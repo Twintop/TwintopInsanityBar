@@ -217,9 +217,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 			barrage = {
 				enabled = true,
 			},
-			serpentSting = {
-				enabled = true,
-			},
 			cobraShot = {
 				enabled = true,
 			},
@@ -553,9 +550,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 				enabled = true,
 			},
 			barrage = {
-				enabled = true,
-			},
-			serpentSting = {
 				enabled = true,
 			},
 			aimedShot = {
@@ -921,9 +915,6 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				enabled = true,
 			},
 			barrage = {
-				enabled = true,
-			},
-			serpentSting = {
 				enabled = true,
 			},
 			raptorStrike = {
@@ -1422,17 +1413,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.multiShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.multiShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.serpentStingThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxSerpentSting"])
-	f.tooltip = L["HunterBeastMasteryThresholdCheckboxSerpentStingTooltip"]
-	f:SetChecked(spec.thresholds.serpentSting.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.serpentSting.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2331,17 +2311,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.multiShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.multiShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.serpentStingThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxSerpentSting"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxSerpentStingTooltip"]
-	f:SetChecked(spec.thresholds.serpentSting.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.serpentSting.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3531,14 +3500,14 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.serpentStingThresholdShow
+	controls.checkBoxes.wildfireBombThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_wildfireBomb", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.wildfireBombThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdSerpentStingCheckbox"])
-	f.tooltip = L["HunterSurvivalThresholdSerpentStingCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.serpentSting.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdWildfireBombCheckbox"])
+	f.tooltip = L["HunterSurvivalThresholdWildfireBombCheckboxTooltip"]
+	f:SetChecked(spec.thresholds.wildfireBomb.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.serpentSting.enabled = self:GetChecked()
+		spec.thresholds.wildfireBomb.enabled = self:GetChecked()
 	end)
 			
 	yCoord = yCoord - 25

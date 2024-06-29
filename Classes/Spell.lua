@@ -90,6 +90,7 @@ end
 ---@field protected classTypes trbSpellType[] # List of types that this class implements. Used for checking if a specific class implements some derived class, e.g. SpellThreshold 
 ---@field private _lastNonZeroPrimaryResourceValue number? # What was the last non-zero primary resource value seen
 ---@field private _lastPrimaryResourceValueCheck number? # Timestamp of the last time a check was done
+---@field private _isFreeCurrently boolean # Is this ability free now when it usually has a resource cost?
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 
@@ -176,6 +177,8 @@ function TRB.Classes.SpellBase:New(spellAttributes)
     self.icon = ""
     self.texture = ""
 
+    self._isFreeCurrently = false
+
     return self
 end
 
@@ -242,10 +245,15 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
         local spc = C_Spell.GetSpellPowerCost(self.id)
         if spc ~= nil then
             for x = 1, #spc do
-                if spc[x].type == self.primaryResourceType and spc[x][self.primaryResourceTypeProperty] > 0 then
-                    local value = spc[x][self.primaryResourceTypeProperty] * self.primaryResourceTypeMod
-                    self._lastNonZeroPrimaryResourceValue = value
-                    return value
+                if spc[x].type == self.primaryResourceType then
+                    if spc[x][self.primaryResourceTypeProperty] > 0 then
+                        local value = spc[x][self.primaryResourceTypeProperty] * self.primaryResourceTypeMod
+                        self._lastNonZeroPrimaryResourceValue = value
+                        self._isFreeCurrently = false
+                        return value
+                    elseif spc[x][self.primaryResourceTypeProperty] == 0 then
+                        self._isFreeCurrently = true
+                    end
                 end
             end
         end
@@ -263,6 +271,13 @@ end
 ---Resets the last non-zero resource value to 0.
 function TRB.Classes.SpellBase:ResetPrimaryResourceCost()
     self._lastNonZeroPrimaryResourceValue = 0
+    self._isFreeCurrently = false
+end
+
+---Is this ability free (resource cost = 0) to cast currently? 
+---@return boolean
+function TRB.Classes.SpellBase:IsFree()
+    return self._isFreeCurrently
 end
 
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.

@@ -15,7 +15,7 @@ local content = [====[
 ## General
 
 - [#356 - UPDATE (Twintop)](#356) Adjust logic used to detect talents being active to:
-<br/>&emsp;&ensp;- Properly detect the active hero talent tree
+<br/>&emsp;&ensp;- Properly detect the active hero talent tree.
 <br/>&emsp;&ensp;- No longer require "baseline" talents from being explicitly flagged as such.
 
 ## Evoker
@@ -49,6 +49,7 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- Black Arrow threshold line and options.
 <br/>&emsp;&ensp;- Removed:
 <br/>&emsp;&ensp;&emsp;&ensp;- A Murder of Crows threshold line and options.
+<br/>&emsp;&ensp;&emsp;&ensp;- Serpent Sting threshold line and options.
 <br/>&emsp;&ensp;&emsp;&ensp;- Wailing Arrow threshold line and options.
 <br/>&emsp;&ensp;- Moved from Class Tree to Specialization Tree:
 <br/>&emsp;&ensp;&emsp;&ensp;- Barrage, Kill Command
@@ -69,10 +70,14 @@ local content = [====[
 ### Survival
 
 - [#367 - UPDATE (Twintop)](#367) Updates to reflect the state of Beast Mastery in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Wildfire Bomb threshold line and options.
+<br/>&emsp;&ensp;&emsp;&ensp;- Bombardier support for Explosive Shot's threshold line.
 <br/>&emsp;&ensp;- Updated:
-<br/>&emsp;&ensp;&emsp;&ensp;- Wildfire Bomb has a threshold line. Maybe. Shrapnel Bomb comes from...where?
+<br/>&emsp;&ensp;&emsp;&ensp;- Coordinated Assault buff ID.
 <br/>&emsp;&ensp;- Removed: 
 <br/>&emsp;&ensp;&emsp;&ensp;- Carve
+<br/>&emsp;&ensp;&emsp;&ensp;- Serpent Sting threshold line and options.
 <br/>&emsp;&ensp;- Moved from Class Tree to Specialization Tree:
 <br/>&emsp;&ensp;&emsp;&ensp;- Kill Command
 

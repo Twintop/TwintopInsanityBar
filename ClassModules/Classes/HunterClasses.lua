@@ -385,7 +385,7 @@ end
 ---@field public termsOfEngagement TRB.Classes.SpellBase
 ---@field public flankingStrike TRB.Classes.SpellBase
 ---@field public coordinatedAssault TRB.Classes.SpellBase
----@field public shrapnelBomb TRB.Classes.SpellBase
+---@field public bombardier TRB.Classes.SpellBase
 ---@field public wildfireBomb TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
 ---@field public butchery TRB.Classes.SpellThreshold
@@ -422,8 +422,9 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         id = 264332,
         isTalent = true
     })
-    self.wildfireBomb = TRB.Classes.SpellBase:New({
+    self.wildfireBomb = TRB.Classes.SpellThreshold:New({
         id = 259495,
+        primaryResourceType = Enum.PowerType.Focus,
         settingKey = "wildfireBomb",
         isTalent = true,
         hasCharges = true,
@@ -462,9 +463,15 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         isTalent = true
     })
     self.coordinatedAssault = TRB.Classes.SpellBase:New({
-        id = 266779,
+        id = 360952,
         isTalent = true
     })
-       
+    self.bombardier = TRB.Classes.SpellBase:New({
+        id = 459859,
+        hasCharges = true
+    })
+
+    self.explosiveShot.isSnowflake = true
+
     return self
 end

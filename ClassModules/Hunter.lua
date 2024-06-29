@@ -207,7 +207,9 @@ local function FillSpecializationCache()
 	specCache.survival.snapshotData.snapshots[spells.flankingStrike.id] = TRB.Classes.Snapshot:New(spells.flankingStrike)
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(spells.wildfireBomb)
-
+	---@type TRB.Classes.Snapshot
+	specCache.survival.snapshotData.snapshots[spells.bombardier.id] = TRB.Classes.Snapshot:New(spells.bombardier, nil, true)
+	
 	specCache.survival.barTextVariables = {
 		icons = {},
 		values = {}
@@ -2045,6 +2047,19 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
+							elseif spell.id == spells.explosiveShot.id then
+								if snapshots[spells.bombardier.id].buff.isActive then
+									thresholdColor = specSettings.colors.threshold.over
+									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+								elseif snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif currentResource >= resourceAmount or spell:IsFree() then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
 							end
 						elseif resourceAmount == 0 then
 							showThreshold = false
@@ -2056,7 +2071,7 @@ local function UpdateResourceBar()
 							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= resourceAmount then
+							elseif currentResource >= resourceAmount or spell:IsFree() then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
@@ -2212,6 +2227,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.wildfireBomb.id then
 					snapshots[entry.spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.bombardier.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 
