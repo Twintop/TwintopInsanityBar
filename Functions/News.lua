@@ -86,7 +86,13 @@ local content = [====[
 
 - (FIX (Twintop)) Show the correct Energy cost in bar text and in the bar progress for Crackling Jade Lightning.
 
+## Paladin
+### Holy
 
+- [#370 - UPDATE (Twintop)](#370) Updates to reflect the state of Holy in beta:
+<br/>&emsp;&ensp;- Removed: 
+<br/>&emsp;&ensp;&emsp;&ensp;- Daybreak
+<br/>&emsp;&ensp;&emsp;&ensp;- Glimmer of Light
 
 ---
 

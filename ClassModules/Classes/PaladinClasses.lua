@@ -10,8 +10,6 @@ TRB.Classes.Paladin = TRB.Classes.Paladin or {}
 
 ---@class TRB.Classes.Paladin.HolySpells : TRB.Classes.Healer.HealerSpells
 ---@field public infusionOfLight TRB.Classes.SpellBase
----@field public glimmerOfLight TRB.Classes.SpellBase
----@field public daybreak TRB.Classes.SpellThreshold
 TRB.Classes.Paladin.HolySpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Paladin.HolySpells.__index = TRB.Classes.Paladin.HolySpells
 
@@ -31,25 +29,6 @@ function TRB.Classes.Paladin.HolySpells:New()
     -- Paladin Class Talents		
     
     -- Holy Spec Talents
-    self.glimmerOfLight = TRB.Classes.SpellBase:New({
-        id = 287269,
-        spellId = 287280,
-        isTalent = true,
-        isDot = true,
-        isBuff = true,
-        isDebuff = true,
-        duration = 30,
-        debuffId = 287280,
-        buffId = 287280
-    })
-    self.daybreak = TRB.Classes.SpellThreshold:New({
-        id = 414170,
-        settingKey = "daybreak",
-        isTalent = true,
-        primaryResourceType = Enum.PowerType.Mana,
-        resourcePercent = 0.008,
-        hasCooldown = true
-    })
 
     return self
 end

@@ -1909,38 +1909,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		spec.thresholds.potionOfFrozenFocusRank1.enabled = self:GetChecked()
 	end)
 
-	if classId == 2 and specId == 1 then
-		yCoord = yCoord - 25
-		controls.labels.thresholdAbilities = TRB.Functions.OptionsUi:BuildLabel(parent, L["Abilities"], 5, yCoord, 300, 20)
-		
-		--NOTE: the order of these checkboxes is reversed!
-		yCoord = yCoord - 20
-		controls.checkBoxes.daybreakThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_daybreak_cooldown", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.daybreakThresholdShowCooldown
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["Daybreak"])
-		f:SetChecked(spec.thresholds.daybreak.cooldown)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.daybreak.cooldown = self:GetChecked()
-		end)
-		
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.daybreakThresholdShowCooldown, spec.thresholds.daybreak.enabled)
-		
-		controls.checkBoxes.daybreakThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_daybreak", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.daybreakThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["Daybreak"])
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["Daybreak"])
-		f:SetChecked(spec.thresholds.daybreak.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.daybreak.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.daybreakThresholdShowCooldown, spec.thresholds.daybreak.enabled)
-		end)
-		yCoord = yCoord - 20		
-	elseif classId == 5 or classId == 10 then -- Priest or Monk
+	if classId == 5 or classId == 10 then -- Priest or Monk
 		yCoord = yCoord - 25
 		controls.labels.thresholdAbilities = TRB.Functions.OptionsUi:BuildLabel(parent, L["Abilities"], 5, yCoord, 300, 20)
 		

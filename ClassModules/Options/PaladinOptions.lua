@@ -28,7 +28,7 @@ local function HolyLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="$glimmerCount",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -105,7 +105,7 @@ local function HolyLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="#glimmer $glimmerCount ($glimmerMinTime)||n{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
+			text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -207,10 +207,6 @@ local function HolyLoadDefaultSettings(includeBarText)
 			},
 			potionOfFrozenFocusRank3 = {
 				enabled = true,
-			},
-			daybreak = {
-				enabled = true,
-				cooldown = true
 			},
 			potionCooldown = {
 				enabled=true,

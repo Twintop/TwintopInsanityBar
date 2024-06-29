@@ -122,18 +122,9 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
 	specCache.holy.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
-	
-	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.glimmerOfLight.buffId] = TRB.Classes.Snapshot:New(spells.glimmerOfLight, {
-		minRemainingTime = 0,
-		maxRemainingTime = 0
-	})
 
-	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.daybreak.id] = TRB.Classes.Snapshot:New(spells.daybreak)
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.infusionOfLight.id] = TRB.Classes.Snapshot:New(spells.infusionOfLight)
-
 
 	specCache.holy.barTextVariables = {
 		icons = {},
@@ -163,10 +154,6 @@ local function FillSpellData_Holy()
 		
 		{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
 		{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
-
-		{ variable = "#glimmer", icon = spells.glimmerOfLight.icon, description = spells.glimmerOfLight.name, printInSettings = true },
-		{ variable = "#glimmerOfLight", icon = spells.glimmerOfLight.icon, description = spells.glimmerOfLight.name, printInSettings = false },
-
 		{ variable = "#iol", icon = spells.infusionOfLight.icon, description = spells.infusionOfLight.name, printInSettings = true },
 		{ variable = "#infusionOfLight", icon = spells.infusionOfLight.icon, description = spells.infusionOfLight.name, printInSettings = false },
 
@@ -240,12 +227,6 @@ local function FillSpellData_Holy()
 
 		{ variable = "$iolTime", description =   L["PaladinHolyBarTextVariable_iolTime"], printInSettings = true, color = false },
 		{ variable = "$iolStacks", description = L["PaladinHolyBarTextVariable_iolStacks"], printInSettings = true, color = false },
-
-		{ variable = "$glimmerCount", description =   L["PaladinHolyBarTextVariable_glimmerCount"], printInSettings = true, color = false },
-		{ variable = "$glimmerTime", description =    L["PaladinHolyBarTextVariable_glimmerTime"], printInSettings = true, color = false },
-		{ variable = "$glimmerMinTime", description = L["PaladinHolyBarTextVariable_glimmerMinTime"], printInSettings = true, color = false },
-		{ variable = "$glimmerMaxTime", description = L["PaladinHolyBarTextVariable_glimmerMaxTime"], printInSettings = true, color = false },
-
 
 		{ variable = "$bowMana", description = L["PaladinHolyBarTextVariable_bowMana"], printInSettings = true, color = false },
 		{ variable = "$bowTime", description = L["PaladinHolyBarTextVariable_bowTime"], printInSettings = true, color = false },
@@ -379,27 +360,6 @@ local function RefreshLookupData_Holy()
 	local _castingMana = snapshotData.casting.resourceFinal
 	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
-	--$glimmerMinTime
-	local _glimmerMinTime = snapshots[spells.glimmerOfLight.buffId].attributes.minRemainingTime
-	local glimmerMinTime = TRB.Functions.BarText:TimerPrecision(_glimmerMinTime)
-	
-	--$glimmerMaxTime
-	local _glimmerMaxTime = snapshots[spells.glimmerOfLight.buffId].attributes.maxRemainingTime
-	local glimmerMaxTime = TRB.Functions.BarText:TimerPrecision(_glimmerMaxTime)
-
-	
-	--$glimmerTime
-	local _glimmerTime = 0
-
-	if target ~= nil then
-		_glimmerTime = target.spells[spells.glimmerOfLight.buffId].remainingTime or 0
-	end
-	local glimmerTime = TRB.Functions.BarText:TimerPrecision(_glimmerTime)
-
-	--$glimmerCount
-	local _glimmerCount = snapshotData.targetData.count[spells.glimmerOfLight.buffId] or 0
-	local glimmerCount = string.format("%s", _glimmerCount)
-	
 	--$iolTime
 	local _iolTime = snapshots[spells.infusionOfLight.id].buff:GetRemainingTime(currentTime)
 	local iolTime = TRB.Functions.BarText:TimerPrecision(_iolTime)
@@ -523,17 +483,9 @@ local function RefreshLookupData_Holy()
 	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
 	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
-	Global_TwintopResourceBar.glimmerOfLight = Global_TwintopResourceBar.glimmerOfLight or {}
-	Global_TwintopResourceBar.glimmerOfLight.count = _glimmerCount
-	Global_TwintopResourceBar.glimmerOfLight.targetTime = _glimmerTime
-	Global_TwintopResourceBar.glimmerOfLight.minTime = _glimmerMinTime
-	Global_TwintopResourceBar.glimmerOfLight.maxTime = _glimmerMaxTime
-
 	local lookup = TRB.Data.lookup or {}
 	lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
 	lookup["#bow"] = spells.blessingOfWinter.icon
-	lookup["#glimmer"] = spells.glimmerOfLight.icon
-	lookup["#glimmerOfLight"] = spells.glimmerOfLight.icon
 	lookup["#innervate"] = spells.innervate.icon
 	lookup["#mtt"] = spells.manaTideTotem.icon
 	lookup["#manaTideTotem"] = spells.manaTideTotem.icon
@@ -584,10 +536,6 @@ local function RefreshLookupData_Holy()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$holyPowerMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$glimmerMinTime"] = glimmerMinTime
-	lookup["$glimmerMaxTime"] = glimmerMaxTime
-	lookup["$glimmerTime"] = glimmerTime
-	lookup["$glimmerCount"] = glimmerCount
 	lookup["$iolTime"] = iolTime
 	lookup["$iolStacks"] = iolStacks
 	TRB.Data.lookup = lookup
@@ -630,10 +578,6 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$holyPowerMax"] = TRB.Data.character.maxResource
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$glimmerMinTime"] = _glimmerMinTime
-	lookupLogic["$glimmerMaxTime"] = _glimmerMaxTime
-	lookupLogic["$glimmerTime"] = _glimmerTime
-	lookupLogic["$glimmerCount"] = _glimmerCount
 	lookupLogic["$iolTime"] = _iolTime
 	lookupLogic["$iolStacks"] = _iolStacks
 	TRB.Data.lookupLogic = lookupLogic
@@ -705,32 +649,6 @@ local function CastingSpell()
 	end
 end
 
-local function UpdateGlimmerOfLight()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
-	local glimmerOfLight = TRB.Data.snapshotData.snapshots[spells.glimmerOfLight.buffId] --[[@as TRB.Classes.Snapshot]]
-	local targets = TRB.Data.snapshotData.targetData.targets
-	local minRemainingTime = nil
-	local maxRemainingTime = nil
-	local currentTime = GetTime()
-	if TRB.Functions.Table:Length(targets) > 0 then
-		for guid, target in pairs(targets) do
-			if target.spells[spells.glimmerOfLight.buffId].active and target.spells[spells.glimmerOfLight.buffId].endTime ~= nil then
-				local remainingTime = (target.spells[spells.glimmerOfLight.buffId].endTime - currentTime)
-				if remainingTime > 0 and remainingTime > (maxRemainingTime or 0) then
-					maxRemainingTime = remainingTime
-				end
-			
-				if remainingTime > 0 and remainingTime < (minRemainingTime or 999) then
-					minRemainingTime = remainingTime
-				end
-			end
-		end
-	end
-
-	glimmerOfLight.attributes.minRemainingTime = minRemainingTime or 0
-	glimmerOfLight.attributes.maxRemainingTime = maxRemainingTime or 0
-end
-
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 	local currentTime = GetTime()
@@ -739,7 +657,6 @@ end
 local function UpdateSnapshot_Holy()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	UpdateGlimmerOfLight()
 	
 	local _
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
@@ -770,8 +687,6 @@ local function UpdateSnapshot_Holy()
 	-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 	snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
 	snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
-	
-	snapshots[spells.daybreak.id].cooldown:GetRemainingTime(currentTime)
 end
 
 local function UpdateResourceBar()
@@ -920,28 +835,6 @@ local function UpdateResourceBar()
 							else
 								showThreshold = false
 							end
-						elseif spell.id == spells.daybreak.id then
-							snapshot = snapshots[spell.id]
-							if talents:IsTalentActive(spell) then
-								if specSettings.thresholds[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds[spell.settingKey].cooldown) then
-									local daybreakMana = snapshotData.targetData.count[spells.glimmerOfLight.buffId] * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
-									resourceAmount = castingBarValue + daybreakMana
-									if snapshot.cooldown:IsUnusable() then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									end
-			
-									if daybreakMana > 0 and resourceAmount < TRB.Data.character.maxResource then
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-									else
-										showThreshold = false
-									end
-								else
-									showThreshold = false
-								end
-							else
-								showThreshold = false
-							end
 						else
 							resourceAmount = spell:GetPrimaryResourceCost()
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
@@ -1045,18 +938,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.potionOfChilledClarity.id then
 					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 					potionOfChilledClarity.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.glimmerOfLight.buffId and bit.band(entry.destinationFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY) > 0 then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
-						triggerUpdate = targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.glimmerOfLight.debuffId then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, false) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.daybreak.id then
-					if entry.type == "SPELL_AURA_REMOVED" then -- Use this instead of SPELL_CAST_SUCCESS because of delays in triggering the cooldown
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
 				elseif entry.spellId == spells.infusionOfLight.id then
 					snapshots[spells.infusionOfLight.id].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
@@ -1109,11 +990,8 @@ local function SwitchSpec()
 		FillSpellData_Holy()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.holy)
 
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
-		local targetData = TRB.Data.snapshotData.targetData
-		targetData:AddSpellTracking(spells.glimmerOfLight)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
 		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.paladin.holy)
@@ -1337,26 +1215,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
 				TRB.Functions.Class:IsValidVariableForSpec("$mttMana") or
 				TRB.Functions.Class:IsValidVariableForSpec("$mrMana") then
-				valid = true
-			end
-		elseif var == "glimmerCount" then
-			if snapshotData.targetData.count[spells.glimmerOfLight.buffId] > 0 then
-				valid = true
-			end
-		elseif var == "glimmerTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitIsFriend("player", "target") and
-				target ~= nil and
-				((target.spells[spells.glimmerOfLight.buffId] ~= nil and
-				target.spells[spells.glimmerOfLight.buffId].remainingTime > 0)) then
-				valid = true
-			end
-		elseif var == "glimmerMinTime" then
-			if snapshots[spells.glimmerOfLight.buffId].attributes.minRemainingTime > 0 then
-				valid = true
-			end
-		elseif var == "glimmerMaxTime" then
-			if snapshots[spells.glimmerOfLight.buffId].attributes.maxRemainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$sohMana" then
