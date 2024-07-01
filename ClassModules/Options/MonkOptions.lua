@@ -218,6 +218,9 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				enabled = false,
 				cooldown = false
 			},
+			manaTeaCharges = {
+				enabled = true
+			},
 			potionCooldown = {
 				enabled=true,
 				mode="time",
@@ -337,7 +340,7 @@ local function WindwalkerLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$serenityTime}[$serenityTime sec]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -415,7 +418,7 @@ local function WindwalkerLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$serenityTime}[#serenity $serenityTime #serenity]{$ttd}[||nTTD: $ttd]",
+			text="{$ttd}[||nTTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -535,12 +538,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		endOfSerenity = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
-		},
 		overcap={
 			mode="relative",
 			relative=0,
@@ -594,8 +591,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				casting="FFFFFFFF",
 				spending="FF555555",
 				passive="FF9F4500",
-				serenity="FF00FF96",
-				serenityEnd="FFFF0000",
 				overcapEnabled=true,
 			},
 			comboPoints = {
@@ -1362,30 +1357,6 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
-	controls.colors.serenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerSerenity"], spec.colors.bar.serenity, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.serenity
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "serenity")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfSerenity = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_EOS", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfSerenity
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxSerenityEnd"])
-	f.tooltip = L["MonkWindwalkerCheckboxSerenityEndTooltip"]
-	f:SetChecked(spec.endOfSerenity.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfSerenity.enabled = self:GetChecked()
-	end)
-
-	controls.colors.serenityEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerSerenityEnd"], spec.colors.bar.serenityEnd, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.serenityEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "serenityEnd")
-	end)
-
-	yCoord = yCoord - 30
 	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1620,57 +1591,6 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 3, yCoord)
-
-	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkWindwalkerHeaderEndOfSerenityConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfSerenityModeGCDs = CreateFrame("CheckButton", "TRB_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfSerenityModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxSerenityGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfSerenity.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfSerenityModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfSerenityModeTime:SetChecked(false)
-		spec.endOfSerenity.mode = "gcd"
-	end)
-
-	title = L["MonkWindwalkerSerenityGcds"]
-	controls.endOfSerenityGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfSerenity.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfSerenityGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfSerenity.gcdsMax = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfSerenityModeTime = CreateFrame("CheckButton", "TRB_EOFV_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfSerenityModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxSerenityTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfSerenity.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfSerenityModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfSerenityModeTime:SetChecked(true)
-		spec.endOfSerenity.mode = "time"
-	end)
-
-	title = L["MonkWindwalkerSerenityTime"]
-	controls.endOfSerenityTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfSerenity.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfSerenityTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfSerenity.timeMax = value
-	end)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 150)

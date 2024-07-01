@@ -1990,8 +1990,22 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			end
 		end
 
+		if classId == 10 then
+			yCoord = yCoord - 25
+			controls.checkBoxes.manaTeaChargesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_manaTeaCharges", parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes.manaTeaChargesThresholdShow
+			f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+			getglobal(f:GetName() .. 'Text'):SetText(L["ManaTea"])
+			---@diagnostic disable-next-line: inject-field
+			f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["ManaTea"])
+			f:SetChecked(spec.thresholds.manaTeaCharges.enabled)
+			f:SetScript("OnClick", function(self, ...)
+				spec.thresholds.manaTeaCharges.enabled = self:GetChecked()
+			end)
+		end
+
 		--NOTE: the order of these checkboxes is reversed!
-		yCoord = yCoord - 20
+		yCoord = yCoord - 25
 		controls.checkBoxes.cannibalizeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cannibalize_cooldown", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cannibalizeThresholdShowCooldown
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
@@ -2016,10 +2030,10 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			spec.thresholds.cannibalize.enabled = self:GetChecked()
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.cannibalize.enabled)
 		end)
-		yCoord = yCoord - 20
+		yCoord = yCoord - 25
 	end
 
-	--yCoord = yCoord - 25
+	yCoord = yCoord - 25
 	--controls.labels.thresholdItems = TRB.Functions.OptionsUi:BuildLabel(parent, L["Items"], 5, yCoord, 300, 20)
 	
 	return yCoord

@@ -11,6 +11,16 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-alpha08 (2024-07-02)
+## General 
+
+## Monk
+### Mistweaver
+
+- [#368 - NEW (Twintop)](#368) Add threshold lines for Mana Tea, showing how much mana you will restore if you channeled Mana Tea right now and a passive threshold line to show how much mana you will end up with while channeling.
+
+---
+
 # 11.0.0.0-alpha07 (2024-06-29)
 ## General 
 
@@ -21,7 +31,7 @@ local content = [====[
 ## Evoker
 ### Augmentation
 
-- [#362 - UPDATE (Twintop)](#364) Updates to reflect the state of Augmentation in beta:
+- [#364 - UPDATE (Twintop)](#364) Updates to reflect the state of Augmentation in beta:
 <br/>&emsp;&ensp;- Added:
 <br/>&emsp;&ensp;&emsp;&ensp;- Melt Armor support, applied via Breath of Eons.
 <br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track when the debuff is on a target and allow for the mana bar to change color while active.

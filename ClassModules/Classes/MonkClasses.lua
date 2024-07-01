@@ -8,10 +8,66 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Monk = TRB.Classes.Monk or {}
 
 
+--[[
+    ********************
+    ***** Mana Tea *****
+    ********************
+    ]]
+
+---@class TRB.Classes.Monk.ManaTea : TRB.Classes.Healer.HealerRegenBase
+---@field public mana number
+---@field private manaTeaRegenSnapshot TRB.Classes.Snapshot
+---@field private energizingBrewSpell TRB.Classes.SpellBase
+---@field private talents TRB.Classes.Talents
+TRB.Classes.Monk.ManaTea = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
+TRB.Classes.Monk.ManaTea.__index = TRB.Classes.Monk.ManaTea
+
+---Creates a new Mana Tea object
+---@param spell table # Spell we are snapshotting, in this case Mana Tea
+---@param manaTeaRegenSnapshot TRB.Classes.Snapshot # Snapshot of manaTeaRegen used by the rest of the Mistweaver implementation
+---@param energizingBrewSpell TRB.Classes.SpellBase # Energizing Brew spell, for reference data
+---@param talents TRB.Classes.Talents # Talents object for Mistweaver
+---@return TRB.Classes.Monk.ManaTea
+function TRB.Classes.Monk.ManaTea:New(spell, manaTeaRegenSnapshot, energizingBrewSpell, talents)
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
+    local self = setmetatable(snapshot:New(spell), TRB.Classes.Monk.ManaTea)
+    self:Reset()
+    self.attributes = {}
+    self.manaTeaRegenSnapshot = manaTeaRegenSnapshot
+    self.energizingBrewSpell = energizingBrewSpell
+    self.talents = talents
+    return self
+end
+
+---Updates Mana Tea's values
+function TRB.Classes.Monk.ManaTea:Update()
+    if self.manaTeaRegenSnapshot.buff.isActive then
+        self.mana = self:GetMaxManaReturn()
+    else
+        self.mana = 0
+    end
+end
+
+function TRB.Classes.Monk.ManaTea:GetMaxManaReturn()
+    local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+    local resourcePerTick = self.spell.resourcePerTick
+    local tickRate = self.spell.tickRate
+
+    if self.talents:IsTalentActive(self.energizingBrewSpell) then
+        resourcePerTick = resourcePerTick * self.energizingBrewSpell.resourcePerTickMod
+        tickRate = tickRate * self.energizingBrewSpell.tickRateMod
+    end
+    return (TRB.Data.snapshotData.attributes.manaRegen * tickRate * (self.buff.applications * (gcd / 1.5))) + (self.buff.applications * resourcePerTick * TRB.Data.character.maxResource)
+end
+
+
 ---@class TRB.Classes.Monk.MistweaverSpells : TRB.Classes.Healer.HealerSpells
 ---@field public soothingMist TRB.Classes.SpellBase
 ---@field public vivaciousVivification TRB.Classes.SpellBase
 ---@field public manaTea TRB.Classes.SpellBase
+---@field public energizingBrew TRB.Classes.SpellBase
+---@field public manaTeaCharges TRB.Classes.SpellThreshold
 ---@field public cannibalize TRB.Classes.SpellThreshold
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Monk.MistweaverSpells.__index = TRB.Classes.Monk.MistweaverSpells
@@ -25,7 +81,6 @@ function TRB.Classes.Monk.MistweaverSpells:New()
     self.soothingMist = TRB.Classes.SpellBase:New({
         id = 115175,
         isTalent = true,
-        baseline = true,
         primaryResourceType = Enum.PowerType.Mana,
         primaryResourceTypeProperty = "costPerSec"
     })
@@ -36,7 +91,29 @@ function TRB.Classes.Monk.MistweaverSpells:New()
     -- Mistweaver Spec Talents
     self.manaTea = TRB.Classes.SpellBase:New({
         id = 197908,
+        talentId = 115869,
         isTalent = true
+    })
+    self.manaTeaRegen = TRB.Classes.SpellBase:New({
+        id = 115294,
+        talentId = 115869,
+        isTalent = true
+    })
+    self.manaTeaCharges = TRB.Classes.SpellThreshold:New({
+        id = 115867,
+        talentId = 115869,
+        hasTicks = true,
+        tickRate = 0.5, -- hasted
+        resourcePerTick = 0.021,
+        settingKey = "manaTeaCharges",
+        primaryResourceType = Enum.PowerType.Mana,
+        isSnowflake = true,
+    })
+    self.energizingBrew = TRB.Classes.SpellBase:New({
+        id = 422031,
+        isTalent = true,
+        resourcePerTickMod = 1.2,
+        tickRateMod = 0.5
     })
 
     -- Racials
@@ -64,7 +141,6 @@ end
 ---@field public paralysisRank2 TRB.Classes.SpellBase
 ---@field public strikeOfTheWindlord TRB.Classes.SpellBase
 ---@field public danceOfChiJi TRB.Classes.SpellBase
----@field public serenity TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
@@ -199,10 +275,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     })
     self.danceOfChiJi = TRB.Classes.SpellBase:New({
         id = 325202,
-        isTalent = true
-    })
-    self.serenity = TRB.Classes.SpellBase:New({
-        id = 152173,
         isTalent = true
     })
 

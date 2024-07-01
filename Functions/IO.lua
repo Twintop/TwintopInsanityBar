@@ -80,7 +80,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 10 then -- Monk
 			if specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
-				configuration.endOfSerenity = settings.endOfSerenity
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance

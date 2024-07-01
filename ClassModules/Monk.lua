@@ -124,6 +124,14 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.mistweaver.snapshotData.snapshots[spells.manaTea.id] = TRB.Classes.Snapshot:New(spells.manaTea)
 	---@type TRB.Classes.Snapshot
+	specCache.mistweaver.snapshotData.snapshots[spells.manaTeaRegen.id] = TRB.Classes.Snapshot:New(spells.manaTeaRegen)
+	---@type TRB.Classes.Monk.ManaTea
+	specCache.mistweaver.snapshotData.snapshots[spells.manaTeaCharges.id] = TRB.Classes.Monk.ManaTea:New(
+		spells.manaTeaCharges,
+		specCache.mistweaver.snapshotData.snapshots[spells.manaTeaRegen.id],
+		spells.energizingBrew,
+		specCache.mistweaver.talents)
+	---@type TRB.Classes.Snapshot
 	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification, nil, true)
 
 	specCache.mistweaver.barTextVariables = {
@@ -173,8 +181,6 @@ local function FillSpecializationCache()
 	specCache.windwalker.snapshotData.snapshots[spells.paralysis.id] = TRB.Classes.Snapshot:New(spells.paralysis)
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.strikeOfTheWindlord.id] = TRB.Classes.Snapshot:New(spells.strikeOfTheWindlord)
-	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.serenity.id] = TRB.Classes.Snapshot:New(spells.serenity)
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
@@ -352,7 +358,6 @@ local function FillSpellData_Windwalker()
 		{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
 		{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
 		{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
-		{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
 		{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
 		{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
 		{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
@@ -412,8 +417,6 @@ local function FillSpellData_Windwalker()
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$chiMax", description = L["MonkWindwalkerBarTextVariable_chiMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-
-		{ variable = "$serenityTime", description = L["MonkWindwalkerBarTextVariable_serenityTime"], printInSettings = true, color = false },
 
 		{ variable = "$danceOfChiJiTime", description = L["MonkWindwalkerBarTextVariable_danceOfChiJiTime"], printInSettings = true, color = false },
 
@@ -475,7 +478,7 @@ local function ConstructResourceBar(settings)
 			end
 		end
 
-		for x = 1, 8 do
+		for x = 1, 9 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
@@ -935,10 +938,6 @@ local function RefreshLookupData_Windwalker()
 	local _energyPlusPassive = math.min(_passiveEnergy + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
 	
-	--$serenityTime
-	local _serenityTime = snapshots[spells.serenity.id].buff:GetRemainingTime(currentTime)
-	local serenityTime = TRB.Functions.BarText:TimerPrecision(_serenityTime)
-	
 	--$danceOfChiJiTime
 	local _danceOfChiJiTime = snapshots[spells.danceOfChiJi.id].buff:GetRemainingTime(currentTime)
 	local danceOfChiJiTime = TRB.Functions.BarText:TimerPrecision(_danceOfChiJiTime)
@@ -1017,7 +1016,6 @@ local function RefreshLookupData_Windwalker()
 	lookup["#paralysis"] = spells.paralysis.icon
 	lookup["#risingSunKick"] = spells.risingSunKick.icon
 	lookup["#rsk"] = spells.risingSunKick.icon
-	lookup["#serenity"] = spells.serenity.icon
 	lookup["#spinningCraneKick"] = spells.spinningCraneKick.icon
 	lookup["#sck"] = spells.spinningCraneKick.icon
 	lookup["#tigerPalm"] = spells.tigerPalm.icon
@@ -1053,7 +1051,6 @@ local function RefreshLookupData_Windwalker()
 	lookup["$overcap"] = overcap
 	lookup["$resourceOvercap"] = overcap
 	lookup["$energyOvercap"] = overcap
-	lookup["$serenityTime"] = serenityTime
 	lookup["$danceOfChiJiTime"] = danceOfChiJiTime
 	lookup["$motcMinTime"] = motcMinTime
 	lookup["$motcMaxTime"] = motcMaxTime
@@ -1092,7 +1089,6 @@ local function RefreshLookupData_Windwalker()
 	lookupLogic["$overcap"] = overcap
 	lookupLogic["$resourceOvercap"] = overcap
 	lookupLogic["$energyOvercap"] = overcap
-	lookupLogic["$serenityTime"] = _serenityTime
 	lookupLogic["$danceOfChiJiTime"] = _danceOfChiJiTime
 	lookupLogic["$motcMinTime"] = _motcMinTime
 	lookupLogic["$motcMaxTime"] = _motcMaxTime
@@ -1264,6 +1260,9 @@ local function UpdateSnapshot_Mistweaver()
 	
 	local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 	cannibalize:Update()
+	
+	local manaTeaCharges = snapshots[spells.manaTeaCharges.id] --[[@as TRB.Classes.Monk.ManaTea]]
+	manaTeaCharges:Update()
 
 	-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 	snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
@@ -1339,6 +1338,13 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
+				if talents:IsTalentActive(spells.manaTeaCharges) and snapshots[spells.manaTeaRegen.id].buff.isActive and specSettings.thresholds.manaTeaCharges.enabled and specSettings.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.manaTeaCharges.id] --[[@as TRB.Classes.Monk.ManaTea]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+				else
+					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+				end
+				
+				thresholdCount = thresholdCount + 1
 				if snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
@@ -1411,6 +1417,15 @@ local function UpdateResourceBar()
 								else
 									showThreshold = false
 								end
+							else
+								showThreshold = false
+							end
+						elseif spell.id == spells.manaTeaCharges.id then
+							snapshot = snapshots[spells.manaTeaCharges.id] --[[@as TRB.Classes.Monk.ManaTea]]
+							local manaTeaTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
+							resourceAmount = castingBarValue + manaTeaTotal
+							if not snapshots[spells.manaTeaRegen.id].buff.isActive and snapshot.buff.isActive and specSettings.thresholds.manaTeaCharges.enabled and resourceAmount < TRB.Data.character.maxResource then
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 							else
 								showThreshold = false
 							end
@@ -1565,21 +1580,6 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
-				if snapshots[spells.serenity.id].buff.isActive then
-					local timeThreshold = 0
-					if specSettings.endOfSerenity.mode == "gcd" then
-						local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-						timeThreshold = gcd * specSettings.endOfSerenity.gcdsMax
-					elseif specSettings.endOfSerenity.mode == "time" then
-						timeThreshold = specSettings.endOfSerenity.timeMax
-					end
-					
-					if snapshots[spells.serenity.id].buff:GetRemainingTime(currentTime) <= timeThreshold then
-						barColor = specSettings.colors.bar.serenityEnd
-					else
-						barColor = specSettings.colors.bar.serenity
-					end
-				end
 
 				local barBorderColor = specSettings.colors.bar.border
 				if snapshots[spells.danceOfChiJi.id].buff.isActive then
@@ -1694,6 +1694,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					channeledManaPotion.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.manaTea.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.manaTeaRegen.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.manaTeaCharges.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.cannibalize.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -1704,8 +1708,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].buff:Initialize(entry.type)
 					end
-				elseif entry.spellId == spells.serenity.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.danceOfChiJi.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
@@ -1807,6 +1809,7 @@ local function SwitchSpec()
 		FillSpellData_Mistweaver()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.mistweaver)
 		
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1816,6 +1819,8 @@ local function SwitchSpec()
 
 		if TRB.Data.barConstructedForSpec ~= "mistweaver" then
 			talents = specCache.mistweaver.talents
+			specCache.mistweaver.snapshotData.snapshots[spells.manaTeaCharges.id].attributes.talents = talents
+			specCache.mistweaver.snapshotData.snapshots[spells.manaTeaCharges.id].attributes.energizingBrew = spells.energizingBrew
 			TRB.Data.barConstructedForSpec = "mistweaver"
 			ConstructResourceBar(specCache.mistweaver.settings)
 		end
@@ -2201,12 +2206,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
 			end
-		elseif var == "$serenityTime" then
-			if snapshots[spells.serenity.id].buff.isActive then
-				valid = true
-			end
 		elseif var == "$danceOfChiJiTime" then
-			if snapshots[spells.serenity.id].buff.isActive then
+			if snapshots[spells.danceOfChiJi.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$motcCount" then
