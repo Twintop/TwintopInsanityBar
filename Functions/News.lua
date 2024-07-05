@@ -19,6 +19,23 @@ local content = [====[
 
 - [#368 - NEW (Twintop)](#368) Add threshold lines for Mana Tea, showing how much mana you will restore if you channeled Mana Tea right now and a passive threshold line to show how much mana you will end up with while channeling.
 
+### Windwalker
+
+- [#369 - UPDATE (Twintop)](#369) Updates to reflect the state of Windwalker in beta:
+<br/>&emsp;&ensp;- Removed:
+<br/>&emsp;&ensp;&emsp;&ensp;- Serenity
+
+## Shaman
+### Elemental
+
+### Enhancement
+
+### Restoration
+
+- [#379 - UPDATE (Twintop)](#379) Updates to reflect the state of Windwalker in beta:
+<br/>&emsp;&ensp;- Removed:
+<br/>&emsp;&ensp;&emsp;&ensp;- Serenity
+
 ---
 
 # 11.0.0.0-alpha07 (2024-06-29)

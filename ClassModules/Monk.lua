@@ -1211,7 +1211,7 @@ local function UpdateMarkOfTheCrane()
 		markOfTheCrane.buff.isActive = false
 	end
 
-	markOfTheCrane.attributes.count = GetSpellCount(spells.spinningCraneKick.id)
+	markOfTheCrane.attributes.count = C_Spell.GetSpellCastCount(spells.spinningCraneKick.id)
 
 	-- Avoid race conditions from combat log events saying we have 6 marks when 5 is the max
 	if markOfTheCrane.attributes.count < activeCount then

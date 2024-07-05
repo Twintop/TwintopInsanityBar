@@ -235,7 +235,6 @@ end
 
 
 ---@class TRB.Classes.Shaman.RestorationSpells : TRB.Classes.Healer.HealerSpells
----@field public resonantWaters TRB.Classes.SpellBase
 ---@field public flameShock TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
 TRB.Classes.Shaman.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
@@ -246,11 +245,6 @@ function TRB.Classes.Shaman.RestorationSpells:New()
     local base = TRB.Classes.Healer.HealerSpells
     self = setmetatable(base:New(), TRB.Classes.Shaman.RestorationSpells) --[[@as TRB.Classes.Shaman.RestorationSpells]]
 
-    self.resonantWaters = TRB.Classes.SpellBase:New({
-        id = 404539,
-        isTalent = true,
-        duration = 4,
-    })
     self.flameShock = TRB.Classes.SpellBase:New({
         id = 188389,
         baseDuration = 18,

@@ -1893,9 +1893,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
 					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 					local duration = spells.manaTideTotem.duration
-					if entry.sourceGuid == TRB.Data.character.guid and TRB.Functions.Table:IsTalentActive(spells.resonantWaters) then
-						duration = spells.manaTideTotem.duration + spells.resonantWaters.duration
-					end
 					manaTideTotem:Initialize(entry.type, duration)
 				elseif entry.spellId == spells.potionOfChilledClarity.id then
 					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
