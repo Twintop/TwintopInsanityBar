@@ -1905,7 +1905,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.Essence
-		TRB.Data.resourceFactor = 1
+		TRB.Data.resource2Factor = 1
 	elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
 		TRB.Data.specSupported = true
