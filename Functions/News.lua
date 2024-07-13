@@ -107,17 +107,6 @@ local content = [====[
 <br/>&emsp;&ensp;- New bar text icons:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#hotjs` - Heart of the Jade Serpent
 
-## Shaman
-### Elemental
-
-### Enhancement
-
-### Restoration
-
-- [#379 - UPDATE (Twintop)](#379) Updates to reflect the state of Windwalker in beta:
-<br/>&emsp;&ensp;- Removed:
-<br/>&emsp;&ensp;&emsp;&ensp;- Serenity
-
 ---
 
 # 11.0.0.0-alpha07 (2024-06-29)
