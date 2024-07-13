@@ -171,6 +171,8 @@ local function FillSpecializationCache()
 	specCache.preservation.snapshotData.snapshots[spells.emeraldCommunion.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.emeraldCommunion)
 	---@type TRB.Classes.Snapshot
 	specCache.preservation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
+	---@type TRB.Classes.Snapshot
+	specCache.preservation.snapshotData.snapshots[spells.temporalBurst.id] = TRB.Classes.Snapshot:New(spells.temporalBurst)
 
 	specCache.preservation.barTextVariables = {
 		icons = {},
@@ -214,6 +216,8 @@ local function FillSpecializationCache()
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.augmentation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
+	---@type TRB.Classes.Snapshot
+	specCache.augmentation.snapshotData.snapshots[spells.temporalBurst.id] = TRB.Classes.Snapshot:New(spells.temporalBurst)
 
 	specCache.augmentation.barTextVariables = {
 		icons = {},
@@ -329,6 +333,8 @@ local function FillSpellData_Preservation()
 		{ variable = "#ec", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = true },
 		{ variable = "#emeraldCommunion", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = false },
 
+		{ variable = "#temporalBurst", icon = spells.temporalBurst.icon, description = spells.temporalBurst.name, printInSettings = true },
+
 		{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 		{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 		
@@ -400,6 +406,8 @@ local function FillSpellData_Preservation()
 		{ variable = "$essenceRegenTime", description = L["EvokerPreservationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerPreservationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		
+		{ variable = "$temporalBurstTime", description = L["EvokerPreservationBarTextVariable_temporalBurstTime"], printInSettings = true, color = false },
 
 		{ variable = "$ebTime", description = L["EvokerPreservationBarTextVariable_ebTime"], printInSettings = true, color = false },
 		{ variable = "$ebStacks", description = L["EvokerPreservationBarTextVariable_ebStacks"], printInSettings = true, color = false },
@@ -453,6 +461,7 @@ local function FillSpellData_Augmentation()
 		{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
 		{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
 		{ variable = "#meltArmor", icon = spells.meltArmor.icon, description = spells.meltArmor.name, printInSettings = true },
+		{ variable = "#temporalBurst", icon = spells.temporalBurst.icon, description = spells.temporalBurst.name, printInSettings = true },
 	}
 	specCache.augmentation.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -501,6 +510,8 @@ local function FillSpellData_Augmentation()
 		{ variable = "$ebStacks", description = L["EvokerAugmentationBarTextVariable_ebStacks"], printInSettings = true, color = false },
 
 		{ variable = "$meltArmorTime", description = L["EvokerAugmentationBarTextVariable_meltArmorTime"], printInSettings = true, color = false },
+		
+		{ variable = "$temporalBurstTime", description = L["EvokerAugmentationBarTextVariable_temporalBurstTime"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -842,6 +853,10 @@ local function RefreshLookupData_Preservation()
 	local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 	local ebStacks = string.format("%.0f", _ebStacks)
 
+	--$temporalBurstTime
+	local _temporalBurstTime = snapshots[spells.temporalBurst.id].buff.remaining
+	local temporalBurstTime = TRB.Functions.BarText:TimerPrecision(_temporalBurstTime)
+
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -873,6 +888,7 @@ local function RefreshLookupData_Preservation()
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#eb"] = spells.essenceBurst.icon
+	lookup["#temporalBurst"] = spells.temporalBurst.icon
 	lookup["#essenceBurst"] = spells.essenceBurst.icon
 	lookup["#ec"] = spells.emeraldCommunion.icon
 	lookup["#emeraldCommunion"] = spells.emeraldCommunion.icon
@@ -934,6 +950,7 @@ local function RefreshLookupData_Preservation()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$essenceMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookup["$temporalBurstTime"] = temporalBurstTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -980,6 +997,7 @@ local function RefreshLookupData_Preservation()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookupLogic["$temporalBurstTime"] = _temporalBurstTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1021,6 +1039,10 @@ local function RefreshLookupData_Augmentation()
 	
 	meltArmorTime = TRB.Functions.BarText:TimerPrecision(_meltArmorTime)
 
+	--$temporalBurstTime
+	local _temporalBurstTime = snapshots[spells.temporalBurst.id].buff.remaining
+	local temporalBurstTime = TRB.Functions.BarText:TimerPrecision(_temporalBurstTime)
+
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -1034,6 +1056,7 @@ local function RefreshLookupData_Augmentation()
 	lookup["#eb"] = spells.essenceBurst.icon
 	lookup["#essenceBurst"] = spells.essenceBurst.icon
 	lookup["#meltArmor"] = spells.meltArmor.icon
+	lookup["#temporalBurst"] = spells.temporalBurst.icon
 	lookup["$manaMax"] = TRB.Data.character.maxResource
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1041,6 +1064,7 @@ local function RefreshLookupData_Augmentation()
 	lookup["$ebTime"] = ebTime
 	lookup["$ebStacks"] = ebStacks
 	lookup["$meltArmorTime"] = meltArmorTime
+	lookup["$temporalBurstTime"] = temporalBurstTime
 	lookup["$essence"] = snapshotData.attributes.resource
 	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
@@ -1052,6 +1076,7 @@ local function RefreshLookupData_Augmentation()
 	lookupLogic["$ebTime"] = _ebTime
 	lookupLogic["$ebStacks"] = _ebStacks
 	lookupLogic["$meltArmorTime"] = _meltArmorTime
+	lookupLogic["$temporalBurstTime"] = _temporalBurstTime
 	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 	lookupLogic["$mana"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -1149,7 +1174,6 @@ local function UpdateSnapshot_Devastation()
 	UpdateSnapshot()
 	
 	local currentTime = GetTime()
-	local _
 end
 
 local function UpdateSnapshot_Preservation()
@@ -1187,13 +1211,19 @@ local function UpdateSnapshot_Preservation()
 	local emeraldCommunion = snapshots[spells.emeraldCommunion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]]
 	emeraldCommunion.buff:UpdateTicks(currentTime)
 	emeraldCommunion.mana = emeraldCommunion.buff.resource
+
+	snapshots[spells.temporalBurst.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Augmentation()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	---@type table<integer, TRB.Classes.Snapshot>
+	local snapshots = TRB.Data.snapshotData.snapshots
 	
 	local currentTime = GetTime()
-	local _
+
+	snapshots[spells.temporalBurst.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateResourceBar()
@@ -1445,11 +1475,12 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local resourceBarColor = nil
+				local barColor = specSettings.colors.bar.base
+				if specSettings.colors.bar.temporalBurst.enabled and snapshots[spells.temporalBurst.id].buff.isActive then
+					barColor = specSettings.colors.bar.temporalBurst.color
+				end
 
-				resourceBarColor = specSettings.colors.bar.base
-
-				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
+				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -1485,7 +1516,7 @@ local function UpdateResourceBar()
 		end
 	elseif specId == 3 then
 		local specSettings = classSettings.augmentation
-		UpdateSnapshot_Devastation()
+		UpdateSnapshot_Augmentation()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 		if snapshotData.attributes.isTracking then
@@ -1536,6 +1567,8 @@ local function UpdateResourceBar()
 
 				if target ~= nil and target.spells[spells.meltArmor.id].active and specSettings.colors.bar.meltArmor.enabled then
 					barColor = specSettings.colors.bar.meltArmor.color
+				elseif specSettings.colors.bar.temporalBurst.enabled and snapshots[spells.temporalBurst.id].buff.isActive then
+					barColor = specSettings.colors.bar.temporalBurst.color
 				end
 
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
@@ -1651,6 +1684,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
+				end
+			end
+
+			-- Chronowarden
+			if (specId == 2 and TRB.Data.barConstructedForSpec == "preservation") or (specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
+				if entry.spellId == spells.temporalBurst.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 
@@ -2127,6 +2167,15 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		end
 	elseif specId == 3 then -- Augmentation
+	end
+
+	-- Chronowarden
+	if specId == 2 or specId == 3 then
+		if var == "$temporalBurstTime" then
+			if snapshots[spells.temporalBurst.id].buff.isActive then
+				valid = true
+			end
+		end
 	end
 
 	-- Scalecommander

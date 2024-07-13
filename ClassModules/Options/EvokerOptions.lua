@@ -770,6 +770,10 @@ local function PreservationLoadDefaultSettings(includeBarText)
 					color = "FFAF9942",
 					enabled = true
 				},
+				temporalBurst={
+					color = "FFFCE58E",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border="FF246759",
@@ -1087,6 +1091,10 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 					color = "FFFF9900",
 					enabled = true
 				},
+				temporalBurst={
+					color = "FFFCE58E",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border="FF246759",
@@ -1298,8 +1306,8 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 	controls.checkBoxes.meltArmor = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Checkbox_meltArmor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.meltArmor
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerDevastationCheckboxmeltArmor"])
-	f.tooltip = L["EvokerDevastationCheckboxmeltArmorTooltip"]
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerDevastationCheckboxMeltArmor"])
+	f.tooltip = L["EvokerDevastationCheckboxMeltArmorTooltip"]
 	f:SetChecked(spec.colors.bar.meltArmor.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.meltArmor.enabled = self:GetChecked()
@@ -1847,9 +1855,26 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
+	
+	yCoord = yCoord - 30
+	controls.colors.temporalBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerPreservationColorPickerTemporalBurst"], spec.colors.bar.temporalBurst.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.temporalBurst
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "temporalBurst")
+	end)
+
+	controls.checkBoxes.temporalBurst = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Checkbox_temporalBurst", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.temporalBurst
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerPreservationCheckboxTemporalBurst"])
+	f.tooltip = L["EvokerPreservationCheckboxTemporalBurstTooltip"]
+	f:SetChecked(spec.colors.bar.temporalBurst.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.temporalBurst.enabled = self:GetChecked()
+	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -1866,7 +1891,7 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showPassiveBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -2551,11 +2576,28 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	controls.checkBoxes.meltArmor = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_meltArmor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.meltArmor
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxmeltArmor"])
-	f.tooltip = L["EvokerAugmentationCheckboxmeltArmorTooltip"]
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxMeltArmor"])
+	f.tooltip = L["EvokerAugmentationCheckboxMeltArmorTooltip"]
 	f:SetChecked(spec.colors.bar.meltArmor.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.meltArmor.enabled = self:GetChecked()
+	end)
+	
+	yCoord = yCoord - 30
+	controls.colors.temporalBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerTemporalBurst"], spec.colors.bar.temporalBurst.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.temporalBurst
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "temporalBurst")
+	end)
+
+	controls.checkBoxes.temporalBurst = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_temporalBurst", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.temporalBurst
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxTemporalBurst"])
+	f.tooltip = L["EvokerAugmentationCheckboxTemporalBurstTooltip"]
+	f:SetChecked(spec.colors.bar.temporalBurst.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.temporalBurst.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

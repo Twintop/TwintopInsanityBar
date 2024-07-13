@@ -22,6 +22,29 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- Warblade's Hunger
 <br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Chaos Strike threshold line has the "special" coloring while active.
 
+## Evoker
+### Augmentation
+
+- [#364 - UPDATE (Twintop)](#364) Updates to reflect the state of Augmentation in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Temporal Burst support, applied via Tip the Scales.
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track when the buff is up allow for the mana bar to change color while active.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$temporalBurstTime` - Time remaining on your Temporal Burst buff.
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#temporalBurst` - Temporal Burst
+
+### Preservation
+
+- [#363 - UPDATE (Twintop)](#363) Updates to reflect the state of Preservation in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Temporal Burst support, applied via Tip the Scales.
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track when the buff is up allow for the mana bar to change color while active.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$temporalBurstTime` - Time remaining on your Temporal Burst buff.
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#temporalBurst` - Temporal Burst
+
 ## Hunter
 ### Beast Mastery
 
