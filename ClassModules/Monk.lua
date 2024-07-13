@@ -197,6 +197,12 @@ local function FillSpecializationCache()
 		maxEndTime = nil,
 		list = {}
 	})
+	---@type TRB.Classes.Snapshot
+	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
+	---@type TRB.Classes.Snapshot
+	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentReady.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentReady, nil, true)
+	---@type TRB.Classes.Snapshot
+	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, true)
 
 	specCache.windwalker.barTextVariables = {
 		icons = {},
@@ -369,12 +375,13 @@ local function FillSpellData_Windwalker()
 		{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
 		{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
 		{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
-		{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
+		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
 		{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
 		{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
 		{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
 		{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
 		{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
+		{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
 		{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
 		{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
 		{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
@@ -440,6 +447,12 @@ local function FillSpellData_Windwalker()
 		{ variable = "$motcTime", description = L["MonkWindwalkerBarTextVariable_motcTime"], printInSettings = true, color = false },
 		{ variable = "$motcMinTime", description = L["MonkWindwalkerBarTextVariable_motcMinTime"], printInSettings = true, color = false },
 		{ variable = "$motcMaxTime", description = L["MonkWindwalkerBarTextVariable_motcMaxTime"], printInSettings = true, color = false },
+
+		{ variable = "$hotjsStacks", description = L["MonkWindwalkerBarTextVariable_hotjsStacks"], printInSettings = true, color = false },
+		{ variable = "$hotjsMaxStacks", description = L["MonkWindwalkerBarTextVariable_hotjsMaxStacks"], printInSettings = true, color = false },
+		{ variable = "$hotjsRemainingStacks", description = L["MonkWindwalkerBarTextVariable_hotjsRemainingStacks"], printInSettings = true, color = false },
+		{ variable = "$hotjsReady", description = L["MonkWindwalkerBarTextVariable_hotjsReady"], printInSettings = true, color = false },
+		{ variable = "$hotjsTime", description = L["MonkWindwalkerBarTextVariable_hotjsTime"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -1034,6 +1047,22 @@ local function RefreshLookupData_Windwalker()
 		motcTime = TRB.Functions.BarText:TimerPrecision(_motcTime)
 	end
 
+	--$hotjsStacks
+	local _hotjsStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
+	
+	--$hotjsMaxStacks
+	local _hotjsMaxStacks = spells.heartOfTheJadeSerpentStacks.attributes.maxStacks
+
+	--$hotjsRemainingStacks
+	local _hotjsRemainingStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks
+
+	--$hotjsReady
+	local _hotjsReady = snapshots[spells.heartOfTheJadeSerpentReady.id].buff.isActive
+	
+	--$hotjsTime
+	local _hotjsTime = snapshots[spells.heartOfTheJadeSerpent.id].buff.remaining
+	local hotjsTime = TRB.Functions.BarText:TimerPrecision(_hotjsTime)
+
 	----------------------------
 
 	Global_TwintopResourceBar.resource.passive = _passiveEnergy
@@ -1060,12 +1089,13 @@ local function RefreshLookupData_Windwalker()
 	lookup["#expelHarm"] = spells.expelHarm.icon
 	lookup["#fistsOfFury"] = spells.fistsOfFury.icon
 	lookup["#fof"] = spells.fistsOfFury.icon
-	lookup["#strikeOfTheWindlord"] = spells.strikeOfTheWindlord.icon
+	lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
 	lookup["#paralysis"] = spells.paralysis.icon
 	lookup["#risingSunKick"] = spells.risingSunKick.icon
 	lookup["#rsk"] = spells.risingSunKick.icon
 	lookup["#spinningCraneKick"] = spells.spinningCraneKick.icon
 	lookup["#sck"] = spells.spinningCraneKick.icon
+	lookup["#strikeOfTheWindlord"] = spells.strikeOfTheWindlord.icon
 	lookup["#tigerPalm"] = spells.tigerPalm.icon
 	lookup["#touchOfDeath"] = spells.touchOfDeath.icon
 	lookup["#vivify"] = spells.vivify.icon
@@ -1105,6 +1135,11 @@ local function RefreshLookupData_Windwalker()
 	lookup["$motcTime"] = motcTime
 	lookup["$motcCount"] = motcCount
 	lookup["$motcActiveCount"] = motcActiveCount
+	lookup["$hotjsStacks"] = _hotjsStacks
+	lookup["$hotjsMaxStacks"] = _hotjsMaxStacks
+	lookup["$hotjsRemainingStacks"] = _hotjsRemainingStacks
+	lookup["$hotjsReady"] = ""
+	lookup["$hotjsTime"] = hotjsTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1143,6 +1178,11 @@ local function RefreshLookupData_Windwalker()
 	lookupLogic["$motcTime"] = _motcTime
 	lookupLogic["$motcCount"] = _motcCount
 	lookupLogic["$motcActiveCount"] = _motcActiveCount
+	lookupLogic["$hotjsStacks"] = _hotjsStacks
+	lookupLogic["$hotjsMaxStacks"] = _hotjsMaxStacks
+	lookupLogic["$hotjsRemainingStacks"] = _hotjsRemainingStacks
+	lookupLogic["$hotjsReady"] = _hotjsReady
+	lookupLogic["$hotjsTime"] = _hotjsTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1341,6 +1381,11 @@ local function UpdateSnapshot_Windwalker()
 	snapshots[spells.paralysis.id].cooldown:Refresh()
 
 	snapshots[spells.strikeOfTheWindlord.id].buff:GetRemainingTime(currentTime)
+
+	snapshots[spells.heartOfTheJadeSerpent.id].buff:GetRemainingTime(currentTime)
+
+	local hotjsMaxStacks = spells.heartOfTheJadeSerpentStacks.attributes.maxStacks
+	snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks = hotjsMaxStacks - snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
 end
 
 local function UpdateResourceBar()
@@ -1603,6 +1648,19 @@ local function UpdateResourceBar()
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+							if spell.id == spells.expelHarm.id then
+								if talents:IsTalentActive(spells.combatWisdom) then
+									showThreshold = false
+								elseif snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif currentResource >= resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							end
 						elseif resourceAmount == 0 then
 							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -1645,7 +1703,12 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 
 				local barBorderColor = specSettings.colors.bar.border
-				if snapshots[spells.danceOfChiJi.id].buff.isActive then
+
+				if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and snapshots[spells.heartOfTheJadeSerpentReady.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
+				elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
+				elseif snapshots[spells.danceOfChiJi.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.borderChiJi
 				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 					barBorderColor = specSettings.colors.bar.borderOvercap
@@ -1761,10 +1824,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.manaTeaCharges.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.heartOfTheJadeSerpent.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.heartOfTheJadeSerpentStacks.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.cannibalize.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -1831,6 +1890,17 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							snapshots[entry.spellId].cooldown.duration = snapshots[entry.spellId].cooldown.duration + spells.paralysisRank2.attributes.cooldownMod
 						end
 					end
+				elseif entry.spellId == spells.heartOfTheJadeSerpentReady.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				end
+			end
+
+			-- Mistweaver or Windwalker / Conduit of the Celestials shared abilities
+			if (specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver") or (specId == 3 and TRB.Data.barConstructedForSpec == "windwalker") then
+				if entry.spellId == spells.heartOfTheJadeSerpent.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.heartOfTheJadeSerpentStacks.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 		end
@@ -2264,20 +2334,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.sheilunsGift.id].cooldown.castCount > 0 then
 				valid = true
 			end
-		elseif var == "$hotjsStacks" then
-			if snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications > 0 then
-				valid = true
-			end
-		elseif var == "$hotjsMaxStacks" then
-			valid = true
-		elseif var == "$hotjsRemainingStacks" then
-			if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
-				valid = true
-			end
-		elseif var == "$hotjsTime" then
-			if snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
-				valid = true
-			end
 		end
 	elseif specId == 3 then --Windwalker
 		if var == "$casting" then
@@ -2317,6 +2373,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				target ~= nil and
 				target.spells[spells.markOfTheCrane.id] ~= nil and
 				target.spells[spells.markOfTheCrane.id].remainingTime > 0 then
+				valid = true
+			end
+		elseif var == "$hotjsReady" then
+			if snapshots[spells.heartOfTheJadeSerpentReady.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$resource" or var == "$energy" then
@@ -2361,11 +2421,30 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	end
 
-	return valid
+	-- Mistweaver or Windwalker / Conduit of the Celestials shared abilities
+	if specId == 2 or specId == 3 then
+		if var == "$hotjsStacks" then
+			if snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications > 0 then
+				valid = true
+			end
+		elseif var == "$hotjsMaxStacks" then
+			valid = true
+		elseif var == "$hotjsRemainingStacks" then
+			if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
+				valid = true
+			end
+		elseif var == "$hotjsTime" then
+			if snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
+				valid = true
+			end
+
+			return valid
+		end
+	end
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local specId = GetSpecialization()	
+	local specId = GetSpecialization()
 	return nil
 end
 

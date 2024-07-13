@@ -604,6 +604,14 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				spending="FF555555",
 				passive="FF9F4500",
 				overcapEnabled=true,
+				heartOfTheJadeSerpentReady = {
+					color = "FF008461",
+					enabled = true
+				},
+				heartOfTheJadeSerpent = {
+					color = "FF00FFBB",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border="FF00FF98",
@@ -1470,6 +1478,40 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderChiJi")
 	end)
 
+	yCoord = yCoord - 30
+	controls.checkBoxes.heartOfTheJadeSerpentReady = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_heartOfTheJadeSerpentReady", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.heartOfTheJadeSerpentReady
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentReady"])
+	f.tooltip = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentReadyTooltip"]
+	f:SetChecked(spec.colors.bar.heartOfTheJadeSerpentReady.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.heartOfTheJadeSerpentReady.enabled = self:GetChecked()
+	end)
+
+	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.heartOfTheJadeSerpentReady
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpentReady")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.heartOfTheJadeSerpent = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_heartOfTheJadeSerpent", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.heartOfTheJadeSerpent
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxHeartOfTheJadeSerpent"])
+	f.tooltip = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentTooltip"]
+	f:SetChecked(spec.colors.bar.heartOfTheJadeSerpent.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.heartOfTheJadeSerpent.enabled = self:GetChecked()
+	end)
+
+	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.heartOfTheJadeSerpent
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
+	end)
+
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ChiColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
@@ -1500,7 +1542,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 	end)
 
-	yCoord = yCoord - 30		
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)

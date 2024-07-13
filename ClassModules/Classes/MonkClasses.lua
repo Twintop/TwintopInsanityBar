@@ -68,6 +68,7 @@ end
 ---@field public energizingBrew TRB.Classes.SpellBase
 ---@field public sheilunsGift TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
+---@field public heartOfTheJadeSerpentStacks TRB.Classes.SpellBase
 ---@field public manaTeaCharges TRB.Classes.SpellThreshold
 ---@field public cannibalize TRB.Classes.SpellThreshold
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
@@ -169,6 +170,10 @@ end
 ---@field public paralysisRank2 TRB.Classes.SpellBase
 ---@field public strikeOfTheWindlord TRB.Classes.SpellBase
 ---@field public danceOfChiJi TRB.Classes.SpellBase
+---@field public combatWisdom TRB.Classes.SpellBase
+---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
+---@field public heartOfTheJadeSerpentReady TRB.Classes.SpellBase
+---@field public heartOfTheJadeSerpentStacks TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
@@ -210,7 +215,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
         hasCooldown = true,
         cooldown = 15,
         isTalent = false,
-        baseline = true
+        baseline = true,
+        isSnowflake = true
     })
     self.markOfTheCrane = TRB.Classes.SpellBase:New({
         id = 228287,
@@ -250,6 +256,10 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     -- Windwalker Spec Baseline Abilities
 
     -- Monk Class Talents
+    self.combatWisdom = TRB.Classes.SpellBase:New({
+        id = 121817,
+        isTalent = true
+    })
     self.risingSunKick = TRB.Classes.SpellComboPoint:New({
         id = 107428,
         comboPoints = 2,
@@ -304,6 +314,28 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     self.danceOfChiJi = TRB.Classes.SpellBase:New({
         id = 325202,
         isTalent = true
+    })
+
+    -- Conduit of the Celestials
+    self.heartOfTheJadeSerpent = TRB.Classes.SpellBase:New({
+        id = 443421,
+        talentId = 443294,
+        isTalent = true,
+        isBuff = true
+    })
+    self.heartOfTheJadeSerpentReady = TRB.Classes.SpellBase:New({
+        id = 456368,
+        talentId = 443294,
+        isTalent = true,
+        isBuff = true
+    })
+    self.heartOfTheJadeSerpentStacks = TRB.Classes.SpellBase:New({
+        id = 443424,
+        talentId = 443294,
+        isTalent = true,
+        isBuff = true,
+        hasStacks = true,
+        maxStacks = 45
     })
 
     return self

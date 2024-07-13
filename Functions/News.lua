@@ -40,8 +40,23 @@ local content = [====[
 ### Windwalker
 
 - [#369 - UPDATE (Twintop)](#369) Updates to reflect the state of Windwalker in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Heart of the Jade Serpent
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track how stacks the buff is at and when the buff is up.
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Optional bar border color changes when you can use Strike of the Windlord to gain the proc, or, when the buff is active.
 <br/>&emsp;&ensp;- Removed:
 <br/>&emsp;&ensp;&emsp;&ensp;- Serenity
+<br/>&emsp;&ensp;- Updated:
+<br/>&emsp;&ensp;&emsp;&ensp;- Combat Wisdom
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Hide Expel Harm threshold line when talented.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsStacks` - Number of stacks of Heart of the Jade Serpent
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsMaxStacks` - Maximum number of stacks of Heart of the Jade Serpent before the buff occurs
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsRemainingStacks` - Remaining number of stacks of Heart of the Jade Serpent before the buff occurs
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsReady` - Is Heart of the Jade Serpent buff ready to be used. LOGIC VARIABLE ONLY!
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsTime` - Time remaining on Heart of the Jade Serpent buff
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#hotjs` - Heart of the Jade Serpent
 
 ## Shaman
 ### Elemental
