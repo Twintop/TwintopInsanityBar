@@ -14,6 +14,14 @@ local content = [====[
 # 11.0.0.0-alpha08 (2024-07-13)
 ## General 
 
+## Demon Hunter
+### Havoc
+
+- [#357 - UPDATE (Twintop)](#357) Updates to reflect the state of Havoc in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Warblade's Hunger
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Chaos Strike threshold line has the "special" coloring while active.
+
 ## Hunter
 ### Beast Mastery
 

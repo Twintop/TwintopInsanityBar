@@ -112,6 +112,8 @@ local function FillSpecializationCache()
 	specCache.havoc.snapshotData.snapshots[spells.rendingStrike.id] = TRB.Classes.Snapshot:New(spells.rendingStrike)
 	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.studentOfSuffering.id] = TRB.Classes.Snapshot:New(spells.studentOfSuffering)
+	---@type TRB.Classes.Snapshot
+	specCache.havoc.snapshotData.snapshots[spells.warbladesHunger.id] = TRB.Classes.Snapshot:New(spells.warbladesHunger)
 
 	-- vengeance
 	specCache.vengeance.Global_TwintopResourceBar = {
@@ -169,6 +171,8 @@ local function FillSpecializationCache()
 	specCache.vengeance.snapshotData.snapshots[spells.rendingStrike.id] = TRB.Classes.Snapshot:New(spells.rendingStrike)
 	---@type TRB.Classes.Snapshot
 	specCache.vengeance.snapshotData.snapshots[spells.studentOfSuffering.id] = TRB.Classes.Snapshot:New(spells.studentOfSuffering)
+	---@type TRB.Classes.Snapshot
+	specCache.vengeance.snapshotData.snapshots[spells.warbladesHunger.id] = TRB.Classes.Snapshot:New(spells.warbladesHunger)
 end
 
 local function Setup_Havoc()
@@ -990,6 +994,7 @@ local function UpdateResourceBar()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.demonhunter
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
 
 	if specId == 1 then
 		local specSettings = classSettings.havoc
@@ -1005,16 +1010,16 @@ local function UpdateResourceBar()
 				local passiveBarValue = 0
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
-				local metaTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
+				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 				local passiveValue = 0
 				if specSettings.bar.showPassive then
-					if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura1.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura2.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura3.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura4.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura5.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura6.id].buff.resource > 0 then
-						passiveValue = passiveValue + snapshotData.snapshots[spells.immolationAura.id].buff.resource + snapshotData.snapshots[spells.immolationAura1.id].buff.resource + snapshotData.snapshots[spells.immolationAura2.id].buff.resource + snapshotData.snapshots[spells.immolationAura3.id].buff.resource + snapshotData.snapshots[spells.immolationAura4.id].buff.resource + snapshotData.snapshots[spells.immolationAura5.id].buff.resource + snapshotData.snapshots[spells.immolationAura6.id].buff.resource
+					if snapshots[spells.immolationAura.id].buff.resource > 0 or snapshots[spells.immolationAura1.id].buff.resource > 0 or snapshots[spells.immolationAura2.id].buff.resource > 0 or snapshots[spells.immolationAura3.id].buff.resource > 0 or snapshots[spells.immolationAura4.id].buff.resource > 0 or snapshots[spells.immolationAura5.id].buff.resource > 0 or snapshots[spells.immolationAura6.id].buff.resource > 0 then
+						passiveValue = passiveValue + snapshots[spells.immolationAura.id].buff.resource + snapshots[spells.immolationAura1.id].buff.resource + snapshots[spells.immolationAura2.id].buff.resource + snapshots[spells.immolationAura3.id].buff.resource + snapshots[spells.immolationAura4.id].buff.resource + snapshots[spells.immolationAura5.id].buff.resource + snapshots[spells.immolationAura6.id].buff.resource
 					end
 
-					if snapshotData.snapshots[spells.tacticalRetreat.id].buff.resource > 0 then
-						passiveValue = passiveValue + snapshotData.snapshots[spells.tacticalRetreat.id].buff.resource
+					if snapshots[spells.tacticalRetreat.id].buff.resource > 0 then
+						passiveValue = passiveValue + snapshots[spells.tacticalRetreat.id].buff.resource
 					end
 				end
 
@@ -1072,7 +1077,7 @@ local function UpdateResourceBar()
 							showThreshold = false
 						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.chaosStrike.id or spell.id == spells.annihilation.id then
-								if snapshotData.snapshots[spells.chaosTheory.id].buff.isActive or snapshotData.snapshots[spells.rendingStrike.id].buff.isActive then
+								if snapshots[spells.chaosTheory.id].buff.isActive or snapshots[spells.rendingStrike.id].buff.isActive or snapshots[spells.warbladesHunger.id].buff.isActive then
 									thresholdColor = specSettings.colors.threshold.special
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 								elseif currentResource >= resourceAmount then
@@ -1082,10 +1087,10 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.bladeDance.id or spell.id == spells.deathSweep.id then
-								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.snapshots[spells.glaiveFlurry.id].buff.isActive then
+								elseif snapshots[spells.glaiveFlurry.id].buff.isActive then
 									thresholdColor = specSettings.colors.threshold.special
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 								elseif currentResource >= resourceAmount then
@@ -1098,7 +1103,7 @@ local function UpdateResourceBar()
 						elseif resourceAmount == 0 then
 							showThreshold = false
 						elseif spell.hasCooldown then
-							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							elseif currentResource >= resourceAmount then
@@ -1116,14 +1121,14 @@ local function UpdateResourceBar()
 							end
 						end
 
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotData.snapshots[spell.id], specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
 						thresholdId = thresholdId + 1
 						pairOffset = pairOffset + 3
 					end
 				end
 				
 				local barColor = specSettings.colors.bar.base
-				if snapshotData.snapshots[spells.metamorphosis.id].buff.isActive then
+				if snapshots[spells.metamorphosis.id].buff.isActive then
 					local timeThreshold = 0
 					local useEndOfMetamorphosisColor = false
 
@@ -1179,12 +1184,12 @@ local function UpdateResourceBar()
 				local passiveBarValue = 0
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
-				local metaTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
+				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 				local passiveValue = 0
 				if specSettings.bar.showPassive then
-					if snapshotData.snapshots[spells.immolationAura.id].buff.resource then
-						passiveValue = passiveValue + snapshotData.snapshots[spells.immolationAura.id].buff.resource
+					if snapshots[spells.immolationAura.id].buff.resource then
+						passiveValue = passiveValue + snapshots[spells.immolationAura.id].buff.resource
 					end
 				end
 
@@ -1238,7 +1243,7 @@ local function UpdateResourceBar()
 							showThreshold = false
 						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.soulCleave.id or spell.id == spells.spiritBomb.id then
-								if snapshotData.snapshots[spells.soulFurnace.id].buff.isActive then
+								if snapshots[spells.soulFurnace.id].buff.isActive then
 									thresholdColor = specSettings.colors.threshold.special
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 								elseif currentResource >= resourceAmount then
@@ -1251,7 +1256,7 @@ local function UpdateResourceBar()
 						elseif resourceAmount == 0 then
 							showThreshold = false
 						elseif spell.hasCooldown then
-							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							elseif currentResource >= resourceAmount then
@@ -1276,14 +1281,14 @@ local function UpdateResourceBar()
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 						end
 
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotData.snapshots[spell.id], specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
 						thresholdId = thresholdId + 1
 						pairOffset = pairOffset + 3
 					end
 				end
 				
 				local barColor = specSettings.colors.bar.base
-				if snapshotData.snapshots[spells.metamorphosis.id].buff.isActive then
+				if snapshots[spells.metamorphosis.id].buff.isActive then
 					local timeThreshold = 0
 					local useEndOfMetamorphosisColor = false
 
@@ -1363,6 +1368,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		if specId == 1 then
@@ -1375,108 +1381,110 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			if specId == 1 and TRB.Data.barConstructedForSpec == "havoc" then --Havoc
 				if entry.spellId == spells.bladeDance.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.deathSweep.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.chaosNova.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.eyeBeam.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.glaiveTempest.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.throwGlaive.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.felEruption.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.felBarrage.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.immolationAura.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.immolationAura1.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.immolationAura2.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.immolationAura3.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.immolationAura4.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.immolationAura5.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.immolationAura6.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.unboundChaos.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.chaosTheory.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.tacticalRetreat.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Tactical Retreat
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "vengeance" then --Vengeance
 				if entry.spellId == spells.immolationAura.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.soulFurnace.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.felDevastation.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.chaosNova.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 			end
 
 			-- All specs
 			if entry.spellId == spells.metamorphosis.id then
-				snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				snapshots[entry.spellId].buff:Initialize(entry.type)
 			elseif entry.spellId == spells.artOfTheGlaive.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 			elseif entry.spellId == spells.glaiveFlurry.id then
-				snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				snapshots[entry.spellId].buff:Initialize(entry.type)
 			elseif entry.spellId == spells.rendingStrike.id then
-				snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				snapshots[entry.spellId].buff:Initialize(entry.type)
 			elseif entry.spellId == spells.studentOfSuffering.id then
-				snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				snapshots[entry.spellId].buff:Initialize(entry.type)
+			elseif entry.spellId == spells.warbladesHunger.id then
+				snapshots[entry.spellId].buff:Initialize(entry.type)
 			end
 		end
 

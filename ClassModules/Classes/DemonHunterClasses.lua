@@ -26,6 +26,7 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public glaiveFlurry TRB.Classes.SpellBase
 ---@field public rendingStrike TRB.Classes.SpellBase
 ---@field public studentOfSuffering TRB.Classes.SpellBase
+---@field public warbladesHunger TRB.Classes.SpellBase
 ---@field public throwGlaive TRB.Classes.SpellThreshold
 ---@field public bladeDance TRB.Classes.SpellThreshold
 ---@field public chaosStrike TRB.Classes.SpellThreshold
@@ -222,6 +223,12 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     self.rendingStrike = TRB.Classes.SpellThreshold:New({
         id = 442442
     })
+    self.warbladesHunger = TRB.Classes.SpellBase:New({
+        id = 442503,
+        talentId = 442502,
+        isTalent = true,
+        isBuff = true
+    })
 
     -- Fel-Scarred
     self.studentOfSuffering = TRB.Classes.SpellThreshold:New({
@@ -247,6 +254,7 @@ end
 ---@field public glaiveFlurry TRB.Classes.SpellBase
 ---@field public rendingStrike TRB.Classes.SpellBase
 ---@field public studentOfSuffering TRB.Classes.SpellBase
+---@field public warbladesHunger TRB.Classes.SpellBase
 ---@field public soulCleave TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public felDevastation TRB.Classes.SpellThreshold
@@ -334,6 +342,12 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     })
     self.rendingStrike = TRB.Classes.SpellThreshold:New({
         id = 442442
+    })
+    self.warbladesHunger = TRB.Classes.SpellBase:New({
+        id = 442503,
+        talentId = 442502,
+        isTalent = true,
+        isBuff = true
     })
 
     -- Fel-Scarred
