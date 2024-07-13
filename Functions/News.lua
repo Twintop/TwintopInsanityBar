@@ -14,6 +14,21 @@ local content = [====[
 # 11.0.0.0-alpha08 (2024-07-13)
 ## General 
 
+## Hunter
+### Beast Mastery
+
+- [#365 - UPDATE (Twintop)](#365) Updates to reflect the state of Beast Mastery in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Hunter's Prey
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Show Kill Shot threshold line when active.
+
+### Marksmanship
+
+- [#366 - UPDATE (Twintop)](#366) Updates to reflect the state of Beast Mastery in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Deathblow
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Show Kill Shot threshold line when active.
+
 ## Monk
 ### Mistweaver
 

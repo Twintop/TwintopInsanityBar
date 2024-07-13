@@ -93,6 +93,7 @@ end
 ---@field public beastCleave TRB.Classes.SpellBase
 ---@field public callOfTheWild TRB.Classes.SpellBase
 ---@field public bloodFrenzy TRB.Classes.SpellBase
+---@field public huntersPrey TRB.Classes.SpellBase
 ---@field public barrage TRB.Classes.SpellThreshold
 ---@field public cobraShot TRB.Classes.SpellThreshold
 ---@field public killCommand TRB.Classes.SpellThreshold
@@ -199,6 +200,12 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         baseline = false,
         isSnowflake = true
     })
+    self.huntersPrey = TRB.Classes.SpellBase:New({
+        id = 378215,
+        talentId = 378210,
+        isTalent = true,
+        isBuff = true
+    })
 
     -- Dark Ranger
     self.blackArrow = TRB.Classes.SpellThreshold:New({
@@ -237,7 +244,6 @@ end
 ---@field public improvedSteadyShot TRB.Classes.SpellBase
 ---@field public rapidFire TRB.Classes.SpellBase
 ---@field public deathblow TRB.Classes.SpellBase
----@field public deadeye TRB.Classes.SpellBase
 ---@field public steadyFocus TRB.Classes.SpellBase
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public lockAndLoad TRB.Classes.SpellBase
@@ -303,9 +309,11 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         settingKey = "chimaeraShot",
         isTalent = true
     })
-    self.deathblow = TRB.Classes.SpellBase:New({-- TODO: Add Deathblow support
-        id = 378769,
-        isTalent = true
+    self.deathblow = TRB.Classes.SpellBase:New({
+        id = 378770,
+        talentId = 378769,
+        isTalent = true,
+        isBuff = true
     })
     self.multiShot = TRB.Classes.SpellThreshold:New({
         id = 257620,
@@ -318,10 +326,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "burstingShot",
         hasCooldown = true,
-        isTalent = true
-    })
-    self.deadeye = TRB.Classes.SpellBase:New({-- TODO: Add Deadeye implementation
-        id = 321460,
         isTalent = true
     })
     self.steadyFocus = TRB.Classes.SpellBase:New({
