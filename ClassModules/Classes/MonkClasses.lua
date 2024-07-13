@@ -7,7 +7,6 @@ end
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Monk = TRB.Classes.Monk or {}
 
-
 --[[
     ********************
     ***** Mana Tea *****
@@ -67,6 +66,8 @@ end
 ---@field public vivaciousVivification TRB.Classes.SpellBase
 ---@field public manaTea TRB.Classes.SpellBase
 ---@field public energizingBrew TRB.Classes.SpellBase
+---@field public sheilunsGift TRB.Classes.SpellBase
+---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
 ---@field public manaTeaCharges TRB.Classes.SpellThreshold
 ---@field public cannibalize TRB.Classes.SpellThreshold
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
@@ -114,6 +115,33 @@ function TRB.Classes.Monk.MistweaverSpells:New()
         isTalent = true,
         resourcePerTickMod = 1.2,
         tickRateMod = 0.5
+    })
+    self.sheilunsGift = TRB.Classes.SpellBase:New({
+        id = 399491,
+        isTalent = true,
+        hasCastCount = true,
+        maxCastCount = 10
+    })
+    self.shaohaosLessons = TRB.Classes.SpellBase:New({
+        id = 400089,
+        isTalent = true,
+        maxStacksMod = -10
+    })
+
+    -- Conduit of the Celestials
+    self.heartOfTheJadeSerpent = TRB.Classes.SpellBase:New({
+        id = 443421,
+        talentId = 443294,
+        isTalent = true,
+        isBuff = true
+    })
+    self.heartOfTheJadeSerpentStacks = TRB.Classes.SpellBase:New({
+        id = 443506,
+        talentId = 443294,
+        isTalent = true,
+        isBuff = true,
+        hasStacks = true,
+        maxStacks = 20
     })
 
     -- Racials

@@ -8,7 +8,6 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Healer = TRB.Classes.Healer or {}
 
 
-
 --[[
     ***************************
     ***** HealerRegenBase *****

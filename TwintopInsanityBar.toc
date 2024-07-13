@@ -15,7 +15,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 11.0.0.0
 ## X-ReleaseType: alpha08
-## X-ReleaseDate: 2024-07-02
+## X-ReleaseDate: 2024-07-13
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled

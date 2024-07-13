@@ -11,13 +11,31 @@ local content = [====[
 
 ---
 
-# 11.0.0.0-alpha08 (2024-07-02)
+# 11.0.0.0-alpha08 (2024-07-13)
 ## General 
 
 ## Monk
 ### Mistweaver
 
-- [#368 - NEW (Twintop)](#368) Add threshold lines for Mana Tea, showing how much mana you will restore if you channeled Mana Tea right now and a passive threshold line to show how much mana you will end up with while channeling.
+- [#368 - UPDATE (Twintop)](#368) Updates to reflect the state of Augmentation in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Mana Tea
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Add threshold lines, showing how much mana you will restore if you channeled Mana Tea right now and a passive threshold line to show how much mana you will end up with while channeling.
+<br/>&emsp;&ensp;&emsp;&ensp;- Sheilun's Gift
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track how many clouds (stacks) you have and when it is maxed out.
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Optional bar border color change when at maximum stacks.
+<br/>&emsp;&ensp;&emsp;&ensp;- Heart of the Jade Serpent
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track how stacks the buff is at and when the buff is up.
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Optional bar border color changes when you can use Sheilun's Gift to gain the proc, or, when the buff is active.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sgStacks` - Number of Sheilun's Gift clouds (stacks) available to use
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsStacks` - Number of stacks of Heart of the Jade Serpent
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsMaxStacks` - Maximum number of stacks of Heart of the Jade Serpent before the buff occurs
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsRemainingStacks` - Remaining number of stacks of Heart of the Jade Serpent before the buff occurs
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hotjsTime` - Time remaining on Heart of the Jade Serpent buff
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#hotjs` - Heart of the Jade Serpent
+<br/>&emsp;&ensp;&emsp;&ensp;- `#sheilunsGift` - Sheilun's Gift
 
 ### Windwalker
 

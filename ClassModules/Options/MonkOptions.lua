@@ -281,6 +281,18 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 					color = "FF00FFBB",
 					enabled = true
 				},
+				sheilunsGiftMax = {
+					color = "FFFFD080",
+					enabled = true
+				},
+				heartOfTheJadeSerpentReady = {
+					color = "FF008461",
+					enabled = true
+				},
+				heartOfTheJadeSerpent = {
+					color = "FF00FFBB",
+					enabled = true
+				},
 			},
 			threshold={
 				unusable="FFFF0000",
@@ -867,7 +879,24 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], false, true)
-	
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.sheilunsGiftMax = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_sheilunsGiftMax", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sheilunsGiftMax
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkMistweaverCheckboxSheilunsGiftMax"])
+	f.tooltip = L["MonkMistweaverCheckboxSheilunsGiftMaxTooltip"]
+	f:SetChecked(spec.colors.bar.sheilunsGiftMax.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.sheilunsGiftMax.enabled = self:GetChecked()
+	end)
+
+	controls.colors.sheilunsGiftMax = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerSheilunsGiftMax"], spec.colors.bar.sheilunsGiftMax.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.sheilunsGiftMax
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "sheilunsGiftMax")
+	end)
+
 	yCoord = yCoord - 30
 	controls.checkBoxes.manaTeaBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Border_Option_manaTeaBorderChange", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.manaTeaBorderChange
@@ -883,6 +912,40 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.manaTea
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "manaTea")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.heartOfTheJadeSerpentReady = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_heartOfTheJadeSerpentReady", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.heartOfTheJadeSerpentReady
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkMistweaverCheckboxHeartOfTheJadeSerpentReady"])
+	f.tooltip = L["MonkMistweaverCheckboxHeartOfTheJadeSerpentReadyTooltip"]
+	f:SetChecked(spec.colors.bar.heartOfTheJadeSerpentReady.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.heartOfTheJadeSerpentReady.enabled = self:GetChecked()
+	end)
+
+	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.heartOfTheJadeSerpentReady
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpentReady")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.heartOfTheJadeSerpent = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_heartOfTheJadeSerpent", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.heartOfTheJadeSerpent
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkMistweaverCheckboxHeartOfTheJadeSerpent"])
+	f.tooltip = L["MonkMistweaverCheckboxHeartOfTheJadeSerpentTooltip"]
+	f:SetChecked(spec.colors.bar.heartOfTheJadeSerpent.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.heartOfTheJadeSerpent.enabled = self:GetChecked()
+	end)
+
+	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.heartOfTheJadeSerpent
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
 	end)
 
 	yCoord = yCoord - 40

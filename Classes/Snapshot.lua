@@ -359,6 +359,7 @@ end
 ---@field public onCooldown boolean
 ---@field public charges integer
 ---@field public maxCharges integer
+---@field public castCount integer
 ---@field private retryForceTime number?
 ---@field private parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotCooldown = {}
@@ -384,6 +385,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
     self.remainingTotal = 0
     self.onCooldown = false
     self.charges = 0
+    self.castCount = 0
     self.maxCharges = 0
     self.retryForceTime = nil
 end
@@ -445,7 +447,7 @@ end
 ---@param force boolean? # Force refresh of the value even if other interal logic would prevent it from doing so
 ---@param retryForce boolean? # Allow the cooldown to retry a force on the next call to Refresh()
 function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
-    if self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.onCooldown) then
+    if self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.parent.spell.hasCastCount or self.onCooldown) then
         local startTime = nil
         local duration = 0
         if self.parent.spell.hasCharges == true then
@@ -462,6 +464,10 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
             local spellCooldown = C_Spell.GetSpellCooldown(self.parent.spell.id) --[[@as SpellCooldownInfo]]
             startTime = spellCooldown.startTime
             duration = spellCooldown.duration
+        end
+
+        if self.parent.spell.hasCastCount == true then
+            self.castCount = C_Spell.GetSpellCastCount(self.parent.spell.id)
         end
 
         local gcd = TRB.Functions.Character:GetCurrentGCDLockRemaining()

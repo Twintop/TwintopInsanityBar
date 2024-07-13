@@ -133,6 +133,12 @@ local function FillSpecializationCache()
 		specCache.mistweaver.talents)
 	---@type TRB.Classes.Snapshot
 	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification, nil, true)
+	---@type TRB.Classes.Snapshot
+	specCache.mistweaver.snapshotData.snapshots[spells.sheilunsGift.id] = TRB.Classes.Snapshot:New(spells.sheilunsGift)
+	---@type TRB.Classes.Snapshot
+	specCache.mistweaver.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
+	---@type TRB.Classes.Snapshot
+	specCache.mistweaver.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, true)
 
 	specCache.mistweaver.barTextVariables = {
 		icons = {},
@@ -226,7 +232,9 @@ local function FillSpellData_Mistweaver()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		
+		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
 		{ variable = "#manaTea", icon = spells.manaTea.icon, description = spells.manaTea.name, printInSettings = true },
+		{ variable = "#sheilunsGift", icon = spells.sheilunsGift.icon, description = spells.sheilunsGift.name, printInSettings = true },
 
 		{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 		{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
@@ -294,6 +302,13 @@ local function FillSpellData_Mistweaver()
 		{ variable = "$manaTotal", description = L["MonkMistweaverBarTextVariable_manaTotal"], printInSettings = true, color = false },
 		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 		
+		{ variable = "$sgStacks", description = L["MonkMistweaverBarTextVariable_sgStacks"], printInSettings = true, color = false },
+		
+		{ variable = "$hotjsStacks", description = L["MonkMistweaverBarTextVariable_hotjsStacks"], printInSettings = true, color = false },
+		{ variable = "$hotjsMaxStacks", description = L["MonkMistweaverBarTextVariable_hotjsMaxStacks"], printInSettings = true, color = false },
+		{ variable = "$hotjsRemainingStacks", description = L["MonkMistweaverBarTextVariable_hotjsRemainingStacks"], printInSettings = true, color = false },
+		{ variable = "$hotjsTime", description = L["MonkMistweaverBarTextVariable_hotjsTime"], printInSettings = true, color = false },
+
 		{ variable = "$bowMana", description = L["MonkMistweaverBarTextVariable_bowMana"], printInSettings = true, color = false },
 		{ variable = "$bowTime", description = L["MonkMistweaverBarTextVariable_bowTime"], printInSettings = true, color = false },
 		{ variable = "$bowTicks", description = L["MonkMistweaverBarTextVariable_bowTicks"], printInSettings = true, color = false },
@@ -745,6 +760,27 @@ local function RefreshLookupData_Mistweaver()
 	local _manaPercent = (normalizedMana/maxResource)
 	local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.Number:RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
+	--$sgStacks
+	local _sgStacks = snapshots[spells.sheilunsGift.id].cooldown.castCount
+
+	--$hotjsStacks
+	local _hotjsStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
+	
+	--$hotjsMaxStacks
+	local _hotjsMaxStacks = spells.heartOfTheJadeSerpentStacks.attributes.maxStacks
+
+	if talents:IsTalentActive(spells.shaohaosLessons) then
+		_hotjsMaxStacks = _hotjsMaxStacks + spells.shaohaosLessons.attributes.maxStacksMod
+	end
+
+	--$hotjsRemainingStacks
+	local _hotjsRemainingStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks
+
+	
+	--$hotjsTime
+	local _hotjsTime = snapshots[spells.heartOfTheJadeSerpent.id].buff.remaining
+	local hotjsTime = TRB.Functions.BarText:TimerPrecision(_hotjsTime)
+
 	----------
 
 	Global_TwintopResourceBar.resource.passive = _passiveMana
@@ -764,10 +800,12 @@ local function RefreshLookupData_Mistweaver()
 
 
 	local lookup = TRB.Data.lookup or {}
+	lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
+	lookup["#manaTea"] = spells.manaTea.icon
+	lookup["#sheilunsGift"] = spells.sheilunsGift.icon
 	lookup["#innervate"] = spells.innervate.icon
 	lookup["#mr"] = spells.moltenRadiance.icon
 	lookup["#moltenRadiance"] = spells.moltenRadiance.icon
-	lookup["#manaTea"] = spells.manaTea.icon
 	lookup["#mtt"] = spells.manaTideTotem.icon
 	lookup["#manaTideTotem"] = spells.manaTideTotem.icon
 	lookup["#soh"] = spells.symbolOfHope.icon
@@ -815,6 +853,11 @@ local function RefreshLookupData_Mistweaver()
 	lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
 	lookup["$potionCooldown"] = potionCooldown
 	lookup["$potionCooldownSeconds"] = potionCooldownSeconds
+	lookup["$sgStacks"] = _sgStacks
+	lookup["$hotjsStacks"] = _hotjsStacks
+	lookup["$hotjsMaxStacks"] = _hotjsMaxStacks
+	lookup["$hotjsRemainingStacks"] = _hotjsRemainingStacks
+	lookup["$hotjsTime"] = hotjsTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -853,6 +896,11 @@ local function RefreshLookupData_Mistweaver()
 	lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
 	lookupLogic["$potionCooldown"] = potionCooldown
 	lookupLogic["$potionCooldownSeconds"] = potionCooldown
+	lookupLogic["$sgStacks"] = _sgStacks
+	lookupLogic["$hotjsStacks"] = _hotjsStacks
+	lookupLogic["$hotjsMaxStacks"] = _hotjsMaxStacks
+	lookupLogic["$hotjsRemainingStacks"] = _hotjsRemainingStacks
+	lookupLogic["$hotjsTime"] = _hotjsTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1116,7 +1164,7 @@ end
 local function CastingSpell()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
-	local affectingCombat = UnitAffectingCombat("player")
+	--local affectingCombat = UnitAffectingCombat("player")
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 	local specId = GetSpecialization()
@@ -1226,7 +1274,7 @@ end
 
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
-	local currentTime = GetTime()
+	--local currentTime = GetTime()
 end
 
 local function UpdateSnapshot_Mistweaver()
@@ -1236,6 +1284,15 @@ local function UpdateSnapshot_Mistweaver()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
+
+	snapshots[spells.sheilunsGift.id].cooldown:Refresh()
+	snapshots[spells.heartOfTheJadeSerpent.id].buff:GetRemainingTime(currentTime)
+
+	local hotjsMaxStacks = spells.heartOfTheJadeSerpentStacks.attributes.maxStacks
+	if talents:IsTalentActive(spells.shaohaosLessons) then
+		hotjsMaxStacks = hotjsMaxStacks + spells.shaohaosLessons.attributes.maxStacksMod
+	end
+	snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks = hotjsMaxStacks - snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
 
 	local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 	innervate:Update()
@@ -1313,7 +1370,11 @@ local function UpdateResourceBar()
 				local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 				local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 
-				if potionOfChilledClarity.buff.isActive and specSettings.colors.bar.potionOfChilledClarityBorderChange then
+				if specSettings.colors.bar.sheilunsGiftMax.enabled and snapshots[spells.sheilunsGift.id].cooldown.castCount == spells.sheilunsGift.attributes.maxCastCount then
+					barBorderColor = specSettings.colors.bar.sheilunsGiftMax.color
+				elseif specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks <= snapshots[spells.sheilunsGift.id].cooldown.castCount then
+					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
+				elseif potionOfChilledClarity.buff.isActive and specSettings.colors.bar.potionOfChilledClarityBorderChange then
 					barBorderColor = specSettings.colors.bar.potionOfChilledClarity
 				elseif innervate.buff.isActive and (specSettings.colors.bar.innervateBorderChange or specSettings.audio.innervate.enabled)  then
 					if specSettings.colors.bar.innervateBorderChange then
@@ -1326,6 +1387,8 @@ local function UpdateResourceBar()
 					end
 				elseif snapshots[spells.manaTea.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.manaTea.color
+				elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
 				end
 
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
@@ -1697,6 +1760,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.manaTeaRegen.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.manaTeaCharges.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.heartOfTheJadeSerpent.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.heartOfTheJadeSerpentStacks.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.cannibalize.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
@@ -2191,6 +2258,24 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$potionCooldownSeconds" then
 			if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
+				valid = true
+			end
+		elseif var == "$sgStacks" then
+			if snapshots[spells.sheilunsGift.id].cooldown.castCount > 0 then
+				valid = true
+			end
+		elseif var == "$hotjsStacks" then
+			if snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications > 0 then
+				valid = true
+			end
+		elseif var == "$hotjsMaxStacks" then
+			valid = true
+		elseif var == "$hotjsRemainingStacks" then
+			if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
+				valid = true
+			end
+		elseif var == "$hotjsTime" then
+			if snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 				valid = true
 			end
 		end
