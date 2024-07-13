@@ -12,8 +12,6 @@ local content = [====[
 ---
 
 # 11.0.0.0-alpha08 (2024-07-13)
-## General 
-
 ## Demon Hunter
 ### Havoc
 
