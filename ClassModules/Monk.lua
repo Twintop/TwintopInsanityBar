@@ -203,6 +203,8 @@ local function FillSpecializationCache()
 	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentReady.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentReady, nil, true)
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, true)
+	---@type TRB.Classes.Snapshot
+	specCache.windwalker.snapshotData.snapshots[spells.flurryCharge.id] = TRB.Classes.Snapshot:New(spells.flurryCharge)
 
 	specCache.windwalker.barTextVariables = {
 		icons = {},
@@ -375,6 +377,7 @@ local function FillSpellData_Windwalker()
 		{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
 		{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
 		{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
+		{ variable = "#flurryCharge", icon = spells.flurryCharge.icon, description = spells.flurryCharge.name, printInSettings = false },
 		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
 		{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
 		{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
@@ -453,6 +456,8 @@ local function FillSpellData_Windwalker()
 		{ variable = "$hotjsRemainingStacks", description = L["MonkWindwalkerBarTextVariable_hotjsRemainingStacks"], printInSettings = true, color = false },
 		{ variable = "$hotjsReady", description = L["MonkWindwalkerBarTextVariable_hotjsReady"], printInSettings = true, color = false },
 		{ variable = "$hotjsTime", description = L["MonkWindwalkerBarTextVariable_hotjsTime"], printInSettings = true, color = false },
+
+		{ variable = "$flurryChargeStacks", description = L["MonkWindwalkerBarTextVariable_flurryChargeStacks"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -1063,6 +1068,9 @@ local function RefreshLookupData_Windwalker()
 	local _hotjsTime = snapshots[spells.heartOfTheJadeSerpent.id].buff.remaining
 	local hotjsTime = TRB.Functions.BarText:TimerPrecision(_hotjsTime)
 
+	--$flurryChargeStacks
+	local _flurryChargeStacks = snapshots[spells.flurryCharge.id].buff.applications
+
 	----------------------------
 
 	Global_TwintopResourceBar.resource.passive = _passiveEnergy
@@ -1089,6 +1097,7 @@ local function RefreshLookupData_Windwalker()
 	lookup["#expelHarm"] = spells.expelHarm.icon
 	lookup["#fistsOfFury"] = spells.fistsOfFury.icon
 	lookup["#fof"] = spells.fistsOfFury.icon
+	lookup["#flurryCharge"] = spells.flurryCharge.icon
 	lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
 	lookup["#paralysis"] = spells.paralysis.icon
 	lookup["#risingSunKick"] = spells.risingSunKick.icon
@@ -1140,6 +1149,7 @@ local function RefreshLookupData_Windwalker()
 	lookup["$hotjsRemainingStacks"] = _hotjsRemainingStacks
 	lookup["$hotjsReady"] = ""
 	lookup["$hotjsTime"] = hotjsTime
+	lookup["$flurryChargeStacks"] = _flurryChargeStacks
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1183,6 +1193,7 @@ local function RefreshLookupData_Windwalker()
 	lookupLogic["$hotjsRemainingStacks"] = _hotjsRemainingStacks
 	lookupLogic["$hotjsReady"] = _hotjsReady
 	lookupLogic["$hotjsTime"] = _hotjsTime
+	lookupLogic["$flurryChargeStacks"] = _flurryChargeStacks
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1892,6 +1903,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.heartOfTheJadeSerpentReady.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.flurryCharge.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 
@@ -2377,6 +2390,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$hotjsReady" then
 			if snapshots[spells.heartOfTheJadeSerpentReady.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$flurryChargeStacks" then
+			if snapshots[spells.flurryCharge.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$resource" or var == "$energy" then

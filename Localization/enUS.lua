@@ -2073,3 +2073,4 @@ L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentReadyTooltip"] = "This will change
 L["MonkWindwalkerColorPickerHeartOfTheJadeSerpent"] = "Border when Heart of the Jade Serpent is active"
 L["MonkWindwalkerCheckboxHeartOfTheJadeSerpent"] = "Heart of the Jade Serpent"
 L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentTooltip"] = "This will change the bar border color when you have Heart of the Jade Serpent active."
+L["MonkWindwalkerBarTextVariable_flurryChargeStacks"] = "Number of stacks of Flurry Strikes"

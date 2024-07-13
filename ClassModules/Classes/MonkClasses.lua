@@ -174,6 +174,7 @@ end
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpentReady TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpentStacks TRB.Classes.SpellBase
+---@field public flurryCharge TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
@@ -336,6 +337,15 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
         isBuff = true,
         hasStacks = true,
         maxStacks = 45
+    })
+
+    -- Shado-Pan
+    self.flurryCharge = TRB.Classes.SpellBase:New({
+        id = 451021,
+        talentId = 450615,
+        isTalent = true,
+        isBuff = true,
+        hasStacks = true
     })
 
     return self
