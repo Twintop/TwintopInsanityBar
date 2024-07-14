@@ -73,6 +73,8 @@ local function FillSpecializationCache()
 	specCache.arms.snapshotData.snapshots[spells.ignorePain.id] = TRB.Classes.Snapshot:New(spells.ignorePain)
 	---@type TRB.Classes.Snapshot
 	specCache.arms.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
+	---@type TRB.Classes.Snapshot
+	specCache.arms.snapshotData.snapshots[spells.stormOfSwords.id] = TRB.Classes.Snapshot:New(spells.stormOfSwords)
 
 	-- Fury
 
@@ -863,7 +865,7 @@ local function UpdateResourceBar()
 							if spell.id == spells.execute.id then
 								if snapshots[spells.suddenDeath.id].buff.isActive then
 									--We only show the maximum value when this proc occurs. Current and minimum thresholds being in their expected place don't matter.
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, spells.executeMaximum:GetPrimaryResourceCost() * 2, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, spells.executeMaximum:GetPrimaryResourceCost(), TRB.Data.character.maxResource)
 								elseif spell.settingKey == "execute" then
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, math.min(math.max(resourceAmount, normalizedResource), spells.executeMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
 								end
@@ -876,6 +878,35 @@ local function UpdateResourceBar()
 									showThreshold = false
 								elseif currentResource >= resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							elseif spell.id == spells.whirlwind.id then
+								if talents:IsTalentActive(spells.cleave) then
+									showThreshold = false
+								elseif currentResource >= resourceAmount or snapshots[spells.stormOfSwords.id].buff.isActive then
+									thresholdColor = specSettings.colors.threshold.over
+
+									if snapshots[spells.stormOfSwords.id].buff.isActive then
+										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									end
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							elseif spell.id == spells.cleave.id then
+								if not talents:IsTalentActive(spells.cleave) then
+									showThreshold = false
+								elseif snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif currentResource >= resourceAmount or snapshots[spells.stormOfSwords.id].buff.isActive then
+									thresholdColor = specSettings.colors.threshold.over
+
+									if snapshots[spells.stormOfSwords.id].buff.isActive then
+										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									end
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
@@ -1142,6 +1173,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
+				elseif entry.spellId == spells.stormOfSwords.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
 				if entry.spellId == spells.enrage.id then

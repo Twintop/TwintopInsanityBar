@@ -15,6 +15,7 @@ TRB.Classes.Warrior = TRB.Classes.Warrior or {}
 ---@field public suddenDeath TRB.Classes.SpellBase
 ---@field public massacre TRB.Classes.SpellBase
 ---@field public bloodletting TRB.Classes.SpellBase
+---@field public stormOfSwords TRB.Classes.SpellBase
 ---@field public execute TRB.Classes.SpellThreshold
 ---@field public executeMinimum TRB.Classes.SpellThreshold
 ---@field public executeMaximum TRB.Classes.SpellThreshold
@@ -102,7 +103,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "whirlwind",
         isTalent = false,
-        baseline = true
+        baseline = true,
+        isSnowflake = true
     })
 
     -- Arms Baseline Abilities
@@ -156,7 +158,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "cleave",
         isTalent = true,
-        hasCooldown = true
+        hasCooldown = true,
+        isSnowflake = true
     })
     self.ignorePain = TRB.Classes.SpellThreshold:New({
         id = 190456,
@@ -167,7 +170,10 @@ function TRB.Classes.Warrior.ArmsSpells:New()
         duration = 11
     })
     self.suddenDeath = TRB.Classes.SpellBase:New({
-        id = 52437
+        id = 52437,
+        talentId = 29725,
+        isTalent = true,
+        isBuff = true
     })
     self.massacre = TRB.Classes.SpellBase:New({
         id = 281001,
@@ -178,6 +184,19 @@ function TRB.Classes.Warrior.ArmsSpells:New()
         id = 383154,
         pandemicModifier = 6,
         isTalent = true
+    })
+    self.stormOfSwords = TRB.Classes.SpellBase:New({
+        id = 439601,
+        talentId = 385512,
+        isTalent = true,
+        isBuff = true
+    })
+    -- TODO: Implement with color change when targeting enemy with debuff
+    self.executionersPrecision = TRB.Classes.SpellBase:New({
+        id = 439601,
+        talentId = 386634,
+        isTalent = true,
+        isBuff = true
     })
 
     return self
@@ -192,6 +211,7 @@ end
 ---@field public suddenDeath TRB.Classes.SpellBase
 ---@field public massacre TRB.Classes.SpellBase
 ---@field public ravager TRB.Classes.SpellBase
+---@field public bladestorm TRB.Classes.SpellBase
 ---@field public stormOfSteel TRB.Classes.SpellBase
 ---@field public execute TRB.Classes.SpellThreshold
 ---@field public executeMinimum TRB.Classes.SpellThreshold
@@ -321,6 +341,14 @@ function TRB.Classes.Warrior.FurySpells:New()
         id = 206315,
         isTalent = true,
         healthMinimum = 0.35
+    })
+    self.ravager = TRB.Classes.SpellBase:New({
+        id = 228920,
+        hasTicks = true,
+        tickRate = 2,
+        duration = 12,
+        resourcePerTick = 10,
+        energizeId = 334934
     })
     self.ravager = TRB.Classes.SpellBase:New({
         id = 228920,

@@ -14,7 +14,6 @@ TRB.Classes.Rogue = TRB.Classes.Rogue or {}
 ---@field public atrophicPoison TRB.Classes.SpellBase
 ---@field public stealth TRB.Classes.SpellBase
 ---@field public subterfuge TRB.Classes.SpellBase
----@field public shadowDance TRB.Classes.SpellBase
 ---@field public adrenalineRush TRB.Classes.SpellBase
 ---@field public crimsonVial TRB.Classes.SpellThreshold
 ---@field public distract TRB.Classes.SpellThreshold
@@ -30,7 +29,6 @@ TRB.Classes.Rogue = TRB.Classes.Rogue or {}
 ---@field public echoingReprimand_3CP TRB.Classes.SpellBase
 ---@field public echoingReprimand_4CP TRB.Classes.SpellBase
 ---@field public echoingReprimand_5CP TRB.Classes.SpellBase
----@field public sepsis TRB.Classes.SpellComboPointThreshold
 ---@field public dismantle TRB.Classes.SpellThreshold
 ---@field public deathFromAbove TRB.Classes.SpellThreshold
 TRB.Classes.Rogue.RogueBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -196,23 +194,9 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 354838,
         comboPoint = 5
     })
-    self.shadowDance = TRB.Classes.SpellBase:New({
-        id = 185422,
-        isTalent = true
-    })
 
     self.adrenalineRush = TRB.Classes.SpellBase:New({
         id = 13750
-    })
-    self.sepsis = TRB.Classes.SpellComboPointThreshold:New({
-        id = 385408,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 1,
-        settingKey = "sepsis",
-        hasCooldown = true,
-        cooldown = 90,
-        buffId = 375939,
-        isTalent = true
     })
     -- PvP
     self.deathFromAbove = TRB.Classes.SpellComboPointThreshold:New({
@@ -241,6 +225,7 @@ end
 ---@field public internalBleeding TRB.Classes.SpellBase
 ---@field public improvedGarrote TRB.Classes.SpellBase
 ---@field public blindside TRB.Classes.SpellBase
+---@field public serratedBoneSpike TRB.Classes.SpellBase
 ---@field public ambush TRB.Classes.SpellComboPointThreshold
 ---@field public envenom TRB.Classes.SpellComboPointThreshold
 ---@field public fanOfKnives TRB.Classes.SpellComboPointThreshold
@@ -249,7 +234,6 @@ end
 ---@field public poisonedKnife TRB.Classes.SpellComboPointThreshold
 ---@field public rupture TRB.Classes.SpellComboPointThreshold
 ---@field public crimsonTempest TRB.Classes.SpellComboPointThreshold
----@field public serratedBoneSpike TRB.Classes.SpellComboPointThreshold
 ---@field public kingsbane TRB.Classes.SpellComboPointThreshold
 TRB.Classes.Rogue.AssassinationSpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
 TRB.Classes.Rogue.AssassinationSpells.__index = TRB.Classes.Rogue.AssassinationSpells
@@ -374,11 +358,9 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         isTalent = true
     })
     self.serratedBoneSpike = TRB.Classes.SpellComboPointThreshold:New({
-        id = 385424,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 2,
-        settingKey = "serratedBoneSpike",
-        hasCooldown = true,
+        id = 455366,
+        talentId = 455352,
+        isBuff = true,
         debuffId = 394036,
         isTalent = true
     })
@@ -597,6 +579,7 @@ end
 ---@field public finalityRupture TRB.Classes.SpellBase
 ---@field public shadowcraft TRB.Classes.SpellBase
 ---@field public inevitability TRB.Classes.SpellBase
+---@field public shadowDance TRB.Classes.SpellBase
 ---@field public gloomblade TRB.Classes.SpellThreshold
 ---@field public eviscerate TRB.Classes.SpellComboPointThreshold
 ---@field public backstab TRB.Classes.SpellComboPointThreshold
@@ -609,6 +592,7 @@ end
 ---@field public shurikenTornado TRB.Classes.SpellComboPointThreshold
 ---@field public goremawsBite TRB.Classes.SpellComboPointThreshold
 ---@field public killingSpree TRB.Classes.SpellComboPointThreshold
+---@field public sepsis TRB.Classes.SpellComboPointThreshold
 TRB.Classes.Rogue.SubtletySpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
 TRB.Classes.Rogue.SubtletySpells.__index = TRB.Classes.Rogue.SubtletySpells
 
@@ -691,6 +675,10 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 212283,
         baseline = true
     })
+    self.shadowDance = TRB.Classes.SpellBase:New({
+        id = 185422,
+        baseline = true
+    })
 
     -- Subtlety Spec Abilities		
     --TODO: Do something with this tracking!	
@@ -728,6 +716,16 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPointsGenerated = 3,
         settingKey = "goremawsBite",
         hasCooldown = true,
+        isTalent = true
+    })
+    self.sepsis = TRB.Classes.SpellComboPointThreshold:New({
+        id = 385408,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPointsGenerated = 1,
+        settingKey = "sepsis",
+        hasCooldown = true,
+        cooldown = 90,
+        buffId = 375939,
         isTalent = true
     })
     self.shotInTheDark = TRB.Classes.SpellBase:New({

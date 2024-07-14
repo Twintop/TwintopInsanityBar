@@ -11,6 +11,44 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-alpha09 (2024-07-14)
+## Rogue
+### Assassination
+
+- [#374 - UPDATE (Twintop)](#374) Updates to reflect the state of Assassination in beta:
+<br/>&emsp;&ensp;- Removed
+<br/>&emsp;&ensp;&emsp;&ensp;- Shadow Dance
+<br/>&emsp;&ensp;&emsp;&ensp;- Sepsis
+<br/>&emsp;&ensp;- Updated
+<br/>&emsp;&ensp;&emsp;&ensp;- Serrated Bone Spike
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Combo Points, border, and background now change color to show how many Combo Points will be generated if you use Rupture.
+
+### Outlaw
+
+- [#375 - UPDATE (Twintop)](#375) Updates to reflect the state of Outlaw in beta:
+<br/>&emsp;&ensp;- Removed
+<br/>&emsp;&ensp;&emsp;&ensp;- Shadow Dance
+<br/>&emsp;&ensp;&emsp;&ensp;- Sepsis
+
+### Subtlety
+
+- [#376 - UPDATE (Twintop)](#376) Updates to reflect the state of Subtlety in beta:
+<br/>&emsp;&ensp;- Updated
+<br/>&emsp;&ensp; - Shadow Dance is now baseline.
+
+## Warrior
+### Arms
+
+- [#380 - UPDATE (Twintop)](#380) Updates to reflect the state of Arms in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Storm of Swords
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track this to show the Cleave or Whirlwind thresholds as usable regardless of current Rage.
+<br/>&emsp;&ensp;- Updated:
+<br/>&emsp;&ensp;&emsp;&ensp;- Cleave and Whirlwind
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Mutually exclusive and share the same threshold configuration.
+
+---
+
 # 11.0.0.0-alpha08 (2024-07-13)
 ## Demon Hunter
 ### Havoc

@@ -1,4 +1,4 @@
-## Interface: 110000
+## Interface: 110000, 110002
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
@@ -14,8 +14,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 11.0.0.0
-## X-ReleaseType: alpha08
-## X-ReleaseDate: 2024-07-13
+## X-ReleaseType: alpha09
+## X-ReleaseDate: 2024-07-14
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled

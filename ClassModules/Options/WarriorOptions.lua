@@ -877,11 +877,12 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	controls.checkBoxes.cleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_cleave", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.cleaveThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdCleave"])
-	f.tooltip = L["WarriorArmsThresholdCleaveTooltip"]
-	f:SetChecked(spec.thresholds.cleave.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdWhirlwindCleave"])
+	f.tooltip = L["WarriorArmsThresholdWhirlwindCleaveTooltip"]
+	f:SetChecked(spec.thresholds.cleave.enabled or spec.thresholds.whirlwind.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.cleave.enabled = self:GetChecked()
+		spec.thresholds.whirlwind.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1003,17 +1004,6 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.thunderClap.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thunderClap.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.whirlwindThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_whirlwind", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.whirlwindThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdWhirlwind"])
-	f.tooltip = L["WarriorArmsThresholdWhirlwindTooltip"]
-	f:SetChecked(spec.thresholds.whirlwind.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.whirlwind.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 40

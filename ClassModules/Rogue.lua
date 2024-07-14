@@ -107,9 +107,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_5CP)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(spells.serratedBoneSpike)
-	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.sepsis.id] = TRB.Classes.Snapshot:New(spells.sepsis)
+	specCache.assassination.snapshotData.snapshots[spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(spells.serratedBoneSpike, nil, true)
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.kingsbane.id] = TRB.Classes.Snapshot:New(spells.kingsbane)
 	---@type TRB.Classes.Snapshot
@@ -120,8 +118,6 @@ local function FillSpecializationCache()
 	specCache.assassination.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
-	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
 
 	specCache.assassination.barTextVariables = {
 		icons = {},
@@ -190,8 +186,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
-	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand,
 	{
 		enabled = {
@@ -214,8 +208,6 @@ local function FillSpecializationCache()
 	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP2)
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_5CP)
-	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.sepsis.id] = TRB.Classes.Snapshot:New(spells.sepsis)
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
@@ -418,7 +410,6 @@ local function FillSpellData_Assassination()
 		{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-		{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
 		{ variable = "#serratedBoneSpike", icon = spells.serratedBoneSpike.icon, description = spells.serratedBoneSpike.name, printInSettings = true },
 		{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
 		{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
@@ -581,7 +572,6 @@ local function FillSpellData_Outlaw()
 		{ variable = "#ruthlessPrecision", icon = spells.ruthlessPrecision.icon, description = spells.ruthlessPrecision.name, printInSettings = true },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-		{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
 		{ variable = "#sinisterStrike", icon = spells.sinisterStrike.icon, description = spells.sinisterStrike.name, printInSettings = true },
 		{ variable = "#skullAndCrossbones", icon = spells.skullAndCrossbones.icon, description = spells.skullAndCrossbones.name, printInSettings = true },
 		{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
@@ -1236,7 +1226,6 @@ local function RefreshLookupData_Assassination()
 	lookup["#rupture"] = spells.rupture.icon
 	lookup["#sad"] = spells.sliceAndDice.icon
 	lookup["#sliceAndDice"] = spells.sliceAndDice.icon
-	lookup["#sepsis"] = spells.sepsis.icon
 	lookup["#serratedBoneSpike"] = spells.serratedBoneSpike.icon
 	lookup["#stealth"] = spells.stealth.icon
 	lookup["#woundPoison"] = spells.woundPoison.icon
@@ -1626,7 +1615,6 @@ local function RefreshLookupData_Outlaw()
 	lookup["#ruthlessPrecision"] = spells.ruthlessPrecision.icon
 	lookup["#sad"] = spells.sliceAndDice.icon
 	lookup["#sliceAndDice"] = spells.sliceAndDice.icon
-	lookup["#sepsis"] = spells.sepsis.icon
 	lookup["#sinisterStrike"] = spells.sinisterStrike.icon
 	lookup["#skullAndCrossbones"] = spells.skullAndCrossbones.icon
 	lookup["#stealth"] = spells.stealth.icon
@@ -2183,7 +2171,6 @@ local function UpdateSnapshot()
 	
 	snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.subterfuge.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.shadowDance.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.echoingReprimand_2CP.id].buff:GetRemainingTime(currentTime)
 	if snapshots[spells.echoingReprimand_2CP.id].buff.isActive then
 		snapshots[spells.echoingReprimand.id].attributes.enabled[2] = true
@@ -2233,9 +2220,7 @@ local function UpdateSnapshot_Assassination()
 
 	snapshots[spells.improvedGarrote.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.blindside.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.sepsis.id].buff:GetRemainingTime(currentTime)
 
-	snapshots[spells.serratedBoneSpike.id].cooldown:Refresh()
 	snapshots[spells.garrote.id].cooldown:Refresh()
 	snapshots[spells.kingsbane.id].cooldown:Refresh()
 end
@@ -2265,6 +2250,7 @@ local function UpdateSnapshot_Subtlety()
 	snapshots[spells.sepsis.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.goremawsBite.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.shadowDance.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.shadowTechniques.id].buff:Refresh()
 	snapshots[spells.symbolsOfDeath.id].buff:Refresh()
 	
@@ -2340,7 +2326,7 @@ local function UpdateResourceBar()
 					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 				end
 
-				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
+				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
 				local pairOffset = 0
 				local thresholdId = 1
 				for _, v in pairs(TRB.Data.spellsData.spells) do
@@ -2486,7 +2472,7 @@ local function UpdateResourceBar()
 				
 				local sbsCp = 0
 				
-				if specSettings.comboPoints.spec.serratedBoneSpikeColor and talents:IsTalentActive(spells.serratedBoneSpike) and snapshotData.targetData.currentTargetGuid ~= nil and snapshots[spells.serratedBoneSpike.id].cooldown.charges > 0 then
+				if specSettings.comboPoints.spec.serratedBoneSpikeColor and talents:IsTalentActive(spells.serratedBoneSpike) and snapshotData.targetData.currentTargetGuid ~= nil and snapshots[spells.serratedBoneSpike.id].buff.applications > 0 then
 					sbsCp = 1 + snapshotData.targetData.count[spells.serratedBoneSpike.debuffId]
 				end
 
@@ -2498,6 +2484,7 @@ local function UpdateResourceBar()
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
+					local sbs = false
 
 					if snapshotData.attributes.resource2 >= x then
 						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
@@ -2510,23 +2497,24 @@ local function UpdateResourceBar()
 						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 					end
 
+					if x <= sbsCp then
+						sbs = true
+						cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
+						cpColor = specSettings.colors.comboPoints.serratedBoneSpike
+						if not specSettings.comboPoints.consistentUnfilledColor then
+							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.serratedBoneSpike, true)
+						end
+					end
+
 					if snapshots[spells.echoingReprimand.id].attributes.enabled[x] then
 						cpColor = specSettings.colors.comboPoints.echoingReprimand
 						
-						if sbsCp > 0 and x > snapshotData.attributes.resource2 and x <= (snapshotData.attributes.resource2 + sbsCp) and not specSettings.comboPoints.consistentUnfilledColor then
-							cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
-						else
+						if not sbs then
 							cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
 						end
 
 						if not specSettings.comboPoints.consistentUnfilledColor then
 							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
-						end
-					elseif sbsCp > 0 and x > snapshotData.attributes.resource2 and x <= (snapshotData.attributes.resource2 + sbsCp) then
-						cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
-						
-						if not specSettings.comboPoints.consistentUnfilledColor then
-							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.serratedBoneSpike, true)
 						end
 					end
 					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
@@ -2594,7 +2582,7 @@ local function UpdateResourceBar()
 					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 				end
 				
-				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
+				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
 				local pairOffset = 0
 				local thresholdId = 1
 				for _, v in pairs(TRB.Data.spellsData.spells) do
@@ -3182,12 +3170,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.serratedBoneSpike.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
+					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.serratedBoneSpike.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].buff:Initialize()
+						end
 					end
 				elseif entry.spellId == spells.crimsonVial.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
@@ -3301,6 +3290,19 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.symbolsOfDeath.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.shadowDance.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.sepsis.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
+					end
+				elseif entry.spellId == spells.sepsis.buffId then
+					snapshots[spells.sepsis.id].buff:Initialize(entry.type)
+					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
+						if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
+							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					end
 				end
 
 				-- Shadow Techniques check workaround until a spellId dictionary can be added
@@ -3330,8 +3332,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
 			if entry.spellId == spells.subterfuge.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.shadowDance.id then
 				snapshots[entry.spellId].buff:Initialize(entry.type)
 			elseif entry.spellId == spells.crimsonVial.id then
 				if entry.type == "SPELL_CAST_SUCCESS" then
@@ -3365,17 +3365,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				end
 			elseif entry.spellId == spells.echoingReprimand_2CP.id or entry.spellId == spells.echoingReprimand_3CP.id or entry.spellId == spells.echoingReprimand_4CP.id or entry.spellId == spells.echoingReprimand_4CP2.id or entry.spellId == spells.echoingReprimand_5CP.id then
 				snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.sepsis.id then
-				if entry.type == "SPELL_CAST_SUCCESS" then
-					snapshots[entry.spellId].cooldown:Initialize()
-				end
-			elseif entry.spellId == spells.sepsis.buffId then
-				snapshots[spells.sepsis.id].buff:Initialize(entry.type)
-				if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
-					if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
-						PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-					end
-				end
 			elseif entry.spellId == spells.cripplingPoison.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -3461,7 +3450,7 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.deadlyPoison)
 		targetData:AddSpellTracking(spells.numbingPoison)
 		targetData:AddSpellTracking(spells.woundPoison)
-		targetData:AddSpellTracking(spells.serratedBoneSpike, true, false, false)
+		targetData:AddSpellTracking(spells.serratedBoneSpike, true, false, false, false)
 
 		spells.shiv:ResetPrimaryResourceCost()
 
@@ -3473,6 +3462,9 @@ local function SwitchSpec()
 			talents = specCache.assassination.talents
 			TRB.Data.barConstructedForSpec = "assassination"
 			ConstructResourceBar(specCache.assassination.settings)
+			if talents:IsTalentActive(spells.serratedBoneSpike) then
+				TRB.Data.snapshotData.snapshots[spells.serratedBoneSpike.id].buff:Initialize()
+			end
 		else
 			TRB.Functions.Bar:SetPosition(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 		end

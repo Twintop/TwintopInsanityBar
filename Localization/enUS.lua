@@ -2082,3 +2082,5 @@ L["EvokerAugmentationCheckboxTemporalBurst"] = "Change bar color when Temporal B
 L["EvokerAugmentationCheckboxTemporalBurstTooltip"] = "Changes the bar color when you have the Temporal Burst buff"
 L["EvokerPreservationBarTextVariable_temporalBurstTime"] = "Time remaining on your Temporal Burst buff"
 L["EvokerAugmentationBarTextVariable_temporalBurstTime"] = "Time remaining on your Temporal Burst buff"
+L["WarriorArmsThresholdWhirlwindCleave"] = "Whirlwind / Cleave"
+L["WarriorArmsThresholdWhirlwindCleaveTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Whirlwind or Cleave (if talented)."
