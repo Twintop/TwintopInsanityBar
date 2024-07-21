@@ -52,7 +52,7 @@ local content = [====[
 <br/>&emsp;&ensp; - Shadow Dance is now baseline.
 
 ## Shaman
-### 
+### Elemental
 
 - [#377 - UPDATE (Twintop)](#377) Updates to reflect the state of Elemental in beta:
 <br/>&emsp;&ensp;- Updated:
