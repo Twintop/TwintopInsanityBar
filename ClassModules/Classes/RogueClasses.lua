@@ -360,7 +360,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     self.serratedBoneSpike = TRB.Classes.SpellComboPointThreshold:New({
         id = 455366,
         talentId = 455352,
-        isBuff = true,
         debuffId = 394036,
         isTalent = true
     })

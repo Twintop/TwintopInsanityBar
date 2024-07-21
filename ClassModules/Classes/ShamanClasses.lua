@@ -38,7 +38,6 @@ end
 
 ---@class TRB.Classes.Shaman.ElementalSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public flameShock TRB.Classes.SpellBase
----@field public lavaBurst TRB.Classes.SpellBase
 ---@field public frostShock TRB.Classes.SpellBase
 ---@field public hex TRB.Classes.SpellBase
 ---@field public inundate TRB.Classes.SpellBase
@@ -49,6 +48,7 @@ end
 ---@field public ascendance TRB.Classes.SpellBase
 ---@field public primalFracture TRB.Classes.SpellBase
 ---@field public lightningBolt TRB.Classes.Shaman.OverloadSpell
+---@field public lavaBurst TRB.Classes.Shaman.OverloadSpell
 ---@field public chainLightning TRB.Classes.Shaman.OverloadSpell
 ---@field public icefury TRB.Classes.Shaman.OverloadSpell
 ---@field public lavaBeam TRB.Classes.Shaman.OverloadSpell
@@ -66,8 +66,8 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     -- Shaman Class Baseline Abilities
     self.lightningBolt = TRB.Classes.Shaman.OverloadSpell:New({
         id = 188196,
-        resource = 8,
-        overload = 3,
+        resource = 6,
+        overload = 2,
         baseline = true,
         primalFracture = true
     })
@@ -78,26 +78,32 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     })
 
     -- Elemental Baseline Abilities
+    self.inundate = TRB.Classes.SpellBase:New({
+        id = 378776,
+        resource = 8,
+        baseline = true
+    })
 
 
     -- Shaman Class Talent Abilities
-    self.lavaBurst = TRB.Classes.SpellBase:New({
+    self.lavaBurst = TRB.Classes.Shaman.OverloadSpell:New({
         id = 51505,
-        resource = 10,
+        resource = 8,
+        overload = 3,
         isTalent = true,
         baseline = true,
         primalFracture = true
     })
     self.chainLightning = TRB.Classes.Shaman.OverloadSpell:New({
         id = 188443,
-        resource = 4,
-        overload = 3,
+        resource = 2,
+        overload = 1,
         isTalent = true,
         baseline = true
     })
     self.frostShock = TRB.Classes.SpellBase:New({
         id = 196840,
-        resource = 14,
+        resource = 10,
         isTalent = true,
         primalFracture = true
     })
@@ -113,9 +119,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 8042,
         primaryResourceType = Enum.PowerType.Maelstrom,
         settingKey = "earthShock",
-        isTalent = true,
-        baseline = true,
-        isSnowflake = true
+        isTalent = true
     })
     self.earthquake = TRB.Classes.SpellThreshold:New({
         id = 61882,
@@ -124,10 +128,12 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         isTalent = true,
         isSnowflake = true
     })
-    self.inundate = TRB.Classes.SpellBase:New({
-        id = 378776,
-        resource = 8,
-        isTalent = true
+    self.earthquakeTargeted = TRB.Classes.SpellThreshold:New({
+        id = 462620,
+        primaryResourceType = Enum.PowerType.Maelstrom,
+        settingKey = "earthquakeTargeted",
+        isTalent = true,
+        isSnowflake = true
     })
     self.flowOfPower = TRB.Classes.SpellBase:New({
         id = 385923,
@@ -148,17 +154,17 @@ function TRB.Classes.Shaman.ElementalSpells:New()
                     lavaBurst = 0
                 },
                 [1] = {
-                    lightningBolt = 1,
-                    lavaBurst = 1
+                    lightningBolt = 0,
+                    lavaBurst = 0
                 }
             }
         },
         isTalent = true
     })
     self.icefury = TRB.Classes.Shaman.OverloadSpell:New({
-        id = 210714,
-        resource = 25,
-        overload = 12,
+        id = 462818,
+        resource = 12,
+        overload = 4,
         stacks = 4,
         duration = 15,
         isTalent = true,
@@ -181,8 +187,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 117014,
         primaryResourceType = Enum.PowerType.Maelstrom,
         settingKey = "elementalBlast",
-        isTalent = true,
-        isSnowflake = true
+        isTalent = true
     })
     self.echoesOfGreatSundering = TRB.Classes.SpellBase:New({
         id = 384088,

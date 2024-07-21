@@ -24,7 +24,6 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public starweaversWarp TRB.Classes.SpellBase
 ---@field public starweaversWeft TRB.Classes.SpellBase
 ---@field public celestialAlignment TRB.Classes.SpellBase
----@field public primordialArcanicPulsar TRB.Classes.SpellBase
 ---@field public soulOfTheForest TRB.Classes.SpellBase
 ---@field public incarnationChosenOfElune TRB.Classes.SpellBase
 ---@field public furyOfElune TRB.Classes.SpellBase
@@ -32,6 +31,8 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public halfMoon TRB.Classes.SpellBase
 ---@field public fullMoon TRB.Classes.SpellBase
 ---@field public sunderedFirmament TRB.Classes.SpellBase
+---@field public astralCommunion TRB.Classes.SpellBase
+---@field public moonGuardian TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
 ---@field public starsurge3 TRB.Classes.SpellThreshold
@@ -55,9 +56,10 @@ function TRB.Classes.Druid.BalanceSpells:New()
     -- Druid Class Talents
     self.starfire = TRB.Classes.SpellBase:New({
         id = 194153,
-        resource = 10,
+        resource = 8,
         baseline = true,
-        isTalent = true
+        isTalent = true,
+        hasCastCount = true
     })
     self.starsurge = TRB.Classes.SpellThreshold:New({
         id = 78674,
@@ -100,7 +102,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
     -- Balance Spec Baseline Abilities
     self.wrath = TRB.Classes.SpellBase:New({
         id = 190984,
-        resource = 8
+        resource = 6,
+        hasCastCount = true
     })
 
     -- Balance Spec Talents
@@ -132,7 +135,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.stellarFlare = TRB.Classes.SpellBase:New({
         id = 202347,
-        resource = 10,
+        resource = 12,
         pandemic = true,
         baseDuration = 24,
         isTalent = true
@@ -156,16 +159,10 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 194223,
         isTalent = true
     })
-    self.primordialArcanicPulsar = TRB.Classes.SpellBase:New({
-        id = 393961,
-        talentId = 393960,
-        maxResource = 600,
-        isTalent = true
-    })
     self.soulOfTheForest = TRB.Classes.SpellBase:New({
         id = 114107,
         modifier = {
-            wrath = 0.3,
+            wrath = 0.6,
             starfire = 0.2
         },
         isTalent = true
@@ -186,17 +183,17 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.newMoon = TRB.Classes.SpellBase:New({
         id = 274281,
-        resource = 12,
+        resource = 10,
         recharge = 20,
         isTalent = true
     })
     self.halfMoon = TRB.Classes.SpellBase:New({
         id = 274282,
-        resource = 24
+        resource = 30
     })
     self.fullMoon = TRB.Classes.SpellBase:New({
         id = 274283,
-        resource = 50
+        resource = 40
     })
     self.sunderedFirmament = TRB.Classes.SpellBase:New({
         id = 394094,
@@ -205,6 +202,18 @@ function TRB.Classes.Druid.BalanceSpells:New()
         resourcePerTick = 0.5,
         tickRate = 0.5,
         isTalent = true
+    })
+    self.astralCommunion = TRB.Classes.SpellBase:New({
+        id = 450598,
+        isTalent = true,
+        resourceMod = 20
+    })
+
+    -- Elune's Chosen
+    self.moonGuardian = TRB.Classes.SpellBase:New({
+        id = 429520,
+        isTalent = true,
+        resourceMod = 2
     })
 
     return self

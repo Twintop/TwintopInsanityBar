@@ -134,13 +134,11 @@ function TRB.Classes.Monk.MistweaverSpells:New()
         id = 443421,
         talentId = 443294,
         isTalent = true,
-        isBuff = true
     })
     self.heartOfTheJadeSerpentStacks = TRB.Classes.SpellBase:New({
         id = 443506,
         talentId = 443294,
         isTalent = true,
-        isBuff = true,
         hasStacks = true,
         maxStacks = 20
     })
@@ -321,20 +319,17 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     self.heartOfTheJadeSerpent = TRB.Classes.SpellBase:New({
         id = 443421,
         talentId = 443294,
-        isTalent = true,
-        isBuff = true
+        isTalent = true
     })
     self.heartOfTheJadeSerpentReady = TRB.Classes.SpellBase:New({
         id = 456368,
         talentId = 443294,
-        isTalent = true,
-        isBuff = true
+        isTalent = true
     })
     self.heartOfTheJadeSerpentStacks = TRB.Classes.SpellBase:New({
         id = 443424,
         talentId = 443294,
         isTalent = true,
-        isBuff = true,
         hasStacks = true,
         maxStacks = 45
     })
@@ -344,7 +339,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
         id = 451021,
         talentId = 450615,
         isTalent = true,
-        isBuff = true,
         hasStacks = true
     })
 

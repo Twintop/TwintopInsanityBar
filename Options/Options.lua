@@ -3222,6 +3222,22 @@ function TRB.Options:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Earthquake (Targeted)
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental.thresholds ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquakeTargeted == nil then
+
+		TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquakeTargeted = {
+			enabled = TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquake.enabled
+		}
+		
+		TwintopInsanityBarSettings.shaman.elemental.thresholdWidth = nil
+		TwintopInsanityBarSettings.shaman.elemental.earthShockThreshold = nil
+		TwintopInsanityBarSettings.shaman.elemental.thresholdsOverlapBorder = nil
+	end
 end
 
 function TRB.Options:CleanupSettings(oldSettings)

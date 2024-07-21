@@ -115,15 +115,10 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.starweaversWeft.id] = TRB.Classes.Snapshot:New(spells.starweaversWeft)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.primordialArcanicPulsar.id] = TRB.Classes.Snapshot:New(spells.primordialArcanicPulsar, nil, true)
-	specCache.balance.snapshotData.snapshots[spells.primordialArcanicPulsar.id].buff:SetCustomProperties({
-		{
-			name = "currentResource",
-			dataType = "number",
-			index = 1,
-			modifier = 1
-		}
-	})
+	specCache.balance.snapshotData.snapshots[spells.wrath.id] = TRB.Classes.Snapshot:New(spells.wrath)
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.starfire.id] = TRB.Classes.Snapshot:New(spells.starfire)
+
 
 	-- Feral
 	specCache.feral.Global_TwintopResourceBar = {
@@ -312,10 +307,6 @@ local function FillSpellData_Balance()
 		{ variable = "#starweaver", icon = string.format(L["DruidBalanceIcon_starweaver"], spells.starweaversWarp.icon, spells.starweaversWeft.icon), description = L["DruidBalanceIconDescription_starweaver"], printInSettings = true },
 		{ variable = "#starweaversWarp", icon = spells.starweaversWarp.icon, description = spells.starweaversWarp.name, printInSettings = true },
 		{ variable = "#starweaversWeft", icon = spells.starweaversWeft.icon, description = spells.starweaversWeft.name, printInSettings = true },
-
-		{ variable = "#pulsar", icon = spells.primordialArcanicPulsar.icon, description = spells.primordialArcanicPulsar.name, printInSettings = true },
-		{ variable = "#pap", icon = spells.primordialArcanicPulsar.icon, description = spells.primordialArcanicPulsar.name, printInSettings = false },
-		{ variable = "#primordialArcanicPulsar", icon = spells.primordialArcanicPulsar.icon, description = spells.primordialArcanicPulsar.name, printInSettings = false },
 
 		{ variable = "#eclipse", icon = string.format(L["DruidBalanceIcon_eclipse"], spells.incarnationChosenOfElune.icon, spells.celestialAlignment.icon, spells.eclipseSolar.icon, spells.eclipseLunar.icon), description = L["DruidBalanceIconDescription_eclipse"], printInSettings = true },
 		{ variable = "#celestialAlignment", icon = spells.celestialAlignment.icon, description = spells.celestialAlignment.name, printInSettings = true },			
@@ -1110,16 +1101,6 @@ local function RefreshLookupData_Balance()
 		starweaverIcon = spells.starweaversWeft.icon
 	end
 
-	--$pulsar variables
-	local pulsarCollected = snapshotData.snapshots[spells.primordialArcanicPulsar.id].buff.customProperties["currentResource"]
-	local _pulsarCollectedPercent = pulsarCollected / spells.primordialArcanicPulsar.attributes.maxResource
-	local pulsarCollectedPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarCollectedPercent * 100, 1))
-	local pulsarRemaining = spells.primordialArcanicPulsar.attributes.maxResource - pulsarCollected
-	local _pulsarRemainingPercent = pulsarRemaining / spells.primordialArcanicPulsar.attributes.maxResource
-	local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarRemainingPercent * 100, 1))
-	local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / spells.starsurge:GetPrimaryResourceCost(), 0, ceil, true)
-	local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / spells.starfall:GetPrimaryResourceCost(), 0, ceil, true)
-	
 	----------------------------
 
 	Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
@@ -1174,17 +1155,6 @@ local function RefreshLookupData_Balance()
 	lookup["#starweaver"] = starweaverIcon
 	lookup["#starweaversWarp"] = spells.starweaversWarp.icon
 	lookup["#starweaversWeft"] = spells.starweaversWeft.icon
-	lookup["#pulsar"] = spells.primordialArcanicPulsar.icon
-	lookup["#pap"] = spells.primordialArcanicPulsar.icon
-	lookup["#primordialArcanicPulsar"] = spells.primordialArcanicPulsar.icon
-	lookup["$pulsarCollected"] = pulsarCollected
-	lookup["$pulsarCollectedPercent"] = pulsarCollectedPercent
-	lookup["$pulsarRemaining"] = pulsarRemaining
-	lookup["$pulsarRemainingPercent"] = pulsarRemainingPercent
-	lookup["$pulsarNextStarsurge"] = ""
-	lookup["$pulsarNextStarfall"] = ""
-	lookup["$pulsarStarsurgeCount"] = pulsarStarsurgeCount
-	lookup["$pulsarStarfallCount"] = pulsarStarfallCount
 	lookup["$moonkinForm"] = ""
 	lookup["$eclipseTime"] = eclipseTime
 	lookup["$eclipse"] = ""
@@ -1234,12 +1204,6 @@ local function RefreshLookupData_Balance()
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$pulsarCollected"] = pulsarCollected
-	lookupLogic["$pulsarCollectedPercent"] = _pulsarCollectedPercent
-	lookupLogic["$pulsarRemaining"] = pulsarRemaining
-	lookupLogic["$pulsarRemainingPercent"] = _pulsarRemainingPercent
-	lookupLogic["$pulsarStarsurgeCount"] = pulsarStarsurgeCount
-	lookupLogic["$pulsarStarfallCount"] = pulsarStarfallCount
 	lookupLogic["$eclipseTime"] = _eclispeTime
 	lookupLogic["$starweaver"] = _starweaver
 	lookupLogic["$starweaverTime"] = _starweaverTime
@@ -2190,6 +2154,9 @@ local function CastingSpell()
 					if talents:IsTalentActive(spells.wildSurges) then
 						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
 					end
+					if talents:IsTalentActive(spells.astralCommunion) and snapshotData.snapshots[spells.wrath.id].cooldown.castCount == 1 then
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.astralCommunion.attributes.resourceMod
+					end
 					if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
 						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.attributes.modifier.wrath)
 					end
@@ -2197,6 +2164,12 @@ local function CastingSpell()
 					FillSnapshotDataCasting_Balance(spells.starfire)
 					if talents:IsTalentActive(spells.wildSurges) then
 						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
+					end
+					if talents:IsTalentActive(spells.astralCommunion) and snapshotData.snapshots[spells.starfire.id].cooldown.castCount == 1 then
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.astralCommunion.attributes.resourceMod
+					end
+					if talents:IsTalentActive(spells.moonGuardian) then
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.moonGuardian.attributes.resourceMod
 					end
 					--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
 					--snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
@@ -2333,7 +2306,6 @@ local function UpdateSnapshot_Balance()
 	snapshotData.snapshots[spells.eclipseSolar.id].buff:Refresh()
 	snapshotData.snapshots[spells.eclipseLunar.id].buff:Refresh()
 	snapshotData.snapshots[spells.starfall.id].buff:GetRemainingTime(currentTime)
-	snapshotData.snapshots[spells.primordialArcanicPulsar.id].buff:Refresh()
 end
 
 local function UpdateSnapshot_Feral()
@@ -3214,7 +3186,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
-				if entry.spellId == spells.moonfire.id then
+				if entry.spellId == spells.wrath.id then
+					snapshotData.snapshots[entry.spellId].cooldown:Refresh(true)
+				elseif entry.spellId == spells.starfire.id then
+					snapshotData.snapshots[entry.spellId].cooldown:Refresh(true)
+				elseif entry.spellId == spells.moonfire.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
@@ -3242,12 +3218,28 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.eclipseSolar.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					if entry.type == "SPELL_AURA_REMOVED" then
+						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
+						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
+					end
 				elseif entry.spellId == spells.eclipseLunar.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					if entry.type == "SPELL_AURA_REMOVED" then
+						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
+						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
+					end
 				elseif entry.spellId == spells.celestialAlignment.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					if entry.type == "SPELL_AURA_REMOVED" then
+						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
+						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
+					end
 				elseif entry.spellId == spells.incarnationChosenOfElune.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					if entry.type == "SPELL_AURA_REMOVED" then
+						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
+						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
+					end
 				elseif entry.spellId == spells.starfall.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.starweaversWarp.id then
@@ -3959,40 +3951,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				if snapshots[spells.newMoon.id].cooldown.charges < snapshots[spells.newMoon.id].cooldown.maxCharges then
 					valid = true
 				end
-			end
-		elseif var == "$pulsarCollected" then
-			if talents:IsTalentActive(spells.primordialArcanicPulsar) then
-				valid = true
-			end
-		elseif var == "$pulsarCollectedPercent" then
-			if talents:IsTalentActive(spells.primordialArcanicPulsar) then
-				valid = true
-			end
-		elseif var == "$pulsarRemaining" then
-			if talents:IsTalentActive(spells.primordialArcanicPulsar) then
-				valid = true
-			end
-		elseif var == "$pulsarRemainingPercent" then
-			if talents:IsTalentActive(spells.primordialArcanicPulsar) then
-				valid = true
-			end
-		elseif var == "$pulsarStarsurgeCount" then
-			if talents:IsTalentActive(spells.primordialArcanicPulsar) then
-				valid = true
-			end
-		elseif var == "$pulsarStarfallCount" then
-			if talents:IsTalentActive(spells.primordialArcanicPulsar) then
-				valid = true
-			end
-		elseif var == "$pulsarNextStarsurge" then
-			if talents:IsTalentActive(spells.primordialArcanicPulsar) and
-				(((spells.primordialArcanicPulsar.attributes.maxResource or 0) - (snapshots[spells.primordialArcanicPulsar.id].buff.customProperties["currentResource"])) <= spells.starsurge:GetPrimaryResourceCost()) then
-				valid = true
-			end
-		elseif var == "$pulsarNextStarfall" then
-			if talents:IsTalentActive(spells.primordialArcanicPulsar) and
-				(((spells.primordialArcanicPulsar.attributes.maxResource or 0) - (snapshots[spells.primordialArcanicPulsar.id].buff.customProperties["currentResource"])) <= spells.starsurge:GetPrimaryResourceCost()) then
-				valid = true
 			end
 		end
 	elseif specId == 2 then -- Feral

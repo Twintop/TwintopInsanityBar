@@ -202,6 +202,9 @@ local function ElementalLoadDefaultSettings(includeBarText)
 			earthquake = {
 				enabled = true,
 			},
+			earthquakeTargeted = {
+				enabled = true,
+			},
 			elementalBlast = {
 				enabled = true,
 			},
@@ -1211,6 +1214,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.earthquake.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.earthquake.enabled = self:GetChecked()
+		spec.thresholds.earthquakeTargeted.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

@@ -172,8 +172,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     self.suddenDeath = TRB.Classes.SpellBase:New({
         id = 52437,
         talentId = 29725,
-        isTalent = true,
-        isBuff = true
+        isTalent = true
     })
     self.massacre = TRB.Classes.SpellBase:New({
         id = 281001,
@@ -188,15 +187,13 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     self.stormOfSwords = TRB.Classes.SpellBase:New({
         id = 439601,
         talentId = 385512,
-        isTalent = true,
-        isBuff = true
+        isTalent = true
     })
     -- TODO: Implement with color change when targeting enemy with debuff
     self.executionersPrecision = TRB.Classes.SpellBase:New({
         id = 439601,
         talentId = 386634,
-        isTalent = true,
-        isBuff = true
+        isTalent = true
     })
 
     return self

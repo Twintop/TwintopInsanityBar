@@ -1490,31 +1490,7 @@ local function UpdateResourceBar()
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 						
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							if spell.id == spells.earthShock.id then
-								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-									showThreshold = false
-								elseif talents:IsTalentActive(spells.elementalBlast) then
-									showThreshold = false
-								else
-									if currentResource >= resourceAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								end
-							elseif spell.id == spells.elementalBlast.id then
-								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-									showThreshold = false
-								else
-									if currentResource >= resourceAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								end
-							elseif spell.id == spells.earthquake.id then
+							if spell.id == spells.earthquake.id or spell.id == spells.earthquakeTargeted.id then
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								else
@@ -1530,7 +1506,6 @@ local function UpdateResourceBar()
 									end
 								end
 							end
-						--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
 						elseif resourceAmount == 0 then
 							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -2157,9 +2132,6 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "elemental"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
-
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.earthShock, TRB.Data.settings.shaman.elemental)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.elementalBlast, TRB.Data.settings.shaman.elemental)
 	elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		TRB.Data.character.specName = "enhancement"
 		local maxComboPoints = 10
