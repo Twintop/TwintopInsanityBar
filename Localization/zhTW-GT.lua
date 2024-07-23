@@ -22,7 +22,7 @@ if locale == "zhTW" then
     L["BarTextInstructions2"] = "對於條件顯示（僅當 $VARIABLE 有效/非零時）：\n {$VARIABLE}[$VARIABLE 為 TRUE 輸出]\n\n"
     L["BarTextInstructions3"] = "支援條件顯示邏輯中的布林 AND (&)、OR (|)、NOT (!) 和括號：\n {$A&$B}[兩者都是 TRUE 輸出]\n {$A|$B}[一或兩個都是TRUE 輸出]\n {!$A}[$A 是FALSE 輸出]\n {!$A&($B|$C)}[$A 是FALSE，$B 或$C 是TRUE輸出] \n\n"
     L["BarTextInstructions4"] = "也支援表達式（+、-、*、/）和比較符號（>、>=、<、<=、=、!=）：\n {$VARIABLE*2>=$OTHERVAR}[$VARIABLE 位於至少是$OTHERVAR 輸出的兩倍]\n\n"
-    L["BarTextInstructions5"] = "支援 IF/ELSE:\n {$VARIABLE}[$VARIABLE 為 TRUE 輸出][$VARIABLE 為 FALSE 輸出]\n {$VARIABLE>2}[$VARIABLE 大於 2 輸出][$VARIABLE 小於 2輸出]\n\ n"
+    L["BarTextInstructions5"] = "支援 IF/ELSE:\n {$VARIABLE}[$VARIABLE 為 TRUE 輸出][$VARIABLE 為 FALSE 輸出]\n {$VARIABLE>2}[$VARIABLE 大於 2 輸出][$VARIABLE 小於 2輸出]\n\n"
     L["BarTextInstructions6"] = "IF/ELSE 包含 NOT 支援:\n {!$VARIABLE}[$VARIABLE 為 FALSE 輸出][$VARIABLE 為 TRUE 輸出]\n\n"
     L["BarTextInstructions7"] = "邏輯可以在 IF/ELSE 區塊內進行：\n {$A}[$A is TRUE 輸出][$A is FALSE and {$B}[$B is TRUE][$B is FALSE] 輸出]\n\n"
     L["BarTextInstructions8"] = "若要顯示圖標，請使用：\n #ICONVARIABLENAME"

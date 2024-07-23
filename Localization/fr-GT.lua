@@ -84,7 +84,7 @@ if locale == "frFR" then
     L["BarBorderWidth"] = "Largeur de bordure de barre"
     L["ThresholdLineWidth"] = "Largeur de ligne de seuil"
     L["DragAndDropEnabled"] = "Mouvement glisser-déposer activé"
-    L["DragAndDropTooltip"] = "Désactivez la fonctionnalité Glisser-Déposer de la barre pour l'empêcher d'être déplacée accidentellement.\n\nLorsque "Épingler à l'affichage des ressources personnelles" est coché, cette valeur est ignorée et ne peut pas être modifiée."
+    L["DragAndDropTooltip"] = "Désactivez la fonctionnalité Glisser-Déposer de la barre pour l'empêcher d'être déplacée accidentellement.\n\nLorsque `Épingler à l'affichage des ressources personnelles` est coché, cette valeur est ignorée et ne peut pas être modifiée."
     L["PinToPRDEnabled"] = "Épingler sur l’affichage des ressources personnelles"
     L["PinToPRDTooltip"] = "Épingle la barre sur l’affichage des ressources personnelles Blizzard. Ajustez les positions horizontale et verticale ci-dessus pour les décaler du PRD. Lorsqu'il est activé, le positionnement par glisser-déposer n'est pas autorisé. Si le PRD n'est pas activé, il se comportera comme si vous ne l'aviez pas activé.\n\nREMARQUE : ce sera également la position (par rapport au centre de l'écran, PAS le PRD) qu'il affichera hors combat/ le PRD ne s'affiche pas ! Il est recommandé de définir « Affichage de la barre » sur « Afficher uniquement la barre en combat » si vous prévoyez de l'épingler sur votre PRD."
     L["SecondaryPositionAndSize"] = "Position et taille %s"
