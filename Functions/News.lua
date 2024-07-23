@@ -11,11 +11,11 @@ local content = [====[
 
 ---
 
-# 11.0.0.0-release (2024-07-23)
+# 11.0.0.1-release (2024-07-23)
 ## General
 
 - [#356 - UPDATE (Twintop)](#356) Updated all supported specs for The War Within prepatch. See alpha release patchnotes below for a more detailed list of changes.
-- (UPDATE) Update localizations to include new and modified strings.
+- (UPDATE) Update localizations to include new and updated strings.
 
 ## Druid
 ### Balance
