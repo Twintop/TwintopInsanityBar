@@ -11,6 +11,22 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-release (2024-07-23)
+## General
+
+- [#356 - UPDATE (Twintop)](#356) Updated all supported specs for The War Within prepatch. See alpha release patchnotes below for a more detailed list of changes.
+- (UPDATE) Update localizations to include new and modified strings.
+
+## Druid
+### Balance
+
+- [#359 - UPDATE (Twintop)](#359) Updates to reflect the state of Balance in prepatch:
+<br/>&emsp;&ensp;- Added
+<br/>&emsp;&ensp;&emsp;&ensp;- Touch the Cosmos
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Starsurge threshold lines and the Starfall threshold line will light up if you have enough Touch the Cosmos procs, Starweaver's procs, and/or Astral Power to use the ability.
+
+---
+
 # 11.0.0.0-alpha09 (2024-07-22)
 ## Druid
 ### Balance

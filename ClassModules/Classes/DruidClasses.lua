@@ -32,6 +32,8 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public fullMoon TRB.Classes.SpellBase
 ---@field public sunderedFirmament TRB.Classes.SpellBase
 ---@field public astralCommunion TRB.Classes.SpellBase
+---@field public touchTheCosmos_starsurge TRB.Classes.SpellBase
+---@field public touchTheCosmos_starfall TRB.Classes.SpellBase
 ---@field public moonGuardian TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
@@ -207,6 +209,12 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 450598,
         isTalent = true,
         resourceMod = 20
+    })
+    self.touchTheCosmos_starsurge = TRB.Classes.SpellBase:New({
+        id = 450360
+    })
+    self.touchTheCosmos_starfall = TRB.Classes.SpellBase:New({
+        id = 450361
     })
 
     -- Elune's Chosen

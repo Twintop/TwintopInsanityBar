@@ -118,6 +118,10 @@ local function FillSpecializationCache()
 	specCache.balance.snapshotData.snapshots[spells.wrath.id] = TRB.Classes.Snapshot:New(spells.wrath)
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.starfire.id] = TRB.Classes.Snapshot:New(spells.starfire)
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.touchTheCosmos_starsurge.id] = TRB.Classes.Snapshot:New(spells.touchTheCosmos_starsurge)
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.touchTheCosmos_starfall.id] = TRB.Classes.Snapshot:New(spells.touchTheCosmos_starfall)
 
 
 	-- Feral
@@ -2492,9 +2496,7 @@ local function UpdateResourceBar()
 							if spell.settingKey == spells.starsurge.settingKey then
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
-								elseif snapshots[spells.starweaversWeft.id].buff.isActive then
-									thresholdColor = specSettings.colors.threshold.over
-								elseif currentResource >= spells.starsurge:GetPrimaryResourceCost() then
+								elseif snapshots[spells.starweaversWeft.id].buff.isActive or snapshots[spells.touchTheCosmos_starsurge.id].buff.isActive or currentResource >= spells.starsurge:GetPrimaryResourceCost() then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2502,7 +2504,7 @@ local function UpdateResourceBar()
 								end
 								
 								if showThreshold then
-									if snapshots[spells.starweaversWeft.id].buff.isActive and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
+									if (snapshots[spells.starweaversWeft.id].buff.isActive or snapshots[spells.touchTheCosmos_starsurge.id].buff.isActive) and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
 										snapshotData.audio.playedstarweaverCue = true
 										snapshotData.audio.playedSfCue = true
 										PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
@@ -2515,26 +2517,58 @@ local function UpdateResourceBar()
 									snapshotData.audio.playedstarweaverCue = false
 								end
 							elseif spell.settingKey == spells.starsurge2.settingKey then
+								local aboveCounts = 0
+								if snapshots[spells.starweaversWeft.id].buff.isActive then
+									aboveCounts = aboveCounts + 1
+								end
+								
+								if snapshots[spells.touchTheCosmos_starsurge.id].buff.isActive then
+									aboveCounts = aboveCounts + 1
+								end
+								
+								if currentResource >= spells.starsurge2:GetPrimaryResourceCost() then
+									aboveCounts = aboveCounts + 2
+								elseif currentResource >= spells.starsurge:GetPrimaryResourceCost() then
+									aboveCounts = aboveCounts + 1
+								end
+
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif resourceAmount >= TRB.Data.character.maxResource then
 									showThreshold = false
-								elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and resourceAmount > currentResource then
+								elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and aboveCounts < 2 then
 									showThreshold = false
-								elseif currentResource >= resourceAmount then
+								elseif aboveCounts >= 2 then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.settingKey == spells.starsurge3.settingKey then
+								local aboveCounts = 0
+								if snapshots[spells.starweaversWeft.id].buff.isActive then
+									aboveCounts = aboveCounts + 1
+								end
+								
+								if snapshots[spells.touchTheCosmos_starsurge.id].buff.isActive then
+									aboveCounts = aboveCounts + 1
+								end
+								
+								if currentResource >= spells.starsurge3:GetPrimaryResourceCost() then
+									aboveCounts = aboveCounts + 3
+								elseif currentResource >= spells.starsurge2:GetPrimaryResourceCost() then
+									aboveCounts = aboveCounts + 2
+								elseif currentResource >= spells.starsurge:GetPrimaryResourceCost() then
+									aboveCounts = aboveCounts + 1
+								end
+
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif resourceAmount >= TRB.Data.character.maxResource then
 									showThreshold = false
-								elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and resourceAmount > currentResource then
+								elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and aboveCounts < 3 then
 									showThreshold = false
-								elseif currentResource >= resourceAmount then
+								elseif aboveCounts >= 3 then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2543,7 +2577,7 @@ local function UpdateResourceBar()
 							elseif spell.id == spells.starfall.id then
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
-								elseif currentResource >= spells.starfall:GetPrimaryResourceCost() then
+								elseif snapshots[spells.starweaversWarp.id].buff.isActive or snapshots[spells.touchTheCosmos_starfall.id].buff.isActive or currentResource >= spells.starfall:GetPrimaryResourceCost() then
 									if snapshots[spells.starfall.id].buff.isActive and (snapshots[spells.starfall.id].buff.remaining) > (TRB.Data.character.pandemicModifier * spells.starfall.pandemicTime) then
 										thresholdColor = specSettings.colors.threshold.starfallPandemic
 									else
@@ -2555,7 +2589,7 @@ local function UpdateResourceBar()
 								end
 
 								if showThreshold then
-									if snapshots[spells.starweaversWarp.id].buff.isActive and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
+									if (snapshots[spells.starweaversWarp.id].buff.isActive or snapshots[spells.touchTheCosmos_starfall.id].buff.isActive) and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
 										snapshotData.audio.playedstarweaverCue = true
 										snapshotData.audio.playedSfCue = true
 										PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
@@ -3245,6 +3279,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.starweaversWarp.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.starweaversWeft.id then
+					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.touchTheCosmos_starsurge.id then
+					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.touchTheCosmos_starfall.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.newMoon.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
