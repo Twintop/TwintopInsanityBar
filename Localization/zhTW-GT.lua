@@ -334,7 +334,7 @@ if locale == "zhTW" then
     L["ThresholdOverlapBorderCheckboxTooltip"] = "選取後，閾值線將跨越條形的整個高度並與條形邊框重疊。"
     L["AudioOptionsHeader"] = "音訊選項"
     L["BarDisplayTextCustomizationHeader"] = "欄顯示文字定制"
-    L["IsBarEnabledForSpecTooltip"] = "是否為 %s %s 啟用了 Twintop 的資源欄"
+    L["IsBarEnabledForSpecTooltip"] = "是否為 %s 啟用了 Twintop 的資源欄"
     L["ExportSpecialization"] = "出口專業化"
     L["TabBarDisplay"] = "條形展示"
     L["TabFontText"] = "字體和文字"

@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.0.0.2-release (2024-07-31)
+## General
+
+- (FIX) Fix Lua errors caused by malformed localization strings.
+
+---
+
 # 11.0.0.1-release (2024-07-23)
 ## General
 

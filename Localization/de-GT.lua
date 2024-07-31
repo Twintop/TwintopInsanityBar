@@ -334,7 +334,7 @@ if locale == "deDE" then
     L["ThresholdOverlapBorderCheckboxTooltip"] = "Wenn diese Option aktiviert ist, erstrecken sich die Schwellenlinien über die gesamte Höhe des Balkens und überlappen den Balkenrand."
     L["AudioOptionsHeader"] = "Audiooptionen"
     L["BarDisplayTextCustomizationHeader"] = "Anpassung des Balkenanzeigetextes"
-    L["IsBarEnabledForSpecTooltip"] = "Ist die Ressourcenleiste von Twintop für %s %s aktiviert?"
+    L["IsBarEnabledForSpecTooltip"] = "Ist die Ressourcenleiste von Twintop für %s aktiviert?"
     L["ExportSpecialization"] = "Exportspezialisierung"
     L["TabBarDisplay"] = "Balkenanzeige"
     L["TabFontText"] = "Schriftart und Text"
