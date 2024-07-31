@@ -568,7 +568,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
         id = 407466,
         buffId = 407468,
         talentId = 391403,
-        resource = 8,
+        resource = 12,
         isTalent = true
     })
     self.deathspeaker = TRB.Classes.SpellBase:New({
@@ -633,15 +633,15 @@ function TRB.Classes.Priest.ShadowSpells:New()
         id = 344838,
         resource = 1,
         duration = 15,
-        ticks = 15,
-        tickDuration = 1
+        ticks = 10,
+        tickDuration = 1.5
     })
     self.lashOfInsanity_Lasher = TRB.Classes.SpellBase:New({
         id = 344838, --Doesn't actually exist / unused?
         resource = 1,
         duration = 15,
-        ticks = 15,
-        tickDuration = 1
+        ticks = 10,
+        tickDuration = 1.5
     })
     self.idolOfYoggSaron = TRB.Classes.SpellBase:New({
         id = 373276,

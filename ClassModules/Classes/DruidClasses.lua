@@ -208,7 +208,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
     self.astralCommunion = TRB.Classes.SpellBase:New({
         id = 450598,
         isTalent = true,
-        resourceMod = 20
+        resourceMod = 25
     })
     self.touchTheCosmos_starsurge = TRB.Classes.SpellBase:New({
         id = 450360

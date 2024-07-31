@@ -214,8 +214,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         id = 444661,
         buffId = 444661,
         talentId = 442290,
-        isTalent = true,
-        maxStacks = 6
+        isTalent = true
     })
     self.glaiveFlurry = TRB.Classes.SpellThreshold:New({
         id = 442435
@@ -334,8 +333,7 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
         id = 444661,
         buffId = 444661,
         talentId = 442290,
-        isTalent = true,
-        maxStacks = 6
+        isTalent = true
     })
     self.glaiveFlurry = TRB.Classes.SpellThreshold:New({
         id = 442435
