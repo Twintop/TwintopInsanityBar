@@ -8,6 +8,347 @@ end
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Priest = TRB.Classes.Priest or {}
 
+---@alias shadowfiendType
+---| '"Shadowfiend"' # Shadowfiend
+---| '"Mindbender"' # Mindbender
+---| '"Voidwraith"' # Voidwraith
+
+---@class TRB.Classes.Priest.ShadowfiendEntry : TRB.Classes.SpellBase
+---@field public guid string # ID of the spawned Shadowfiend, Mindbender, or Voidwraith
+---@field public totemId number # Totem that represents this spawn
+---@field public type shadowfiendType? # Type of spawn
+---@field public startTime number? # Timestamp the spawn started
+---@field public duration number # Duration of the spawn
+---@field public remaining number # Time remaining on the spawn
+---@field public swingTime number? # Timestamp of last swing
+---@field public remainingSwings number # Number of swings remaining before despawn
+---@field public remainingGcds number # Number of GCDs remaining before despawn
+---@field public remainingTime number # Time remaining before despawn
+---@field public resourceRaw number # Amount of Mana or Insanity to be generated before despawn, before modifiers
+---@field public resourceFinal number # Amount of Mana or Insanity to be generated before despawn, after modifiers
+---@field private shadowfiend TRB.Classes.SpellBase # Shadowfiend spell
+---@field private mindbender TRB.Classes.SpellBase? # Mindbender spell
+---@field private voidwraith TRB.Classes.SpellBase? # Voidwraith spell
+---@field private activeSpell TRB.Classes.SpellBase? # Spell of the active spawn
+---@field private resourceCalculationFunction function # Function to call for resource gain calculations to get the "final" values
+---@field private settings table # Shadowfiend settings
+TRB.Classes.Priest.ShadowfiendEntry = {}
+TRB.Classes.Priest.ShadowfiendEntry.__index = TRB.Classes.Priest.ShadowfiendEntry
+
+---Creates a new ShadowfiendEntry object
+---@param totemId number # Totem that represents this spawn
+---@param resourceCalculationFunction function # Function to call for resource gain calculations to get the "final" values
+---@param settings table # Shadowfiend settings
+---@param shadowfiend TRB.Classes.SpellBase # Shadowfiend spell
+---@param mindbender TRB.Classes.SpellBase? # Mindbender spell
+---@param voidwraith TRB.Classes.SpellBase? # Voidwraith spell
+---@return TRB.Classes.Priest.ShadowfiendEntry
+function TRB.Classes.Priest.ShadowfiendEntry:New(totemId, resourceCalculationFunction, settings, shadowfiend, mindbender, voidwraith)
+---@diagnostic disable-next-line: missing-fields
+    local self = {} --[[@as TRB.Classes.Priest.ShadowfiendEntry]]
+    self = setmetatable(self, TRB.Classes.Priest.ShadowfiendEntry)
+
+    self.totemId = totemId
+    self.resourceCalculationFunction = resourceCalculationFunction
+    self.settings = settings
+    self.shadowfiend = shadowfiend
+    self.mindbender = mindbender
+    self.voidwraith = voidwraith
+
+    self:Reset()
+
+    return self
+end
+
+---Resets the Shadowfiend snapshot to default/empty values
+function TRB.Classes.Priest.ShadowfiendEntry:Reset()
+    self.guid = nil
+    self.startTime = nil
+    self.duration = 0
+    self.remaining = 0
+    self.swingTime = nil
+    self.remainingGcds = 0
+    self.remainingSwings = 0
+    self.remainingTime = 0
+    self.resourceRaw = 0
+    self.resourceFinal = 0
+    self.activeSpell = nil
+end
+
+---Activates the entry with the guid provided and updates with initial values
+---@param guid string # Guid of the spawn
+---@param currentTime number # Current timestamp
+function TRB.Classes.Priest.ShadowfiendEntry:Activate(guid, currentTime)
+    self.guid = guid
+    self.swingTime = currentTime
+    self:Update()
+end
+
+---Gets Shadowfiend values based on current state of the spawn
+---@return number # Time remaining on this spawn
+---@return integer # Swings remaining
+---@return integer # GCDs remaining
+---@return number # Time until next melee swing
+---@return number # Swing speed
+function TRB.Classes.Priest.ShadowfiendEntry:GetShadowfiendValues()
+	local currentTime = GetTime()
+    local swingSpeed = 1.5 / (1 + (TRB.Data.snapshotData.attributes.haste / 100))
+	local gcd = swingSpeed
+	local swingsRemaining = 0
+	local gcdsRemaining = 0
+
+	if swingSpeed > 1.5 then
+		swingSpeed = 1.5
+	end
+
+	local timeToNextSwing = swingSpeed - (currentTime - self.swingTime)
+    local timeRemaining = self.startTime + self.duration - currentTime
+
+	if timeToNextSwing < 0 then
+		timeToNextSwing = 0
+	elseif timeToNextSwing > 1.5 then
+		timeToNextSwing = 1.5
+	end
+
+	swingsRemaining = math.ceil((self.remaining - timeToNextSwing) / swingSpeed)
+
+	gcd = swingSpeed
+	if gcd < 0.75 then
+		gcd = 0.75
+	end
+
+	if self.remaining > (gcd * swingsRemaining) then
+		gcdsRemaining = math.ceil(((gcd * swingsRemaining) - timeToNextSwing) / swingSpeed)
+	else
+		gcdsRemaining = math.ceil((timeRemaining - timeToNextSwing) / swingSpeed)
+	end
+
+	return timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed
+end
+
+function TRB.Classes.Priest.ShadowfiendEntry:Update()
+    local haveTotem, name, startTime, duration, _ = GetTotemInfo(self.totemId)
+
+    if haveTotem then
+        if name == self.shadowfiend.name then
+            self.type = "Shadowfiend"
+            self.activeSpell = self.shadowfiend
+        elseif name == self.mindbender.name then
+            self.type = "Mindbender"
+            self.activeSpell = self.mindbender
+        elseif name == self.voidwraith.name then
+            self.type = "Voidwraith"
+            self.activeSpell = self.voidwraith
+        else -- Not actually a Shadowfiend spawn
+            if self.guid ~= nil then
+                self:Reset()
+            end
+            return
+        end
+    else
+        if self.guid ~= nil then
+            self:Reset()
+        end
+        return
+    end
+
+	local specId = GetSpecialization()
+	local currentTime = GetTime()
+
+    self.startTime = startTime
+    self.duration = duration
+    self.remaining = currentTime - startTime + duration
+
+    local timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = self:GetShadowfiendValues()
+    self.remainingTime = timeRemaining
+    self.remainingSwings = swingsRemaining
+    self.remainingGcds = gcdsRemaining
+
+    local countValue = 0
+
+    if self.settings.mode == "swing" then
+        if self.remainingSwings > self.settings.swingsMax then
+            countValue = self.settings.swingsMax
+        else
+            countValue = self.remainingSwings
+        end
+    elseif self.settings.mode == "time" then
+        if self.remainingTime > self.settings.timeMax then
+            countValue = math.ceil((self.settings.timeMax - timeToNextSwing) / swingSpeed)
+        else
+            countValue = math.ceil((self.remainingTime - timeToNextSwing) / swingSpeed)
+        end
+    else --assume GCD
+        if self.remainingGcds > self.settings.gcdsMax then
+            countValue = self.settings.gcdsMax
+        else
+            countValue = self.remainingGcds
+        end
+    end
+
+    if specId == 1 then
+        self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercent * TRB.Data.character.maxResource
+        self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw, false)
+    elseif specId == 2 then
+        self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercent * TRB.Data.character.maxResource
+        self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw, false)
+    elseif specId == 3 then
+        self.resourceRaw = countValue * self.activeSpell.resource
+        self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw)
+    end
+end
+
+
+---@class TRB.Classes.Priest.Shadowfiend : TRB.Classes.Snapshot
+---@field public spawns { [integer]: TRB.Classes.Priest.ShadowfiendEntry } # Shadowfiend spawns by TotemId key
+---@field public resourceRaw number # Total amount of Mana or Insanity to be generated before all despawn, before modifiers
+---@field public resourceFinal number # Total amount of Mana or Insanity to be generated before all despawn, after modifiers
+---@field public remainingSwings number # Maximum number of swings remaining before all despawn
+---@field public remainingGcds number # Maximum number of GCDs remaining before all despawn
+---@field public remainingTime number # Maximum time remaining before all despawn
+---@field public shadowfiend TRB.Classes.SpellBase # Shadowfiend spell
+---@field public mindbender TRB.Classes.SpellBase? # Mindbender spell
+---@field public voidwraith TRB.Classes.SpellBase? # Voidwraith spell
+---@field private settings table # Specialization specific settings
+---@field private resourceCalculationFunction function # Function to call for resource gain calculations to get the "final" values
+---@field private talents TRB.Classes.Talents # Talents list
+TRB.Classes.Priest.Shadowfiend = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Priest.Shadowfiend.__index = TRB.Classes.Priest.Shadowfiend
+
+---Creates a new Shadowfiend object
+---@param settings table # Specialization specific settings
+---@param resourceCalculationFunction function # Function to call for resource gain calculations to get the "final" values
+---@param talents TRB.Classes.Talents # Talents list
+---@param shadowfiend TRB.Classes.SpellBase # Shadowfiend spell
+---@param mindbender TRB.Classes.SpellBase? # Mindbender spell
+---@param voidwraith TRB.Classes.SpellBase? # Voidwraith spell
+---@return TRB.Classes.Priest.Shadowfiend
+function TRB.Classes.Priest.Shadowfiend:New(settings, talents, resourceCalculationFunction, shadowfiend, mindbender, voidwraith)
+---@diagnostic disable-next-line: missing-fields
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    self = setmetatable(snapshot:New(shadowfiend), {__index = TRB.Classes.Priest.Shadowfiend})
+
+    self.settings = settings
+    self.resourceCalculationFunction = resourceCalculationFunction
+    self.talents = talents
+    self.shadowfiend = shadowfiend
+    self.mindbender = mindbender
+    self.voidwraith = voidwraith
+    self.spawns = {}
+
+    for x = 1, 5 do
+        self.spawns[x] = TRB.Classes.Priest.ShadowfiendEntry:New(x, resourceCalculationFunction, settings, shadowfiend, mindbender, voidwraith)
+    end
+
+    self.resourceRaw = 0
+    self.resourceFinal = 0
+
+    return self
+end
+
+function TRB.Classes.Priest.Shadowfiend:LogSwingTime(guid, currentTime)
+    for x = 1, #self.spawns do
+        if self.spawns[x].guid == guid then
+            self.spawns[x].swingTime = currentTime
+            return
+        end
+    end
+end
+
+---Updates all values of all Shadowfiend spawns
+function TRB.Classes.Priest.Shadowfiend:Update()
+    if self.settings.enabled then
+        local resourceRaw = 0
+        local resourceFinal = 0
+        local remainingSwings = 0
+        local remainingGcds = 0
+        local remainingTime = 0
+        
+        for x = 1, #self.spawns do
+            if self.spawns[x].guid ~= nil then -- Only update if we had a spawn tracked
+                self.spawns[x]:Update()
+                if self.spawns[x].guid ~= nil then -- Only update max values if we still have a spawn after update
+                    resourceRaw = resourceRaw + self.spawns[x].resourceRaw
+                    resourceFinal = resourceFinal + self.spawns[x].resourceFinal
+                    remainingSwings = math.max(remainingSwings, self.spawns[x].remainingSwings)
+                    remainingGcds = math.max(remainingGcds, self.spawns[x].remainingGcds)
+                    remainingTime = math.max(remainingTime, self.spawns[x].remainingTime)
+                end
+            end
+        end
+
+        self.resourceRaw = resourceRaw
+        self.resourceFinal = resourceFinal
+        self.remainingSwings = remainingSwings
+        self.remainingGcds = remainingGcds
+        self.remainingTime = remainingTime
+
+        self.cooldown:Refresh(true)
+    end
+end
+
+---Is there currently a Shadowfiend, Mindbender, or Voidwraith spawned?
+---@return boolean
+function TRB.Classes.Priest.Shadowfiend:IsAnyActive()
+    for x = 1, #self.spawns do
+        if self.spawns[x].guid ~= nil then
+            return true
+        end
+    end
+    return false
+end
+
+---Gets a count of the currently active spawns
+---@return integer # Count of currently active spawns
+function TRB.Classes.Priest.Shadowfiend:TotalActive()
+    local count = 0
+    for x = 1, #self.spawns do
+        if self.spawns[x].guid ~= nil then
+            count = count + 1
+        end
+    end
+    return count
+end
+
+---Gets the theoretical maximum values for the talented spawn type
+---@return number # Time remaining on this spawn
+---@return integer # Swings remaining
+---@return integer # GCDs remaining
+---@return number # Time until next melee swing
+---@return number # Swing speed
+function TRB.Classes.Priest.Shadowfiend:GetMaximumValues()
+    local specId = GetSpecialization()
+    local spell = nil
+
+    if specId == 1 or specId == 3 then
+        if self.talents:IsTalentActive(self.voidwraith) then
+            spell = self.voidwraith
+        elseif self.talents:IsTalentActive(self.mindbender) then
+            spell = self.mindbender
+        else
+            spell = self.shadowfiend
+        end
+    elseif specId == 2 then
+        if self.talents:IsTalentActive(self.shadowfiend) then
+            spell = self.shadowfiend
+        end
+    end
+    
+    if spell == nil then
+        return 0, 0, 0, 0, 0
+    end
+
+---@diagnostic disable-next-line: missing-fields
+    return TRB.Classes.Priest.ShadowfiendEntry.GetShadowfiendValues({
+        swingTime = GetTime(),
+        remaining = spell.duration,
+        duration = spell.duration,
+        startTime = GetTime()
+    })
+end
+
+
 ---@class TRB.Classes.Priest.HolyWordSpell : TRB.Classes.SpellBase
 ---@field public holyWordKey string? # Holy Word spell key that has its cooldown reduced on cast.
 ---@field public holyWordReduction number? # How much the associated Holy Word will have its cooldown reduced.
@@ -109,7 +450,10 @@ end
 ---@field public rapture TRB.Classes.SpellBase
 ---@field public shadowCovenant TRB.Classes.SpellBase
 ---@field public purgeTheWicked TRB.Classes.SpellBase
----@field public mindbender TRB.Classes.SpellBase
+---@field public entropicRift TRB.Classes.SpellBase
+---@field public depthOfShadows TRB.Classes.SpellBase
+---@field public mindbender TRB.Classes.SpellThreshold
+---@field public voidwraith TRB.Classes.SpellThreshold
 TRB.Classes.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.DisciplineSpells.__index = TRB.Classes.Priest.DisciplineSpells
 
@@ -182,15 +526,24 @@ function TRB.Classes.Priest.DisciplineSpells:New()
     })
 
     -- Voidweaver
-    self.voidwraith = TRB.Classes.SpellBase:New({
+    self.entropicRift = TRB.Classes.SpellBase:New({
+        id = 447444,
+        isTalent = true,
+        duration = 8
+    })
+    self.depthOfShadows = TRB.Classes.SpellBase:New({
+        id = 451308,
+        isTalent = true
+    })
+    self.voidwraith = TRB.Classes.SpellThreshold:New({
         id = 451235,
         talentId = 451234,
+        settingKey = "voidwraith",
         energizeId = 262485,
         primaryResourceType = Enum.PowerType.Mana,
-        resource = 2,
         isTalent = true,
         duration = 15,
-        resourcePercent = 0.002
+        resourcePercent = 0.005
     })
     
     return self
@@ -406,8 +759,10 @@ end
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
 ---@field public resonantEnergy TRB.Classes.SpellBase
+---@field public entropicRift TRB.Classes.SpellBase
 ---@field public voidBlast TRB.Classes.SpellBase
 ---@field public voidInfusion TRB.Classes.SpellBase
+---@field public depthOfShadows TRB.Classes.SpellBase
 ---@field public voidwraith TRB.Classes.SpellBase
 ---@field public devouringPlague TRB.Classes.SpellThreshold
 ---@field public devouringPlague2 TRB.Classes.SpellThreshold
@@ -681,6 +1036,10 @@ function TRB.Classes.Priest.ShadowSpells:New()
     self.voidInfusion = TRB.Classes.SpellBase:New({
         id = 450612,
         resourceMod = 2,
+        isTalent = true
+    })
+    self.depthOfShadows = TRB.Classes.SpellBase:New({
+        id = 451308,
         isTalent = true
     })
     self.voidwraith = TRB.Classes.SpellBase:New({

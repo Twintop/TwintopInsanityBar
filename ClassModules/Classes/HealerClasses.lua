@@ -173,11 +173,13 @@ end
 
 ---@class TRB.Classes.Healer.SymbolOfHope : TRB.Classes.Healer.HealerRegenBase
 ---@field public buff TRB.Classes.Healer.SymbolOfHopeBuff
+---@field public calculateManaGainFunction function # Function that will calculate mana gain
 TRB.Classes.Healer.SymbolOfHope = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
 TRB.Classes.Healer.SymbolOfHope.__index = TRB.Classes.Healer.SymbolOfHope
 
 ---Creates a new SymbolOfHope object
 ---@param spell table # Spell we are snapshotting, in this case SymbolOfHope
+---@param calculateManaGainFunction function # Function that will calculate mana gain
 ---@return TRB.Classes.Healer.SymbolOfHope
 function TRB.Classes.Healer.SymbolOfHope:New(spell, calculateManaGainFunction)
     ---@type TRB.Classes.BuffCustomProperty[]
@@ -441,6 +443,7 @@ TRB.Classes.Healer.ChanneledManaPotion.__index = TRB.Classes.Healer.ChanneledMan
 
 ---Creates a new ChanneledManaPotion object
 ---@param spell table # Spell we are snapshotting, in this case ChanneledManaPotion
+---@param calculateManaGainFunction function # Function that will calculate mana gain
 ---@return TRB.Classes.Healer.ChanneledManaPotion
 function TRB.Classes.Healer.ChanneledManaPotion:New(spell, calculateManaGainFunction)
     ---@type TRB.Classes.BuffCustomProperty[]

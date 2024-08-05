@@ -248,14 +248,16 @@ end
 ---@param thresholdId integer # Threshold to be updated
 ---@param castingBarValue number # Current value of the casting bar.
 ---@param passiveValue number # The total mana regen of all previous shared passive regen healer spells.
+---@param overrideMana number? # Override amount of mana. Used mostly when the snapshot isn't HealerRegenBase, like in the case of Shadowfiend for Priests
 ---@return number # The total mana regen of all shared passive regen healer spells so far.
-function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshot, frame, thresholdId, castingBarValue, passiveValue)
+function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshot, frame, thresholdId, castingBarValue, passiveValue, overrideMana)
 	if frame == nil or frame.thresholds == nil then
 		return passiveValue
 	end
 
-	if snapshot.mana > 0 then
-		passiveValue = passiveValue + snapshot.mana
+	local mana = overrideMana or snapshot.mana
+	if mana > 0 then
+		passiveValue = passiveValue + mana
 
 		if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 			TRB.Functions.Threshold:RepositionThreshold(settings, frame.thresholds[thresholdId], frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)

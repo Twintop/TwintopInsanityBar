@@ -284,6 +284,10 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				enabled = true,
 				cooldown = false
 			},
+			voidwraith = {
+				enabled = true,
+				cooldown = false
+			},
 			cannibalize = {
 				enabled = false,
 				cooldown = false
@@ -2106,6 +2110,8 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 	f:SetChecked(spec.shadowfiend.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.shadowfiend.enabled = self:GetChecked()
+		spec.mindbender.enabled = self:GetChecked()
+		spec.voidwraith.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

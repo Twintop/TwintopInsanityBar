@@ -3233,10 +3233,29 @@ function TRB.Options:PortForwardSettings()
 		TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquakeTargeted = {
 			enabled = TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquake.enabled
 		}
-		
-		TwintopInsanityBarSettings.shaman.elemental.thresholdWidth = nil
-		TwintopInsanityBarSettings.shaman.elemental.earthShockThreshold = nil
-		TwintopInsanityBarSettings.shaman.elemental.thresholdsOverlapBorder = nil
+	end
+
+	-- Mindbender threshold for Discipline
+	if TwintopInsanityBarSettings ~= nil and
+	TwintopInsanityBarSettings.priest ~= nil and
+	TwintopInsanityBarSettings.priest.discipline ~= nil and
+	TwintopInsanityBarSettings.priest.discipline.thresholds ~= nil and
+	TwintopInsanityBarSettings.priest.discipline.thresholds.mindbender == nil then
+		TwintopInsanityBarSettings.priest.discipline.thresholds.mindbender = {
+			enabled = TwintopInsanityBarSettings.priest.discipline.thresholds.shadowfiend
+		}
+	end
+
+	-- Voidwraith threshold for Discipline
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.discipline ~= nil and
+		TwintopInsanityBarSettings.priest.discipline.thresholds ~= nil and
+		TwintopInsanityBarSettings.priest.discipline.thresholds.voidwraith == nil then
+
+		TwintopInsanityBarSettings.priest.discipline.thresholds.voidwraith = {
+			enabled = TwintopInsanityBarSettings.priest.discipline.thresholds.shadowfiend
+		}
 	end
 end
 

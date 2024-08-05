@@ -131,21 +131,8 @@ local function FillSpecializationCache()
 	specCache.discipline.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
 	specCache.discipline.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
-	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.shadowfiend, {
-		guid = nil,
-		totemId = nil,
-		delay = false,
-		onCooldown = false,
-		swingTime = 0,
-		remaining = {
-			swings = 0,
-			gcds = 0,
-			time = 0
-		},
-		resourceRaw = 0,
-		resourceFinal = 0
-	})
+	---@type TRB.Classes.Priest.Shadowfiend
+	specCache.discipline.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Priest.Shadowfiend:New(TRB.Data.settings.priest.discipline.shadowfiend, specCache.discipline.talents, CalculateManaGain, spells.shadowfiend, spells.mindbender, spells.voidwraith)
 	---@type TRB.Classes.Healer.Cannibalize
 	specCache.discipline.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)
 	---@type TRB.Classes.Snapshot
@@ -241,21 +228,8 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
 	---@type TRB.Classes.Healer.ManaTideTotem
 	specCache.holy.snapshotData.snapshots[spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(spells.manaTideTotem)
-	---@type TRB.Classes.Healer.HealerRegenBase
-	specCache.holy.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.shadowfiend, {
-		guid = nil,
-		totemId = nil,
-		delay = false,
-		onCooldown = false,
-		swingTime = 0,
-		remaining = {
-			swings = 0,
-			gcds = 0,
-			time = 0
-		},
-		resourceRaw = 0,
-		resourceFinal = 0
-	})
+	---@type TRB.Classes.Priest.Shadowfiend
+	specCache.holy.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Priest.Shadowfiend:New(TRB.Data.settings.priest.holy.shadowfiend, specCache.holy.talents, CalculateManaGain, spells.shadowfiend, nil, nil)
 	---@type TRB.Classes.Healer.Cannibalize
 	specCache.holy.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)
 	---@type TRB.Classes.Snapshot
@@ -339,21 +313,8 @@ local function FillSpecializationCache()
 	specCache.shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.darkAscension.id] = TRB.Classes.Snapshot:New(spells.darkAscension)
-	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Snapshot:New(spells.shadowfiend, {
-		guid = nil,
-		totemId = nil,
-		delay = false,
-		onCooldown = false,
-		swingTime = 0,
-		remaining = {
-			swings = 0,
-			gcds = 0,
-			time = 0
-		},
-		resourceRaw = 0,
-		resourceFinal = 0
-	})
+	---@type TRB.Classes.Priest.Shadowfiend
+	specCache.shadow.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Priest.Shadowfiend:New(TRB.Data.settings.priest.shadow.mindbender, specCache.shadow.talents, CalculateManaGain, spells.shadowfiend, spells.mindbender, spells.voidwraith)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.devouredDespair.id] = TRB.Classes.Snapshot:New(spells.devouredDespair, {
 		resourceRaw = 0,
@@ -1252,18 +1213,20 @@ local function RefreshLookupData_Discipline()
 	--$potionOfFrozenFocusTime
 	local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
 	local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
+
+	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 	
 	--$sfMana
-	local _sfMana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
+	local _sfMana = shadowfiend.resourceFinal or 0
 	local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
 	--$sfGcds
-	local _sfGcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds
+	local _sfGcds = shadowfiend.remainingGcds
 	local sfGcds = string.format("%.0f", _sfGcds)
 	--$sfSwings
-	local _sfSwings = snapshots[spells.shadowfiend.id].attributes.remaining.swings
+	local _sfSwings = shadowfiend.remainingSwings
 	local sfSwings = string.format("%.0f", _sfSwings)
 	--$sfTime
-	local _sfTime = snapshots[spells.shadowfiend.id].attributes.remaining.time
+	local _sfTime = shadowfiend.remainingTime
 	local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)
 
 	--$passive
@@ -1389,10 +1352,10 @@ local function RefreshLookupData_Discipline()
 	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
 	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
-	Global_TwintopResourceBar.shadowfiend.mana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
-	Global_TwintopResourceBar.shadowfiend.gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0
-	Global_TwintopResourceBar.shadowfiend.swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0
-	Global_TwintopResourceBar.shadowfiend.time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
+	Global_TwintopResourceBar.shadowfiend.mana = shadowfiend.resourceFinal or 0
+	Global_TwintopResourceBar.shadowfiend.gcds = shadowfiend.remainingGcds or 0
+	Global_TwintopResourceBar.shadowfiend.swings = shadowfiend.remainingSwings or 0
+	Global_TwintopResourceBar.shadowfiend.time = shadowfiend.remainingTime or 0
 
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
 	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
@@ -1614,18 +1577,20 @@ local function RefreshLookupData_Holy()
 	--$potionOfFrozenFocusTime
 	local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
 	local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
+
+	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 	
 	--$sfMana
-	local _sfMana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
+	local _sfMana = shadowfiend.resourceFinal or 0
 	local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
 	--$sfGcds
-	local _sfGcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds
+	local _sfGcds = shadowfiend.remainingGcds
 	local sfGcds = string.format("%.0f", _sfGcds)
 	--$sfSwings
-	local _sfSwings = snapshots[spells.shadowfiend.id].attributes.remaining.swings
+	local _sfSwings = shadowfiend.remainingSwings
 	local sfSwings = string.format("%.0f", _sfSwings)
 	--$sfTime
-	local _sfTime = snapshots[spells.shadowfiend.id].attributes.remaining.time
+	local _sfTime = shadowfiend.remainingTime
 	local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)
 
 	--$passive
@@ -1744,10 +1709,10 @@ local function RefreshLookupData_Holy()
 	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
 	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
-	Global_TwintopResourceBar.shadowfiend.mana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
-	Global_TwintopResourceBar.shadowfiend.gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0
-	Global_TwintopResourceBar.shadowfiend.swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0
-	Global_TwintopResourceBar.shadowfiend.time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
+	Global_TwintopResourceBar.shadowfiend.mana = shadowfiend.resourceFinal or 0
+	Global_TwintopResourceBar.shadowfiend.gcds = shadowfiend.remainingGcds or 0
+	Global_TwintopResourceBar.shadowfiend.swings = shadowfiend.remainingSwings or 0
+	Global_TwintopResourceBar.shadowfiend.time = shadowfiend.remainingTime or 0
 
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
 	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
@@ -1928,17 +1893,20 @@ local function RefreshLookupData_Shadow()
 	--$casting
 	local _castingInsanity = snapshotData.casting.resourceFinal
 	local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
+	
+	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+	
 	--$mbInsanity
-	local _mbInsanity = snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal
+	local _mbInsanity = shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal
 	local mbInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_mbInsanity, resourcePrecision, "floor"))
 	--$mbGcds
-	local _mbGcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds
+	local _mbGcds = shadowfiend.remainingGcds
 	local mbGcds = string.format("%.0f", _mbGcds)
 	--$mbSwings
-	local _mbSwings = snapshots[spells.shadowfiend.id].attributes.remaining.swings
+	local _mbSwings = shadowfiend.remainingSwings
 	local mbSwings = string.format("%.0f", _mbSwings)
 	--$mbTime
-	local _mbTime = snapshots[spells.shadowfiend.id].attributes.remaining.time
+	local _mbTime = shadowfiend.remainingTime
 	local mbTime = TRB.Functions.BarText:TimerPrecision(_mbTime)
 	--$loiInsanity
 	local _loiInsanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal
@@ -2116,15 +2084,15 @@ local function RefreshLookupData_Shadow()
 
 	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
 	Global_TwintopResourceBar.shadowfiend.insanity = _mbInsanity or 0
-	Global_TwintopResourceBar.shadowfiend.gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0
-	Global_TwintopResourceBar.shadowfiend.swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0
-	Global_TwintopResourceBar.shadowfiend.time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
+	Global_TwintopResourceBar.shadowfiend.gcds = shadowfiend.remainingGcds or 0
+	Global_TwintopResourceBar.shadowfiend.swings = shadowfiend.remainingSwings or 0
+	Global_TwintopResourceBar.shadowfiend.time = shadowfiend.remainingTime or 0
 
 	Global_TwintopResourceBar.mindbender = Global_TwintopResourceBar.mindbender or {}
 	Global_TwintopResourceBar.mindbender.insanity = _mbInsanity or 0
-	Global_TwintopResourceBar.mindbender.gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0
-	Global_TwintopResourceBar.mindbender.swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0
-	Global_TwintopResourceBar.mindbender.time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
+	Global_TwintopResourceBar.mindbender.gcds = shadowfiend.remainingGcds or 0
+	Global_TwintopResourceBar.mindbender.swings = shadowfiend.remainingSwings or 0
+	Global_TwintopResourceBar.mindbender.time = shadowfiend.remainingTime or 0
 
 	Global_TwintopResourceBar.eternalCallToTheVoid = Global_TwintopResourceBar.eternalCallToTheVoid or {}
 	Global_TwintopResourceBar.eternalCallToTheVoid.insanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal or 0
@@ -2437,7 +2405,7 @@ local function CastingSpell()
 	end
 end
 
-local function GetMaximumShadowfiendResults()
+local function GetMaximumShadowfiendResults_()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
 	local specId = GetSpecialization()
 	if specId ~= 1 and specId ~= 2 and specId ~= 3 then
@@ -2450,14 +2418,28 @@ local function GetMaximumShadowfiendResults()
 	local swingTime = shadowfiend.attributes.swingTime
 
 	local currentTime = GetTime()
-	local haveTotem, name, startTime, duration, icon
+	local haveTotem, name, startTime, duration
+	local cStartTime = nil
+	local cDuration = 0
+	local cHaveTotem = false
 	
 	for i = 1, MAX_TOTEMS do
 		haveTotem, name, startTime, duration, _ = GetTotemInfo(i) --TODO: Update this for Shadow in TWW to look for the highest remaining Shadowfiend/Mindbender spawn
-		if haveTotem and (specId ~= 2 or (specId == 2 and name ~= spells.lightwell.name)) then
-			break
+		if haveTotem then
+			if (specId == 2 and name ~= spells.lightwell.name) or
+				((specId == 1 or specId == 3) and name ~= spells.entropicRift.name) then
+				if startTime+duration > cStartTime+cDuration then -- This lasts longer than the current high watermark
+					cHaveTotem = true
+					cStartTime = startTime
+					cDuration = duration
+				end
+			end
 		end
 	end
+
+	haveTotem = cHaveTotem
+	startTime = cStartTime
+	duration = cDuration
 
 	local timeRemaining = startTime+duration-currentTime
 
@@ -2510,7 +2492,7 @@ end
 
 ---Update a specific Shadowfiend's values
 ---@param shadowfiend TRB.Classes.Snapshot|TRB.Classes.Healer.HealerRegenBase
-local function UpdateSpecificShadowfiendValues(shadowfiend)
+local function UpdateSpecificShadowfiendValues_(shadowfiend)
 	local specId = GetSpecialization()
 	local currentTime = GetTime()
 	local settings
@@ -2538,7 +2520,7 @@ local function UpdateSpecificShadowfiendValues(shadowfiend)
 		if settings.enabled and haveTotem and timeRemainingCalc > 0 then
 			shadowfiend.buff.isActive = true
 			if settings.enabled then
-				local _, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
+				local _, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults_()
 				shadowfiend.attributes.remaining.time = timeRemaining
 				shadowfiend.attributes.remaining.swings = swingsRemaining
 				shadowfiend.attributes.remaining.gcds = gcdsRemaining
@@ -2607,14 +2589,14 @@ local function UpdateSpecificShadowfiendValues(shadowfiend)
 	shadowfiend.cooldown:Refresh(true)
 end
 
-local function UpdateShadowfiendValues()
+local function UpdateShadowfiendValues_()
 	local specId = GetSpecialization()
 	local _
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local shadowfiend = snapshotData.snapshots[spells.shadowfiend.id]
 
-	UpdateSpecificShadowfiendValues(shadowfiend)
+	UpdateSpecificShadowfiendValues_(shadowfiend)
 	
 	if specId == 3 then
 		local devouredDespair = snapshotData.snapshots[spells.devouredDespair.id]
@@ -2717,7 +2699,12 @@ end
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 	--TODO #339: Comment out to reduce load while testing
-	UpdateShadowfiendValues()
+	--UpdateShadowfiendValues()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	---@type table<integer, TRB.Classes.Snapshot>
+	local snapshots = TRB.Data.snapshotData.snapshots
+	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+	shadowfiend:Update()
 end
 
 local function UpdateSnapshot_Healers()
@@ -2812,6 +2799,11 @@ local function UpdateSnapshot_Shadow()
 	
 	--TODO #339: Comment out to reduce load while testing
 	snapshots[spells.mindBlast.id].cooldown:Refresh()
+
+	local devouredDespair = snapshots[spells.devouredDespair.id]
+	devouredDespair.buff:UpdateTicks()
+	devouredDespair.attributes.resourceRaw = devouredDespair.buff.resource
+	devouredDespair.attributes.resourceFinal = CalculateResourceGain(devouredDespair.attributes.resourceRaw)
 end
 
 local function UpdateResourceBar()
@@ -2896,8 +2888,8 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if (talents:IsTalentActive(spells.shadowfiend) or talents:IsTalentActive(spells.mindbender)) and specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+				if (talents:IsTalentActive(spells.shadowfiend) or talents:IsTalentActive(spells.mindbender) or talents:IsTalentActive(spells.voidwraith)) and specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
 				else
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
 				end
@@ -2978,14 +2970,26 @@ local function UpdateResourceBar()
 							else
 								showThreshold = false
 							end
-						elseif spell.id == spells.shadowfiend.id or spell.id == spells.mindbender.id then
-							snapshot = snapshots[spells.shadowfiend.id]
-							if talents:IsTalentActive(spell) and not snapshot.buff.isActive then
-								if  (spell.id == spells.shadowfiend.id and not talents:IsTalentActive(spells.mindbender)) or
-									(spell.id == spells.mindbender.id) then
+						elseif spell.id == spells.shadowfiend.id or spell.id == spells.mindbender.id or spell.id == spells.voidwraith.id then
+							snapshot = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+							if talents:IsTalentActive(spell) then--and not snapshot.buff.isActive then
+								local mbActive = talents:IsTalentActive(spells.mindbender)
+								local vwActive = talents:IsTalentActive(spells.voidwraith)
+								if  (spell.id == spells.shadowfiend.id and not mbActive and not vwActive) or
+									(spell.id == spells.mindbender.id and mbActive and not vwActive) or
+									(spell.id == spells.voidwraith.id and vwActive) then
 									if specSettings.thresholds.shadowfiend.enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
-										local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
-										local shadowfiendMana = swingsRemaining * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
+---@diagnostic disable-next-line: param-type-mismatch
+										local _, swingsRemaining, _, _, _ = snapshot:GetMaximumValues()
+										local shadowfiendMana
+
+										if spell.id == spells.voidwraith.id and vwActive then
+											shadowfiendMana = swingsRemaining * snapshot.voidwraith.attributes.resourcePercent * TRB.Data.character.maxResource
+										elseif spell.id == spells.mindbender.id and mbActive then
+											shadowfiendMana = swingsRemaining * snapshot.mindbender.attributes.resourcePercent * TRB.Data.character.maxResource
+										else
+											shadowfiendMana = swingsRemaining * snapshot.shadowfiend.attributes.resourcePercent * TRB.Data.character.maxResource
+										end
 
 										resourceAmount = castingBarValue + shadowfiendMana
 										if snapshot.cooldown:IsUnusable() then
@@ -2993,7 +2997,9 @@ local function UpdateResourceBar()
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										end
 				
-										if not haveTotem and shadowfiendMana > 0 and resourceAmount < TRB.Data.character.maxResource then
+										local totalActive = snapshot:TotalActive()
+
+										if (totalActive == 0 or talents:IsTalentActive(spells.depthOfShadows)) and shadowfiendMana > 0 and resourceAmount < TRB.Data.character.maxResource then
 											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 										else
 											showThreshold = false
@@ -3236,7 +3242,7 @@ local function UpdateResourceBar()
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
 				if talents:IsTalentActive(spells.shadowfiend) and specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
 				else
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
 				end
@@ -3318,9 +3324,10 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 						elseif spell.id == spells.shadowfiend.id then
-							snapshot = snapshots[spells.shadowfiend.id]
+							snapshot = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 							if talents:IsTalentActive(spell) and not snapshot.buff.isActive and specSettings.thresholds[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds[spell.settingKey].cooldown) then
-								local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
+---@diagnostic disable-next-line: param-type-mismatch
+								local _, swingsRemaining, _, _, _ = snapshot:GetMaximumValues()
 								local shadowfiendMana = swingsRemaining * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 
 								resourceAmount = castingBarValue + shadowfiendMana
@@ -3329,7 +3336,7 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								end
 		
-								if not haveTotem and shadowfiendMana > 0 and resourceAmount < TRB.Data.character.maxResource then
+								if not snapshot:IsAnyActive() and shadowfiendMana > 0 and resourceAmount < TRB.Data.character.maxResource then
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 								else
 									showThreshold = false
@@ -3606,13 +3613,14 @@ local function UpdateResourceBar()
 					castingBarValue = currentResource
 				end
 
+				local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 				if specSettings.bar.showPassive and
 					(talents:IsTalentActive(spells.auspiciousSpirits) or
-					(snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 or
+					(shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 or
 					snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0) then
-					passiveValue = ((CalculateResourceGain(spells.auspiciousSpirits.resource) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
-					if (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
+					passiveValue = ((CalculateResourceGain(spells.auspiciousSpirits.resource) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
+					if (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 						TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 						TRB.Frames.passiveFrame.thresholds[1]:Show()
 					else
@@ -3867,16 +3875,14 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 					cannibalize.buff:Initialize(entry.type)
 				elseif entry.type == "SPELL_ENERGIZE" and entry.spellId == snapshots[spells.shadowfiend.id].spell.energizeId then
-					snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
-					snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
+					local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+					shadowfiend:LogSwingTime(entry.sourceGuid, currentTime)
 					triggerUpdate = true
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 				if entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.mindbender.energizeId or entry.spellId == spells.shadowfiend.energizeId or entry.spellId == spells.voidwraith.energizeId) then
-					if entry.sourceGuid == snapshots[spells.shadowfiend.id].attributes.guid then
-						snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
-						snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
-					end
+					local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+					shadowfiend:LogSwingTime(entry.sourceGuid, currentTime)
 					triggerUpdate = true
 				end
 			end
@@ -4040,29 +4046,27 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			elseif 	entry.type == "SPELL_SUMMON" and
 					((specId == 3 and settings.mindbender.enabled) or (specId ~= 3 and settings.shadowfiend.enabled))
 					and (entry.spellId == spells.shadowfiend.id or (specId ~= 2 and (entry.spellId == spells.mindbender.id or entry.spellId == spells.voidwraith.id))) then
-				local currentSf = snapshots[spells.shadowfiend.id].attributes
-				currentSf.guid = entry.destinationGuid
-				currentSf.delay = true
+				local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 
-				--[[TBD if this delay is actually needed
 				C_Timer.After(0, function()
-					C_Timer.After(0.1, function()]]
+					C_Timer.After(0.1, function()
 						local haveTotem, name
-						for i = 1, MAX_TOTEMS do
-							haveTotem, name, _, _, _ = GetTotemInfo(i)
-							if haveTotem and (specId ~= 2 or (specId == 2 and name ~= spells.lightwell.name)) then
-								currentSf.totemId = i
-								i = MAX_TOTEMS
-								break
+						for x = 1, #shadowfiend.spawns do
+							if shadowfiend.spawns[x].guid == nil then
+								haveTotem, name, _, _, _ = GetTotemInfo(x)
+								if haveTotem then
+									if specId == 2 and name ~= spells.lightwell.name then
+										shadowfiend.spawns[x]:Activate(entry.sourceGuid, currentTime)
+										break
+									elseif (specId == 1 or specId == 3) and name ~= spells.entropicRift.name then
+										shadowfiend.spawns[x]:Activate(entry.sourceGuid, currentTime)
+										break
+									end
+								end
 							end
 						end
-
-						currentSf.delay = false
-						if currentSf.totemId == nil then
-							currentSf.totemId = 5
-						end
-					--[[end)
-				end)]]
+					end)
+				end)
 			end
 		elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (entry.spellId == spells.idolOfCthun_Tendril.tickId or entry.spellId == spells.idolOfCthun_Lasher.tickId) and CheckVoidTendrilExists(entry.sourceGuid) then
 			if entry.spellId == spells.idolOfCthun_Lasher.tickId and entry.type == "SPELL_DAMAGE" then
@@ -4783,19 +4787,23 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$sfMana" then
-			if snapshots[spells.shadowfiend.id].attributes.resourceRaw > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if shadowfiend.resourceRaw > 0 then
 				valid = true
 			end
 		elseif var == "$sfGcds" then
-			if snapshots[spells.shadowfiend.id].attributes.remaining.gcds > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if shadowfiend.remainingGcds > 0 then
 				valid = true
 			end
 		elseif var == "$sfSwings" then
-			if snapshots[spells.shadowfiend.id].attributes.remaining.swings > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if shadowfiend.remainingSwings > 0 then
 				valid = true
 			end
 		elseif var == "$sfTime" then
-			if snapshots[spells.shadowfiend.id].attributes.remaining.time > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if shadowfiend.remainingTime > 0 then
 				valid = true
 			end
 		end
@@ -4915,9 +4923,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$resourceMax" or var == "$insanityMax" then
 			valid = true
 		elseif var == "$resourceTotal" or var == "$insanityTotal" then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 			if snapshotData.attributes.resource > 0 or
 				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0) or
-				(((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0) then
+				(((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + shadowfiend.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0) then
 				valid = true
 			end
 		elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
@@ -4933,8 +4942,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				return true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 			if snapshotData.attributes.resource > 0 or
-				((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
+				((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + shadowfiend.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
 				valid = true
 			end
 		elseif var == "$casting" then
@@ -4942,23 +4952,28 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$passive" then
-			if ((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if ((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + shadowfiend.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
 				valid = true
 			end
 		elseif var == "$mbInsanity" then
-			if snapshots[spells.shadowfiend.id].attributes.resourceRaw > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if shadowfiend.resourceRaw > 0 then
 				valid = true
 			end
 		elseif var == "$mbGcds" then
-			if snapshots[spells.shadowfiend.id].attributes.remaining.gcds > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if shadowfiend.remainingGcds > 0 then
 				valid = true
 			end
 		elseif var == "$mbSwings" then
-			if snapshots[spells.shadowfiend.id].attributes.remaining.swings > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if shadowfiend.remainingSwings > 0 then
 				valid = true
 			end
 		elseif var == "$mbTime" then
-			if snapshots[spells.shadowfiend.id].attributes.remaining.time > 0 then
+			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+			if shadowfiend.remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$loiInsanity" then
