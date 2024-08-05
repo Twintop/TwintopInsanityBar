@@ -334,7 +334,7 @@ if locale == "ruRU" then
     L["ThresholdOverlapBorderCheckboxTooltip"] = "Если этот флажок установлен, пороговые линии будут охватывать всю высоту столбца и перекрывать границу столбца."
     L["AudioOptionsHeader"] = "Параметры аудио"
     L["BarDisplayTextCustomizationHeader"] = "Настройка текста на панели дисплея"
-    L["IsBarEnabledForSpecTooltip"] = "Включена ли панель ресурсов Twintop для %s %s?"
+    L["IsBarEnabledForSpecTooltip"] = "Включена ли панель ресурсов Twintop для %s?"
     L["ExportSpecialization"] = "Экспортная специализация"
     L["TabBarDisplay"] = "Барный дисплей"
     L["TabFontText"] = "Шрифт и текст"

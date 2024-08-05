@@ -334,7 +334,7 @@ if locale == "koKR" then
     L["ThresholdOverlapBorderCheckboxTooltip"] = "선택하면 임계값 선이 막대의 전체 높이에 걸쳐 막대 테두리와 겹칩니다."
     L["AudioOptionsHeader"] = "오디오 옵션"
     L["BarDisplayTextCustomizationHeader"] = "바 표시 텍스트 사용자 정의"
-    L["IsBarEnabledForSpecTooltip"] = "%s %s에 대해 Twintop의 리소스 표시줄이 활성화되어 있습니까?"
+    L["IsBarEnabledForSpecTooltip"] = "%s 에 대해 Twintop의 리소스 표시줄이 활성화되어 있습니까?"
     L["ExportSpecialization"] = "수출 전문화"
     L["TabBarDisplay"] = "바 디스플레이"
     L["TabFontText"] = "글꼴 및 텍스트"

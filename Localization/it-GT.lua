@@ -334,7 +334,7 @@ if locale == "itIT" then
     L["ThresholdOverlapBorderCheckboxTooltip"] = "Se selezionate, le linee di soglia copriranno l'intera altezza della barra e si sovrapporranno al bordo della barra."
     L["AudioOptionsHeader"] = "Opzioni audio"
     L["BarDisplayTextCustomizationHeader"] = "Personalizzazione del testo della visualizzazione della barra"
-    L["IsBarEnabledForSpecTooltip"] = "La barra delle risorse di Twintop è abilitata per %s %s"
+    L["IsBarEnabledForSpecTooltip"] = "La barra delle risorse di Twintop è abilitata per %s"
     L["ExportSpecialization"] = "Specializzazione nell'esportazione"
     L["TabBarDisplay"] = "Visualizzazione della barra"
     L["TabFontText"] = "Carattere e testo"

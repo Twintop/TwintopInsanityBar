@@ -760,7 +760,7 @@ local function AfflictionConstructOptionsPanel(cache)
 	interfaceSettingsFrame.afflictionDisplayPanel.name = L["WarlockAfflictionFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.afflictionDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["affliction"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.holyDisplayPanel, L["WarlockAfflictionFull"])
+	TRB.Details.addonCategory.specs["affliction"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.afflictionDisplayPanel, L["WarlockAfflictionFull"])
 	
 	parent = interfaceSettingsFrame.afflictionDisplayPanel
 
