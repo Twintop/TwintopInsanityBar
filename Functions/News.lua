@@ -11,6 +11,32 @@ local content = [====[
 
 ---
 
+# 11.0.2.0-beta01 (2024-08-05)
+
+## Druid
+### Balance 
+
+- [#359 - UPDATE (Twintop)] Astral Communion now generates 25 Astral Power.
+
+## Priest
+### Discipline
+
+- [#371 - NEW (Twintop)] Add support for Depth of Shadows -- multiple Shadowfiends/Mindbenders spawned at once. The existing variables that track remaining GCDs, swings, or time will now report back the highest amount between all active spawns. Mana generation will be the total amount over the period selected for all active spawns.
+- [#371 - FIX (Twintop)] Force the Mindbender threshold line to obey the same choice in display as Shadowfiend.
+
+## Shadow
+
+- [#373 - NEW (Twintop)] Add support for Depth of Shadows -- multiple Shadowfiends/Mindbenders spawned at once. The existing variables that track remaining GCDs, swings, or time will now report back the highest amount between all active spawns. Insanity generation will be the total amount over the period selected for all active spawns.
+- [#373 - UPDATE (Twintop)] Mind Spike: Insanity now generates 12 Insanity.
+- [#373 - UPDATE (Twintop)] Idol of C'thun tentacles now deal damage, and generate Insanity, every 1.5 seconds.
+
+## Warlock
+### Affliction
+
+- (FIX (Koroshy)) Fix options menu loading.
+
+---
+
 # 11.0.0.2-release (2024-07-31)
 ## General
 
