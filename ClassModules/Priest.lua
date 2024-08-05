@@ -2777,7 +2777,6 @@ local function UpdateResourceBar()
 									(spell.id == spells.mindbender.id and mbActive and not vwActive) or
 									(spell.id == spells.voidwraith.id and vwActive) then
 									if specSettings.thresholds.shadowfiend.enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
----@diagnostic disable-next-line: param-type-mismatch
 										local _, swingsRemaining, _, _, _ = snapshot:GetMaximumValues()
 										local shadowfiendMana
 
@@ -3124,7 +3123,6 @@ local function UpdateResourceBar()
 						elseif spell.id == spells.shadowfiend.id then
 							snapshot = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 							if talents:IsTalentActive(spell) and not snapshot.buff.isActive and specSettings.thresholds[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds[spell.settingKey].cooldown) then
----@diagnostic disable-next-line: param-type-mismatch
 								local _, swingsRemaining, _, _, _ = snapshot:GetMaximumValues()
 								local shadowfiendMana = swingsRemaining * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 

@@ -289,9 +289,11 @@ function SlashCmdList.TWINTOP(msg)
 		if TRB.Data.barConstructedForSpec == nil then
 			Settings.OpenToCategory(TRB.Details.addonCategory.main.ID)
 		else
-			Settings.OpenToCategory(TRB.Details.addonCategory.main.ID)
-			--This will be supported. Someday. https://github.com/Stanzilla/WoWUIBugs/issues/285
-			--Settings.OpenToCategory(TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec].ID)
+			if TRB.Data.barConstructedForSpec ~= nil and TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec] ~= nil and TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec].ID ~= nil then
+				Settings.OpenToCategory(TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec].ID)
+			else
+				Settings.OpenToCategory(TRB.Details.addonCategory.main.ID)
+			end
 		end
 	end
 end
