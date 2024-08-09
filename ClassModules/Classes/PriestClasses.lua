@@ -527,7 +527,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 
     -- Voidweaver
     self.entropicRift = TRB.Classes.SpellBase:New({
-        id = 447444,
+        id = 450193,
+        talentId = 447444,
         isTalent = true,
         duration = 8
     })
@@ -1022,7 +1023,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
 
     -- Voidweaver
     self.entropicRift = TRB.Classes.SpellBase:New({
-        id = 447444,
+        id = 450193,
+        talentId = 447444,
         isTalent = true,
         duration = 8
     })

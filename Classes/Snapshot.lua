@@ -228,10 +228,11 @@ end
 
 ---Initializes the buff with custom endTime and duration values
 ---@param duration number # How long the buff will last
-function TRB.Classes.SnapshotBuff:InitializeCustom(duration)
-    local currentTime = GetTime()
+---@param startTime number? # When did this buff begin. Defaults to GetTime()
+function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime)
+    local startTime = startTime or GetTime()
     self.duration = duration
-    self.endTime = currentTime + duration
+    self.endTime = startTime + duration
     self.isCustom = true
     self:GetRemainingTime()
 end
@@ -295,8 +296,8 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
         if self.refreshRequested == false or self.refreshEmbargo ~= nil and self.refreshEmbargo > GetTime() then
             if self.isActive then
                 self:GetRemainingTime()
+                return
             end
-            return
         else
             self.refreshRequested = false
             self.refreshEmbargo = nil

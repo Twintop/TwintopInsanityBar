@@ -3302,7 +3302,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshotData.snapshots[spells.newMoon.id].attributes.currentSpellId = spells.newMoon.id
 						snapshotData.snapshots[spells.newMoon.id].attributes.currentKey = "newMoon"
 						snapshotData.snapshots[spells.newMoon.id].attributes.checkAfter = currentTime + 20
-						spells.newMoon.attributes.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
+						local spellInfo = C_Spell.GetSpellInfo(202767) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
+						spells.newMoon.attributes.currentIcon = spellInfo.iconID
 					end
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then

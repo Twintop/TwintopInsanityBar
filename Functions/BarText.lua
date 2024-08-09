@@ -494,7 +494,7 @@ local function AddToBarTextCache(input)
 					local iconName = string.sub(input, a, z)
 					local itemId = string.sub(input, a+6, z-1)
 					local _, icon
-					_, _, _, _, _, _, _, _, _, icon = GetItemInfo(itemId)
+					_, _, _, _, _, _, _, _, _, icon = C_Item.GetItemInfo(itemId)
 
 					if icon ~= nil then
 						match = true
