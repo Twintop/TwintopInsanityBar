@@ -38,6 +38,8 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public theEternalMoon TRB.Classes.SpellBase
 ---@field public theLightOfElune TRB.Classes.SpellBase
 ---@field public moonGuardian TRB.Classes.SpellBase
+---@field public bounteousBloom TRB.Classes.SpellBase
+---@field public forceOfNature TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
 ---@field public starsurge3 TRB.Classes.SpellThreshold
@@ -247,6 +249,20 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 429520,
         isTalent = true,
         resourceMod = 2
+    })
+
+    -- Keeper of the Grove
+    self.forceOfNature = TRB.Classes.SpellBase:New({
+        id = 205636,
+        isTalent = true,
+        duration = 10,
+        resourcePerTick = 30, -- 10 * 3 treants
+        hasTicks = true,
+        tickRate = 2
+    })
+    self.bounteousBloom = TRB.Classes.SpellBase:New({
+        id = 429215,
+        isTalent = true
     })
 
     return self

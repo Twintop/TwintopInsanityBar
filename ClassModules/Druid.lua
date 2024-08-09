@@ -130,6 +130,8 @@ local function FillSpecializationCache()
 	specCache.balance.snapshotData.snapshots[spells.touchTheCosmos_starsurge.id] = TRB.Classes.Snapshot:New(spells.touchTheCosmos_starsurge)
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.touchTheCosmos_starfall.id] = TRB.Classes.Snapshot:New(spells.touchTheCosmos_starfall)
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.forceOfNature.id] = TRB.Classes.Snapshot:New(spells.forceOfNature)
 
 
 	-- Feral
@@ -942,7 +944,7 @@ local function RefreshLookupData_Balance()
 	--$casting
 	local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	--$passive
-	local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource
+	local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + snapshotData.snapshots[spells.forceOfNature.id].buff.resource
 	if talents:IsTalentActive(spells.naturesBalance) then
 		if UnitAffectingCombat("player") then
 			_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.resource
@@ -1061,7 +1063,7 @@ local function RefreshLookupData_Balance()
 
 	----------
 	--$foeAstralPower
-	local foeAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
+	local foeAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + snapshotData.snapshots[spells.forceOfNature.id].buff.resource
 	--$foeTicks
 	local foeTicks = snapshotData.snapshots[spells.furyOfElune.id].buff.ticks + snapshotData.snapshots[spells.theLightOfElune.id].buff.ticks + snapshotData.snapshots[spells.sunderedFirmament.id].buff.ticks
 	--$foeTime
@@ -2302,6 +2304,7 @@ local function UpdateSnapshot_Balance()
 	snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.theLightOfElune.id].buff:UpdateTicks(currentTime)
+	snapshotData.snapshots[spells.forceOfNature.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.celestialAlignment.id].buff:Refresh()
 	snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:Refresh()
 	snapshotData.snapshots[spells.eclipseSolar.id].buff:Refresh()
@@ -2309,15 +2312,15 @@ local function UpdateSnapshot_Balance()
 	snapshotData.snapshots[spells.starfall.id].buff:GetRemainingTime(currentTime)
 
 	if talents:IsTalentActive(spells.theEternalMoon) then
-		if snapshotData.snapshots[spells.furyOfElune.id].buff:GetRemainingTime() > 0 then
+		if snapshotData.snapshots[spells.furyOfElune.id].buff.isActive then
 			snapshotData.snapshots[spells.furyOfElune.id].buff.resource = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
 		end
 
-		if snapshotData.snapshots[spells.sunderedFirmament.id].buff:GetRemainingTime() > 0 then
+		if snapshotData.snapshots[spells.sunderedFirmament.id].buff.isActive then
 			snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource = snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
 		end
 
-		if snapshotData.snapshots[spells.theLightOfElune.id].buff:GetRemainingTime() > 0 then
+		if snapshotData.snapshots[spells.theLightOfElune.id].buff.isActive then
 			snapshotData.snapshots[spells.theLightOfElune.id].buff.resource = snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
 		end
 	end
@@ -2459,7 +2462,7 @@ local function UpdateResourceBar()
 
 					if talents:IsTalentActive(spells.naturesBalance) and (affectingCombat or (not affectingCombat and currentResource < 50)) then
 					else
-						passiveValue = snapshots[spells.furyOfElune.id].buff.resource + snapshots[spells.sunderedFirmament.id].buff.resource + snapshots[spells.theLightOfElune.id].buff.resource
+						passiveValue = snapshots[spells.furyOfElune.id].buff.resource + snapshots[spells.sunderedFirmament.id].buff.resource + snapshots[spells.theLightOfElune.id].buff.resource + snapshots[spells.forceOfNature.id].buff.resource
 					end
 				end
 
@@ -3268,12 +3271,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.sunderedFirmament.buffId then
 					snapshotData.snapshots[spells.sunderedFirmament.id].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-						snapshotData.snapshots[entry.spellId].attributes.guid = entry.destinationGuid
+						snapshotData.snapshots[spells.sunderedFirmament.id].attributes.guid = entry.destinationGuid
 						snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 					elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
 						snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 					end
+				elseif entry.spellId == spells.forceOfNature.id and entry.type == "SPELL_CAST_SUCCESS" and talents:IsTalentActive(spells.bounteousBloom) then
+					snapshotData.snapshots[spells.forceOfNature.id].buff:InitializeCustom(spells.forceOfNature.duration)
 				elseif entry.spellId == spells.eclipseSolar.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_REMOVED" then

@@ -18,6 +18,12 @@ local content = [====[
 - [#359 - UPDATE (Twintop)](#359) Add support for Boundless Moonlight, modifying Full Moon.
 - [#359 - UPDATE (Twintop)](#359) Add support for The Eternal Moon, modifying New Moon, Half Moon, and Fury of Elune.
 - [#359 - UPDATE (Twintop)](#359) Add support for The Light of Elune.
+- [#359 - UPDATE (Twintop)](#359) Add support for Bounteous Bloom.
+<br/>&emsp;&ensp;- New bar text variable:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$bounteousBloomTime` - Time remaining on your Bounteous Bloom.
+<br/>&emsp;&ensp;&emsp;&ensp;- `$bounteousBloomResource` - Incoming Astral Power from your Bounteos Bloom.
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#bounteousBloom` - Bounteous Bloom
 - [#359 - UPDATE (Twintop)](#359) Combine Sundered Firmament bar text variable data with Fury of Elune.
 
 ## Priest
