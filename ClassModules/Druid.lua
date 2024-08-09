@@ -90,9 +90,17 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.moonkinForm.id] = TRB.Classes.Snapshot:New(spells.moonkinForm, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.furyOfElune.id] = TRB.Classes.Snapshot:New(spells.furyOfElune)
+	specCache.balance.snapshotData.snapshots[spells.furyOfElune.id] = TRB.Classes.Snapshot:New(spells.furyOfElune, {
+		guid = nil
+	})
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.sunderedFirmament.id] = TRB.Classes.Snapshot:New(spells.sunderedFirmament)
+	specCache.balance.snapshotData.snapshots[spells.sunderedFirmament.id] = TRB.Classes.Snapshot:New(spells.sunderedFirmament, {
+		guid = nil
+	})
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.theLightOfElune.id] = TRB.Classes.Snapshot:New(spells.theLightOfElune, {
+		guid = nil
+	})
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(spells.eclipseSolar)
 	---@type TRB.Classes.Snapshot
@@ -403,14 +411,11 @@ local function FillSpellData_Balance()
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
 		{ variable = "$astralPowerPlusPassive", description = L["DruidBalanceBarTextVariable_astralPowerPlusPassive"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$astralPowerTotal", description = L["DruidBalanceBarTextVariable_astralPowerTotal"], printInSettings = true, color = false },   
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },	 
-		{ variable = "$foeAstralPower", description = L["DruidBalanceBarTextVariable_foeAstralPower"], printInSettings = true, color = false },   
-		{ variable = "$foeTicks", description = L["DruidBalanceBarTextVariable_foeTicks"], printInSettings = true, color = false },   
-		{ variable = "$foeTime", description = L["DruidBalanceBarTextVariable_foeTime"], printInSettings = true, color = false },		
-		{ variable = "$sunderedFirmamentAstralPower", description = L["DruidBalanceBarTextVariable_sunderedFirmamentAstralPower"], printInSettings = true, color = false },   
-		{ variable = "$sunderedFirmamentTicks", description = L["DruidBalanceBarTextVariable_sunderedFirmamentTicks"], printInSettings = true, color = false },   
-		{ variable = "$sunderedFirmamentTime", description = L["DruidBalanceBarTextVariable_sunderedFirmamentTime"], printInSettings = true, color = false },   
+		{ variable = "$astralPowerTotal", description = L["DruidBalanceBarTextVariable_astralPowerTotal"], printInSettings = true, color = false },
+		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
+		{ variable = "$foeAstralPower", description = L["DruidBalanceBarTextVariable_foeAstralPower"], printInSettings = true, color = false },
+		{ variable = "$foeTicks", description = L["DruidBalanceBarTextVariable_foeTicks"], printInSettings = true, color = false },
+		{ variable = "$foeTime", description = L["DruidBalanceBarTextVariable_foeTime"], printInSettings = true, color = false },
 
 		{ variable = "$sunfireCount", description = L["DruidBalanceBarTextVariable_sunfireCount"], printInSettings = true, color = false },
 		{ variable = "$sunfireTime", description = L["DruidBalanceBarTextVariable_sunfireTime"], printInSettings = true, color = false },
@@ -937,7 +942,7 @@ local function RefreshLookupData_Balance()
 	--$casting
 	local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	--$passive
-	local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
+	local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource
 	if talents:IsTalentActive(spells.naturesBalance) then
 		if UnitAffectingCombat("player") then
 			_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.resource
@@ -1056,22 +1061,13 @@ local function RefreshLookupData_Balance()
 
 	----------
 	--$foeAstralPower
-	local foeAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource
+	local foeAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
 	--$foeTicks
-	local foeTicks = snapshotData.snapshots[spells.furyOfElune.id].buff.ticks
+	local foeTicks = snapshotData.snapshots[spells.furyOfElune.id].buff.ticks + snapshotData.snapshots[spells.theLightOfElune.id].buff.ticks + snapshotData.snapshots[spells.sunderedFirmament.id].buff.ticks
 	--$foeTime
-	local _foeTime = snapshotData.snapshots[spells.furyOfElune.id].buff:GetRemainingTime(currentTime)
+	local _foeTime = math.max(snapshotData.snapshots[spells.furyOfElune.id].buff:GetRemainingTime(currentTime), math.max(snapshotData.snapshots[spells.theLightOfElune.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.sunderedFirmament.id].buff:GetRemainingTime(currentTime)))
 	local foeTime = TRB.Functions.BarText:TimerPrecision(_foeTime)
-	
-	----------
-	--$foeAstralPower
-	local sunderedFirmamentAstralPower = snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
-	--$foeTicks
-	local sunderedFirmamentTicks = snapshotData.snapshots[spells.sunderedFirmament.id].buff.ticks
-	--$foeTime
-	local _sunderedFirmamentTime = snapshotData.snapshots[spells.sunderedFirmament.id].buff:GetRemainingTime(currentTime)
-	local sunderedFirmamentTime = TRB.Functions.BarText:TimerPrecision(_sunderedFirmamentTime)
-	
+
 	--New Moon
 	local currentMoonIcon = spells.newMoon.icon
 	--$moonAstralPower
@@ -1109,7 +1105,6 @@ local function RefreshLookupData_Balance()
 
 	Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
 	Global_TwintopResourceBar.resource.furyOfElune = foeAstralPower or 0
-	Global_TwintopResourceBar.resource.sunderedFirmament = sunderedFirmamentAstralPower or 0
 	
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
 	Global_TwintopResourceBar.dots.sunfireCount = _sunfireCount or 0
@@ -1120,11 +1115,6 @@ local function RefreshLookupData_Balance()
 	Global_TwintopResourceBar.furyOfElune.astralPower = foeAstralPower or 0
 	Global_TwintopResourceBar.furyOfElune.ticks = foeTicks or 0
 	Global_TwintopResourceBar.furyOfElune.remaining = foeTime or 0
-
-	Global_TwintopResourceBar.sunderedFirmament = Global_TwintopResourceBar.sunderedFirmament or {}
-	Global_TwintopResourceBar.sunderedFirmament.astralPower = sunderedFirmamentAstralPower or 0
-	Global_TwintopResourceBar.sunderedFirmament.ticks = sunderedFirmamentTicks or 0
-	Global_TwintopResourceBar.sunderedFirmament.remaining = sunderedFirmamentTime or 0
 	
 	local lookup = TRB.Data.lookup or {}
 	lookup["#wrath"] = spells.wrath.icon
@@ -1201,9 +1191,6 @@ local function RefreshLookupData_Balance()
 	lookup["$foeAstralPower"] = foeAstralPower
 	lookup["$foeTicks"] = foeTicks
 	lookup["$foeTime"] = foeTime
-	lookup["$sunderedFirmamentAstralPower"] = sunderedFirmamentAstralPower
-	lookup["$sunderedFirmamentTicks"] = sunderedFirmamentTicks
-	lookup["$sunderedFirmamentTime"] = sunderedFirmamentTime
 	lookup["$talentStellarFlare"] = ""
 	TRB.Data.lookup = lookup
 
@@ -1241,9 +1228,6 @@ local function RefreshLookupData_Balance()
 	lookupLogic["$foeAstralPower"] = foeAstralPower
 	lookupLogic["$foeTicks"] = foeTicks
 	lookupLogic["$foeTime"] = _foeTime
-	lookupLogic["$sunderedFirmamentAstralPower"] = sunderedFirmamentAstralPower
-	lookupLogic["$sunderedFirmamentTicks"] = sunderedFirmamentTicks
-	lookupLogic["$sunderedFirmamentTime"] = _sunderedFirmamentTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -2116,8 +2100,20 @@ local function RefreshLookupData_Restoration()
 end
 
 local function FillSnapshotDataCasting_Balance(spell)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
+
+	local resource = spell.resource
+
+	if talents:IsTalentActive(spells.boundlessMoonlight) and spell.attributes.boundlessMoonlight ~= nil and spell.attributes.boundlessMoonlight > 0 then
+		resource = resource + (spells.boundlessMoonlight.attributes.resourceMod * spell.attributes.boundlessMoonlight)
+	end
+
+	if talents:IsTalentActive(spells.theEternalMoon) and spell.attributes.theEternalMoon ~= nil and spell.attributes.theEternalMoon > 0 then
+		resource = resource + (spells.theEternalMoon.attributes.moonResourceMod * spell.attributes.theEternalMoon)
+	end
+
 	snapshotData.casting.startTime = currentTime
 	snapshotData.casting.resourceRaw = spell.resource
 	snapshotData.casting.resourceFinal = spell.resource
@@ -2305,11 +2301,26 @@ local function UpdateSnapshot_Balance()
 	snapshotData.snapshots[spells.moonkinForm.id].buff:Refresh()
 	snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
+	snapshotData.snapshots[spells.theLightOfElune.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.celestialAlignment.id].buff:Refresh()
 	snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:Refresh()
 	snapshotData.snapshots[spells.eclipseSolar.id].buff:Refresh()
 	snapshotData.snapshots[spells.eclipseLunar.id].buff:Refresh()
 	snapshotData.snapshots[spells.starfall.id].buff:GetRemainingTime(currentTime)
+
+	if talents:IsTalentActive(spells.theEternalMoon) then
+		if snapshotData.snapshots[spells.furyOfElune.id].buff:GetRemainingTime() > 0 then
+			snapshotData.snapshots[spells.furyOfElune.id].buff.resource = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
+		end
+
+		if snapshotData.snapshots[spells.sunderedFirmament.id].buff:GetRemainingTime() > 0 then
+			snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource = snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
+		end
+
+		if snapshotData.snapshots[spells.theLightOfElune.id].buff:GetRemainingTime() > 0 then
+			snapshotData.snapshots[spells.theLightOfElune.id].buff.resource = snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
+		end
+	end
 end
 
 local function UpdateSnapshot_Feral()
@@ -2448,7 +2459,7 @@ local function UpdateResourceBar()
 
 					if talents:IsTalentActive(spells.naturesBalance) and (affectingCombat or (not affectingCombat and currentResource < 50)) then
 					else
-						passiveValue = snapshots[spells.furyOfElune.id].buff.resource + snapshots[spells.sunderedFirmament.id].buff.resource
+						passiveValue = snapshots[spells.furyOfElune.id].buff.resource + snapshots[spells.sunderedFirmament.id].buff.resource + snapshots[spells.theLightOfElune.id].buff.resource
 					end
 				end
 
@@ -3237,15 +3248,28 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.furyOfElune.id then
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
+					if entry.type == "SPELL_CAST_SUCCESS" then -- Hardcasted
 						snapshotData.snapshots[entry.spellId].buff:InitializeCustom(spells.furyOfElune.duration)
 						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshotData.snapshots[entry.spellId].attributes.guid = entry.destinationGuid
+					elseif entry.type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune via The Light of Elune. Maybe.
+						if talents:IsTalentActive(spells.theLightOfElune) and not snapshotData.snapshots[spells.furyOfElune.id].buff.isActive then
+							snapshotData.snapshots[spells.theLightOfElune.id].buff:InitializeCustom(spells.theLightOfElune.duration)
+							snapshotData.snapshots[spells.theLightOfElune.id].buff:UpdateTicks(currentTime)
+							snapshotData.snapshots[spells.theLightOfElune.id].attributes.guid = entry.destinationGuid
+						else
+							snapshotData.snapshots[entry.spellId].buff:InitializeCustom(spells.furyOfElune.duration)
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+							snapshotData.snapshots[entry.spellId].attributes.guid = entry.destinationGuid
+						end
 					elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
 						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.sunderedFirmament.buffId then
 					snapshotData.snapshots[spells.sunderedFirmament.id].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
+						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						snapshotData.snapshots[entry.spellId].attributes.guid = entry.destinationGuid
 						snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 					elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
 						snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
@@ -3934,29 +3958,17 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$foeAstralPower" then
-			if snapshots[spells.furyOfElune.id].buff.resource > 0 then
+			if snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.theEternalMoon.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 then
 				valid = true
 			end
 		elseif var == "$foeTicks" then
-			if snapshots[spells.furyOfElune.id].buff.isActive then
+			if snapshots[spells.furyOfElune.id].buff.isActive or snapshots[spells.theLightOfElune.id].buff.isActive or snapshots[spells.sunderedFirmament.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$foeTime" then
-			if snapshots[spells.furyOfElune.id].buff.isActive then
+			if snapshots[spells.furyOfElune.id].buff.isActive or snapshots[spells.theLightOfElune.id].buff.isActive or snapshots[spells.sunderedFirmament.id].buff.isActive then
 				valid = true
-			end
-		elseif var == "$sunderedFirmamentAstralPower" then
-			if snapshots[spells.sunderedFirmament.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$sunderedFirmamentTicks" then
-			if snapshots[spells.sunderedFirmament.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$sunderedFirmamentTime" then
-			if snapshots[spells.sunderedFirmament.id].buff.isActive then
-				valid = true
-			end				
+			end			
 		elseif var == "$starweaverTime" then
 			if snapshots[spells.starweaversWarp.id].buff.isActive or snapshots[spells.starweaversWarp.id].buff.isActive  then
 				valid = true

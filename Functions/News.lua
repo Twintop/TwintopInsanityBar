@@ -12,11 +12,13 @@ local content = [====[
 ---
 
 # 11.0.2.0-release (2024-08-13)
-
 ## Druid
 ### Balance 
 
-- [#359 - UPDATE (Twintop)](#359) Astral Communion now generates 25 Astral Power.
+- [#359 - UPDATE (Twintop)](#359) Add support for Boundless Moonlight, modifying Full Moon.
+- [#359 - UPDATE (Twintop)](#359) Add support for The Eternal Moon, modifying New Moon, Half Moon, and Fury of Elune.
+- [#359 - UPDATE (Twintop)](#359) Add support for The Light of Elune.
+- [#359 - UPDATE (Twintop)](#359) Combine Sundered Firmament bar text variable data with Fury of Elune.
 
 ## Priest
 

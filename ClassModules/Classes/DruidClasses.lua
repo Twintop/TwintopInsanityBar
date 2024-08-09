@@ -34,6 +34,9 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public astralCommunion TRB.Classes.SpellBase
 ---@field public touchTheCosmos_starsurge TRB.Classes.SpellBase
 ---@field public touchTheCosmos_starfall TRB.Classes.SpellBase
+---@field public boundlessMoonlight TRB.Classes.SpellBase
+---@field public theEternalMoon TRB.Classes.SpellBase
+---@field public theLightOfElune TRB.Classes.SpellBase
 ---@field public moonGuardian TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
@@ -187,21 +190,24 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 274281,
         resource = 10,
         recharge = 20,
-        isTalent = true
+        isTalent = true,
+        theEternalMoon = 1
     })
     self.halfMoon = TRB.Classes.SpellBase:New({
         id = 274282,
-        resource = 30
+        resource = 20,
+        theEternalMoon = 1
     })
     self.fullMoon = TRB.Classes.SpellBase:New({
         id = 274283,
-        resource = 40
+        resource = 40,
+        boundlessMoonlight = 2
     })
     self.sunderedFirmament = TRB.Classes.SpellBase:New({
         id = 394094,
         buffId = 394108,
         hasTicks = true,
-        resourcePerTick = 0.5,
+        resourcePerTick = TRB.Functions.Number:RoundTo(2.5 * 0.25, 1, "floor", true),
         tickRate = 0.5,
         isTalent = true
     })
@@ -218,6 +224,25 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
 
     -- Elune's Chosen
+    self.boundlessMoonlight = TRB.Classes.SpellBase:New({
+        id = 424058,
+        isTalent = true,
+        resourceMod = 3
+    })
+    self.theEternalMoon = TRB.Classes.SpellBase:New({
+        id = 424058,
+        isTalent = true,
+        moonResourceMod = 3,
+        furyResourceMod = 6
+    })
+    self.theLightOfElune = TRB.Classes.SpellBase:New({
+        id = 428655,
+        isTalent = true,
+        duration = 3,
+        resourcePerTick = 2.5,
+        hasTicks = true,
+        tickRate = 0.5
+    })
     self.moonGuardian = TRB.Classes.SpellBase:New({
         id = 429520,
         isTalent = true,
