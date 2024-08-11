@@ -346,6 +346,9 @@ local function FillSpellData_Balance()
 		
 		{ variable = "#sunderedFirmament", icon = spells.sunderedFirmament.icon, description = spells.sunderedFirmament.name, printInSettings = true },
 		
+		{ variable = "#bb", icon = spells.bounteousBloom.icon, description = spells.bounteousBloom.name, printInSettings = true },
+		{ variable = "#bounteousBloom", icon = spells.bounteousBloom.icon, description = spells.bounteousBloom.name, printInSettings = false },
+
 		{ variable = "#newMoon", icon = spells.newMoon.icon, description = spells.newMoon.name, printInSettings = true },
 		{ variable = "#halfMoon", icon = spells.halfMoon.icon, description = spells.halfMoon.name, printInSettings = true },
 		{ variable = "#fullMoon", icon = spells.fullMoon.icon, description = spells.fullMoon.name, printInSettings = true },
@@ -418,6 +421,9 @@ local function FillSpellData_Balance()
 		{ variable = "$foeAstralPower", description = L["DruidBalanceBarTextVariable_foeAstralPower"], printInSettings = true, color = false },
 		{ variable = "$foeTicks", description = L["DruidBalanceBarTextVariable_foeTicks"], printInSettings = true, color = false },
 		{ variable = "$foeTime", description = L["DruidBalanceBarTextVariable_foeTime"], printInSettings = true, color = false },
+		{ variable = "$bbAstralPower", description = L["DruidBalanceBarTextVariable_bbAstralPower"], printInSettings = true, color = false },
+		{ variable = "$bbTicks", description = L["DruidBalanceBarTextVariable_bbTicks"], printInSettings = true, color = false },
+		{ variable = "$bbTime", description = L["DruidBalanceBarTextVariable_bbTime"], printInSettings = true, color = false },
 
 		{ variable = "$sunfireCount", description = L["DruidBalanceBarTextVariable_sunfireCount"], printInSettings = true, color = false },
 		{ variable = "$sunfireTime", description = L["DruidBalanceBarTextVariable_sunfireTime"], printInSettings = true, color = false },
@@ -1069,6 +1075,15 @@ local function RefreshLookupData_Balance()
 	--$foeTime
 	local _foeTime = math.max(snapshotData.snapshots[spells.furyOfElune.id].buff:GetRemainingTime(currentTime), math.max(snapshotData.snapshots[spells.theLightOfElune.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.sunderedFirmament.id].buff:GetRemainingTime(currentTime)))
 	local foeTime = TRB.Functions.BarText:TimerPrecision(_foeTime)
+	
+	----------	
+	--$bbAstralPower
+	local bbAstralPower = snapshotData.snapshots[spells.forceOfNature.id].buff.resource
+	--$bbTicks
+	local bbTicks = snapshotData.snapshots[spells.forceOfNature.id].buff.ticks
+	--$bbTime
+	local _bbTime = snapshotData.snapshots[spells.forceOfNature.id].buff:GetRemainingTime(currentTime)
+	local bbTime = TRB.Functions.BarText:TimerPrecision(_bbTime)
 
 	--New Moon
 	local currentMoonIcon = spells.newMoon.icon
@@ -1151,6 +1166,8 @@ local function RefreshLookupData_Balance()
 	lookup["#starweaver"] = starweaverIcon
 	lookup["#starweaversWarp"] = spells.starweaversWarp.icon
 	lookup["#starweaversWeft"] = spells.starweaversWeft.icon
+	lookup["#bb"] = spells.bounteousBloom.icon
+	lookup["#bounteousBloom"] = spells.bounteousBloom.icon
 	lookup["$moonkinForm"] = ""
 	lookup["$eclipseTime"] = eclipseTime
 	lookup["$eclipse"] = ""
@@ -1193,6 +1210,9 @@ local function RefreshLookupData_Balance()
 	lookup["$foeAstralPower"] = foeAstralPower
 	lookup["$foeTicks"] = foeTicks
 	lookup["$foeTime"] = foeTime
+	lookup["$bbAstralPower"] = bbAstralPower
+	lookup["$bbTicks"] = bbTicks
+	lookup["$bbTime"] = bbTime
 	lookup["$talentStellarFlare"] = ""
 	TRB.Data.lookup = lookup
 
@@ -1230,6 +1250,9 @@ local function RefreshLookupData_Balance()
 	lookupLogic["$foeAstralPower"] = foeAstralPower
 	lookupLogic["$foeTicks"] = foeTicks
 	lookupLogic["$foeTime"] = _foeTime
+	lookupLogic["$bbAstralPower"] = bbAstralPower
+	lookupLogic["$bbTicks"] = bbTicks
+	lookupLogic["$bbTime"] = _bbTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -3894,7 +3917,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		elseif var == "$resourceTotal" or var == "$astralPowerTotal" then
 			if snapshotData.attributes.resource > 0 or
-				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0) then
+				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0) or
+				snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 or snapshots[spells.theLightOfElune.id].buff.resource > 0 or snapshots[spells.forceOfNature.id].buff.resource > 0 then
 				valid = true
 			end
 		elseif var == "$resourcePlusCasting" or var == "$astralPowerPlusCasting" then
@@ -3910,7 +3934,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				return true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
-			if snapshotData.attributes.resource > 0 then
+			if snapshotData.attributes.resource > 0 or snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 or snapshots[spells.theLightOfElune.id].buff.resource > 0 or snapshots[spells.forceOfNature.id].buff.resource > 0 then
 				valid = true
 			end
 		elseif var == "$casting" then
@@ -3918,7 +3942,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$passive" then
-			if (talents:IsTalentActive(spells.naturesBalance) and (affectingCombat or (snapshotData.attributes.resource / TRB.Data.resourceFactor) < 50)) or snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 then
+			if (talents:IsTalentActive(spells.naturesBalance) and (affectingCombat or (snapshotData.attributes.resource / TRB.Data.resourceFactor) < 50)) or snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 or snapshots[spells.theLightOfElune.id].buff.resource > 0 or snapshots[spells.forceOfNature.id].buff.resource > 0 then
 				valid = true
 			end
 		elseif var == "$sunfireCount" then
@@ -3972,7 +3996,19 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$foeTime" then
 			if snapshots[spells.furyOfElune.id].buff.isActive or snapshots[spells.theLightOfElune.id].buff.isActive or snapshots[spells.sunderedFirmament.id].buff.isActive then
 				valid = true
-			end			
+			end
+		elseif var == "$bbAstralPower" then
+			if snapshots[spells.forceOfNature.id].buff.resource > 0 then
+				valid = true
+			end
+		elseif var == "$bbTicks" then
+			if snapshots[spells.forceOfNature.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$bbTime" then
+			if snapshots[spells.forceOfNature.id].buff.isActive then
+				valid = true
+			end
 		elseif var == "$starweaverTime" then
 			if snapshots[spells.starweaversWarp.id].buff.isActive or snapshots[spells.starweaversWarp.id].buff.isActive  then
 				valid = true

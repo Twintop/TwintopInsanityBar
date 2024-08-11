@@ -20,10 +20,11 @@ local content = [====[
 - [#359 - UPDATE (Twintop)](#359) Add support for The Light of Elune.
 - [#359 - UPDATE (Twintop)](#359) Add support for Bounteous Bloom.
 <br/>&emsp;&ensp;- New bar text variable:
-<br/>&emsp;&ensp;&emsp;&ensp;- `$bounteousBloomTime` - Time remaining on your Bounteous Bloom.
-<br/>&emsp;&ensp;&emsp;&ensp;- `$bounteousBloomResource` - Incoming Astral Power from your Bounteos Bloom.
+<br/>&emsp;&ensp;&emsp;&ensp;- `$bbAstralPower` - Incoming Astral Power from your Bounteos Bloom.
+<br/>&emsp;&ensp;&emsp;&ensp;- `$bbTicks` - Number of ticks remaining.
+<br/>&emsp;&ensp;&emsp;&ensp;- `$bbTime` - Time remaining on your Bounteous Bloom.
 <br/>&emsp;&ensp;- New bar text icons:
-<br/>&emsp;&ensp;&emsp;&ensp;- `#bounteousBloom` - Bounteous Bloom
+<br/>&emsp;&ensp;&emsp;&ensp;- `#bb`, `#boundlessBloom` - Bounteous Bloom
 - [#359 - UPDATE (Twintop)](#359) Combine Sundered Firmament bar text variable data with Fury of Elune.
 
 ## Priest
