@@ -696,6 +696,18 @@ local function FeralLoadDefaultSettings(includeBarText)
 			feralFrenzy = {
 				enabled = true,
 			},
+			ravage = {
+				enabled = true,
+			},
+			ravageMinimum = {
+				enabled = false,
+			},
+			ravageMaximum = {
+				enabled = true,
+			},
+			frenziedRegeneration = {
+				enabled = false,
+			}
 		},
 		generation = {
 			mode="gcd",
@@ -2526,6 +2538,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.ferociousBite.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.ferociousBite.enabled = self:GetChecked()
+		spec.thresholds.ravage.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2537,6 +2550,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.ferociousBiteMinimum.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.ferociousBiteMinimum.enabled = self:GetChecked()
+		spec.thresholds.ravageMinimum.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2548,6 +2562,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.ferociousBiteMaximum.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.ferociousBiteMaximum.enabled = self:GetChecked()
+		spec.thresholds.ravageMaximum.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2584,7 +2599,6 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 2, yCoord)
 
 	yCoord = yCoord - 40

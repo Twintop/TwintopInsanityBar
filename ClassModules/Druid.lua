@@ -202,6 +202,9 @@ local function FillSpecializationCache()
 		untilNextTick = 0,
 		ticks = 0
 	})
+	-- Druid of the Claw
+	---@type TRB.Classes.Snapshot
+	specCache.feral.snapshotData.snapshots[spells.ravage.id] = TRB.Classes.Snapshot:New(spells.ravage)
 
 	-- Restoration
 	specCache.restoration.Global_TwintopResourceBar = {
@@ -485,6 +488,7 @@ local function FillSpellData_Feral()
 		{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
 		{ variable = "#stealth", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = false },
 		{ variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
+		{ variable = "#ravage", icon = spells.ravage.icon, description = spells.ravage.name, printInSettings = true },
 		{ variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
 		{ variable = "#shadowmeld", icon = spells.shadowmeld.icon, description = spells.shadowmeld.name, printInSettings = true },
 		{ variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
@@ -1647,6 +1651,7 @@ local function RefreshLookupData_Feral()
 	lookup["#prowl"] = spells.prowl.icon
 	lookup["#stealth"] = spells.prowl.icon
 	lookup["#rake"] = spells.rake.icon
+	lookup["#ravage"] = spells.ravage.icon
 	lookup["#rip"] = spells.rip.icon
 	lookup["#shadowmeld"] = spells.shadowmeld.icon
 	lookup["#shred"] = spells.shred.icon
@@ -2377,6 +2382,8 @@ local function UpdateSnapshot_Feral()
 	snapshotData.snapshots[spells.feralFrenzy.id].cooldown:Refresh()
 	snapshotData.snapshots[spells.maim.id].cooldown:Refresh()
 	
+	snapshotData.snapshots[spells.ravage.id].buff:Refresh()
+
 	if talents:IsTalentActive(spells.brutalSlash) then
 		snapshotData.snapshots[spells.brutalSlash.id].cooldown:Refresh()
 	end
@@ -2844,28 +2851,59 @@ local function UpdateResourceBar()
 								thresholdColor = specSettings.colors.threshold.over
 							end
 						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							if spell.id == spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, math.min(math.max(resourceAmount, currentResource), spells.ferociousBiteMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
-								
-								if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							if spell.id == spells.ferociousBite.id then
+								if snapshots[spells.ravage.id].buff.isActive then
+									showThreshold = false
+								elseif spell.id == spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, math.min(math.max(resourceAmount, currentResource), spells.ferociousBiteMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
+									
+									if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
+									if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
+									if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
 								end
-							elseif spell.id == spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
-								if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-							elseif spell.id == spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
-								if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							elseif spell.id == spells.ravage.id then
+								if not snapshots[spells.ravage.id].buff.isActive then
+									showThreshold = false
+								elseif spell.id == spells.ravage.id and spell.settingKey == "ravage" then
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, math.min(math.max(resourceAmount, currentResource), spells.ravageMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
+									
+									if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == spells.ravageMinimum.id and spell.settingKey == "ravageMinimum" then
+									if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == spells.ravageMaximum.id and spell.settingKey == "ravageMaximum" then
+									if currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
 								end
 							elseif spell.id == spells.moonfire.id then
 								if not talents:IsTalentActive(spells.lunarInspiration) then
@@ -3468,6 +3506,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 					end
+				elseif entry.spellId == spells.ravage.id then
+					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
 				if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then

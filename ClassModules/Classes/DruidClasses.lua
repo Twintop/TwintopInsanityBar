@@ -299,6 +299,10 @@ end
 ---@field public moonfire TRB.Classes.SpellComboPointThreshold
 ---@field public brutalSlash TRB.Classes.SpellComboPointThreshold
 ---@field public feralFrenzy TRB.Classes.SpellComboPointThreshold
+---@field public ravage TRB.Classes.SpellComboPointThreshold
+---@field public ravageMinimum TRB.Classes.SpellComboPointThreshold
+---@field public ravageMaximum TRB.Classes.SpellComboPointThreshold
+---@field public frenziedRegeneration TRB.Classes.SpellComboPointThreshold
 TRB.Classes.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Druid.FeralSpells.__index = TRB.Classes.Druid.FeralSpells
 
@@ -395,7 +399,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         settingKey = "ferociousBite",
-        isSnowflake = true -- Really between 25-50 energy, minus Relentless Predator
+        isSnowflake = true -- Really between 25-50 energy
     })
     self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
@@ -534,6 +538,50 @@ function TRB.Classes.Druid.FeralSpells:New()
         energizeId = 411344,
         tickRate = 2.0,
         spellKey = "predatorRevealed"
+    })
+
+    -- Druid of the Claw
+    self.ravage = TRB.Classes.SpellComboPointThreshold:New({
+        id = 441591,
+        buffId = 441585,
+        talentId = 441583,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPoints = true,
+        settingKey = "ravage",
+        isSnowflake = true -- Really between 25-50 energy
+    })
+    self.ravageMinimum = TRB.Classes.SpellComboPointThreshold:New({
+        id = 441591,
+        buffId = 441585,
+        talentId = 441583,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPoints = true,
+        settingKey = "ravageMinimum",
+        isSnowflake = true
+    })
+    self.ravageMaximum = TRB.Classes.SpellComboPointThreshold:New({
+        id = 441591,
+        buffId = 441585,
+        talentId = 441583,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Energy,
+        primaryResourceTypeMod = 2,
+        comboPoints = true,
+        settingKey = "ravageMaximum",
+        isSnowflake = true
+    })
+    self.empoweredShapeshifting = TRB.Classes.SpellBase:New({
+        id = 441689,
+        isTalent = true
+    })
+    self.frenziedRegeneration = TRB.Classes.SpellThreshold:New({
+        id = 22842,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Energy,
+        settingKey = "frenziedRegeneration",
+        isSnowflake = true -- Only usable in Catform with Empowered Shapeshifting
     })
 
     return self

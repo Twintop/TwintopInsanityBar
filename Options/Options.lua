@@ -3257,6 +3257,24 @@ function TRB.Options:PortForwardSettings()
 			enabled = TwintopInsanityBarSettings.priest.discipline.thresholds.shadowfiend
 		}
 	end
+
+	-- Ravage thresholds for Feral
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.feral ~= nil and
+		TwintopInsanityBarSettings.druid.feral.thresholds ~= nil and
+		TwintopInsanityBarSettings.druid.feral.thresholds.ravage == nil then
+
+		TwintopInsanityBarSettings.druid.feral.thresholds.ravage = {
+			enabled = TwintopInsanityBarSettings.druid.feral.thresholds.ferociousBite
+		}
+		TwintopInsanityBarSettings.druid.feral.thresholds.ravageMinimum = {
+			enabled = TwintopInsanityBarSettings.druid.feral.thresholds.ferociousBiteMinimum
+		}
+		TwintopInsanityBarSettings.druid.feral.thresholds.ravageMaximum = {
+			enabled = TwintopInsanityBarSettings.druid.feral.thresholds.ferociousBiteMaximum
+		}
+	end
 end
 
 function TRB.Options:CleanupSettings(oldSettings)
