@@ -30,6 +30,7 @@ local content = [====[
 ### Feral 
 
 - [#360 - NEW (Twintop)](#360) Add support for Ravage, modifying Ferocious Bite.
+- [#360 - NEW (Twintop)](#360) Add support for Frenzied Regeneration in Catform with Empowered Shapeshifting, showing a threshold line when usable.
 
 ## Priest
 

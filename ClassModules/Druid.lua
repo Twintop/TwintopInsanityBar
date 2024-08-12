@@ -205,6 +205,8 @@ local function FillSpecializationCache()
 	-- Druid of the Claw
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.ravage.id] = TRB.Classes.Snapshot:New(spells.ravage)
+	---@type TRB.Classes.Snapshot
+	specCache.feral.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 
 	-- Restoration
 	specCache.restoration.Global_TwintopResourceBar = {
@@ -2391,6 +2393,10 @@ local function UpdateSnapshot_Feral()
 	if talents:IsTalentActive(spells.bloodtalons) then
 		snapshotData.snapshots[spells.bloodtalons.id].cooldown:Refresh()
 	end
+	
+	if talents:IsTalentActive(spells.empoweredShapeshifting) then
+		snapshotData.snapshots[spells.frenziedRegeneration.id].cooldown:Refresh()
+	end
 end
 
 local function UpdateSnapshot_Restoration()
@@ -2927,6 +2933,18 @@ local function UpdateResourceBar()
 								if not talents:IsTalentActive(spells.brutalSlash) then
 									showThreshold = false
 								elseif snapshots[spells.brutalSlash.id].cooldown.charges == 0 then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif currentResource >= resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							elseif spell.id == spells.frenziedRegeneration.id then
+								if not talents:IsTalentActive(spells.empoweredShapeshifting) then
+									showThreshold = false
+								elseif snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentResource >= resourceAmount then
@@ -3508,6 +3526,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.ravage.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.frenziedRegeneration.id then
+					if entry.type == "SPELL_CAST_SUCCESS" and talents:IsTalentActive(spells.empoweredShapeshifting) then
+						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+					end
 				end
 			elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
 				if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then

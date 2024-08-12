@@ -2598,6 +2598,21 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.rip.enabled = self:GetChecked()
 	end)
 
+
+	yCoord = yCoord - 25
+	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
+	yCoord = yCoord - 20
+
+	controls.checkBoxes.frenziedRegenerationThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_frenziedRegeneration", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.frenziedRegenerationThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFrenziedRegeneration"])
+	f.tooltip = L["DruidFeralThresholdCheckboxFrenziedRegenerationTooltip"]
+	f:SetChecked(spec.thresholds.frenziedRegeneration.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.frenziedRegeneration.enabled = self:GetChecked()
+	end)	
+
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 2, yCoord)
 

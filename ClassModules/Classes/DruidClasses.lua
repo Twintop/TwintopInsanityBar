@@ -581,6 +581,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         isTalent = true,
         primaryResourceType = Enum.PowerType.Energy,
         settingKey = "frenziedRegeneration",
+        hasCooldown = true,
         isSnowflake = true -- Only usable in Catform with Empowered Shapeshifting
     })
 
