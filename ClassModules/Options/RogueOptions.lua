@@ -665,6 +665,10 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			dismantle = {
 				enabled = false,
 			},
+			--Trickster
+			coupDeGrace = {
+				enabled = true,
+			}
 		},
 		generation = {
 			mode="gcd",
@@ -1070,6 +1074,10 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			shadowyDuel = {
 				enabled = false,
 			},
+			--Trickster
+			coupDeGrace = {
+				enabled = true,
+			}
 		},
 		generation = {
 			mode="gcd",
@@ -2766,6 +2774,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.dispatch.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.dispatch.enabled = self:GetChecked()
+		spec.thresholds.coupDeGrace.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3868,6 +3877,7 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.eviscerate.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.eviscerate.enabled = self:GetChecked()
+		spec.thresholds.coupDeGrace.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

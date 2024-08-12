@@ -1070,6 +1070,20 @@ local function UpdateResourceBar()
 										end
 									end
 								end
+							elseif spell.id == spells.thunderClap.id then
+								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+									showThreshold = false
+								elseif talents:IsTalentActive(spells.crashingThunder) then
+									showThreshold = false
+								elseif snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif currentResource >= resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
 							end
 						elseif resourceAmount == 0 then
 							showThreshold = false

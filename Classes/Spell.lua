@@ -248,7 +248,7 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
         if spc ~= nil then
             for x = 1, #spc do
                 if spc[x].type == self.primaryResourceType then
-                    if spc[x][self.primaryResourceTypeProperty] > 0 then
+                    if spc[x][self.primaryResourceTypeProperty] > 0 then                        
                         local value = spc[x][self.primaryResourceTypeProperty] * self.primaryResourceTypeMod
                         self._lastNonZeroPrimaryResourceValue = value
                         self._isFreeCurrently = false

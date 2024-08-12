@@ -3275,6 +3275,30 @@ function TRB.Options:PortForwardSettings()
 			enabled = TwintopInsanityBarSettings.druid.feral.thresholds.ferociousBiteMaximum
 		}
 	end
+
+	-- Coup de Grace thresholds for Outlaw
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.rogue ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw.thresholds ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw.thresholds.coupDeGrace == nil then
+
+		TwintopInsanityBarSettings.rogue.outlaw.thresholds.coupDeGrace = {
+			enabled = TwintopInsanityBarSettings.rogue.outlaw.thresholds.dispatch
+		}
+	end
+
+	-- Coup de Grace thresholds for Subtlety
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.rogue ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety.thresholds ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety.thresholds.coupDeGrace == nil then
+
+		TwintopInsanityBarSettings.rogue.subtlety.thresholds.coupDeGrace = {
+			enabled = TwintopInsanityBarSettings.rogue.subtlety.thresholds.eviscerate
+		}
+	end
 end
 
 function TRB.Options:CleanupSettings(oldSettings)

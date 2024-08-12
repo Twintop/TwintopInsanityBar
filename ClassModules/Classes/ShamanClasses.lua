@@ -47,6 +47,7 @@ end
 ---@field public echoesOfGreatSundering TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
 ---@field public primalFracture TRB.Classes.SpellBase
+---@field public tempest TRB.Classes.SpellBase
 ---@field public lightningBolt TRB.Classes.Shaman.OverloadSpell
 ---@field public lavaBurst TRB.Classes.Shaman.OverloadSpell
 ---@field public chainLightning TRB.Classes.Shaman.OverloadSpell
@@ -202,12 +203,15 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         resource = 4, --Tooltip says 3, but spell ID 217891 and in game says 4
         overload = 3
     })
-
-    --TODO: Add Searing Flames passive resource
-
     self.primalFracture = TRB.Classes.SpellBase:New({ -- T30 4P
         id = 410018,
         resourcePercent = 1.5
+    })
+
+    -- Stormbringer    
+    self.tempest = TRB.Classes.SpellBase:New({
+        id = 454009,
+        isTalent = true
     })
 
     return self

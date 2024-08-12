@@ -389,7 +389,7 @@ end
 ---@field public countTheOdds TRB.Classes.SpellBase
 ---@field public bladeRush TRB.Classes.SpellBase
 ---@field public keepItRolling TRB.Classes.SpellBase
----@field public greenskinsWickers TRB.Classes.SpellBase
+---@field public escalatingBlade TRB.Classes.SpellBase
 ---@field public bladeFlurry TRB.Classes.SpellThreshold
 ---@field public rollTheBones TRB.Classes.SpellThreshold
 ---@field public dreadblades TRB.Classes.SpellThreshold
@@ -400,6 +400,7 @@ end
 ---@field public pistolShot TRB.Classes.SpellComboPointThreshold
 ---@field public sinisterStrike TRB.Classes.SpellComboPointThreshold
 ---@field public ghostlyStrike TRB.Classes.SpellComboPointThreshold
+---@field public coupDeGrace TRB.Classes.SpellComboPointThreshold
 TRB.Classes.Rogue.OutlawSpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
 TRB.Classes.Rogue.OutlawSpells.__index = TRB.Classes.Rogue.OutlawSpells
 
@@ -435,7 +436,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         settingKey = "dispatch",
-        baseline = true
+        baseline = true,
+        isSnowflake = true
     })
     self.pistolShot = TRB.Classes.SpellComboPointThreshold:New({
         id = 185763,
@@ -556,10 +558,21 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         cooldown = 90,
         restlessBlades = true
     })
-    -- TODO: Implement this!
-    self.greenskinsWickers = TRB.Classes.SpellBase:New({
-        id = 386823,
-        isTalent = true
+
+    -- Trickster
+    self.coupDeGrace = TRB.Classes.SpellComboPointThreshold:New({
+        id = 441776,
+        talentId = 441423,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPoints = true,
+        settingKey = "coupDeGrace",
+        isTalent = true,
+        isSnowflake = true
+    })
+    self.escalatingBlade = TRB.Classes.SpellBase:New({
+        id = 441786,
+        hasStacks = true,
+        maxStacks = 4
     })
 
     return self
@@ -763,6 +776,22 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         settingKey = "dismantle",
         hasCooldown = true,
         isPvp = true
+    })
+
+    -- Trickster
+    self.coupDeGrace = TRB.Classes.SpellComboPointThreshold:New({
+        id = 441776,
+        talentId = 441423,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPoints = true,
+        settingKey = "coupDeGrace",
+        isTalent = true,
+        isSnowflake = true
+    })
+    self.escalatingBlade = TRB.Classes.SpellBase:New({
+        id = 441786,
+        hasStacks = true,
+        maxStacks = 4
     })
        
     return self

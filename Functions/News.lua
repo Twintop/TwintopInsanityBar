@@ -52,6 +52,21 @@ local content = [====[
 <br/>&emsp;&ensp;- New bar text icons:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#entropicRift` - Entropic Rift
 
+## Rogue
+### Outlaw
+
+- [#375 - NEW (Twintop)](#375) Add support for Coup de Grace as a threshold line, replacing Dispatch.
+
+### Subtlety
+
+- [#376 - NEW (Twintop)](#376) Add support for Coup de Grace as a threshold line, replacing Eviscerate.
+
+
+## Warrior
+### Fury
+
+- [#371 - NEW (Twintop)](#381) Add support for Crashing Thunder.
+
 ---
 
 # 11.0.2.0-beta01 (2024-08-05)

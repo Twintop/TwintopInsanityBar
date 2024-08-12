@@ -313,7 +313,8 @@ function TRB.Classes.Warrior.FurySpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "thunderClap",
         isTalent = true,
-        hasCooldown = true
+        hasCooldown = true,
+        isSnowflake = true
     })
 
     -- Fury Talent abilities
@@ -347,11 +348,12 @@ function TRB.Classes.Warrior.FurySpells:New()
         resourcePerTick = 10,
         energizeId = 334934
     })
-    self.ravager = TRB.Classes.SpellBase:New({
-        id = 228920,
+    -- TODO: Maybe implement this
+    self.bladestorm = TRB.Classes.SpellBase:New({
+        id = 227847,
         hasTicks = true,
-        tickRate = 2,
-        duration = 12,
+        tickRate = 1,
+        duration = 4,
         resourcePerTick = 10,
         energizeId = 334934
     })
@@ -359,6 +361,12 @@ function TRB.Classes.Warrior.FurySpells:New()
         id = 382953,
         resourcePerTick = 10,
         charges = 2,
+        isTalent = true
+    })
+
+    -- Mountain Thane    
+    self.crashingThunder = TRB.Classes.SpellBase:New({
+        id = 436707,
         isTalent = true
     })
 

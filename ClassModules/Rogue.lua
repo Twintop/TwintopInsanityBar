@@ -253,6 +253,8 @@ local function FillSpecializationCache()
 	specCache.outlaw.snapshotData.snapshots[spells.skullAndCrossbones.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.skullAndCrossbones.id]
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.trueBearing.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.trueBearing.id]
+	---@type TRB.Classes.Snapshot
+	specCache.outlaw.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, true)
 
 	specCache.outlaw.barTextVariables = {
 		icons = {},
@@ -364,6 +366,8 @@ local function FillSpecializationCache()
 	specCache.subtlety.snapshotData.snapshots[spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(spells.finalityEviscerate, nil, true)
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.finalityRupture.id] = TRB.Classes.Snapshot:New(spells.finalityRupture, nil, true)
+	---@type TRB.Classes.Snapshot
+	specCache.subtlety.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, true)
 
 	specCache.subtlety.barTextVariables = {
 		icons = {},
@@ -2687,6 +2691,25 @@ local function UpdateResourceBar()
 									else
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 									end
+								elseif spell.id == spells.dispatch.id then
+									if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.attributes.maxStacks then
+										showThreshold = false
+									elseif currentResource >= resourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == spells.coupDeGrace.id then
+									if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.attributes.maxStacks then
+										showThreshold = false
+									elseif currentResource >= resourceAmount then
+										thresholdColor = specSettings.colors.threshold.special
+										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
 								end
 							elseif resourceAmount == 0 then
 								showThreshold = false
@@ -2875,18 +2898,6 @@ local function UpdateResourceBar()
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					
 						if spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
-							--[[if spell.id == spells.ambush.id then
-								if stealthViaBuff then
-									if currentResource >= resourceAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								else
-									showThreshold = false
-								end
-							else]]
 							if stealthViaBuff then
 								if currentResource >= resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
@@ -2965,11 +2976,23 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == spells.eviscerate.id then
-									if snapshots[spells.finalityEviscerate.id].buff.isActive then
+									if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.attributes.maxStacks then
+										showThreshold = false
+									elseif snapshots[spells.finalityEviscerate.id].buff.isActive then
 										thresholdColor = specSettings.colors.threshold.special
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 									elseif currentResource >= resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == spells.coupDeGrace.id then
+									if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.attributes.maxStacks then
+										showThreshold = false
+									elseif currentResource >= resourceAmount then
+										thresholdColor = specSettings.colors.threshold.special
+										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
@@ -3325,6 +3348,14 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					(entry.spellId == spells.backstab.id or
 					entry.spellId == spells.shadowstrike.id) then
 					snapshots[spells.symbolsOfDeath.id].buff:RequestRefresh(GetTime() + 0.05)
+				end
+			end
+
+			if (specId == 2 and TRB.Data.barConstructedForSpec == "outlaw") or
+			   (specId == 3 and TRB.Data.barConstructedForSpec == "subtlety") then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells|TRB.Classes.Rogue.SubtletySpells]]
+				if entry.spellId == spells.escalatingBlade.id then
+					snapshots[spells.escalatingBlade.id].buff:Initialize(entry.type, true)
 				end
 			end
 
