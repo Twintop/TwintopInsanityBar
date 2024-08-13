@@ -46,7 +46,7 @@ local content = [====[
 
 ### Shadow
 
-- [#373 - NEW (Twintop)](#371) Add support for tracking Entropic Rift.
+- [#373 - NEW (Twintop)](#373) Add support for tracking Entropic Rift.
 <br/>&emsp;&ensp;- New bar text variable:
 <br/>&emsp;&ensp;&emsp;&ensp;- `$entropicRiftTime` - Time remaining on your Entropic Rift.
 <br/>&emsp;&ensp;- New bar text icons:
@@ -60,7 +60,6 @@ local content = [====[
 ### Subtlety
 
 - [#376 - NEW (Twintop)](#376) Add support for Coup de Grace as a threshold line, replacing Eviscerate.
-
 
 ## Warrior
 ### Fury
