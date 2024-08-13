@@ -13,7 +13,7 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 11.0.2.0
+## Version: 11.0.2.1
 ## X-ReleaseType: release
 ## X-ReleaseDate: 2024-08-13
 ## SavedVariables: TwintopInsanityBarSettings

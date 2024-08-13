@@ -11,6 +11,17 @@ local content = [====[
 
 ---
 
+# 11.0.2.1-release (2024-08-13)
+## General
+
+- (UPDATE (Twintop)) Update localizations.
+
+## Priest
+
+- [#402 - FIX (Twintop)](#402) Fix an issue where Shadowfiend bar text would cause Lua errors if you had disabled tracking Insanity or Mana gain from Shadowfiend.
+
+---
+
 # 11.0.2.0-release (2024-08-13)
 ## Druid
 ### Balance 

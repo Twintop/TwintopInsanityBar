@@ -236,7 +236,10 @@ function TRB.Classes.Priest.Shadowfiend:New(settings, talents, resourceCalculati
     self.mindbender = mindbender
     self.voidwraith = voidwraith
     self.spawns = {}
-
+    self.remainingGcds = 0
+    self.remainingSwings = 0
+    self.remainingTime = 0
+    
     for x = 1, 5 do
         self.spawns[x] = TRB.Classes.Priest.ShadowfiendEntry:New(x, resourceCalculationFunction, settings, shadowfiend, mindbender, voidwraith)
     end
