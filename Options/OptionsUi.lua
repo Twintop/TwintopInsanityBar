@@ -1832,81 +1832,121 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 
-	controls.labels.thresholdPotions = TRB.Functions.OptionsUi:BuildLabel(parent, L["AeratedManaPotion"], 5, yCoord, 300, 20)
+	controls.labels.thresholdPotions = TRB.Functions.OptionsUi:BuildLabel(parent, L["AlgariManaPotion"], 5, yCoord, 300, 20)
 	yCoord = yCoord - 20
 
-	controls.checkBoxes.aeratedManaPotionRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.aeratedManaPotionRank3ThresholdShow
+	controls.checkBoxes.algariManaPotionRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_algariManaPotionRank3", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.algariManaPotionRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["AeratedManaPotionRank3"])
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank3"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AeratedManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["AeratedManaPotionRank3"])
-	f:SetChecked(spec.thresholds.aeratedManaPotionRank3.enabled)
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank3"])
+	f:SetChecked(spec.thresholds.algariManaPotionRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.aeratedManaPotionRank3.enabled = self:GetChecked()
+		spec.thresholds.algariManaPotionRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.aeratedManaPotionRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.aeratedManaPotionRank2ThresholdShow
+	controls.checkBoxes.algariManaPotionRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_algariManaPotionRank2", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.algariManaPotionRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["AeratedManaPotionRank2"])
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank2"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AeratedManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["AeratedManaPotionRank2"])
-	f:SetChecked(spec.thresholds.aeratedManaPotionRank2.enabled)
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank2"])
+	f:SetChecked(spec.thresholds.algariManaPotionRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.aeratedManaPotionRank2.enabled = self:GetChecked()
+		spec.thresholds.algariManaPotionRank2.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
-	controls.checkBoxes.aeratedManaPotionRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.aeratedManaPotionRank1ThresholdShow
+	controls.checkBoxes.algariManaPotionRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_algariManaPotionRank1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.algariManaPotionRank1ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["AeratedManaPotionRank1"])
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank1"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AeratedManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["AeratedManaPotionRank1"])
-	f:SetChecked(spec.thresholds.aeratedManaPotionRank1.enabled)
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank1"])
+	f:SetChecked(spec.thresholds.algariManaPotionRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.aeratedManaPotionRank1.enabled = self:GetChecked()
+		spec.thresholds.algariManaPotionRank1.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
-	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["PotionOfFrozenFocus"], 5, yCoord, 300, 20)
+	controls.labels.thresholdPotions = TRB.Functions.OptionsUi:BuildLabel(parent, L["CavedwellersDelight"], 5, yCoord, 300, 20)
 	yCoord = yCoord - 20
 
-	controls.checkBoxes.potionOfFrozenFocusRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.potionOfFrozenFocusRank3ThresholdShow
+	controls.checkBoxes.cavedwellersDelightRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cavedwellersDelightRank3", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cavedwellersDelightRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["PotionOfFrozenFocusRank3"])
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank3"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["PotionOfFrozenFocus"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["PotionOfFrozenFocusRank3"])
-	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank3.enabled)
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank3"])
+	f:SetChecked(spec.thresholds.cavedwellersDelightRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.potionOfFrozenFocusRank3.enabled = self:GetChecked()
+		spec.thresholds.cavedwellersDelightRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.potionOfFrozenFocusRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.potionOfFrozenFocusRank2ThresholdShow
+	controls.checkBoxes.cavedwellersDelightRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cavedwellersDelightRank2", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cavedwellersDelightRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["PotionOfFrozenFocusRank2"])
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank2"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["PotionOfFrozenFocus"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["PotionOfFrozenFocusRank2"])
-	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank2.enabled)
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank2"])
+	f:SetChecked(spec.thresholds.cavedwellersDelightRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.potionOfFrozenFocusRank2.enabled = self:GetChecked()
+		spec.thresholds.cavedwellersDelightRank2.enabled = self:GetChecked()
+	end)
+	yCoord = yCoord - 25
+
+	controls.checkBoxes.cavedwellersDelightRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cavedwellersDelightRank1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cavedwellersDelightRank1ThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank1"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank1"])
+	f:SetChecked(spec.thresholds.cavedwellersDelightRank1.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.cavedwellersDelightRank1.enabled = self:GetChecked()
+	end)
+	yCoord = yCoord - 25
+
+
+	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["SlumberingSoulSerum"], 5, yCoord, 300, 20)
+	yCoord = yCoord - 20
+
+	controls.checkBoxes.slumberingSoulSerumRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_slumberingSoulSerumRank3", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.slumberingSoulSerumRank3ThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank3"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank3"])
+	f:SetChecked(spec.thresholds.slumberingSoulSerumRank3.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.slumberingSoulSerumRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.potionOfFrozenFocusRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.potionOfFrozenFocusRank1ThresholdShow
+	controls.checkBoxes.slumberingSoulSerumRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_slumberingSoulSerumRank2", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.slumberingSoulSerumRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["PotionOfFrozenFocusRank1"])
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank2"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["PotionOfFrozenFocus"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["PotionOfFrozenFocusRank1"])
-	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank1.enabled)
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank2"])
+	f:SetChecked(spec.thresholds.slumberingSoulSerumRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.potionOfFrozenFocusRank1.enabled = self:GetChecked()
+		spec.thresholds.slumberingSoulSerumRank2.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.slumberingSoulSerumRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_slumberingSoulSerumRank1", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.slumberingSoulSerumRank1ThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank1"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank1"])
+	f:SetChecked(spec.thresholds.slumberingSoulSerumRank1.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.slumberingSoulSerumRank1.enabled = self:GetChecked()
 	end)
 
 	if classId == 5 or classId == 10 then -- Priest or Monk

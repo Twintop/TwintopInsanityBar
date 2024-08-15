@@ -943,7 +943,7 @@ local function RestorationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
+			text="{$potionCooldown}[#slumberingSoulSerum $potionCooldown] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -1029,22 +1029,31 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			aeratedManaPotionRank1 = {
+			algariManaPotionRank1 = {
 				enabled = false,
 			},
-			aeratedManaPotionRank2 = {
+			algariManaPotionRank2 = {
 				enabled = false,
 			},
-			aeratedManaPotionRank3 = {
+			algariManaPotionRank3 = {
 				enabled = true,
 			},
-			potionOfFrozenFocusRank1 = {
+			cavedwellersDelightRank1 = {
 				enabled = false,
 			},
-			potionOfFrozenFocusRank2 = {
+			cavedwellersDelightRank2 = {
 				enabled = false,
 			},
-			potionOfFrozenFocusRank3 = {
+			cavedwellersDelightRank3 = {
+				enabled = true,
+			},
+			slumberingSoulSerumRank1 = {
+				enabled = false,
+			},
+			slumberingSoulSerumRank2 = {
+				enabled = false,
+			},
+			slumberingSoulSerumRank3 = {
 				enabled = true,
 			},
 			potionCooldown = {

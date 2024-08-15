@@ -592,12 +592,15 @@ end
 ---@field public alchemistStone TRB.Classes.SpellBase
 ---@field public moltenRadiance TRB.Classes.SpellBase
 ---@field public potionOfChilledClarity TRB.Classes.SpellBase
----@field public aeratedManaPotionRank1 TRB.Classes.SpellThreshold
----@field public aeratedManaPotionRank2 TRB.Classes.SpellThreshold
----@field public aeratedManaPotionRank3 TRB.Classes.SpellThreshold
----@field public potionOfFrozenFocusRank1 TRB.Classes.SpellThreshold
----@field public potionOfFrozenFocusRank2 TRB.Classes.SpellThreshold
----@field public potionOfFrozenFocusRank3 TRB.Classes.SpellThreshold
+---@field public algariManaPotionRank1 TRB.Classes.SpellThreshold
+---@field public algariManaPotionRank2 TRB.Classes.SpellThreshold
+---@field public algariManaPotionRank3 TRB.Classes.SpellThreshold
+---@field public cavedwellersDelightRank1 TRB.Classes.SpellThreshold
+---@field public cavedwellersDelightRank2 TRB.Classes.SpellThreshold
+---@field public cavedwellersDelightRank3 TRB.Classes.SpellThreshold
+---@field public slumberingSoulSerumRank1 TRB.Classes.SpellThreshold
+---@field public slumberingSoulSerumRank2 TRB.Classes.SpellThreshold
+---@field public slumberingSoulSerumRank3 TRB.Classes.SpellThreshold
 TRB.Classes.Healer.HealerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Healer.HealerSpells.__index = TRB.Classes.Healer.HealerSpells
 
@@ -632,66 +635,102 @@ function TRB.Classes.Healer.HealerSpells:New()
     })
 
     -- Potions
-    self.aeratedManaPotionRank1 = TRB.Classes.SpellThreshold:New({
-        id = 370607,
-        itemId = 191384,
-        spellId = 370607,
+    self.algariManaPotionRank1 = TRB.Classes.SpellThreshold:New({
+        id = 431418,
+        itemId = 212239,
+        spellId = 431418,
         primaryResourceType = Enum.PowerType.Mana,
-        iconName = "inv_10_alchemy_bottle_shape1_blue",
+        iconName = "inv_flask_blue",
         useSpellIcon = true,
-        settingKey = "aeratedManaPotionRank1",
+        settingKey = "algariManaPotionRank1",
         isPotion = true,
         hasCooldown = true
     })
-    self.aeratedManaPotionRank2 = TRB.Classes.SpellThreshold:New({
-        id = 370607,
-        itemId = 191385,
-        spellId = 370607,
+    self.algariManaPotionRank2 = TRB.Classes.SpellThreshold:New({
+        id = 431418,
+        itemId = 212240,
+        spellId = 431418,
         primaryResourceType = Enum.PowerType.Mana,
-        iconName = "inv_10_alchemy_bottle_shape1_blue",
+        iconName = "inv_flask_blue",
         useSpellIcon = true,
-        settingKey = "aeratedManaPotionRank2",
+        settingKey = "algariManaPotionRank2",
         isPotion = true,
         hasCooldown = true
     })
-    self.aeratedManaPotionRank3 = TRB.Classes.SpellThreshold:New({
-        id = 370607,
-        itemId = 191386,
-        spellId = 370607,
+    self.algariManaPotionRank3 = TRB.Classes.SpellThreshold:New({
+        id = 431418,
+        itemId = 212241,
+        spellId = 431418,
         primaryResourceType = Enum.PowerType.Mana,
-        iconName = "inv_10_alchemy_bottle_shape1_blue",
+        iconName = "inv_flask_blue",
         useSpellIcon = true,
-        settingKey = "aeratedManaPotionRank3",
+        settingKey = "algariManaPotionRank3",
         isPotion = true,
         hasCooldown = true
     })
-    self.potionOfFrozenFocusRank1 = TRB.Classes.SpellThreshold:New({
-        id = 371033,
-        itemId = 191363,
-        spellId = 371033,
+    self.cavedwellersDelightRank1 = TRB.Classes.SpellThreshold:New({
+        id = 431419,
+        itemId = 212242,
+        spellId = 431419,
         primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_alchemy_elixir_06",
         useSpellIcon = true,
-        settingKey = "potionOfFrozenFocusRank1",
+        settingKey = "cavedwellersDelightRank1",
         isPotion = true,
         hasCooldown = true
     })
-    self.potionOfFrozenFocusRank2 = TRB.Classes.SpellThreshold:New({
-        id = 371033,
-        itemId = 191364,
-        spellId = 371033,
+    self.cavedwellersDelightRank2 = TRB.Classes.SpellThreshold:New({
+        id = 431419,
+        itemId = 212243,
+        spellId = 431419,
         primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_alchemy_elixir_06",
         useSpellIcon = true,
-        settingKey = "potionOfFrozenFocusRank2",
+        settingKey = "cavedwellersDelightRank2",
         isPotion = true,
         hasCooldown = true
     })
-    self.potionOfFrozenFocusRank3 = TRB.Classes.SpellThreshold:New({
-        id = 371033,
-        itemId = 191365,
-        spellId = 371033,
+    self.cavedwellersDelightRank3 = TRB.Classes.SpellThreshold:New({
+        id = 431419,
+        itemId = 212244,
+        spellId = 431419,
         primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_alchemy_elixir_06",
         useSpellIcon = true,
-        settingKey = "potionOfFrozenFocusRank3",
+        settingKey = "cavedwellersDelightRank3",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.slumberingSoulSerumRank1 = TRB.Classes.SpellThreshold:New({
+        id = 431422,
+        itemId = 212245,
+        spellId = 431422,
+        primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_flask_green",
+        useSpellIcon = true,
+        settingKey = "slumberingSoulSerumRank1",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.slumberingSoulSerumRank2 = TRB.Classes.SpellThreshold:New({
+        id = 431422,
+        itemId = 212246,
+        spellId = 431422,
+        primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_flask_green",
+        useSpellIcon = true,
+        settingKey = "slumberingSoulSerumRank2",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.slumberingSoulSerumRank3 = TRB.Classes.SpellThreshold:New({
+        id = 431422,
+        itemId = 212247,
+        spellId = 431422,
+        primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_flask_green",
+        useSpellIcon = true,
+        settingKey = "slumberingSoulSerumRank3",
         isPotion = true,
         hasCooldown = true
     })

@@ -222,7 +222,7 @@ end
 function TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(settings, spells, snapshots, frame, castingBarValue)
 	local passiveValue = 0
 	if settings.bar.showPassive then
-		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 1, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 1, castingBarValue, passiveValue)
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 2, castingBarValue, passiveValue)
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 3, castingBarValue, passiveValue)
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 4, castingBarValue, passiveValue)

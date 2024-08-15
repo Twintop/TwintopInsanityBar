@@ -75,30 +75,42 @@ local function FillSpecializationCache()
 		},
 		items = {
 			potions = {
-				aeratedManaPotionRank3 = {
-					id = 191386,
-					mana = 27600
+				algariManaPotionRank3 = {
+					id = 212241,
+					mana = 270000
 				},
-				aeratedManaPotionRank2 = {
-					id = 191385,
-					mana = 24000
+				algariManaPotionRank2 = {
+					id = 212240,
+					mana = 234783
 				},
-				aeratedManaPotionRank1 = {
-					id = 191384,
-					mana = 20869
+				algariManaPotionRank1 = {
+					id = 212239,
+					mana = 204159
 				},
-				potionOfFrozenFocusRank3 = {
-					id = 191365,
-					mana = 48300
+				cavedwellersDelightRank3 = {
+					id = 212244,
+					mana = 202500
 				},
-				potionOfFrozenFocusRank2 = {
-					id = 191364,
-					mana = 42000
+				cavedwellersDelightRank2 = {
+					id = 212243,
+					mana = 176087
 				},
-				potionOfFrozenFocusRank1 = {
-					id = 191363,
-					mana = 36521
+				cavedwellersDelightRank1 = {
+					id = 212243,
+					mana = 153119
 				},
+				slumberingSoulSerumRank3 = {
+					id = 212247,
+					mana = 375000
+				},
+				slumberingSoulSerumRank2 = {
+					id = 212246,
+					mana = 326090
+				},
+				slumberingSoulSerumRank1 = {
+					id = 212245,
+					mana = 283550
+				},				
 			},
 			alchemyStone = false
 		}
@@ -124,9 +136,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Healer.SymbolOfHope
 	specCache.discipline.snapshotData.snapshots[spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(spells.symbolOfHope, CalculateManaGain)
 	---@type TRB.Classes.Healer.ChanneledManaPotion
-	specCache.discipline.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.potionOfFrozenFocusRank1, CalculateManaGain)
+	specCache.discipline.snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.slumberingSoulSerumRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.aeratedManaPotionRank1)
+	specCache.discipline.snapshotData.snapshots[spells.algariManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.algariManaPotionRank1)
 	---@type TRB.Classes.Healer.MoltenRadiance
 	specCache.discipline.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
@@ -185,29 +197,41 @@ local function FillSpecializationCache()
 		},
 		items = {
 			potions = {
-				aeratedManaPotionRank3 = {
-					id = 191386,
-					mana = 27600
+				algariManaPotionRank3 = {
+					id = 212241,
+					mana = 270000
 				},
-				aeratedManaPotionRank2 = {
-					id = 191385,
-					mana = 24000
+				algariManaPotionRank2 = {
+					id = 212240,
+					mana = 234783
 				},
-				aeratedManaPotionRank1 = {
-					id = 191384,
-					mana = 20869
+				algariManaPotionRank1 = {
+					id = 212239,
+					mana = 204159
 				},
-				potionOfFrozenFocusRank3 = {
-					id = 191365,
-					mana = 48300
+				cavedwellersDelightRank3 = {
+					id = 212244,
+					mana = 202500
 				},
-				potionOfFrozenFocusRank2 = {
-					id = 191364,
-					mana = 42000
+				cavedwellersDelightRank2 = {
+					id = 212243,
+					mana = 176087
 				},
-				potionOfFrozenFocusRank1 = {
-					id = 191363,
-					mana = 36521
+				cavedwellersDelightRank1 = {
+					id = 212243,
+					mana = 153119
+				},
+				slumberingSoulSerumRank3 = {
+					id = 212247,
+					mana = 375000
+				},
+				slumberingSoulSerumRank2 = {
+					id = 212246,
+					mana = 326090
+				},
+				slumberingSoulSerumRank1 = {
+					id = 212245,
+					mana = 283550
 				},
 			},
 			alchemyStone = false
@@ -254,9 +278,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.holyWordChastise.id] = TRB.Classes.Snapshot:New(spells.holyWordChastise)
 	---@type TRB.Classes.Healer.ChanneledManaPotion
-	specCache.holy.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.potionOfFrozenFocusRank1, CalculateManaGain)
+	specCache.holy.snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.slumberingSoulSerumRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.aeratedManaPotionRank1)
+	specCache.holy.snapshotData.snapshots[spells.algariManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.algariManaPotionRank1)
 	---@type TRB.Classes.Healer.MoltenRadiance
 	specCache.holy.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
@@ -415,12 +439,12 @@ local function FillSpellData_Discipline()
 		{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 		{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
 
-		{ variable = "#amp", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = true },
-		{ variable = "#aeratedManaPotion", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = false },
+		{ variable = "#amp", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = true },
+		{ variable = "#algariManaPotion", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = false },
 		{ variable = "#pocc", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = true },
 		{ variable = "#potionOfChilledClarity", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = false },
-		{ variable = "#poff", icon = spells.potionOfFrozenFocusRank1.icon, description = spells.potionOfFrozenFocusRank1.name, printInSettings = true },
-		{ variable = "#potionOfFrozenFocus", icon = spells.potionOfFrozenFocusRank1.icon, description = spells.potionOfFrozenFocusRank1.name, printInSettings = true },
+		{ variable = "#poff", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = true },
+		{ variable = "#slumberingSoulSerum", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = true },
 	}
 	specCache.discipline.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -508,8 +532,8 @@ local function FillSpellData_Discipline()
 		{ variable = "$mrTime", description = L["PriestDisciplineBarTextVariable_mrTime"], printInSettings = true, color = false },
 
 		{ variable = "$channeledMana", description = L["PriestDisciplineBarTextVariable_channeledMana"], printInSettings = true, color = false },
-		{ variable = "$potionOfFrozenFocusTicks", description = L["PriestDisciplineBarTextVariable_potionOfFrozenFocusTicks"], printInSettings = true, color = false },
-		{ variable = "$potionOfFrozenFocusTime", description = L["PriestDisciplineBarTextVariable_potionOfFrozenFocusTime"], printInSettings = true, color = false },
+		{ variable = "$slumberingSoulSerumTicks", description = L["PriestDisciplineBarTextVariable_slumberingSoulSerumTicks"], printInSettings = true, color = false },
+		{ variable = "$slumberingSoulSerumTime", description = L["PriestDisciplineBarTextVariable_slumberingSoulSerumTime"], printInSettings = true, color = false },
 		
 		{ variable = "$potionOfChilledClarityMana", description = L["PriestDisciplineBarTextVariable_potionOfChilledClarityMana"], printInSettings = true, color = false },
 		{ variable = "$potionOfChilledClarityTime", description = L["PriestDisciplineBarTextVariable_potionOfChilledClarityTime"], printInSettings = true, color = false },
@@ -592,12 +616,12 @@ local function FillSpellData_Holy()
 		{ variable = "#sol", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
 		{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
 
-		{ variable = "#amp", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = true },
-		{ variable = "#aeratedManaPotion", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = false },
+		{ variable = "#amp", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = true },
+		{ variable = "#algariManaPotion", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = false },
 		{ variable = "#pocc", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = true },
 		{ variable = "#potionOfChilledClarity", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = false },
-		{ variable = "#poff", icon = spells.potionOfFrozenFocusRank1.icon, description = spells.potionOfFrozenFocusRank1.name, printInSettings = true },
-		{ variable = "#potionOfFrozenFocus", icon = spells.potionOfFrozenFocusRank1.icon, description = spells.potionOfFrozenFocusRank1.name, printInSettings = false },
+		{ variable = "#poff", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = true },
+		{ variable = "#slumberingSoulSerum", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = false },
 
 		{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
 		{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
@@ -705,8 +729,8 @@ local function FillSpellData_Holy()
 		{ variable = "$mttTime", description = L["PriestHolyBarTextVariable_mttTime"], printInSettings = true, color = false },
 
 		{ variable = "$channeledMana", description = L["PriestHolyBarTextVariable_channeledMana"], printInSettings = true, color = false },
-		{ variable = "$potionOfFrozenFocusTicks", description = L["PriestHolyBarTextVariable_potionOfFrozenFocusTicks"], printInSettings = true, color = false },
-		{ variable = "$potionOfFrozenFocusTime", description = L["PriestHolyBarTextVariable_potionOfFrozenFocusTime"], printInSettings = true, color = false },
+		{ variable = "$slumberingSoulSerumTicks", description = L["PriestHolyBarTextVariable_slumberingSoulSerumTicks"], printInSettings = true, color = false },
+		{ variable = "$slumberingSoulSerumTime", description = L["PriestHolyBarTextVariable_slumberingSoulSerumTime"], printInSettings = true, color = false },
 		
 		{ variable = "$potionCooldown", description = L["PriestHolyBarTextVariable_potionCooldown"], printInSettings = true, color = false },
 		{ variable = "$potionCooldownSeconds", description = L["PriestHolyBarTextVariable_potionCooldownSeconds"], printInSettings = true, color = false },
@@ -1216,23 +1240,23 @@ local function RefreshLookupData_Discipline()
 	local bowTicks = string.format("%.0f", _bowTicks)
 
 	--$potionCooldownSeconds
-	local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
+	local _potionCooldown = snapshots[spells.algariManaPotionRank1.id].cooldown.remaining
 	local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 	local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 	local _potionCooldownSeconds = _potionCooldown % 60
 	--$potionCooldown
 	local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 	
-	local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+	local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 	--$channeledMana
 	local _channeledMana = channeledManaPotion.mana
 	local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
-	--$potionOfFrozenFocusTicks
-	local _potionOfFrozenFocusTicks = channeledManaPotion.ticks or 0
-	local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
-	--$potionOfFrozenFocusTime
-	local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-	local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
+	--$slumberingSoulSerumTicks
+	local _slumberingSoulSerumTicks = channeledManaPotion.ticks or 0
+	local slumberingSoulSerumTicks = string.format("%.0f", _slumberingSoulSerumTicks)
+	--$slumberingSoulSerumTime
+	local _slumberingSoulSerumTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
+	local slumberingSoulSerumTime = TRB.Functions.BarText:TimerPrecision(_slumberingSoulSerumTime)
 
 	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 	
@@ -1369,7 +1393,7 @@ local function RefreshLookupData_Discipline()
 	
 	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
 	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
-	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _slumberingSoulSerumTicks or 0
 	
 	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
 	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
@@ -1424,8 +1448,8 @@ local function RefreshLookupData_Discipline()
 	lookup["$bowTime"] = bowTime
 	lookup["$bowTicks"] = bowTicks
 	lookup["$channeledMana"] = channeledMana
-	lookup["$potionOfFrozenFocusTicks"] = potionOfFrozenFocusTicks
-	lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
+	lookup["$slumberingSoulSerumTicks"] = slumberingSoulSerumTicks
+	lookup["$slumberingSoulSerumTime"] = slumberingSoulSerumTime
 	lookup["$potionCooldown"] = potionCooldown
 	lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 	lookup["$sfMana"] = sfMana
@@ -1483,8 +1507,8 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$mttMana"] = _mttMana
 	lookupLogic["$mttTime"] = _mttTime
 	lookupLogic["$channeledMana"] = _channeledMana
-	lookupLogic["$potionOfFrozenFocusTicks"] = _potionOfFrozenFocusTicks
-	lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
+	lookupLogic["$slumberingSoulSerumTicks"] = _slumberingSoulSerumTicks
+	lookupLogic["$slumberingSoulSerumTime"] = _slumberingSoulSerumTime
 	lookupLogic["$potionCooldown"] = potionCooldown
 	lookupLogic["$potionCooldownSeconds"] = potionCooldown
 	lookupLogic["$sfMana"] = _sfMana
@@ -1589,23 +1613,23 @@ local function RefreshLookupData_Holy()
 	local bowTicks = string.format("%.0f", _bowTicks)
 
 	--$potionCooldownSeconds
-	local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
+	local _potionCooldown = snapshots[spells.algariManaPotionRank1.id].cooldown.remaining
 	local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 	local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 	local _potionCooldownSeconds = _potionCooldown % 60
 	--$potionCooldown
 	local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 	
-	local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+	local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 	--$channeledMana
 	local _channeledMana = channeledManaPotion.mana
 	local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
-	--$potionOfFrozenFocusTicks
-	local _potionOfFrozenFocusTicks = channeledManaPotion.ticks or 0
-	local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
-	--$potionOfFrozenFocusTime
-	local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-	local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
+	--$slumberingSoulSerumTicks
+	local _slumberingSoulSerumTicks = channeledManaPotion.ticks or 0
+	local slumberingSoulSerumTicks = string.format("%.0f", _slumberingSoulSerumTicks)
+	--$slumberingSoulSerumTime
+	local _slumberingSoulSerumTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
+	local slumberingSoulSerumTime = TRB.Functions.BarText:TimerPrecision(_slumberingSoulSerumTime)
 
 	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 	
@@ -1731,7 +1755,7 @@ local function RefreshLookupData_Holy()
 	
 	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
 	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
-	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _slumberingSoulSerumTicks or 0
 	
 	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
 	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
@@ -1792,8 +1816,8 @@ local function RefreshLookupData_Holy()
 	lookup["$bowTime"] = bowTime
 	lookup["$bowTicks"] = bowTicks
 	lookup["$channeledMana"] = channeledMana
-	lookup["$potionOfFrozenFocusTicks"] = potionOfFrozenFocusTicks
-	lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
+	lookup["$slumberingSoulSerumTicks"] = slumberingSoulSerumTicks
+	lookup["$slumberingSoulSerumTime"] = slumberingSoulSerumTime
 	lookup["$potionCooldown"] = potionCooldown
 	lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 	lookup["$solStacks"] = solStacks
@@ -1857,8 +1881,8 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$mttMana"] = _mttMana
 	lookupLogic["$mttTime"] = _mttTime
 	lookupLogic["$channeledMana"] = _channeledMana
-	lookupLogic["$potionOfFrozenFocusTicks"] = _potionOfFrozenFocusTicks
-	lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
+	lookupLogic["$slumberingSoulSerumTicks"] = _slumberingSoulSerumTicks
+	lookupLogic["$slumberingSoulSerumTime"] = _slumberingSoulSerumTime
 	lookupLogic["$potionCooldown"] = potionCooldown
 	lookupLogic["$potionCooldownSeconds"] = potionCooldown
 	lookupLogic["$solStacks"] = _solStacks
@@ -2585,14 +2609,14 @@ local function UpdateSnapshot_Healers()
 	local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 	potionOfChilledClarity:Update()
 
-	local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+	local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 	channeledManaPotion:Update()
 
 	snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime)
 
 	-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-	snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
-	snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
+	snapshots[spells.algariManaPotionRank1.id].cooldown.startTime, snapshots[spells.algariManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.algariManaPotionRank1.id)
+	snapshots[spells.algariManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Voidweaver()
@@ -2793,7 +2817,7 @@ local function UpdateResourceBar()
 					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 				end
 
-				local potion = snapshots[spells.aeratedManaPotionRank1.id].cooldown
+				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
 				local potionThresholdColor = specSettings.colors.threshold.over
 				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
@@ -2825,7 +2849,7 @@ local function UpdateResourceBar()
 						local resourceAmount = 0
 
 						if spell.attributes.isPotion then
-							snapshot = snapshots[spells.aeratedManaPotionRank1.id]
+							snapshot = snapshots[spells.algariManaPotionRank1.id]
 							thresholdColor = potionThresholdColor
 							frameLevel = potionFrameLevel
 							if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
@@ -3145,7 +3169,7 @@ local function UpdateResourceBar()
 					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 				end
 				
-				local potion = snapshots[spells.aeratedManaPotionRank1.id].cooldown
+				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
 				local potionThresholdColor = specSettings.colors.threshold.over
 				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
@@ -3177,7 +3201,7 @@ local function UpdateResourceBar()
 						local resourceAmount = 0
 
 						if spell.attributes.isPotion then
-							snapshot = snapshots[spells.aeratedManaPotionRank1.id]
+							snapshot = snapshots[spells.algariManaPotionRank1.id]
 							thresholdColor = potionThresholdColor
 							frameLevel = potionFrameLevel
 							if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
@@ -3757,8 +3781,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
-				if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then
-					local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
+					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.surgeOfLight.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
@@ -4053,10 +4077,10 @@ local function SwitchSpec()
 		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
 		lookup["#sol"] = spells.surgeOfLight.icon
 		lookup["#surgeOfLight"] = spells.surgeOfLight.icon
-		lookup["#amp"] = spells.aeratedManaPotionRank1.icon
-		lookup["#aeratedManaPotion"] = spells.aeratedManaPotionRank1.icon
-		lookup["#poff"] = spells.potionOfFrozenFocusRank1.icon
-		lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
+		lookup["#amp"] = spells.algariManaPotionRank1.icon
+		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
+		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
 		lookup["#pocc"] = spells.potionOfChilledClarity.icon
 		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 		lookup["#entropicRift"] = spells.entropicRift.icon
@@ -4143,10 +4167,10 @@ local function SwitchSpec()
 		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
 		lookup["#sol"] = spells.surgeOfLight.icon
 		lookup["#surgeOfLight"] = spells.surgeOfLight.icon
-		lookup["#amp"] = spells.aeratedManaPotionRank1.icon
-		lookup["#aeratedManaPotion"] = spells.aeratedManaPotionRank1.icon
-		lookup["#poff"] = spells.potionOfFrozenFocusRank1.icon
-		lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
+		lookup["#amp"] = spells.algariManaPotionRank1.icon
+		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
+		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
 		lookup["#pocc"] = spells.potionOfChilledClarity.icon
 		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 		lookup["#swp"] = spells.shadowWordPain.icon
@@ -4654,26 +4678,26 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$channeledMana" then
-			local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+			local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 			if channeledManaPotion.buff.isActive then
 				valid = true
 			end
-		elseif var == "$potionOfFrozenFocusTicks" then
-			local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+		elseif var == "$slumberingSoulSerumTicks" then
+			local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 			if channeledManaPotion.buff.isActive then
 				valid = true
 			end
-		elseif var == "$potionOfFrozenFocusTime" then
-			local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+		elseif var == "$slumberingSoulSerumTime" then
+			local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 			if channeledManaPotion.buff.isActive then
 				valid = true
 			end
 		elseif var == "$potionCooldown" then
-			if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
+			if snapshots[spells.algariManaPotionRank1.id].cooldown:IsUnusable() then
 				valid = true
 			end
 		elseif var == "$potionCooldownSeconds" then
-			if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
+			if snapshots[spells.algariManaPotionRank1.id].cooldown:IsUnusable() then
 				valid = true
 			end
 		elseif var == "$solStacks" then

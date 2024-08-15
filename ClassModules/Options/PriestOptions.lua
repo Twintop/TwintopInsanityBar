@@ -167,7 +167,7 @@ local function DisciplineLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="#atonement $atonementCount ($atonementMinTime)||n{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
+			text="#atonement $atonementCount ($atonementMinTime)||n{$potionCooldown}[#slumberingSoulSerum $potionCooldown] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -258,22 +258,31 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			aeratedManaPotionRank1 = {
+			algariManaPotionRank1 = {
 				enabled = false,
 			},
-			aeratedManaPotionRank2 = {
+			algariManaPotionRank2 = {
 				enabled = false,
 			},
-			aeratedManaPotionRank3 = {
+			algariManaPotionRank3 = {
 				enabled = true,
 			},
-			potionOfFrozenFocusRank1 = {
+			cavedwellersDelightRank1 = {
 				enabled = false,
 			},
-			potionOfFrozenFocusRank2 = {
+			cavedwellersDelightRank2 = {
 				enabled = false,
 			},
-			potionOfFrozenFocusRank3 = {
+			cavedwellersDelightRank3 = {
+				enabled = true,
+			},
+			slumberingSoulSerumRank1 = {
+				enabled = false,
+			},
+			slumberingSoulSerumRank2 = {
+				enabled = false,
+			},
+			slumberingSoulSerumRank3 = {
 				enabled = true,
 			},
 			shadowfiend = {
@@ -667,7 +676,7 @@ local function HolyLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
+			text="{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#slumberingSoulSerum $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -758,22 +767,31 @@ local function HolyLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			aeratedManaPotionRank1 = {
+			algariManaPotionRank1 = {
 				enabled = false,
 			},
-			aeratedManaPotionRank2 = {
+			algariManaPotionRank2 = {
 				enabled = false,
 			},
-			aeratedManaPotionRank3 = {
+			algariManaPotionRank3 = {
 				enabled = true,
 			},
-			potionOfFrozenFocusRank1 = {
+			cavedwellersDelightRank1 = {
 				enabled = false,
 			},
-			potionOfFrozenFocusRank2 = {
+			cavedwellersDelightRank2 = {
 				enabled = false,
 			},
-			potionOfFrozenFocusRank3 = {
+			cavedwellersDelightRank3 = {
+				enabled = true,
+			},
+			slumberingSoulSerumRank1 = {
+				enabled = false,
+			},
+			slumberingSoulSerumRank2 = {
+				enabled = false,
+			},
+			slumberingSoulSerumRank3 = {
 				enabled = true,
 			},
 			shadowfiend = {
