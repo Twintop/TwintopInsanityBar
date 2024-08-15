@@ -2,6 +2,12 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.String = {}
 
+---Converts a number into a short notation following the pattern: 1000, 10.00k, 100.0k, 1000k, 10.00m, 100.0m, 1000m, 10.00b, 100.0b, 1000b
+---@param num number
+---@param numDecimalPlaces integer # Only used if sub 1000 and `num` is not an integer
+---@param mode string # Rounding mode
+---@param isInteger boolean # Is `num` an integer?
+---@return string # Short notation output
 function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces, mode, isInteger)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
 	isInteger = isInteger or false
@@ -12,16 +18,30 @@ function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces
 		num = -num
 	end
 
-	if num >= 10^9 then
-		return string.format(negative .. "%." .. numDecimalPlaces .. "fb", TRB.Functions.Number:RoundTo(num / 10^9, numDecimalPlaces, mode))
+	if num >= 10^12 then
+		return string.format(negative .. "%." .. 0 .. "fb", TRB.Functions.Number:RoundTo(num / 10^9, 0, mode))
+	elseif num >= 10^11 then
+		return string.format(negative .. "%." .. 1 .. "fb", TRB.Functions.Number:RoundTo(num / 10^9, 3, mode))
+	elseif num >= 10^10 then
+		return string.format(negative .. "%." .. 2 .. "fb", TRB.Functions.Number:RoundTo(num / 10^9, 2, mode))
+	elseif num >= 10^9 then
+		return string.format(negative .. "%." .. 0 .. "fm", TRB.Functions.Number:RoundTo(num / 10^6, 0, mode))
+	elseif num >= 10^8 then
+		return string.format(negative .. "%." .. 1 .. "fm", TRB.Functions.Number:RoundTo(num / 10^6, 3, mode))
+	elseif num >= 10^7 then
+		return string.format(negative .. "%." .. 2 .. "fm", TRB.Functions.Number:RoundTo(num / 10^6, 2, mode))
 	elseif num >= 10^6 then
-		return string.format(negative .. "%." .. numDecimalPlaces .. "fm", TRB.Functions.Number:RoundTo(num / 10^6, numDecimalPlaces, mode))
+		return string.format(negative .. "%." .. 0 .. "fk", TRB.Functions.Number:RoundTo(num / 10^3, 0, mode))
+	elseif num >= 10^5 then
+		return string.format(negative .. "%." .. 1 .. "fk", TRB.Functions.Number:RoundTo(num / 10^3, 3, mode))
+	elseif num >= 10^4 then
+		return string.format(negative .. "%." .. 2 .. "fk", TRB.Functions.Number:RoundTo(num / 10^3, 2, mode))
 	elseif num >= 10^3 then
-		return string.format(negative .. "%." .. numDecimalPlaces .. "fk", TRB.Functions.Number:RoundTo(num / 10^3, numDecimalPlaces, mode))
+		return string.format(negative .. "%." .. 3 .. "fk", TRB.Functions.Number:RoundTo(num / 10^3, 1, mode))
 	else
 		if isInteger then
 			return string.format(negative .. "%.0f", TRB.Functions.Number:RoundTo(num, 0, mode))
-		else			
+		else
 			return string.format(negative .. "%." .. numDecimalPlaces .. "f", TRB.Functions.Number:RoundTo(num, 0, mode))
 		end
 	end

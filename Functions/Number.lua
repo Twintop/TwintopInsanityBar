@@ -2,6 +2,9 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Number = {}
 
+---Determines if the parameter is any kind of number
+---@param data any
+---@return boolean
 function TRB.Functions.Number:IsNumeric(data)
 	if type(data) == "number" then
 		return true
@@ -16,6 +19,12 @@ function TRB.Functions.Number:IsNumeric(data)
 	return false
 end
 
+---Rounds the supplied number to a number of decimal places.
+---@param num number # Number to round
+---@param numDecimalPlaces number? # Number of decimal places to round to
+---@param mode string? # Rounding mode. `floor`, `ceil`, or no rounding
+---@param returnAsNumber boolean? # Should the method return a number or a string
+---@return number|string
 function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode, returnAsNumber)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
 	local newNum = tostring(tonumber(num) or 0)
