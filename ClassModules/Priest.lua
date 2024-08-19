@@ -3976,10 +3976,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 								haveTotem, name, _, _, _ = GetTotemInfo(x)
 								if haveTotem then
 									if specId == 2 and name ~= spells.lightwell.name then
-										shadowfiend.spawns[x]:Activate(entry.destinationGuid, currentTime)
+										shadowfiend.spawns[x]:Activate(entry.spellId, entry.destinationGuid, currentTime)
 										break
 									elseif (specId == 1 or specId == 3) and name ~= spells.entropicRift.name then
-										shadowfiend.spawns[x]:Activate(entry.destinationGuid, currentTime)
+										shadowfiend.spawns[x]:Activate(entry.spellId, entry.destinationGuid, currentTime)
 										break
 									end
 								end
