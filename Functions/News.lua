@@ -16,6 +16,10 @@ local content = [====[
 
 - [#382 - UPDATE (Twintop)](#382) Update short number notation. Healers should no longer see e.g. `12.3k/2.5m` and instead see `12.34k/2500k`.
 
+## Priest
+
+- (FIX) Properly track Shadowfiend/Mindbender/Voidwraith when Glyph of the Sha is enabled.
+
 ---
 
 # 11.0.2.1-release (2024-08-13)

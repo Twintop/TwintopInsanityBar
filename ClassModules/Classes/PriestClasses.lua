@@ -16,6 +16,7 @@ TRB.Classes.Priest = TRB.Classes.Priest or {}
 ---@class TRB.Classes.Priest.ShadowfiendEntry : TRB.Classes.SpellBase
 ---@field public guid string # ID of the spawned Shadowfiend, Mindbender, or Voidwraith
 ---@field public totemId number # Totem that represents this spawn
+---@field public spellId integer? # Spell Id of the spawn
 ---@field public type shadowfiendType? # Type of spawn
 ---@field public startTime number? # Timestamp the spawn started
 ---@field public duration number # Duration of the spawn
@@ -72,13 +73,16 @@ function TRB.Classes.Priest.ShadowfiendEntry:Reset()
     self.remainingTime = 0
     self.resourceRaw = 0
     self.resourceFinal = 0
+    self.spellId = nil
     self.activeSpell = nil
 end
 
 ---Activates the entry with the guid provided and updates with initial values
+---@param spellId integer # SpellId of the spawn
 ---@param guid string # Guid of the spawn
 ---@param currentTime number # Current timestamp
-function TRB.Classes.Priest.ShadowfiendEntry:Activate(guid, currentTime)
+function TRB.Classes.Priest.ShadowfiendEntry:Activate(spellId, guid, currentTime)
+    self.spellId = spellId
     self.guid = guid
     self.swingTime = currentTime
     self:Update()
@@ -139,11 +143,20 @@ function TRB.Classes.Priest.ShadowfiendEntry:Update()
         elseif name == self.voidwraith.name then
             self.type = "Voidwraith"
             self.activeSpell = self.voidwraith
-        else -- Not actually a Shadowfiend spawn
-            if self.guid ~= nil then
+        else -- Sha Beast?
+            if self.spellId == self.shadowfiend.id then
+                self.type = "Shadowfiend"
+                self.activeSpell = self.shadowfiend
+            elseif self.mindbender ~= nil and self.spellId == self.mindbender.id then
+                self.type = "Mindbender"
+                self.activeSpell = self.mindbender
+            elseif self.voidwraith ~= nil and self.spellId == self.voidwraith.id then
+                self.type = "Voidwraith"
+                self.activeSpell = self.voidwraith
+            else
                 self:Reset()
+                return
             end
-            return
         end
     else
         if self.guid ~= nil then
