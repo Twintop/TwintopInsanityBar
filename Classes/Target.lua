@@ -5,6 +5,7 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.TargetData
 ---@field public targets table<string, TRB.Classes.Target>
+---@field public auraInstanceIds table<integer, TRB.Classes.Target>
 ---@field public currentTargetGuid string?
 ---@field public ttdIsActive boolean
 ---@field public count table
@@ -26,6 +27,7 @@ function TRB.Classes.TargetData:New()
     self.custom = {}
     ---@type table<integer, TRB.Classes.TargetSpell>
     self.trackedSpells = {}
+    self.auraInstanceIds = {}
 
     return self
 end
@@ -51,6 +53,7 @@ function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSn
     local id = spell.debuffId or spell.buffId or spell.spellId or spell.id or nil
 
     if id ~= nil and self.trackedSpells[id] == nil then
+---@diagnostic disable-next-line: param-type-mismatch
         self.trackedSpells[id] = TRB.Classes.TargetSpell:New(spell, nil, isDot, hasCounter, hasSnapshot, autoUpdate)
         self.count[id] = 0
     end
@@ -111,8 +114,7 @@ end
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.TargetData:HandleCombatLogDebuff(spellId, type, guid)
     if self.trackedSpells[spellId] == nil then
-        print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.." on this target tracking. Please consider reporting this on GitHub!")
-        self.trackedSpells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId })
+        return false
     end
 
     local triggerUpdate = self.targets[guid]:HandleCombatLogDebuff(spellId, type)
@@ -139,8 +141,7 @@ end
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.TargetData:HandleCombatLogBuff(spellId, type, guid)
     if self.trackedSpells[spellId] == nil then
-        print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.." on this target tracking. Please consider reporting this on GitHub!")
-        self.trackedSpells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId })
+        return false
     end
 
     local triggerUpdate = self.targets[guid]:HandleCombatLogBuff(spellId, type)
@@ -204,6 +205,7 @@ end
 ---@field public timeToDie TRB.Classes.TimeToDie
 ---@field public lastUpdate number?
 ---@field public spells table<integer, TRB.Classes.TargetSpell>
+---@field public auraInstanceIds table<integer, TRB.Classes.TargetSpell>
 ---@field public isFriend boolean
 TRB.Classes.Target = {}
 TRB.Classes.Target.__index = TRB.Classes.Target
@@ -219,6 +221,7 @@ function TRB.Classes.Target:New(guid, isFriend)
     self.timeToDie = TRB.Classes.TimeToDie:New(guid)
     self.lastUpdate = GetTime()
     self.spells = {}
+    self.auraInstanceIds = {}
     self.isFriend = isFriend or false
     return self
 end
@@ -255,8 +258,9 @@ end
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.Target:HandleCombatLogDebuff(spellId, type)
     if self.spells[spellId] == nil then
-        print(string.format(L["SpellIdMissing"], spellId))
-        self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId, target = self })
+        --print(string.format(L["SpellIdMissing"], spellId))
+        --self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId, target = self })
+        return false
     end
 
     return self.spells[spellId]:HandleCombatLogBuffOrDebuff(type)
@@ -268,8 +272,7 @@ end
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.Target:HandleCombatLogBuff(spellId, type)
     if self.spells[spellId] == nil then
-        print(string.format(L["SpellIdMissing"], spellId))
-        self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId, isBuff = true, target = self })
+        return false
     end
     return self.spells[spellId]:HandleCombatLogBuffOrDebuff(type)
 end
@@ -277,6 +280,19 @@ end
 ---Updates all spells tracked on this target
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.Target:UpdateAllSpellTracking(currentTime)
+    currentTime = currentTime or GetTime()
+    if TRB.Functions.Table:Length(self.spells) > 0 then
+        for spellId, _ in pairs(self.spells) do
+            if self.spells[spellId] ~= nil and self.spells[spellId].endTime ~= nil then
+                self.spells[spellId].remainingTime = self.spells[spellId].endTime - currentTime
+            end
+        end
+    end
+end
+
+---Updates all spells tracked on this target
+---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
+function TRB.Classes.Target:UpdateAllSpellTrackingOLD(currentTime)
     currentTime = currentTime or GetTime()
     if TRB.Functions.Table:Length(self.spells) > 0 then
         for spellId, _ in pairs(self.spells) do
@@ -316,6 +332,7 @@ end
 ---@field public hasStacks boolean
 ---@field public stacks integer
 ---@field public autoUpdate boolean
+---@field public auraInstanceId? integer
 ---@field private guid string
 ---@field private target TRB.Classes.Target
 TRB.Classes.TargetSpell = {}
@@ -323,7 +340,7 @@ TRB.Classes.TargetSpell.__index = TRB.Classes.TargetSpell
 
 ---Adds a new spell to be tracked against a target
 ---@param spell table # Spell we are tracking
----@param target? TRB.Classes.Target # Target this spell is tracked against
+---@param target TRB.Classes.Target # Target this spell is tracked against
 ---@param isDot boolean? # Is this a DoT?
 ---@param hasCounter boolean? # Does this have a counter component to it?
 ---@param hasSnapshot boolean? # Is there any snapshotting required?
@@ -364,6 +381,7 @@ function TRB.Classes.TargetSpell:New(spell, target, isDot, hasCounter, hasSnapsh
     self.stacks = 0
     self.autoUpdate = autoUpdate
     self.guid = ""
+    self.auraInstanceId = nil
     return self
 end
 
@@ -382,10 +400,14 @@ local function SetAuraData(self, unitToken, isBuff)
     ---@type AuraData?
     local aura
     
-    if isBuff then
-        aura = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
+    if self.auraInstanceId ~= nil then
+        aura = C_UnitAuras.GetAuraDataByAuraInstanceID(unitToken, self.auraInstanceId)
     else
-        aura = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
+        if isBuff then
+            aura = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
+        else
+            aura = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
+        end
     end
     
     if aura ~= nil then
@@ -393,6 +415,7 @@ local function SetAuraData(self, unitToken, isBuff)
         self.remainingTime = aura.expirationTime - currentTime
         self.endTime = aura.expirationTime
         self.stacks = aura.applications
+        self.auraInstanceId = aura.auraInstanceID
     else
         self:Reset()
     end
@@ -419,6 +442,11 @@ function TRB.Classes.TargetSpell:Update(currentTime)
                 else
                     SetAuraData(self, unitToken, false)
                 end
+
+                if self.auraInstanceId ~= nil then
+                    TRB.Functions.Character:StoreTargetAuraInstanceId(self.auraInstanceId, self.target)
+                    self.target.auraInstanceIds[self.auraInstanceId] = self
+                end
             end
 
             if self.hasCounter then
@@ -438,6 +466,7 @@ function TRB.Classes.TargetSpell:HandleCombatLogBuffOrDebuff(type)
     local triggerUpdate = false
     if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
         self.active = true
+        self:Update()
         if self.spell.duration ~= nil and self.spell.duration > 0 then
             local currentTime = GetTime()
             self.endTime = currentTime + self.spell.duration
@@ -457,10 +486,14 @@ end
 
 ---Reset's the spell's snapshots
 function TRB.Classes.TargetSpell:Reset()
+    if self.auraInstanceId ~= nil then
+        TRB.Functions.Character:RemoveTargetAuraInstanceId(self.auraInstanceId)
+    end
     self.active = false
     self.remainingTime = 0.0
     self.endTime = nil
     self.count = 0
     self.snapshot = 0.0
     self.stacks = 0
+    self.auraInstanceId = nil
 end

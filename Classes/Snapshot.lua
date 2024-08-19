@@ -5,6 +5,7 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.SnapshotData
 ---@field public targetData TRB.Classes.TargetData
+---@field public auraInstanceIds table<integer, TRB.Classes.SnapshotBuff>
 ---@field public snapshots table<integer, TRB.Classes.Snapshot>
 ---@field public casting TRB.Classes.SnapshotCasting
 ---@field public audio table
@@ -22,6 +23,7 @@ function TRB.Classes.SnapshotData:New(attributes)
     self.targetData = TRB.Classes.TargetData:New()
     ---@type table<integer, TRB.Classes.Snapshot>
     self.snapshots = {}
+    self.auraInstanceIds = {}
     self.casting = TRB.Classes.SnapshotCasting:New()
     self.audio = {}
     self.attributes = attributes or {}
@@ -83,10 +85,10 @@ end
 ---@field public ticks number
 ---@field public resource number
 ---@field public isCustom boolean
+---@field protected parent TRB.Classes.Snapshot
 ---@field private refreshRequested boolean
 ---@field private refreshEmbargo number?
 ---@field private onlyRefreshOnRequest boolean
----@field protected parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
@@ -135,6 +137,9 @@ end
 
 ---Resets the object to default values
 function TRB.Classes.SnapshotBuff:Reset()
+    if self.auraInstanceId ~= nil then
+        TRB.Functions.Character:RemoveBuffAuraInstanceId(self.auraInstanceId)
+    end
     self.auraInstanceId = nil
     self.isActive = false
     self.endTime = nil
@@ -268,6 +273,7 @@ local function ParseBuffData(buff, aura)
             end
         end
 
+        TRB.Functions.Character:StoreBuffAuraInstanceId(buff)
         return aura.spellId
     else
         buff:Reset()

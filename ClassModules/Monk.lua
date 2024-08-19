@@ -2157,6 +2157,7 @@ function TRB.Functions.Class:EventRegistration()
 		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Functions.Aura:EnableUnitAura()
 
 		TRB.Details.addonData.registered = true
 	else

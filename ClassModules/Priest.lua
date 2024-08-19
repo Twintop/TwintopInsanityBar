@@ -4509,6 +4509,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Functions.Aura:EnableUnitAura()
 		TRB.Details.addonData.registered = true
 	else
 		targetsTimerFrame:SetScript("OnUpdate", nil)
@@ -4517,6 +4518,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Functions.Aura:DisableUnitAura()
 		TRB.Details.addonData.registered = false
 		TRB.Frames.barContainerFrame:Hide()
 	end
@@ -5137,7 +5139,7 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
 	--TODO #339: Remove commented out to do memory load testing
-	--[[if updateMemory + 5 < currentTime then
+	if updateMemory + 5 < currentTime then
 		updateMemory = currentTime
 		UpdateAddOnMemoryUsage()
 		currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
@@ -5145,5 +5147,5 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		if currentMemory > highMemory then
 			highMemory = currentMemory
 		end
-	end]]
+	end
 end

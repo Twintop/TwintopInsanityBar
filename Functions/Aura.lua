@@ -3,6 +3,58 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Aura = {}
 
+---Handles UNIT_AURA events
+---@param self any
+---@param event string
+---@param unit UnitToken
+---@param info UnitAuraUpdateInfo
+local function AuraUpdateEvent(self, event, unit, info)
+	--[[
+	if info.isFullUpdate then
+		return
+	end
+	if info.addedAuras then
+	end]]
+	if info.updatedAuraInstanceIDs then
+		for _, v in pairs(info.updatedAuraInstanceIDs) do
+			local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v]
+
+			if target ~= nil then
+				local targetSpell = target.auraInstanceIds[v]
+				targetSpell:Update()
+			end
+		end
+	end
+	if info.removedAuraInstanceIDs then
+		if unit == "player" then
+			for _, v in pairs(info.removedAuraInstanceIDs) do
+				TRB.Functions.Character:RemoveBuffAuraInstanceId(v)
+			end
+
+		else
+			for _, v in pairs(info.removedAuraInstanceIDs) do
+				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v]
+
+				if target ~= nil then
+					target.auraInstanceIds[v] = nil
+					TRB.Functions.Character:RemoveTargetAuraInstanceId(v)
+				end
+			end
+		end
+	end
+end
+
+local unitAuraFrame = CreateFrame("Frame")
+unitAuraFrame:SetScript("OnEvent", AuraUpdateEvent)
+
+function TRB.Functions.Aura:EnableUnitAura()
+	unitAuraFrame:RegisterEvent("UNIT_AURA")
+end
+
+function TRB.Functions.Aura:DisableUnitAura()
+	unitAuraFrame:UnegisterEvent("UNIT_AURA")
+end
+
 ---Attempts to get a buff on a target by its spellId
 ---@param spellId integer
 ---@param onWhom string?

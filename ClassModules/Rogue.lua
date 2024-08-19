@@ -3702,6 +3702,7 @@ function TRB.Functions.Class:EventRegistration()
 		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Functions.Aura:EnableUnitAura()
 
 		TRB.Details.addonData.registered = true
 	else
@@ -3711,6 +3712,7 @@ function TRB.Functions.Class:EventRegistration()
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Functions.Aura:DisableUnitAura()
 		TRB.Details.addonData.registered = false
 		barContainerFrame:Hide()
 	end
@@ -4071,10 +4073,13 @@ end
 
 --HACK to fix FPS
 local updateRateLimit = 0
+local updateMemory = 0
+local highMemory = 0
+local currentMemory = 0
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
-	if specId ~= 1 and specId ~= 2 and specId ~= 3 then
+	if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end
@@ -4084,5 +4089,16 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 	if updateRateLimit + 0.05 < currentTime then
 		updateRateLimit = currentTime
 		UpdateResourceBar()
+	end
+
+	--TODO #339: Remove commented out to do memory load testing
+	if updateMemory + 5 < currentTime then
+		updateMemory = currentTime
+		UpdateAddOnMemoryUsage()
+		currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
+		print(string.format("%.2f (%.2f)", currentMemory, highMemory))
+		if currentMemory > highMemory then
+			highMemory = currentMemory
+		end
 	end
 end
