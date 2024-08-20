@@ -14,7 +14,7 @@ local content = [====[
 # 11.0.2.2-release (2024-08-20)
 ## General
 
-- (#342 - UPDATE (Twintop)) Change how the bar handles updating buffs and debuffs to use `UNIT_AURA` instead of polling every frame. Memory usage should be 50-80% lower depending on specialization.
+- [#342 - UPDATE (Twintop)](#342) Change how the bar handles updating buffs and debuffs to use `UNIT_AURA` instead of polling every frame. Memory usage should be 50-80% lower depending on specialization.
 
 ## Healers
 
