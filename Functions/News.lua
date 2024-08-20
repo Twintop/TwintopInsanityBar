@@ -11,10 +11,20 @@ local content = [====[
 
 ---
 
-# 11.0.2.2-release (2024-08-22)
+# 11.0.2.2-release (2024-08-20)
+## General
+
+- (#342 - UPDATE (Twintop)) Change how the bar handles updating buffs and debuffs to use `UNIT_AURA` instead of polling every frame. Memory usage should be 50-80% lower depending on specialization.
+
 ## Healers
 
 - [#382 - UPDATE (Twintop)](#382) Update short number notation. Healers should no longer see e.g. `12.3k/2.5m` and instead see `12.34k/2500k`.
+- [#382 - UPDATE (Twintop)](#382) Update potions from Dragonflight to The War Within. As a result, default potion thresholds have also been reset.
+
+## Hunter
+### Marksmanship
+
+- (FIX) Avoid a Lua error when using Steady Shot without Improved Steady Shot talented.
 
 ## Priest
 

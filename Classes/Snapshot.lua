@@ -32,6 +32,12 @@ function TRB.Classes.SnapshotData:New(attributes)
     return self
 end
 
+---Refreshes all buffs. Usually required upon login or from a specialization/talent change.
+function TRB.Classes.SnapshotData:RefreshAllBuffs()
+    for _, v in pairs(self.snapshots) do
+		v.buff:Refresh()
+	end
+end
 
 ---@class TRB.Classes.Snapshot
 ---@field public spell TRB.Classes.SpellBase?
@@ -138,7 +144,7 @@ end
 ---Resets the object to default values
 function TRB.Classes.SnapshotBuff:Reset()
     if self.auraInstanceId ~= nil then
-        TRB.Functions.Character:RemoveBuffAuraInstanceId(self.auraInstanceId)
+        TRB.Functions.Aura:RemoveBuffAuraInstanceId(self.auraInstanceId)
     end
     self.auraInstanceId = nil
     self.isActive = false
@@ -273,7 +279,7 @@ local function ParseBuffData(buff, aura)
             end
         end
 
-        TRB.Functions.Character:StoreBuffAuraInstanceId(buff)
+        TRB.Functions.Aura:StoreBuffAuraInstanceId(buff)
         return aura.spellId
     else
         buff:Reset()
@@ -285,6 +291,27 @@ end
 function TRB.Classes.SnapshotBuff:RequestRefresh(embargo)
     self.refreshRequested = true
     self.refreshEmbargo = embargo
+end
+
+---Refreshes the buff snapshot with already captured AuraData
+---@param auraData AuraData
+function TRB.Classes.SnapshotBuff:RefreshWithAuraData(auraData)
+    if self.isCustom then
+        return
+    end
+
+    ParseBuffData(self, auraData)
+    if self.alwaysSimple then
+        self.isActive = true
+    else
+        local currentTime = GetTime()
+        if self.endTime ~= nil and self.endTime > currentTime then
+            self.isActive = true
+            self:GetRemainingTime()
+        else
+            self:Reset()
+        end
+    end 
 end
 
 ---Refreshes the buff information for the snapshot

@@ -1305,7 +1305,7 @@ local function CastingSpell()
 					if talents:IsTalentActive(spells.improvedSteadyShot) then
 						FillSnapshotDataCasting(spells.improvedSteadyShot)
 					else
-						FillSnapshotDataCasting(spells.steadyShot)
+						--FillSnapshotDataCasting(spells.steadyShot)
 					end
 				elseif spellName == spells.scareBeast.name then
 					FillSnapshotDataCasting(spells.scareBeast)
@@ -1423,6 +1423,8 @@ end
 local function UpdateSnapshot_Marksmanship()
 	UpdateSnapshot()
 	UpdateDarkRanger()
+
+	local currentTime = GetTime()
 	
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
@@ -1433,7 +1435,7 @@ local function UpdateSnapshot_Marksmanship()
 	snapshots[spells.barrage.id].cooldown:Refresh()
 	snapshots[spells.explosiveShot.id].cooldown:Refresh()
 
-	snapshots[spells.trueshot.id].buff:Refresh()
+	snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Survival()

@@ -944,7 +944,7 @@ local function UpdateSnapshot_Havoc()
 
 	snapshotData.snapshots[spells.tacticalRetreat.id].buff:UpdateTicks(currentTime)
 
-	snapshotData.snapshots[spells.metamorphosis.id].buff:Refresh()
+	snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 	if snapshotData.snapshots[spells.metamorphosis.id].buff.isActive and 
 			snapshotData.snapshots[spells.deathSweep.id].spell.id == spells.bladeDance.id then
@@ -981,7 +981,7 @@ local function UpdateSnapshot_Vengeance()
 	local _
 
 	snapshotData.snapshots[spells.immolationAura.id].buff:UpdateTicks(currentTime)
-	snapshotData.snapshots[spells.metamorphosis.id].buff:Refresh()
+	snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 	snapshotData.snapshots[spells.chaosNova.id].cooldown:Refresh()
 	snapshotData.snapshots[spells.felDevastation.id].cooldown:Refresh()

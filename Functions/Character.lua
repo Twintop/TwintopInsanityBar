@@ -34,17 +34,13 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
-
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player")
 	TRB.Data.character.advancedFlight = TRB.Details.addonData.libs.LibAdvFlight.IsAdvFlyEnabled()
-
-	--TRB.Data.cache.barText = {}
-	--TRB.Data.cache.symbols = {}
-	--TRB.Functions.Spell:FillSpellData()
+	TRB.Data.snapshotData:RefreshAllBuffs()
 end
 
 function TRB.Functions.Character:UpdateSnapshot()
@@ -110,39 +106,6 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.cache.barText = {}
 	TRB.Data.cache.symbols = {}
-end
-
----Stores the AuraInstanceId->SnapshotBuff in a dictionary
----@param snapshotBuff TRB.Classes.SnapshotBuff
-function TRB.Functions.Character:StoreBuffAuraInstanceId(snapshotBuff)
-	if TRB.Data.snapshotData ~= nil and snapshotBuff.auraInstanceId ~= nil then
-		TRB.Data.snapshotData.auraInstanceIds[snapshotBuff.auraInstanceId] = snapshotBuff
-	end
-end
-
----Removes the AuraInstanceId->SnapshotBuff dictionary entry
----@param auraInstanceId integer
-function TRB.Functions.Character:RemoveBuffAuraInstanceId(auraInstanceId)
-	if TRB.Data.snapshotData ~= nil then
-		TRB.Data.snapshotData.auraInstanceIds[auraInstanceId] = nil
-	end
-end
-
----Stores the AuraInstanceId->Target in a dictionary
----@param auraInstanceId integer
----@param target TRB.Classes.Target
-function TRB.Functions.Character:StoreTargetAuraInstanceId(auraInstanceId, target)
-	if TRB.Data.snapshotData ~= nil and TRB.Data.snapshotData.targetData ~= nil then
-		TRB.Data.snapshotData.targetData.auraInstanceIds[auraInstanceId] = target
-	end
-end
-
----Removes the AuraInstanceId->Target dictionary entry
----@param auraInstanceId integer
-function TRB.Functions.Character:RemoveTargetAuraInstanceId(auraInstanceId)
-	if TRB.Data.snapshotData ~= nil and TRB.Data.snapshotData.targetData ~= nil then
-		TRB.Data.snapshotData.targetData.auraInstanceIds[auraInstanceId] = nil
-	end
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings

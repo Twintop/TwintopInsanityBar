@@ -331,7 +331,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(spells.symbolsOfDeath, nil, false, true)
+	specCache.subtlety.snapshotData.snapshots[spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(spells.symbolsOfDeath)
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.goremawsBite.id] = TRB.Classes.Snapshot:New(spells.goremawsBite)
 	---@type TRB.Classes.Snapshot
@@ -355,7 +355,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(spells.shotInTheDark, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(spells.shadowTechniques, nil, true, true)
+	specCache.subtlety.snapshotData.snapshots[spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(spells.shadowTechniques, nil, true)
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.flagellation.id] = TRB.Classes.Snapshot:New(spells.flagellation)
 	---@type TRB.Classes.Snapshot
@@ -2255,8 +2255,8 @@ local function UpdateSnapshot_Subtlety()
 	snapshots[spells.goremawsBite.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.shadowDance.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.shadowTechniques.id].buff:Refresh()
-	snapshots[spells.symbolsOfDeath.id].buff:Refresh()
+	--snapshots[spells.shadowTechniques.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.symbolsOfDeath.id].buff:GetRemainingTime(currentTime)
 	
 	snapshots[spells.goremawsBite.id].cooldown:Refresh()
 	snapshots[spells.secretTechnique.id].cooldown:Refresh()
@@ -3326,28 +3326,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-				end
-
-				-- Shadow Techniques check workaround until a spellId dictionary can be added
-				if entry.spellId == spells.cheapShot.id or
-					entry.spellId == spells.shiv.id or
-					entry.spellId == spells.gouge.id or
-					entry.spellId == spells.echoingReprimand.id or
-					entry.spellId == spells.backstab.id or
-					entry.spellId == spells.shadowstrike.id or
-					entry.spellId == spells.shurikenStorm.id or
-					entry.spellId == spells.shurikenToss.id or
-					entry.spellId == spells.shurikenTornado.id or
-					entry.spellId == spells.sepsis.id or
-					entry.spellId == spells.goremawsBite.id then
-					snapshots[spells.shadowTechniques.id].buff:RequestRefresh(GetTime() + 0.05)
-				end
-
-				if snapshots[spells.symbolsOfDeath.id].buff.isActive and
-					talents:IsTalentActive(spells.inevitability) and
-					(entry.spellId == spells.backstab.id or
-					entry.spellId == spells.shadowstrike.id) then
-					snapshots[spells.symbolsOfDeath.id].buff:RequestRefresh(GetTime() + 0.05)
 				end
 			end
 

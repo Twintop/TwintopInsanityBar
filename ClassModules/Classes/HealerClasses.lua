@@ -132,17 +132,14 @@ end
 ---@param duration? number # Expected duration of the totem
 function TRB.Classes.Healer.ManaTideTotem:Initialize(eventType, duration)
     if (eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH") then
-        if duration ~= nil then
-            self.buff.duration = duration
-        else
-            self.buff.duration = self.spell.duration
+        if duration == nil then
+            duration = self.spell.duration
         end
 
         local currentTime = GetTime()
-        self.buff.endTime = currentTime + self.buff.duration
-        self.buff.isActive = true
-    else
-        self.buff:Initialize(eventType)
+        self.buff:InitializeCustom(duration, currentTime)
+    elseif eventType == "SPELL_AURA_REMOVED" then
+        self:Reset()
     end
 end
 
@@ -158,7 +155,7 @@ end
 function TRB.Classes.Healer.ManaTideTotem:Update()
     if self.buff.isActive then
         local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        self.mana = self.buff:GetRemainingTime() * manaRegen / 2
+        self.mana = self.buff:GetRemainingTime() * manaRegen * self.spell.attributes.resourceMod
     else
         self.mana = 0
     end
@@ -624,7 +621,8 @@ function TRB.Classes.Healer.HealerSpells:New()
     })
     self.manaTideTotem = TRB.Classes.SpellBase:New({
         id = 320763,
-        duration = 8
+        duration = 8,
+        resourceMod = 0.8
     })
     self.blessingOfWinter = TRB.Classes.SpellBase:New({
         id = 388011,

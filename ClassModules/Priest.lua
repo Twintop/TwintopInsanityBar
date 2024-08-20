@@ -2648,8 +2648,8 @@ local function UpdateSnapshot_Discipline()
 
 	snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
 	snapshots[spells.rapture.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.shadowCovenant.id].buff:Refresh()
-	snapshots[spells.entropicRift.id].buff:Refresh()
+	snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Holy()
@@ -2683,12 +2683,12 @@ local function UpdateSnapshot_Shadow()
 	local snapshots = TRB.Data.snapshotData.snapshots
 	
 	--TODO #339: Comment out to reduce load while testing
-	snapshots[spells.voidform.id].buff:Refresh()
+	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)--:Refresh()
 	snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.surgeOfInsanity.id].buff:Refresh()
+	snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.entropicRift.id].buff:Refresh()
+	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 	
 	--TODO #339: Comment out to reduce load while testing
 	snapshots[spells.mindBlast.id].cooldown:Refresh()
@@ -4450,7 +4450,7 @@ function TRB.Functions.Class:CheckCharacter()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"
 ---@diagnostic disable-next-line: missing-parameter
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Resource)
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
 		
 		if talents:IsTalentActive(spells.voidwraith) then
 			snapshots[spells.shadowfiend.id].spell = spells.voidwraith
@@ -4490,7 +4490,7 @@ function TRB.Functions.Class:EventRegistration()
 	elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
 		specSettings = TRB.Data.settings.priest.shadow
 		TRB.Data.specSupported = true
-		TRB.Data.resource = Enum.PowerType.Resource
+		TRB.Data.resource = Enum.PowerType.Insanity
 		TRB.Data.resourceFactor = 100
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
@@ -5139,7 +5139,7 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
 	--TODO #339: Remove commented out to do memory load testing
-	if updateMemory + 5 < currentTime then
+	--[[if updateMemory + 5 < currentTime then
 		updateMemory = currentTime
 		UpdateAddOnMemoryUsage()
 		currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
@@ -5147,5 +5147,5 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		if currentMemory > highMemory then
 			highMemory = currentMemory
 		end
-	end
+	end]]
 end

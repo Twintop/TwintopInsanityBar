@@ -942,8 +942,6 @@ local function RefreshLookupData_Balance()
 	local currentTime = GetTime()
 	local normalizedAstralPower = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
-	--local moonkinFormActive = snapshot.moonkinForm.isActive
-
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
@@ -953,7 +951,7 @@ local function RefreshLookupData_Balance()
 	local astralPowerThreshold = math.min(spells.starsurge:GetPrimaryResourceCost(), spells.starfall:GetPrimaryResourceCost())
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then 
+		if specSettings.colors.text.overcapEnabled and overcap then
 			currentAstralPowerColor = specSettings.colors.text.overcap
 			castingAstralPowerColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
@@ -2341,16 +2339,15 @@ local function UpdateSnapshot_Balance()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
-
-	snapshotData.snapshots[spells.moonkinForm.id].buff:Refresh()
+	
 	snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.theLightOfElune.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.forceOfNature.id].buff:UpdateTicks(currentTime)
-	snapshotData.snapshots[spells.celestialAlignment.id].buff:Refresh()
-	snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:Refresh()
-	snapshotData.snapshots[spells.eclipseSolar.id].buff:Refresh()
-	snapshotData.snapshots[spells.eclipseLunar.id].buff:Refresh()
+	snapshotData.snapshots[spells.celestialAlignment.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.eclipseSolar.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.eclipseLunar.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.starfall.id].buff:GetRemainingTime(currentTime)
 
 	if talents:IsTalentActive(spells.theEternalMoon) then
@@ -2387,16 +2384,16 @@ local function UpdateSnapshot_Feral()
 	
 	-- Incarnation: King of the Jungle doesn't show up in-game as a combat log event. Check for it manually instead.
 	if talents:IsTalentActive(spells.incarnationAvatarOfAshamane) then
-		snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:Refresh()
+		snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:GetRemainingTime(currentTime)
 	end
 
-	snapshotData.snapshots[spells.tigersFury.id].buff:Refresh()
+	snapshotData.snapshots[spells.tigersFury.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.tigersFury.id].cooldown:Refresh(true)
 
 	snapshotData.snapshots[spells.feralFrenzy.id].cooldown:Refresh()
 	snapshotData.snapshots[spells.maim.id].cooldown:Refresh()
 	
-	snapshotData.snapshots[spells.ravage.id].buff:Refresh()
+	snapshotData.snapshots[spells.ravage.id].buff:GetRemainingTime(currentTime)
 
 	if talents:IsTalentActive(spells.brutalSlash) then
 		snapshotData.snapshots[spells.brutalSlash.id].cooldown:Refresh()
@@ -3676,7 +3673,8 @@ local function SwitchSpec()
 	else
 		TRB.Data.barConstructedForSpec = nil
 	end
-	
+
+	TRB.Functions.Aura:ClearAuraInstanceIds()
 	TRB.Functions.Class:EventRegistration()
 end
 
@@ -4565,6 +4563,9 @@ end
 
 --HACK to fix FPS
 local updateRateLimit = 0
+local updateMemory = 0
+local highMemory = 0
+local currentMemory = 0
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
@@ -4579,4 +4580,15 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		updateRateLimit = currentTime
 		UpdateResourceBar()
 	end
+
+	--TODO #339: Remove commented out to do memory load testing
+	--[[if updateMemory + 5 < currentTime then
+		updateMemory = currentTime
+		UpdateAddOnMemoryUsage()
+		currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
+		print(string.format("%.2f (%.2f)", currentMemory, highMemory))
+		if currentMemory > highMemory then
+			highMemory = currentMemory
+		end
+	end]]
 end

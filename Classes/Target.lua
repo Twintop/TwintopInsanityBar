@@ -258,8 +258,6 @@ end
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.Target:HandleCombatLogDebuff(spellId, type)
     if self.spells[spellId] == nil then
-        --print(string.format(L["SpellIdMissing"], spellId))
-        --self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId, target = self })
         return false
     end
 
@@ -444,7 +442,7 @@ function TRB.Classes.TargetSpell:Update(currentTime)
                 end
 
                 if self.auraInstanceId ~= nil then
-                    TRB.Functions.Character:StoreTargetAuraInstanceId(self.auraInstanceId, self.target)
+                    TRB.Functions.Aura:StoreTargetAuraInstanceId(self.auraInstanceId, self.target)
                     self.target.auraInstanceIds[self.auraInstanceId] = self
                 end
             end
@@ -487,7 +485,7 @@ end
 ---Reset's the spell's snapshots
 function TRB.Classes.TargetSpell:Reset()
     if self.auraInstanceId ~= nil then
-        TRB.Functions.Character:RemoveTargetAuraInstanceId(self.auraInstanceId)
+        TRB.Functions.Aura:RemoveTargetAuraInstanceId(self.auraInstanceId)
     end
     self.active = false
     self.remainingTime = 0.0
