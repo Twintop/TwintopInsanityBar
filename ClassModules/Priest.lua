@@ -1911,20 +1911,22 @@ local function RefreshLookupData_Shadow()
 	local currentTime = GetTime()
 	local normalizedInsanity = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
+	local lookup = TRB.Data.lookup
+	local lookupLogic = TRB.Data.lookupLogic or {}
 
 	--$vfTime
-	local _voidformTime = snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
+	lookupLogic["$vfTime"] = snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
 
 	--TODO: not use this hacky workaroud for timers
 	if snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime) > 0 then
-		_voidformTime = snapshots[spells.darkAscension.id].buff.remaining
+		lookupLogic["$vfTime"] = snapshots[spells.darkAscension.id].buff.remaining
 	end
 
-	local voidformTime = TRB.Functions.BarText:TimerPrecision(_voidformTime)
+	lookup["$vfTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$vfTime"])
 	----------
 
-	--$overcap
-	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
+	--$lookup["$overcap"]
+	lookup["$overcap"] = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 	local currentInsanityColor = specSettings.colors.text.currentInsanity
 	local castingInsanityColor = specSettings.colors.text.castingInsanity
@@ -1932,7 +1934,7 @@ local function RefreshLookupData_Shadow()
 	local insanityThreshold = spells.devouringPlague:GetPrimaryResourceCost()
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
+		if specSettings.colors.text.overcapEnabled and lookup["$overcap"] then
 			currentInsanityColor = specSettings.colors.text.overcapInsanity
 			castingInsanityColor = specSettings.colors.text.overcapInsanity
 		elseif specSettings.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
@@ -1943,213 +1945,208 @@ local function RefreshLookupData_Shadow()
 
 	--$insanity
 	local resourcePrecision = specSettings.resourcePrecision or 0
-	local _currentInsanity = normalizedInsanity
-	local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
+	lookupLogic["$insanity"] = normalizedInsanity
+	lookup["$insanity"] = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(lookupLogic["$insanity"], resourcePrecision, "floor"))
 	--$casting
-	local _castingInsanity = snapshotData.casting.resourceFinal
-	local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
+	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+	lookup["$casting"] = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(lookupLogic["$casting"], resourcePrecision, "floor"))
 	
 	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 	
-	--$mbInsanity
-	local _mbInsanity = shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal
-	local mbInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_mbInsanity, resourcePrecision, "floor"))
-	--$mbGcds
-	local _mbGcds = shadowfiend.remainingGcds
-	local mbGcds = string.format("%.0f", _mbGcds)
-	--$mbSwings
-	local _mbSwings = shadowfiend.remainingSwings
-	local mbSwings = string.format("%.0f", _mbSwings)
-	--$mbTime
-	local _mbTime = shadowfiend.remainingTime
-	local mbTime = TRB.Functions.BarText:TimerPrecision(_mbTime)
-	--$loiInsanity
-	local _loiInsanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal
-	local loiInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_loiInsanity, resourcePrecision, "floor"))
-	--$loiTicks
-	local _loiTicks = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining
-	local loiTicks = string.format("%.0f", _loiTicks)
-	--$ecttvCount
-	local _ecttvCount = snapshots[spells.idolOfCthun.id].attributes.numberActive
-	local ecttvCount = string.format("%.0f", _ecttvCount)
-	--$asCount
-	local _asCount = targetData.count[spells.auspiciousSpirits.id] or 0
-	local asCount = string.format("%.0f", _asCount)
-	--$asInsanity
-	local _asInsanity = CalculateResourceGain(spells.auspiciousSpirits.resource) * (targetData.custom.auspiciousSpiritsGenerate or 0)
-	local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, resourcePrecision, "ceil"))
+	--$lookup["$sfInsanity"]
+	lookupLogic["$sfInsanity"] = shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal
+	lookup["$sfInsanity"] = string.format("%s", TRB.Functions.Number:RoundTo(lookupLogic["$sfInsanity"], resourcePrecision, "floor"))
+	--$lookup["$sfGcds"]
+	lookupLogic["$sfGcds"] = shadowfiend.remainingGcds
+	lookup["$sfGcds"] = string.format("%.0f", lookupLogic["$sfGcds"])
+	--$lookup["$sfSwings"]
+	lookupLogic["$sfSwings"] = shadowfiend.remainingSwings
+	lookup["$sfSwings"] = string.format("%.0f", lookupLogic["$sfSwings"])
+	--$lookup["$sfTime"]
+	lookupLogic["$sfTime"] = shadowfiend.remainingTime
+	lookup["$sfTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$sfTime"])
+	--$lookup["$loiInsanity"]
+	lookupLogic["$loiInsanity"] = snapshots[spells.idolOfCthun.id].attributes.resourceFinal
+	lookup["$loiInsanity"] = string.format("%s", TRB.Functions.Number:RoundTo(lookupLogic["$loiInsanity"], resourcePrecision, "floor"))
+	--$lookup["$loiTicks"]
+	lookupLogic["$loiTicks"] = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining
+	lookup["$loiTicks"] = string.format("%.0f", lookupLogic["$loiTicks"])
+	--$lookup["$ecttvCount"]
+	lookupLogic["$ecttvCount"] = snapshots[spells.idolOfCthun.id].attributes.numberActive
+	lookup["$ecttvCount"] = string.format("%.0f", lookupLogic["$ecttvCount"])
+	--$lookup["$asCount"]
+	lookupLogic["$asCount"] = targetData.count[spells.auspiciousSpirits.id] or 0
+	lookup["$asCount"] = string.format("%.0f", lookupLogic["$asCount"])
+	--$lookup["$asInsanity"]
+	lookupLogic["$asInsanity"] = CalculateResourceGain(spells.auspiciousSpirits.resource) * (targetData.custom.auspiciousSpiritsGenerate or 0)
+	lookup["$asInsanity"] = string.format("%s", TRB.Functions.Number:RoundTo(lookupLogic["$asInsanity"], resourcePrecision, "ceil"))
 	--$passive
-	local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity
-	local passiveInsanity = string.format("|c%s%s|r", specSettings.colors.text.passiveInsanity, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
-	--$insanityTotal
-	local _insanityTotal = math.min(_passiveInsanity + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
-	local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityTotal, resourcePrecision, "floor"))
-	--$insanityPlusCasting
-	local _insanityPlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
-	local insanityPlusCasting = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_insanityPlusCasting, resourcePrecision, "floor"))
-	--$insanityPlusPassive
-	local _insanityPlusPassive = math.min(_passiveInsanity + normalizedInsanity, TRB.Data.character.maxResource)
-	local insanityPlusPassive = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityPlusPassive, resourcePrecision, "floor"))
+	lookupLogic["$passive"] = lookupLogic["$asInsanity"] + lookupLogic["$sfInsanity"] + lookupLogic["$loiInsanity"]
+	lookup["$passive"] = string.format("|c%s%s|r", specSettings.colors.text.passiveInsanity, TRB.Functions.Number:RoundTo(lookupLogic["$passive"], resourcePrecision, "floor"))
+	--$lookup["$insanityTotal"]
+	lookupLogic["$insanityTotal"] = math.min(lookupLogic["$passive"] + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
+	lookup["$insanityTotal"] = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(lookupLogic["$insanityTotal"], resourcePrecision, "floor"))
+	--$lookup["$resourcePlusCasting"]
+	lookupLogic["$resourcePlusCasting"] = math.min(snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
+	lookup["$resourcePlusCasting"] = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(lookupLogic["$resourcePlusCasting"], resourcePrecision, "floor"))
+	--$lookup["$resourcePlusPassive"]
+	lookupLogic["$resourcePlusPassive"] = math.min(lookupLogic["$passive"] + normalizedInsanity, TRB.Data.character.maxResource)
+	lookup["$resourcePlusPassive"] = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(lookupLogic["$resourcePlusPassive"], resourcePrecision, "floor"))
 
 
 	----------
 	--$swpCount and $swpTime
-	local _shadowWordPainCount = targetData.count[spells.shadowWordPain.id] or 0
-	local shadowWordPainCount = string.format("%s", _shadowWordPainCount)
-	local _shadowWordPainTime = 0
+	lookupLogic["$swpCount"] = targetData.count[spells.shadowWordPain.id] or 0
+	lookup["$swpCount"] = string.format("%s", lookupLogic["$swpCount"])
+	lookupLogic["$swpTime"] = 0
 	
 	if target ~= nil then
-		_shadowWordPainTime = target.spells[spells.shadowWordPain.id].remainingTime or 0
+		lookupLogic["$swpTime"] = target.spells[spells.shadowWordPain.id].remainingTime or 0
 	end
-
-	local shadowWordPainTime
 
 	--$vtCount and $vtTime
-	local _vampiricTouchCount = targetData.count[spells.vampiricTouch.id] or 0
-	local vampiricTouchCount = string.format("%s", _vampiricTouchCount)
-	local _vampiricTouchTime = 0
+	lookupLogic["$vtCount"] = targetData.count[spells.vampiricTouch.id] or 0
+	lookup["$vtCount"] = string.format("%s", lookupLogic["$vtCount"])
+	lookupLogic["$vtTime"] = 0
 	
 	if target ~= nil then
-		_vampiricTouchTime = target.spells[spells.vampiricTouch.id].remainingTime or 0
+		lookupLogic["$vtTime"] = target.spells[spells.vampiricTouch.id].remainingTime or 0
 	end
 
-	local vampiricTouchTime
-
 	--$dpTime
-	local devouringPlagueTime
 	if target ~= nil then
-		devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(target.spells[spells.devouringPlague.id].remainingTime or 0)
+		lookup["$dpTime"] = TRB.Functions.BarText:TimerPrecision(target.spells[spells.devouringPlague.id].remainingTime or 0)
 	else
-		devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(0)
+		lookup["$dpTime"] = TRB.Functions.BarText:TimerPrecision(0)
 	end
 
 	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 			if (not talents:IsTalentActive(spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.pandemicTime) or
 				(talents:IsTalentActive(spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.attributes.miseryPandemicTime) then
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				lookup["$swpCount"] = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, lookupLogic["$swpCount"])
+				lookup["$swpTime"] = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(lookupLogic["$swpTime"]))
 			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				lookup["$swpCount"] = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, lookupLogic["$swpCount"])
+				lookup["$swpTime"] = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(lookupLogic["$swpTime"]))
 			end
 		else
-			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			lookup["$swpCount"] = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, lookupLogic["$swpCount"])
+			lookup["$swpTime"] = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.vampiricTouch.id].active then
 			if target.spells[spells.vampiricTouch.id].remainingTime > spells.vampiricTouch.pandemicTime then
-				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _vampiricTouchCount)
-				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
+				lookup["$vtCount"] = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, lookupLogic["$vtCount"])
+				lookup["$vtTime"] = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(lookupLogic["$vtTime"]))
 			else
-				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _vampiricTouchCount)
-				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
+				lookup["$vtCount"] = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, lookupLogic["$vtCount"])
+				lookup["$vtTime"] = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(lookupLogic["$vtTime"]))
 			end
 		else
-			vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _vampiricTouchCount)
-			vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			lookup["$vtCount"] = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, lookupLogic["$vtCount"])
+			lookup["$vtTime"] = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
-		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
-		vampiricTouchTime = TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime)
+		lookup["$swpTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$swpTime"])
+		lookup["$vtTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$vtTime"])
 	end
 
 	--$dpCount
-	local devouringPlagueCount = targetData.count[spells.devouringPlague.id] or 0
+	lookup["$dpCount"] = targetData.count[spells.devouringPlague.id] or 0
 
-	--$mdTime
-	local _mdTime = snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
-	local mdTime = TRB.Functions.BarText:TimerPrecision(_mdTime)
+	--$lookup["$mdTime"]
+	lookupLogic["$mdTime"] = snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
+	lookup["$mdTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$mdTime"])
 	
-	--$mfiTime
-	local _mfiTime = snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
-	local mfiTime = TRB.Functions.BarText:TimerPrecision(_mfiTime)
+	--$lookup["$mfiTime"]
+	lookupLogic["$mfiTime"] = snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
+	lookup["$mfiTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$mfiTime"])
 
-	--$mfiStacks
-	local _mfiStacks = snapshots[spells.surgeOfInsanity.id].buff.applications or 0
-	local mfiStacks = string.format("%.0f", _mfiStacks)
+	--$lookup["$mfiStacks"]
+	lookupLogic["$mfiStacks"] = snapshots[spells.surgeOfInsanity.id].buff.applications or 0
+	lookup["$mfiStacks"] = string.format("%.0f", lookupLogic["$mfiStacks"])
 	
-	--$deathspeakerTime
-	local _deathspeakerTime = snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
-	local deathspeakerTime = TRB.Functions.BarText:TimerPrecision(_deathspeakerTime)
+	--$lookup["$deathspeakerTime"]
+	lookupLogic["$deathspeakerTime"] = snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
+	lookup["$deathspeakerTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$deathspeakerTime"])
 
-	--$tofTime
-	local _tofTime = snapshots[spells.twistOfFate.id].buff:GetRemainingTime(currentTime)
-	local tofTime = TRB.Functions.BarText:TimerPrecision(_tofTime)
+	--$lookup["$tofTime"]
+	lookupLogic["$tofTime"] = snapshots[spells.twistOfFate.id].buff:GetRemainingTime(currentTime)
+	lookup["$tofTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$tofTime"])
 	
-	--$mindBlastCharges
-	local mindBlastCharges = snapshots[spells.mindBlast.id].cooldown.charges or 0
+	--$lookup["$mindBlastCharges"]
+	lookup["$mindBlastCharges"] = snapshots[spells.mindBlast.id].cooldown.charges or 0
 	
-	--$mindBlastMaxCharges
-	local mindBlastMaxCharges = snapshots[spells.mindBlast.id].cooldown.maxCharges or 0
+	--$lookup["$mindBlastMaxCharges"]
+	lookup["$mindBlastMaxCharges"] = snapshots[spells.mindBlast.id].cooldown.maxCharges or 0
 
-	--$siTime
-	local _siTime = snapshots[spells.shadowyInsight.id].buff:GetRemainingTime(currentTime)
-	local siTime = TRB.Functions.BarText:TimerPrecision(_siTime)
+	--$lookup["$siTime"]
+	lookupLogic["$siTime"] = snapshots[spells.shadowyInsight.id].buff:GetRemainingTime(currentTime)
+	lookup["$siTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$siTime"])
 	
-	--$mmTime
-	local _mmTime = snapshots[spells.mindMelt.id].buff:GetRemainingTime(currentTime)
-	local mmTime = TRB.Functions.BarText:TimerPrecision(_mmTime)
-	--$mmStacks
-	local mmStacks = snapshots[spells.mindMelt.id].buff.applications or 0
+	--$lookup["$mmTime"]
+	lookupLogic["$mmTime"] = snapshots[spells.mindMelt.id].buff:GetRemainingTime(currentTime)
+	lookup["$mmTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$mmTime"])
+	--$lookup["$mmStacks"]
+	lookup["$mmStacks"] = snapshots[spells.mindMelt.id].buff.applications or 0
 	
-	--$ysTime
-	local _ysTime = snapshots[spells.idolOfYoggSaron.id].buff:GetRemainingTime(currentTime)
-	local ysTime = TRB.Functions.BarText:TimerPrecision(_ysTime)
-	--$ysStacks
-	local ysStacks = snapshots[spells.idolOfYoggSaron.id].buff.applications or 0
-	--$ysRemainingStacks
-	local ysRemainingStacks = (spells.idolOfYoggSaron.attributes.requiredStacks - ysStacks) or spells.idolOfYoggSaron.attributes.requiredStacks
-	--$tfbTime
-	local _tfbTime = snapshots[spells.thingFromBeyond.id].buff:GetRemainingTime(currentTime)
-	local tfbTime = TRB.Functions.BarText:TimerPrecision(_tfbTime)
+	--$lookup["$ysTime"]
+	lookupLogic["$ysTime"] = snapshots[spells.idolOfYoggSaron.id].buff:GetRemainingTime(currentTime)
+	lookup["$ysTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$ysTime"])
+	--$lookup["$ysStacks"]
+	lookup["$ysStacks"] = snapshots[spells.idolOfYoggSaron.id].buff.applications or 0
+	--$lookup["$ysRemainingStacks"]
+	lookup["$ysRemainingStacks"] = (spells.idolOfYoggSaron.attributes.requiredStacks - lookup["$ysStacks"]) or spells.idolOfYoggSaron.attributes.requiredStacks
+	--$lookup["$tfbTime"]
+	lookupLogic["$tfbTime"] = snapshots[spells.thingFromBeyond.id].buff:GetRemainingTime(currentTime)
+	lookup["$tfbTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$tfbTime"])
 	
-	--$reStacks
-	local reStacks = 0
-	--$reTime
-	local _reTime = 0
+	--$lookup["$reStacks"]
+	lookup["$reStacks"] = 0
+	--$lookup["$reTime"]
+	lookupLogic["$reTime"] = 0
 	if target ~= nil then
-		reStacks = target.spells[spells.resonantEnergy.debuffId].stacks or 0
-		_reTime = target.spells[spells.resonantEnergy.debuffId].remainingTime
+		lookup["$reStacks"] = target.spells[spells.resonantEnergy.debuffId].stacks or 0
+		lookupLogic["$reTime"] = target.spells[spells.resonantEnergy.debuffId].remainingTime
 	end
-	local reTime = TRB.Functions.BarText:TimerPrecision(_reTime)
+	lookup["$reTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$reTime"])
 
-	--$entropicRiftTime
-	local _entropicRiftTime = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
-	local entropicRiftTime = TRB.Functions.BarText:TimerPrecision(_entropicRiftTime)
+	--$lookup["$entropicRiftTime"]
+	lookupLogic["$entropicRiftTime"] = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
+	lookup["$entropicRiftTime"] = TRB.Functions.BarText:TimerPrecision(lookupLogic["$entropicRiftTime"])
 
-	--$cttvEquipped
-	local cttvEquipped = TRB.Functions.Class:IsValidVariableForSpec("$cttvEquipped")
+	--$lookup["$cttvEquipped"]
+	lookup["$cttvEquipped"] = TRB.Functions.Class:IsValidVariableForSpec("$cttvEquipped")
 
 	----------------------------
 
 	Global_TwintopResourceBar.voidform = {
 	}
-	Global_TwintopResourceBar.resource.passive = _passiveInsanity
-	Global_TwintopResourceBar.resource.auspiciousSpirits = _asInsanity
-	Global_TwintopResourceBar.resource.shadowfiend = _mbInsanity or 0
-	Global_TwintopResourceBar.resource.mindbender = _mbInsanity or 0
+	Global_TwintopResourceBar.resource.passive = lookupLogic["$passive"]
+	Global_TwintopResourceBar.resource.auspiciousSpirits = lookupLogic["$asInsanity"]
+	Global_TwintopResourceBar.resource.shadowfiend = lookupLogic["$sfInsanity"] or 0
+	Global_TwintopResourceBar.resource.mindbender = lookupLogic["$sfInsanity"] or 0
 	Global_TwintopResourceBar.resource.ecttv = snapshots[spells.idolOfCthun.id].attributes.resourceFinal or 0
 	
 	Global_TwintopResourceBar.auspiciousSpirits = Global_TwintopResourceBar.auspiciousSpirits or {}
 	Global_TwintopResourceBar.auspiciousSpirits.count = targetData.count[spells.auspiciousSpirits.id] or 0
-	Global_TwintopResourceBar.auspiciousSpirits.insanity = _asInsanity
+	Global_TwintopResourceBar.auspiciousSpirits.insanity = lookupLogic["$asInsanity"]
 
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
-	Global_TwintopResourceBar.dots.vtCount = _vampiricTouchCount or 0
-	Global_TwintopResourceBar.dots.dpCount = devouringPlagueCount or 0
+	Global_TwintopResourceBar.dots.swpCount = lookupLogic["$swpCount"] or 0
+	Global_TwintopResourceBar.dots.vtCount = lookupLogic["$vtCount"] or 0
+	Global_TwintopResourceBar.dots.dpCount = lookup["$dpCount"] or 0
 
 	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
-	Global_TwintopResourceBar.shadowfiend.insanity = _mbInsanity or 0
+	Global_TwintopResourceBar.shadowfiend.insanity = lookupLogic["$sfInsanity"] or 0
 	Global_TwintopResourceBar.shadowfiend.gcds = shadowfiend.remainingGcds or 0
 	Global_TwintopResourceBar.shadowfiend.swings = shadowfiend.remainingSwings or 0
 	Global_TwintopResourceBar.shadowfiend.time = shadowfiend.remainingTime or 0
 	Global_TwintopResourceBar.shadowfiend.count = shadowfiend:TotalActive()
 
 	Global_TwintopResourceBar.mindbender = Global_TwintopResourceBar.mindbender or {}
-	Global_TwintopResourceBar.mindbender.insanity = _mbInsanity or 0
+	Global_TwintopResourceBar.mindbender.insanity = lookupLogic["$sfInsanity"] or 0
 	Global_TwintopResourceBar.mindbender.gcds = shadowfiend.remainingGcds or 0
 	Global_TwintopResourceBar.mindbender.swings = shadowfiend.remainingSwings or 0
 	Global_TwintopResourceBar.mindbender.time = shadowfiend.remainingTime or 0
@@ -2160,124 +2157,47 @@ local function RefreshLookupData_Shadow()
 	Global_TwintopResourceBar.eternalCallToTheVoid.ticks = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining or 0
 	Global_TwintopResourceBar.eternalCallToTheVoid.count = snapshots[spells.idolOfCthun.id].attributes.numberActive or 0
 
-	local lookup = TRB.Data.lookup
-
-	lookup["$swpCount"] = shadowWordPainCount
-	lookup["$swpTime"] = shadowWordPainTime
-	lookup["$vtCount"] = vampiricTouchCount
-	lookup["$vtTime"] = vampiricTouchTime
-	lookup["$dpCount"] = devouringPlagueCount
-	lookup["$dpTime"] = devouringPlagueTime
-	lookup["$mdTime"] = mdTime
-	lookup["$mfiTime"] = mfiTime
-	lookup["$mfiStacks"] = mfiStacks
-	lookup["$deathspeakerTime"] = deathspeakerTime
-	lookup["$tofTime"] = tofTime
-	lookup["$vfTime"] = voidformTime
-	lookup["$mmTime"] = mmTime
-	lookup["$mmStacks"] = mmStacks
-	lookup["$ysTime"] = ysTime
-	lookup["$ysStacks"] = ysStacks
-	lookup["$ysRemainingStacks"] = ysRemainingStacks
-	lookup["$reStacks"] = reStacks
-	lookup["$reTime"] = reTime
-	lookup["$tfbTime"] = tfbTime
-	lookup["$siTime"] = siTime
-	lookup["$mindBlastCharges"] = mindBlastCharges
-	lookup["$mindBlastMaxCharges"] = mindBlastMaxCharges
-	lookup["$insanityTotal"] = insanityTotal
 	lookup["$insanityMax"] = TRB.Data.character.maxResource
-	lookup["$insanity"] = currentInsanity
-	lookup["$resourcePlusCasting"] = insanityPlusCasting
-	lookup["$insanityPlusCasting"] = insanityPlusCasting
-	lookup["$resourcePlusPassive"] = insanityPlusPassive
-	lookup["$insanityPlusPassive"] = insanityPlusPassive
-	lookup["$resourceTotal"] = insanityTotal
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$resource"] = currentInsanity
-	lookup["$casting"] = castingInsanity
-	lookup["$passive"] = passiveInsanity
-	lookup["$overcap"] = overcap
-	lookup["$resourceOvercap"] = overcap
-	lookup["$insanityOvercap"] = overcap
-	lookup["$sfInsanity"] = mbInsanity
-	lookup["$mbInsanity"] = mbInsanity
-	lookup["$sfGcds"] = mbGcds
-	lookup["$mbGcds"] = mbGcds
-	lookup["$sfSwings"] = mbSwings
-	lookup["$mbSwings"] = mbSwings
-	lookup["$sfTime"] = mbTime
-	lookup["$mbTime"] = mbTime
+	lookup["$resource"] = lookup["$insanity"]
+	lookup["$resourceTotal"] = lookup["$insanityTotal"]
+	lookup["$insanityPlusCasting"] = lookup["$resourcePlusCasting"]
+	lookup["$insanityPlusPassive"] = lookup["$resourcePlusPassive"]
 	lookup["$sfCount"] = shadowfiend:TotalActive()
 	lookup["$mbCount"] = shadowfiend:TotalActive()
-	lookup["$loiInsanity"] = loiInsanity
-	lookup["$loiTicks"] = loiTicks
-	lookup["$cttvEquipped"] = ""
-	lookup["$ecttvCount"] = ecttvCount
-	lookup["$asCount"] = asCount
-	lookup["$asInsanity"] = asInsanity
-	lookup["$entropicRiftTime"] = entropicRiftTime
+	lookup["$mbInsanity"] = lookup["$sfInsanity"]
+	lookup["$mbGcds"] = lookup["$sfGcds"]
+	lookup["$mbSwings"] = lookup["$sfSwings"]
+	lookup["$mbTime"] = lookup["$sfTime"]
 	lookup["$overcap"] = ""
 	lookup["$insanityOvercap"] = ""
 	lookup["$resourceOvercap"] = ""
 	TRB.Data.lookup = lookup
 
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$swpCount"] = _shadowWordPainCount
-	lookupLogic["$swpTime"] = _shadowWordPainTime
-	lookupLogic["$vtCount"] = _vampiricTouchCount
-	lookupLogic["$vtTime"] = _vampiricTouchTime
-	lookupLogic["$dpCount"] = devouringPlagueCount
-	lookupLogic["$dpTime"] = devouringPlagueTime
-	lookupLogic["$mdTime"] = _mdTime
-	lookupLogic["$mfiTime"] = _mfiTime
-	lookupLogic["$mfiStacks"] = _mfiStacks
-	lookupLogic["$deathspeakerTime"] = _deathspeakerTime
-	lookupLogic["$tofTime"] = _tofTime
-	lookupLogic["$vfTime"] = _voidformTime
-	lookupLogic["$mmTime"] = _mmTime
-	lookupLogic["$mmStacks"] = mmStacks
-	lookupLogic["$ysTime"] = _ysTime
-	lookupLogic["$ysStacks"] = ysStacks
-	lookupLogic["$ysRemainingStacks"] = ysRemainingStacks
-	lookupLogic["$reStacks"] = reStacks
-	lookupLogic["$reTime"] = _reTime
-	lookupLogic["$tfbTime"] = _tfbTime
-	lookupLogic["$siTime"] = _siTime
-	lookupLogic["$mindBlastCharges"] = mindBlastCharges
-	lookupLogic["$mindBlastMaxCharges"] = mindBlastMaxCharges
-	lookupLogic["$insanityTotal"] = _insanityTotal
+	lookupLogic["$dpTime"] = lookup["$dpTime"]
+	lookupLogic["$insanityPlusCasting"] = lookupLogic["$resourcePlusCasting"]
 	lookupLogic["$insanityMax"] = TRB.Data.character.maxResource
-	lookupLogic["$insanity"] = _currentInsanity
-	lookupLogic["$resourcePlusCasting"] = _insanityPlusCasting
-	lookupLogic["$insanityPlusCasting"] = _insanityPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _insanityPlusPassive
-	lookupLogic["$insanityPlusPassive"] = _insanityPlusPassive
-	lookupLogic["$resourceTotal"] = _insanityTotal
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = _currentInsanity
-	lookupLogic["$casting"] = _castingInsanity
-	lookupLogic["$passive"] = _passiveInsanity
-	lookupLogic["$overcap"] = overcap
-	lookupLogic["$resourceOvercap"] = overcap
-	lookupLogic["$insanityOvercap"] = overcap
-	lookupLogic["$sfInsanity"] = _mbInsanity
-	lookupLogic["$mbInsanity"] = _mbInsanity
-	lookupLogic["$sfGcds"] = _mbGcds
-	lookupLogic["$mbGcds"] = _mbGcds
-	lookupLogic["$sfSwings"] = _mbSwings
-	lookupLogic["$mbSwings"] = _mbSwings
-	lookupLogic["$sfTime"] = _mbTime
-	lookupLogic["$mbTime"] = _mbTime
+	lookupLogic["$resource"] = lookupLogic["$insanity"]
+	lookupLogic["$resourceTotal"] = lookupLogic["$insanityTotal"]
+	lookupLogic["$insanityPlusPassive"] = lookupLogic["$resourcePlusPassive"]
+	lookupLogic["$mbInsanity"] = lookupLogic["$sfInsanity"]
+	lookupLogic["$mbGcds"] = lookupLogic["$sfGcds"]
+	lookupLogic["$mbSwings"] = lookupLogic["$sfSwings"]
+	lookupLogic["$mbTime"] = lookupLogic["$sfTime"]
 	lookupLogic["$sfCount"] = shadowfiend:TotalActive()
 	lookupLogic["$mbCount"] = shadowfiend:TotalActive()
-	lookupLogic["$loiInsanity"] = _loiInsanity
-	lookupLogic["$loiTicks"] = _loiTicks
-	lookupLogic["$cttvEquipped"] = cttvEquipped
-	lookupLogic["$ecttvCount"] = _ecttvCount
-	lookupLogic["$asCount"] = _asCount
-	lookupLogic["$asInsanity"] = _asInsanity
-	lookupLogic["$entropicRiftTime"] = _entropicRiftTime
+	
+	lookupLogic["$mmStacks"] = lookup["mmStacks"]
+	lookupLogic["$ysStacks"] = lookup["ysStacks"]
+	lookupLogic["$ysRemainingStacks"] = lookup["ysRemainingStacks"]
+	lookupLogic["$reStacks"] = lookup["reStacks"]
+	lookupLogic["$mindBlastCharges"] = lookup["mindBlastCharges"]
+	lookupLogic["$mindBlastMaxCharges"] = lookup["mindBlastMaxCharges"]
+	lookupLogic["$overcap"] = lookup["overcap"]
+	lookupLogic["$resourceOvercap"] = lookup["overcap"]
+	lookupLogic["$insanityOvercap"] = lookup["overcap"]
+	lookupLogic["$cttvEquipped"] = lookup["cttvEquipped"]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -5120,9 +5040,13 @@ end
 
 --HACK to fix FPS
 local updateRateLimit = 0
-local updateMemory = 0
+local updateMemory = GetTime()
 local highMemory = 0
 local currentMemory = 0
+local oldMemory = 0
+---@type number?
+local memoryPerSecond = 0
+local memoryDuration = 0
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
@@ -5139,13 +5063,23 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
 	--TODO #339: Remove commented out to do memory load testing
-	--[[if updateMemory + 5 < currentTime then
+	if updateMemory + 5 < currentTime then
+		memoryDuration = currentTime - updateMemory
 		updateMemory = currentTime
 		UpdateAddOnMemoryUsage()
+		oldMemory = currentMemory
 		currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
-		print(string.format("%.2f (%.2f)", currentMemory, highMemory))
+		
+		if currentMemory > oldMemory then
+			memoryPerSecond = (currentMemory - oldMemory) / memoryDuration
+			print(string.format("%.2f (+%.2f/sec, %.2f)", currentMemory, memoryPerSecond, highMemory))
+		else
+			print(string.format("%.2f (GC'd, %.2f)", currentMemory, highMemory))
+			memoryPerSecond = nil
+		end
+
 		if currentMemory > highMemory then
 			highMemory = currentMemory
 		end
-	end]]
+	end
 end
