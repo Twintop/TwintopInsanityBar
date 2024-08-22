@@ -84,7 +84,7 @@ function TRB.Functions.Aura:EnableUnitAura()
 end
 
 function TRB.Functions.Aura:DisableUnitAura()
-	unitAuraFrame:UnegisterEvent("UNIT_AURA")
+	unitAuraFrame:UnregisterEvent("UNIT_AURA")
 end
 
 ---Stores the AuraInstanceId->SnapshotBuff in a dictionary

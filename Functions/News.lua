@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.0.2.4-release (2024-08-23)
+## General
+
+- (FIX) Fix Lua errors when switching to an unsupported or disabled specialization.
+
+---
+
 # 11.0.2.3-release (2024-08-22)
 ## Druid
 ### Balance
