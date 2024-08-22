@@ -40,6 +40,7 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public moonGuardian TRB.Classes.SpellBase
 ---@field public bounteousBloom TRB.Classes.SpellBase
 ---@field public forceOfNature TRB.Classes.SpellBase
+---@field public twwSeason1SetBonus TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
 ---@field public starsurge3 TRB.Classes.SpellThreshold
@@ -263,6 +264,17 @@ function TRB.Classes.Druid.BalanceSpells:New()
     self.bounteousBloom = TRB.Classes.SpellBase:New({
         id = 429215,
         isTalent = true
+    })
+
+    --Set Bonuses
+    self.twwSeason1SetBonus = TRB.Classes.SpellBase:New({
+        headId = 212056,
+        shoulderId = 212054,
+        chestId = 212059,
+        handId = 212057,
+        legId = 212055,
+        resourceModWrath = 2,
+        resourceModStarfire = 5
     })
 
     return self

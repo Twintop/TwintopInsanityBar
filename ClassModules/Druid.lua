@@ -75,6 +75,9 @@ local function FillSpecializationCache()
 		starfallThreshold = 50,
 		pandemicModifier = 1.0,
 		effects = {
+		},
+		items = {
+			twwSeason1SetBonusCount = 0
 		}
 	}
 	
@@ -2193,6 +2196,10 @@ local function CastingSpell()
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 				if currentSpellId == spells.wrath.id then
 					FillSnapshotDataCasting_Balance(spells.wrath)
+
+					if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModWrath
+					end
 					if talents:IsTalentActive(spells.wildSurges) then
 						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
 					end
@@ -2204,6 +2211,10 @@ local function CastingSpell()
 					end
 				elseif currentSpellId == spells.starfire.id then
 					FillSnapshotDataCasting_Balance(spells.starfire)
+
+					if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModStarfire
+					end
 					if talents:IsTalentActive(spells.wildSurges) then
 						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
 					end
@@ -3781,6 +3792,33 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "balance"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
 		GetCurrentMoonSpell()
+
+		local twwSeason1SetBonusSpell = TRB.Data.spellsData.spells.twwSeason1SetBonus --[[@as TRB.Classes.SpellBase]]
+
+		local headItemLink = GetInventoryItemLink("player", 1)
+		local shoulderItemLink = GetInventoryItemLink("player", 3)
+		local chestItemLink = GetInventoryItemLink("player", 5)
+		local handItemLink = GetInventoryItemLink("player", 10)
+		local legItemLink = GetInventoryItemLink("player", 7)
+		
+		local twwSeason1SetBonusCount = 0
+		if TRB.Functions.Item:DoesItemLinkMatchId(headItemLink, twwSeason1SetBonusSpell.attributes.headId) then
+			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
+		end
+		if TRB.Functions.Item:DoesItemLinkMatchId(shoulderItemLink, twwSeason1SetBonusSpell.attributes.shoulderId) then
+			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
+		end
+		if TRB.Functions.Item:DoesItemLinkMatchId(chestItemLink, twwSeason1SetBonusSpell.attributes.chestId) then
+			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
+		end
+		if TRB.Functions.Item:DoesItemLinkMatchId(handItemLink, twwSeason1SetBonusSpell.attributes.handId) then
+			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
+		end
+		if TRB.Functions.Item:DoesItemLinkMatchId(legItemLink, twwSeason1SetBonusSpell.attributes.legId) then
+			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
+		end
+
+		TRB.Data.character.items.twwSeason1SetBonusCount = twwSeason1SetBonusCount
 	elseif specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		TRB.Data.character.specName = "feral"

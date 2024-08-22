@@ -20,7 +20,14 @@ function TRB.Functions.Item:DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, b
 	return false
 end
 
+---Determines if the currently equipped item matches the specified item id
+---@param itemLink string? # ItemLink we are using the verify
+---@param id integer # Item Id we are checking for
+---@return boolean # Is this a match?
 function TRB.Functions.Item:DoesItemLinkMatchId(itemLink, id)
+	if itemLink == nil or id == nil then
+		return false
+	end
 	local parts = { strsplit(":", itemLink) }
 	-- Note for Future Twintop:
 	--  1  = Item Name

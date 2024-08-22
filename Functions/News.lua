@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.0.2.3-release (2024-08-22)
+## Druid
+### Balance
+
+- [#398 - UPDATE (Twintop)](#398) Add support for Balance's The War Within Season 1 4-piece set bonus.
+
+---
+
 # 11.0.2.2-release (2024-08-20)
 ## General
 
