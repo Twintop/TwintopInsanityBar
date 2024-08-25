@@ -4070,7 +4070,7 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
 	--TODO #339: Remove commented out to do memory load testing
-	if updateMemory + 5 < currentTime then
+	--[[if updateMemory + 5 < currentTime then
 		updateMemory = currentTime
 		UpdateAddOnMemoryUsage()
 		currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
@@ -4078,5 +4078,5 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		if currentMemory > highMemory then
 			highMemory = currentMemory
 		end
-	end
+	end]]
 end

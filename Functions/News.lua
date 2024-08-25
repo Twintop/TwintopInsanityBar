@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.0.2.5-release (2024-08-25)
+## General
+
+- (FIX) Stop debug printing from happening on some classes.
+
+---
+
 # 11.0.2.4-release (2024-08-23)
 ## General
 
