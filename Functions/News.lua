@@ -12,6 +12,12 @@ local content = [====[
 ---
 
 # 11.0.2.6-release (2024-09-08)
+## General
+
+- [#403 - UPDATE (Twintop)](#403) Add Time To Die overrides for the following enemies:
+<br/>&emsp;&ensp;- Darkflame Cleft - The Darkness -- 44.5%
+<br/>&emsp;&ensp;- The Dawnbreaker - Rasha'nan -- 59.5%
+
 ## Monk
 ### Mistweaver
 

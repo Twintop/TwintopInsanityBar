@@ -147,6 +147,12 @@ local unitDeathHealthPercentageList = {
     ["184582"] = 0.1, -- Eric "The Swift"
     --- Dawn of the Infinite ---
     ["198933"] = 0.85, -- Iridikron
+
+    ---- The War Within ----
+    --- Darkflame Cleft ---
+    ["210797"] = 0.445, -- The Darkness
+    --- The Dawnbreaker ---
+    ["213937"] = 0.595, -- Rasta'nan
 }
 
 function TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unit)
