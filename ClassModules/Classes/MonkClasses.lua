@@ -54,8 +54,8 @@ function TRB.Classes.Monk.ManaTea:GetMaxManaReturn()
     local tickRate = self.spell.tickRate
 
     if self.talents:IsTalentActive(self.energizingBrewSpell) then
-        resourcePerTick = resourcePerTick * self.energizingBrewSpell.resourcePerTickMod
-        tickRate = tickRate * self.energizingBrewSpell.tickRateMod
+        resourcePerTick = resourcePerTick * self.energizingBrewSpell.attributes.resourcePerTickMod
+        tickRate = tickRate * self.energizingBrewSpell.attributes.tickRateMod
     end
     return (TRB.Data.snapshotData.attributes.manaRegen * tickRate * (self.buff.applications * (gcd / 1.5))) + (self.buff.applications * resourcePerTick * TRB.Data.character.maxResource)
 end

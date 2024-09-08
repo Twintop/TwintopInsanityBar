@@ -11,17 +11,25 @@ local content = [====[
 
 ---
 
+# 11.0.2.6-release (2024-09-08)
+## Monk
+### Mistweaver
+
+- (FIX (Twintop)) Prevent a Lua error when tracking Mana Tea mana regen with Energizing Brew talented.
+
+---
+
 # 11.0.2.5-release (2024-08-25)
 ## General
 
-- (FIX) Stop debug printing from happening on some classes.
+- (FIX (Twintop)) Stop debug printing from happening on some classes.
 
 ---
 
 # 11.0.2.4-release (2024-08-23)
 ## General
 
-- (FIX) Fix Lua errors when switching to an unsupported or disabled specialization.
+- (FIX (Twintop)) Fix Lua errors when switching to an unsupported or disabled specialization.
 
 ---
 
