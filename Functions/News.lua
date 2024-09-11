@@ -11,6 +11,17 @@ local content = [====[
 
 ---
 
+# 11.0.2.7-release (2024-09-11)
+## General
+
+- (UPDATE (Twintop)) Improve cleaning up of aura tracking data when changing specializations or talents.
+
+## Druid
+
+- (FIX (Twintop)) Fix Lua errors as Guardian Druid.
+
+---
+
 # 11.0.2.6-release (2024-09-08)
 ## General
 

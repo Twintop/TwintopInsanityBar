@@ -3531,6 +3531,11 @@ local function SwitchSpec()
 	else
 		TRB.Data.barConstructedForSpec = nil
 	end
+
+	if TRB.Data.barConstructedForSpec ~= nil then
+		TRB.Functions.Aura:ClearAuraInstanceIds()
+	end
+	
 	TRB.Functions.Class:EventRegistration()
 end
 
