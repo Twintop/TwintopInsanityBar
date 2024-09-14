@@ -150,7 +150,7 @@ local unitDeathHealthPercentageList = {
 
     ---- The War Within ----
     --- Darkflame Cleft ---
-    ["210797"] = 0.445, -- The Darkness
+    ["208747"] = 0.445, -- The Darkness
     --- The Dawnbreaker ---
     ["213937"] = 0.595, -- Rasta'nan
 }
