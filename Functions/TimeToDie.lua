@@ -94,7 +94,7 @@ local unitDeathHealthPercentageList = {
 
     ---- Cataclysm ----
     --- Grim Batol ---  
-    ["40320"] = 0.2, -- Valiona
+    ["40320"] = 0.505, -- Valiona
     --- Firelands ---
     ["52409"] = Firelands_Ragnaros,
 
@@ -152,7 +152,7 @@ local unitDeathHealthPercentageList = {
     --- Darkflame Cleft ---
     ["208747"] = 0.445, -- The Darkness
     --- The Dawnbreaker ---
-    ["213937"] = 0.595, -- Rasta'nan
+    ["213937"] = 0.605, -- Rasta'nan
 }
 
 function TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unit)
