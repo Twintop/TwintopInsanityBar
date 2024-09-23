@@ -51,7 +51,7 @@ local function LoadDefaultSettings()
 			},
 			strata={
 				level="BACKGROUND",
-				name=L["StrataBackground"] 
+				name=L["StrataBackground"]
 			},
 			timers = {
 				precisionLow = 1,
@@ -123,24 +123,16 @@ local function LoadDefaultSettings()
 				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 				comboPointsBarName="Blizzard",
 			},
-			font={
-				fontSizeLock = true,
-				fontFaceLock = true,
-				left = {
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontSize = 18
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = L["PositionLeft"],
+					fontSize=18,
+					color = "FFFFFFFF",
 				},
-				middle = {
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontSize = 18
-				},
-				right = {
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontSize = 18
-				}
+				barText = {}
 			},
 			globalSettings = {
 				globalEnable = false,
@@ -150,7 +142,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -159,7 +151,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}
@@ -170,7 +162,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -179,7 +171,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -188,7 +180,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}
@@ -199,7 +191,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -208,7 +200,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -217,7 +209,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}
@@ -228,7 +220,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -237,7 +229,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -246,7 +238,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}
@@ -257,7 +249,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -266,7 +258,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}
@@ -277,7 +269,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -288,7 +280,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -297,7 +289,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -306,7 +298,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = false,
 						displayBar = false,
-						font = false,
+						displayText = false,
 						textures = false,
 						thresholds = false
 					}
@@ -317,7 +309,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -326,7 +318,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -335,7 +327,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}
@@ -346,7 +338,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -355,7 +347,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -364,7 +356,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}
@@ -375,7 +367,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}
@@ -386,7 +378,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					},
@@ -395,7 +387,7 @@ local function LoadDefaultSettings()
 						bar = true,
 						comboPoints = true,
 						displayBar = true,
-						font = true,
+						displayText = true,
 						textures = true,
 						thresholds = true
 					}

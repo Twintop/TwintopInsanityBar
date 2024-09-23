@@ -173,8 +173,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 		specCache.settings.displayBar = spec.displayBar
 	end
 
-	if enabled and s.font then
-		specCache.settings.displayText = core.font
+	if enabled and s.displayText then
+		specCache.settings.displayText = core.displayText
 	else
 		specCache.settings.displayText = spec.displayText
 	end
