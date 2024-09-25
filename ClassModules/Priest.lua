@@ -1926,15 +1926,15 @@ local function RefreshLookupData_Shadow()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentInsanityColor = specSettings.colors.text.currentInsanity
-	local castingInsanityColor = specSettings.colors.text.castingInsanity
+	local currentInsanityColor = specSettings.colors.text.current
+	local castingInsanityColor = specSettings.colors.text.casting
 
 	local insanityThreshold = spells.devouringPlague:GetPrimaryResourceCost()
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 		if specSettings.colors.text.overcapEnabled and overcap then
-			currentInsanityColor = specSettings.colors.text.overcapInsanity
-			castingInsanityColor = specSettings.colors.text.overcapInsanity
+			currentInsanityColor = specSettings.colors.text.overcap
+			castingInsanityColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
 			currentInsanityColor = specSettings.colors.text.overThreshold
 			castingInsanityColor = specSettings.colors.text.overThreshold
@@ -1980,7 +1980,7 @@ local function RefreshLookupData_Shadow()
 	local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, resourcePrecision, "ceil"))
 	--$passive
 	local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity
-	local passiveInsanity = string.format("|c%s%s|r", specSettings.colors.text.passiveInsanity, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
+	local passiveInsanity = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
 	--$insanityTotal
 	local _insanityTotal = math.min(_passiveInsanity + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
 	local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityTotal, resourcePrecision, "floor"))

@@ -665,8 +665,8 @@ local function RefreshLookupData_Elemental()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentMaelstromColor = specSettings.colors.text.currentMaelstrom
-	local castingMaelstromColor = specSettings.colors.text.castingMaelstrom
+	local currentMaelstromColor = specSettings.colors.text.current
+	local castingMaelstromColor = specSettings.colors.text.casting
 
 	local maelstromThreshold = TRB.Data.character.maxResource
 
@@ -682,8 +682,8 @@ local function RefreshLookupData_Elemental()
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 		if specSettings.colors.text.overcapEnabled and overcap then
-			currentMaelstromColor = specSettings.colors.text.overcapMaelstrom
-			castingMaelstromColor = specSettings.colors.text.overcapMaelstrom
+			currentMaelstromColor = specSettings.colors.text.overcap
+			castingMaelstromColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled and snapshotData.attributes.resource >= maelstromThreshold then
 			currentMaelstromColor = specSettings.colors.text.overThreshold
 			castingMaelstromColor = specSettings.colors.text.overThreshold
@@ -697,7 +697,7 @@ local function RefreshLookupData_Elemental()
 	--$passive
 	local _passiveMaelstrom = 0
 
-	local passiveMaelstrom = string.format("|c%s%.0f|r", specSettings.colors.text.passiveMaelstrom, _passiveMaelstrom)
+	local passiveMaelstrom = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveMaelstrom)
 	--$maelstromTotal
 	local _maelstromTotal = math.min(_passiveMaelstrom + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local maelstromTotal = string.format("|c%s%.0f|r", currentMaelstromColor, _maelstromTotal)

@@ -3291,6 +3291,40 @@ function TRB.Options:PortForwardSettings()
 			enabled = TwintopInsanityBarSettings.rogue.subtlety.thresholds.eviscerate
 		}
 	end
+
+	-- Text color standardization for Shadow
+	if TwintopInsanityBarSettings ~= nil and
+	TwintopInsanityBarSettings.priest ~= nil and
+	TwintopInsanityBarSettings.priest.shadow ~= nil and
+	TwintopInsanityBarSettings.priest.shadow.colors ~= nil and
+	TwintopInsanityBarSettings.priest.shadow.colors.text ~= nil and
+	TwintopInsanityBarSettings.priest.shadow.colors.text.current == nil then
+		TwintopInsanityBarSettings.priest.shadow.colors.text.current = TwintopInsanityBarSettings.priest.shadow.colors.text.currentInsanity
+		TwintopInsanityBarSettings.priest.shadow.colors.text.casting = TwintopInsanityBarSettings.priest.shadow.colors.text.castingInsanity
+		TwintopInsanityBarSettings.priest.shadow.colors.text.passive = TwintopInsanityBarSettings.priest.shadow.colors.text.passiveInsanity
+		TwintopInsanityBarSettings.priest.shadow.colors.text.overcap = TwintopInsanityBarSettings.priest.shadow.colors.text.overcapInsanity
+		TwintopInsanityBarSettings.priest.shadow.colors.text.currentInsanity = nil
+		TwintopInsanityBarSettings.priest.shadow.colors.text.castingInsanity = nil
+		TwintopInsanityBarSettings.priest.shadow.colors.text.passiveInsanity = nil
+		TwintopInsanityBarSettings.priest.shadow.colors.text.overcapInsanity = nil
+	end
+
+	-- Text color standardization for Elemental
+	if TwintopInsanityBarSettings ~= nil and
+	TwintopInsanityBarSettings.shaman ~= nil and
+	TwintopInsanityBarSettings.shaman.elemental ~= nil and
+	TwintopInsanityBarSettings.shaman.elemental.colors ~= nil and
+	TwintopInsanityBarSettings.shaman.elemental.colors.text ~= nil and
+	TwintopInsanityBarSettings.shaman.elemental.colors.text.current == nil then
+		TwintopInsanityBarSettings.shaman.elemental.colors.text.current = TwintopInsanityBarSettings.shaman.elemental.colors.text.currentMaelstrom
+		TwintopInsanityBarSettings.shaman.elemental.colors.text.casting = TwintopInsanityBarSettings.shaman.elemental.colors.text.castingMaelstrom
+		TwintopInsanityBarSettings.shaman.elemental.colors.text.passive = TwintopInsanityBarSettings.shaman.elemental.colors.text.passiveMaelstrom
+		TwintopInsanityBarSettings.shaman.elemental.colors.text.overcap = TwintopInsanityBarSettings.shaman.elemental.colors.text.overcapMaelstrom
+		TwintopInsanityBarSettings.shaman.elemental.colors.text.currentMaelstrom = nil
+		TwintopInsanityBarSettings.shaman.elemental.colors.text.castingMaelstrom = nil
+		TwintopInsanityBarSettings.shaman.elemental.colors.text.passiveMaelstrom = nil
+		TwintopInsanityBarSettings.shaman.elemental.colors.text.overcapMaelstrom = nil
+	end
 end
 
 function TRB.Options:CleanupSettings(oldSettings)

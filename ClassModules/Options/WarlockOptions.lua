@@ -222,7 +222,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 		passiveGeneration = {
 		},
 		colors={
-			text={
+			text = {
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",

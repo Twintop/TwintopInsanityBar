@@ -750,7 +750,7 @@ local function PreservationLoadDefaultSettings(includeBarText)
 			blessingOfWinter = true
 		},
 		colors={
-			text={
+			text = {
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",

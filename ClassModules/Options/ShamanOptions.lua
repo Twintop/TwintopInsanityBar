@@ -239,10 +239,10 @@ local function ElementalLoadDefaultSettings(includeBarText)
 		},
 		colors = {
 			text = {
-				currentMaelstrom="FF6563E0",
-				castingMaelstrom="FFFFFFFF",
-				passiveMaelstrom="FF995BDD",
-				overcapMaelstrom="FFFF0000",
+				current="FF6563E0",
+				casting="FFFFFFFF",
+				passive="FF995BDD",
+				overcap="FFFF0000",
 				overThreshold="FF00FF00",
 				overThresholdEnabled=false,
 				overcapEnabled=true,
@@ -865,7 +865,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			timeMax=3.0
 		},
 		colors={
-			text={
+			text = {
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",
@@ -1318,23 +1318,23 @@ local function ElementalConstructFontAndTextPanel(parent)
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanElementalTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.currentMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCurrent"], spec.colors.text.currentMaelstrom, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.currentMaelstrom
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "currentMaelstrom")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.castingMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCasting"], spec.colors.text.castingMaelstrom, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.castingMaelstrom
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCasting"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "castingMaelstrom")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.passiveMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextPassive"], spec.colors.text.passiveMaelstrom, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passiveMaelstrom
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passiveMaelstrom")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
 	yCoord = yCoord - 30
@@ -1344,10 +1344,10 @@ local function ElementalConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcapMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcapMaelstrom, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcapMaelstrom
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcapMaelstrom")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30

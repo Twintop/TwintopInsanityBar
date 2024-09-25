@@ -356,7 +356,7 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 			blessingOfWinter = true
 		},
 		colors={
-			text={
+			text = {
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",
@@ -865,7 +865,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 			blessingOfWinter = true
 		},
 		colors={
-			text={
+			text = {
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",
@@ -1295,11 +1295,11 @@ local function ShadowLoadDefaultSettings(includeBarText)
 			fixed=100
 		},
 		colors={
-			text={
-				currentInsanity="FFC2A3E0",
-				castingInsanity="FFFFFFFF",
-				passiveInsanity="FFDF00FF",
-				overcapInsanity="FFFF0000",
+			text = {
+				current="FFC2A3E0",
+				casting="FFFFFFFF",
+				passive="FFDF00FF",
+				overcap="FFFF0000",
 				overThreshold="FF00FF00",
 				overThresholdEnabled=false,
 				overcapEnabled=true,
@@ -3954,21 +3954,21 @@ local function ShadowConstructFontAndTextPanel(parent)
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.currentInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerTextCurrent"], spec.colors.text.currentInsanity, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.currentInsanity
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerTextCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "currentInsanity")
 	end)
 
-	controls.colors.text.castingInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerTextCasting"], spec.colors.text.castingInsanity, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.castingInsanity
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerTextCasting"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "castingInsanity")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.passiveInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerTextPassive"], spec.colors.text.passiveInsanity, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passiveInsanity
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerTextPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passiveInsanity")
 	end)
@@ -3980,8 +3980,8 @@ local function ShadowConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcapInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerOvercap"], spec.colors.text.overcapInsanity, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcapInsanity
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcapInsanity")
 	end)

@@ -1093,7 +1093,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			timeMax=3.0
 		},
 		colors={
-			text={
+			text = {
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",
