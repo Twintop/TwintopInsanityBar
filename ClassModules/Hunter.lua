@@ -1550,7 +1550,7 @@ local function UpdateResourceBar()
 								elseif UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spell.attributes.healthMinimum then
 									showThreshold = false
 									snapshotData.audio.playedKillShotCue = false
-								elseif snapshots[spell.id].buff.isActive then
+								elseif snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									snapshotData.audio.playedKillShotCue = false
@@ -2260,6 +2260,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 			if entry.spellId == spells.killShot.id then
 				snapshotData.audio.playedKillShotCue = false
+				snapshots[entry.spellId].cooldown:Initialize()
 			elseif entry.spellId == spells.serpentSting.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
