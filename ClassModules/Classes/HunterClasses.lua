@@ -10,7 +10,6 @@ TRB.Classes.Hunter = TRB.Classes.Hunter or {}
 ---@class TRB.Classes.Hunter.HunterBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public concussiveShot TRB.Classes.SpellBase
 ---@field public serpentSting TRB.Classes.SpellBase
----@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public revivePet TRB.Classes.SpellThreshold
 ---@field public wingClip TRB.Classes.SpellThreshold
 ---@field public killShot TRB.Classes.SpellThreshold
@@ -27,13 +26,6 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
     self = setmetatable(base:New(), TRB.Classes.Hunter.HunterBaseSpells) --[[@as TRB.Classes.Hunter.HunterBaseSpells]]
     
     -- Hunter Class Baseline Abilities
-    self.arcaneShot = TRB.Classes.SpellThreshold:New({
-        id = 185358,
-        iconName = "ability_impalingbolt",
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "arcaneShot",
-        baseline = true
-    })
     self.revivePet = TRB.Classes.SpellThreshold:New({
         id = 982,
         primaryResourceType = Enum.PowerType.Focus,
@@ -247,6 +239,7 @@ end
 ---@field public steadyFocus TRB.Classes.SpellBase
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public lockAndLoad TRB.Classes.SpellBase
+---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public aimedShot TRB.Classes.SpellThreshold
 ---@field public barrage TRB.Classes.SpellThreshold
 ---@field public chimaeraShot TRB.Classes.SpellThreshold
@@ -270,6 +263,13 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     self.steadyShot = TRB.Classes.SpellBase:New({
         id = 56641,
         resource = 0,
+        baseline = true
+    })
+    self.arcaneShot = TRB.Classes.SpellThreshold:New({
+        id = 185358,
+        iconName = "ability_impalingbolt",
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "arcaneShot",
         baseline = true
     })
 
@@ -390,6 +390,7 @@ end
 ---@field public flankingStrike TRB.Classes.SpellBase
 ---@field public coordinatedAssault TRB.Classes.SpellBase
 ---@field public bombardier TRB.Classes.SpellBase
+---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public wildfireBomb TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
 ---@field public butchery TRB.Classes.SpellThreshold
@@ -413,6 +414,13 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     })
 
     -- Survival Spec Baseline Abilities
+    self.arcaneShot = TRB.Classes.SpellThreshold:New({
+        id = 185358,
+        iconName = "ability_impalingbolt",
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "arcaneShot",
+        baseline = true
+    })
 
     -- Survival Spec Talents
     self.raptorStrike = TRB.Classes.SpellThreshold:New({

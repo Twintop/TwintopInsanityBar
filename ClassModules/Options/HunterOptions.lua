@@ -193,9 +193,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			arcaneShot = {
-				enabled = false,
-			},
 			revivePet = {
 				enabled = false,
 			},
@@ -1327,18 +1324,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 			
 	controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
-
-	controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.arcaneShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxArcaneShot"])
-	f.tooltip = L["HunterBeastMasteryThresholdCheckboxArcaneShotTooltip"]
-	f:SetChecked(spec.thresholds.arcaneShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.arcaneShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
+	
 	controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.barrageThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)

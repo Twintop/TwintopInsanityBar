@@ -255,7 +255,6 @@ local function FillSpellData_BeastMastery()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-		{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
 		{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = spells.barbedShot.name, printInSettings = true },
 		{ variable = "#barrage", icon = spells.barrage.icon, description = spells.barrage.name, printInSettings = true },
 		{ variable = "#beastCleave", icon = spells.beastCleave.icon, description = spells.beastCleave.name, printInSettings = true },
@@ -733,7 +732,6 @@ local function RefreshLookupData_BeastMastery()
 	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#arcaneShot"] = spells.arcaneShot.icon
 	lookup["#barbedShot"] = spells.barbedShot.icon
 	lookup["#barrage"] = spells.barrage.icon
 	lookup["#beastCleave"] = spells.beastCleave.icon
