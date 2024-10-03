@@ -149,12 +149,16 @@ local unitDeathHealthPercentageList = {
     ["198933"] = 0.85, -- Iridikron
 
     ---- The War Within ----
+    --- Isle of Dorn ---
+    ["211858"] = 0.85, -- Queensguard Zirix
+    --- Delves ---
+    ["228044"] = 0.34, -- Reno Jackson
     --- Theater Troupe ---
     ["220953"] = 0.3, -- Wanderer Ida
     --- Darkflame Cleft ---
     ["208747"] = 0.445, -- The Darkness
     --- The Dawnbreaker ---
-    ["213937"] = 0.605, -- Rasha'nan
+    ["213937"] = 0.595, -- Rasha'nan
 }
 
 function TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unit)
