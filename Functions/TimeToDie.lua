@@ -4,6 +4,8 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.TimeToDie = {}
 
 local triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = false
+local triggeredSkitteringBreach_SpeakerXanveth_FirstEncounter = false
+local triggeredSkitteringBreach_SpeakerXanveth_FirstEncounterEnd = false
 local instanceDifficulty = 0
 local instanceId = 0
 local locale = "enUS"
@@ -13,6 +15,8 @@ ttdEventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, ...)
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
         if arg3 == 210385 then
             triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = true
+            ttdEventFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+            ttdEventFrame:UnregisterEvent("CHAT_MSG_MONSTER_EMOTE")
         end
     elseif event == "CHAT_MSG_MONSTER_EMOTE" then
         if instanceId == 1571 then
@@ -28,8 +32,12 @@ ttdEventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, ...)
                 ((locale == "zhCN") and string.find(arg1, "偷偷在庄严静夜合剂中下了毒。")) or
                 ((locale == "zhTW") and string.find(arg1, "偷偷地在莊嚴之夜藥劑裡面加入毒藥。")) then
                 triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = true
+                ttdEventFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+                ttdEventFrame:UnregisterEvent("CHAT_MSG_MONSTER_EMOTE")
             end
         end
+    elseif event == "ACTIVE_DELVE_DATA_UPDATE" and triggeredSkitteringBreach_SpeakerXanveth_FirstEncounter then
+        triggeredSkitteringBreach_SpeakerXanveth_FirstEncounterEnd = true
     end
 end)
 
@@ -40,6 +48,7 @@ ttdPlayerEnteringWorldFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         ttdEventFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
         ttdEventFrame:UnregisterEvent("CHAT_MSG_MONSTER_EMOTE")
+        ttdEventFrame:UnregisterEvent("ACTIVE_DELVE_DATA_UPDATE")
         
         locale = GetLocale()
         instanceId = select(8, GetInstanceInfo())
@@ -49,6 +58,10 @@ ttdPlayerEnteringWorldFrame:SetScript("OnEvent", function(self, event, ...)
             ttdEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
             ttdEventFrame:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
             triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = false
+        elseif instanceId == 2685 then
+            ttdEventFrame:RegisterEvent("ACTIVE_DELVE_DATA_UPDATE")
+            triggeredSkitteringBreach_SpeakerXanveth_FirstEncounter = false
+            triggeredSkitteringBreach_SpeakerXanveth_FirstEncounterEnd = false
         end
     end
 end)
@@ -76,6 +89,15 @@ local function SanctumOfDomination_SylvanasWindrunner()
         return 0.45
     else
         return 0.5
+    end
+end
+
+local function SkitteringBreach_SpeakerXanveth()
+    if triggeredSkitteringBreach_SpeakerXanveth_FirstEncounterEnd then
+        return 0.5
+    else
+        triggeredSkitteringBreach_SpeakerXanveth_FirstEncounter = true
+        return 2/3
     end
 end
 
@@ -153,12 +175,14 @@ local unitDeathHealthPercentageList = {
     ["211858"] = 0.85, -- Queensguard Zirix
     --- Delves ---
     ["228044"] = 0.34, -- Reno Jackson
+    --- Skittering Breach ---
+    ["220130"] = SkitteringBreach_SpeakerXanveth,
     --- Theater Troupe ---
     ["220953"] = 0.3, -- Wanderer Ida
     --- Darkflame Cleft ---
     ["208747"] = 0.445, -- The Darkness
     --- The Dawnbreaker ---
-    ["213937"] = 0.595, -- Rasha'nan
+    ["213937"] = 0.59, -- Rasha'nan
 }
 
 function TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unit)
