@@ -1540,7 +1540,7 @@ local function UpdateResourceBar()
 									targetUnitHealth = target:GetHealthPercent()
 								end
 
-								if snapshots[spells.huntersPrey.id].buff.isActive then
+								if snapshots[spells.huntersPrey.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
 									thresholdColor = specSettings.colors.threshold.over
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
@@ -1850,7 +1850,7 @@ local function UpdateResourceBar()
 									targetUnitHealth = target:GetHealthPercent()
 								end
 
-								if snapshots[spells.deathblow.id].buff.isActive then
+								if snapshots[spells.deathblow.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
 									thresholdColor = specSettings.colors.threshold.over
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
