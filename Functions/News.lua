@@ -11,6 +11,39 @@ local content = [====[
 
 ---
 
+# 11.0.2.8-release (2024-10-11)
+## General
+
+- [#406 - UPDATE](#406) Add Time To Die overrides additions/updates for the following enemies:
+<br/>&emsp;&ensp;- Isle of Dorn - Queensguard Zirix -- 85%
+<br/>&emsp;&ensp;- Theater Troupe - Wanderer Ida -- 30%
+<br/>&emsp;&ensp;- Delves - Reno Jackson -- 34%
+<br/>&emsp;&ensp;- Skittering Breach - Speaker Xanventh -- 66% then 50%
+<br/>&emsp;&ensp;- Darkflame Cleft - The Darkness -- fix NPC ID
+<br/>&emsp;&ensp;- Grim Batol - Valiona -- 50.5%
+<br/>&emsp;&ensp;- The Dawnbreaker - Rasha'nan -- 59%
+- (UPDATE) Update LibSharedMedia-3.0 to revision 151.
+
+## Hunter
+
+- (FIX) Correct the logic around Kill Shot being labeled as usable.
+
+### Beast Mastery
+
+- (FIX) Remove Arcane Shot from being a threshold line.
+
+## Priest
+### Shadow
+
+- [#405 - REFACTOR](#405) Standardize settings in preparation for more Global Bar Settings.
+
+## Shaman
+### Elemental
+
+- [#405 - REFACTOR](#405) Standardize settings in preparation for more Global Bar Settings.
+
+---
+
 # 11.0.2.7-release (2024-09-11)
 ## General
 
