@@ -174,7 +174,8 @@ local unitDeathHealthPercentageList = {
     --- Isle of Dorn ---
     ["211858"] = 0.85, -- Queensguard Zirix
     --- Delves ---
-    ["228044"] = 0.34, -- Reno Jackson
+    ["228030"] = 1/3, -- Sir Finley Mrrgglton
+    ["228044"] = 1/3, -- Reno Jackson
     --- Skittering Breach ---
     ["220130"] = SkitteringBreach_SpeakerXanveth,
     --- Theater Troupe ---

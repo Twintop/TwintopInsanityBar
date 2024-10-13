@@ -11,6 +11,15 @@ local content = [====[
 
 ---
 
+# 11.0.2.9-release (2024-10-13)
+## General
+
+- [#406 - UPDATE](#406) Add Time To Die overrides additions/updates for the following enemies:
+<br/>&emsp;&ensp;- Delves - Reno Jackson -- 33.3%
+<br/>&emsp;&ensp;- Delves - Sir Finley Mrrgglton -- 33.3%
+
+---
+
 # 11.0.2.8-release (2024-10-11)
 ## General
 
