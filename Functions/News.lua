@@ -11,12 +11,13 @@ local content = [====[
 
 ---
 
-# 11.0.2.9-release (2024-10-13)
+# 11.0.2.9-release (2024-10-14)
 ## General
 
 - [#406 - UPDATE](#406) Add Time To Die overrides additions/updates for the following enemies:
 <br/>&emsp;&ensp;- Delves - Reno Jackson -- 33.3%
 <br/>&emsp;&ensp;- Delves - Sir Finley Mrrgglton -- 33.3%
+- [#407 - FIX](#407) Put some safety rails around the duration of bar pulsing options to stop invalid values (and the Lua errors that love them) from being set.
 
 ---
 

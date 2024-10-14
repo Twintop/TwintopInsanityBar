@@ -110,6 +110,16 @@ function TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowVa
 end
 
 function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)
+	if alphaOffset > 1.0 then
+		alphaOffset = 1.0
+	elseif alphaOffset < 0 then
+		alphaOffset = 0
+	end
+
+	if flashPeriod <= 0 then
+		flashPeriod = 0.5
+	end
+	
 	frame:SetAlpha(((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime()/flashPeriod)))) + alphaOffset)
 end
 
