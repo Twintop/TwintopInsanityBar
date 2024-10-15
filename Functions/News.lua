@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.0.2.10-release (2024-10-15)
+## General
+
+- [#406 - UPDATE](#406) Add Time To Die overrides additions/updates for the following enemies:
+<br/>&emsp;&ensp;- The Dawnbreaker - Rasha'nan -- 60%
+
+---
+
 # 11.0.2.9-release (2024-10-14)
 ## General
 
