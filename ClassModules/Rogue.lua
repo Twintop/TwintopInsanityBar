@@ -337,8 +337,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.secretTechnique.id] = TRB.Classes.Snapshot:New(spells.secretTechnique)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.sepsis.id] = TRB.Classes.Snapshot:New(spells.sepsis)
-	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.shadowBlades.id] = TRB.Classes.Snapshot:New(spells.shadowBlades)
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.shurikenTornado.id] = TRB.Classes.Snapshot:New(spells.shurikenTornado)
@@ -719,7 +717,6 @@ local function FillSpellData_Subtlety()
 		{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-		{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
 		{ variable = "#shadowTechniques", icon = spells.shadowTechniques.icon, description = spells.shadowTechniques.name, printInSettings = true },
 		{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
 		{ variable = "#sod", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = true },
@@ -1981,7 +1978,6 @@ local function RefreshLookupData_Subtlety()
 	lookup["#sliceAndDice"] = spells.sliceAndDice.icon
 	lookup["#sod"] = spells.symbolsOfDeath.icon
 	lookup["#symbolsOfDeath"] = spells.symbolsOfDeath.icon
-	lookup["#sepsis"] = spells.sepsis.icon
 	lookup["#shadowTechniques"] = spells.shadowTechniques.icon
 	lookup["#stealth"] = spells.stealth.icon
 	lookup["#woundPoison"] = spells.woundPoison.icon
@@ -2251,7 +2247,6 @@ local function UpdateSnapshot_Subtlety()
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()
 	
-	snapshots[spells.sepsis.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.goremawsBite.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.shadowDance.id].buff:GetRemainingTime(currentTime)
@@ -2883,7 +2878,7 @@ local function UpdateResourceBar()
 					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 				end
 
-				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
+				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
 				local pairOffset = 0
 				local thresholdId = 1
 				for _, v in pairs(TRB.Data.spellsData.spells) do
@@ -3315,17 +3310,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.shadowDance.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.sepsis.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.sepsis.buffId then
-					snapshots[spells.sepsis.id].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
-						if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
-							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					end
 				end
 			end
 

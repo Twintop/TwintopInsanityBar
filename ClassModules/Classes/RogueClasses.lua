@@ -604,7 +604,6 @@ end
 ---@field public shurikenTornado TRB.Classes.SpellComboPointThreshold
 ---@field public goremawsBite TRB.Classes.SpellComboPointThreshold
 ---@field public killingSpree TRB.Classes.SpellComboPointThreshold
----@field public sepsis TRB.Classes.SpellComboPointThreshold
 TRB.Classes.Rogue.SubtletySpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
 TRB.Classes.Rogue.SubtletySpells.__index = TRB.Classes.Rogue.SubtletySpells
 
@@ -728,16 +727,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPointsGenerated = 3,
         settingKey = "goremawsBite",
         hasCooldown = true,
-        isTalent = true
-    })
-    self.sepsis = TRB.Classes.SpellComboPointThreshold:New({
-        id = 385408,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 1,
-        settingKey = "sepsis",
-        hasCooldown = true,
-        cooldown = 90,
-        buffId = 375939,
         isTalent = true
     })
     self.shotInTheDark = TRB.Classes.SpellBase:New({

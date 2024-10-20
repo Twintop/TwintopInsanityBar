@@ -254,9 +254,6 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			serratedBoneSpike = {
 				enabled = true,
 			},
-			sepsis = {
-				enabled = true,
-			},
 			kingsbane = {
 				enabled = true,
 			},
@@ -379,12 +376,6 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			},
 			blindside={
 				name = L["RogueAssassinationAudioBlindsideProc"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
-			sepsis={
-				name = L["RogueAudioSepsisProc"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
@@ -646,9 +637,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			rollTheBones = {
 				enabled = true,
 			},
-			sepsis = {
-				enabled = true,
-			},
 			ghostlyStrike = {
 				enabled = true,
 			},
@@ -780,12 +768,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			},
 			opportunity={
 				name = L["RogueOutlawAudioOpportunityProc"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
-			sepsis={
-				name = L["RogueAudioSepsisProc"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
@@ -1058,9 +1040,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			shurikenTornado = {
 				enabled = true,
 			},
-			sepsis = {
-				enabled = true,
-			},
 			goremawsBite = {
 				enabled = true,
 			},
@@ -1183,12 +1162,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 		audio = {
 			overcap={
 				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
-			sepsis={
-				name = L["RogueAudioSepsisProc"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
@@ -1638,17 +1611,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sepsisThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSepsis"])
-	f.tooltip = L["RogueAssassinationThresholdSepsisTooltip"]
-	f:SetChecked(spec.thresholds.sepsis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sepsis.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.serratedBoneSpikeThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2087,70 +2049,6 @@ local function AssassinationConstructAudioAndTrackingPanel(parent)
 		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 	end
 
-	
-	yCoord = yCoord - 60
-	controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sepsisAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAudioCheckboxSepsisProc"])
-	f.tooltip = L["RogueAudioCheckboxSepsisProcTooltip"]
-	f:SetChecked(spec.audio.sepsis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.sepsis.enabled = self:GetChecked()
-
-		if spec.audio.sepsis.enabled then
-			PlaySoundFile(spec.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.sepsisAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Rogue_Assassination_sepsis_Audio", parent)
-	controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, spec.audio.sepsis.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.sepsisAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.sepsisAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else  
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.sepsis.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.sepsisAudio:SetValue(newValue, newName)
-		spec.audio.sepsis.sound = newValue
-		spec.audio.sepsis.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, newName)
-		CloseDropDownMenus()
-		---@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
 	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
@@ -2718,17 +2616,6 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sepsisThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSepsis"])
-	f.tooltip = L["RogueOutlawThresholdSepsisTooltip"]
-	f:SetChecked(spec.thresholds.sepsis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sepsis.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.shivThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -3187,70 +3074,6 @@ local function OutlawConstructAudioAndTrackingPanel(parent)
 		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 	end
 
-	
-	yCoord = yCoord - 60
-	controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sepsisAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAudioCheckboxSepsisProc"])
-	f.tooltip = L["RogueAudioCheckboxSepsisProcTooltip"]
-	f:SetChecked(spec.audio.sepsis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.sepsis.enabled = self:GetChecked()
-
-		if spec.audio.sepsis.enabled then
-			PlaySoundFile(spec.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.sepsisAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Rogue_Outlaw_sepsis_Audio", parent)
-	controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, spec.audio.sepsis.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.sepsisAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.sepsisAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else  
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.sepsis.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.sepsisAudio:SetValue(newValue, newName)
-		spec.audio.sepsis.sound = newValue
-		spec.audio.sepsis.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, newName)
-		CloseDropDownMenus()
-		---@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
 	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
@@ -3788,17 +3611,6 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sepsisThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSepsis"])
-	f.tooltip = L["RogueSubtletyThresholdSepsisTooltip"]
-	f:SetChecked(spec.thresholds.sepsis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sepsis.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.shadowstrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shadowstrike", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.shadowstrikeThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -4228,70 +4040,6 @@ local function SubtletyConstructAudioAndTrackingPanel(parent)
 		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 	end
 
-	
-	yCoord = yCoord - 60
-	controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sepsisAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAudioCheckboxSepsisProc"])
-	f.tooltip = L["RogueAudioCheckboxSepsisProcTooltip"]
-	f:SetChecked(spec.audio.sepsis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.sepsis.enabled = self:GetChecked()
-
-		if spec.audio.sepsis.enabled then
-			PlaySoundFile(spec.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.sepsisAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Rogue_Subtlety_sepsis_Audio", parent)
-	controls.dropDown.sepsisAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.sepsisAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, spec.audio.sepsis.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.sepsisAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.sepsisAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else  
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.sepsis.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.sepsisAudio:SetValue(newValue, newName)
-		spec.audio.sepsis.sound = newValue
-		spec.audio.sepsis.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.sepsisAudio, newName)
-		CloseDropDownMenus()
-		---@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
 	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 

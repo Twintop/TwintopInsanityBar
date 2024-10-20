@@ -11,6 +11,21 @@ local content = [====[
 
 ---
 
+# 11.0.5.0-release (2024-10-22)
+## General
+
+## Priest
+### Shadow
+
+- (FIX - Koroshy) Add missing localization text for Resonant Energy.
+
+## Rogue
+### Subtlety
+
+- [#404 - UPDATE](#404) Sepsis removed.
+
+---
+
 # 11.0.2.10-release (2024-10-15)
 ## General
 
