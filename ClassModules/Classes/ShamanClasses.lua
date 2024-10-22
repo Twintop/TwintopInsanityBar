@@ -41,7 +41,6 @@ end
 ---@field public frostShock TRB.Classes.SpellBase
 ---@field public hex TRB.Classes.SpellBase
 ---@field public inundate TRB.Classes.SpellBase
----@field public flowOfPower TRB.Classes.SpellBase
 ---@field public stormkeeper TRB.Classes.SpellBase
 ---@field public surgeOfPower TRB.Classes.SpellBase
 ---@field public echoesOfGreatSundering TRB.Classes.SpellBase
@@ -52,7 +51,6 @@ end
 ---@field public lavaBurst TRB.Classes.Shaman.OverloadSpell
 ---@field public chainLightning TRB.Classes.Shaman.OverloadSpell
 ---@field public icefury TRB.Classes.Shaman.OverloadSpell
----@field public lavaBeam TRB.Classes.Shaman.OverloadSpell
 ---@field public earthShock TRB.Classes.SpellThreshold
 ---@field public earthquake TRB.Classes.SpellThreshold
 ---@field public elementalBlast TRB.Classes.SpellThreshold
@@ -136,32 +134,6 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         isTalent = true,
         isSnowflake = true
     })
-    self.flowOfPower = TRB.Classes.SpellBase:New({
-        id = 385923,
-        resourceMods = {
-            base = {
-                [0] = {
-                    lightningBolt = 0,
-                    lavaBurst = 0
-                },
-                [1] = {
-                    lightningBolt = 2,
-                    lavaBurst = 2
-                }
-            },
-            overload = {
-                [0] = {
-                    lightningBolt = 0,
-                    lavaBurst = 0
-                },
-                [1] = {
-                    lightningBolt = 0,
-                    lavaBurst = 0
-                }
-            }
-        },
-        isTalent = true
-    })
     self.icefury = TRB.Classes.Shaman.OverloadSpell:New({
         id = 462818,
         resource = 12,
@@ -197,11 +169,6 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     self.ascendance = TRB.Classes.SpellBase:New({
         id = 114050,
         isTalent = true
-    })
-    self.lavaBeam = TRB.Classes.Shaman.OverloadSpell:New({
-        id = 114074,
-        resource = 4, --Tooltip says 3, but spell ID 217891 and in game says 4
-        overload = 3
     })
     self.primalFracture = TRB.Classes.SpellBase:New({ -- T30 4P
         id = 410018,

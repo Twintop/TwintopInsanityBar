@@ -282,7 +282,6 @@ local function FillSpellData_Elemental()
 		{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
 		{ variable = "#frostShock", icon = spells.frostShock.icon, description = spells.frostShock.name, printInSettings = true },
 		{ variable = "#icefury", icon = spells.icefury.icon, description = spells.icefury.name, printInSettings = true },
-		{ variable = "#lavaBeam", icon = spells.lavaBeam.icon, description = spells.lavaBeam.name, printInSettings = true },
 		{ variable = "#lavaBurst", icon = spells.lavaBurst.icon, description = spells.lavaBurst.name, printInSettings = true },
 		{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
 		{ variable = "#primalFracture", icon = spells.primalFracture.icon, description = spells.primalFracture.name, printInSettings = true },
@@ -789,7 +788,6 @@ local function RefreshLookupData_Elemental()
 	lookup["#flameShock"] = spells.flameShock.icon
 	lookup["#frostShock"] = spells.frostShock.icon
 	lookup["#icefury"] = spells.icefury.icon
-	lookup["#lavaBeam"] = spells.lavaBeam.icon
 	lookup["#lavaBurst"] = spells.lavaBurst.icon
 	lookup["#lightningBolt"] = spells.lightningBolt.icon
 	lookup["#primalFracture"] = spells.primalFracture.icon
@@ -1266,30 +1264,27 @@ local function CastingSpell()
 				--See Priest implementation for handling channeled spells
 			else
 				if currentSpellId == spells.lightningBolt.id then
-					FillSnapshotDataCasting(spells.lightningBolt, spells.flowOfPower.attributes.resourceMods.base[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt)
+					FillSnapshotDataCasting(spells.lightningBolt)
 
 					if snapshots[spells.surgeOfPower.id].buff.isActive then
-						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + ((spells.lightningBolt.overload + spells.flowOfPower.attributes.resourceMods.overload[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + ((spells.lightningBolt.overload + spells.flowOfPower.attributes.resourceMods.overload[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + ((spells.lightningBolt.overload) * 2)
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + ((spells.lightningBolt.overload) * 2)
 					end
 					
 					if snapshots[spells.powerOfTheMaelstrom.id].buff.isActive then
-						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.lightningBolt.overload + spells.flowOfPower.attributes.resourceMods.overload[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.lightningBolt.overload + spells.flowOfPower.attributes.resourceMods.overload[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt
+						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.lightningBolt.overload
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.lightningBolt.overload
 					end
 				elseif currentSpellId == spells.lavaBurst.id then
-					FillSnapshotDataCasting(spells.lavaBurst, spells.flowOfPower.attributes.resourceMods.base[talents.talents[spells.flowOfPower.id].currentRank].lavaBurst)
+					FillSnapshotDataCasting(spells.lavaBurst)
 				elseif currentSpellId == spells.elementalBlast.id then
 					FillSnapshotDataCasting(spells.elementalBlast)
 				elseif currentSpellId == spells.icefury.id then
 					FillSnapshotDataCasting(spells.icefury)
-				elseif currentSpellId == spells.chainLightning.id or currentSpellId == spells.lavaBeam.id then
+				elseif currentSpellId == spells.chainLightning.id then
 					local spell = nil
-					if currentSpellId == spells.lavaBeam.id then
-						spell = spells.lavaBeam
-					else
-						spell = spells.chainLightning
-					end
+					
+					spell = spells.chainLightning
 					FillSnapshotDataCasting(spell)
 					
 					local currentTime = GetTime()
@@ -1898,7 +1893,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if specId == 1 and TRB.Data.barConstructedForSpec == "elemental" then
-				if entry.spellId == spells.chainLightning.id or entry.spellId == spells.lavaBeam.id then
+				if entry.spellId == spells.chainLightning.id then
 					if entry.type == "SPELL_DAMAGE" then
 						local chainLightning = snapshots[spells.chainLightning.id]
 						if chainLightning.attributes.hitTime == nil or currentTime > (chainLightning.attributes.hitTime + 0.1) then --This is a new hit
@@ -2300,12 +2295,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		elseif var == "$resourceTotal" or var == "$maelstromTotal" then
 			if snapshotData.attributes.resource > 0 or
-				(snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw > 0 or snapshotData.casting.spellId == spells.chainLightning.id or snapshotData.casting.spellId == spells.lavaBeam.id)) then
+				(snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw > 0 or snapshotData.casting.spellId == spells.chainLightning.id)) then
 				valid = true
 			end
 		elseif var == "$resourcePlusCasting" or var == "$maelstromPlusCasting" then
 			if snapshotData.attributes.resource > 0 or
-				(snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw > 0 or snapshotData.casting.spellId == spells.chainLightning.id or snapshotData.casting.spellId == spells.lavaBeam.id)) then
+				(snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw > 0 or snapshotData.casting.spellId == spells.chainLightning.id)) then
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$maelstromOvercap" or var == "$resourceOvercap" then

@@ -216,7 +216,9 @@ function TRB.Classes.SpellBase:FillSpellData()
                 spellInfo = C_Spell.GetSpellInfo(self.id) --[[@as SpellInfo]]
             end
 
-            print(self.id, self.spellId, self)
+            if spellInfo == nil then
+                print("MISSING", self.id, self.spellId)
+            end
 
             if self.iconName ~= nil then
                 icon = "Interface\\Icons\\" .. self.iconName

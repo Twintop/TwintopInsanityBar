@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 11.0.5.0-release (2024-10-22)
+# 11.0.5.0-release (2024-10-23)
 ## General
 
 ## Priest
