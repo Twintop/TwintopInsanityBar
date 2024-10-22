@@ -216,6 +216,8 @@ function TRB.Classes.SpellBase:FillSpellData()
                 spellInfo = C_Spell.GetSpellInfo(self.id) --[[@as SpellInfo]]
             end
 
+            print(self.id, self.spellId, self)
+
             if self.iconName ~= nil then
                 icon = "Interface\\Icons\\" .. self.iconName
             else

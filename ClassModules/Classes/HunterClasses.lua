@@ -86,6 +86,7 @@ end
 ---@field public callOfTheWild TRB.Classes.SpellBase
 ---@field public bloodFrenzy TRB.Classes.SpellBase
 ---@field public huntersPrey TRB.Classes.SpellBase
+---@field public deathblow TRB.Classes.SpellBase
 ---@field public barrage TRB.Classes.SpellThreshold
 ---@field public cobraShot TRB.Classes.SpellThreshold
 ---@field public killCommand TRB.Classes.SpellThreshold
@@ -183,6 +184,12 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         id = 407412,
         isTalent = true
     })
+    self.deathblow = TRB.Classes.SpellBase:New({
+        id = 378770,
+        talentId = 378769,
+        isTalent = true,
+        isBuff = true
+    })
     self.killCommand = TRB.Classes.SpellThreshold:New({
         id = 34026,
         primaryResourceType = Enum.PowerType.Focus,
@@ -201,11 +208,15 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
 
     -- Dark Ranger
     self.blackArrow = TRB.Classes.SpellThreshold:New({
-        id = 430703,
+        id = 466930,
+        talentId = 466932,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "blackArrow",
+        healthMinimum = 0.2,
+        healthMaximum = 0.8,
         hasCooldown = true,
         isTalent = true,
+        isSnowflake = true,
         baseline = false -- When subTreeActive = true
     })
 
@@ -262,7 +273,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     -- Marksmanship Spec Baseline Abilities
     self.steadyShot = TRB.Classes.SpellBase:New({
         id = 56641,
-        resource = 0,
+        resource = 10,
         baseline = true
     })
     self.arcaneShot = TRB.Classes.SpellThreshold:New({
@@ -360,12 +371,16 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
 
     -- Dark Ranger
     self.blackArrow = TRB.Classes.SpellThreshold:New({
-        id = 430703,
+        id = 466930,
+        talentId = 466932,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "blackArrow",
+        healthMinimum = 0.2,
+        healthMaximum = 0.8,
         hasCooldown = true,
         isTalent = true,
-        baseline = false
+        isSnowflake = true,
+        baseline = false -- When subTreeActive = true
     })
 
     -- PvP
@@ -390,6 +405,7 @@ end
 ---@field public flankingStrike TRB.Classes.SpellBase
 ---@field public coordinatedAssault TRB.Classes.SpellBase
 ---@field public bombardier TRB.Classes.SpellBase
+---@field public steadyShot TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public wildfireBomb TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
@@ -419,6 +435,11 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         iconName = "ability_impalingbolt",
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "arcaneShot",
+        baseline = true
+    })
+    self.steadyShot = TRB.Classes.SpellBase:New({
+        id = 56641,
+        resource = 10,
         baseline = true
     })
 
@@ -458,7 +479,6 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         primaryResourceType = Enum.PowerType.Focus,
         isTalent = true,
         hasCooldown = true,
-        hasCharges = true,
         settingKey = "butchery"
     })
     self.mongooseBite = TRB.Classes.SpellThreshold:New({

@@ -94,6 +94,8 @@ local function FillSpecializationCache()
 	})
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.huntersPrey.id] = TRB.Classes.Snapshot:New(spells.huntersPrey)
+	---@type TRB.Classes.Snapshot
+	specCache.beastMastery.snapshotData.snapshots[spells.deathblow.id] = TRB.Classes.Snapshot:New(spells.deathblow)
 
 	specCache.beastMastery.barTextVariables = {
 		icons = {},
@@ -1329,6 +1331,8 @@ local function CastingSpell()
 					FillSnapshotDataCasting(spells.scareBeast)
 				elseif spellName == spells.revivePet.name then
 					FillSnapshotDataCasting(spells.revivePet)
+				elseif spellName == spells.steadyShot.name then
+					FillSnapshotDataCasting(spells.steadyShot)
 				else
 					TRB.Functions.Character:ResetCastingSnapshotData()
 					return false
@@ -1534,7 +1538,7 @@ local function UpdateResourceBar()
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							if spell.id == spells.killShot.id then
+							if spell.id == spells.killShot.id and not talents:IsTalentActive(spells.blackArrow) then
 								local targetUnitHealth
 								if target ~= nil then
 									targetUnitHealth = target:GetHealthPercent()
@@ -1565,6 +1569,44 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									snapshotData.audio.playedKillShotCue = false
 								end
+							elseif spell.id == spells.blackArrow.id and talents:IsTalentActive(spells.blackArrow) then
+								local targetUnitHealth
+								if target ~= nil then
+									targetUnitHealth = target:GetHealthPercent()
+								end
+						
+								if snapshots[spells.deathblow.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
+									thresholdColor = specSettings.colors.threshold.over
+									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
+										snapshotData.audio.playedKillShotCue = true
+										PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
+									end
+								elseif snapshots[spells.huntersPrey.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
+									thresholdColor = specSettings.colors.threshold.over
+									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
+										snapshotData.audio.playedKillShotCue = true
+										PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
+									end
+								elseif UnitIsDeadOrGhost("target") or targetUnitHealth == nil or (targetUnitHealth >= spell.attributes.healthMinimum and targetUnitHealth <= spell.attributes.healthMaximum) then
+									showThreshold = false
+									snapshotData.audio.playedKillShotCue = false
+								elseif snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									snapshotData.audio.playedKillShotCue = false
+								elseif currentResource >= resourceAmount then
+									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
+										snapshotData.audio.playedKillShotCue = true
+										PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
+									end
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									snapshotData.audio.playedKillShotCue = false
+								end
 							elseif spell.id == spells.killCommand.id then
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
@@ -1575,6 +1617,8 @@ local function UpdateResourceBar()
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
+							else
+								showThreshold = false
 							end
 						elseif resourceAmount == 0 then
 							showThreshold = false
@@ -1844,7 +1888,7 @@ local function UpdateResourceBar()
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
-							elseif spell.id == spells.killShot.id then
+							elseif spell.id == spells.killShot.id and not talents:IsTalentActive(spells.blackArrow) then
 								local targetUnitHealth
 								if target ~= nil then
 									targetUnitHealth = target:GetHealthPercent()
@@ -1875,6 +1919,39 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									snapshotData.audio.playedKillShotCue = false
 								end
+							elseif spell.id == spells.blackArrow.id and talents:IsTalentActive(spells.blackArrow) then
+								local targetUnitHealth
+								if target ~= nil then
+									targetUnitHealth = target:GetHealthPercent()
+								end
+						
+								if snapshots[spells.deathblow.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
+									thresholdColor = specSettings.colors.threshold.over
+									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
+										snapshotData.audio.playedKillShotCue = true
+										PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
+									end
+								elseif UnitIsDeadOrGhost("target") or targetUnitHealth == nil or (targetUnitHealth >= spell.attributes.healthMinimum and targetUnitHealth <= spell.attributes.healthMaximum) then
+									showThreshold = false
+									snapshotData.audio.playedKillShotCue = false
+								elseif snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									snapshotData.audio.playedKillShotCue = false
+								elseif currentResource >= resourceAmount then
+									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
+										snapshotData.audio.playedKillShotCue = true
+										PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
+									end
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									snapshotData.audio.playedKillShotCue = false
+								end
+							else
+								showThreshold = false
 							end
 						elseif resourceAmount == 0 then
 							showThreshold = false
@@ -2197,6 +2274,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.huntersPrey.id then
+					snapshots[entry.spellId].buff:Initialize()
+				elseif entry.spellId == spells.deathblow.id then
 					snapshots[entry.spellId].buff:Initialize()
 				elseif entry.spellId == spells.direBeastBasilisk.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
