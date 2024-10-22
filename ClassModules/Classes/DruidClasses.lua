@@ -32,8 +32,7 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public fullMoon TRB.Classes.SpellBase
 ---@field public sunderedFirmament TRB.Classes.SpellBase
 ---@field public astralCommunion TRB.Classes.SpellBase
----@field public touchTheCosmos_starsurge TRB.Classes.SpellBase
----@field public touchTheCosmos_starfall TRB.Classes.SpellBase
+---@field public touchTheCosmos TRB.Classes.SpellBase
 ---@field public boundlessMoonlight TRB.Classes.SpellBase
 ---@field public theEternalMoon TRB.Classes.SpellBase
 ---@field public theLightOfElune TRB.Classes.SpellBase
@@ -113,6 +112,15 @@ function TRB.Classes.Druid.BalanceSpells:New()
         resource = 6,
         hasCastCount = true
     })
+    self.starfall = TRB.Classes.SpellThreshold:New({
+        id = 191034,
+        primaryResourceType = Enum.PowerType.LunarPower,
+        settingKey = "starfall",
+        pandemic = true,
+        baseDuration = 8,
+        isSnowflake = true,
+        baseline = true
+    })
 
     -- Balance Spec Talents
     self.eclipse = TRB.Classes.SpellBase:New({
@@ -131,15 +139,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         outOfCombatResource = 6,
         tickRate = 3,
         isTalent = true
-    })
-    self.starfall = TRB.Classes.SpellThreshold:New({
-        id = 191034,
-        primaryResourceType = Enum.PowerType.LunarPower,
-        settingKey = "starfall",
-        pandemic = true,
-        baseDuration = 8,
-        isTalent = true,
-        isSnowflake = true
     })
     self.stellarFlare = TRB.Classes.SpellBase:New({
         id = 202347,
@@ -215,15 +214,11 @@ function TRB.Classes.Druid.BalanceSpells:New()
         isTalent = true
     })
     self.astralCommunion = TRB.Classes.SpellBase:New({
-        id = 450598,
-        isTalent = true,
-        resourceMod = 25
+        id = 450599,
+        resourceMod = -15
     })
-    self.touchTheCosmos_starsurge = TRB.Classes.SpellBase:New({
+    self.touchTheCosmos = TRB.Classes.SpellBase:New({
         id = 450360
-    })
-    self.touchTheCosmos_starfall = TRB.Classes.SpellBase:New({
-        id = 450361
     })
 
     -- Elune's Chosen
