@@ -12,7 +12,20 @@ local content = [====[
 ---
 
 # 11.0.5.0-release (2024-10-23)
-## General
+## Druid
+### Balance
+
+- [#404 - UPDATE](#404) Change Touch the Cosmos to rely on a single buff.
+- [#404 - UPDATE](#404) Change Astral Communion to now lower the cost of Starfall or Starsurge.
+
+## Hunter
+### Beast Mastery
+
+- [#404 - UPDATE](#404) Black Arrow threshold line now replaces Kill Shot and is available above 80% target health, below 20% target health, or when a Deathblow proc occurs.
+
+### Marksmanship
+
+- [#404 - UPDATE](#404) Black Arrow threshold line now replaces Kill Shot and is available above 80% target health, below 20% target health, or when a Deathblow proc occurs.
 
 ## Priest
 ### Shadow
@@ -23,6 +36,11 @@ local content = [====[
 ### Subtlety
 
 - [#404 - UPDATE](#404) Sepsis removed.
+
+## Shaman
+### Elemental
+
+- [#404 - UPDATE](#404) Remove Lava Beam and Flow of Power.
 
 ---
 
