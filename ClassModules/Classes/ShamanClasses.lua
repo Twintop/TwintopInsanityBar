@@ -136,10 +136,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     })
     self.icefury = TRB.Classes.Shaman.OverloadSpell:New({
         id = 462818,
-        resource = 12,
-        overload = 4,
-        stacks = 4,
-        duration = 15,
+        resource = 10,
         isTalent = true,
         primalFracture = true
     })
