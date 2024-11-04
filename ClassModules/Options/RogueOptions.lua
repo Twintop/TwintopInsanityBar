@@ -1532,18 +1532,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.cheapShot.enabled = self:GetChecked()
 	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.echoingReprimandThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdEchoingReprimand"])
-	f.tooltip = L["RogueAssassinationThresholdEchoingReprimandTooltip"]
-	f:SetChecked(spec.thresholds.echoingReprimand.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.echoingReprimand.enabled = self:GetChecked()
-	end)
-
 	yCoord = yCoord - 25
 	controls.checkBoxes.fanOfKnivesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_fanOfKnives", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.fanOfKnivesThresholdShow
@@ -2572,17 +2560,6 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_echoingRep", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.echoingReprimandThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdEchoingReprimand"])
-	f.tooltip = L["RogueOutlawThresholdEchoingReprimandTooltip"]
-	f:SetChecked(spec.thresholds.echoingReprimand.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.echoingReprimand.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.ghostlyStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_ghostlyStrike", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.ghostlyStrikeThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -3575,17 +3552,6 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.cheapShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.cheapShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.echoingReprimandThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdEchoingReprimand"])
-	f.tooltip = L["RogueSubtletyThresholdEchoingReprimandTooltip"]
-	f:SetChecked(spec.thresholds.echoingReprimand.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.echoingReprimand.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

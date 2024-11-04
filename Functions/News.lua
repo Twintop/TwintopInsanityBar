@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 11.0.5.1-release (2024-11-06)
+# 11.0.5.1-release (2024-11-05)
 ## General
 
 - [#406 - UPDATE](#406) Add Time To Die overrides additions/updates for the following enemies:
@@ -21,6 +21,10 @@ local content = [====[
 ### Marksmanship
 
 - [#404 - UPDATE](#406) Add support for Improved Steady Shot's focus generation.
+
+## Rogue
+
+- [#404 - UPDATE](#404) Change the behavior of existing Echoing Reprimand to now show Supercharged combo points instead.
 
 ## Shaman
 ### Elemental

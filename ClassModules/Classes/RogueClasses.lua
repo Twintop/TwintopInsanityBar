@@ -15,6 +15,7 @@ TRB.Classes.Rogue = TRB.Classes.Rogue or {}
 ---@field public stealth TRB.Classes.SpellBase
 ---@field public subterfuge TRB.Classes.SpellBase
 ---@field public adrenalineRush TRB.Classes.SpellBase
+---@field public supercharger TRB.Classes.SpellBase
 ---@field public crimsonVial TRB.Classes.SpellThreshold
 ---@field public distract TRB.Classes.SpellThreshold
 ---@field public feint TRB.Classes.SpellThreshold
@@ -24,11 +25,6 @@ TRB.Classes.Rogue = TRB.Classes.Rogue or {}
 ---@field public sliceAndDice TRB.Classes.SpellComboPointThreshold
 ---@field public shiv TRB.Classes.SpellComboPointThreshold
 ---@field public gouge TRB.Classes.SpellComboPointThreshold
----@field public echoingReprimand TRB.Classes.SpellComboPointThreshold
----@field public echoingReprimand_2CP TRB.Classes.SpellBase
----@field public echoingReprimand_3CP TRB.Classes.SpellBase
----@field public echoingReprimand_4CP TRB.Classes.SpellBase
----@field public echoingReprimand_5CP TRB.Classes.SpellBase
 ---@field public dismantle TRB.Classes.SpellThreshold
 ---@field public deathFromAbove TRB.Classes.SpellThreshold
 TRB.Classes.Rogue.RogueBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -158,45 +154,13 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 115192,
         isTalent = true
     })
-    self.echoingReprimand = TRB.Classes.SpellComboPointThreshold:New({
-        id = 385616,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 2,
-        settingKey = "echoingReprimand",
-        hasCooldown = true,
-        cooldown = 45,
-        isTalent = true,
-        buffId = {
-            323558, -- 2
-            323559, -- 3
-            323560, -- 4
-            354835, -- 4
-            354838, -- 5
-        }
-    })
-    self.echoingReprimand_2CP = TRB.Classes.SpellBase:New({
-        id = 323558,
-        comboPoint = 2
-    })
-    self.echoingReprimand_3CP = TRB.Classes.SpellBase:New({
-        id = 323559,
-        comboPoint = 3
-    })
-    self.echoingReprimand_4CP = TRB.Classes.SpellBase:New({
-        id = 323560,
-        comboPoint = 4
-    })
-    self.echoingReprimand_4CP2 = TRB.Classes.SpellBase:New({
-        id = 354835,
-        comboPoint = 4
-    })
-    self.echoingReprimand_5CP = TRB.Classes.SpellBase:New({
-        id = 354838,
-        comboPoint = 5
-    })
 
     self.adrenalineRush = TRB.Classes.SpellBase:New({
         id = 13750
+    })
+    self.supercharger = TRB.Classes.SpellBase:New({
+        id = 470347,
+        isTalent = true
     })
     -- PvP
     self.deathFromAbove = TRB.Classes.SpellComboPointThreshold:New({

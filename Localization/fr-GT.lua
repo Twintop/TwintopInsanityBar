@@ -1055,7 +1055,7 @@ if locale == "frFR" then
     L["RogueColorPickerSliceAndDicePandemic"] = "Énergie lorsque Slice and Dice est dans la plage de rafraîchissement pandémique (CP actuels)"
     L["RogueColorPickerSliceAndDiceDown"] = "L'énergie lorsque Slice and Dice n'est pas en place"
     L["RogueColorPickerPassive"] = "Gain d'énergie provenant de sources passives"
-    L["RogueColorPickerEchoingReprimand"] = "Point de combo lorsque le buff Echoing Reprimand est activé"
+    L["RogueColorPickerEchoingReprimand"] = "Point de combo lorsqu'il est suralimenté"
     L["RogueColorPickerSeratedBoneSpike"] = "Changer la couleur pour la génération Serrated Bone Spike ?"
     L["RogueColorPickerSeratedBoneSpikeTooltip"] = "Lorsque cette case est cochée, tous les points de combo non remplis qui seront générés lors de votre prochaine utilisation de Serrated Bone Spike auront une couleur d'arrière-plan et de bordure différente (comme spécifié ci-dessus)."
     L["RogueDotChangeColorCheckbox"] = "Modifier le compteur DoT total, la minuterie DoT et la couleur des tranches et des dés en fonction du temps restant ?"
