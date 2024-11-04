@@ -1305,7 +1305,7 @@ local function CastingSpell()
 					if talents:IsTalentActive(spells.improvedSteadyShot) then
 						FillSnapshotDataCasting(spells.improvedSteadyShot)
 					else
-						--FillSnapshotDataCasting(spells.steadyShot)
+						FillSnapshotDataCasting(spells.steadyShot)
 					end
 				elseif spellName == spells.scareBeast.name then
 					FillSnapshotDataCasting(spells.scareBeast)

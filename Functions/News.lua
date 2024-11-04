@@ -11,7 +11,17 @@ local content = [====[
 
 ---
 
-# 11.0.5.1-release (2024-11-03)
+# 11.0.5.1-release (2024-11-06)
+## General
+
+- [#406 - UPDATE](#406) Add Time To Die overrides additions/updates for the following enemies:
+<br/>&emsp;&ensp;- Isle of Dorn - Kordac -- 5%
+
+## Hunter
+### Marksmanship
+
+- [#404 - UPDATE](#406) Add support for Improved Steady Shot's focus generation.
+
 ## Shaman
 ### Elemental
 
