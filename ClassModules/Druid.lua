@@ -3422,7 +3422,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.starfall.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.starlord.buffId then
+				elseif entry.spellId == spells.starlord.id then
 					snapshotData.snapshots[spells.starlord.id].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.starweaversWarp.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)

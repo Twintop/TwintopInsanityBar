@@ -222,9 +222,9 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 450360
     })
     self.starlord = TRB.Classes.SpellBase:New({
-        id = 202345,
-        isTalent = true,
-        buffId = 279709
+        id = 279709,
+        talentId = 202345,
+        isTalent = true
     })
 
     -- Elune's Chosen

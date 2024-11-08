@@ -1310,6 +1310,8 @@ if locale == "frFR" then
     L["DruidBalanceBarTextVariable_starweaver"] = "Le processus Chaîne/Trame de Starweaver est actif. Variable logique uniquement !"
     L["DruidBalanceBarTextVariable_starweaversWarp"] = "Le processus Warp de Starweaver est actif. Variable logique uniquement !"
     L["DruidBalanceBarTextVariable_starweaversWeft"] = "Le processus Trame de Starweaver est actif. Variable logique uniquement !"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Temps restant de Seigneur des étoiles"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Nombre de cumul du buff Seigneur des étoiles"
     L["DruidFeralBarTextVariable_energy"] = "Énergie actuelle"
     L["DruidFeralBarTextVariable_resource"] = "Énergie actuelle"
     L["DruidFeralBarTextVariable_energyMax"] = "Énergie maximale"
