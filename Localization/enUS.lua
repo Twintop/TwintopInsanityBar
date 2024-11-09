@@ -2097,8 +2097,6 @@ L["DruidBalanceBarTextVariable_bbTicks"] = "Number of ticks remaining on Bounteo
 L["DruidBalanceBarTextVariable_bbTime"] = "Time remaining on Bounteous Bloom"
 L["DruidFeralThresholdCheckboxFrenziedRegeneration"] = "Frenzied Regeneration (Empowered Shapeshifting)"
 L["DruidFeralThresholdCheckboxFrenziedRegenerationTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Frenzied Regeneration while in Catform. Only shows if you are talented into Empowered Shapeshifting."
-L["DruidBalanceBarTextVariable_starlordTime"] = "Time remaining on Starlord"
-L["DruidBalanceBarTextVariable_starlordStacks"] = "Number of stacks of Starlord"
 
 L["AlgariManaPotion"] = "Algari Mana Potion"
 L["SlumberingSoulSerum"] = "Slumbering Soul Serum"
@@ -2133,3 +2131,6 @@ L["ShamanRestorationBarTextVariable_slumberingSoulSerumTime"] = "Amount of time,
 L["PaladinHolyBarTextVariable_channeledMana"] = "Mana while channeling of Slumbering Soul Serum"
 L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "Number of ticks left channeling Slumbering Soul Serum"
 L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "Amount of time, in seconds, remaining of your channel of Slumbering Soul Serum"
+
+L["DruidBalanceBarTextVariable_starlordTime"] = "Time remaining on Starlord"
+L["DruidBalanceBarTextVariable_starlordStacks"] = "Number of stacks of Starlord"
