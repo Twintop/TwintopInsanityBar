@@ -2099,6 +2099,8 @@ L["DruidFeralThresholdCheckboxFrenziedRegeneration"] = "Frenzied Regeneration (E
 L["DruidFeralThresholdCheckboxFrenziedRegenerationTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Frenzied Regeneration while in Catform. Only shows if you are talented into Empowered Shapeshifting."
 L["DruidBalanceBarTextVariable_starlordTime"] = "Time remaining on Starlord"
 L["DruidBalanceBarTextVariable_starlordStacks"] = "Number of stacks of Starlord"
+L["DruidBalanceBarTextVariable_dreamburstTime"] = "Time remaining on Dreamburst"
+L["DruidBalanceBarTextVariable_dreamburstStacks"] = "Number of stacks of Dreamburst"
 
 L["AlgariManaPotion"] = "Algari Mana Potion"
 L["SlumberingSoulSerum"] = "Slumbering Soul Serum"
