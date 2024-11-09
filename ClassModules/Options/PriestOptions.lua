@@ -4127,9 +4127,6 @@ local function ShadowConstructFontAndTextPanel(parent)
 		self.EditBox:SetText(value)
 		spec.resourcePrecision = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 end
 
 local function ShadowConstructAudioAndTrackingPanel(parent)

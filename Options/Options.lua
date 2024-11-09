@@ -508,36 +508,165 @@ local function LoadDefaultSettings()
 end
 TRB.Options.LoadDefaultSettings = LoadDefaultSettings
 
-local function ConstructAddonOptionsPanel()
+local function ConstructFontAndTextPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.core
+
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls
-	local yCoord = -5
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
 	local f = nil
 
 	local title = ""
 
-	interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
-	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.optionsPanel.name = L["GlobalOptions"]
-	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.optionsPanel.parent = parent.name
-	TRB.Details.addonCategory.global, _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.optionsPanel, L["GlobalOptions"])
+	--[[
+	controls.buttons.exportButton_Priest_Shadow_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Priest_Shadow_FontAndText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["GlobalFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 5, 3, false, true, false, false, false)
+	end)
+	]]
 
-	parent = interfaceSettingsFrame.optionsPanel
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord)
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, nil, nil, yCoord)
+
+	--[[
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	---@diagnostic disable-next-line: inject-field
-	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
-	parent.panel:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	parent.panel:Show()
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "currentInsanity")
+	end)
 
-	parent = parent.panel.scrollFrame.scrollChild
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextCasting"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.casting
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "castingInsanity")
+	end)
 
-	yCoord = 5
+	yCoord = yCoord - 30
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.passive
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passiveInsanity")
+	end)
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["Bar Settings"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerThresholdOver"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.overThreshold
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
+	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcapInsanity")
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overThresholdEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["GlobalCheckboxThresholdOverTooltip"]
+	f:SetChecked(spec.colors.text.overThresholdEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overThresholdEnabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["GlobalCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcapEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcapEnabled = self:GetChecked()
+	end)
+	]]
+
+	--[[
+	yCoord = yCoord - 30
+	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_dotColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dotColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
+	f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$swpCount/$swpTime, $vtCount/$vtTime")
+	f:SetChecked(spec.colors.text.dots.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.dots.enabled = self:GetChecked()
+	end)
+
+	controls.colors.dots = {}
+
+	controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+	f = controls.colors.dots.up
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
+	end)
+
+	controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+	f = controls.colors.dots.pandemic
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+	end)
+
+	controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+	f = controls.colors.dots.down
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
+	end)
+	]]
+
+	--[[
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 50
+	title = L["SecondaryDecimalPrecision"]
+	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.hastePrecision = value
+	end)
+
+	title = L["GlobalInsanityDecimalPrecision"]
+	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.resourcePrecision, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.resourcePrecision = value
+	end)
+	]]
+end
+
+local function ConstructMiscellaneousPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarSettings"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.smoothBar = CreateFrame("CheckButton", "TwintopResourceBar_CB_Smooth_Bar", parent, "ChatConfigCheckButtonTemplate")
@@ -865,6 +994,85 @@ local function ConstructAddonOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer.controls = controls
 end
 
+local function ConstructGlobalOptionsPanel()
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	interfaceSettingsFrame.controls.global = interfaceSettingsFrame.controls.global or {}
+	local parent = interfaceSettingsFrame.panel
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 0
+	local f = nil
+
+	controls.colors = {}
+	controls.labels = {}
+	controls.textbox = {}
+	controls.checkBoxes = {}
+	controls.dropDown = {}
+	controls.buttons = controls.buttons or {}
+	
+	interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
+	---@diagnostic disable-next-line: inject-field
+	interfaceSettingsFrame.optionsPanel.name = L["GlobalOptions"]
+	---@diagnostic disable-next-line: inject-field
+	interfaceSettingsFrame.optionsPanel.parent = parent.name
+	TRB.Details.addonCategory.global, _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.optionsPanel, L["GlobalOptions"])
+
+	parent = interfaceSettingsFrame.optionsPanel
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord-5)
+
+	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
+	controls.buttons.importButton:SetFrameLevel(10000)
+	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Import")
+	end)
+
+	--[[
+		TODO: Exporting of Globals
+	controls.buttons.exportButton_Priest_Shadow_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
+	controls.buttons.exportButton_Priest_Shadow_All:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["GlobalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 5, 3, true, true, true, true, false)
+	end)
+	]]
+
+	yCoord = yCoord - 52
+
+	local tabs = {}
+	local tabsheets = {}
+
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab6", L["TabMiscellaneous"], 6, parent, 100, tabs[5])
+
+	yCoord = yCoord - 15
+
+	for i = 1, #tabs do
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Global_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	end
+
+	tabsheets[6]:Show()
+	tabsheets[6].selected = true
+	tabs[6]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	parent.tabs = tabs
+	parent.tabsheets = tabsheets
+	parent.lastTab = tabsheets[6]
+	parent.lastTabId = 6
+
+	--ShadowConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+	ConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
+	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
+	--ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
+	--ShadowConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	ConstructMiscellaneousPanel(tabsheets[6].scrollFrame.scrollChild)
+end
 
 local function ConstructImportExportPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -2353,7 +2561,7 @@ function TRB.Options:ConstructOptionsPanel()
 	TRB.Details.addonCategory.main, _ = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, L["TwintopsResourceBar"])
 	Settings.RegisterAddOnCategory(TRB.Details.addonCategory.main)
 
-	ConstructAddonOptionsPanel()
+	ConstructGlobalOptionsPanel()
 	ConstructImportExportPanel()
 end
 
