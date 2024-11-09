@@ -173,6 +173,7 @@ local unitDeathHealthPercentageList = {
     ---- The War Within ----
     --- Isle of Dorn ---
     ["211858"] = 0.85, -- Queensguard Zirix
+    ["221084"] = 0.05, -- Kordac
     --- Delves ---
     ["228030"] = 1/3, -- Sir Finley Mrrgglton
     ["228044"] = 1/3, -- Reno Jackson

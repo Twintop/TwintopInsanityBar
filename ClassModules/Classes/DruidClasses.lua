@@ -40,8 +40,8 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public bounteousBloom TRB.Classes.SpellBase
 ---@field public dreamburst TRB.Classes.SpellBase
 ---@field public forceOfNature TRB.Classes.SpellBase
----@field public twwSeason1SetBonus TRB.Classes.SpellBase
 ---@field public starlord TRB.Classes.SpellBase
+---@field public twwSeason1SetBonus TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
 ---@field public starsurge3 TRB.Classes.SpellThreshold

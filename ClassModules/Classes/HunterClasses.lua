@@ -304,7 +304,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     })
     self.improvedSteadyShot = TRB.Classes.SpellBase:New({
         id = 321018,
-        resource = 10,
+        resource = 20,
         isTalent = true
     })
     self.rapidFire = TRB.Classes.SpellBase:New({

@@ -84,29 +84,6 @@ local function FillSpecializationCache()
 		isActiveStealth = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand,
-	{
-		enabled = {
-			[1] = false,
-			[2] = false,
-			[3] = false,
-			[4] = false,
-			[5] = false,
-			[6] = false,
-			[7] = false,
-		}
-	})
-	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_2CP)
-	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_3CP)
-	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP)
-	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP2)
-	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_5CP)
-	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(spells.serratedBoneSpike, nil, true)
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.kingsbane.id] = TRB.Classes.Snapshot:New(spells.kingsbane)
@@ -185,29 +162,6 @@ local function FillSpecializationCache()
 	specCache.outlaw.snapshotData.snapshots[spells.opportunity.id] = TRB.Classes.Snapshot:New(spells.opportunity)
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
-	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand,
-	{
-		enabled = {
-			[1] = false,
-			[2] = false,
-			[3] = false,
-			[4] = false,
-			[5] = false,
-			[6] = false,
-			[7] = false,
-		}
-	})
-	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_2CP)
-	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_3CP)
-	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP)
-	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP2)
-	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_5CP)
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
@@ -298,29 +252,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand,
-	{
-		enabled = {
-			[1] = false,
-			[2] = false,
-			[3] = false,
-			[4] = false,
-			[5] = false,
-			[6] = false,
-			[7] = false,
-		}
-	})
-	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_2CP)
-	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_3CP)
-	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP)
-	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP2)
-	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_5CP)
-	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
@@ -403,7 +334,6 @@ local function FillSpellData_Assassination()
 		{ variable = "#dp", icon = spells.deadlyPoison.icon, description = spells.deadlyPoison.name, printInSettings = false },
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#echoingReprimand", icon = spells.echoingReprimand.icon, description = spells.echoingReprimand.name, printInSettings = true },
 		{ variable = "#garrote", icon = spells.garrote.icon, description = spells.garrote.name, printInSettings = true },
 		{ variable = "#internalBleeding", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = true },
 		{ variable = "#ib", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = false },
@@ -563,7 +493,6 @@ local function FillSpellData_Outlaw()
 		{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
 		{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#echoingReprimand", icon = spells.echoingReprimand.icon, description = spells.echoingReprimand.name, printInSettings = true },
 		{ variable = "#ghostlyStrike", icon = spells.ghostlyStrike.icon, description = spells.ghostlyStrike.name, printInSettings = true },
 		{ variable = "#grandMelee", icon = spells.grandMelee.icon, description = spells.grandMelee.name, printInSettings = true },
 		{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
@@ -710,7 +639,6 @@ local function FillSpellData_Subtlety()
 		{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
 		{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#echoingReprimand", icon = spells.echoingReprimand.icon, description = spells.echoingReprimand.name, printInSettings = true },
 		{ variable = "#flagellation", icon = spells.flagellation.icon, description = spells.flagellation.name, printInSettings = true },
 		{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
 		{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
@@ -1218,7 +1146,6 @@ local function RefreshLookupData_Assassination()
 	lookup["#dp"] = spells.deadlyPoison.icon
 	lookup["#deathFromAbove"] = spells.deathFromAbove.icon
 	lookup["#dismantle"] = spells.dismantle.icon
-	lookup["#echoingReprimand"] = spells.echoingReprimand.icon
 	lookup["#garrote"] = spells.garrote.icon
 	lookup["#internalBleeding"] = spells.internalBleeding.icon
 	lookup["#ib"] = spells.internalBleeding.icon
@@ -1605,7 +1532,6 @@ local function RefreshLookupData_Outlaw()
 	lookup["#cripplingPoison"] = spells.cripplingPoison.icon
 	lookup["#cp"] = spells.cripplingPoison.icon
 	lookup["#dismantle"] = spells.dismantle.icon
-	lookup["#echoingReprimand"] = spells.echoingReprimand.icon
 	lookup["#ghostlyStrike"] = spells.ghostlyStrike.icon
 	lookup["#grandMelee"] = spells.grandMelee.icon
 	lookup["#numbingPoison"] = spells.numbingPoison.icon
@@ -1969,7 +1895,6 @@ local function RefreshLookupData_Subtlety()
 	lookup["#cp"] = spells.cripplingPoison.icon
 	lookup["#deathFromAbove"] = spells.deathFromAbove.icon
 	lookup["#dismantle"] = spells.dismantle.icon
-	lookup["#echoingReprimand"] = spells.echoingReprimand.icon
 	lookup["#flagellation"] = spells.flagellation.icon
 	lookup["#numbingPoison"] = spells.numbingPoison.icon
 	lookup["#np"] = spells.numbingPoison.icon
@@ -2171,36 +2096,6 @@ local function UpdateSnapshot()
 	
 	snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.subterfuge.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.echoingReprimand_2CP.id].buff:GetRemainingTime(currentTime)
-	if snapshots[spells.echoingReprimand_2CP.id].buff.isActive then
-		snapshots[spells.echoingReprimand.id].attributes.enabled[2] = true
-	else
-		snapshots[spells.echoingReprimand.id].attributes.enabled[2] = false
-	end
-
-	snapshots[spells.echoingReprimand_3CP.id].buff:GetRemainingTime(currentTime)
-	if snapshots[spells.echoingReprimand_3CP.id].buff.isActive then
-		snapshots[spells.echoingReprimand.id].attributes.enabled[3] = true
-	else
-		snapshots[spells.echoingReprimand.id].attributes.enabled[3] = false
-	end
-
-	snapshots[spells.echoingReprimand_4CP.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.echoingReprimand_4CP2.id].buff:GetRemainingTime(currentTime)
-	if snapshots[spells.echoingReprimand_4CP.id].buff.isActive or snapshots[spells.echoingReprimand_4CP2.id].buff.isActive then
-		snapshots[spells.echoingReprimand.id].attributes.enabled[4] = true
-	else
-		snapshots[spells.echoingReprimand.id].attributes.enabled[4] = false
-	end
-
-	snapshots[spells.echoingReprimand_5CP.id].buff:GetRemainingTime(currentTime)
-	if snapshots[spells.echoingReprimand_5CP.id].buff.isActive then
-		snapshots[spells.echoingReprimand.id].attributes.enabled[5] = true
-	else
-		snapshots[spells.echoingReprimand.id].attributes.enabled[5] = false
-	end
-
-	snapshots[spells.echoingReprimand.id].cooldown:Refresh()
 	snapshots[spells.distract.id].cooldown:Refresh()
 	snapshots[spells.feint.id].cooldown:Refresh()
 	snapshots[spells.gouge.id].cooldown:Refresh()
@@ -2477,6 +2372,7 @@ local function UpdateResourceBar()
 
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
+				local charged = GetUnitChargedPowerPoints("player")
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
@@ -2505,21 +2401,26 @@ local function UpdateResourceBar()
 						end
 					end
 
-					if snapshots[spells.echoingReprimand.id].attributes.enabled[x] then
-						cpColor = specSettings.colors.comboPoints.echoingReprimand
-						
-						if not sbs then
-							cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
-						end
-
-						if not specSettings.comboPoints.consistentUnfilledColor then
-							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+					if charged ~= nil then
+						for y = 1, #charged do
+							if charged[y] == x then
+								cpColor = specSettings.colors.comboPoints.echoingReprimand
+								
+								if not sbs then
+									cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
+								end
+			
+								if not specSettings.comboPoints.consistentUnfilledColor then
+									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+								end
+							end
 						end
 					end
+
 					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
 					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end
+				end				
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -2786,6 +2687,8 @@ local function UpdateResourceBar()
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
+				local charged = GetUnitChargedPowerPoints("player")
+
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
@@ -2804,12 +2707,16 @@ local function UpdateResourceBar()
 						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 					end
 
-					if snapshots[spells.echoingReprimand.id].attributes.enabled[x] then
-						cpColor = specSettings.colors.comboPoints.echoingReprimand
-						cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
-
-						if not specSettings.comboPoints.consistentUnfilledColor then
-							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+					if charged ~= nil then
+						for y = 1, #charged do
+							if charged[y] == x then
+								cpColor = specSettings.colors.comboPoints.echoingReprimand
+								cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
+			
+								if not specSettings.comboPoints.consistentUnfilledColor then
+									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+								end
+							end
 						end
 					end
 
@@ -3087,6 +2994,8 @@ local function UpdateResourceBar()
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
+				local charged = GetUnitChargedPowerPoints("player")
+
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
@@ -3104,14 +3013,23 @@ local function UpdateResourceBar()
 					else
 						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 					end
-					if snapshots[spells.echoingReprimand.id].attributes.enabled[x] then
-						cpColor = specSettings.colors.comboPoints.echoingReprimand
-						cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
-
-						if not specSettings.comboPoints.consistentUnfilledColor then
-							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+				
+					local isCharged = false
+					if charged ~= nil then
+						for y = 1, #charged do
+							if charged[y] == x then
+								cpColor = specSettings.colors.comboPoints.echoingReprimand
+								cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
+			
+								if not specSettings.comboPoints.consistentUnfilledColor then
+									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+								end
+								isCharged = true
+							end
 						end
-					elseif x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.applications + snapshotData.attributes.resource2) >= x then							
+					end
+
+					if not isCharged and x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.applications + snapshotData.attributes.resource2) >= x then
 						cpBorderColor = specSettings.colors.comboPoints.shadowTechniques
 
 						if not specSettings.comboPoints.consistentUnfilledColor then
@@ -3352,12 +3270,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REMOVED" then -- For right now, just redo the CheckCharacter() to get update Energy values
 					TRB.Functions.Class:CheckCharacter()
 				end
-			elseif entry.spellId == spells.echoingReprimand.id then
-				if entry.type == "SPELL_CAST_SUCCESS" then
-					snapshots[entry.spellId].cooldown:Initialize()
-				end
-			elseif entry.spellId == spells.echoingReprimand_2CP.id or entry.spellId == spells.echoingReprimand_3CP.id or entry.spellId == spells.echoingReprimand_4CP.id or entry.spellId == spells.echoingReprimand_4CP2.id or entry.spellId == spells.echoingReprimand_5CP.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
 			elseif entry.spellId == spells.cripplingPoison.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
