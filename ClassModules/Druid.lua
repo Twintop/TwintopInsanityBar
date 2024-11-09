@@ -133,7 +133,9 @@ local function FillSpecializationCache()
 	specCache.balance.snapshotData.snapshots[spells.forceOfNature.id] = TRB.Classes.Snapshot:New(spells.forceOfNature)
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.astralCommunion.id] = TRB.Classes.Snapshot:New(spells.astralCommunion)
-
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.starlord.id] = TRB.Classes.Snapshot:New(spells.starlord)
+	
 
 	-- Feral
 	specCache.feral.Global_TwintopResourceBar = {
@@ -339,6 +341,7 @@ local function FillSpellData_Balance()
 		{ variable = "#starweaver", icon = string.format(L["DruidBalanceIcon_starweaver"], spells.starweaversWarp.icon, spells.starweaversWeft.icon), description = L["DruidBalanceIconDescription_starweaver"], printInSettings = true },
 		{ variable = "#starweaversWarp", icon = spells.starweaversWarp.icon, description = spells.starweaversWarp.name, printInSettings = true },
 		{ variable = "#starweaversWeft", icon = spells.starweaversWeft.icon, description = spells.starweaversWeft.name, printInSettings = true },
+		{ variable = "#starlord", icon = spells.starlord.icon, description = spells.starlord.name, printInSettings = true},
 
 		{ variable = "#eclipse", icon = string.format(L["DruidBalanceIcon_eclipse"], spells.incarnationChosenOfElune.icon, spells.celestialAlignment.icon, spells.eclipseSolar.icon, spells.eclipseLunar.icon), description = L["DruidBalanceIconDescription_eclipse"], printInSettings = true },
 		{ variable = "#celestialAlignment", icon = spells.celestialAlignment.icon, description = spells.celestialAlignment.name, printInSettings = true },			
@@ -442,6 +445,9 @@ local function FillSpellData_Balance()
 		{ variable = "$bbAstralPower", description = L["DruidBalanceBarTextVariable_bbAstralPower"], printInSettings = true, color = false },
 		{ variable = "$bbTicks", description = L["DruidBalanceBarTextVariable_bbTicks"], printInSettings = true, color = false },
 		{ variable = "$bbTime", description = L["DruidBalanceBarTextVariable_bbTime"], printInSettings = true, color = false },
+		{ variable = "$starlordTime", description = "Placeholder for this bar text", printInSettings = true, color = false },
+		{ variable = "$starlordStacks", description = "Placeholder for this bar", printInSettings = true, color = false },
+
 
 		{ variable = "$sunfireCount", description = L["DruidBalanceBarTextVariable_sunfireCount"], printInSettings = true, color = false },
 		{ variable = "$sunfireTime", description = L["DruidBalanceBarTextVariable_sunfireTime"], printInSettings = true, color = false },
@@ -1139,6 +1145,13 @@ local function RefreshLookupData_Balance()
 		starweaverIcon = spells.starweaversWeft.icon
 	end
 
+	--$starlordTime
+	local _starlordTime = snapshotData.snapshots[spells.starlord.id].buff:GetRemainingTime(currentTime)
+	local starlordTime = TRB.Functions.BarText:TimerPrecision(_starlordTime)
+	--$starlordStacks
+	local _starlordStacks = snapshotData.snapshots[spells.starlord.id].buff.applications or 0
+	local starlordStacks = string.format("%.0f", _starlordStacks)
+
 	----------------------------
 
 	Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
@@ -1187,6 +1200,7 @@ local function RefreshLookupData_Balance()
 	lookup["#starweaver"] = starweaverIcon
 	lookup["#starweaversWarp"] = spells.starweaversWarp.icon
 	lookup["#starweaversWeft"] = spells.starweaversWeft.icon
+	lookup["#starlord"] = spells.starlord.icon
 	lookup["#bb"] = spells.bounteousBloom.icon
 	lookup["#bounteousBloom"] = spells.bounteousBloom.icon
 	lookup["$moonkinForm"] = ""
@@ -1235,6 +1249,8 @@ local function RefreshLookupData_Balance()
 	lookup["$bbTicks"] = bbTicks
 	lookup["$bbTime"] = bbTime
 	lookup["$talentStellarFlare"] = ""
+	lookup["$starlordTime"] = starlordTime
+	lookup["$starlordStacks"] = starlordStacks
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1274,6 +1290,8 @@ local function RefreshLookupData_Balance()
 	lookupLogic["$bbAstralPower"] = bbAstralPower
 	lookupLogic["$bbTicks"] = bbTicks
 	lookupLogic["$bbTime"] = _bbTime
+	lookupLogic["$starlordTime"] = _starlordTime
+	lookupLogic["$starlordStacks"] = starlordStacks
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -2356,7 +2374,7 @@ local function UpdateSnapshot_Balance()
 	snapshotData.snapshots[spells.eclipseSolar.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.eclipseLunar.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.starfall.id].buff:GetRemainingTime(currentTime)
-
+	
 	if talents:IsTalentActive(spells.theEternalMoon) then
 		if snapshotData.snapshots[spells.furyOfElune.id].buff.isActive then
 			snapshotData.snapshots[spells.furyOfElune.id].buff.resource = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
@@ -3287,6 +3305,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local specId = GetSpecialization()
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
@@ -3403,6 +3422,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.starfall.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.starlord.id then
+					snapshotData.snapshots[spells.starlord.id].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.starweaversWarp.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.starweaversWeft.id then
@@ -4159,6 +4180,15 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				end
 			end
 		end
+		elseif var == "$starlordStacks" then
+			if snapshots[spells.starlord.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$starlordTime" then
+			if snapshots[spells.starlord.id].buff.isActive then
+				valid = true
+			end
+		
 	elseif specId == 2 then -- Feral
 		if var == "$resource" or var == "$energy" then
 			if snapshotData.attributes.resource > 0 then

@@ -2131,3 +2131,6 @@ L["ShamanRestorationBarTextVariable_slumberingSoulSerumTime"] = "Amount of time,
 L["PaladinHolyBarTextVariable_channeledMana"] = "Mana while channeling of Slumbering Soul Serum"
 L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "Number of ticks left channeling Slumbering Soul Serum"
 L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "Amount of time, in seconds, remaining of your channel of Slumbering Soul Serum"
+
+L["DruidBalanceBarTextVariable_starlordTime"] = "Time remaining on Starlord"
+L["DruidBalanceBarTextVariable_starlordStacks"] = "Number of stacks of Starlord"

@@ -39,6 +39,7 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public moonGuardian TRB.Classes.SpellBase
 ---@field public bounteousBloom TRB.Classes.SpellBase
 ---@field public forceOfNature TRB.Classes.SpellBase
+---@field public starlord TRB.Classes.SpellBase
 ---@field public twwSeason1SetBonus TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
@@ -219,6 +220,11 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.touchTheCosmos = TRB.Classes.SpellBase:New({
         id = 450360
+    })
+    self.starlord = TRB.Classes.SpellBase:New({
+        id = 279709,
+        talentId = 202345,
+        isTalent = true
     })
 
     -- Elune's Chosen

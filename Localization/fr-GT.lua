@@ -2050,4 +2050,6 @@ if locale == "frFR" then
     L["PaladinHolyBarTextVariable_channeledMana"] = "Mana pendant la canalisation du Sérum d'âme endormie"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "Nombre de ticks restants pour canaliser le Sérum d'âme endormie"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "Temps restant, en secondes, pour canaliser le Sérum d'âme endormie"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Temps restant de Seigneur des étoiles"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Nombre de cumul du buff Seigneur des étoiles"
 end
