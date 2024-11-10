@@ -3451,6 +3451,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.astralCommunion.id then
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+				 elseif entry.spellId == spells.dreamburst.id then
+					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type) 
 				elseif entry.spellId == spells.newMoon.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[spells.newMoon.id].attributes.currentSpellId = spells.halfMoon.id
