@@ -1700,15 +1700,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 
 			-- Chronowarden
-			if (specId == 2 and TRB.Data.barConstructedForSpec == "preservation") or (specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
-				if entry.spellId == spells.temporalBurst.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				end
-			end
+			--if (specId == 2 and TRB.Data.barConstructedForSpec == "preservation") or (specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
+			--end
 
 			-- Spec Agnostic
 			if entry.spellId == spells.essenceBurst.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
 				if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 					snapshotData.audio.essenceBurst2Cue = false
 				elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff

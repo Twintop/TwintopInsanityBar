@@ -172,8 +172,8 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         isTalent = true
     })
     self.beastCleave = TRB.Classes.SpellBase:New({
-        id = 115939,
-        buffId = 268877,
+        id = 268877,
+        talentId = 115939,
         isTalent = true
     })
     self.callOfTheWild = TRB.Classes.SpellBase:New({

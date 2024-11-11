@@ -124,10 +124,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.starweaversWeft.id] = TRB.Classes.Snapshot:New(spells.starweaversWeft)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.wrath.id] = TRB.Classes.Snapshot:New(spells.wrath)
-	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.starfire.id] = TRB.Classes.Snapshot:New(spells.starfire)
-	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.touchTheCosmos.id] = TRB.Classes.Snapshot:New(spells.touchTheCosmos)
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.forceOfNature.id] = TRB.Classes.Snapshot:New(spells.forceOfNature)
@@ -3371,11 +3367,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
-				if entry.spellId == spells.wrath.id then
-					snapshotData.snapshots[entry.spellId].cooldown:Refresh(true)
-				elseif entry.spellId == spells.starfire.id then
-					snapshotData.snapshots[entry.spellId].cooldown:Refresh(true)
-				elseif entry.spellId == spells.moonfire.id then
+				if entry.spellId == spells.moonfire.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
@@ -3402,57 +3394,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 							snapshotData.snapshots[entry.spellId].attributes.guid = entry.destinationGuid
 						end
-					elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
-				elseif entry.spellId == spells.sunderedFirmament.buffId then
-					snapshotData.snapshots[spells.sunderedFirmament.id].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.sunderedFirmament.id then
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
 						snapshotData.snapshots[spells.sunderedFirmament.id].attributes.guid = entry.destinationGuid
-						snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
-					elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
-						snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.forceOfNature.id and entry.type == "SPELL_CAST_SUCCESS" and talents:IsTalentActive(spells.bounteousBloom) then
 					snapshotData.snapshots[spells.forceOfNature.id].buff:InitializeCustom(spells.forceOfNature.duration)
-				elseif entry.spellId == spells.eclipseSolar.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
-						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
-					end
-				elseif entry.spellId == spells.eclipseLunar.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
-						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
-					end
-				elseif entry.spellId == spells.celestialAlignment.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
-						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
-					end
-				elseif entry.spellId == spells.incarnationChosenOfElune.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
-						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
-					end
-				elseif entry.spellId == spells.starfall.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.starlord.id then
-					snapshotData.snapshots[spells.starlord.id].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.starweaversWarp.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.starweaversWeft.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.touchTheCosmos.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.astralCommunion.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				 elseif entry.spellId == spells.dreamburst.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type) 
 				elseif entry.spellId == spells.newMoon.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[spells.newMoon.id].attributes.currentSpellId = spells.halfMoon.id
@@ -3520,12 +3468,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							triggerUpdate = true
 						end
 					end
-				elseif entry.spellId == spells.shadowmeld.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.prowl.id or entry.spellId == spells.prowl.attributes.idIncarnation then
+					--TODO: make individual 
 					snapshotData.snapshots[spells.prowl.id].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.suddenAmbush.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_REMOVED" then
 						snapshotData.snapshots[entry.spellId].attributes.endTimeLeeway = currentTime + 0.1
 					end
@@ -3549,22 +3495,17 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_ENERGIZE" then
 						snapshotData.snapshots[spells.berserk.id].attributes.lastTick = currentTime
 					end
-				elseif entry.spellId == spells.clearcasting.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.tigersFury.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.bloodtalons.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 					elseif entry.type == "SPELL_AURA_REMOVED" then
 						snapshotData.snapshots[entry.spellId].attributes.endTimeLeeway = currentTime + 0.1
 					end
 				elseif entry.spellId == spells.apexPredatorsCraving.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 						if settings.audio.apexPredatorsCraving.enabled then
 							PlaySoundFile(settings.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -3586,8 +3527,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.ravage.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.frenziedRegeneration.id then
 					if entry.type == "SPELL_CAST_SUCCESS" and talents:IsTalentActive(spells.empoweredShapeshifting) then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
@@ -3612,12 +3551,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif entry.spellId == spells.clearcasting.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.incarnationTreeOfLife.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.reforestation.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 		end

@@ -931,21 +931,16 @@ function TRB.Classes.Priest.ShadowSpells:New()
         isTalent = true
     })
     self.mindFlayInsanity = TRB.Classes.SpellBase:New({
-        id = 391403,
-        buffId = 391401,
-        resource = 3,
-        isTalent = true
+        id = 391401,
+        resource = 3
     })
     self.mindSpikeInsanity = TRB.Classes.SpellBase:New({
-        id = 407466,
-        buffId = 407468,
-        talentId = 391403,
-        resource = 12,
-        isTalent = true
+        id = 407468,
+        resource = 12
     })
     self.deathspeaker = TRB.Classes.SpellBase:New({
-        id = 392507,
-        buffId = 392511,
+        id = 392511,
+        talentId = 392507,
         isTalent = true
     })
     self.voidTorrent = TRB.Classes.SpellBase:New({
@@ -986,8 +981,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
         hasTicks = true
     })
     self.mindDevourer = TRB.Classes.SpellBase:New({
-        id = 373202,
-        buffId = 373204,
+        id = 373204,
+        talentId = 373202,
         isTalent = true
     })
     self.idolOfCthun = TRB.Classes.SpellBase:New({

@@ -685,8 +685,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         isTalent = true
     })
     self.goremawsBite = TRB.Classes.SpellComboPointThreshold:New({
-        id = 426591,
-        buffId = 426593,
+        id = 426593,
+        talentId = 426591,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 3,
         settingKey = "goremawsBite",

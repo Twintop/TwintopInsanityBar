@@ -1830,8 +1830,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.cannibalize.buffId then
 					local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 					cannibalize.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.vivaciousVivification.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
 				end
 			end
 		end
@@ -1841,24 +1839,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
 					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.manaTea.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.manaTeaRegen.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.manaTeaCharges.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.cannibalize.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
-				if entry.spellId == spells.strikeOfTheWindlord.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].buff:Initialize(entry.type)
-					end
-				elseif entry.spellId == spells.danceOfChiJi.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
+				if entry.spellId == spells.danceOfChiJi.id then
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled and not snapshotData.audio.playedDanceOfChiJiCue then
 							snapshotData.audio.playedDanceOfChiJiCue = true
@@ -1913,21 +1900,12 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							snapshots[entry.spellId].cooldown.duration = snapshots[entry.spellId].cooldown.duration + spells.paralysisRank2.attributes.cooldownMod
 						end
 					end
-				elseif entry.spellId == spells.heartOfTheJadeSerpentReady.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.flurryCharge.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 
 			-- Mistweaver or Windwalker / Conduit of the Celestials shared abilities
-			if (specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver") or (specId == 3 and TRB.Data.barConstructedForSpec == "windwalker") then
-				if entry.spellId == spells.heartOfTheJadeSerpent.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.heartOfTheJadeSerpentStacks.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				end
-			end
+			--if (specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver") or (specId == 3 and TRB.Data.barConstructedForSpec == "windwalker") then
+			--end
 		end
 
 		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.

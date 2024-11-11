@@ -208,8 +208,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
         boundlessMoonlight = 2
     })
     self.sunderedFirmament = TRB.Classes.SpellBase:New({
-        id = 394094,
-        buffId = 394108,
+        id = 394108,
+        talentId = 394094,
         hasTicks = true,
         resourcePerTick = TRB.Functions.Number:RoundTo(2.5 * 0.25, 1, "floor", true),
         tickRate = 0.5,
