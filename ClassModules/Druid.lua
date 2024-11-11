@@ -132,6 +132,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.starlord.id] = TRB.Classes.Snapshot:New(spells.starlord)
 	
+	--Keeper of the Grove
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.dreamburst.id] = TRB.Classes.Snapshot:New(spells.dreamburst)
 
 	-- Feral
 	specCache.feral.Global_TwintopResourceBar = {
@@ -366,6 +369,8 @@ local function FillSpellData_Balance()
 		{ variable = "#bb", icon = spells.bounteousBloom.icon, description = spells.bounteousBloom.name, printInSettings = true },
 		{ variable = "#bounteousBloom", icon = spells.bounteousBloom.icon, description = spells.bounteousBloom.name, printInSettings = false },
 
+		{ variable = "#dreamburst", icon = spells.dreamburst.icon, description = spells.dreamburst.name, printInSettings = true},
+
 		{ variable = "#newMoon", icon = spells.newMoon.icon, description = spells.newMoon.name, printInSettings = true },
 		{ variable = "#halfMoon", icon = spells.halfMoon.icon, description = spells.halfMoon.name, printInSettings = true },
 		{ variable = "#fullMoon", icon = spells.fullMoon.icon, description = spells.fullMoon.name, printInSettings = true },
@@ -441,8 +446,11 @@ local function FillSpellData_Balance()
 		{ variable = "$bbAstralPower", description = L["DruidBalanceBarTextVariable_bbAstralPower"], printInSettings = true, color = false },
 		{ variable = "$bbTicks", description = L["DruidBalanceBarTextVariable_bbTicks"], printInSettings = true, color = false },
 		{ variable = "$bbTime", description = L["DruidBalanceBarTextVariable_bbTime"], printInSettings = true, color = false },
-		{ variable = "$starlordTime", description = "Placeholder for this bar text", printInSettings = true, color = false },
-		{ variable = "$starlordStacks", description = "Placeholder for this bar", printInSettings = true, color = false },
+		{ variable = "$starlordTime", description = L["DruidBalanceBarTextVariable_starlordTime"], printInSettings = true, color = false },
+		{ variable = "$starlordStacks", description = L["DruidBalanceBarTextVariable_starlordStacks"], printInSettings = true, color = false },
+
+		{ variable = "$dreamburstTime", description = L["DruidBalanceBarTextVariable_dreamburstTime"], printInSettings = true, color = false },
+		{ variable = "$dreamburstStacks", description = L["DruidBalanceBarTextVariable_dreamburstStacks"], printInSettings = true, color = false },
 
 
 		{ variable = "$sunfireCount", description = L["DruidBalanceBarTextVariable_sunfireCount"], printInSettings = true, color = false },
@@ -1148,6 +1156,12 @@ local function RefreshLookupData_Balance()
 	local _starlordStacks = snapshotData.snapshots[spells.starlord.id].buff.applications or 0
 	local starlordStacks = string.format("%.0f", _starlordStacks)
 
+	--$dreamburstTime
+	local _dreamburstTime = snapshotData.snapshots[spells.dreamburst.id].buff:GetRemainingTime(currentTime)
+	local dreamburstTime = TRB.Functions.BarText:TimerPrecision(_dreamburstTime)
+	--$dreamburstStacks
+	local _dreamburstStacks = snapshotData.snapshots[spells.dreamburst.id].buff.applications or 0
+	local dreamburstStacks = string.format("%.0f", _dreamburstStacks)
 	----------------------------
 
 	Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
@@ -1199,6 +1213,7 @@ local function RefreshLookupData_Balance()
 	lookup["#starlord"] = spells.starlord.icon
 	lookup["#bb"] = spells.bounteousBloom.icon
 	lookup["#bounteousBloom"] = spells.bounteousBloom.icon
+	lookup["#dreamburst"] = spells.dreamburst.icon
 	lookup["$moonkinForm"] = ""
 	lookup["$eclipseTime"] = eclipseTime
 	lookup["$eclipse"] = ""
@@ -1247,6 +1262,8 @@ local function RefreshLookupData_Balance()
 	lookup["$talentStellarFlare"] = ""
 	lookup["$starlordTime"] = starlordTime
 	lookup["$starlordStacks"] = starlordStacks
+	lookup["$dreamburstTime"] = dreamburstTime
+	lookup["$dreamburstStacks"] = dreamburstStacks
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1288,6 +1305,8 @@ local function RefreshLookupData_Balance()
 	lookupLogic["$bbTime"] = _bbTime
 	lookupLogic["$starlordTime"] = _starlordTime
 	lookupLogic["$starlordStacks"] = starlordStacks
+	lookupLogic["$dreamburstTime"] = _dreamburstTime
+	lookupLogic["$dreamburstStacks"] = dreamburstStacks
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -4123,7 +4142,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.starlord.id].buff.isActive then
 				valid = true
 			end
-		
+		elseif var == "$dreamburstStacks" then
+			if snapshots[spells.dreamburst.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$dreamburstTime" then
+			if snapshots[spells.dreamburst.id].buff.isActive then
+				valid = true
+			end
 	elseif specId == 2 then -- Feral
 		if var == "$resource" or var == "$energy" then
 			if snapshotData.attributes.resource > 0 then

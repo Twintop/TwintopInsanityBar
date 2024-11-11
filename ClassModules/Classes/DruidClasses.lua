@@ -38,6 +38,7 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public theLightOfElune TRB.Classes.SpellBase
 ---@field public moonGuardian TRB.Classes.SpellBase
 ---@field public bounteousBloom TRB.Classes.SpellBase
+---@field public dreamburst TRB.Classes.SpellBase
 ---@field public forceOfNature TRB.Classes.SpellBase
 ---@field public starlord TRB.Classes.SpellBase
 ---@field public twwSeason1SetBonus TRB.Classes.SpellBase
@@ -266,7 +267,11 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 429215,
         isTalent = true
     })
-
+    self.dreamburst = TRB.Classes.SpellBase:New({
+        id = 433832,
+        talentId = 433831,
+        isTalent = true
+    })
     --Set Bonuses
     self.twwSeason1SetBonus = TRB.Classes.SpellBase:New({
         headId = 212056,
