@@ -3062,7 +3062,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 				if entry.spellId == spells.blindside.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
 							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -3105,8 +3104,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.serratedBoneSpike.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.serratedBoneSpike.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -3195,9 +3192,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.goremawsBite.buffId then
-					
-					snapshots[spells.goremawsBite.id].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.rupture.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -3210,46 +3204,21 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.shotInTheDark.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
-				elseif entry.spellId == spells.silentStorm.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
-				elseif entry.spellId == spells.finalityBlackPowder.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
-				elseif entry.spellId == spells.finalityEviscerate.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
-				elseif entry.spellId == spells.finalityRupture.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
-				elseif entry.spellId == spells.shadowTechniques.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
-				elseif entry.spellId == spells.flagellation.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.symbolsOfDeath.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.shadowDance.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 
-			if (specId == 2 and TRB.Data.barConstructedForSpec == "outlaw") or
-			   (specId == 3 and TRB.Data.barConstructedForSpec == "subtlety") then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells|TRB.Classes.Rogue.SubtletySpells]]
-				if entry.spellId == spells.escalatingBlade.id then
-					snapshots[spells.escalatingBlade.id].buff:Initialize(entry.type, true)
-				end
-			end
+			--if (specId == 2 and TRB.Data.barConstructedForSpec == "outlaw") or
+			--   (specId == 3 and TRB.Data.barConstructedForSpec == "subtlety") then
+			--	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells|TRB.Classes.Rogue.SubtletySpells]]
+			--end
 
 			-- Spec agnostic
 			
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
-			if entry.spellId == spells.subterfuge.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.crimsonVial.id then
+			if entry.spellId == spells.crimsonVial.id then
 				if entry.type == "SPELL_CAST_SUCCESS" then
 					snapshots[entry.spellId].cooldown:Initialize()
 				end
-			elseif entry.spellId == spells.sliceAndDice.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
 			elseif entry.spellId == spells.distract.id then
 				if entry.type == "SPELL_CAST_SUCCESS" then
 					snapshots[entry.spellId].cooldown:Initialize()

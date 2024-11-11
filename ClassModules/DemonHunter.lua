@@ -1411,57 +1411,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.immolationAura.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				elseif entry.spellId == spells.immolationAura1.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				elseif entry.spellId == spells.immolationAura2.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				elseif entry.spellId == spells.immolationAura3.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				elseif entry.spellId == spells.immolationAura4.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				elseif entry.spellId == spells.immolationAura5.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				elseif entry.spellId == spells.immolationAura6.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				elseif entry.spellId == spells.unboundChaos.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.chaosTheory.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.tacticalRetreat.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Tactical Retreat
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "vengeance" then --Vengeance
-				if entry.spellId == spells.immolationAura.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.soulFurnace.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.felDevastation.id then
+				if entry.spellId == spells.felDevastation.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
@@ -1473,19 +1425,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 
 			-- All specs
-			if entry.spellId == spells.metamorphosis.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.artOfTheGlaive.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.glaiveFlurry.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.rendingStrike.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.studentOfSuffering.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.warbladesHunger.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
-			end
 		end
 
 		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.

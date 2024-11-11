@@ -951,7 +951,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 					potionOfChilledClarity.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.infusionOfLight.id then
-					snapshots[spells.infusionOfLight.id].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 						snapshotData.audio.infusionOfLight2Cue = false
 					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff

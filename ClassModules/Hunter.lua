@@ -2263,20 +2263,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.beastialWrath.id then
 					snapshots[entry.spellId].cooldown:Initialize()
-				elseif entry.spellId == spells.cobraSting.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
-				elseif entry.spellId == spells.callOfTheWild.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.beastCleave.buffId then
-					snapshots[spells.beastCleave.id].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.blackArrow.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.huntersPrey.id then
-					snapshots[entry.spellId].buff:Initialize()
-				elseif entry.spellId == spells.deathblow.id then
-					snapshots[entry.spellId].buff:Initialize()
 				elseif entry.spellId == spells.direBeastBasilisk.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -2294,12 +2284,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 						snapshotData.audio.playedAimedShotCue = false
 					end
-				elseif entry.spellId == spells.trueshot.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.steadyFocus.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.lockAndLoad.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -2309,8 +2294,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.deathblow.id then
-					snapshots[entry.spellId].buff:Initialize()
 				elseif entry.spellId == spells.sniperShot.id then
 					snapshots[entry.spellId].cooldown:Initialize()
 				elseif entry.spellId == spells.blackArrow.id then
@@ -2322,16 +2305,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				if entry.spellId == spells.flankingStrike.id then
 					snapshots[entry.spellId].cooldown:Initialize()
 				elseif entry.spellId == spells.termsOfEngagement.id then
-					snapshots[spells.termsOfEngagement.id].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" then
 						snapshots[spells.termsOfEngagement.id].buff:UpdateTicks(currentTime)
 					end
-				elseif entry.spellId == spells.coordinatedAssault.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.wildfireBomb.id then
 					snapshots[entry.spellId].cooldown:Initialize()
-				elseif entry.spellId == spells.bombardier.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 

@@ -11,6 +11,23 @@ local content = [====[
 
 ---
 
+# 11.0.5.2-release (2024-11-12)
+## General
+
+- [#401 - UPDATE](#401) Significantly reduce the amount of manual buff tracking done across all specializations.
+
+## Druid
+### Balance
+
+- [#411 - NEW (Koroshy)](#411) Add support for tracking Starlord.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$starlordTime` - Time remaining on Starlord.
+<br/>&emsp;&ensp;&emsp;&ensp;- `$starlordStacks` - Number of stacks of Starlord.
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#starlord` - Starlord
+
+---
+
 # 11.0.5.1-release (2024-11-05)
 ## General
 
