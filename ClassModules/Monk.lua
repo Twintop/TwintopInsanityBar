@@ -2449,10 +2449,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 				valid = true
 			end
-
-			return valid
 		end
 	end
+
+	return valid
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
