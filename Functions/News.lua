@@ -32,6 +32,15 @@ local content = [====[
 <br/>&emsp;&ensp;- New bar text icons:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#dreamburst` - Dreamburst
 
+## Monk
+
+- (FIX) Fix an issue with bar text logic not being properly applied.
+
+## Paladin
+### Holy
+
+- (FIX) Fix an issue with hardcasted mana costs of abilities not being displayed.
+
 ## Priest
 ### Holy
 
