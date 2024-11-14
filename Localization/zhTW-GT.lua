@@ -2050,4 +2050,11 @@ if locale == "zhTW" then
     L["PaladinHolyBarTextVariable_channeledMana"] = "引導沉睡靈魂精華液時的法力"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "剩餘引導沉睡靈魂精華液的蜱蟲數量"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "沉睡靈魂血清通道的剩餘時間（以秒為單位）"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "星爵號剩餘時間"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "星爵層數"
+    L["DruidBalanceBarTextVariable_dreamburstTime"] = "Dreamburst 剩餘時間"
+    L["DruidBalanceBarTextVariable_dreamburstStacks"] = "夢爆疊數"
+    L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "祈禱得到回應的疊數"
+    L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "獲得神化所需的最大堆疊數量"
+    L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "在獲得神化之前所需的額外祈禱應允層數"
 end

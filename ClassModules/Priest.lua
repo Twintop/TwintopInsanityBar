@@ -699,8 +699,10 @@ local function FillSpellData_Holy()
 		{ variable = "$sacredReverenceStacks", description = L["PriestHolyBarTextVariable_sacredReverenceStacks"], printInSettings = true, color = false },
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
+		
 		{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
 		{ variable = "$answeredPrayersMaxStacks", description = L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"], printInSettings = true, color = false },
+		{ variable = "$answeredPrayersRemainingStacks", description = L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"], printInSettings = true, color = false },
 
 		{ variable = "$solStacks", description = L["PriestHolyBarTextVariable_solStacks"], printInSettings = true, color = false },
 		{ variable = "$solTime", description = L["PriestHolyBarTextVariable_solTime"], printInSettings = true, color = false },
@@ -1702,6 +1704,10 @@ local function RefreshLookupData_Holy()
 	--$answeredPrayersMaxStacks
 	local _answeredPrayersMaxStacks = spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] or 0
 	local answeredPrayersMaxStacks = string.format("%.0f", _answeredPrayersMaxStacks)
+	--$answeredPrayersRemainingStacks
+	local _answeredPrayersRemainingStacks = _answeredPrayersMaxStacks - _answeredPrayersStacks
+	local answeredPrayersRemainingStacks = string.format("%.0f", _answeredPrayersRemainingStacks)
+
 
 	--$solStacks
 	local _solStacks = snapshots[spells.surgeOfLight.id].buff.applications or 0
@@ -1841,6 +1847,7 @@ local function RefreshLookupData_Holy()
 	lookup["$apotheosisTime"] = apotheosisTime
 	lookup["$answeredPrayersStacks"] = answeredPrayersStacks
 	lookup["$answeredPrayersMaxStacks"] = answeredPrayersMaxStacks
+	lookup["$answeredPrayersRemainingStacks"] = answeredPrayersRemainingStacks
 	lookup["$sacredReverenceStacks"] = sacredReverenceStacks
 	lookup["$swpCount"] = shadowWordPainCount
 	lookup["$swpTime"] = shadowWordPainTime
@@ -1907,6 +1914,7 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$apotheosisTime"] = _apotheosisTime
 	lookupLogic["$answeredPrayersStacks"] = _answeredPrayersStacks
 	lookupLogic["$answeredPrayersMaxStacks"] = _answeredPrayersMaxStacks
+	lookupLogic["$answeredPrayersRemainingStacks"] = _answeredPrayersRemainingStacks
 	lookupLogic["$sacredReverenceStacks"] = _sacredReverenceStacks
 	lookupLogic["$swpCount"] = _shadowWordPainCount
 	lookupLogic["$swpTime"] = _shadowWordPainTime
@@ -4775,6 +4783,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$answeredPrayersMaxStacks" then
+			if spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] > 0 then
+				valid = true
+			end
+		elseif var == "$answeredPrayersRemainingStacks" then
 			if spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] > 0 then
 				valid = true
 			end

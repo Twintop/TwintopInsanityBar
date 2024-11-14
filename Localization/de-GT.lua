@@ -2050,4 +2050,11 @@ if locale == "deDE" then
     L["PaladinHolyBarTextVariable_channeledMana"] = "Mana während des Kanalisierens von Schlummerndem Seelenserum"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "Anzahl der verbleibenden Ticks beim Kanalisieren von Schlummerndem Seelenserum"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "Verbleibende Zeit in Sekunden für Ihren Kanal von Schlummerndem Seelenserum"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Verbleibende Zeit auf Starlord"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Anzahl der Stapel von Starlord"
+    L["DruidBalanceBarTextVariable_dreamburstTime"] = "Verbleibende Zeit auf Dreamburst"
+    L["DruidBalanceBarTextVariable_dreamburstStacks"] = "Anzahl der Stapel von Dreamburst"
+    L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "Anzahl der Stapel von erhörten Gebeten"
+    L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "Maximale Anzahl von Stapeln von erhörten Gebeten, die erforderlich sind, um Apotheose zu erlangen"
+    L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "Anzahl zusätzlicher Stapel von erhörten Gebeten, die erforderlich sind, bevor Apotheose erlangt wird"
 end
