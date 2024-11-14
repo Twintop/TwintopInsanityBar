@@ -25,6 +25,12 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- `$starlordStacks` - Number of stacks of Starlord.
 <br/>&emsp;&ensp;- New bar text icons:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#starlord` - Starlord
+- [#412 - NEW (Koroshy)](#412) Add support for tracking Dreamburst.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$dreamburstTime` - Time remaining on Dreamburst.
+<br/>&emsp;&ensp;&emsp;&ensp;- `$dreamburstStacks` - Number of stacks of Dreamburst.
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#dreamburst` - Dreamburst
 
 ---
 

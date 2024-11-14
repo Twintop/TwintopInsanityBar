@@ -287,6 +287,8 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, true)
+	---@type TRB.Classes.Snapshot
+	specCache.holy.snapshotData.snapshots[spells.answeredPrayers.id] = TRB.Classes.Snapshot:New(spells.answeredPrayers, nil, true)
 
 	-- Shadow
 	specCache.shadow.Global_TwintopResourceBar = {
@@ -573,6 +575,7 @@ local function FillSpellData_Holy()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
+		{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },			
 		{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },			
 		{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
 		{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
@@ -696,7 +699,9 @@ local function FillSpellData_Holy()
 		{ variable = "$sacredReverenceStacks", description = L["PriestHolyBarTextVariable_sacredReverenceStacks"], printInSettings = true, color = false },
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
-		
+		{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
+		{ variable = "$answeredPrayersMaxStacks", description = L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"], printInSettings = true, color = false },
+
 		{ variable = "$solStacks", description = L["PriestHolyBarTextVariable_solStacks"], printInSettings = true, color = false },
 		{ variable = "$solTime", description = L["PriestHolyBarTextVariable_solTime"], printInSettings = true, color = false },
 		
@@ -1690,6 +1695,13 @@ local function RefreshLookupData_Holy()
 	--$apotheosisTime
 	local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 	local apotheosisTime = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)
+	
+	--$answeredPrayersStacks
+	local _answeredPrayersStacks = snapshots[spells.answeredPrayers.id].buff.applications or 0
+	local answeredPrayersStacks = string.format("%.0f", _answeredPrayersStacks)
+	--$answeredPrayersMaxStacks
+	local _answeredPrayersMaxStacks = spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] or 0
+	local answeredPrayersMaxStacks = string.format("%.0f", _answeredPrayersMaxStacks)
 
 	--$solStacks
 	local _solStacks = snapshots[spells.surgeOfLight.id].buff.applications or 0
@@ -1827,6 +1839,8 @@ local function RefreshLookupData_Holy()
 	lookup["$lightweaverStacks"] = lightweaverStacks
 	lookup["$lightweaverTime"] = lightweaverTime
 	lookup["$apotheosisTime"] = apotheosisTime
+	lookup["$answeredPrayersStacks"] = answeredPrayersStacks
+	lookup["$answeredPrayersMaxStacks"] = answeredPrayersMaxStacks
 	lookup["$sacredReverenceStacks"] = sacredReverenceStacks
 	lookup["$swpCount"] = shadowWordPainCount
 	lookup["$swpTime"] = shadowWordPainTime
@@ -1891,6 +1905,8 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$lightweaverStacks"] = _lightweaverStacks
 	lookupLogic["$lightweaverTime"] = _lightweaverTime
 	lookupLogic["$apotheosisTime"] = _apotheosisTime
+	lookupLogic["$answeredPrayersStacks"] = _answeredPrayersStacks
+	lookupLogic["$answeredPrayersMaxStacks"] = _answeredPrayersMaxStacks
 	lookupLogic["$sacredReverenceStacks"] = _sacredReverenceStacks
 	lookupLogic["$swpCount"] = _shadowWordPainCount
 	lookupLogic["$swpTime"] = _shadowWordPainTime
@@ -4096,6 +4112,7 @@ local function SwitchSpec()
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#answeredPrayers"] = spells.answeredPrayers.icon
 		lookup["#apotheosis"] = spells.apotheosis.icon
 		lookup["#coh"] = spells.circleOfHealing.icon
 		lookup["#circleOfHealing"] = spells.circleOfHealing.icon
@@ -4751,6 +4768,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$apotheosisTime" then
 			if snapshots[spells.apotheosis.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$answeredPrayersStacks" then
+			if snapshots[spells.answeredPrayers.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$answeredPrayersMaxStacks" then
+			if spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] > 0 then
 				valid = true
 			end
 		elseif var == "$hwChastiseTime" or var == "$chastiseTime" or var == "$holyWordChastiseTime" then

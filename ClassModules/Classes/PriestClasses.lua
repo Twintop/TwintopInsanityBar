@@ -578,6 +578,7 @@ end
 ---@field public sacredReverence TRB.Classes.SpellBase
 ---@field public voiceOfHarmony TRB.Classes.SpellBase
 ---@field public lightwell TRB.Classes.SpellBase
+---@field public answeredPrayers TRB.Classes.SpellBase
 ---@field public symbolOfHope TRB.Classes.SpellThreshold
 ---@field public smite TRB.Classes.Priest.HolyWordSpell
 ---@field public heal TRB.Classes.Priest.HolyWordSpell
@@ -714,6 +715,16 @@ function TRB.Classes.Priest.HolySpells:New()
     self.lightwell = TRB.Classes.SpellBase:New({
         id = 372835,
         isTalent = true
+    })
+    self.answeredPrayers = TRB.Classes.SpellBase:New({
+        id = 394289,
+        talentId = 391387,
+        isTalent = true,
+        maxStackRank = {
+            [0] = 0,
+            [1] = 100,
+            [2] = 50
+        }
     })
 
     -- Set Bonuses
