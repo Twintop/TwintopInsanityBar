@@ -788,6 +788,7 @@ local function UpdateResourceBar()
 
 	if specId == 1 then
 		local specSettings = classSettings.arms
+		local specCacheSettings = TRB.Data.specCache.arms.settings
 		UpdateSnapshot_Arms()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -963,9 +964,10 @@ local function UpdateResourceBar()
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	elseif specId == 2 then
 		local specSettings = classSettings.fury
+		local specCacheSettings = TRB.Data.specCache.fury.settings
 		UpdateSnapshot_Fury()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -1141,7 +1143,7 @@ local function UpdateResourceBar()
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	end
 end
 

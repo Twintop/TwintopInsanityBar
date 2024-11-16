@@ -1249,6 +1249,7 @@ local function UpdateResourceBar()
 
 	if specId == 1 then
 		local specSettings = classSettings.devastation
+		local specCacheSettings = TRB.Data.specCache.devastation.settings
 		UpdateSnapshot_Devastation()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -1332,9 +1333,10 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	elseif specId == 2 then
 		local specSettings = classSettings.preservation
+		local specCacheSettings = TRB.Data.specCache.preservation.settings
 		UpdateSnapshot_Preservation()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 		if snapshotData.attributes.isTracking then
@@ -1524,10 +1526,11 @@ local function UpdateResourceBar()
 				end
 			end
 
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
 	elseif specId == 3 then
 		local specSettings = classSettings.augmentation
+		local specCacheSettings = TRB.Data.specCache.augmentation.settings
 		UpdateSnapshot_Augmentation()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -1612,7 +1615,7 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	end
 end
 

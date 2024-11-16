@@ -29,6 +29,16 @@ TRB.Options.fonts.options.exportSpec = f4
 TRB.Options.variables = {}
 TRB.Options.variables.barTextInstructions = L["BarTextInstructions"]
 
+local specGlobalDefaults = {
+	specEnable = false,
+	bar = true,
+	comboPoints = true,
+	displayBar = true,
+	displayText = true,
+	textures = true,
+	thresholds = true
+}
+
 local function LoadDefaultSettings()
 	local settings = {
 		core = {
@@ -507,6 +517,13 @@ local function LoadDefaultSettings()
 	return settings
 end
 TRB.Options.LoadDefaultSettings = LoadDefaultSettings
+
+local function ConstructEnabledForSpecsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+end
 
 local function ConstructFontAndTextPanel(parent)
 	if parent == nil then
@@ -1041,11 +1058,10 @@ local function ConstructGlobalOptionsPanel()
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab6", L["TabMiscellaneous"], 6, parent, 100, tabs[5])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabBarText"], 5, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab6", L["TabMiscellaneous"], 6, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -1066,7 +1082,7 @@ local function ConstructGlobalOptionsPanel()
 	parent.lastTab = tabsheets[6]
 	parent.lastTabId = 6
 
-	--ShadowConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+	--ConstructEnabledForSpecsPanel(tabsheets[1].scrollFrame.scrollChild)
 	ConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
 	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 	--ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)

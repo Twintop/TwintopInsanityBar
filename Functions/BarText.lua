@@ -863,16 +863,16 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	return valid
 end
 
-function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
+function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, refreshText)
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
 	TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	TRB.Functions.RefreshLookupData()
 	
 	--Only parse bar text if we're we need to refresh the text
-	if settings ~= nil and settings.bar ~= nil and refreshText then
+	if settings ~= nil and sharedSettings ~= nil and sharedSettings.displayText ~= nil and refreshText then
 		---@type Frame[]
 		local textFrames = TRB.Frames.textFrames
-		local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+		local displayText = sharedSettings.displayText --[[@as TRB.Classes.DisplayText]]
 		local entries = TRB.Functions.Table:Length(displayText.barText)
 		if entries > 0 then
 			for i = 1, entries do
@@ -908,13 +908,18 @@ end
 ---@param specId integer?
 function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 	-- Only do this if we're on the current class and spec!
-	local _, _, currentClassId = UnitClass("player")
+	local currentClassId = select(3, UnitClass("player"))
 	local currentSpecId = GetSpecialization()
 
 	if classId ~= nil and specId ~= nil and (currentClassId ~= classId or currentSpecId ~= specId) then
 		return
 	end
 	
+	local className = string.lower(select(2, GetClassInfo(classId or currentClassId)))
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId or currentSpecId)
+	print(className, classId, currentClassId, specName, specId, currentSpecId)
+	settings = TRB.Data.specCache[specName].settings
+
 	---@type Frame[]
 	local textFrames = TRB.Frames.textFrames
 	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]

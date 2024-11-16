@@ -1422,6 +1422,7 @@ local function UpdateResourceBar()
 	
 	if specId == 2 then
 		local specSettings = classSettings.mistweaver
+		local specCacheSettings = TRB.Data.specCache.mistweaver.settings
 		UpdateSnapshot_Mistweaver()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 		if snapshotData.attributes.isTracking then
@@ -1597,10 +1598,11 @@ local function UpdateResourceBar()
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
 			end
 
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
 	elseif specId == 3 then
 		local specSettings = classSettings.windwalker
+		local specCacheSettings = TRB.Data.specCache.windwalker.settings
 		UpdateSnapshot_Windwalker()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -1776,7 +1778,7 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	end
 end
 

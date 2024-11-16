@@ -2226,7 +2226,6 @@ end
 
 function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, classId, specId, yCoord)
 	local className
-	local specValue = specId
 
 	if classId ~= nil then
 		_, className, _ = GetClassInfo(classId)
@@ -2234,21 +2233,39 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		className = "Global"
 	end
 
-	if specId == nil then
-		specValue = ""
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	if specName == nil then
+		specName = ""
 	end
 
 	local f = nil
 	local title = ""
 
 	controls.colors.text = controls.colors.text or {}
+	controls.checkBoxes = controls.checkBoxes or {}
 	controls.dropDown.fonts = {}
 
 	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultBarTextFontSettingsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
+	if specId ~= nil and classId ~= nil then
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobal = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_displayText", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobal
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		f.tooltip = L["CheckboxUseGlobalTooltip"]
+		f:SetChecked(TRB.Data.settings.core.globalSettings[lowerClassName][specName].displayText)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.globalSettings[lowerClassName][specName].displayText = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
+			TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		end)
+		yCoord = yCoord - 30
+	end
+
 	-- Create the dropdown, and configure its appearance
-	controls.dropDown.fontDefault = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specValue.."_fontDefault", parent)
+	controls.dropDown.fontDefault = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specName.."_fontDefault", parent)
 	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultFontFace"], oUi.xCoord, yCoord)
 	controls.dropDown.fontDefault.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.fontDefault:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)

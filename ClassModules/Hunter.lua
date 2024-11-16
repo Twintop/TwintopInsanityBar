@@ -1468,6 +1468,7 @@ local function UpdateResourceBar()
 
 	if specId == 1 then
 		local specSettings = classSettings.beastMastery
+		local specCacheSettings = TRB.Data.specCache.beastMastery.settings
 		UpdateSnapshot_BeastMastery()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -1729,9 +1730,10 @@ local function UpdateResourceBar()
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	elseif specId == 2 then
 		local specSettings = classSettings.marksmanship
+		local specCacheSettings = TRB.Data.specCache.marksmanship.settings
 		UpdateSnapshot_Marksmanship()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -2010,9 +2012,10 @@ local function UpdateResourceBar()
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	elseif specId == 3 then
 		local specSettings = classSettings.survival
+		local specCacheSettings = TRB.Data.specCache.survival.settings
 		UpdateSnapshot_Survival()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -2221,7 +2224,7 @@ local function UpdateResourceBar()
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	end
 end
 

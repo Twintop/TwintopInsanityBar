@@ -713,6 +713,7 @@ local function UpdateResourceBar()
 
 	if specId == 1 then
 		local specSettings = classSettings.holy
+		local specCacheSettings = TRB.Data.specCache.holy.settings
 		UpdateSnapshot_Holy()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 		if snapshotData.attributes.isTracking then
@@ -892,7 +893,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
 	end
 end

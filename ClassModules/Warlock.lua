@@ -326,6 +326,7 @@ local function UpdateResourceBar()
 
 	if specId == 1 then
 		local specSettings = classSettings.affliction
+		local specCacheSettings = TRB.Data.specCache.affliction.settings
 		UpdateSnapshot_Affliction()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -378,7 +379,7 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	end
 end
 

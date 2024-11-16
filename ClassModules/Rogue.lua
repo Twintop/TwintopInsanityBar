@@ -2164,6 +2164,7 @@ local function UpdateResourceBar()
 
 	if specId == 1 then
 		local specSettings = classSettings.assassination
+		local specCacheSettings = TRB.Data.specCache.assassination.settings
 		UpdateSnapshot_Assassination()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -2423,9 +2424,10 @@ local function UpdateResourceBar()
 				end				
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	elseif specId == 2 then
 		local specSettings = classSettings.outlaw
+		local specCacheSettings = TRB.Data.specCache.outlaw.settings
 		UpdateSnapshot_Outlaw()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -2726,9 +2728,10 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	elseif specId == 3 then
 		local specSettings = classSettings.subtlety
+		local specCacheSettings = TRB.Data.specCache.subtlety.settings
 		UpdateSnapshot_Subtlety()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -3043,7 +3046,7 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	end
 end
 

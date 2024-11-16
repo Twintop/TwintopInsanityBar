@@ -2499,6 +2499,7 @@ local function UpdateResourceBar()
 
 	if specId == 1 then
 		local specSettings = classSettings.balance
+		local specCacheSettings = TRB.Data.specCache.balance.settings
 		UpdateSnapshot_Balance()
 
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
@@ -2784,9 +2785,10 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	elseif specId == 2 then
 		local specSettings = classSettings.feral
+		local specCacheSettings = TRB.Data.specCache.feral.settings
 		UpdateSnapshot_Feral()
 
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
@@ -3152,9 +3154,10 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	elseif specId == 4 then
 		local specSettings = classSettings.restoration
+		local specCacheSettings = TRB.Data.specCache.restoration.settings
 		UpdateSnapshot_Restoration()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 		if snapshotData.attributes.isTracking then
@@ -3308,7 +3311,7 @@ local function UpdateResourceBar()
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
 			end
 	
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
 	end
 end

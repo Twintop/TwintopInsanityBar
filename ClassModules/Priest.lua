@@ -29,6 +29,7 @@ local specCache = {
 	holy = TRB.Classes.SpecCache:New(),
 	shadow = TRB.Classes.SpecCache:New()
 }
+TRB.Data.specCache = specCache
 
 local function CalculateManaGain(mana, isPotion)
 	if isPotion == nil then
@@ -2738,6 +2739,7 @@ local function UpdateResourceBar()
 	if specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		local specSettings = classSettings.discipline
+		local specCacheSettings = TRB.Data.specCache.discipline.settings
 		UpdateSnapshot_Discipline()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 		if snapshotData.attributes.isTracking then
@@ -3064,11 +3066,12 @@ local function UpdateResourceBar()
 				end
 			end
 
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
 	elseif specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		local specSettings = classSettings.holy
+		local specCacheSettings = TRB.Data.specCache.holy.settings
 		UpdateSnapshot_Holy()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 		if snapshotData.attributes.isTracking then
@@ -3478,11 +3481,12 @@ local function UpdateResourceBar()
 				end
 			end
 
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
 	elseif specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		local specSettings = classSettings.shadow
+		local specCacheSettings = TRB.Data.specCache.shadow.settings
 		UpdateSnapshot_Shadow()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
@@ -3731,7 +3735,7 @@ local function UpdateResourceBar()
 			end
 		end
 		
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 	end
 end
 

@@ -34,6 +34,116 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
+function TRB.Functions.Character:GetSpecializationName(className, specId)
+    className = string.upper(className) -- Should be uppercase anyway from UnitClass() but let's be certain
+	if className == "DEATHKNIGHT" then
+        if specId == 1 then
+            return "blood"
+        elseif specId == 2 then
+            return "frost"
+        elseif specId == 3 then
+            return "unholy"
+        end
+    elseif className == "DEMONHUNTER" then
+        if specId == 1 then
+            return "havoc"
+        elseif specId == 2 then
+            return "vengeance"
+        end
+    elseif className == "DRUID" then
+        if specId == 1 then
+            return "balance"
+        elseif specId == 2 then
+            return "feral"
+        elseif specId == 3 then
+            return "guardian"
+        elseif specId == 4 then
+            return "restoration"
+        end
+    elseif className == "HUNTER" then
+        if specId == 1 then
+            return "beastMastery"
+        elseif specId == 2 then
+            return "marksmanship"
+        elseif specId == 3 then
+            return "survival"
+        end
+    elseif className == "EVOKER" then
+        if specId == 1 then
+            return "devastation"
+        elseif specId == 2 then
+            return "preservation"
+        elseif specId == 3 then
+            return "augmentation"
+        end
+    elseif className == "MAGE" then
+        if specId == 1 then
+            return "arcane"
+        elseif specId == 2 then
+            return "fire"
+        elseif specId == 3 then
+            return "frost"
+        end
+    elseif className == "MONK" then
+        if specId == 1 then
+            return "brewmaster"
+        elseif specId == 2 then
+            return "mistweaver"
+        elseif specId == 3 then
+            return "windwalker"
+        end
+    elseif className == "PALADIN" then
+        if specId == 1 then
+            return "holy"
+        elseif specId == 2 then
+            return "protection"
+        elseif specId == 3 then
+            return "retribution"
+        end
+    elseif className == "PRIEST" then
+        if specId == 1 then
+            return "discipline"
+        elseif specId == 2 then
+            return "holy"
+        elseif specId == 3 then
+            return "shadow"
+        end
+    elseif className == "ROGUE" then
+        if specId == 1 then
+            return "assassination"
+        elseif specId == 2 then
+            return "outlaw"
+        elseif specId == 3 then
+            return "subtlety"
+        end
+    elseif className == "SHAMAN" then
+        if specId == 1 then
+            return "elemental"
+        elseif specId == 2 then
+            return "enhancement"
+        elseif specId == 3 then
+            return "restoration"
+        end
+    elseif className == "WARLOCK" then
+        if specId == 1 then
+            return "affliction"
+        elseif specId == 2 then
+            return "demonology"
+        elseif specId == 3 then
+            return "destruction"
+        end
+    elseif className == "WARRIOR" then
+        if specId == 1 then
+            return "arms"
+        elseif specId == 2 then
+            return "fury"
+        elseif specId == 3 then
+            return "protection"
+        end
+    end
+    return nil
+end
+
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
@@ -173,10 +283,13 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 		specCache.settings.displayBar = spec.displayBar
 	end
 
-	if enabled and s.displayText then
-		specCache.settings.displayText = core.displayText
+	specCache.settings.displayText = {}
+	specCache.settings.displayText.barText = spec.displayText.barText
+	--if enabled and s.displayText then
+	if s.displayText then
+		specCache.settings.displayText.default = core.displayText.default
 	else
-		specCache.settings.displayText = spec.displayText
+		specCache.settings.displayText.default = spec.displayText.default
 	end
 
 	if enabled and s.textures then
