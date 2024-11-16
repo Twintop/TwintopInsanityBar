@@ -60,6 +60,11 @@ local function AuraUpdateEvent(self, event, unit, info)
 	if info.removedAuraInstanceIDs then
 		if unit == "player" then
 			for _, v in pairs(info.removedAuraInstanceIDs) do
+				local snapshot = TRB.Data.snapshotData.auraInstanceIds[v] --[[@as TRB.Classes.SnapshotBuff]]
+
+				if snapshot ~= nil then
+					snapshot:Refresh()
+				end
 				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
 			end
 
@@ -185,4 +190,5 @@ end
 ---| '"SPELL_AURA_APPLIED_DOSE"' # SPELL_AURA_APPLIED_DOSE
 ---| '"SPELL_AURA_REMOVED_DOSE"' # SPELL_AURA_REMOVED_DOSE
 ---| '"SPELL_DISPEL"' # SPELL_DISPEL
+---| '"SPELL_PERIODIC_ENERGIZE"' # SPELL_PERIODIC_ENERGIZE
 ---| '""' # No event type; refresh data and nothing else

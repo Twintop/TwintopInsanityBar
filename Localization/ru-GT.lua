@@ -2050,4 +2050,11 @@ if locale == "ruRU" then
     L["PaladinHolyBarTextVariable_channeledMana"] = "Мана во время направления Slumbering Soul Serum"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "Количество тиков, оставшихся до направления Slumbering Soul Serum"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "Количество времени, в секундах, оставшееся до вашего канала Slumbering Soul Serum"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Оставшееся время на Starlord"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Количество стеков Starlord"
+    L["DruidBalanceBarTextVariable_dreamburstTime"] = "Оставшееся время на Dreamburst"
+    L["DruidBalanceBarTextVariable_dreamburstStacks"] = "Количество стеков Dreamburst"
+    L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "Количество стеков Answered Prayers"
+    L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "Максимальное количество стеков Answered Prayers, необходимое для получения Apotheosis"
+    L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "Количество дополнительных стеков Answered Prayers, необходимых для получения Apotheosis"
 end

@@ -124,16 +124,17 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.starweaversWeft.id] = TRB.Classes.Snapshot:New(spells.starweaversWeft)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.wrath.id] = TRB.Classes.Snapshot:New(spells.wrath)
-	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.starfire.id] = TRB.Classes.Snapshot:New(spells.starfire)
-	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.touchTheCosmos.id] = TRB.Classes.Snapshot:New(spells.touchTheCosmos)
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.forceOfNature.id] = TRB.Classes.Snapshot:New(spells.forceOfNature)
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.astralCommunion.id] = TRB.Classes.Snapshot:New(spells.astralCommunion)
-
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.starlord.id] = TRB.Classes.Snapshot:New(spells.starlord)
+	
+	--Keeper of the Grove
+	---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.dreamburst.id] = TRB.Classes.Snapshot:New(spells.dreamburst)
 
 	-- Feral
 	specCache.feral.Global_TwintopResourceBar = {
@@ -339,6 +340,7 @@ local function FillSpellData_Balance()
 		{ variable = "#starweaver", icon = string.format(L["DruidBalanceIcon_starweaver"], spells.starweaversWarp.icon, spells.starweaversWeft.icon), description = L["DruidBalanceIconDescription_starweaver"], printInSettings = true },
 		{ variable = "#starweaversWarp", icon = spells.starweaversWarp.icon, description = spells.starweaversWarp.name, printInSettings = true },
 		{ variable = "#starweaversWeft", icon = spells.starweaversWeft.icon, description = spells.starweaversWeft.name, printInSettings = true },
+		{ variable = "#starlord", icon = spells.starlord.icon, description = spells.starlord.name, printInSettings = true},
 
 		{ variable = "#eclipse", icon = string.format(L["DruidBalanceIcon_eclipse"], spells.incarnationChosenOfElune.icon, spells.celestialAlignment.icon, spells.eclipseSolar.icon, spells.eclipseLunar.icon), description = L["DruidBalanceIconDescription_eclipse"], printInSettings = true },
 		{ variable = "#celestialAlignment", icon = spells.celestialAlignment.icon, description = spells.celestialAlignment.name, printInSettings = true },			
@@ -366,6 +368,8 @@ local function FillSpellData_Balance()
 		
 		{ variable = "#bb", icon = spells.bounteousBloom.icon, description = spells.bounteousBloom.name, printInSettings = true },
 		{ variable = "#bounteousBloom", icon = spells.bounteousBloom.icon, description = spells.bounteousBloom.name, printInSettings = false },
+
+		{ variable = "#dreamburst", icon = spells.dreamburst.icon, description = spells.dreamburst.name, printInSettings = true},
 
 		{ variable = "#newMoon", icon = spells.newMoon.icon, description = spells.newMoon.name, printInSettings = true },
 		{ variable = "#halfMoon", icon = spells.halfMoon.icon, description = spells.halfMoon.name, printInSettings = true },
@@ -442,6 +446,12 @@ local function FillSpellData_Balance()
 		{ variable = "$bbAstralPower", description = L["DruidBalanceBarTextVariable_bbAstralPower"], printInSettings = true, color = false },
 		{ variable = "$bbTicks", description = L["DruidBalanceBarTextVariable_bbTicks"], printInSettings = true, color = false },
 		{ variable = "$bbTime", description = L["DruidBalanceBarTextVariable_bbTime"], printInSettings = true, color = false },
+		{ variable = "$starlordTime", description = L["DruidBalanceBarTextVariable_starlordTime"], printInSettings = true, color = false },
+		{ variable = "$starlordStacks", description = L["DruidBalanceBarTextVariable_starlordStacks"], printInSettings = true, color = false },
+
+		{ variable = "$dreamburstTime", description = L["DruidBalanceBarTextVariable_dreamburstTime"], printInSettings = true, color = false },
+		{ variable = "$dreamburstStacks", description = L["DruidBalanceBarTextVariable_dreamburstStacks"], printInSettings = true, color = false },
+
 
 		{ variable = "$sunfireCount", description = L["DruidBalanceBarTextVariable_sunfireCount"], printInSettings = true, color = false },
 		{ variable = "$sunfireTime", description = L["DruidBalanceBarTextVariable_sunfireTime"], printInSettings = true, color = false },
@@ -1139,6 +1149,19 @@ local function RefreshLookupData_Balance()
 		starweaverIcon = spells.starweaversWeft.icon
 	end
 
+	--$starlordTime
+	local _starlordTime = snapshotData.snapshots[spells.starlord.id].buff:GetRemainingTime(currentTime)
+	local starlordTime = TRB.Functions.BarText:TimerPrecision(_starlordTime)
+	--$starlordStacks
+	local _starlordStacks = snapshotData.snapshots[spells.starlord.id].buff.applications or 0
+	local starlordStacks = string.format("%.0f", _starlordStacks)
+
+	--$dreamburstTime
+	local _dreamburstTime = snapshotData.snapshots[spells.dreamburst.id].buff:GetRemainingTime(currentTime)
+	local dreamburstTime = TRB.Functions.BarText:TimerPrecision(_dreamburstTime)
+	--$dreamburstStacks
+	local _dreamburstStacks = snapshotData.snapshots[spells.dreamburst.id].buff.applications or 0
+	local dreamburstStacks = string.format("%.0f", _dreamburstStacks)
 	----------------------------
 
 	Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
@@ -1187,8 +1210,10 @@ local function RefreshLookupData_Balance()
 	lookup["#starweaver"] = starweaverIcon
 	lookup["#starweaversWarp"] = spells.starweaversWarp.icon
 	lookup["#starweaversWeft"] = spells.starweaversWeft.icon
+	lookup["#starlord"] = spells.starlord.icon
 	lookup["#bb"] = spells.bounteousBloom.icon
 	lookup["#bounteousBloom"] = spells.bounteousBloom.icon
+	lookup["#dreamburst"] = spells.dreamburst.icon
 	lookup["$moonkinForm"] = ""
 	lookup["$eclipseTime"] = eclipseTime
 	lookup["$eclipse"] = ""
@@ -1235,6 +1260,10 @@ local function RefreshLookupData_Balance()
 	lookup["$bbTicks"] = bbTicks
 	lookup["$bbTime"] = bbTime
 	lookup["$talentStellarFlare"] = ""
+	lookup["$starlordTime"] = starlordTime
+	lookup["$starlordStacks"] = starlordStacks
+	lookup["$dreamburstTime"] = dreamburstTime
+	lookup["$dreamburstStacks"] = dreamburstStacks
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1274,6 +1303,10 @@ local function RefreshLookupData_Balance()
 	lookupLogic["$bbAstralPower"] = bbAstralPower
 	lookupLogic["$bbTicks"] = bbTicks
 	lookupLogic["$bbTime"] = _bbTime
+	lookupLogic["$starlordTime"] = _starlordTime
+	lookupLogic["$starlordStacks"] = starlordStacks
+	lookupLogic["$dreamburstTime"] = _dreamburstTime
+	lookupLogic["$dreamburstStacks"] = dreamburstStacks
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -2356,7 +2389,7 @@ local function UpdateSnapshot_Balance()
 	snapshotData.snapshots[spells.eclipseSolar.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.eclipseLunar.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.starfall.id].buff:GetRemainingTime(currentTime)
-
+	
 	if talents:IsTalentActive(spells.theEternalMoon) then
 		if snapshotData.snapshots[spells.furyOfElune.id].buff.isActive then
 			snapshotData.snapshots[spells.furyOfElune.id].buff.resource = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
@@ -3287,6 +3320,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local specId = GetSpecialization()
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
@@ -3333,11 +3367,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
-				if entry.spellId == spells.wrath.id then
-					snapshotData.snapshots[entry.spellId].cooldown:Refresh(true)
-				elseif entry.spellId == spells.starfire.id then
-					snapshotData.snapshots[entry.spellId].cooldown:Refresh(true)
-				elseif entry.spellId == spells.moonfire.id then
+				if entry.spellId == spells.moonfire.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
@@ -3364,53 +3394,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 							snapshotData.snapshots[entry.spellId].attributes.guid = entry.destinationGuid
 						end
-					elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
-						snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
-				elseif entry.spellId == spells.sunderedFirmament.buffId then
-					snapshotData.snapshots[spells.sunderedFirmament.id].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.sunderedFirmament.id then
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
 						snapshotData.snapshots[spells.sunderedFirmament.id].attributes.guid = entry.destinationGuid
-						snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
-					elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
-						snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 					end
 				elseif entry.spellId == spells.forceOfNature.id and entry.type == "SPELL_CAST_SUCCESS" and talents:IsTalentActive(spells.bounteousBloom) then
 					snapshotData.snapshots[spells.forceOfNature.id].buff:InitializeCustom(spells.forceOfNature.duration)
-				elseif entry.spellId == spells.eclipseSolar.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
-						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
-					end
-				elseif entry.spellId == spells.eclipseLunar.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
-						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
-					end
-				elseif entry.spellId == spells.celestialAlignment.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
-						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
-					end
-				elseif entry.spellId == spells.incarnationChosenOfElune.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.snapshots[spells.wrath.id].cooldown:Refresh(true)
-						snapshotData.snapshots[spells.starfire.id].cooldown:Refresh(true)
-					end
-				elseif entry.spellId == spells.starfall.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.starweaversWarp.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.starweaversWeft.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.touchTheCosmos.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.astralCommunion.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.newMoon.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[spells.newMoon.id].attributes.currentSpellId = spells.halfMoon.id
@@ -3478,12 +3468,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							triggerUpdate = true
 						end
 					end
-				elseif entry.spellId == spells.shadowmeld.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.prowl.id or entry.spellId == spells.prowl.attributes.idIncarnation then
+					--TODO: make individual 
 					snapshotData.snapshots[spells.prowl.id].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.suddenAmbush.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_REMOVED" then
 						snapshotData.snapshots[entry.spellId].attributes.endTimeLeeway = currentTime + 0.1
 					end
@@ -3507,22 +3495,17 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_ENERGIZE" then
 						snapshotData.snapshots[spells.berserk.id].attributes.lastTick = currentTime
 					end
-				elseif entry.spellId == spells.clearcasting.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.tigersFury.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.bloodtalons.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 					elseif entry.type == "SPELL_AURA_REMOVED" then
 						snapshotData.snapshots[entry.spellId].attributes.endTimeLeeway = currentTime + 0.1
 					end
 				elseif entry.spellId == spells.apexPredatorsCraving.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 						if settings.audio.apexPredatorsCraving.enabled then
 							PlaySoundFile(settings.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -3544,8 +3527,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.ravage.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.frenziedRegeneration.id then
 					if entry.type == "SPELL_CAST_SUCCESS" and talents:IsTalentActive(spells.empoweredShapeshifting) then
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
@@ -3570,12 +3551,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif entry.spellId == spells.clearcasting.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.incarnationTreeOfLife.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.reforestation.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			end
 		end
@@ -4159,6 +4134,22 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				end
 			end
 		end
+		elseif var == "$starlordStacks" then
+			if snapshots[spells.starlord.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$starlordTime" then
+			if snapshots[spells.starlord.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$dreamburstStacks" then
+			if snapshots[spells.dreamburst.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$dreamburstTime" then
+			if snapshots[spells.dreamburst.id].buff.isActive then
+				valid = true
+			end
 	elseif specId == 2 then -- Feral
 		if var == "$resource" or var == "$energy" then
 			if snapshotData.attributes.resource > 0 then

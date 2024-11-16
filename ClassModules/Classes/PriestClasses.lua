@@ -578,6 +578,7 @@ end
 ---@field public sacredReverence TRB.Classes.SpellBase
 ---@field public voiceOfHarmony TRB.Classes.SpellBase
 ---@field public lightwell TRB.Classes.SpellBase
+---@field public answeredPrayers TRB.Classes.SpellBase
 ---@field public symbolOfHope TRB.Classes.SpellThreshold
 ---@field public smite TRB.Classes.Priest.HolyWordSpell
 ---@field public heal TRB.Classes.Priest.HolyWordSpell
@@ -714,6 +715,16 @@ function TRB.Classes.Priest.HolySpells:New()
     self.lightwell = TRB.Classes.SpellBase:New({
         id = 372835,
         isTalent = true
+    })
+    self.answeredPrayers = TRB.Classes.SpellBase:New({
+        id = 394289,
+        talentId = 391387,
+        isTalent = true,
+        maxStackRank = {
+            [0] = 0,
+            [1] = 100,
+            [2] = 50
+        }
     })
 
     -- Set Bonuses
@@ -931,21 +942,16 @@ function TRB.Classes.Priest.ShadowSpells:New()
         isTalent = true
     })
     self.mindFlayInsanity = TRB.Classes.SpellBase:New({
-        id = 391403,
-        buffId = 391401,
-        resource = 3,
-        isTalent = true
+        id = 391401,
+        resource = 3
     })
     self.mindSpikeInsanity = TRB.Classes.SpellBase:New({
-        id = 407466,
-        buffId = 407468,
-        talentId = 391403,
-        resource = 12,
-        isTalent = true
+        id = 407468,
+        resource = 12
     })
     self.deathspeaker = TRB.Classes.SpellBase:New({
-        id = 392507,
-        buffId = 392511,
+        id = 392511,
+        talentId = 392507,
         isTalent = true
     })
     self.voidTorrent = TRB.Classes.SpellBase:New({
@@ -986,8 +992,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
         hasTicks = true
     })
     self.mindDevourer = TRB.Classes.SpellBase:New({
-        id = 373202,
-        buffId = 373204,
+        id = 373204,
+        talentId = 373202,
         isTalent = true
     })
     self.idolOfCthun = TRB.Classes.SpellBase:New({

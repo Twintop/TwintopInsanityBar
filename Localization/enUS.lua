@@ -2098,6 +2098,7 @@ L["DruidBalanceBarTextVariable_bbTime"] = "Time remaining on Bounteous Bloom"
 L["DruidFeralThresholdCheckboxFrenziedRegeneration"] = "Frenzied Regeneration (Empowered Shapeshifting)"
 L["DruidFeralThresholdCheckboxFrenziedRegenerationTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Frenzied Regeneration while in Catform. Only shows if you are talented into Empowered Shapeshifting."
 
+
 L["AlgariManaPotion"] = "Algari Mana Potion"
 L["SlumberingSoulSerum"] = "Slumbering Soul Serum"
 L["CavedwellersDelight"] = "Cavedweller's Delight"
@@ -2131,3 +2132,11 @@ L["ShamanRestorationBarTextVariable_slumberingSoulSerumTime"] = "Amount of time,
 L["PaladinHolyBarTextVariable_channeledMana"] = "Mana while channeling of Slumbering Soul Serum"
 L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "Number of ticks left channeling Slumbering Soul Serum"
 L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "Amount of time, in seconds, remaining of your channel of Slumbering Soul Serum"
+
+L["DruidBalanceBarTextVariable_starlordTime"] = "Time remaining on Starlord"
+L["DruidBalanceBarTextVariable_starlordStacks"] = "Number of stacks of Starlord"
+L["DruidBalanceBarTextVariable_dreamburstTime"] = "Time remaining on Dreamburst"
+L["DruidBalanceBarTextVariable_dreamburstStacks"] = "Number of stacks of Dreamburst"
+L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "Number of stacks of Answered Prayers"
+L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "Maximum number of stacks of Answered Prayers required for Apotheosis to be gained"
+L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "Number of additional stacks of Answered Prayers needed before Apotheosis will be gained"

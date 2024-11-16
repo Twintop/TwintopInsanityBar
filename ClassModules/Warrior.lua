@@ -1173,7 +1173,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.suddenDeath.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_APPLIED_DOSE" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
 							PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1187,16 +1186,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif entry.spellId == spells.stormOfSwords.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
-				if entry.spellId == spells.enrage.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.whirlwind.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.suddenDeath.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
+				if entry.spellId == spells.suddenDeath.id then
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_APPLIED_DOSE" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled then
 							PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)

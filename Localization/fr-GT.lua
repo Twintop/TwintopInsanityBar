@@ -2050,4 +2050,13 @@ if locale == "frFR" then
     L["PaladinHolyBarTextVariable_channeledMana"] = "Mana pendant la canalisation du Sérum d'âme endormie"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "Nombre de ticks restants pour canaliser le Sérum d'âme endormie"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "Temps restant, en secondes, pour canaliser le Sérum d'âme endormie"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Temps restant de Seigneur des étoiles"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Nombre de cumul du buff Seigneur des étoiles"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Temps restant sur Starlord"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Nombre de cumuls de Starlord"
+    L["DruidBalanceBarTextVariable_dreamburstTime"] = "Temps restant sur Dreamburst"
+    L["DruidBalanceBarTextVariable_dreamburstStacks"] = "Nombre de cumuls de Dreamburst"
+    L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "Nombre de cumuls de Prières exaucées"
+    L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "Nombre maximal de cumuls de Prières exaucées requis pour obtenir l'Apothéose"
+    L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "Nombre de cumuls supplémentaires de Prières exaucées nécessaires avant d'obtenir l'Apothéose"
 end

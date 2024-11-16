@@ -11,6 +11,49 @@ local content = [====[
 
 ---
 
+# 11.0.5.2-release (2024-11-15)
+## General
+
+- [#401 - UPDATE](#401) Significantly reduce the amount of manual buff tracking done across all specializations.
+
+## Druid
+### Balance
+
+- [#411 - NEW (Koroshy)](#411) Add support for tracking Starlord.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$starlordTime` - Time remaining on Starlord
+<br/>&emsp;&ensp;&emsp;&ensp;- `$starlordStacks` - Number of stacks of Starlord
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#starlord` - Starlord
+- [#412 - NEW (Koroshy)](#412) Add support for tracking Dreamburst
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$dreamburstTime` - Time remaining on Dreamburst
+<br/>&emsp;&ensp;&emsp;&ensp;- `$dreamburstStacks` - Number of stacks of Dreamburst
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#dreamburst` - Dreamburst
+
+## Monk
+
+- (FIX) Fix an issue with bar text logic not being properly applied.
+
+## Paladin
+### Holy
+
+- (FIX) Fix an issue with hardcasted mana costs of abilities not being displayed.
+
+## Priest
+### Holy
+
+- [#413 - NEW](#413) Add support for tracking Answered Prayers.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$answeredPrayersStacks` - Number of stacks of Answered Prayers
+<br/>&emsp;&ensp;&emsp;&ensp;- `$answeredPrayersMaxStacks` - Maximum number of stacks of Answered Prayers required for Apotheosis to be gained
+<br/>&emsp;&ensp;&emsp;&ensp;- `$answeredPrayersRemainingStacks` - Number of additional stacks of Answered Prayers needed before Apotheosis will be gained
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#answeredPrayers` - Answered Prayers
+
+---
+
 # 11.0.5.1-release (2024-11-05)
 ## General
 

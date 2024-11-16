@@ -2050,4 +2050,11 @@ if locale == "koKR" then
     L["PaladinHolyBarTextVariable_channeledMana"] = "졸리는 영혼 혈청 채널링 중 마나"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "졸리는 영혼 혈청 채널링 중 남은 틱 수"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "졸리는 영혼 혈청 채널의 남은 시간(초)"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Starlord에서 남은 시간"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Starlord 스택 수"
+    L["DruidBalanceBarTextVariable_dreamburstTime"] = "Dreamburst에서 남은 시간"
+    L["DruidBalanceBarTextVariable_dreamburstStacks"] = "Dreamburst 스택 수"
+    L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "Answered Prayers 스택 수"
+    L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "Apotheosis를 얻기 위해 필요한 Answered Prayers의 최대 스택 수"
+    L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "Apotheosis를 얻기 전에 필요한 Answered Prayers의 추가 스택 수"
 end

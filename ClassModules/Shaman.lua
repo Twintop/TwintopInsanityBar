@@ -1906,16 +1906,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.icefury.id then
 					snapshots[spells.icefury.id].buff:Initialize(entry.type)
 					snapshots[spells.icefury.id].attributes.resource = snapshots[spells.icefury.id].buff.applications * spells.frostShock.resource
-				elseif entry.spellId == spells.stormkeeper.id then
-					snapshots[spells.stormkeeper.id].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.surgeOfPower.id then
-					snapshots[spells.surgeOfPower.id].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.powerOfTheMaelstrom.id then
-					snapshots[spells.powerOfTheMaelstrom.id].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.echoesOfGreatSundering.id then
-					snapshots[spells.echoesOfGreatSundering.id].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.primalFracture.id then
-					snapshots[spells.primalFracture.id].buff:Initialize(entry.type)
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "enhancement" then
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
@@ -1926,9 +1916,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 
 			-- Spec agnostic abilities
-			if entry.spellId == spells.ascendance.id then
-				snapshots[entry.spellId].buff:Initialize(entry.type)
-			elseif entry.spellId == spells.flameShock.id then
+			if entry.spellId == spells.flameShock.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end

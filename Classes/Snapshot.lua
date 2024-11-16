@@ -353,6 +353,10 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
             end
             if not simple and not self.alwaysSimple then
                 self:GetRemainingTime()
+
+                if self.hasTicks then
+                    self:UpdateTicks()
+                end
             end
         elseif eventType == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
             if self.applications ~= nil then
@@ -360,6 +364,12 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
             end
         elseif eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_DISPEL" then -- Lost buff
             self:Reset()
+        elseif eventType == "SPELL_PERIODIC_ENERGIZE" then -- Tick with gain of energy        
+            self:GetRemainingTime()
+
+            if self.hasTicks then
+                self:UpdateTicks()
+            end
         elseif eventType == nil or eventType == "" then
             local currentTime = currentTime or GetTime()
             local foundId = nil
@@ -376,6 +386,10 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
                 if self.endTime ~= nil and self.endTime > currentTime then
                     self.isActive = true
                     self:GetRemainingTime()
+
+                    if self.hasTicks then
+                        self:UpdateTicks()
+                    end
                 else
                     self:Reset()
                 end

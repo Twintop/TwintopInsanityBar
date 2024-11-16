@@ -38,7 +38,9 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public theLightOfElune TRB.Classes.SpellBase
 ---@field public moonGuardian TRB.Classes.SpellBase
 ---@field public bounteousBloom TRB.Classes.SpellBase
+---@field public dreamburst TRB.Classes.SpellBase
 ---@field public forceOfNature TRB.Classes.SpellBase
+---@field public starlord TRB.Classes.SpellBase
 ---@field public twwSeason1SetBonus TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
@@ -206,8 +208,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
         boundlessMoonlight = 2
     })
     self.sunderedFirmament = TRB.Classes.SpellBase:New({
-        id = 394094,
-        buffId = 394108,
+        id = 394108,
+        talentId = 394094,
         hasTicks = true,
         resourcePerTick = TRB.Functions.Number:RoundTo(2.5 * 0.25, 1, "floor", true),
         tickRate = 0.5,
@@ -219,6 +221,11 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.touchTheCosmos = TRB.Classes.SpellBase:New({
         id = 450360
+    })
+    self.starlord = TRB.Classes.SpellBase:New({
+        id = 279709,
+        talentId = 202345,
+        isTalent = true
     })
 
     -- Elune's Chosen
@@ -260,7 +267,11 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 429215,
         isTalent = true
     })
-
+    self.dreamburst = TRB.Classes.SpellBase:New({
+        id = 433832,
+        talentId = 433831,
+        isTalent = true
+    })
     --Set Bonuses
     self.twwSeason1SetBonus = TRB.Classes.SpellBase:New({
         headId = 212056,

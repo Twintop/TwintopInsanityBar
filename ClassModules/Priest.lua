@@ -287,6 +287,8 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, true)
+	---@type TRB.Classes.Snapshot
+	specCache.holy.snapshotData.snapshots[spells.answeredPrayers.id] = TRB.Classes.Snapshot:New(spells.answeredPrayers, nil, true)
 
 	-- Shadow
 	specCache.shadow.Global_TwintopResourceBar = {
@@ -360,7 +362,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.mindDevourer.id] = TRB.Classes.Snapshot:New(spells.mindDevourer)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.surgeOfInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
+	specCache.shadow.snapshotData.snapshots[spells.mindFlayInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
+	---@type TRB.Classes.Snapshot
+	specCache.shadow.snapshotData.snapshots[spells.mindSpikeInsanity.id] = TRB.Classes.Snapshot:New(spells.mindSpikeInsanity)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.deathspeaker.id] = TRB.Classes.Snapshot:New(spells.deathspeaker)
 	---@type TRB.Classes.Snapshot
@@ -369,11 +373,6 @@ local function FillSpecializationCache()
 	specCache.shadow.snapshotData.snapshots[spells.mindMelt.id] = TRB.Classes.Snapshot:New(spells.mindMelt)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.shadowyInsight.id] = TRB.Classes.Snapshot:New(spells.shadowyInsight)
-	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.voidBolt.id] = TRB.Classes.Snapshot:New(spells.voidBolt, {
-		lastSuccess = nil,
-		flightTime = 1.0
-	})
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.mindBlast.id] = TRB.Classes.Snapshot:New(spells.mindBlast)
 	---@type TRB.Classes.Snapshot
@@ -576,6 +575,7 @@ local function FillSpellData_Holy()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
+		{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },			
 		{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },			
 		{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
 		{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
@@ -700,6 +700,10 @@ local function FillSpellData_Holy()
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
 		
+		{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
+		{ variable = "$answeredPrayersMaxStacks", description = L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"], printInSettings = true, color = false },
+		{ variable = "$answeredPrayersRemainingStacks", description = L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"], printInSettings = true, color = false },
+
 		{ variable = "$solStacks", description = L["PriestHolyBarTextVariable_solStacks"], printInSettings = true, color = false },
 		{ variable = "$solTime", description = L["PriestHolyBarTextVariable_solTime"], printInSettings = true, color = false },
 		
@@ -1693,6 +1697,17 @@ local function RefreshLookupData_Holy()
 	--$apotheosisTime
 	local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 	local apotheosisTime = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)
+	
+	--$answeredPrayersStacks
+	local _answeredPrayersStacks = snapshots[spells.answeredPrayers.id].buff.applications or 0
+	local answeredPrayersStacks = string.format("%.0f", _answeredPrayersStacks)
+	--$answeredPrayersMaxStacks
+	local _answeredPrayersMaxStacks = spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] or 0
+	local answeredPrayersMaxStacks = string.format("%.0f", _answeredPrayersMaxStacks)
+	--$answeredPrayersRemainingStacks
+	local _answeredPrayersRemainingStacks = _answeredPrayersMaxStacks - _answeredPrayersStacks
+	local answeredPrayersRemainingStacks = string.format("%.0f", _answeredPrayersRemainingStacks)
+
 
 	--$solStacks
 	local _solStacks = snapshots[spells.surgeOfLight.id].buff.applications or 0
@@ -1830,6 +1845,9 @@ local function RefreshLookupData_Holy()
 	lookup["$lightweaverStacks"] = lightweaverStacks
 	lookup["$lightweaverTime"] = lightweaverTime
 	lookup["$apotheosisTime"] = apotheosisTime
+	lookup["$answeredPrayersStacks"] = answeredPrayersStacks
+	lookup["$answeredPrayersMaxStacks"] = answeredPrayersMaxStacks
+	lookup["$answeredPrayersRemainingStacks"] = answeredPrayersRemainingStacks
 	lookup["$sacredReverenceStacks"] = sacredReverenceStacks
 	lookup["$swpCount"] = shadowWordPainCount
 	lookup["$swpTime"] = shadowWordPainTime
@@ -1894,6 +1912,9 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$lightweaverStacks"] = _lightweaverStacks
 	lookupLogic["$lightweaverTime"] = _lightweaverTime
 	lookupLogic["$apotheosisTime"] = _apotheosisTime
+	lookupLogic["$answeredPrayersStacks"] = _answeredPrayersStacks
+	lookupLogic["$answeredPrayersMaxStacks"] = _answeredPrayersMaxStacks
+	lookupLogic["$answeredPrayersRemainingStacks"] = _answeredPrayersRemainingStacks
 	lookupLogic["$sacredReverenceStacks"] = _sacredReverenceStacks
 	lookupLogic["$swpCount"] = _shadowWordPainCount
 	lookupLogic["$swpTime"] = _shadowWordPainTime
@@ -2063,13 +2084,21 @@ local function RefreshLookupData_Shadow()
 	local mdTime = TRB.Functions.BarText:TimerPrecision(_mdTime)
 	
 	--$mfiTime
-	local _mfiTime = snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
-	local mfiTime = TRB.Functions.BarText:TimerPrecision(_mfiTime)
-
+	local _mfiTime = 0
 	--$mfiStacks
-	local _mfiStacks = snapshots[spells.surgeOfInsanity.id].buff.applications or 0
-	local mfiStacks = string.format("%.0f", _mfiStacks)
+	local _mfiStacks = 0
 	
+	if snapshots[spells.mindFlayInsanity.id].buff.isActive then
+		_mfiTime = snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
+		_mfiStacks = snapshots[spells.mindFlayInsanity.id].buff.applications or 0
+	elseif snapshots[spells.mindSpikeInsanity.id].buff.isActive then
+		_mfiTime = snapshots[spells.mindSpikeInsanity.id].buff:GetRemainingTime(currentTime)
+		_mfiStacks = snapshots[spells.mindSpikeInsanity.id].buff.applications or 0
+	end
+	
+	local mfiTime = TRB.Functions.BarText:TimerPrecision(_mfiTime)
+	local mfiStacks = string.format("%.0f", _mfiStacks)
+
 	--$deathspeakerTime
 	local _deathspeakerTime = snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
 	local deathspeakerTime = TRB.Functions.BarText:TimerPrecision(_deathspeakerTime)
@@ -2572,7 +2601,6 @@ end
 
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
-	--TODO #339: Comment out to reduce load while testing
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
@@ -2675,22 +2703,20 @@ end
 local function UpdateSnapshot_Shadow()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	--TODO #339: Comment out to reduce load while testing
 	UpdateExternalCallToTheVoidValues()
 	UpdateSnapshot_Voidweaver()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	
-	--TODO #339: Comment out to reduce load while testing
-	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)--:Refresh()
+	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.mindSpikeInsanity.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 	
-	--TODO #339: Comment out to reduce load while testing
 	snapshots[spells.mindBlast.id].cooldown:Refresh()
 
 	local devouredDespair = snapshots[spells.devouredDespair.id]
@@ -3705,7 +3731,6 @@ local function UpdateResourceBar()
 			end
 		end
 		
-		--TODO #339: Comment out to reduce load while testing
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 	end
 end
@@ -3785,7 +3810,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.surgeOfLight.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 						snapshotData.audio.surgeOfLight2Cue = false
 					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -3800,14 +3824,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 
 			if specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
-				if entry.spellId == spells.rapture.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.atonement.id then
+				if entry.spellId == spells.atonement.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
 						triggerUpdate = targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif entry.spellId == spells.shadowCovenant.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.purgeTheWicked.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -3830,13 +3850,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "holy" then
-				if entry.spellId == spells.apotheosis.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.lightweaver.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.resonantWords.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.holyWordSerenity.id then
+				if entry.spellId == spells.holyWordSerenity.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
@@ -3848,19 +3862,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.sacredReverence.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
 				elseif entry.spellId == spells.symbolOfHope.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
-				if entry.spellId == spells.voidform.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.darkAscension.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.vampiricTouch.id then
+				if entry.spellId == spells.vampiricTouch.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
@@ -3885,29 +3893,12 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					triggerUpdate = true
 				elseif entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.shadowCrash.id or entry.spellId == spells.voidCrash.id) then
 					triggerUpdate = true
-				elseif entry.spellId == spells.mindDevourer.buffId then
-					snapshots[spells.mindDevourer.id].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.devouredDespair.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.mindFlayInsanity.buffId or entry.spellId == spells.mindSpikeInsanity.buffId then
-					snapshots[spells.surgeOfInsanity.id].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.deathspeaker.buffId then
-					snapshots[spells.deathspeaker.id].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.deathspeaker.id then
 					if entry.type == "SPELL_AURA_APPLIED" then
 						if TRB.Data.settings.priest.shadow.audio.deathspeaker.enabled then
 							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-				elseif entry.spellId == spells.twistOfFate.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.shadowyInsight.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.mindMelt.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.idolOfYoggSaron.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.thingFromBeyond.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.type == "SPELL_SUMMON" and settings.voidTendrilTracker and (entry.spellId == spells.idolOfCthun_Tendril.id or entry.spellId == spells.idolOfCthun_Lasher.id) then
 					InitializeVoidTendril(entry.destinationGuid)
 					if entry.spellId == spells.idolOfCthun_Tendril.id then
@@ -4129,6 +4120,7 @@ local function SwitchSpec()
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#answeredPrayers"] = spells.answeredPrayers.icon
 		lookup["#apotheosis"] = spells.apotheosis.icon
 		lookup["#coh"] = spells.circleOfHealing.icon
 		lookup["#circleOfHealing"] = spells.circleOfHealing.icon
@@ -4465,12 +4457,6 @@ function TRB.Functions.Class:CheckCharacter()
 				snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
 			end
 		end
-		
-		if talents:IsTalentActive(spells.mindSpike) then
-			snapshots[spells.surgeOfInsanity.id].spell = spells.mindSpikeInsanity
-		else
-			snapshots[spells.surgeOfInsanity.id].spell = spells.mindFlayInsanity
-		end
 	end
 end
 
@@ -4792,6 +4778,18 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.apotheosis.id].buff.isActive then
 				valid = true
 			end
+		elseif var == "$answeredPrayersStacks" then
+			if snapshots[spells.answeredPrayers.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$answeredPrayersMaxStacks" then
+			if spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] > 0 then
+				valid = true
+			end
+		elseif var == "$answeredPrayersRemainingStacks" then
+			if spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] > 0 then
+				valid = true
+			end
 		elseif var == "$hwChastiseTime" or var == "$chastiseTime" or var == "$holyWordChastiseTime" then
 			if snapshots[spells.holyWordChastise.id].cooldown.remaining > 0 then
 				valid = true
@@ -4942,11 +4940,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$mfiTime" then
-			if snapshots[spells.surgeOfInsanity.id].buff.isActive then
+			if snapshots[spells.mindFlayInsanity.id].buff.isActive or snapshots[spells.mindSpikeInsanity.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$mfiStacks" then
-			if snapshots[spells.surgeOfInsanity.id].buff.isActive then
+			if snapshots[spells.mindFlayInsanity.id].buff.isActive or snapshots[spells.mindSpikeInsanity.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$deathspeakerTime" then

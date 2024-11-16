@@ -2050,4 +2050,11 @@ if locale == "zhCN" then
     L["PaladinHolyBarTextVariable_channeledMana"] = "引导沉睡灵魂精华时的法力"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "引导沉睡灵魂精华剩余的刻数"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "沉睡灵魂精华的剩余时间（以秒为单位）"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "星爵剩余时间"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "星爵堆叠数量"
+    L["DruidBalanceBarTextVariable_dreamburstTime"] = "梦爆剩余时间"
+    L["DruidBalanceBarTextVariable_dreamburstStacks"] = "梦爆堆叠数量"
+    L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "祈祷应验堆叠数量"
+    L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "获得神化所需的祈祷应验堆叠数量上限"
+    L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "获得神化前所需的祈祷应验堆叠数量上限"
 end

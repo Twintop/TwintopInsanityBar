@@ -2050,4 +2050,11 @@ if locale == "ptBR" or locale == "ptPT" then
     L["PaladinHolyBarTextVariable_channeledMana"] = "Mana durante a canalização de Slumbering Soul Serum"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTicks"] = "Número de ticks restantes canalizando Slumbering Soul Serum"
     L["PaladinHolyBarTextVariable_slumberingSoulSerumTime"] = "Quantidade de tempo, em segundos, restante do seu canal de Slumbering Soul Serum Soro"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Tempo restante em Starlord"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Número de pilhas de Starlord"
+    L["DruidBalanceBarTextVariable_dreamburstTime"] = "Tempo restante em Dreamburst"
+    L["DruidBalanceBarTextVariable_dreamburstStacks"] = "Número de pilhas de Dreamburst"
+    L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "Número de pilhas de Answered Prayers"
+    L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "Número máximo de pilhas de Answered Prayers necessárias para que Apotheosis seja obtida"
+    L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "Número de pilhas adicionais de Answered Prayers necessárias antes que Apotheosis seja obtida"
 end
