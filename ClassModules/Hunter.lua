@@ -29,6 +29,7 @@ local specCache = {
 	marksmanship = TRB.Classes.SpecCache:New(),
 	survival = TRB.Classes.SpecCache:New()
 }
+TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Beast Mastery

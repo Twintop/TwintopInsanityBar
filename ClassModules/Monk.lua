@@ -28,6 +28,7 @@ local specCache = {
 	mistweaver = TRB.Classes.SpecCache:New(),
 	windwalker = TRB.Classes.SpecCache:New()
 }
+TRB.Data.specCache = specCache
 
 local function CalculateManaGain(mana, isPotion)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]

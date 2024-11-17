@@ -26,8 +26,8 @@ TRB.Data.character = {}
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
 	affliction = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
-	
 }
+TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Affliction

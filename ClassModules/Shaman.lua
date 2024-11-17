@@ -27,6 +27,7 @@ local specCache = {
 	enhancement = TRB.Classes.SpecCache:New(),
 	restoration = TRB.Classes.SpecCache:New()
 }
+TRB.Data.specCache = specCache
 
 local function CalculateManaGain(mana, isPotion)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]

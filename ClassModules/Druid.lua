@@ -30,6 +30,7 @@ local specCache = {
 	}),
 	restoration = TRB.Classes.SpecCache:New()
 }
+TRB.Data.specCache = specCache
 
 local function CalculateManaGain(mana, isPotion)
 	if isPotion == nil then

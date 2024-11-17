@@ -27,6 +27,7 @@ local specCache = {
 	arms = TRB.Classes.SpecCache:New(),
 	fury = TRB.Classes.SpecCache:New()
 }
+TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Arms

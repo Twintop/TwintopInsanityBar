@@ -29,6 +29,7 @@ local specCache = {
 	outlaw = TRB.Classes.SpecCache:New(),
 	subtlety = TRB.Classes.SpecCache:New()
 }
+TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Assassination

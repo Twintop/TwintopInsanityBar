@@ -27,6 +27,7 @@ local specCache = {
 	havoc = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
 	vengeance = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 }
+TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Havoc
