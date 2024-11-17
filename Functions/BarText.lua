@@ -917,7 +917,6 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 	
 	local className = string.lower(select(2, GetClassInfo(classId or currentClassId)))
 	local specName = TRB.Functions.Character:GetSpecializationName(className, specId or currentSpecId)
-	print(className, classId, currentClassId, specName, specId, currentSpecId)
 	settings = TRB.Data.specCache[specName].settings
 
 	---@type Frame[]

@@ -1059,9 +1059,9 @@ local function ConstructGlobalOptionsPanel()
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabBarText"], 5, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab6", L["TabMiscellaneous"], 6, parent, 100, tabs[4])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab6", L["TabMiscellaneous"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -1074,9 +1074,9 @@ local function ConstructGlobalOptionsPanel()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
 
-	tabsheets[6]:Show()
-	tabsheets[6].selected = true
-	tabs[6]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	tabsheets[5]:Show()
+	tabsheets[5].selected = true
+	tabs[5]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 	parent.tabs = tabs
 	parent.tabsheets = tabsheets
 	parent.lastTab = tabsheets[6]
@@ -1087,7 +1087,7 @@ local function ConstructGlobalOptionsPanel()
 	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 	--ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
 	--ShadowConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
-	ConstructMiscellaneousPanel(tabsheets[6].scrollFrame.scrollChild)
+	ConstructMiscellaneousPanel(tabsheets[5].scrollFrame.scrollChild)
 end
 
 local function ConstructImportExportPanel()
