@@ -495,8 +495,8 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	controls.checkBoxes.nightfall = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_nightfallProc", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.nightfall
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxNighfall"])
-	f.tooltip = L["WarlockAfflictionCheckboxNighfallTooltip"]
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxNightfall"])
+	f.tooltip = L["WarlockAfflictionCheckboxNightfallTooltip"]
 	f:SetChecked(spec.colors.bar.nightfall.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.nightfall.enabled = self:GetChecked()

@@ -281,6 +281,8 @@ local function RefreshLookupData_Affliction()
 
 	local lookup = TRB.Data.lookup or {}
 	
+	lookup["#nightfall"] = spells.nightfall.icon
+	lookup["#tormentedCrescendo"] = spells.tormentedCrescendo.icon
 	lookup["$resourceTotal"] = manaTotal
 	lookup["$manaTotal"] = manaTotal
 	lookup["$resourceMax"] = manaMax
@@ -299,8 +301,6 @@ local function RefreshLookupData_Affliction()
 	lookup["$comboPoints"] = normalizedSoulShards
 	lookup["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["#nightfall"] = spells.nightfall.icon
-	lookup["#tormentedCrescendo"] = spells.tormentedCrescendo.icon
 	lookup["$tormentedCrescendoTime"] = tormentedCrescendoTime
 	lookup["$tormentedCrescendoStacks"] = tormentedCrescendoStacks
 	lookup["$nightfallTime"] = nightfallTime
@@ -718,13 +718,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.nightfall.id].buff.isActive then
 				valid = true
 			end
-		end
-		if var == "$tormentedCrescendoTime" then
+		elseif var == "$tormentedCrescendoTime" then
 			if snapshots[spells.tormentedCrescendo.id].buff.isActive then
 				valid = true
 			end
-		end
-		if var == "$tormentedCrescendoStacks" then
+		elseif var == "$tormentedCrescendoStacks" then
 			if snapshots[spells.tormentedCrescendo.id].buff.isActive then
 				valid = true
 			end
