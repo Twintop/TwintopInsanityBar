@@ -57,9 +57,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Warlock.AfflictionSpells
 	specCache.affliction.spellsData.spells = TRB.Classes.Warlock.AfflictionSpells:New()
-	---@type TRB.Classes.Warlock.AfflictionSpells
-	---@diagnostic disable-next-line: assign-type-mismatch
-	local spells = specCache.affliction.spellsData.spells
+	local spells = specCache.affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
 	specCache.affliction.snapshotData.audio = {
 		
@@ -69,6 +67,10 @@ local function FillSpecializationCache()
 		icons = {},
 		values = {}
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.affliction.snapshotData.snapshots[spells.nightfall.id] = TRB.Classes.Snapshot:New(spells.nightfall)
+	---@type TRB.Classes.Snapshot
+	specCache.affliction.snapshotData.snapshots[spells.tormentedCrescendo.id] = TRB.Classes.Snapshot:New(spells.tormentedCrescendo)
 
 end
 
@@ -90,6 +92,9 @@ local function FillSpellData_Affliction()
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+		{ variable = "#nightfall", icon = spells.nightfall.icon,description = spells.nightfall.name, printInSettings = true },
+		{ variable = "#tormentedCrescendo", icon = spells.tormentedCrescendo.icon,description = spells.tormentedCrescendo.name, printInSettings = true },
+
 	}
 	specCache.affliction.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -142,6 +147,11 @@ local function FillSpellData_Affliction()
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+
+		{ variable = "$nightfallTime", description = L["WarlockAfflictionBarTextVariableNightfallTime"], printInSettings = true, color = false },
+		{ variable = "$tormentedCrescendoTime", description = L["WarlockAfflictionBarTextVariableTormentedCrescendoTime"], printInSettings = true, color = false },
+		{ variable = "$tormentedCrescendoStacks", description = L["WarlockAfflictionBarTextVariableTormentedCrescendoStacks"], printInSettings = true, color = false },
+
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -256,10 +266,23 @@ local function RefreshLookupData_Affliction()
 	local _manaPercent = (normalizedMana/maxResource)
 	local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.Number:RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
+	--nightfallTime
+	local _nightfallTime = snapshotData.snapshots[spells.nightfall.id].buff:GetRemainingTime(currentTime)
+	local nightfallTime =  TRB.Functions.BarText:TimerPrecision(_nightfallTime)
+
+	--tormentedCrescendoTime
+	local _tormentedCrescendoTime = snapshotData.snapshots[spells.tormentedCrescendo.id].buff:GetRemainingTime(currentTime)
+	local tormentedCrescendoTime =  TRB.Functions.BarText:TimerPrecision(_tormentedCrescendoTime)
+	
+	--tormentedCrescendoStacks
+	local _tormentedCrescendoStacks = snapshotData.snapshots[spells.tormentedCrescendo.id].buff.applications or 0
+	local tormentedCrescendoStacks = string.format("%.0f", _tormentedCrescendoStacks)
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
 	
+	lookup["#nightfall"] = spells.nightfall.icon
+	lookup["#tormentedCrescendo"] = spells.tormentedCrescendo.icon
 	lookup["$resourceTotal"] = manaTotal
 	lookup["$manaTotal"] = manaTotal
 	lookup["$resourceMax"] = manaMax
@@ -278,6 +301,9 @@ local function RefreshLookupData_Affliction()
 	lookup["$comboPoints"] = normalizedSoulShards
 	lookup["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookup["$tormentedCrescendoTime"] = tormentedCrescendoTime
+	lookup["$tormentedCrescendoStacks"] = tormentedCrescendoStacks
+	lookup["$nightfallTime"] = nightfallTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -300,6 +326,9 @@ local function RefreshLookupData_Affliction()
 	lookupLogic["$comboPoints"] = normalizedSoulShards
 	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+	lookupLogic["$nightfallTime"] = _nightfallTime
+	lookupLogic["$tormentedCrescendoTime"] = _tormentedCrescendoTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -347,6 +376,13 @@ local function UpdateResourceBar()
 
 				barContainerFrame:SetAlpha(1.0)
 
+				if specSettings.colors.bar.nightfall.enabled and snapshots[spells.nightfall.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.nightfall.color
+				end
+
+				if specSettings.colors.bar.tormentedCrescendo.enabled and snapshots[spells.tormentedCrescendo.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.tormentedCrescendo.color
+				end
 
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
@@ -677,7 +713,20 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		return false
 	end
 
-	if specId == 1 then --Affliction			
+	if specId == 1 then --Affliction
+		if var == "$nightfallTime" then
+			if snapshots[spells.nightfall.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$tormentedCrescendoTime" then
+			if snapshots[spells.tormentedCrescendo.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$tormentedCrescendoStacks" then
+			if snapshots[spells.tormentedCrescendo.id].buff.isActive then
+				valid = true
+			end
+		end
 	end
 
 	--Spec agnostic
