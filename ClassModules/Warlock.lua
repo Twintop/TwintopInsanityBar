@@ -92,6 +92,16 @@ local function FillSpellData_Affliction()
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+		
+		{ variable = "#ua", icon = spells.unstableAffliction.icon,description = spells.unstableAffliction.name, printInSettings = true },
+		{ variable = "#agony", icon = spells.agony.icon,description = spells.agony.name, printInSettings = true },
+		{ variable = "#corruption", icon = spells.corruption.icon,description = spells.corruption.name, printInSettings = true },
+		{ variable = "#haunt", icon = spells.haunt.icon,description = spells.haunt.name, printInSettings = true },
+		{ variable = "#vileTaint", icon = spells.vileTaint.icon,description = spells.vileTaint.name, printInSettings = true },
+		{ variable = "#soulrot", icon = spells.soulrot.icon,description = spells.soulrot.name, printInSettings = true },
+		{ variable = "#phantomSingularity", icon = spells.phantomSingularity.icon,description = spells.phantomSingularity.name, printInSettings = true },
+
+
 		{ variable = "#nightfall", icon = spells.nightfall.icon,description = spells.nightfall.name, printInSettings = true },
 		{ variable = "#tormentedCrescendo", icon = spells.tormentedCrescendo.icon,description = spells.tormentedCrescendo.name, printInSettings = true },
 
@@ -147,6 +157,15 @@ local function FillSpellData_Affliction()
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		
+		{ variable = "$agonyTime", description = L["WarlockAfflictionBarTextVariableAgonyTime"], printInSettings = true, color = false },
+		{ variable = "$unstableAfflictionTime", description = L["WarlockAfflictionBarTextVariableUnstableAfflictionTime"], printInSettings = true, color = false },
+		{ variable = "$corruptionTime", description = L["WarlockAfflictionBarTextVariableCorruptionTime"], printInSettings = true, color = false },
+		{ variable = "$hauntTime", description = L["WarlockAfflictionBarTextVariableHauntTime"], printInSettings = true, color = false },
+		{ variable = "$vileTaintTime", description = L["WarlockAfflictionBarTextVariableVileTaintTime"], printInSettings = true, color = false },
+		{ variable = "$soulrotTime", description = L["WarlockAfflictionBarTextVariableSoulrotTime"], printInSettings = true, color = false },
+		{ variable = "$phantomSingularityTime", description = L["WarlockAfflictionBarTextVariablePhantomSingularityTime"], printInSettings = true, color = false },
+
 
 		{ variable = "$nightfallTime", description = L["WarlockAfflictionBarTextVariableNightfallTime"], printInSettings = true, color = false },
 		{ variable = "$tormentedCrescendoTime", description = L["WarlockAfflictionBarTextVariableTormentedCrescendoTime"], printInSettings = true, color = false },
@@ -224,6 +243,7 @@ local function RefreshLookupData_Affliction()
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.warlock.affliction
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+	local targetData = snapshotData.targetData
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 	local normalizedSoulShards = snapshotData.attributes.resource2 / TRB.Data.resource2Factor
@@ -266,6 +286,65 @@ local function RefreshLookupData_Affliction()
 	local _manaPercent = (normalizedMana/maxResource)
 	local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.Number:RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
+	--unstableAffliction
+	local _unstableAfflictionTime = 0
+	
+	if target ~= nil then
+		_unstableAfflictionTime = target.spells[spells.unstableAffliction.id].remainingTime or 0
+	end
+
+	local unstableAfflictionTime
+
+	--agony
+	local _agonyTime = 0
+	
+	if target ~= nil then
+		_agonyTime = target.spells[spells.agony.id].remainingTime or 0
+	end
+
+	local agonyTime
+
+	--corruption
+	local _corruptionTime = 0
+	
+	if target ~= nil then
+		_corruptionTime = target.spells[spells.corruption.id].remainingTime or 0
+	end
+
+	local corruptionTime
+
+	--haunt
+	local _hauntTime = 0
+	
+	if target ~= nil then
+		_hauntTime = target.spells[spells.haunt.id].remainingTime or 0
+	end
+
+	local hauntTime
+	--vileTaint
+	local _vileTaintTime = 0
+
+	if target ~= nil then
+		_vileTaintTime = target.spells[spells.vileTaint.id].remainingTime or 0
+	end
+
+	local vileTaintTime
+	--soulrot
+	local _soulrotTime = 0
+
+	if target ~= nil then
+		_soulrotTime = target.spells[spells.soulrot.id].remainingTime or 0
+	end
+
+	local soulrotTime
+	--phantomSingularity
+	local _phantomSingularityTime = 0
+
+	if target ~= nil then
+		_phantomSingularityTime = target.spells[spells.phantomSingularity.id].remainingTime or 0
+	end
+
+	local phantomSingularityTime
 	--nightfallTime
 	local _nightfallTime = snapshotData.snapshots[spells.nightfall.id].buff:GetRemainingTime(currentTime)
 	local nightfallTime =  TRB.Functions.BarText:TimerPrecision(_nightfallTime)
@@ -279,8 +358,89 @@ local function RefreshLookupData_Affliction()
 	local tormentedCrescendoStacks = string.format("%.0f", _tormentedCrescendoStacks)
 	----------------------------
 
+	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+		if target ~= nil and target.spells[spells.unstableAffliction.id].active then
+			if target.spells[spells.unstableAffliction.id].remainingTime > spells.unstableAffliction.pandemicTime then
+				unstableAfflictionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_unstableAfflictionTime))
+			else
+				unstableAfflictionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_unstableAfflictionTime))
+			end
+		else
+			unstableAfflictionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		end
+		if target ~= nil and target.spells[spells.agony.id].active then
+			if target.spells[spells.agony.id].remainingTime > spells.agony.pandemicTime then
+				agonyTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_agonyTime))
+			else
+				agonyTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_agonyTime))
+			end
+		else
+			agonyTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		end
+		if target ~= nil and target.spells[spells.corruption.id].active then
+			if target.spells[spells.corruption.id].remainingTime > spells.corruption.pandemicTime then
+				corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_corruptionTime))
+			else
+				corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_corruptionTime))
+			end
+		else
+			corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		end
+		if target ~= nil and target.spells[spells.haunt.id].active then
+			if target.spells[spells.haunt.id].remainingTime > spells.haunt.pandemicTime then
+				hauntTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_hauntTime))
+			else
+				hauntTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_hauntTime))
+			end
+		else
+			hauntTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		end
+		if target ~= nil and target.spells[spells.vileTaint.id].active then
+			if target.spells[spells.vileTaint.id].remainingTime then
+				vileTaintTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_vileTaintTime))
+			else
+				vileTaintTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_vileTaintTime))
+			end
+		else
+			vileTaintTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		end
+		if target ~= nil and target.spells[spells.soulrot.id].active then
+			if target.spells[spells.soulrot.id].remainingTime then
+				soulrotTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_soulrotTime))
+			else
+				soulrotTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_soulrotTime))
+			end
+		else
+			soulrotTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		end
+		if target ~= nil and target.spells[spells.phantomSingularity.id].active then
+			if target.spells[spells.phantomSingularity.id].remainingTime then
+				phantomSingularityTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_phantomSingularityTime))
+			else
+				phantomSingularityTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_phantomSingularityTime))
+			end
+		else
+			phantomSingularityTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		end
+	else
+		unstableAfflictionTime = TRB.Functions.BarText:TimerPrecision(_unstableAfflictionTime)
+		agonyTime = TRB.Functions.BarText:TimerPrecision(_agonyTime)
+		corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
+		hauntTime = TRB.Functions.BarText:TimerPrecision(_hauntTime)
+		vileTaintTime = TRB.Functions.BarText:TimerPrecision(_vileTaintTime)
+		soulrotTime = TRB.Functions.BarText:TimerPrecision(_soulrotTime)
+		phantomSingularityTime = TRB.Functions.BarText:TimerPrecision(_phantomSingularityTime)
+
+	end
 	local lookup = TRB.Data.lookup or {}
 	
+	lookup["#ua"] = spells.unstableAffliction.icon
+	lookup["#agony"] = spells.agony.icon
+	lookup["#corruption"] = spells.corruption.icon
+	lookup["#haunt"] = spells.haunt.icon
+	lookup["#vileTaint"] = spells.vileTaint.icon
+	lookup["#soulrot"] = spells.soulrot.icon
+	lookup["#phantomSingularity"] = spells.phantomSingularity.icon
 	lookup["#nightfall"] = spells.nightfall.icon
 	lookup["#tormentedCrescendo"] = spells.tormentedCrescendo.icon
 	lookup["$resourceTotal"] = manaTotal
@@ -301,6 +461,14 @@ local function RefreshLookupData_Affliction()
 	lookup["$comboPoints"] = normalizedSoulShards
 	lookup["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookup["$unstableAfflictionTime"] = unstableAfflictionTime
+	lookup["$agonyTime"] = agonyTime
+	lookup["$corruptionTime"] = corruptionTime
+	lookup["$hauntTime"] = hauntTime
+	lookup["$vileTaintTime"] = vileTaintTime
+	lookup["$soulrotTime"] = soulrotTime
+	lookup["$phantomSingularityTime"] = phantomSingularityTime
+
 	lookup["$tormentedCrescendoTime"] = tormentedCrescendoTime
 	lookup["$tormentedCrescendoStacks"] = tormentedCrescendoStacks
 	lookup["$nightfallTime"] = nightfallTime
@@ -326,6 +494,13 @@ local function RefreshLookupData_Affliction()
 	lookupLogic["$comboPoints"] = normalizedSoulShards
 	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+	lookupLogic["$unstableAfflictionTime"] = _unstableAfflictionTime
+	lookupLogic["$agonyTime"] = _agonyTime
+	lookupLogic["$corruptionTime"] = _corruptionTime
+	lookupLogic["$hauntTime"] = _hauntTime
+	lookupLogic["$vileTaintTime"] = _vileTaintTime
+	lookupLogic["$phantomSingularityTime"] = _phantomSingularityTime
 
 	lookupLogic["$nightfallTime"] = _nightfallTime
 	lookupLogic["$tormentedCrescendoTime"] = _tormentedCrescendoTime
@@ -438,17 +613,48 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
         end
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if specId == 1 and TRB.Data.barConstructedForSpec == "affliction" then --Affliction					
-
-			-- Spec Agnostic
-			-- if entry.spellId == spells.essenceBurst.id then
-			-- 	snapshots[entry.spellId].buff:Initialize(entry.type)
-			-- 	if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
-			-- 		snapshotData.audio.essenceBurst2Cue = false
-			-- 	elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
-			-- 		snapshotData.audio.essenceBurstCue = false
-			-- 		snapshotData.audio.essenceBurst2Cue = false
-			-- 	end
-			 end
+				if entry.spellId == spells.unstableAffliction.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				elseif entry.spellId == spells.agony.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				
+				elseif entry.spellId == spells.corruption.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				
+				elseif entry.spellId == spells.haunt.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				
+				elseif entry.spellId == spells.vileTaint.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				elseif entry.spellId == spells.soulrot.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				elseif entry.spellId == spells.phantomSingularity.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				end
+				-- Spec Agnostic
+				-- if entry.spellId == spells.essenceBurst.id then
+				-- 	snapshots[entry.spellId].buff:Initialize(entry.type)
+				-- 	if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+				-- 		snapshotData.audio.essenceBurst2Cue = false
+				-- 	elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
+				-- 		snapshotData.audio.essenceBurstCue = false
+				-- 		snapshotData.audio.essenceBurst2Cue = false
+				-- 	end
+			end
 		end
 
 		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
@@ -494,10 +700,21 @@ local function SwitchSpec()
 		
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local targetData = TRB.Data.snapshotData.targetData
+		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Affliction
 		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.warlock.affliction)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.affliction)
+		targetData:AddSpellTracking(spells.unstableAffliction)
+		targetData:AddSpellTracking(spells.agony)
+		targetData:AddSpellTracking(spells.corruption)
+		targetData:AddSpellTracking(spells.haunt)
+		targetData:AddSpellTracking(spells.vileTaint)
+		targetData:AddSpellTracking(spells.soulrot)
+		targetData:AddSpellTracking(spells.phantomSingularity)
+
 
 		if TRB.Data.barConstructedForSpec ~= "affliction" then
 			talents = specCache.affliction.talents
@@ -726,7 +943,63 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.tormentedCrescendo.id].buff.isActive then
 				valid = true
 			end
+		elseif var == "$unstableAfflictionTime" then
+			if not UnitIsDeadOrGhost("target") and
+			UnitCanAttack("player", "target") and
+			target ~= nil and
+			target.spells[spells.unstableAffliction.id] ~= nil and
+			target.spells[spells.unstableAffliction.id].remainingTime > 0 then
+			valid = true
+			end
+		elseif var == "$agonyTime" then
+			if not UnitIsDeadOrGhost("target") and
+			UnitCanAttack("player", "target") and
+			target ~= nil and
+			target.spells[spells.agony.id] ~= nil and
+			target.spells[spells.agony.id].remainingTime > 0 then
+			valid = true
+			end
 		end
+		elseif var == "$corruptionTime" then
+			if not UnitIsDeadOrGhost("target") and
+			UnitCanAttack("player", "target") and
+			target ~= nil and
+			target.spells[spells.corruption.id] ~= nil and
+			target.spells[spells.corruption.id].remainingTime > 0 then
+			valid = true
+			end
+		elseif var == "$hauntTime" then
+			if not UnitIsDeadOrGhost("target") and
+			UnitCanAttack("player", "target") and
+			target ~= nil and
+			target.spells[spells.haunt.id] ~= nil and
+			target.spells[spells.haunt.id].remainingTime > 0 then
+			valid = true
+			end
+		elseif var == "$vileTaintTime" then
+			if not UnitIsDeadOrGhost("target") and
+			UnitCanAttack("player", "target") and
+			target ~= nil and
+			target.spells[spells.vileTaint.id] ~= nil and
+			target.spells[spells.vileTaint.id].remainingTime > 0 then
+			valid = true
+			end
+		elseif var == "$soulrotTime" then
+			if not UnitIsDeadOrGhost("target") and
+			UnitCanAttack("player", "target") and
+			target ~= nil and
+			target.spells[spells.soulrot.id] ~= nil and
+			target.spells[spells.soulrot.id].remainingTime > 0 then
+			valid = true
+			end
+		elseif var == "$phantomSingularityTime" then
+			if not UnitIsDeadOrGhost("target") and
+			UnitCanAttack("player", "target") and
+			target ~= nil and
+			target.spells[spells.phantomSingularity.id] ~= nil and
+			target.spells[spells.phantomSingularity.id].remainingTime > 0 then
+			valid = true
+			end
 	end
 
 	--Spec agnostic
