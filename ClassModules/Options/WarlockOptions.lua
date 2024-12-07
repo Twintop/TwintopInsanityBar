@@ -239,6 +239,14 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				base="FF0000FF",
 				spending="FFFFFFFF",
 				passive="FF8080FF",
+				nightfall = {
+					color = "FF00D9FF",
+					enabled = true,
+				},
+				tormentedCrescendo = {
+					color = "FF00FF00",
+					enabled = true,
+				}
 			},
 			comboPoints = {
 				border="FF4749B5",
@@ -482,6 +490,41 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], false)
+	
+	yCoord = yCoord - 30
+	controls.checkBoxes.nightfall = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_nightfallProc", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.nightfall
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxNightfall"])
+	f.tooltip = L["WarlockAfflictionCheckboxNightfallTooltip"]
+	f:SetChecked(spec.colors.bar.nightfall.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.nightfall.enabled = self:GetChecked()
+	end)
+
+	controls.colors.nightfall = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerNightfall"], spec.colors.bar.nightfall.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.nightfall
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "nightfall")
+	end)
+
+	----
+	yCoord = yCoord - 30
+	controls.checkBoxes.tormentedCrescendo = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_tormentedCrescendoProc", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.tormentedCrescendo
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxTormentedCrescendo"])
+	f.tooltip = L["WarlockAfflictionCheckboxTormentedCrescendoTooltip"]
+	f:SetChecked(spec.colors.bar.tormentedCrescendo.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.tormentedCrescendo.enabled = self:GetChecked()
+	end)
+
+	controls.colors.tormentedCrescendo = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerTormentedCrescendo"], spec.colors.bar.nightfall.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.tormentedCrescendo
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "tormentedCrescendo")
+	end)
 	
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsColorsHeader"], oUi.xCoord, yCoord)

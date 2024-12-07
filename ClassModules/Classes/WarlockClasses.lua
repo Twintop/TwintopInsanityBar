@@ -7,16 +7,25 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Warlock = TRB.Classes.Warlock or {}
 
 ---@class TRB.Classes.Warlock.AfflictionSpells : TRB.Classes.SpecializationSpellsBase
-
+---@field public tormentedCrescendo TRB.Classes.SpellBase
+---@field public nightfall TRB.Classes.SpellBase
 TRB.Classes.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.AfflictionSpells.__index = TRB.Classes.Warlock.AfflictionSpells
-
 
 function TRB.Classes.Warlock.AfflictionSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Warlock.AfflictionSpells) --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
-
+    self.nightfall = TRB.Classes.SpellBase:New({
+        id = 264571,
+        talentId = 108558,
+        isTalent = true
+    })
+    self.tormentedCrescendo = TRB.Classes.SpellBase:New({
+        id = 387079,
+        talentId = 387075,
+        isTalent= true
+    })
     return self
 end
