@@ -12,7 +12,7 @@ TRB.Classes.Warlock = TRB.Classes.Warlock or {}
 ---@field public corruption TRB.Classes.SpellBase
 ---@field public haunt TRB.Classes.SpellBase
 ---@field public vileTaint TRB.Classes.SpellBase
----@field public soulrot TRB.Classes.SpellBase
+---@field public soulRot TRB.Classes.SpellBase
 ---@field public phantomSingularity TRB.Classes.SpellBase
 ---@field public tormentedCrescendo TRB.Classes.SpellBase
 ---@field public nightfall TRB.Classes.SpellBase
@@ -63,7 +63,7 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
         baseDuration = 10,
         isTalent = true,
     })
-    self.soulrot = TRB.Classes.SpellBase:New({
+    self.soulRot = TRB.Classes.SpellBase:New({
         id = 386997,
         baseDuration = 8,
         isTalent = true,
