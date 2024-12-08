@@ -719,6 +719,40 @@ local function AfflictionConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
+	yCoord = yCoord - 30
+	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_dotColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dotColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
+	f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$agonyCount/$agonyTime, $corruptionCount/$corruptionTime, $hauntCount/$hauntTime, $unstableAffliction")
+	f:SetChecked(spec.colors.text.dots.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.dots.enabled = self:GetChecked()
+	end)
+
+	controls.colors.dots = {}
+
+	controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+	f = controls.colors.dots.up
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
+	end)
+
+	controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+	f = controls.colors.dots.pandemic
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+	end)
+
+	controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+	f = controls.colors.dots.down
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
+	end)
+
 	yCoord = yCoord - 130
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
