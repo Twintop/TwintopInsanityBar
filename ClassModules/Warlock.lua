@@ -702,7 +702,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local targetData = TRB.Data.snapshotData.targetData
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Affliction
 		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.warlock.affliction)
