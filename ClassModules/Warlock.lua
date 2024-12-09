@@ -981,11 +981,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			target.spells[spells.agony.id].remainingTime > 0 then
 			valid = true
 			end
-		end
-	elseif var == "$corruptionCount" then
-		if snapshotData.targetData.count[spells.corruption.id] > 0 then
-			valid = true
-		end
+		elseif var == "$corruptionCount" then
+			if snapshotData.targetData.count[spells.corruption.id] > 0 then
+				valid = true
+			end
 		elseif var == "$corruptionTime" then
 			if not UnitIsDeadOrGhost("target") and
 			UnitCanAttack("player", "target") and
@@ -1038,6 +1037,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			target.spells[spells.phantomSingularity.id].remainingTime > 0 then
 			valid = true
 			end
+		end
 	end
 
 	--Spec agnostic
