@@ -16,6 +16,7 @@ TRB.Classes.Warlock = TRB.Classes.Warlock or {}
 ---@field public phantomSingularity TRB.Classes.SpellBase
 ---@field public tormentedCrescendo TRB.Classes.SpellBase
 ---@field public nightfall TRB.Classes.SpellBase
+---@field public absoluteCorruption TRB.Classes.SpellBase
 TRB.Classes.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.AfflictionSpells.__index = TRB.Classes.Warlock.AfflictionSpells
 
@@ -24,6 +25,21 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Warlock.AfflictionSpells) --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
+    -- Warlock Class Baseline Abilities
+    self.corruption = TRB.Classes.SpellBase:New({
+        id = 146739,
+        baseDuration = 14,
+        pandemic = true,
+        baseline = true,
+    })
+
+    -- Affliction Baseline Abilities 
+    
+
+    -- Warlock Talent Abilities
+
+
+    -- Affliction Talent Abilities
     self.nightfall = TRB.Classes.SpellBase:New({
         id = 264571,
         talentId = 108558,
@@ -46,12 +62,6 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
         pandemic = true,
         isTalent = true,
     })
-    self.corruption = TRB.Classes.SpellBase:New({
-        id = 146739,
-        baseDuration = 14,
-        pandemic = true,
-        baseline = true,
-    })
     self.haunt = TRB.Classes.SpellBase:New({
         id = 48181,
         pandemic = true,
@@ -73,5 +83,12 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
         baseDuration = 14.3,
         isTalent = true,
     })
+    self.absoluteCorruption = TRB.Classes.SpellBase:New({
+        id = 196103,
+        isTalent = true,
+        pvpDuration = 24,
+        pvpPandemicTime = 24*0.3
+    })
+
     return self
 end

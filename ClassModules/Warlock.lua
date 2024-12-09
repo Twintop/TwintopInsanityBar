@@ -314,10 +314,19 @@ local function RefreshLookupData_Affliction()
 	--$corruptionCount and $corruptionTime
 	local _corruptionCount = snapshotData.targetData.count[spells.corruption.id] or 0
 	local corruptionCount = string.format("%s", _corruptionCount)
+	--[[@type integer|boolean]]
 	local _corruptionTime = 0
-	local corruptionTime	
+	local corruptionTime = "0"
 	if target ~= nil then
 		_corruptionTime = target.spells[spells.corruption.id].remainingTime or 0
+		if target.spells[spells.corruption.id].active then
+			if target.spells[spells.corruption.id].remainingTime <= 0 and talents:IsTalentActive(spells.absoluteCorruption) then
+				_corruptionTime = true
+				corruptionTime = "∞"
+			else
+				corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
+			end
+		end
 	end
 
 	--$hauntCount and $hauntTime
@@ -390,15 +399,28 @@ local function RefreshLookupData_Affliction()
 			agonyCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _agonyCount)
 		end
 		if target ~= nil and target.spells[spells.corruption.id].active then
-			if target.spells[spells.corruption.id].remainingTime > spells.corruption.pandemicTime then
-				corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_corruptionTime))
-				corruptionCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _corruptionCount)
+			if talents:IsTalentActive(spells.absoluteCorruption) then
+				if target.spells[spells.corruption.id].remainingTime > 0 then -- PvP
+					if target.spells[spells.corruption.id].remainingTime > spells.absoluteCorruption.attributes.pvpPandemicTime then
+						corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, corruptionTime)
+						corruptionCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _corruptionCount)
+					else
+						corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, corruptionTime)
+						corruptionCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _corruptionCount)
+					end
+				else -- PvE
+					corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, corruptionTime)
+					corruptionCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _corruptionCount)
+				end
+			elseif target.spells[spells.corruption.id].remainingTime > spells.corruption.pandemicTime then
+				corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, corruptionTime)
+				corruptionCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _corruptionCount)
 			else
-				corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_corruptionTime))
+				corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, corruptionTime)
 				corruptionCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _corruptionCount)
 			end
 		else
-			corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, corruptionTime)
 			corruptionCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _corruptionCount)
 		end
 		if target ~= nil and target.spells[spells.haunt.id].active then
@@ -416,8 +438,9 @@ local function RefreshLookupData_Affliction()
 	else
 		unstableAfflictionTime = TRB.Functions.BarText:TimerPrecision(_unstableAfflictionTime)
 		agonyTime = TRB.Functions.BarText:TimerPrecision(_agonyTime)
-		corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
-		hauntTime = TRB.Functions.BarText:TimerPrecision(_hauntTime)		
+		--Handled above because of Absolute Corruption
+		--corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
+		hauntTime = TRB.Functions.BarText:TimerPrecision(_hauntTime)
 	end
 
 	local lookup = TRB.Data.lookup or {}
