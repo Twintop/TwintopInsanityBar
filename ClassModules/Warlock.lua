@@ -157,25 +157,23 @@ local function FillSpellData_Affliction()
 		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 		
-		{ variable = "$agonyCount", description = L["WarlockAfflictionBarTextVariableAgonyCount"], printInSettings = true, color = false },
-		{ variable = "$agonyTime", description = L["WarlockAfflictionBarTextVariableAgonyTime"], printInSettings = true, color = false },
-		{ variable = "$corruptionTime", description = L["WarlockAfflictionBarTextVariableCorruptionTime"], printInSettings = true, color = false },
-		{ variable = "$corruptionCount", description = L["WarlockAfflictionBarTextVariableCorruptionCount"], printInSettings = true, color = false },
-		{ variable = "$hauntCount", description = L["WarlockAfflictionBarTextVariableHauntCount"], printInSettings = true, color = false },
-		{ variable = "$hauntTime", description = L["WarlockAfflictionBarTextVariableHauntTime"], printInSettings = true, color = false },
-		{ variable = "$soulRotCount", description = L["WarlockAfflictionBarTextVariableSoulRotCount"], printInSettings = true, color = false },
-		{ variable = "$soulRotTime", description = L["WarlockAfflictionBarTextVariableSoulRotTime"], printInSettings = true, color = false },
-		{ variable = "$unstableAfflictionTime", description = L["WarlockAfflictionBarTextVariableUnstableAfflictionTime"], printInSettings = true, color = false },
-		{ variable = "$vileTaintCount", description = L["WarlockAfflictionBarTextVariableVileTaintCount"], printInSettings = true, color = false },
-		{ variable = "$vileTaintTime", description = L["WarlockAfflictionBarTextVariableVileTaintTime"], printInSettings = true, color = false },
+		{ variable = "$agonyCount", description = L["WarlockAfflictionBarTextVariable_agonyCount"], printInSettings = true, color = false },
+		{ variable = "$agonyTime", description = L["WarlockAfflictionBarTextVariable_agonyTime"], printInSettings = true, color = false },
+		{ variable = "$corruptionTime", description = L["WarlockAfflictionBarTextVariable_corruptionTime"], printInSettings = true, color = false },
+		{ variable = "$corruptionCount", description = L["WarlockAfflictionBarTextVariable_corruptionCount"], printInSettings = true, color = false },
+		{ variable = "$hauntCount", description = L["WarlockAfflictionBarTextVariable_hauntCount"], printInSettings = true, color = false },
+		{ variable = "$hauntTime", description = L["WarlockAfflictionBarTextVariable_hauntTime"], printInSettings = true, color = false },
+		{ variable = "$soulRotCount", description = L["WarlockAfflictionBarTextVariable_soulRotCount"], printInSettings = true, color = false },
+		{ variable = "$soulRotTime", description = L["WarlockAfflictionBarTextVariable_soulRotTime"], printInSettings = true, color = false },
+		{ variable = "$unstableAfflictionTime", description = L["WarlockAfflictionBarTextVariable_unstableAfflictionTime"], printInSettings = true, color = false },
+		{ variable = "$vileTaintCount", description = L["WarlockAfflictionBarTextVariable_vileTaintCount"], printInSettings = true, color = false },
+		{ variable = "$vileTaintTime", description = L["WarlockAfflictionBarTextVariable_vileTaintTime"], printInSettings = true, color = false },
 
-		{ variable = "$phantomSingularityTime", description = L["WarlockAfflictionBarTextVariablePhantomSingularityTime"], printInSettings = true, color = false },
+		{ variable = "$phantomSingularityTime", description = L["WarlockAfflictionBarTextVariable_phantomSingularityTime"], printInSettings = true, color = false },
 
-
-		{ variable = "$nightfallTime", description = L["WarlockAfflictionBarTextVariableNightfallTime"], printInSettings = true, color = false },
-		{ variable = "$tormentedCrescendoTime", description = L["WarlockAfflictionBarTextVariableTormentedCrescendoTime"], printInSettings = true, color = false },
-		{ variable = "$tormentedCrescendoStacks", description = L["WarlockAfflictionBarTextVariableTormentedCrescendoStacks"], printInSettings = true, color = false },
-
+		{ variable = "$nightfallTime", description = L["WarlockAfflictionBarTextVariable_nightfallTime"], printInSettings = true, color = false },
+		{ variable = "$tormentedCrescendoTime", description = L["WarlockAfflictionBarTextVariable_tormentedCrescendoTime"], printInSettings = true, color = false },
+		{ variable = "$tormentedCrescendoStacks", description = L["WarlockAfflictionBarTextVariable_tormentedCrescendoStacks"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
