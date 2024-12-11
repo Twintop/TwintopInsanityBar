@@ -520,7 +520,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.tormentedCrescendo.enabled = self:GetChecked()
 	end)
 
-	controls.colors.tormentedCrescendo = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerTormentedCrescendo"], spec.colors.bar.nightfall.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.tormentedCrescendo = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerTormentedCrescendo"], spec.colors.bar.tormentedCrescendo.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.tormentedCrescendo
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "tormentedCrescendo")
