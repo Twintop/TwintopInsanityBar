@@ -252,4 +252,8 @@ if locale == "frFR" then
     L["NewsCheckboxShowOnNewVersionTooltip"] = "Afficher cette fenêtre contextuelle de mise à jour chaque fois qu'une nouvelle version de la Barre de Ressources de Twintop est publiée."
     L["NewsHyperlinkViewIssueOnGitHub"] = "Afficher le problème %s sur GitHub"
     L["NewsHyperlinkGeneric"] = "Voici un lien vers %s"
+    L["DruidBalanceBarTextVariable_starlordTime"] = "Temps restant de Seigneur des étoiles"
+    L["DruidBalanceBarTextVariable_starlordStacks"] = "Nombre de stack de Seigneur des étoiles"
+    L["DruidBalanceBarTextVariable_dreamburstTime"] = "Temps restant d'Explosion onirique"
+    L["DruidBalanceBarTextVariable_dreamburstStacks"] = "Nombre de stack d'Explosion onirique"
 end

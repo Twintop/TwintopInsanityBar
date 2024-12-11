@@ -11,10 +11,52 @@ local content = [====[
 
 ---
 
+# 11.0.5.3-release (2024-12-12)
+## Warlock
+### Affliction
+
+- [#415 - NEW (Koroshy)](#414) Add support for tracking Nightfall and Tormented Crescendo procs.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$nightfallTime` - Time remaining on Nightfall
+<br/>&emsp;&ensp;&emsp;&ensp;- `$tormentedCrescendoTime` - Time remaining on Tormented Crescendo
+<br/>&emsp;&ensp;&emsp;&ensp;- `$tormentedCrescendoStacks` - Number of stacks of Tormented Crescendo
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#nightfall` - Nightfall
+<br/>&emsp;&ensp;&emsp;&ensp;- `#tormentedCrescendo` - Tormented Crescendo
+- [#415 - NEW (Koroshy)](#415) Add support for tracking Agony, Corruption, Haunt, Phantom Singularity, Soul Rot, and Vile Taint on targets.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$agonyTime` - Time remaining on Agony on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$agonyCount` - Number of Agonys active on targets
+<br/>&emsp;&ensp;&emsp;&ensp;- `$corruptionTime` - Time remaining on Corruption on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$corruptionCount` - Number of Corruptions active on targets
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hauntTime` - Time remaining on Haunt on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hauntCount` - Number of Haunts active on targets
+<br/>&emsp;&ensp;&emsp;&ensp;- `$phantomSingularityTime` - Time remaining on Phantom Singularity on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$soulRotTime` - Time remaining on Soul Rot on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$soulRotCount` - Number of Soul Rot active on targets
+<br/>&emsp;&ensp;&emsp;&ensp;- `$unstableAfflictionTime` - Time remaining on Unstable Affliction on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$vileTaintTime` - Time remaining on Vile Tain on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$vileTaintCount` - Number of Vile Taints active on targets
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#agony` - Agony
+<br/>&emsp;&ensp;&emsp;&ensp;- `#corruption` - Corruption
+<br/>&emsp;&ensp;&emsp;&ensp;- `#haunt` - Haunt
+<br/>&emsp;&ensp;&emsp;&ensp;- `#phantomSingularity` - Phantom Singularity
+<br/>&emsp;&ensp;&emsp;&ensp;- `#soulRot` - Soul Rot
+<br/>&emsp;&ensp;&emsp;&ensp;- `#unstableAffliction` - Unstable Affliction
+<br/>&emsp;&ensp;&emsp;&ensp;- `#vileTaint` - Vile Taint
+
+---
+
 # 11.0.5.2-release (2024-11-15)
 ## General
 
 - [#401 - UPDATE](#401) Significantly reduce the amount of manual buff tracking done across all specializations.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$starlordTime` - Time remaining on Starlord
+<br/>&emsp;&ensp;&emsp;&ensp;- `$starlordStacks` - Number of stacks of Starlord
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#starlord` - Starlord
 
 ## Druid
 ### Balance

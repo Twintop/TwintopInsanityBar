@@ -28,7 +28,7 @@ local function AfflictionLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="$soulShards/$soulShardsMax",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -74,7 +74,7 @@ local function AfflictionLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
+			text="$soulShards/$soulShardsMax",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -105,7 +105,7 @@ local function AfflictionLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="",
+			text="#agony $agonyCount   #haunt $hauntCount||n#corruption $corruptionCount   {$ttd}[TTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -128,7 +128,7 @@ local function AfflictionLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid=TRB.Functions.String:Guid(),
-			text="",
+			text="{$tormentedCrescendoTime}[#tormentedCrescendo $tormentedCrescendoTime #tormentedCrescendo] ||n{$nightfallTime}[#nightfall $nightfallTime #nightfall] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -151,7 +151,7 @@ local function AfflictionLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid=TRB.Functions.String:Guid(),
-			text="",--{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%
+			text="$soulShards/$soulShardsMax",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -520,7 +520,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.tormentedCrescendo.enabled = self:GetChecked()
 	end)
 
-	controls.colors.tormentedCrescendo = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerTormentedCrescendo"], spec.colors.bar.nightfall.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.tormentedCrescendo = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerTormentedCrescendo"], spec.colors.bar.tormentedCrescendo.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.tormentedCrescendo
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "tormentedCrescendo")
@@ -566,113 +566,6 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
-
-	yCoord = yCoord - 40
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceSoulShards"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
-
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceSoulShards"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	--[[
-	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionThresholdPassive"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.special
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.outOfRange)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.outOfRange = self:GetChecked()
-	end)
-	]]
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-
-	--[[
-	controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionThresholdDevouringPlague"])
-	f.tooltip = L["WarlockAfflictionThresholdDevouringPlagueTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Threshold_Option_devouringPlague2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThreshold2Show
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionThresholdDevouringPlague2x"])
-	f.tooltip = L["WarlockAfflictionThresholdDevouringPlague2xTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague2.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Threshold_Option_devouringPlague3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThreshold3Show
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionThresholdDevouringPlague3x"])
-	f.tooltip = L["WarlockAfflictionThresholdDevouringPlague3xTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague3.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague3.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Threshold_Option_devouringPlagueOnlyOver", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThresholdOnlyOverShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionThresholdCheckboxOnlyCurrentNext"])
-	f.tooltip = L["WarlockAfflictionThresholdCheckboxOnlyCurrentNextTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlagueThresholdOnlyOverShow)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
-	end)
-	]]
-
-	yCoord = yCoord - 25
-	yCoord = yCoord - 25
-	yCoord = yCoord - 25
-	yCoord = yCoord - 25
-	yCoord = yCoord - 25
-	yCoord = yCoord - 50
-
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 9, 1, yCoord)
 end
 
 local function AfflictionConstructFontAndTextPanel(parent)
@@ -717,6 +610,40 @@ local function AfflictionConstructFontAndTextPanel(parent)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
+	end)
+
+	yCoord = yCoord - 30
+	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_dotColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dotColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
+	f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$agonyCount/$agonyTime, $corruptionCount/$corruptionTime, $hauntCount/$hauntTime, $unstableAffliction")
+	f:SetChecked(spec.colors.text.dots.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.dots.enabled = self:GetChecked()
+	end)
+
+	controls.colors.dots = {}
+
+	controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+	f = controls.colors.dots.up
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
+	end)
+
+	controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+	f = controls.colors.dots.pandemic
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+	end)
+
+	controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+	f = controls.colors.dots.down
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
 	end)
 
 	yCoord = yCoord - 130

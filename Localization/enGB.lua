@@ -221,4 +221,6 @@ if locale == "enGB" then
     L["EvokerPreservationCheckboxTemporalBurstTooltip"] = "Changes the bar colour when you have the Temporal Burst buff"
     L["EvokerAugmentationCheckboxTemporalBurst"] = "Change bar colour when Temporal Burst is active"
     L["EvokerAugmentationCheckboxTemporalBurstTooltip"] = "Changes the bar colour when you have the Temporal Burst buff"
+    L["WarlockAfflictionCheckboxNightfallTooltip"] = "This will change the bar border colour when getting a Nightfall Proc"
+    L["WarlockAfflictionCheckboxTormentedCrescendoTooltip"] = "This will change the bar border colour when getting a Tormented Crescendo Proc"
 end
