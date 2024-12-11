@@ -30,13 +30,13 @@ TRB.Options.variables = {}
 TRB.Options.variables.barTextInstructions = L["BarTextInstructions"]
 
 local specGlobalDefaults = {
-	specEnable = false,
-	bar = true,
-	comboPoints = true,
-	displayBar = true,
-	displayText = true,
-	textures = true,
-	thresholds = true
+	--specEnable = false,
+	--bar = false,
+	--comboPoints = false,
+	--displayBar = false,
+	displayText = false,
+	--textures = false,
+	--thresholds = false
 }
 
 local function LoadDefaultSettings()
@@ -144,263 +144,55 @@ local function LoadDefaultSettings()
 				},
 				barText = {}
 			},
-			globalSettings = {
+			global = {
 				globalEnable = false,
 				demonhunter = {
-					havoc = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					vengeance = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					havoc = specGlobalDefaults,
+					vengeance = specGlobalDefaults
 				},
 				druid = {
-					balance = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					feral = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					restoration = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					balance = specGlobalDefaults,
+					feral = specGlobalDefaults,
+					restoration = specGlobalDefaults
 				},
 				evoker = {
-					devastation = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					preservation = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					augmentation = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					devastation = specGlobalDefaults,
+					preservation = specGlobalDefaults,
+					augmentation = specGlobalDefaults
 				},
 				hunter = {
-					beastMastery = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					marksmanship = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					survival = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					beastMastery = specGlobalDefaults,
+					marksmanship = specGlobalDefaults,
+					survival = specGlobalDefaults
 				},
 				monk = {
-					mistweaver = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					windwalker = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					mistweaver = specGlobalDefaults,
+					windwalker = specGlobalDefaults
 				},
 				paladin = {
-					holy = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
+					holy = specGlobalDefaults,
 				},
 				priest = {
-					discipline = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					holy = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					shadow = {
-						specEnable = false,
-						bar = true,
-						comboPoints = false,
-						displayBar = false,
-						displayText = false,
-						textures = false,
-						thresholds = false
-					}
+					discipline = specGlobalDefaults,
+					holy = specGlobalDefaults,
+					shadow = specGlobalDefaults
 				},
 				rogue = {
-					assassination = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					outlaw = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					subtlety = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					assassination = specGlobalDefaults,
+					outlaw = specGlobalDefaults,
+					subtlety = specGlobalDefaults
 				},
 				shaman = {
-					elemental = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					enhancement = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					restoration = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					elemental = specGlobalDefaults,
+					enhancement = specGlobalDefaults,
+					restoration = specGlobalDefaults
 				},
 				warlock = {
-					affliction = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					affliction = specGlobalDefaults
 				},
 				warrior = {
-					arms = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					},
-					fury = {
-						specEnable = false,
-						bar = true,
-						comboPoints = true,
-						displayBar = true,
-						displayText = true,
-						textures = true,
-						thresholds = true
-					}
+					arms = specGlobalDefaults,
+					fury = specGlobalDefaults
 				}
 			},
 			enabled = {
@@ -2517,19 +2309,19 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 11.00)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.56)
+	local localeText2 = string.format(percentFormat, 10.83)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.54)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.08)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.44)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
 
 	local localeText3 = "unfung; Google Translate"
 	localeText3 = localeText3 .. "\n" .. "Twintop"

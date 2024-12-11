@@ -12,6 +12,10 @@ local content = [====[
 ---
 
 # 11.0.5.3-release (2024-12-12)
+## General
+
+- [#405 - NEW] Add Global Bar Setting support for default font face, default font size, and default font color.
+
 ## Warlock
 ### Affliction
 

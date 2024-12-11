@@ -259,8 +259,8 @@ end
 function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache, className, specName)
 	local specCache = cache[specName]
 	local core = settings.core
-	local s = core.globalSettings[className][specName] --[[@as TRB.Classes.GlobalSpecSetting]]
-	local enabled = (core.globalSettings.globalEnable or s.specEnable) and specCache.settings ~= nil
+	local s = core.global[className][specName] --[[@as TRB.Classes.GlobalSpecSetting]]
+	local enabled = (core.global.globalEnable or s.specEnable) and specCache.settings ~= nil
 	local spec = settings[className][specName] --[[@as TRB.Classes.GlobalSpecSetting]]
 
 	if enabled and s.bar then
