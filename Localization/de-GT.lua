@@ -2078,4 +2078,8 @@ if locale == "deDE" then
     L["WarlockAfflictionBarTextVariable_hauntCount"] = "Anzahl der aktiven Haunts auf Zielen"
     L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "Anzahl der aktiven Vile Taints auf Zielen"
     L["WarlockAfflictionBarTextVariable_soulRotCount"] = "Anzahl der aktiven Soul Rots auf Zielen"
+    L["TabMiscellaneous"] = "Verschiedenes"
+    L["BarSettings"] = "Leisteneinstellungen"
+    L["CheckboxUseGlobal"] = "Globale Einstellungen verwenden"
+    L["CheckboxUseGlobalTooltip_Font"] = "Wenn diese Option aktiviert ist, werden die globalen Einstellungen für die Standardschriftart, -farbe und -größe von allen Leistentexten verwendet, bei denen „Standard verwenden“ aktiviert ist."
 end

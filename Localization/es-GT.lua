@@ -2078,4 +2078,8 @@ if locale == "esES" or locale == "esMX" then
     L["WarlockAfflictionBarTextVariable_hauntCount"] = "Número de Perseguir activos en los objetivos"
     L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "Número de Manchas viles activas en los objetivos"
     L["WarlockAfflictionBarTextVariable_soulRotCount"] = "Número de Podredumbres del alma activas en los objetivos"
+    L["TabMiscellaneous"] = "Varios"
+    L["BarSettings"] = "Configuración de la barra"
+    L["CheckboxUseGlobal"] = "Usar configuración global"
+    L["CheckboxUseGlobalTooltip_Font"] = "Cuando se marca esta opción, la configuración global para el tipo de fuente, el color y el tamaño predeterminados se utilizarán en cualquier texto de la barra que tenga activada la opción `Usar configuración predeterminada`."
 end

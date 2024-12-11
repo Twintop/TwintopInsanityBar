@@ -990,8 +990,7 @@ local function HolyConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 2, 1, yCoord, cache)
 end
 
-local function HolyConstructOptionsPanel(cache)
-	
+local function HolyConstructOptionsPanel(cache)	
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.holy or {}

@@ -2078,4 +2078,8 @@ if locale == "zhTW" then
     L["WarlockAfflictionBarTextVariable_hauntCount"] = "目標上活躍的鬧鬼數量"
     L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "目標上活躍的邪惡污點數量"
     L["WarlockAfflictionBarTextVariable_soulRotCount"] = "目標上活躍的靈魂腐爛數量"
+    L["TabMiscellaneous"] = "各種各樣的"
+    L["BarSettings"] = "酒吧設置"
+    L["CheckboxUseGlobal"] = "使用全域設定"
+    L["CheckboxUseGlobalTooltip_Font"] = "選取後，任何開啟「使用預設值」的條形文字都會使用預設字體、顏色和大小的全域設定。"
 end

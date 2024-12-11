@@ -2078,4 +2078,8 @@ if locale == "ruRU" then
     L["WarlockAfflictionBarTextVariable_hauntCount"] = "Количество Haunts, активных на целях"
     L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "Количество Vile Taints, активных на целях"
     L["WarlockAfflictionBarTextVariable_soulRotCount"] = "Количество Soul Rots, активных на целях"
+    L["TabMiscellaneous"] = "Разное"
+    L["BarSettings"] = "Настройки панели"
+    L["CheckboxUseGlobal"] = "Использовать глобальные настройки"
+    L["CheckboxUseGlobalTooltip_Font"] = "Если этот флажок установлен, глобальные настройки шрифта по умолчанию, цвета и размера будут использоваться для любого текста панели, для которого включен параметр «Использовать по умолчанию»."
 end

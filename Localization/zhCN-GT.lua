@@ -2078,4 +2078,8 @@ if locale == "zhCN" then
     L["WarlockAfflictionBarTextVariable_hauntCount"] = "目标上激活的困扰数量"
     L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "目标上激活的邪恶污点数量"
     L["WarlockAfflictionBarTextVariable_soulRotCount"] = "目标上激活的灵魂腐化数量"
+    L["TabMiscellaneous"] = "杂项"
+    L["BarSettings"] = "栏设置"
+    L["CheckboxUseGlobal"] = "使用全局设置"
+    L["CheckboxUseGlobalTooltip_Font"] = "选中后，任何已启用“使用默认”的栏文本都将使用默认字体、颜色和大小的全局设置。"
 end

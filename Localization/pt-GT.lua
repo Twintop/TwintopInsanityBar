@@ -2078,4 +2078,8 @@ if locale == "ptBR" or locale == "ptPT" then
     L["WarlockAfflictionBarTextVariable_hauntCount"] = "Número de Haunts ativos nos alvos"
     L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "Número de Vile Taints ativos nos alvos"
     L["WarlockAfflictionBarTextVariable_soulRotCount"] = "Número de Soul Rots ativos nos alvos"
+    L["TabMiscellaneous"] = "Diversos"
+    L["BarSettings"] = "Configurações da barra"
+    L["CheckboxUseGlobal"] = "Usar configurações globais"
+    L["CheckboxUseGlobalTooltip_Font"] = "Quando marcada, as configurações globais para a fonte, cor e tamanho padrão serão usadas por qualquer texto de barra que tenha 'usar padrão' ativado."
 end

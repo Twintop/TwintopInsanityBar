@@ -2078,4 +2078,8 @@ if locale == "koKR" then
     L["WarlockAfflictionBarTextVariable_hauntCount"] = "대상에서 활성화된 Haunts 수"
     L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "대상에서 활성화된 Vile Taints 수"
     L["WarlockAfflictionBarTextVariable_soulRotCount"] = "대상에서 활성화된 Soul Rots 수"
+    L["TabMiscellaneous"] = "기타"
+    L["BarSettings"] = "바 설정"
+    L["CheckboxUseGlobal"] = "글로벌 설정 사용"
+    L["CheckboxUseGlobalTooltip_Font"] = "체크하면 기본 글꼴, 색상 및 크기에 대한 글로벌 설정이 '기본값 사용'이 켜진 모든 바 텍스트에서 사용됩니다."
 end

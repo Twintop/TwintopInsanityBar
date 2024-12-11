@@ -1079,8 +1079,8 @@ local function ConstructGlobalOptionsPanel()
 	tabs[5]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 	parent.tabs = tabs
 	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[6]
-	parent.lastTabId = 6
+	parent.lastTab = tabsheets[5]
+	parent.lastTabId = 5
 
 	--ConstructEnabledForSpecsPanel(tabsheets[1].scrollFrame.scrollChild)
 	ConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)

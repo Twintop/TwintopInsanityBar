@@ -2254,7 +2254,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		f = controls.checkBoxes.useGlobal
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-		f.tooltip = L["CheckboxUseGlobalTooltip"]
+		f.tooltip = L["CheckboxUseGlobalTooltip_Font"]
 		f:SetChecked(TRB.Data.settings.core.globalSettings[lowerClassName][specName].displayText)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.globalSettings[lowerClassName][specName].displayText = self:GetChecked()

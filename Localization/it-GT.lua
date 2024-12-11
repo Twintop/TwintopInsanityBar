@@ -2078,4 +2078,8 @@ if locale == "itIT" then
     L["WarlockAfflictionBarTextVariable_hauntCount"] = "Numero di Haunts attivi sui bersagli"
     L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "Numero di Vile Tangent attivi sui bersagli"
     L["WarlockAfflictionBarTextVariable_soulRotCount"] = "Numero di Soul Rots attivi sui bersagli"
+    L["TabMiscellaneous"] = "Varie"
+    L["BarSettings"] = "Impostazioni barra"
+    L["CheckboxUseGlobal"] = "Usa impostazioni globali"
+    L["CheckboxUseGlobalTooltip_Font"] = "Se selezionata, le impostazioni globali per il tipo di carattere, il colore e la dimensione predefiniti verranno utilizzate da qualsiasi testo della barra per cui è stata attivata l'opzione `Usa predefinito`."
 end
