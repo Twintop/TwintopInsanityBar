@@ -23,7 +23,7 @@ function TRB.Classes.SpellsData:New()
     setmetatable(self, TRB.Classes.SpellsData)
     
     ---@type TRB.Classes.SpecializationSpellsBase
-    self.spells = {}
+    self.spells = TRB.Classes.SpecializationSpellsBase:New()
 
     return self
 end
@@ -218,6 +218,9 @@ function TRB.Classes.SpellBase:FillSpellData()
 
             if spellInfo == nil then
                 print("MISSING", self.id, self.spellId)
+                spellInfo = {
+                    name = "MISSING"
+                }
             end
 
             if self.iconName ~= nil then

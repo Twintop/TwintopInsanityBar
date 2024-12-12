@@ -58,12 +58,7 @@ TRB.Classes.Healer.Innervate.__index = TRB.Classes.Healer.Innervate
 function TRB.Classes.Healer.Innervate:New(spell)
     ---@type TRB.Classes.BuffCustomProperty[]
     local definitions = {
-        {
-            name = "modifier",
-            dataType = "number",
-            index = 1,
-            modifier = 1
-        }
+        TRB.Classes.BuffCustomProperty:New(1, "number", "modifier", 1)
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
     local snapshot = TRB.Classes.Healer.HealerRegenBase
@@ -111,12 +106,7 @@ TRB.Classes.Healer.ManaTideTotem.__index = TRB.Classes.Healer.ManaTideTotem
 function TRB.Classes.Healer.ManaTideTotem:New(spell)
     ---@type TRB.Classes.BuffCustomProperty[]
     local definitions = {
-        {
-            name = "manaPerTick",
-            dataType = "number",
-            index = 1,
-            modifier = 1
-        }
+        TRB.Classes.BuffCustomProperty:New(1, "number", "manaPerTick", 1)
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
     local snapshot = TRB.Classes.Healer.HealerRegenBase
@@ -387,12 +377,7 @@ TRB.Classes.Healer.PotionOfChilledClarity.__index = TRB.Classes.Healer.PotionOfC
 function TRB.Classes.Healer.PotionOfChilledClarity:New(spell)
     ---@type TRB.Classes.BuffCustomProperty[]
     local definitions = {
-        {
-            name = "modifier",
-            dataType = "number",
-            index = 2,
-            modifier = 1
-        }
+        TRB.Classes.BuffCustomProperty:New(2, "number", "modifier", 1)
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
     local snapshot = TRB.Classes.Healer.HealerRegenBase
@@ -445,12 +430,7 @@ TRB.Classes.Healer.ChanneledManaPotion.__index = TRB.Classes.Healer.ChanneledMan
 function TRB.Classes.Healer.ChanneledManaPotion:New(spell, calculateManaGainFunction)
     ---@type TRB.Classes.BuffCustomProperty[]
     local definitions = {
-        {
-            name = "manaPerTick",
-            dataType = "number",
-            index = 1,
-            modifier = 1
-        }
+        TRB.Classes.BuffCustomProperty:New(1, "number", "manaPerTick", 1)
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
     local snapshot = TRB.Classes.Healer.HealerRegenBase
@@ -501,12 +481,7 @@ TRB.Classes.Healer.MoltenRadiance.__index = TRB.Classes.Healer.MoltenRadiance
 function TRB.Classes.Healer.MoltenRadiance:New(spell)
     ---@type TRB.Classes.BuffCustomProperty[]
     local definitions = {
-        {
-            name = "manaPerTick",
-            dataType = "number",
-            index = 3,
-            modifier = 1
-        }
+        TRB.Classes.BuffCustomProperty:New(3, "number", "manaPerTick", 1)
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
     local snapshot = TRB.Classes.Healer.HealerRegenBase
