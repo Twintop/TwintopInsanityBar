@@ -620,7 +620,7 @@ local function AfflictionConstructFontAndTextPanel(parent)
 	f = controls.checkBoxes.dotColor
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-	f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$agonyCount/$agonyTime, $corruptionCount/$corruptionTime, $hauntCount/$hauntTime, $unstableAffliction")
+	f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$agonyCount/$agonyStacks/$agonyTime, $corruptionCount/$corruptionTime, $hauntCount/$hauntTime, $unstableAffliction")
 	f:SetChecked(spec.colors.text.dots.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.dots.enabled = self:GetChecked()

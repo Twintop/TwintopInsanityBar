@@ -535,7 +535,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.escalatingBlade = TRB.Classes.SpellBase:New({
         id = 441786,
-        hasStacks = true,
         maxStacks = 4
     })
 
@@ -743,7 +742,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.escalatingBlade = TRB.Classes.SpellBase:New({
         id = 441786,
-        hasStacks = true,
         maxStacks = 4
     })
        

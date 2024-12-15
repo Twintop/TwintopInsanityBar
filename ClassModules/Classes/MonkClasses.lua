@@ -139,7 +139,6 @@ function TRB.Classes.Monk.MistweaverSpells:New()
         id = 443506,
         talentId = 443294,
         isTalent = true,
-        hasStacks = true,
         maxStacks = 20
     })
 
@@ -330,7 +329,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
         id = 443424,
         talentId = 443294,
         isTalent = true,
-        hasStacks = true,
         maxStacks = 45
     })
 
@@ -338,8 +336,7 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     self.flurryCharge = TRB.Classes.SpellBase:New({
         id = 451021,
         talentId = 450615,
-        isTalent = true,
-        hasStacks = true
+        isTalent = true
     })
 
     return self

@@ -327,7 +327,6 @@ end
 ---@field public count integer
 ---@field public hasSnapshot boolean
 ---@field public snapshot number
----@field public hasStacks boolean
 ---@field public stacks integer
 ---@field public autoUpdate boolean
 ---@field public auraInstanceId? integer
@@ -375,7 +374,6 @@ function TRB.Classes.TargetSpell:New(spell, target, isDot, hasCounter, hasSnapsh
     self.count = 0
     self.hasSnapshot = hasSnapshot
     self.snapshot = 0.0
-    self.hasStacks = spell.hasStacks
     self.stacks = 0
     self.autoUpdate = autoUpdate
     self.guid = ""

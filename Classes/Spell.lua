@@ -58,6 +58,7 @@ end
 ---@field public debuffId integer? # Spell ID of a debuff that differs from the main `id`.
 ---@field public energizeId integer? # Spell ID of a `SPELL_ENERGIZE` combat log event.
 ---@field public talentId integer? # Spell ID of the underlying talent.
+---@field public castId integer? # Spell ID of the cast to use the spell.
 ---@field public tickId integer? # Spell ID of a tick of a HoT/DoT related to the main spell.
 ---@field public itemId integer? # Item ID related to the spell.
 ---@field public name string # Name of the spell. Populated automagically from the ID via lookups.
@@ -83,7 +84,6 @@ end
 ---@field public ticks integer? # How many ticks this spell have at the beginning.
 ---@field public tickRate number? # How many seconds between ticks.
 ---@field public resourcePerTick number? # How many resources are generated per tick.
----@field public hasStacks boolean? # Does this spell's buff/debuff has stacks?
 ---@field public isBuff boolean? # Is this spell a buff?
 ---@field public isPvp boolean? # Is this a PvP only spell?
 ---@field public tocMinVersion number? # Minimum TOC version of WoW before attempting to use/load this spell.
@@ -116,6 +116,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
             (key == "debuffId"                         and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "energizeId"                       and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "talentId"                         and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "castId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "tickId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "itemId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "iconName") or
@@ -139,7 +140,6 @@ function TRB.Classes.SpellBase:New(spellAttributes)
             (key == "ticks"                            and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "tickRate"                         and type(value) == "number") or
             (key == "resourcePerTick"                  and type(value) == "number") or
-            (key == "hasStacks"                        and type(value) == "boolean") or
             (key == "isBuff"                           and type(value) == "boolean") or
             (key == "isPvp"                            and type(value) == "boolean") or
             (key == "tocMinVersion"                    and type(value) == "number") then

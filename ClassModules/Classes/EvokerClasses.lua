@@ -21,8 +21,7 @@ function TRB.Classes.Evoker.DevastationSpells:New()
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 359618,
-        isBuff = true,
-        hasStacks = true
+        isBuff = true
     })
 
     -- Scalecommander
@@ -58,8 +57,7 @@ function TRB.Classes.Evoker.PreservationSpells:New()
     })
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 369299,
-        isBuff = true,
-        hasStacks = true
+        isBuff = true
     })
     
     -- Chronowarden
@@ -86,8 +84,7 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 392268,
-        isBuff = true,
-        hasStacks = true
+        isBuff = true
     })
     
     -- Chronowarden

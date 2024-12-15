@@ -159,6 +159,7 @@ local function FillSpellData_Affliction()
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 		
 		{ variable = "$agonyCount", description = L["WarlockAfflictionBarTextVariable_agonyCount"], printInSettings = true, color = false },
+		{ variable = "$agonyStacks", description = L["WarlockAfflictionBarTextVariable_agonyStacks"], printInSettings = true, color = false },
 		{ variable = "$agonyTime", description = L["WarlockAfflictionBarTextVariable_agonyTime"], printInSettings = true, color = false },
 		{ variable = "$corruptionTime", description = L["WarlockAfflictionBarTextVariable_corruptionTime"], printInSettings = true, color = false },
 		{ variable = "$corruptionCount", description = L["WarlockAfflictionBarTextVariable_corruptionCount"], printInSettings = true, color = false },
@@ -301,12 +302,15 @@ local function RefreshLookupData_Affliction()
 		_unstableAfflictionTime = target.spells[spells.unstableAffliction.id].remainingTime or 0
 	end
 
-	--$agonyCount and $agonyTime
+	--$agonyCount and $agonyStacks $agonyTime
 	local _agonyCount = snapshotData.targetData.count[spells.agony.id] or 0
 	local agonyCount = string.format("%s", _agonyCount)
+	local _agonyStacks = snapshotData.targetData.trackedSpells[spells.agony.id].stacks or 0
+	local agonyStacks
 	local _agonyTime = 0
-	local agonyTime	
+	local agonyTime
 	if target ~= nil then
+		_agonyStacks = target.spells[spells.agony.id].stacks or 0
 		_agonyTime = target.spells[spells.agony.id].remainingTime or 0
 	end
 
@@ -389,13 +393,16 @@ local function RefreshLookupData_Affliction()
 			if target.spells[spells.agony.id].remainingTime > spells.agony.pandemicTime then
 				agonyTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_agonyTime))
 				agonyCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _agonyCount)
+				agonyStacks = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _agonyStacks)
 			else
 				agonyTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_agonyTime))
 				agonyCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _agonyCount)
+				agonyStacks = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _agonyStacks)
 			end
 		else
 			agonyTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			agonyCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _agonyCount)
+			agonyStacks = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _agonyStacks)
 		end
 		if target ~= nil and target.spells[spells.corruption.id].active then
 			if talents:IsTalentActive(spells.absoluteCorruption) then
@@ -436,6 +443,7 @@ local function RefreshLookupData_Affliction()
 		end
 	else
 		unstableAfflictionTime = TRB.Functions.BarText:TimerPrecision(_unstableAfflictionTime)
+		agonyStacks = string.format("%s", _agonyStacks)
 		agonyTime = TRB.Functions.BarText:TimerPrecision(_agonyTime)
 		--Handled above because of Absolute Corruption
 		--corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
@@ -473,6 +481,7 @@ local function RefreshLookupData_Affliction()
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$unstableAfflictionTime"] = unstableAfflictionTime
 	lookup["$agonyCount"] = agonyCount
+	lookup["$agonyStacks"] = agonyStacks
 	lookup["$agonyTime"] = agonyTime
 	lookup["$corruptionCount"] = corruptionCount
 	lookup["$corruptionTime"] = corruptionTime
@@ -483,7 +492,6 @@ local function RefreshLookupData_Affliction()
 	lookup["$soulRotCount"] = soulRotCount
 	lookup["$soulRotTime"] = soulRotTime
 	lookup["$phantomSingularityTime"] = phantomSingularityTime
-
 	lookup["$tormentedCrescendoTime"] = tormentedCrescendoTime
 	lookup["$tormentedCrescendoStacks"] = tormentedCrescendoStacks
 	lookup["$nightfallTime"] = nightfallTime
@@ -511,6 +519,7 @@ local function RefreshLookupData_Affliction()
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$unstableAfflictionTime"] = _unstableAfflictionTime
 	lookupLogic["$agonyCount"] = _agonyCount
+	lookupLogic["$agonyStacks"] = _agonyStacks
 	lookupLogic["$agonyTime"] = _agonyTime
 	lookupLogic["$corruptionCount"] = _corruptionCount
 	lookupLogic["$corruptionTime"] = _corruptionTime
@@ -528,14 +537,10 @@ end
 
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
-	local currentTime = GetTime()
 end
 
 local function UpdateSnapshot_Affliction()
 	UpdateSnapshot()
-	
-	local currentTime = GetTime()
-	local _
 end
 
 local function UpdateResourceBar()
@@ -971,6 +976,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$agonyCount" then
 			if snapshotData.targetData.count[spells.agony.id] > 0 then
+				valid = true
+			end
+		elseif var == "$agonyStacks" then
+			if not UnitIsDeadOrGhost("target") and
+			UnitCanAttack("player", "target") and
+			target ~= nil and
+			target.spells[spells.agony.id] ~= nil and
+			target.spells[spells.agony.id].stacks > 0 then
 				valid = true
 			end
 		elseif var == "$agonyTime" then

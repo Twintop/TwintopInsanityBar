@@ -60,7 +60,7 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
         id = 980,
         baseDuration = 18,
         pandemic = true,
-        isTalent = true,
+        isTalent = true
     })
     self.haunt = TRB.Classes.SpellBase:New({
         id = 48181,
