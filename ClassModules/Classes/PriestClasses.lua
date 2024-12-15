@@ -740,7 +740,6 @@ function TRB.Classes.Priest.HolySpells:New()
         debuffId = 453850,
         isTalent = true,
         duration = 8,
-        hasStacks = true,
         maxStacks = 5
     })
 
@@ -942,11 +941,15 @@ function TRB.Classes.Priest.ShadowSpells:New()
         isTalent = true
     })
     self.mindFlayInsanity = TRB.Classes.SpellBase:New({
-        id = 391403,
+        id = 391401,
+        buffId = 391401,
+        castId = 391403,
         resource = 3
     })
     self.mindSpikeInsanity = TRB.Classes.SpellBase:New({
         id = 407468,
+        buffId = 407468,
+        castId = 407466,
         resource = 12
     })
     self.deathspeaker = TRB.Classes.SpellBase:New({
@@ -1039,7 +1042,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
         debuffId = 453850,
         isTalent = true,
         duration = 8,
-        hasStacks = true,
         maxStacks = 5
     })
 

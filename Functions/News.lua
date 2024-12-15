@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.0.5.4-release (2024-12-15)
+## Priest
+### Shadow
+
+- [FIX] Further adjustments for Spell IDs for Mind Flay: Insanity and Mind Spike: Insanity.
+
+---
+
 # 11.0.5.3-release (2024-12-12)
 ## General
 

@@ -2433,8 +2433,8 @@ local function CastingSpell()
 					snapshotData.casting.startTime = currentTime
 					snapshotData.casting.resourceRaw = spells.mindFlay.resource
 					snapshotData.casting.icon = spells.mindFlay.icon
-				elseif currentChannelId == spells.mindFlayInsanity.id then
-					snapshotData.casting.spellId = spells.mindFlayInsanity.id
+				elseif currentChannelId == spells.mindFlayInsanity.castId then
+					snapshotData.casting.spellId = spells.mindFlayInsanity.castId
 					snapshotData.casting.startTime = currentTime
 					snapshotData.casting.resourceRaw = spells.mindFlayInsanity.resource
 					snapshotData.casting.icon = spells.mindFlayInsanity.icon
@@ -2459,10 +2459,10 @@ local function CastingSpell()
 					snapshotData.casting.resourceRaw = spells.mindSpike.resource
 					snapshotData.casting.spellId = spells.mindSpike.id
 					snapshotData.casting.icon = spells.mindSpike.icon
-				elseif currentSpellId == spells.mindSpikeInsanity.id then
+				elseif currentSpellId == spells.mindSpikeInsanity.castId then
 					snapshotData.casting.startTime = currentTime
 					snapshotData.casting.resourceRaw = spells.mindSpikeInsanity.resource
-					snapshotData.casting.spellId = spells.mindSpikeInsanity.id
+					snapshotData.casting.spellId = spells.mindSpikeInsanity.castId
 					snapshotData.casting.icon = spells.mindSpikeInsanity.icon
 				elseif currentSpellId == spells.darkAscension.id then
 					snapshotData.casting.startTime = currentTime
