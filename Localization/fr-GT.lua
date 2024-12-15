@@ -2084,4 +2084,5 @@ if locale == "frFR" then
     L["BarSettings"] = "Paramètres de la barre"
     L["CheckboxUseGlobal"] = "Utiliser les paramètres globaux"
     L["CheckboxUseGlobalTooltip_Font"] = "Lorsque cette option est cochée, les paramètres globaux pour la police, la couleur et la taille par défaut seront utilisés par tout texte de barre pour lequel l'option « Utiliser la valeur par défaut » est activée."
+    L["WarlockAfflictionBarTextVariable_agonyStacks"] = "Nombre de charges d'Agonie sur votre cible actuelle"
 end

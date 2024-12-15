@@ -92,19 +92,17 @@ local function FillSpellData_Affliction()
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-		
-		{ variable = "#ua", icon = spells.unstableAffliction.icon,description = spells.unstableAffliction.name, printInSettings = true },
+				
 		{ variable = "#agony", icon = spells.agony.icon,description = spells.agony.name, printInSettings = true },
 		{ variable = "#corruption", icon = spells.corruption.icon,description = spells.corruption.name, printInSettings = true },
 		{ variable = "#haunt", icon = spells.haunt.icon,description = spells.haunt.name, printInSettings = true },
-		{ variable = "#vileTaint", icon = spells.vileTaint.icon,description = spells.vileTaint.name, printInSettings = true },
-		{ variable = "#soulRot", icon = spells.soulRot.icon,description = spells.soulRot.name, printInSettings = true },
-		{ variable = "#phantomSingularity", icon = spells.phantomSingularity.icon,description = spells.phantomSingularity.name, printInSettings = true },
-
-
 		{ variable = "#nightfall", icon = spells.nightfall.icon,description = spells.nightfall.name, printInSettings = true },
+		{ variable = "#phantomSingularity", icon = spells.phantomSingularity.icon,description = spells.phantomSingularity.name, printInSettings = true },
+		{ variable = "#soulRot", icon = spells.soulRot.icon,description = spells.soulRot.name, printInSettings = true },
 		{ variable = "#tormentedCrescendo", icon = spells.tormentedCrescendo.icon,description = spells.tormentedCrescendo.name, printInSettings = true },
-
+		{ variable = "#ua", icon = spells.unstableAffliction.icon,description = spells.unstableAffliction.name, printInSettings = true },
+		{ variable = "#vileTaint", icon = spells.vileTaint.icon,description = spells.vileTaint.name, printInSettings = true },
+		{ variable = "#wither", icon = spells.wither.icon, description = spells.wither.name, printInSettings = true },
 	}
 	specCache.affliction.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -315,19 +313,36 @@ local function RefreshLookupData_Affliction()
 	end
 
 	--$corruptionCount and $corruptionTime
-	local _corruptionCount = snapshotData.targetData.count[spells.corruption.id] or 0
+	local _corruptionCount
+	if talents:IsTalentActive(spells.wither) then
+		_corruptionCount = snapshotData.targetData.count[spells.wither.id] or 0
+	else
+		_corruptionCount = snapshotData.targetData.count[spells.corruption.id] or 0
+	end
 	local corruptionCount = string.format("%s", _corruptionCount)
 	--[[@type integer|boolean]]
 	local _corruptionTime = 0
 	local corruptionTime = "0"
 	if target ~= nil then
 		_corruptionTime = target.spells[spells.corruption.id].remainingTime or 0
-		if target.spells[spells.corruption.id].active then
-			if target.spells[spells.corruption.id].remainingTime <= 0 and talents:IsTalentActive(spells.absoluteCorruption) then
-				_corruptionTime = true
-				corruptionTime = "∞"
-			else
-				corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
+		
+		if talents:IsTalentActive(spells.wither) then
+			if target.spells[spells.wither.id].active then
+				if target.spells[spells.wither.id].remainingTime <= 0 and talents:IsTalentActive(spells.absoluteCorruption) then
+					_corruptionTime = true
+					corruptionTime = "∞"
+				else
+					corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
+				end
+			end
+		else
+			if target.spells[spells.corruption.id].active then
+				if target.spells[spells.corruption.id].remainingTime <= 0 and talents:IsTalentActive(spells.absoluteCorruption) then
+					_corruptionTime = true
+					corruptionTime = "∞"
+				else
+					corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
+				end
 			end
 		end
 	end
@@ -404,10 +419,10 @@ local function RefreshLookupData_Affliction()
 			agonyCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _agonyCount)
 			agonyStacks = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _agonyStacks)
 		end
-		if target ~= nil and target.spells[spells.corruption.id].active then
+		if target ~= nil and (target.spells[spells.corruption.id].active or target.spells[spells.wither.id].active) then
 			if talents:IsTalentActive(spells.absoluteCorruption) then
-				if target.spells[spells.corruption.id].remainingTime > 0 then -- PvP
-					if target.spells[spells.corruption.id].remainingTime > spells.absoluteCorruption.attributes.pvpPandemicTime then
+				if target.spells[spells.corruption.id].remainingTime > 0 or target.spells[spells.wither.id].remainingTime > 0 then -- PvP
+					if target.spells[spells.corruption.id].remainingTime > spells.absoluteCorruption.attributes.pvpPandemicTime or target.spells[spells.wither.id].remainingTime > spells.absoluteCorruption.attributes.pvpPandemicTime then
 						corruptionTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, corruptionTime)
 						corruptionCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _corruptionCount)
 					else
@@ -449,6 +464,13 @@ local function RefreshLookupData_Affliction()
 		--corruptionTime = TRB.Functions.BarText:TimerPrecision(_corruptionTime)
 		hauntTime = TRB.Functions.BarText:TimerPrecision(_hauntTime)
 	end
+
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.agonyCount = _agonyCount or 0
+	Global_TwintopResourceBar.dots.corruptionCount = _corruptionCount or 0
+	Global_TwintopResourceBar.dots.hauntCount = _hauntCount or 0
+	Global_TwintopResourceBar.dots.soulRotCount = _soulRotCount or 0
+	Global_TwintopResourceBar.dots.vileTaintCount = _vileTaintCount or 0
 
 	local lookup = TRB.Data.lookup or {}
 	
@@ -646,15 +668,19 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.agony.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end				
+					end
 				elseif entry.spellId == spells.corruption.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end				
+					end
+				elseif entry.spellId == spells.wither.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
 				elseif entry.spellId == spells.haunt.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end				
+					end
 				elseif entry.spellId == spells.vileTaint.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -733,6 +759,7 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.unstableAffliction)
 		targetData:AddSpellTracking(spells.agony)
 		targetData:AddSpellTracking(spells.corruption)
+		targetData:AddSpellTracking(spells.wither)
 		targetData:AddSpellTracking(spells.haunt)
 		targetData:AddSpellTracking(spells.vileTaint)
 		targetData:AddSpellTracking(spells.soulRot)
@@ -995,15 +1022,17 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 			end
 		elseif var == "$corruptionCount" then
-			if snapshotData.targetData.count[spells.corruption.id] > 0 then
+			if snapshotData.targetData.count[spells.corruption.id] > 0 or snapshotData.targetData.count[spells.wither.id] > 0 then
 				valid = true
 			end
 		elseif var == "$corruptionTime" then
 			if not UnitIsDeadOrGhost("target") and
 			UnitCanAttack("player", "target") and
 			target ~= nil and
-			target.spells[spells.corruption.id] ~= nil and
-			target.spells[spells.corruption.id].remainingTime > 0 then
+			((target.spells[spells.corruption.id] ~= nil and
+			target.spells[spells.corruption.id].remainingTime > 0) or
+			(target.spells[spells.wither.id] ~= nil and
+			target.spells[spells.wither.id].remainingTime > 0)) then
 			valid = true
 			end
 		elseif var == "$hauntCount" then

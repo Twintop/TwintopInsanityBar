@@ -2082,4 +2082,5 @@ if locale == "deDE" then
     L["BarSettings"] = "Leisteneinstellungen"
     L["CheckboxUseGlobal"] = "Globale Einstellungen verwenden"
     L["CheckboxUseGlobalTooltip_Font"] = "Wenn diese Option aktiviert ist, werden die globalen Einstellungen für die Standardschriftart, -farbe und -größe von allen Leistentexten verwendet, bei denen „Standard verwenden“ aktiviert ist."
+    L["WarlockAfflictionBarTextVariable_agonyStacks"] = "Anzahl der Agony-Stapel auf deinem aktuellen Ziel"
 end

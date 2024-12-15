@@ -2082,4 +2082,5 @@ if locale == "esES" or locale == "esMX" then
     L["BarSettings"] = "Configuración de la barra"
     L["CheckboxUseGlobal"] = "Usar configuración global"
     L["CheckboxUseGlobalTooltip_Font"] = "Cuando se marca esta opción, la configuración global para el tipo de fuente, el color y el tamaño predeterminados se utilizarán en cualquier texto de la barra que tenga activada la opción `Usar configuración predeterminada`."
+    L["WarlockAfflictionBarTextVariable_agonyStacks"] = "Número de acumulaciones de Agonía en tu objetivo actual"
 end

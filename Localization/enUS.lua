@@ -2161,9 +2161,11 @@ L["WarlockAfflictionBarTextVariable_corruptionCount"] = "Number of Corruptions a
 L["WarlockAfflictionBarTextVariable_hauntCount"] = "Number of Haunts active on targets"
 L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "Number of Vile Taints active on targets"
 L["WarlockAfflictionBarTextVariable_soulRotCount"] = "Number of Soul Rots active on targets"
-L["WarlockAfflictionBarTextVariable_agonyTime"] = "Number of stacks of Agony on your current target"
+L["WarlockAfflictionBarTextVariable_agonyStacks"] = "Number of stacks of Agony on your current target"
 
 L["TabMiscellaneous"] = "Miscellaneous"
 L["BarSettings"] = "Bar Settings"
 L["CheckboxUseGlobal"] = "Use global settings"
 L["CheckboxUseGlobalTooltip_Font"] = "When checked, the global settings for the default font face, color, and size will be used by any bar text that have 'use default' toggled on."
+
+L["WarlockAfflictionBarTextVariable_agonyStacks"] = "Number of stacks of Agony on your current target"

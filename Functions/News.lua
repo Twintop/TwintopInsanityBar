@@ -15,7 +15,17 @@ local content = [====[
 ## Priest
 ### Shadow
 
-- [FIX] Further adjustments for Spell IDs for Mind Flay: Insanity and Mind Spike: Insanity.
+- (FIX) Further adjustments for Spell IDs for Mind Flay: Insanity and Mind Spike: Insanity.
+
+## Warlock
+### Affliction
+
+- [#388 - NEW] Add support for tracking the number of stacks of Agony
+<br/>&emsp;&ensp;- New bar text variable:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$agonyStacks` - Number of stacks of Agony on your current target
+- [#388 - NEW] Add support for Wither tracking. As Wither replaces Corruption, the existing bar text variables will work for either.
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#wither` - Wither
 
 ---
 
@@ -27,7 +37,7 @@ local content = [====[
 ## Priest
 ### Shadow
 
-- [FIX] Correct the Spell ID for Mind Flay: Insanity.
+- (FIX) Correct the Spell ID for Mind Flay: Insanity.
 
 ## Warlock
 ### Affliction

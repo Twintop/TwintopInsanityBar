@@ -2082,4 +2082,5 @@ if locale == "zhTW" then
     L["BarSettings"] = "酒吧設置"
     L["CheckboxUseGlobal"] = "使用全域設定"
     L["CheckboxUseGlobalTooltip_Font"] = "選取後，任何開啟「使用預設值」的條形文字都會使用預設字體、顏色和大小的全域設定。"
+    L["WarlockAfflictionBarTextVariable_agonyStacks"] = "目前目標上的痛苦層數"
 end

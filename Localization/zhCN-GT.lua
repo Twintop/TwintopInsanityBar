@@ -2082,4 +2082,5 @@ if locale == "zhCN" then
     L["BarSettings"] = "栏设置"
     L["CheckboxUseGlobal"] = "使用全局设置"
     L["CheckboxUseGlobalTooltip_Font"] = "选中后，任何已启用“使用默认”的栏文本都将使用默认字体、颜色和大小的全局设置。"
+    L["WarlockAfflictionBarTextVariable_agonyStacks"] = "当前目标身上的痛苦叠加层数"
 end

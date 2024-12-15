@@ -479,14 +479,6 @@ function TRB.Classes.Priest.DisciplineSpells:New()
     self = setmetatable(base:New(), TRB.Classes.Priest.DisciplineSpells) --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
     -- Priest Class Baseline Abilities
-    self.shadowWordPain = TRB.Classes.SpellBase:New({
-        id = 589,
-        baseDuration = 16,
-        pandemic = true,
-        isTalent = false,
-        baseline = true
-    })
-
     self.shadowfiend.baseline = true
     self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
     

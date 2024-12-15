@@ -2082,4 +2082,5 @@ if locale == "koKR" then
     L["BarSettings"] = "바 설정"
     L["CheckboxUseGlobal"] = "글로벌 설정 사용"
     L["CheckboxUseGlobalTooltip_Font"] = "체크하면 기본 글꼴, 색상 및 크기에 대한 글로벌 설정이 '기본값 사용'이 켜진 모든 바 텍스트에서 사용됩니다."
+    L["WarlockAfflictionBarTextVariable_agonyStacks"] = "현재 대상에 쌓인 고통 스택 수"
 end

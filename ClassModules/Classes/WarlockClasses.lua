@@ -90,5 +90,14 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
         pvpPandemicTime = 24*0.3
     })
 
+    -- Hellcaller    
+    self.wither = TRB.Classes.SpellBase:New({
+        id = 445474,
+        talentId = 445468,
+        baseDuration = 18,
+        pandemic = true,
+        isTalent = true,
+    })
+
     return self
 end
