@@ -20,10 +20,10 @@ local content = [====[
 ## Warlock
 ### Affliction
 
-- [#388 - NEW] Add support for tracking the number of stacks of Agony
+- [#388 - NEW](#388) Add support for tracking the number of stacks of Agony
 <br/>&emsp;&ensp;- New bar text variable:
 <br/>&emsp;&ensp;&emsp;&ensp;- `$agonyStacks` - Number of stacks of Agony on your current target
-- [#388 - NEW] Add support for Wither tracking. As Wither replaces Corruption, the existing bar text variables will work for either.
+- [#388 - NEW](#388) Add support for Wither tracking. As Wither replaces Corruption, the existing bar text variables for Corruption will work for both.
 <br/>&emsp;&ensp;- New bar text icon:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#wither` - Wither
 
