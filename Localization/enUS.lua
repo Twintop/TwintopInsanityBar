@@ -2161,7 +2161,6 @@ L["WarlockAfflictionBarTextVariable_corruptionCount"] = "Number of Corruptions a
 L["WarlockAfflictionBarTextVariable_hauntCount"] = "Number of Haunts active on targets"
 L["WarlockAfflictionBarTextVariable_vileTaintCount"] = "Number of Vile Taints active on targets"
 L["WarlockAfflictionBarTextVariable_soulRotCount"] = "Number of Soul Rots active on targets"
-L["WarlockAfflictionBarTextVariable_agonyStacks"] = "Number of stacks of Agony on your current target"
 
 L["TabMiscellaneous"] = "Miscellaneous"
 L["BarSettings"] = "Bar Settings"
