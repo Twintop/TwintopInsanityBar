@@ -224,4 +224,9 @@ if locale == "enGB" then
     L["WarlockAfflictionCheckboxNightfallTooltip"] = "This will change the bar border colour when getting a Nightfall Proc"
     L["WarlockAfflictionCheckboxTormentedCrescendoTooltip"] = "This will change the bar border colour when getting a Tormented Crescendo Proc"
     L["CheckboxUseGlobalTooltip_Font"] = "When checked, the global settings for the default font face, color, and size will be used by any bar text that have 'use default' toggled on."
+    L["WarlockSoulShardsBorderColorsHeader"] = "Soul Shards Border Colours + Changing"
+    L["WarlockSoulShardsCheckboxAlwaysDefaultBackgroundTooltip"] = "When checked, unfilled Soul Shards will always use the 'Unfilled Soul Shard background' colour above for their background."
+    L["WarlockAfflictionCheckboxMalignOmenTooltip"] = "When checked, filled and unfilled Soul Shards will be this colour to show that the next cast of Malefic Rapture will also use a Malign Omen proc."
+    L["WarlockAfflictionCheckboxSucculentSoulTooltip"] = "When checked, filled and unfilled Soul Shards borders will be this colour to show that the next cast of Malefic Rapture will also use a Succulent Soul proc."
+    L["WarlockAfflictionCheckboxShadowEmbraceNotMaxTooltip"] = "When checked, the Mana Bar colour will change when the current target does not have maximum stacks of Shadow Embrace. Only active when talented into Shadow Embrace."
 end

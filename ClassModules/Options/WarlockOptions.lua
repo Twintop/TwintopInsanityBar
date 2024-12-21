@@ -246,6 +246,10 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				tormentedCrescendo = {
 					color = "FF00FF00",
 					enabled = true,
+				},
+				shadowEmbraceNotMax = {
+					color = "FFFF0000",
+					enabled = true
 				}
 			},
 			comboPoints = {
@@ -254,7 +258,15 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				base="FF8788EE",
 				penultimate="FFFF9900",
 				final="FFFF0000",
-				sameColor=false
+				sameColor=false,
+				succulentSoul = {
+					color = "FF31001B",
+					enabled = true,
+				},
+				malignOmen = {
+					color = "FF00C9B4",
+					enabled = true,
+				},
 			},
 			threshold={
 				unusable="FFFF0000",
@@ -447,6 +459,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
 
+	--[[
 	yCoord = yCoord - 30
 	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
@@ -479,6 +492,23 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
+	end)]]
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.shadowEmbraceNotMax = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_shadowEmbraceNotMax", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.shadowEmbraceNotMax
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxShadowEmbraceNotMax"])
+	f.tooltip = L["WarlockAfflictionCheckboxShadowEmbraceNotMaxTooltip"]
+	f:SetChecked(spec.colors.bar.shadowEmbraceNotMax.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.shadowEmbraceNotMax.enabled = self:GetChecked()
+	end)
+
+	controls.colors.shadowEmbraceNotMax = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerShadowEmbraceNotMax"], spec.colors.bar.shadowEmbraceNotMax.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.shadowEmbraceNotMax
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "shadowEmbraceNotMax")
 	end)
 
 	yCoord = yCoord - 30
@@ -531,29 +561,17 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulShards"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulShards"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.border
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
-	end)
-
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.background
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
-	end)
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
 	yCoord = yCoord - 30
@@ -565,6 +583,73 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.comboPoints.sameColor)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.final
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.malignOmen = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_malignOmen", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.malignOmen
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxMalignOmen"])
+	f.tooltip = L["WarlockAfflictionCheckboxMalignOmenTooltip"]
+	f:SetChecked(spec.colors.comboPoints.malignOmen.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.malignOmen.enabled = self:GetChecked()
+	end)
+
+	controls.colors.malignOmen = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerMalignOmen"], spec.colors.comboPoints.malignOmen.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.malignOmen
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "malignOmen")
+	end)
+	
+	yCoord = yCoord - 40
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsBorderColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.succulentSoul = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_succulentSoul", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.succulentSoul
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxSucculentSoul"])
+	f.tooltip = L["WarlockAfflictionCheckboxSucculentSoulTooltip"]
+	f:SetChecked(spec.colors.comboPoints.succulentSoul.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.succulentSoul.enabled = self:GetChecked()
+	end)
+
+	controls.colors.succulentSoul = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerSucculentSoul"], spec.colors.comboPoints.succulentSoul.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.succulentSoul
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "succulentSoul")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.consistentUnfilledColorComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsCheckboxAlwaysDefaultBackground"])
+	f.tooltip = L["WarlockSoulShardsCheckboxAlwaysDefaultBackgroundTooltip"]
+	f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+	f:SetScript("OnClick", function(self, ...)
+		spec.comboPoints.consistentUnfilledColor = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 	end)
 end
 

@@ -16,7 +16,9 @@ TRB.Classes.Warlock = TRB.Classes.Warlock or {}
 ---@field public phantomSingularity TRB.Classes.SpellBase
 ---@field public tormentedCrescendo TRB.Classes.SpellBase
 ---@field public nightfall TRB.Classes.SpellBase
----@field public absoluteCorruption TRB.Classes.SpellBase
+---@field public shadowEmbrace TRB.Classes.SpellBase
+---@field public wither TRB.Classes.SpellBase
+---@field public succulentSoul TRB.Classes.SpellBase
 TRB.Classes.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.AfflictionSpells.__index = TRB.Classes.Warlock.AfflictionSpells
 
@@ -89,6 +91,15 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
         pvpDuration = 24,
         pvpPandemicTime = 24*0.3
     })
+    self.malignOmen = TRB.Classes.SpellBase:New({
+        id = 458043
+    })
+    self.shadowEmbrace = TRB.Classes.SpellBase:New({
+        id = 32390,
+        talentId = 32388,
+        isTalent = true,
+        maxStacks = 4
+    })
 
     -- Hellcaller    
     self.wither = TRB.Classes.SpellBase:New({
@@ -97,6 +108,11 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
         baseDuration = 18,
         pandemic = true,
         isTalent = true,
+    })
+
+    -- Soul Harvester
+    self.succulentSoul = TRB.Classes.SpellBase:New({
+        id = 449793
     })
 
     return self
