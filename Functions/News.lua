@@ -11,6 +11,47 @@ local content = [====[
 
 ---
 
+# 11.0.7.0-release (2024-12-28)
+## General
+
+- [#388 - NEW](#388) Affliction Warlock is no longer flagged as experimental and is now available and enabled by default.
+
+## Warlock
+### Affliction
+
+- [#388 - NEW](#388) Add support for tracking Shadow Embrace.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$shadowEmbraceMaxStacks` - Maximum possible number of stacks of Shadow Embrace on a target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$shadowEmbraceStacks` - Number of stacks of Shadow Embrace on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$shadowEmbraceTime` - Time remaining on Shadow Embrace on your current target
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#shadowEmbrace` - Shadow Embrace
+- [#388 - NEW](#388) Add support for tracking Malign Omen.
+<br/>&emsp;&ensp;- Soul Shards will have their fill and background color change to reflect the Malign Omen effect is active when consumed/generated next.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$malignOmenStacks` - Number of stacks of Malign Omen
+<br/>&emsp;&ensp;&emsp;&ensp;- `$malignOmenTime` - Time remaining on your Malign Omen buff
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#malignOmen` - Malign Omen
+- [#388 - NEW](#388) Add support for tracking Succulent Soul.
+<br/>&emsp;&ensp;- Soul Shards will have their border color change to reflect the Succulent Soul effect is active when consumed/generated next.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$succulentSoulStacks` - Number of stacks of Succulent Soul
+<br/>&emsp;&ensp;&emsp;&ensp;- `$succulentSoulTime` - Time remaining on your Succulent Soul buff
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#succulentSoul` - Succulent Soul
+- [#388 - NEW](#388) Add support for tracking Nightfall stacks.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$shadowEmbraceStacks` - Number of stacks of Nightfall
+<br/>&emsp;&ensp;- New audio cue:
+<br/>&emsp;&ensp;&emsp;&ensp;- When you gain Nightfall.
+- [#388 - NEW](#388) Add support for audio cues for Tormented Crescendo procs.
+<br/>&emsp;&ensp;- New audio cues:
+<br/>&emsp;&ensp;&emsp;&ensp;- When you gain 1 stack of Tormented Crescendo.
+<br/>&emsp;&ensp;&emsp;&ensp;- When you gain 2 stacks of Tormented Crescendo.
+
+---
+
 # 11.0.5.4-release (2024-12-15)
 ## Priest
 ### Shadow
