@@ -1941,8 +1941,6 @@ if locale == "koKR" then
     L["WarlockColorPickerCurrentMana"] = "현재 마나"
     L["WarlockColorPickerCastingMana"] = "하드캐스팅 주문에 소모된 마나"
     L["WarlockColorPickerPassiveMana"] = "패시브 마나"
-    L["ExperimentalWarlockAffliction"] = "고통 흑마법사 지원"
-    L["ExperimentalWarlockAfflictionTooltip"] = "이를 통해 바 내에서 실험적인 고통 흑마법사 지원이 활성화됩니다. 이 설정을 변경하고 현재 흑마법사로 로그인한 경우 고통 흑마법사 구성 옵션을 사용할 수 있게 되기 전에 UI를 다시 로드해야 합니다."
     L["CannibalizeIfForsaken"] = "식인종(포세이큰인 경우)"
     L["DemonHunterHavocBarTextVariable_aotgStacks"] = "현재 보유한 글레이브 예술 스택 수"
     L["DemonHunterHavocBarTextVariable_aotgTime"] = "Art of the Glaive에 남은 시간"

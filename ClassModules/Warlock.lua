@@ -228,7 +228,7 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
+	if specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 		local thresholdId = 1
 		for _, v in pairs(spells) do
@@ -251,7 +251,7 @@ local function ConstructResourceBar(settings)
     end
 	TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Bar:Construct(settings)
-	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
+	if specId == 1 then
 		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
 end
@@ -829,7 +829,7 @@ local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
+	if specId == 1 then
 		specCache.affliction.talents:GetTalents()
 		FillSpellData_Affliction()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.affliction)
@@ -887,8 +887,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					local settings = TRB.Options.Warlock.LoadDefaultSettings(false)
 
-					if TwintopInsanityBarSettings.core.experimental.specs.warlock.affliction and
-						(TwintopInsanityBarSettings.warlock == nil or
+					if (TwintopInsanityBarSettings.warlock == nil or
 						TwintopInsanityBarSettings.warlock.affliction == nil or
 						TwintopInsanityBarSettings.warlock.affliction.displayText == nil) then
 						settings.warlock.affliction.displayText.barText = TRB.Options.Warlock.AfflictionLoadDefaultBarTextSimpleSettings()
@@ -958,7 +957,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxResource2 = 1
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
 	local settings = nil
-	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
+	if specId == 1 then
 		settings = TRB.Data.settings.warlock.affliction
 		TRB.Data.character.specName = "affliction"
 
@@ -973,7 +972,7 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
+	if specId == 1 then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
@@ -1015,7 +1014,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
+	if specId == 1 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 3
@@ -1256,7 +1255,7 @@ local updateRateLimit = 0
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
-	if (specId ~= 1 and not TRB.Data.settings.core.experimental.specs.warlock.affliction) then
+	if (specId ~= 1) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

@@ -1941,8 +1941,6 @@ if locale == "frFR" then
     L["WarlockColorPickerCurrentMana"] = "Mana actuel"
     L["WarlockColorPickerCastingMana"] = "Mana dépensé pour lancer des sorts durs"
     L["WarlockColorPickerPassiveMana"] = "Mana passif"
-    L["ExperimentalWarlockAffliction"] = "Prise en charge des Démonistes d'Affliction"
-    L["ExperimentalWarlockAfflictionTooltip"] = "Cela permettra la prise en charge expérimentale d'Affliction Warlock dans la barre. Si vous modifiez ce paramètre et que vous êtes actuellement connecté sur un Warlock, vous devrez recharger votre interface utilisateur avant que les options de configuration d'Affliction Warlock ne soient disponibles."
     L["CannibalizeIfForsaken"] = "Cannibaliser (si abandonné)"
     L["DemonHunterHavocBarTextVariable_aotgStacks"] = "Nombre de stacks Art of the Glaive que vous possédez actuellement"
     L["DemonHunterHavocBarTextVariable_aotgTime"] = "Temps restant sur votre Art du Glaive"

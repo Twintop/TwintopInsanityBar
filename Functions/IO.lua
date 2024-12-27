@@ -353,12 +353,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				configuration.shaman.restoration = ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 9 and settings.warlock ~= nil then
-			if TRB.Data.settings.core.experimental.specs.warlock.affliction then
-				configuration.warlock = {}
-				
-				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.affliction) > 0 then -- Affliction
-					configuration.warlock.affliction = ExportConfigurationSections(9, 1, settings.warlock.affliction, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			configuration.warlock = {}
+			
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.affliction) > 0 then -- Affliction
+				configuration.warlock.affliction = ExportConfigurationSections(9, 1, settings.warlock.affliction, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}
@@ -456,11 +454,9 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Restoration
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
-		if TRB.Data.settings.core.experimental.specs.warlock.affliction then
-			-- Warlock
-			-- Affliction
-			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Warlock
+		-- Affliction
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Monk
 		-- Mistweaver
@@ -558,7 +554,7 @@ function TRB.Functions.IO:Import(input)
 			configuration.shaman.restoration ~= nil or
 			(TRB.Data.settings.core.experimental.specs.shaman.enhancement and configuration.shaman.enhancement ~= nil))) or
 		(configuration.warlock ~= nil and
-			(TRB.Data.settings.core.experimental.specs.warlock.affliction and configuration.warlock.affliction ~= nil)) or
+			(configuration.warlock.affliction ~= nil)) or
 		(configuration.druid ~= nil and
 			(configuration.druid.balance ~= nil or
 			configuration.druid.feral ~= nil or

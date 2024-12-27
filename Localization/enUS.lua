@@ -2021,8 +2021,6 @@ L["WarlockManaTextColorsHeader"] = "Mana Text Colors"
 L["WarlockColorPickerCurrentMana"] = "Current Mana"
 L["WarlockColorPickerCastingMana"] = "Mana spent from hardcasting spells"
 L["WarlockColorPickerPassiveMana"] = "Passive Mana"
-L["ExperimentalWarlockAffliction"] = "Affliction Warlock support"
-L["ExperimentalWarlockAfflictionTooltip"] = "This will enable experimental Affliction Warlock support within the bar. If you change this setting and are currently logged in on a Warlock, you'll need to reload your UI before Affliction Warlock configuration options become available."
 L["CannibalizeIfForsaken"] = "Cannibalize (if Forsaken)"
 
 -- 11.0

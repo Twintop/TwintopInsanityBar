@@ -890,8 +890,6 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	
-	if TRB.Data.settings.core.experimental.specs.warlock.affliction then
-		AfflictionConstructOptionsPanel(specCache.affliction)
-	end
+	AfflictionConstructOptionsPanel(specCache.affliction)
 end
 TRB.Options.Warlock.ConstructOptionsPanel = ConstructOptionsPanel

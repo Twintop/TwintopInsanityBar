@@ -1941,8 +1941,6 @@ if locale == "ruRU" then
     L["WarlockColorPickerCurrentMana"] = "Текущая мана"
     L["WarlockColorPickerCastingMana"] = "Мана, потраченная на хардкаст заклинания"
     L["WarlockColorPickerPassiveMana"] = "Пассивная мана"
-    L["ExperimentalWarlockAffliction"] = "Поддержка чернокнижника Колдовства"
-    L["ExperimentalWarlockAfflictionTooltip"] = "Это включит экспериментальную поддержку чернокнижника «Колдовство» в панели. Если вы измените этот параметр и в настоящее время вошли в систему с помощью чернокнижника, вам потребуется перезагрузить пользовательский интерфейс, прежде чем параметры конфигурации чернокнижника «Колдовство» станут доступны."
     L["CannibalizeIfForsaken"] = "Каннибализм (если Отрекшийся)"
     L["DemonHunterHavocBarTextVariable_aotgStacks"] = "Количество стаков Art of the Glaive, которые у вас есть на данный момент"
     L["DemonHunterHavocBarTextVariable_aotgTime"] = "Оставшееся время использования «Искусства глефы»"

@@ -2602,7 +2602,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				L["Maelstrom10"],
 				L["Screen"],
 			}
-		elseif (classId == 9 and specId == 1) then --Affliction Warlock
+		elseif (classId == 9 and specId == 1) then -- Affliction Warlock
 			relativeTo[L["SoulShard1"]] = "ComboPoint_1"
 			relativeTo[L["SoulShard2"]] = "ComboPoint_2"
 			relativeTo[L["SoulShard3"]] = "ComboPoint_3"
