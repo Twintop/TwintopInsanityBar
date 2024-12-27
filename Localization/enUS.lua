@@ -2186,3 +2186,13 @@ L["WarlockAfflictionColorPickerShadowEmbraceNotMax"] = "Mana when Shadow Embrace
 L["WarlockAfflictionBarTextVariable_shadowEmbraceMaxStacks"] = "Maximum number of stacks of Shadow Embrace"
 L["WarlockAfflictionBarTextVariable_shadowEmbraceStacks"] = "Number of stacks of Shadow Embrace on your current target"
 L["WarlockAfflictionBarTextVariable_shadowEmbraceTime"] = "Time remaining on Shadow Embrace on your current target"
+
+L["WarlockAfflictionAudioTormentedCrescendo1"] = "Tormented Crescendo (1 stack)"
+L["WarlockAfflictionAudioCheckboxTormentedCrescendo1"] = "Play audio cue when a Tormented Crescendo proc occurs"
+L["WarlockAfflictionAudioCheckboxTormentedCrescendo1Tooltip"] = "Play an audio cue when a Tormented Crescendo proc occurs. This will only play for the first proc."
+L["WarlockAfflictionAudioTormentedCrescendo2"] = "Tormented Crescendo (2 stacks)"
+L["WarlockAfflictionAudioCheckboxTormentedCrescendo2"] = "Play audio cue when you have two (max) Tormented Crescendo procs"
+L["WarlockAfflictionAudioCheckboxTormentedCrescendo2Tooltip"] = "Play audio cue when you get a second (and maximum) Tormented Crescendo proc. If both are checked, only this sound will play."
+L["WarlockAfflictionAudioNightfall"] = "Nightfall"
+L["WarlockAfflictionAudioCheckboxNightfall"] = "Play audio cue when a Nightfall proc occurs"
+L["WarlockAfflictionAudioCheckboxNightfallTooltip"] = "Play an audio cue when a Nightfall proc occurs."

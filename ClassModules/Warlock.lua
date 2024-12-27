@@ -60,7 +60,9 @@ local function FillSpecializationCache()
 	local spells = specCache.affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
 	specCache.affliction.snapshotData.audio = {
-		
+		nightfallCue = false,
+		tormentedCrescendoCue = false,
+		tormentedCrescendo2Cue = false
 	}
 
 	specCache.affliction.barTextVariables = {
@@ -668,12 +670,31 @@ local function UpdateResourceBar()
 
 				barContainerFrame:SetAlpha(1.0)
 
-				if specSettings.colors.bar.nightfall.enabled and snapshots[spells.nightfall.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.nightfall.color
+				if snapshots[spells.nightfall.id].buff.isActive then
+					if specSettings.colors.bar.nightfall.enabled then
+						barBorderColor = specSettings.colors.bar.nightfall.color
+					end
+
+					if specSettings.audio.nightfall.enabled and snapshotData.audio.nightfallCue == false then
+						snapshotData.audio.nightfallCue = true
+						PlaySoundFile(specSettings.audio.nightfall.sound, coreSettings.audio.channel.channel)
+					end
+				else
+					snapshotData.audio.nightfallCue = false
 				end
 
-				if specSettings.colors.bar.tormentedCrescendo.enabled and snapshots[spells.tormentedCrescendo.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.tormentedCrescendo.color
+				if snapshots[spells.tormentedCrescendo.id].buff.isActive then
+					if specSettings.colors.bar.tormentedCrescendo.enabled then
+						barBorderColor = specSettings.colors.bar.tormentedCrescendo.color
+					end
+
+					if snapshots[spells.tormentedCrescendo.id].buff.applications == 1 and specSettings.audio.tormentedCrescendo.enabled and not snapshotData.audio.tormentedCrescendoCue then
+						snapshotData.audio.tormentedCrescendoCue = true
+						PlaySoundFile(specSettings.audio.tormentedCrescendo.sound, coreSettings.audio.channel.channel)
+					elseif	snapshots[spells.tormentedCrescendo.id].buff.applications == 2 and specSettings.audio.tormentedCrescendo2.enabled and not snapshotData.audio.tormentedCrescendo2Cue then
+						snapshotData.audio.tormentedCrescendo2Cue = true
+						PlaySoundFile(specSettings.audio.tormentedCrescendo2.sound, coreSettings.audio.channel.channel)
+					end
 				end
 
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
@@ -788,6 +809,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.shadowEmbrace.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				elseif entry.spellId == spells.tormentedCrescendo.id then
+					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+						snapshotData.audio.tormentedCrescendo2Cue = false
+					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
+						snapshotData.audio.tormentedCrescendoCue = false
+						snapshotData.audio.tormentedCrescendo2Cue = false
 					end
 				end
 			end
