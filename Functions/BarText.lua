@@ -268,31 +268,27 @@ local function GetFromSymbolsCache(inputString)
 end
 
 local function RemoveInvalidVariablesFromBarText(scan, input, indexOffset, maxIndex, positionOffset, maxPosition)
-	local returnText = ""
+	local returnText = {}
+	local inputLength = #input
 
 ---@diagnostic disable-next-line: undefined-field
-	if string.len(string.trim(input)) == 0 then
-		return returnText
+	if inputLength == 0 then
+		return ""
 	end
 
 	local p = 0
 
-	if indexOffset == nil then
-		indexOffset = 0
-	end
-
-	if positionOffset == nil then
-		positionOffset = 0
-	end
+    indexOffset = indexOffset or 0
+    positionOffset = positionOffset or 0
 
 	local lastIndex = indexOffset
-	while p <= string.len(input) do
+	while p <= inputLength do
 		local nextOpenIf = FindNextSymbolIndex(scan.all, '{', nil, lastIndex, maxIndex)
 		if nextOpenIf ~= nil then
-			local matchedCloseIf = FindNextSymbolLevel(scan.all, '}', nextOpenIf.index+1, nextOpenIf.level)
+			local matchedCloseIf = FindNextSymbolLevel(scan.all, '}', nextOpenIf.index + 1, nextOpenIf.level)
 
 			if nextOpenIf.position - positionOffset > p then
-				returnText = returnText .. string.sub(input, p, nextOpenIf.position - positionOffset - 1)
+                table.insert(returnText, string.sub(input, p, nextOpenIf.position - positionOffset - 1))
 				p = nextOpenIf.position - positionOffset
 			end
 			
@@ -315,11 +311,10 @@ local function RemoveInvalidVariablesFromBarText(scan, input, indexOffset, maxIn
 							end
 						end
 
----@diagnostic disable-next-line: undefined-field
 						local logicString = string.trim(string.sub(input, nextOpenIf.position - positionOffset + 1, matchedCloseIf.position - positionOffset - 1))
 						local s = nextOpenIf.position - positionOffset + 1
 						local outputString = ""
-						local lastLogicIndex = nextOpenIf.index+1
+						local lastLogicIndex = nextOpenIf.index + 1
 						while s-p-1 <= string.len(logicString) do
 							local nextVariable = FindNextSymbolIndex(scan.all, '$', nil, lastLogicIndex, nil, nil, matchedCloseIf.position + 1)
 							
@@ -331,15 +326,13 @@ local function RemoveInvalidVariablesFromBarText(scan, input, indexOffset, maxIn
 									variableEnd = nextSymbol.position - positionOffset - p - 1
 								end
 
----@diagnostic disable-next-line: undefined-field
 								local var = string.trim(string.sub(logicString, nextVariable.position - positionOffset - p, variableEnd))
 								var = string.gsub(var, " ", "")
 								local valid = TRB.Functions.Class:IsValidVariableForSpec(var)
 								
----@diagnostic disable-next-line: undefined-field
 								local beforeVar = string.trim(string.sub(logicString, s-p, nextVariable.position - positionOffset - p - 1))
----@diagnostic disable-next-line: undefined-field
-								local afterVar = string.trim(string.sub(logicString, variableEnd, variableEnd))
+								-- Not currently used
+								--local afterVar = string.trim(string.sub(logicString, variableEnd, variableEnd))
 
 								local prevSymbol = FindNextSymbolIndex(scan.all, '$', true, nextVariable.index-1, nextVariable.index, nil, nil)
 								local nextNextSymbol = FindNextSymbolIndex(scan.all, '$', true, nextVariable.index+1, nextVariable.index+1, nil, nil)										
@@ -390,18 +383,18 @@ local function RemoveInvalidVariablesFromBarText(scan, input, indexOffset, maxIn
 						if resultCode then
 							local pcallSuccess, result = pcall(resultFunc)
 							if not pcallSuccess then-- Something went wrong, show the error text instead
-								returnText = returnText .. L["BarTextInvalidIfElseLogic"]
+								table.insert(returnText, L["BarTextInvalidIfElseLogic"])
 							elseif result == true or result then
 								-- Recursive call for "IF", once we find the matched ]
 								local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)
-								returnText = returnText .. RemoveInvalidVariablesFromBarText(scan, trueText, nextOpenResult.index, nextCloseResult.index - 1, nextOpenResult.position, nextCloseResult.position - 1)
+								table.insert(returnText, RemoveInvalidVariablesFromBarText(scan, trueText, nextOpenResult.index, nextCloseResult.index - 1, nextOpenResult.position, nextCloseResult.position - 1))
 							elseif elseOpenResult ~= nil and elseCloseResult ~= nil and (result == false or (not result)) and hasElse == true then
 								-- Recursive call for "ELSE", once we find the matched ]
 								local falseText = string.sub(input, elseOpenResult.position - positionOffset + 1, elseCloseResult.position - positionOffset - 1)
-								returnText = returnText .. RemoveInvalidVariablesFromBarText(scan, falseText, elseOpenResult.index, elseCloseResult.index - 1, elseOpenResult.position, elseCloseResult.position - 1)
+								table.insert(returnText, RemoveInvalidVariablesFromBarText(scan, falseText, elseOpenResult.index, elseCloseResult.index - 1, elseOpenResult.position, elseCloseResult.position - 1))
 							end
 						else -- Something went wrong, show the error text instead
-							returnText = returnText .. L["BarTextInvalidIfElseLogic"]
+							table.insert(returnText, L["BarTextInvalidIfElseLogic"])
 						end
 
 						if elseCloseResult ~= nil and hasElse == true then
@@ -412,30 +405,30 @@ local function RemoveInvalidVariablesFromBarText(scan, input, indexOffset, maxIn
 							lastIndex = nextCloseResult.index
 						end
 					else -- TRUE result block doesn't close, no matching ]
-						returnText = returnText .. string.sub(input, p, nextOpenResult.position - positionOffset)
+						table.insert(returnText, string.sub(input, p, nextOpenResult.position - positionOffset))
 						p = nextOpenResult.position - positionOffset + 1
 						lastIndex = nextOpenResult.index
 					end
 				else -- Dump all of the previous "if" stuff verbatim
-					returnText = returnText .. string.sub(input, p, matchedCloseIf.position - positionOffset)
+					table.insert(returnText, string.sub(input, p, matchedCloseIf.position - positionOffset))
 					p = matchedCloseIf.position - positionOffset + 1
 					lastIndex = matchedCloseIf.index
 				end
 			elseif matchedCloseIf ~= nil then --nextCloseIf.position+1 is not [
-				returnText = returnText .. string.sub(input, p, matchedCloseIf.position - positionOffset)
+				table.insert(returnText, string.sub(input, p, matchedCloseIf.position - positionOffset))
 				p = matchedCloseIf.position - positionOffset + 1
 				lastIndex = matchedCloseIf.index
 			else -- End of string
-				returnText = returnText .. string.sub(input, p)
-				p = string.len(input) + 1
+				table.insert(returnText, string.sub(input, p, -1))
+				p = inputLength+ 1
 			end
 		else
-			returnText = returnText .. string.sub(input, p)
-			p = string.len(input)
+			table.insert(returnText, string.sub(input, p))
+			p = inputLength
 			break
 		end
 	end
-	return returnText
+	return table.concat(returnText)
 end
 
 local function AddToBarTextCache(input)
