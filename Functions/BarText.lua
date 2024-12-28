@@ -268,167 +268,163 @@ local function GetFromSymbolsCache(inputString)
 end
 
 local function RemoveInvalidVariablesFromBarText(scan, input, indexOffset, maxIndex, positionOffset, maxPosition)
-	local returnText = {}
-	local inputLength = #input
+    local returnText = {}
+    local inputLength = #input
 
----@diagnostic disable-next-line: undefined-field
-	if inputLength == 0 then
-		return ""
-	end
+    ---@diagnostic disable-next-line: undefined-field
+    if inputLength == 0 then
+        return ""
+    end
 
-	local p = 0
-
+    local p = 0
     indexOffset = indexOffset or 0
     positionOffset = positionOffset or 0
+    local lastIndex = indexOffset
 
-	local lastIndex = indexOffset
-	while p <= inputLength do
-		local nextOpenIf = FindNextSymbolIndex(scan.all, '{', nil, lastIndex, maxIndex)
-		if nextOpenIf ~= nil then
-			local matchedCloseIf = FindNextSymbolLevel(scan.all, '}', nextOpenIf.index + 1, nextOpenIf.level)
+    while p <= inputLength do
+        local nextOpenIf = FindNextSymbolIndex(scan.all, '{', nil, lastIndex, maxIndex)
+        if nextOpenIf then
+            local matchedCloseIf = FindNextSymbolLevel(scan.all, '}', nextOpenIf.index + 1, nextOpenIf.level)
 
-			if nextOpenIf.position - positionOffset > p then
+            if nextOpenIf.position - positionOffset > p then
                 table.insert(returnText, string.sub(input, p, nextOpenIf.position - positionOffset - 1))
-				p = nextOpenIf.position - positionOffset
-			end
-			
-			if matchedCloseIf ~= nil and matchedCloseIf.symbol == '}' and matchedCloseIf.level == nextOpenIf.level then -- no weird nesting of if logic, which is unsupported
-				local nextOpenResult = FindNextSymbolLevel(scan.all, '[', matchedCloseIf.index+1, nextOpenIf.level)
+                p = nextOpenIf.position - positionOffset
+            end
 
-				if nextOpenResult ~= nil and nextOpenResult.symbol == '[' and matchedCloseIf.position - positionOffset + 1 == nextOpenResult.position - positionOffset then -- no weird spacing/nesting
-					local nextCloseResult = FindNextSymbolLevel(scan.all, ']', nextOpenResult.index, nextOpenResult.level)
-					if nextCloseResult ~= nil then
-						local hasElse = false
-						local elseOpenResult = FindNextSymbolLevel(scan.all, '[', nextCloseResult.index, nextOpenResult.level)
-						local elseCloseResult
+            if matchedCloseIf and matchedCloseIf.symbol == '}' and matchedCloseIf.level == nextOpenIf.level then -- no weird nesting of if logic, which is unsupported
+                local nextOpenResult = FindNextSymbolLevel(scan.all, '[', matchedCloseIf.index + 1, nextOpenIf.level)
 
-						if elseOpenResult ~= nil and elseOpenResult.position - positionOffset == nextCloseResult.position - positionOffset + 1 then
-							elseCloseResult = FindNextSymbolLevel(scan.all, ']', elseOpenResult.index, nextOpenResult.level)
+                if nextOpenResult and nextOpenResult.symbol == '[' and matchedCloseIf.position - positionOffset + 1 == nextOpenResult.position - positionOffset then -- no weird spacing/nesting
+                    local nextCloseResult = FindNextSymbolLevel(scan.all, ']', nextOpenResult.index, nextOpenResult.level)
+                    if nextCloseResult then
+                        local hasElse = false
+                        local elseOpenResult = FindNextSymbolLevel(scan.all, '[', nextCloseResult.index, nextOpenResult.level)
+                        local elseCloseResult
 
-							if elseCloseResult ~= nil then
-								-- We have if/else
-								hasElse = true
-							end
-						end
+                        if elseOpenResult and elseOpenResult.position - positionOffset == nextCloseResult.position - positionOffset + 1 then
+                            elseCloseResult = FindNextSymbolLevel(scan.all, ']', elseOpenResult.index, nextOpenResult.level)
+                            if elseCloseResult then
+                                -- We have if/else
+                                hasElse = true
+                            end
+                        end
 
-						local logicString = string.trim(string.sub(input, nextOpenIf.position - positionOffset + 1, matchedCloseIf.position - positionOffset - 1))
-						local s = nextOpenIf.position - positionOffset + 1
-						local outputString = ""
-						local lastLogicIndex = nextOpenIf.index + 1
-						while s-p-1 <= string.len(logicString) do
-							local nextVariable = FindNextSymbolIndex(scan.all, '$', nil, lastLogicIndex, nil, nil, matchedCloseIf.position + 1)
-							
-							if nextVariable ~= nil then
-								local nextSymbol = FindNextSymbolIndex(scan.all, '$', true, nextVariable.index, nil, nil, matchedCloseIf.position + 1)
-								local variableEnd = string.len(logicString)
+                        local logicString = string.trim(string.sub(input, nextOpenIf.position - positionOffset + 1, matchedCloseIf.position - positionOffset - 1))
+                        local s = nextOpenIf.position - positionOffset + 1
+                        local lastLogicIndex = nextOpenIf.index + 1
+                        local outputString = ""
 
-								if nextSymbol ~= nil then
-									variableEnd = nextSymbol.position - positionOffset - p - 1
-								end
+                        while s - p - 1 <= #logicString do
+                            local nextVariable = FindNextSymbolIndex(scan.all, '$', nil, lastLogicIndex, nil, nil, matchedCloseIf.position + 1)
+                            if nextVariable then
+                                local nextSymbol = FindNextSymbolIndex(scan.all, '$', true, nextVariable.index, nil, nil, matchedCloseIf.position + 1)
+                                local variableEnd = #logicString
 
-								local var = string.trim(string.sub(logicString, nextVariable.position - positionOffset - p, variableEnd))
-								var = string.gsub(var, " ", "")
-								local valid = TRB.Functions.Class:IsValidVariableForSpec(var)
-								
-								local beforeVar = string.trim(string.sub(logicString, s-p, nextVariable.position - positionOffset - p - 1))
+                                if nextSymbol then
+                                    variableEnd = nextSymbol.position - positionOffset - p - 1
+                                end
+
+                                local var = string.trim(string.gsub(string.sub(logicString, nextVariable.position - positionOffset - p, variableEnd), " ", ""))
+                                local valid = TRB.Functions.Class:IsValidVariableForSpec(var)
+                                local beforeVar = string.trim(string.sub(logicString, s - p, nextVariable.position - positionOffset - p - 1))								
 								-- Not currently used
 								--local afterVar = string.trim(string.sub(logicString, variableEnd, variableEnd))
 
-								local prevSymbol = FindNextSymbolIndex(scan.all, '$', true, nextVariable.index-1, nextVariable.index, nil, nil)
-								local nextNextSymbol = FindNextSymbolIndex(scan.all, '$', true, nextVariable.index+1, nextVariable.index+1, nil, nil)										
-								local pSymbol = ""
-								local nSymbol = ""
+                                local prevSymbol = FindNextSymbolIndex(scan.all, '$', true, nextVariable.index - 1, nextVariable.index, nil, nil)
+                                local nextNextSymbol = FindNextSymbolIndex(scan.all, '$', true, nextVariable.index + 1, nextVariable.index + 1, nil, nil)
+                                local pSymbol = ""
+                                local nSymbol = ""
 
-								if prevSymbol ~= nil and nextNextSymbol ~= nil then
+								if prevSymbol and nextNextSymbol then
 									pSymbol = prevSymbol.symbol
 									nSymbol = nextNextSymbol.symbol
-								end
+                                end
 
-								if TRB.Data.lookupLogic[var] ~= nil and pSymbol ~= "!" and ((pSymbol ~= "{" and pSymbol ~= "|" and pSymbol ~= "&" and pSymbol ~= "(") or (nSymbol ~= "}" and nSymbol ~= "|" and nSymbol ~= "&" and nSymbol ~= ")")) then
-									valid = TRB.Data.lookupLogic[var]
-								end
+                                if TRB.Data.lookupLogic[var] and pSymbol ~= "!" and ((pSymbol ~= "{" and pSymbol ~= "|" and pSymbol ~= "&" and pSymbol ~= "(") or (nSymbol ~= "}" and nSymbol ~= "|" and nSymbol ~= "&" and nSymbol ~= ")")) then
+                                    valid = TRB.Data.lookupLogic[var]
+                                end
 
 								if string.sub(beforeVar, string.len(beforeVar)) == "!" then
 									outputString = outputString .. " " .. string.sub(beforeVar, 0, string.len(beforeVar)-1) .. " (not " .. tostring(valid) .. ") "
-								else
-									outputString = outputString .. " " .. beforeVar .. " " .. tostring(valid)
-								end
+                                else
+                                    outputString = outputString .. " " .. beforeVar .. " " .. tostring(valid)
+                                end
 
-								s = p + variableEnd + 1
-								lastLogicIndex = nextVariable.index + 1
-							else
----@diagnostic disable-next-line: undefined-field
-								local remainder = string.trim(string.sub(logicString, s-p))
-								outputString = outputString .. " " .. remainder
-								s = p + string.len(logicString) + 2
-							end
-						end
+                                s = p + variableEnd + 1
+                                lastLogicIndex = nextVariable.index + 1
+                            else
+                                local remainder = string.trim(string.sub(logicString, s - p))
+                                outputString = outputString .. " " .. remainder
+                                s = p + #logicString + 2
+                            end
+                        end
 
-						outputString = string.lower(outputString)
-						--outputString = string.gsub(outputString, " ", "") -- This is causing problems with ! nots
-						outputString = string.gsub(outputString, "%(%)", "")
-						outputString = string.gsub(outputString, "=", "==")
-						outputString = string.gsub(outputString, "!==", "!=")
-						outputString = string.gsub(outputString, "~==", "~=")
-						outputString = string.gsub(outputString, ">==", ">=")
-						outputString = string.gsub(outputString, "<==", "<=")
-						outputString = string.gsub(outputString, "===", "==")
-						outputString = string.gsub(outputString, "!=", "~=")
-						outputString = string.gsub(outputString, "!", " not ")
-						outputString = string.gsub(outputString, "&", " and ")
-						outputString = string.gsub(outputString, "||", " or ")
+                        outputString = string.lower(outputString)
+                        --outputString = string.gsub(outputString, " ", "") -- This is causing problems with ! nots
+                        outputString = string.gsub(outputString, "%(%)", "")
+                        outputString = string.gsub(outputString, "=", "==")
+                        outputString = string.gsub(outputString, "!==", "!=")
+                        outputString = string.gsub(outputString, "~==", "~=")
+                        outputString = string.gsub(outputString, ">==", ">=")
+                        outputString = string.gsub(outputString, "<==", "<=")
+                        outputString = string.gsub(outputString, "===", "==")
+                        outputString = string.gsub(outputString, "!=", "~=")
+                        outputString = string.gsub(outputString, "!", " not ")
+                        outputString = string.gsub(outputString, "&", " and ")
+                        outputString = string.gsub(outputString, "||", " or ")
 
-						local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
-						
-						if resultCode then
-							local pcallSuccess, result = pcall(resultFunc)
-							if not pcallSuccess then-- Something went wrong, show the error text instead
-								table.insert(returnText, L["BarTextInvalidIfElseLogic"])
-							elseif result == true or result then
-								-- Recursive call for "IF", once we find the matched ]
-								local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)
-								table.insert(returnText, RemoveInvalidVariablesFromBarText(scan, trueText, nextOpenResult.index, nextCloseResult.index - 1, nextOpenResult.position, nextCloseResult.position - 1))
-							elseif elseOpenResult ~= nil and elseCloseResult ~= nil and (result == false or (not result)) and hasElse == true then
-								-- Recursive call for "ELSE", once we find the matched ]
-								local falseText = string.sub(input, elseOpenResult.position - positionOffset + 1, elseCloseResult.position - positionOffset - 1)
-								table.insert(returnText, RemoveInvalidVariablesFromBarText(scan, falseText, elseOpenResult.index, elseCloseResult.index - 1, elseOpenResult.position, elseCloseResult.position - 1))
-							end
-						else -- Something went wrong, show the error text instead
-							table.insert(returnText, L["BarTextInvalidIfElseLogic"])
-						end
+                        local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
+                        
+                        if resultCode then
+                            local pcallSuccess, result = pcall(resultFunc)
+                            if not pcallSuccess then-- Something went wrong, show the error text instead
+                                table.insert(returnText, L["BarTextInvalidIfElseLogic"])
+                            elseif result == true or result then
+                                -- Recursive call for "IF", once we find the matched ]
+                                local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)
+                                table.insert(returnText, RemoveInvalidVariablesFromBarText(scan, trueText, nextOpenResult.index, nextCloseResult.index - 1, nextOpenResult.position, nextCloseResult.position - 1))
+                            elseif elseOpenResult ~= nil and elseCloseResult ~= nil and (result == false or (not result)) and hasElse == true then
+                                -- Recursive call for "ELSE", once we find the matched ]
+                                local falseText = string.sub(input, elseOpenResult.position - positionOffset + 1, elseCloseResult.position - positionOffset - 1)
+                                table.insert(returnText, RemoveInvalidVariablesFromBarText(scan, falseText, elseOpenResult.index, elseCloseResult.index - 1, elseOpenResult.position, elseCloseResult.position - 1))
+                            end
+                        else -- Something went wrong, show the error text instead
+                            table.insert(returnText, L["BarTextInvalidIfElseLogic"])
+                        end
 
-						if elseCloseResult ~= nil and hasElse == true then
-							p = elseCloseResult.position - positionOffset + 1
-							lastIndex = elseCloseResult.index
-						else
-							p = nextCloseResult.position - positionOffset + 1
-							lastIndex = nextCloseResult.index
-						end
+                        if elseCloseResult ~= nil and hasElse == true then
+                            p = elseCloseResult.position - positionOffset + 1
+                            lastIndex = elseCloseResult.index
+                        else
+                            p = nextCloseResult.position - positionOffset + 1
+                            lastIndex = nextCloseResult.index
+                        end
 					else -- TRUE result block doesn't close, no matching ]
-						table.insert(returnText, string.sub(input, p, nextOpenResult.position - positionOffset))
-						p = nextOpenResult.position - positionOffset + 1
-						lastIndex = nextOpenResult.index
-					end
+                        table.insert(returnText, string.sub(input, p, nextOpenResult.position - positionOffset))
+                        p = nextOpenResult.position - positionOffset + 1
+                        lastIndex = nextOpenResult.index
+                    end
 				else -- Dump all of the previous "if" stuff verbatim
-					table.insert(returnText, string.sub(input, p, matchedCloseIf.position - positionOffset))
-					p = matchedCloseIf.position - positionOffset + 1
-					lastIndex = matchedCloseIf.index
-				end
-			elseif matchedCloseIf ~= nil then --nextCloseIf.position+1 is not [
-				table.insert(returnText, string.sub(input, p, matchedCloseIf.position - positionOffset))
-				p = matchedCloseIf.position - positionOffset + 1
-				lastIndex = matchedCloseIf.index
+                    table.insert(returnText, string.sub(input, p, matchedCloseIf.position - positionOffset))
+                    p = matchedCloseIf.position - positionOffset + 1
+                    lastIndex = matchedCloseIf.index
+                end
+			elseif matchedCloseIf then --nextCloseIf.position+1 is not [
+                table.insert(returnText, string.sub(input, p, matchedCloseIf.position - positionOffset))
+                p = matchedCloseIf.position - positionOffset + 1
+                lastIndex = matchedCloseIf.index
 			else -- End of string
-				table.insert(returnText, string.sub(input, p, -1))
-				p = inputLength+ 1
-			end
-		else
-			table.insert(returnText, string.sub(input, p))
-			p = inputLength
-			break
-		end
-	end
-	return table.concat(returnText)
+                table.insert(returnText, string.sub(input, p, -1))
+                p = inputLength + 1
+            end
+        else
+            table.insert(returnText, string.sub(input, p))
+            p = inputLength
+            break
+        end
+    end
+
+    return table.concat(returnText)
 end
 
 local function AddToBarTextCache(input)
