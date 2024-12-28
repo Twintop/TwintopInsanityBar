@@ -144,6 +144,7 @@ TRB.Data.barTextVariables = {
 TRB.Data.cache = {}
 TRB.Data.cache.barText = {}
 TRB.Data.cache.symbols = {}
+TRB.Data.cache.barTextTree = {}
 TRB.Data.specCache = {}
 
 -- This is here for reference/what every implementation should use as a minimum

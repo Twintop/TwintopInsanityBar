@@ -216,6 +216,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.cache.barText = {}
 	TRB.Data.cache.symbols = {}
+	TRB.Data.cache.barTextTree = {}
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings

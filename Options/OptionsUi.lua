@@ -3035,6 +3035,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		SetTableValues(displayText, barTextTable)
 		TRB.Data.cache.barText = {}
 		TRB.Data.cache.symbols = {}
+		TRB.Data.cache.barTextTree = {}
 	end)
 
 	function barTextRelativeToFrame:SetValue(newValue, newName)
