@@ -8,6 +8,9 @@ local function TryUpdateText(frame, text)
 	frame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 end
 
+---Scans the input string for logic symbols and returns their positions and levels
+---@param input string
+---@return table
 local function ScanForLogicSymbols(input)
 	local returnTable = {
 		all = {}
@@ -195,6 +198,15 @@ local function ScanForLogicSymbols(input)
 	return returnTable
 end
 
+---Finds the next symbol index in the table
+---@param t table
+---@param symbol string
+---@param notSymbol boolean
+---@param minIndex number
+---@param maxIndex number
+---@param minPosition number
+---@param maxPosition number
+---@return table|nil
 local function FindNextSymbolIndex(t, symbol, notSymbol, minIndex, maxIndex, minPosition, maxPosition)
 	if t == nil or symbol == nil then
 		return nil
@@ -224,6 +236,12 @@ local function FindNextSymbolIndex(t, symbol, notSymbol, minIndex, maxIndex, min
 	return nil
 end
 
+---Finds the next symbol level in the table
+---@param t table
+---@param symbol string
+---@param minIndex number
+---@param level number
+---@return table|nil
 local function FindNextSymbolLevel(t, symbol, minIndex, level)
 	if t == nil or symbol == nil or level == nil or level < 0 then
 		return nil
@@ -243,6 +261,9 @@ local function FindNextSymbolLevel(t, symbol, minIndex, level)
 	return nil
 end
 
+---Gets the symbols cache for the input string
+---@param inputString string
+---@return table
 local function GetFromSymbolsCache(inputString)
 	if TRB.Data.cache.symbols[inputString] == nil then
 		TRB.Data.cache.symbols[inputString] = ScanForLogicSymbols(inputString)
@@ -397,6 +418,9 @@ local function CreateBarTextTree(input)
     return returnText
 end
 
+---Gets the bar text tree cache for the input string
+---@param input string
+---@return table
 local function GetFromBarTextTreeCache(input)
 	if TRB.Data.cache.barTextTree[input] == nil then
 		TRB.Data.cache.barTextTree[input] = CreateBarTextTree(input)
@@ -406,6 +430,9 @@ local function GetFromBarTextTreeCache(input)
 end
 
 
+---Removes invalid variables from the bar text represented within the tree
+---@param tree table
+---@return string
 local function RemoveInvalidVariablesFromBarText(tree)
 	if tree == nil or tree.barText == nil then
 		return ""
@@ -484,6 +511,9 @@ local function RemoveInvalidVariablesFromBarText(tree)
     return table.concat(returnText)
 end
 
+---Adds the input to the bar text cache
+---@param input string
+---@return table
 local function AddToBarTextCache(input)
 	local barTextVariables = TRB.Data.barTextVariables
 	local iconEntries = TRB.Functions.Table:Length(barTextVariables.icons)
@@ -648,6 +678,9 @@ local function AddToBarTextCache(input)
 	return barTextCacheEntry
 end
 
+---Gets the bar text cache for the input string
+---@param barText string
+---@return table
 local function GetFromBarTextCache(barText)
 	local entries = TRB.Functions.Table:Length(TRB.Data.cache.barText)
 
@@ -662,6 +695,9 @@ local function GetFromBarTextCache(barText)
 	return AddToBarTextCache(barText)
 end
 
+---Gets the return text after processing the input text
+---@param inputText table
+---@return string
 local function GetReturnText(inputText)
 	local lookup = TRB.Data.lookup
 	lookup["color"] = inputText.color
@@ -689,6 +725,8 @@ local function GetReturnText(inputText)
 	return string.format("%s%s", inputText.color, inputText.text)
 end
 
+---Refreshes the baseline lookup data with the current values.
+---@param settings table
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	--Spec specific implementations also needed. This is general/cross-spec data
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -845,6 +883,8 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	Global_TwintopResourceBar.resource.casting = castingAmount
 end
 
+---Checks if Time to Die (TTD) is used at all by display text within the settings provided
+---@param settings table
 function TRB.Functions.BarText:IsTtdActive(settings)
 	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 	local found = false
@@ -863,6 +903,9 @@ function TRB.Functions.BarText:IsTtdActive(settings)
 	targetData.ttdIsActive = found
 end
 
+---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
+---@param var string
+---@return boolean
 function TRB.Functions.BarText:IsValidVariableBase(var)
 	local valid = false
 	if var == "$crit" or var == "$critPercent" then
@@ -909,6 +952,10 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	return valid
 end
 
+---Updates the resource bar text based on the settings
+---@param settings table
+---@param sharedSettings table
+---@param refreshText boolean
 function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, refreshText)
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
 	TRB.Functions.BarText:RefreshLookupDataBase(settings)
@@ -1080,7 +1127,7 @@ function TRB.Functions.BarText:Hide(settings)
 	end
 end
 
----Hides all bar text
+---Shows all enabled bar text
 ---@param settings table
 function TRB.Functions.BarText:Show(settings)
 	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
