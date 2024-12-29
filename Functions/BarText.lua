@@ -306,9 +306,52 @@ local function CreateBarTextTree(input)
 
 						local innerReturnText = {
 							logic = logicString,
+							logicVariables = {},
 							trueResult = CreateBarTextTree(trueText),
 							symbols = GetFromSymbolsCache(logicString)
 						}
+						
+						local s = 1
+						local lastLogicIndex = 0
+						local logicLength = #logicString
+						while s <= logicLength do
+							local nextVariable = FindNextSymbolIndex(innerReturnText.symbols.all, '$', nil, lastLogicIndex)
+							if nextVariable then
+								local nextSymbol = FindNextSymbolIndex(innerReturnText.symbols.all, '$', true, nextVariable.index)
+								local variableEnd = logicLength
+			
+								if nextSymbol then
+									variableEnd = nextSymbol.position - 1
+								end
+			
+								local var = string.trim(string.gsub(string.sub(innerReturnText.logic, nextVariable.position, variableEnd), " ", ""))
+								local beforeVar = string.trim(string.sub(innerReturnText.logic, s, nextVariable.position - 1))
+								local prevSymbol = FindNextSymbolIndex(innerReturnText.symbols.all, '$', true, nextVariable.index - 1, nextVariable.index, nil, nil)
+								local nextNextSymbol = FindNextSymbolIndex(innerReturnText.symbols.all, '$', true, nextVariable.index + 1, nextVariable.index + 1, nil, nil)
+								local pSymbol = "{"
+								local nSymbol = "}"
+			
+								if prevSymbol then
+									pSymbol = prevSymbol.symbol
+								end
+								if nextNextSymbol then
+									nSymbol = nextNextSymbol.symbol
+								end
+			
+								table.insert(innerReturnText.logicVariables, {
+									variable = var,
+									beforeVar = beforeVar,
+									prevSymbol = pSymbol,
+									nextSymbol = nSymbol,
+									variableEnd = variableEnd
+								})
+
+								s = variableEnd + 1
+								lastLogicIndex = nextVariable.index + 1
+							else
+								s = logicLength + 2
+							end
+						end
 
 						if elseOpenResult and elseCloseResult then
 							local falseText = string.sub(input, elseOpenResult.position - positionOffset + 1, elseCloseResult.position - positionOffset - 1)
@@ -368,53 +411,31 @@ local function RemoveInvalidVariablesFromBarText(tree)
 	
 	local returnText = {}
 
-	for i, v in ipairs(tree.barText) do
+	for _, v in ipairs(tree.barText) do
 		if type(v) == "string" then
 			table.insert(returnText, v)
 		else
 			local outputString = ""
 			local s = 1
-			local lastLogicIndex = 0
+			local index = 1
 			while s <= #v.logic do
-				local nextVariable = FindNextSymbolIndex(v.symbols.all, '$', nil, lastLogicIndex)
+				local nextVariable = v.logicVariables[index]
 				if nextVariable then
-					local nextSymbol = FindNextSymbolIndex(v.symbols.all, '$', true, nextVariable.index)
-					local variableEnd = #v.logic
-
-					if nextSymbol then
-						variableEnd = nextSymbol.position - 1
+					local valid = TRB.Functions.Class:IsValidVariableForSpec(nextVariable.variable)
+					if TRB.Data.lookupLogic[nextVariable.variable] and nextVariable.prevSymbol ~= "!" and ((nextVariable.prevSymbol ~= "{" and nextVariable.prevSymbol ~= "|" and nextVariable.prevSymbol ~= "&" and nextVariable.prevSymbol ~= "(") or (nextVariable.nextSymbol ~= "}" and nextVariable.nextSymbol ~= "|" and nextVariable.nextSymbol ~= "&" and nextVariable.nextSymbol ~= ")")) then
+						valid = TRB.Data.lookupLogic[nextVariable.variable]
 					end
 
-					local var = string.trim(string.gsub(string.sub(v.logic, nextVariable.position, variableEnd), " ", ""))
-					local valid = TRB.Functions.Class:IsValidVariableForSpec(var)
-					local beforeVar = string.trim(string.sub(v.logic, s, nextVariable.position - 1))
-					-- Not currently used
-					--local afterVar = string.trim(string.sub(logicString, variableEnd, variableEnd))
+					local beforeVarLength = #nextVariable.beforeVar
 
-					local prevSymbol = FindNextSymbolIndex(v.symbols.all, '$', true, nextVariable.index - 1, nextVariable.index, nil, nil)
-					local nextNextSymbol = FindNextSymbolIndex(v.symbols.all, '$', true, nextVariable.index + 1, nextVariable.index + 1, nil, nil)
-					local pSymbol = "{"
-					local nSymbol = "}"
-
-					if prevSymbol then
-						pSymbol = prevSymbol.symbol
-					end
-					if nextNextSymbol then
-						nSymbol = nextNextSymbol.symbol
-					end
-
-					if TRB.Data.lookupLogic[var] and pSymbol ~= "!" and ((pSymbol ~= "{" and pSymbol ~= "|" and pSymbol ~= "&" and pSymbol ~= "(") or (nSymbol ~= "}" and nSymbol ~= "|" and nSymbol ~= "&" and nSymbol ~= ")")) then
-						valid = TRB.Data.lookupLogic[var]
-					end
-
-					if string.sub(beforeVar, string.len(beforeVar)) == "!" then
-						outputString = outputString .. " " .. string.sub(beforeVar, 0, string.len(beforeVar) - 1) .. " (not " .. tostring(valid) .. ") "
+					if string.sub(nextVariable.beforeVar, beforeVarLength) == "!" then
+						outputString = outputString .. " " .. string.sub(nextVariable.beforeVar, 0, beforeVarLength - 1) .. " (not " .. tostring(valid) .. ") "
 					else
-						outputString = outputString .. " " .. beforeVar .. " " .. tostring(valid)
+						outputString = outputString .. " " .. nextVariable.beforeVar .. " " .. tostring(valid)
 					end
 
-					s = variableEnd + 1
-					lastLogicIndex = nextVariable.index + 1
+					s = nextVariable.variableEnd + 1
+					index = index + 1
 				else
 					local remainder = string.trim(string.sub(v.logic, s))
 					outputString = outputString .. " " .. remainder
@@ -440,14 +461,14 @@ local function RemoveInvalidVariablesFromBarText(tree)
 			if resultCode then
 				local pcallSuccess, result = pcall(resultFunc)
 				if not pcallSuccess then-- Something went wrong, show the error text instead
-					table.insert(returnText, "1" .. L["BarTextInvalidIfElseLogic"])
+					table.insert(returnText, L["BarTextInvalidIfElseLogic"])
 				elseif result == true or result then
 					table.insert(returnText, RemoveInvalidVariablesFromBarText(v.trueResult))
 				elseif v.falseResult then
 					table.insert(returnText, RemoveInvalidVariablesFromBarText(v.falseResult))
 				end
 			else -- Something went wrong, show the error text instead
-				table.insert(returnText, "2" .. L["BarTextInvalidIfElseLogic"])
+				table.insert(returnText, L["BarTextInvalidIfElseLogic"])
 			end
 		end
 	end
