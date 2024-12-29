@@ -11,6 +11,15 @@ local content = [====[
 
 ---
 
+# 11.0.7.1-release (2024-12-30)
+## General
+
+- [#417 - REFACTOR](#417) Add caching to bar text logic parsing.
+<br/>&emsp;&ensp;- This change reduces the CPU usage required for bar text by up to 90%.
+<br/>&emsp;&ensp;- Users with complicated or bar text logic should see addon CPU reduction by upwards of 50% (i.e. Shadow Priest using `Full Advanced` preset).
+
+---
+
 # 11.0.7.0-release (2024-12-28)
 ## General
 
