@@ -341,6 +341,8 @@ local function CreateBarTextTree(input)
 								table.insert(innerReturnText.logicVariables, {
 									variable = var,
 									beforeVar = beforeVar,
+									beforeVarIsNot = string.sub(beforeVar, #beforeVar) == "!",
+									beforeVarIsNotSubString = string.sub(beforeVar, 0, #beforeVar - 1),
 									prevSymbol = pSymbol,
 									nextSymbol = nSymbol,
 									variableEnd = variableEnd
@@ -415,7 +417,7 @@ local function RemoveInvalidVariablesFromBarText(tree)
 		if type(v) == "string" then
 			table.insert(returnText, v)
 		else
-			local outputString = ""
+			local outputStringTable = {}
 			local s = 1
 			local index = 1
 			while s <= #v.logic do
@@ -426,24 +428,30 @@ local function RemoveInvalidVariablesFromBarText(tree)
 						valid = TRB.Data.lookupLogic[nextVariable.variable]
 					end
 
-					local beforeVarLength = #nextVariable.beforeVar
-
-					if string.sub(nextVariable.beforeVar, beforeVarLength) == "!" then
-						outputString = outputString .. " " .. string.sub(nextVariable.beforeVar, 0, beforeVarLength - 1) .. " (not " .. tostring(valid) .. ") "
+					if nextVariable.beforeVarIsNot then
+						table.insert(outputStringTable, " ")
+						table.insert(outputStringTable, nextVariable.beforeVarIsNotSubString)
+						table.insert(outputStringTable, " (not ")
+						table.insert(outputStringTable, tostring(valid))
+						table.insert(outputStringTable, ") ")
 					else
-						outputString = outputString .. " " .. nextVariable.beforeVar .. " " .. tostring(valid)
+						table.insert(outputStringTable, " ")
+						table.insert(outputStringTable, nextVariable.beforeVar)
+						table.insert(outputStringTable, " ")
+						table.insert(outputStringTable, tostring(valid))
 					end
 
 					s = nextVariable.variableEnd + 1
 					index = index + 1
 				else
 					local remainder = string.trim(string.sub(v.logic, s))
-					outputString = outputString .. " " .. remainder
+					table.insert(outputStringTable, " ")
+					table.insert(outputStringTable, remainder)
 					s = #v.logic + 2
 				end
 			end
 
-			outputString = string.lower(outputString)
+			local outputString = string.lower(table.concat(outputStringTable))
 			--outputString = string.gsub(outputString, " ", "") -- This is causing problems with ! nots
 			outputString = string.gsub(outputString, "%(%)", "")
 			outputString = string.gsub(outputString, "=", "==")
