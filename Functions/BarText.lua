@@ -201,11 +201,11 @@ end
 ---Finds the next symbol index in the table
 ---@param t table
 ---@param symbol string
----@param notSymbol boolean
+---@param notSymbol boolean?
 ---@param minIndex number
----@param maxIndex number
----@param minPosition number
----@param maxPosition number
+---@param maxIndex number?
+---@param minPosition number?
+---@param maxPosition number?
 ---@return table|nil
 local function FindNextSymbolIndex(t, symbol, notSymbol, minIndex, maxIndex, minPosition, maxPosition)
 	if t == nil or symbol == nil then
