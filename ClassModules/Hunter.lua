@@ -1500,31 +1500,31 @@ local function UpdateResourceBar()
 				else
 					castingBarValue = currentResource
 				end
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
 
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.passive
+						passiveBarColor = specSettings.colors.bar.spending
 					else
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.spending
+						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					passiveBarValue = castingBarValue + passiveValue
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
-					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
-					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					castingBarColor = specSettings.colors.bar.casting
+					passiveBarColor = specSettings.colors.bar.passive
 				end
+
 
 				local pairOffset = 0
 				local thresholdId = 1
@@ -1726,9 +1726,10 @@ local function UpdateResourceBar()
 					barContainerFrame:SetAlpha(1.0)
 				end
 
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
-
-				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
@@ -1748,9 +1749,9 @@ local function UpdateResourceBar()
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-				local borderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border
 				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-					borderColor = specSettings.colors.bar.borderOvercap
+					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 						snapshotData.audio.overcapCue = true
@@ -1764,18 +1765,16 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 
 					if specSettings.steadyFocus.mode == "gcd" then
-						local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+						local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
 						timeThreshold = gcd * specSettings.steadyFocus.gcdsMax
 					elseif specSettings.steadyFocus.mode == "time" then
 						timeThreshold = specSettings.steadyFocus.timeMax
 					end
 
 					if snapshots[spells.steadyFocus.id].buff:GetRemainingTime(currentTime) <= timeThreshold then
-						borderColor = specSettings.colors.bar.borderSteadyFocus
+						barBorderColor = specSettings.colors.bar.borderSteadyFocus
 					end
 				end
-
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(borderColor, true))
 
 				local passiveValue = 0
 				if specSettings.bar.showPassive then
@@ -1794,30 +1793,32 @@ local function UpdateResourceBar()
 					castingBarValue = currentResource
 				end
 
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
+
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.passive
+						passiveBarColor = specSettings.colors.bar.spending
 					else
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.spending
+						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					passiveBarValue = castingBarValue + passiveValue
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
-					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
-					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					castingBarColor = specSettings.colors.bar.casting
+					passiveBarColor = specSettings.colors.bar.passive
 				end
+
 
 				local pairOffset = 0
 				local thresholdId = 1
@@ -1997,7 +1998,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfTrueshot.enabled then
 						useEndOfTrueshotColor = true
 						if specSettings.endOfTrueshot.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
 							timeThreshold = gcd * specSettings.endOfTrueshot.gcdsMax
 						elseif specSettings.endOfTrueshot.mode == "time" then
 							timeThreshold = specSettings.endOfTrueshot.timeMax
@@ -2010,7 +2011,11 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.trueshot
 					end
 				end
-				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
@@ -2030,15 +2035,15 @@ local function UpdateResourceBar()
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
+				local barBorderColor = specSettings.colors.bar.border
 				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
+					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 						snapshotData.audio.overcapCue = true
 						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 					end
 				else
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.border, true))
 					snapshotData.audio.overcapCue = false
 				end
 
@@ -2061,30 +2066,31 @@ local function UpdateResourceBar()
 					castingBarValue = currentResource
 				end
 
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.passive
+						passiveBarColor = specSettings.colors.bar.spending
 					else
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.spending
+						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					passiveBarValue = castingBarValue + passiveValue
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
-					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
-					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					castingBarColor = specSettings.colors.bar.casting
+					passiveBarColor = specSettings.colors.bar.passive
 				end
+
 
 				local pairOffset = 0
 				local thresholdId = 1
@@ -2209,7 +2215,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfCoordinatedAssault.enabled then
 						useEndOfCoordinatedAssaultColor = true
 						if specSettings.endOfCoordinatedAssault.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
 							timeThreshold = gcd * specSettings.endOfCoordinatedAssault.gcdsMax
 						elseif specSettings.endOfCoordinatedAssault.mode == "time" then
 							timeThreshold = specSettings.endOfCoordinatedAssault.timeMax
@@ -2222,7 +2228,11 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.coordinatedAssault
 					end
 				end
-				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)

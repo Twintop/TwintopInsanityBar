@@ -518,20 +518,20 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
             self.castCount = C_Spell.GetSpellCastCount(self.parent.spell.id)
         end
 
-        local gcd = TRB.Functions.Character:GetCurrentGCDLockRemaining()
-        local down, up, lagHome, lagWorld = GetNetStats()
-        local latency = lagWorld / 1000
+        ---@type TRB.Classes.SnapshotCasting
+        local casting = TRB.Data.snapshotData.casting
+        local gcd = casting:GetCurrentGCDLockRemaining()
         
         local currentTime = GetTime()
         local remainingTime = startTime + duration - currentTime
 
-        if ((startTime ~= nil and startTime > 0 and not self.onCooldown and remainingTime > gcd + latency) or
-            (self.onCooldown and remainingTime > gcd + latency)) and (self.parent.spell.hasChanges ~= true or (self.parent.spell.hasChanges and self.charges < self.maxCharges))
+        if ((startTime ~= nil and startTime > 0 and not self.onCooldown and remainingTime > gcd + TRB.Data.character.latency) or
+            (self.onCooldown and remainingTime > gcd + TRB.Data.character.latency)) and (self.parent.spell.hasChanges ~= true or (self.parent.spell.hasChanges and self.charges < self.maxCharges))
             then
             self.startTime = startTime
             self.duration = duration
             self.retryForceTime = nil
-        elseif self.onCooldown and remainingTime > gcd + latency then
+        elseif self.onCooldown and remainingTime > gcd + TRB.Data.character.latency then
             self.startTime = startTime
             self.duration = duration
             self.retryForceTime = nil
@@ -567,6 +567,8 @@ end
 ---@field public resourceFinal number
 ---@field public icon string
 ---@field public spellKey string?
+---@field public gcdLockRemaining number
+---@field private gcdLockLastUpdate number?
 TRB.Classes.SnapshotCasting = {}
 TRB.Classes.SnapshotCasting.__index = TRB.Classes.SnapshotCasting
 
@@ -589,8 +591,24 @@ function TRB.Classes.SnapshotCasting:Reset()
     self.resourceFinal = 0
     self.icon = ""
     self.spellKey = nil
+    self.gcdLockRemaining = 0
+    self.gcdLockLastUpdate = nil
 end
 
+function TRB.Classes.SnapshotCasting:GetCurrentGCDLockRemaining()
+    local currentTime = GetTime()
+	if currentTime == self.gcdLockLastUpdate then
+		return self.gcdLockRemaining
+	end
+	local startTime, duration
+---@diagnostic disable-next-line: redundant-parameter
+	local spellCooldown = C_Spell.GetSpellCooldown(61304) --[[@as SpellCooldownInfo]]
+	startTime = spellCooldown.startTime
+	duration = spellCooldown.duration
+	self.gcdLockRemaining = (startTime + duration - currentTime)
+    self.gcdLockLastUpdate = currentTime
+    return self.gcdLockRemaining
+end
 
 ---@class TRB.Classes.BuffCustomProperty
 ---@field public index integer

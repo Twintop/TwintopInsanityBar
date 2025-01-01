@@ -196,10 +196,16 @@ function TRB.Functions.Bar:GetPosition(settings)
 	TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 end
 
-function TRB.Functions.Bar:SetValue(settings, bar, value, maxResource, debug)
+function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 	value = value or 0
+	maxResource = maxResource or 1
+	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
+	if TRB.Data.cache.values.bar[key].value == value and TRB.Data.cache.values.bar[key].maxResource == maxResource then
+		return
+	end
+	
 	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
-		local min, max = bar:GetMinMaxValues()
+		local _, max = bar:GetMinMaxValues()
 
 		local factor = max / maxResource
 
@@ -210,12 +216,14 @@ function TRB.Functions.Bar:SetValue(settings, bar, value, maxResource, debug)
 		if factor ~= math.huge and max ~= math.huge then
 			bar:SetValue(math.min(value * factor, max))
 		end
+		TRB.Data.cache.values.bar[key].value = value
+		TRB.Data.cache.values.bar[key].maxResource = maxResource
 	end
 end
 
-function TRB.Functions.Bar:SetPrimaryValue(settings, bar, value)
+function TRB.Functions.Bar:SetPrimaryValue(settings, key, bar, value)
 	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
-		TRB.Functions.Bar:SetValue(settings, bar, value, TRB.Data.character.maxResource)
+		TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)
 	end
 end
 

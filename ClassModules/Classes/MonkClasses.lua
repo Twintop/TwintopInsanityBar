@@ -49,7 +49,7 @@ function TRB.Classes.Monk.ManaTea:Update()
 end
 
 function TRB.Classes.Monk.ManaTea:GetMaxManaReturn()
-    local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+    local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
     local resourcePerTick = self.spell.resourcePerTick
     local tickRate = self.spell.tickRate
 

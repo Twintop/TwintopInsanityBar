@@ -145,17 +145,30 @@ TRB.Data.cache = {}
 TRB.Data.cache.barText = {}
 TRB.Data.cache.symbols = {}
 TRB.Data.cache.barTextTree = {}
+TRB.Data.cache.colors = {
+	bar = {},
+	border = {},
+	backdrop = {},
+	threshold = {}
+}
+TRB.Data.cache.values = {
+	bar = {},
+	threshold = {}
+}
+TRB.Data.cache.thresholdSpells = {}
 TRB.Data.specCache = {}
 
 -- This is here for reference/what every implementation should use as a minimum
 TRB.Data.character = {
 	guid = UnitGUID("player"),
+	raceId = 0,
 	className = "",
 	specName = "",
 	maxResource = 100,
 	talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]],
 	items = {}
 }
+_, _, TRB.Data.character.raceId = UnitRace("player")
 
 ---@type TRB.Classes.SpellsData
 ---@diagnostic disable-next-line: missing-fields

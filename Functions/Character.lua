@@ -145,11 +145,11 @@ function TRB.Functions.Character:GetSpecializationName(className, specId)
 end
 
 function TRB.Functions.Character:CheckCharacter()
-	TRB.Data.character.guid = UnitGUID("player")
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player")
 	TRB.Data.character.advancedFlight = TRB.Details.addonData.libs.LibAdvFlight.IsAdvFlyEnabled()
+	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
 	TRB.Data.snapshotData:RefreshAllBuffs()
 end
 
@@ -158,7 +158,6 @@ function TRB.Functions.Character:UpdateSnapshot()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	
-	_, _, snapshotData.attributes.raceId = UnitRace("player")
 	if target == nil and targetData.currentTargetGuid ~= nil then
 		targetData:InitializeTarget(targetData.currentTargetGuid, UnitIsFriend("target", "player"))
 		target = targetData.targets[targetData.currentTargetGuid]
@@ -185,6 +184,10 @@ function TRB.Functions.Character:UpdateSnapshot()
 			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
 		end
 	end
+end
+
+function TRB.Functions.Character:UpdateStatsSnapshot()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	snapshotData.attributes.haste = UnitSpellHaste("player")
 	snapshotData.attributes.crit = GetCritChance()
@@ -217,6 +220,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.cache.barText = {}
 	TRB.Data.cache.symbols = {}
 	TRB.Data.cache.barTextTree = {}
+	TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData, TRB.Data.talents)
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
@@ -327,16 +331,6 @@ function TRB.Functions.Character:IsComboPointUser()
 	return false
 end
 
-
-function TRB.Functions.Character:GetCurrentGCDLockRemaining()
-	local startTime, duration
----@diagnostic disable-next-line: redundant-parameter
-	local spellCooldown = C_Spell.GetSpellCooldown(61304) --[[@as SpellCooldownInfo]]
-	startTime = spellCooldown.startTime
-	duration = spellCooldown.duration
-	return (startTime + duration - GetTime())
-end
-
 function TRB.Functions.Character:GetCurrentGCDTime(floor)
 	if floor == nil then
 		floor = false
@@ -364,4 +358,21 @@ function TRB.Functions.Character:GetLatency()
 	local _, _, _, lagWorld = GetNetStats()
 	local latency = lagWorld / 1000
 	return latency
+end
+
+---Caches threshold spells for the current specialization that are currently available.
+---@param spells TRB.Classes.SpellsData
+---@param talents TRB.Classes.Talents
+function TRB.Functions.Character:GetThresholdSpells(spells, talents)
+	local thresholdSpells = {}
+	for _, v in pairs(TRB.Data.spellsData.spells) do
+		local spell = v --[[@as TRB.Classes.SpellBase]]
+		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+			if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected			
+			else
+				table.insert(thresholdSpells, spell)
+			end
+		end
+	end
+	TRB.Data.cache.thresholdSpells = thresholdSpells
 end

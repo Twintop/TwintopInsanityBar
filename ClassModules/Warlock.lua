@@ -663,10 +663,12 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
 
-				TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
-				TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
-				TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+				TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
+				TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+				TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
 
 				barContainerFrame:SetAlpha(1.0)
 
@@ -697,15 +699,16 @@ local function UpdateResourceBar()
 					end
 				end
 
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
-
 				if specSettings.colors.bar.shadowEmbraceNotMax.enabled and talents:IsTalentActive(spells.shadowEmbrace) and target ~= nil and
 					not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and
 					target.spells[spells.shadowEmbrace.id].stacks < spells.shadowEmbrace.attributes.maxStacks then
 					barColor = specSettings.colors.bar.shadowEmbraceNotMax.color
 				end
 
-				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				local normalizedResource2 = snapshotData.attributes.resource2 / TRB.Data.resource2Factor
@@ -717,14 +720,14 @@ local function UpdateResourceBar()
 					local cpBB = cpBackgroundBlue
 
 					if normalizedResource2 >= x then
-						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 						if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 							cpColor = specSettings.colors.comboPoints.penultimate
 						elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 							cpColor = specSettings.colors.comboPoints.final
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 					end
 
 					if specSettings.colors.comboPoints.malignOmen.enabled and snapshotData.snapshots[spells.malignOmen.id].buff.isActive then

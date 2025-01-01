@@ -82,22 +82,98 @@ function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	return _a .. _r .. _g .. _b
 end
 
-function TRB.Functions.Color:SetBackdropColor(frame, rgbaString, normalize, specId)
-	if specId ~= nil and specId == GetSpecialization() then
-		frame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
+function TRB.Functions.Color:SetBackdropColor(frame, key, r, g, b, a)
+	local changed = false
+	
+	if key == nil then
+		changed = true
+	else
+		if TRB.Data.cache.colors.border[key] == nil then
+			TRB.Data.cache.colors.border[key] = {
+				r = r,
+				g = g,
+				b = b,
+				a = a
+			}
+			changed = true
+		elseif TRB.Data.cache.colors.border[key].r ~= r or TRB.Data.cache.colors.border[key].g ~= g or TRB.Data.cache.colors.border[key].b ~= b or TRB.Data.cache.colors.border[key].a ~= a then
+			TRB.Data.cache.colors.border[key].r = r
+			TRB.Data.cache.colors.border[key].g = g
+			TRB.Data.cache.colors.border[key].b = b
+			TRB.Data.cache.colors.border[key].a = a
+			changed = true
+		end
+	end
+
+	if changed then
+		frame:SetBackdropColor(r, g, b, a)
 	end
 end
 
-function TRB.Functions.Color:SetBackdropBorderColor(frame, rgbaString, normalize, specId)
-	if specId ~= nil and specId == GetSpecialization() then
-		frame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
+function TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
+	local changed = false
+	
+	if key == nil then
+		changed = true
+	else
+		if TRB.Data.cache.colors.border[key] == nil then
+			TRB.Data.cache.colors.border[key] = {
+				r = r,
+				g = g,
+				b = b,
+				a = a
+			}
+			changed = true
+		elseif TRB.Data.cache.colors.border[key].r ~= r or TRB.Data.cache.colors.border[key].g ~= g or TRB.Data.cache.colors.border[key].b ~= b or TRB.Data.cache.colors.border[key].a ~= a then
+			TRB.Data.cache.colors.border[key].r = r
+			TRB.Data.cache.colors.border[key].g = g
+			TRB.Data.cache.colors.border[key].b = b
+			TRB.Data.cache.colors.border[key].a = a
+			changed = true
+		end
+	end
+
+	if changed then
+		frame:SetBackdropBorderColor(r, g, b, a)
 	end
 end
 
-function TRB.Functions.Color:SetStatusBarColor(frame, rgbaString, normalize, specId)
-	if specId ~= nil and specId == GetSpecialization() then
-		--frame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
+function TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, key, rgbaString, normalize)
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
+	TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
+end
+
+function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
+	local changed = false
+
+	if key == nil then
+		changed = true
+	else
+		if TRB.Data.cache.colors.bar[key] == nil then
+			TRB.Data.cache.colors.bar[key] = {
+				r = r,
+				g = g,
+				b = b,
+				a = a
+			}
+			changed = true
+		elseif TRB.Data.cache.colors.bar[key].r ~= r or TRB.Data.cache.colors.bar[key].g ~= g or TRB.Data.cache.colors.bar[key].b ~= b or TRB.Data.cache.colors.bar[key].a ~= a then
+			TRB.Data.cache.colors.bar[key].r = r
+			TRB.Data.cache.colors.bar[key].g = g
+			TRB.Data.cache.colors.bar[key].b = b
+			TRB.Data.cache.colors.bar[key].a = a
+			changed = true
+		end
 	end
+	
+	if changed then
+		frame:SetStatusBarColor(r, g, b, a)
+	end
+end
+
+function TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, key, rgbaString, normalize)
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
+	TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 end
 
 function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, specId)

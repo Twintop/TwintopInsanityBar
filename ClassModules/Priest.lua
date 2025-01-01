@@ -2723,7 +2723,7 @@ local function UpdateSnapshot_Shadow()
 	local devouredDespair = snapshots[spells.devouredDespair.id]
 	devouredDespair.buff:UpdateTicks()
 	devouredDespair.attributes.resourceRaw = devouredDespair.buff.resource
-	devouredDespair.attributes.resourceFinal = CalculateResourceGain(devouredDespair.attributes.resourceRaw)	
+	devouredDespair.attributes.resourceFinal = CalculateResourceGain(devouredDespair.attributes.resourceRaw)
 end
 
 local function UpdateResourceBar()
@@ -2799,7 +2799,6 @@ local function UpdateResourceBar()
 						PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 					end
 				end
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 				if CastingSpell() and specSettings.bar.showCasting  then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
@@ -2816,34 +2815,38 @@ local function UpdateResourceBar()
 				end
 
 				thresholdCount = thresholdCount + 1
-				if snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
+				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
 				end
 
 				passiveBarValue = castingBarValue + passiveValue
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
+
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.passive
+						passiveBarColor = specSettings.colors.bar.spending
 					else
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.spending
+						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
-					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
-					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					castingBarColor = specSettings.colors.bar.casting
+					passiveBarColor = specSettings.colors.bar.passive
 				end
+
 
 				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
@@ -2855,7 +2858,7 @@ local function UpdateResourceBar()
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					if specSettings.thresholds.potionCooldown.enabled then
 						if specSettings.thresholds.potionCooldown.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
 							potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
 						elseif specSettings.thresholds.potionCooldown.mode == "time" then
 							potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
@@ -2937,7 +2940,7 @@ local function UpdateResourceBar()
 							snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 							local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
 							resourceAmount = castingBarValue + cannibalizeTotal
-							if not snapshot.buff.isActive and snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
+							if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
 								if snapshot.cooldown.onCooldown then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -2958,7 +2961,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local resourceBarColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base
 
 				if snapshots[spells.rapture.id].buff.isActive then
 					local timeThreshold = 0
@@ -2967,7 +2970,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfRapture.enabled then
 						useEndOfRaptureColor = true
 						if specSettings.endOfRapture.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
 							timeThreshold = gcd * specSettings.endOfRapture.gcdsMax
 						elseif specSettings.endOfRapture.mode == "time" then
 							timeThreshold = specSettings.endOfRapture.timeMax
@@ -2975,15 +2978,18 @@ local function UpdateResourceBar()
 					end
 
 					if useEndOfRaptureColor and snapshots[spells.rapture.id].buff.remaining <= timeThreshold then
-						resourceBarColor = specSettings.colors.bar.raptureEnd
+						barColor = specSettings.colors.bar.raptureEnd
 					else
-						resourceBarColor = specSettings.colors.bar.rapture
+						barColor = specSettings.colors.bar.rapture
 					end
-				elseif resourceBarColor == nil then
-					resourceBarColor = specSettings.colors.bar.base
+				elseif barColor == nil then
+					barColor = specSettings.colors.bar.base
 				end
 
-				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
 				if talents:IsTalentActive(spells.powerWordRadiance) and specSettings.colors.comboPoints.powerWordRadianceEnabled then
 					local cpBR, cpBG, cpBB, cpBA = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -3050,14 +3056,14 @@ local function UpdateResourceBar()
 						cp2Duration = 1
 					end
 
-					TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
+					TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. currentCp, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
 					TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp1Color, true))
 					TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 					TRB.Frames.resource2Frames[currentCp].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBA)
 					currentCp = currentCp + 1
 
 					if hasCp2 then
-						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
+						TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. currentCp, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
 						TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp2Color, true))
 						TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[currentCp].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBA)
@@ -3152,7 +3158,6 @@ local function UpdateResourceBar()
 						PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 					end
 				end
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 				if CastingSpell() and specSettings.bar.showCasting  then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
@@ -3169,34 +3174,38 @@ local function UpdateResourceBar()
 				end
 
 				thresholdCount = thresholdCount + 1
-				if snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
+				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
 				end
 
 				passiveBarValue = castingBarValue + passiveValue
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
+
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.passive
+						passiveBarColor = specSettings.colors.bar.spending
 					else
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.spending
+						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
-					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
-					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					castingBarColor = specSettings.colors.bar.casting
+					passiveBarColor = specSettings.colors.bar.passive
 				end
+
 				
 				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
@@ -3208,7 +3217,7 @@ local function UpdateResourceBar()
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					if specSettings.thresholds.potionCooldown.enabled then
 						if specSettings.thresholds.potionCooldown.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
 							potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
 						elseif specSettings.thresholds.potionCooldown.mode == "time" then
 							potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
@@ -3288,7 +3297,7 @@ local function UpdateResourceBar()
 							snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 							local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
 							resourceAmount = castingBarValue + cannibalizeTotal
-							if not snapshot.buff.isActive and snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
+							if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
 								if snapshot.cooldown.onCooldown then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -3309,7 +3318,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local resourceBarColor = nil
+				local barColor = nil
 				local holyWordCooldownCompletes = false
 				local holyWordCooldownCompletesKey = nil
 
@@ -3328,20 +3337,20 @@ local function UpdateResourceBar()
 							holyWordCooldownCompletes = true
 							holyWordCooldownCompletesKey = maybeHolyWordSpell.holyWordKey
 							if specSettings.bar[maybeHolyWordSpell.holyWordKey .. "Enabled"] then
-								resourceBarColor = specSettings.colors.bar[maybeHolyWordSpell.holyWordKey]
+								barColor = specSettings.colors.bar[maybeHolyWordSpell.holyWordKey]
 							end
 						end
 					end
 				end
 
-				if snapshots[spells.apotheosis.id].buff.isActive and resourceBarColor == nil then
+				if snapshots[spells.apotheosis.id].buff.isActive and barColor == nil then
 					local timeThreshold = 0
 					local useEndOfApotheosisColor = false
 
 					if specSettings.endOfApotheosis.enabled then
 						useEndOfApotheosisColor = true
 						if specSettings.endOfApotheosis.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
 							timeThreshold = gcd * specSettings.endOfApotheosis.gcdsMax
 						elseif specSettings.endOfApotheosis.mode == "time" then
 							timeThreshold = specSettings.endOfApotheosis.timeMax
@@ -3349,15 +3358,18 @@ local function UpdateResourceBar()
 					end
 
 					if useEndOfApotheosisColor and snapshots[spells.apotheosis.id].buff.remaining <= timeThreshold then
-						resourceBarColor = specSettings.colors.bar.apotheosisEnd
+						barColor = specSettings.colors.bar.apotheosisEnd
 					else
-						resourceBarColor = specSettings.colors.bar.apotheosis
+						barColor = specSettings.colors.bar.apotheosis
 					end
-				elseif resourceBarColor == nil then
-					resourceBarColor = specSettings.colors.bar.base
+				elseif barColor == nil then
+					barColor = specSettings.colors.bar.base
 				end
 
-				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 
 				local cpBR, cpBG, cpBB, cpBA = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border
@@ -3460,7 +3472,7 @@ local function UpdateResourceBar()
 							cp1Color = cpSacredReverenceColor
 						end
 
-						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
+						TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
 						TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp1Color, true))
 						TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[currentCp].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBA)
@@ -3471,7 +3483,7 @@ local function UpdateResourceBar()
 								cp2Color = cpSacredReverenceColor
 							end
 
-							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
+							TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
 							TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp2Color, true))
 							TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 							TRB.Frames.resource2Frames[currentCp].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBA)
@@ -3514,19 +3526,13 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
-				if specSettings.colors.bar.mindFlayInsanityBorderChange and TRB.Functions.Class:IsValidVariableForSpec("$mfiTime") then
-					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
-				end
-
-				if specSettings.colors.bar.deathspeaker.enabled and TRB.Functions.Class:IsValidVariableForSpec("$deathspeakerTime") then
-					barBorderColor = specSettings.colors.bar.deathspeaker.color
-				end
-				
 				if specSettings.colors.bar.mindDevourer.enabled and snapshots[spells.mindDevourer.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.mindDevourer.color
+				elseif specSettings.colors.bar.mindFlayInsanityBorderChange and (snapshots[spells.mindFlayInsanity.id].buff.isActive or snapshots[spells.mindSpikeInsanity.id].buff.isActive) then
+					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
+				elseif specSettings.colors.bar.deathspeaker.enabled and snapshots[spells.deathspeaker.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.deathspeaker.color
 				end
-
-				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 				if CastingSpell() and specSettings.bar.showCasting  then
 					castingBarValue = snapshotData.casting.resourceFinal + currentResource
@@ -3540,12 +3546,23 @@ local function UpdateResourceBar()
 					(shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 or
 					snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0) then
 					passiveValue = ((CalculateResourceGain(spells.auspiciousSpirits.resource) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
+					TRB.Data.cache.values.threshold["shadowfiend"] = TRB.Data.cache.values.threshold["shadowfiend"] or {}
+					local sfCache = TRB.Data.cache.values.threshold["shadowfiend"]
 					if (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
-						TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-						TRB.Frames.passiveFrame.thresholds[1]:Show()
-					else
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
+						
+						if sfCache.color ~= specSettings.colors.threshold.mindbender then
+							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+							sfCache.color = specSettings.colors.threshold.mindbender
+						end
+
+						if sfCache.shown ~= true then
+							TRB.Frames.passiveFrame.thresholds[1]:Show()
+							sfCache.shown = true
+						end
+					elseif sfCache.shown ~= false then
 						TRB.Frames.passiveFrame.thresholds[1]:Hide()
+						sfCache.shown = false
 					end
 				else
 					TRB.Frames.passiveFrame.thresholds[1]:Hide()
@@ -3554,97 +3571,93 @@ local function UpdateResourceBar()
 
 				local pairOffset = 0
 				local thresholdId = 1
-				for _, v in pairs(TRB.Data.spellsData.spells) do
-					local spell = v --[[@as TRB.Classes.SpellBase]]
-					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						pairOffset = (thresholdId - 1) * 3
-						local resourceAmount = spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-
-						local showThreshold = true
-						local thresholdColor = specSettings.colors.threshold.over
-						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-						
-						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							if spell.settingKey == spells.devouringPlague--[[@as TRB.Classes.SpellThreshold]].settingKey then
-								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-									showThreshold = false
-								elseif resourceAmount >= TRB.Data.character.maxResource then
-									showThreshold = false
-								elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
-									thresholdColor = specSettings.colors.threshold.over
-								elseif currentResource >= resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-							elseif spell.settingKey == spells.devouringPlague2--[[@as TRB.Classes.SpellThreshold]].settingKey then
-								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-									showThreshold = false
-								elseif resourceAmount >= TRB.Data.character.maxResource then
-									showThreshold = false
-								elseif snapshots[spells.mindDevourer.id].buff.isActive and
-									currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
-									thresholdColor = specSettings.colors.threshold.over
-								elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
-										spells.devouringPlague:GetPrimaryResourceCost() > currentResource  then
-									showThreshold = false
-								elseif currentResource >= resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-							elseif spell.settingKey == spells.devouringPlague3--[[@as TRB.Classes.SpellThreshold]].settingKey then
-								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-									showThreshold = false
-								elseif resourceAmount >= TRB.Data.character.maxResource then
-									showThreshold = false
-								elseif snapshots[spells.mindDevourer.id].buff.isActive and
-									currentResource >= spells.devouringPlague2:GetPrimaryResourceCost() then
-									thresholdColor = specSettings.colors.threshold.over
-								elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
-									spells.devouringPlague2:GetPrimaryResourceCost() > currentResource then
-									showThreshold = false
-								elseif currentResource >= resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-							end
-						--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
-						elseif resourceAmount == 0 then
-							showThreshold = false
-						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-							showThreshold = false
-						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
-							showThreshold = false
-						elseif spell.hasCooldown then
-							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
-								thresholdColor = specSettings.colors.threshold.unusable
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+				for _, v in ipairs(TRB.Data.cache.thresholdSpells) do
+					local spell = v --[[@as TRB.Classes.SpellThreshold]]
+					pairOffset = (thresholdId - 1) * 3
+					local resourceAmount = spell:GetPrimaryResourceCost()
+					local showThreshold = true
+					local thresholdColor = specSettings.colors.threshold.over
+					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+					
+					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						if spell.settingKey == spells.devouringPlague--[[@as TRB.Classes.SpellThreshold]].settingKey then
+							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif resourceAmount >= TRB.Data.character.maxResource then
+								showThreshold = false
+							elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
+								thresholdColor = specSettings.colors.threshold.over
 							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
-						else -- This is an active/available/normal spell threshold
-							if currentResource >= resourceAmount then
+						elseif spell.settingKey == spells.devouringPlague2--[[@as TRB.Classes.SpellThreshold]].settingKey then
+							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif resourceAmount >= TRB.Data.character.maxResource then
+								showThreshold = false
+							elseif snapshots[spells.mindDevourer.id].buff.isActive and
+								currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
+								thresholdColor = specSettings.colors.threshold.over
+							elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
+									spells.devouringPlague:GetPrimaryResourceCost() > currentResource  then
+								showThreshold = false
+							elseif currentResource >= resourceAmount then
+								thresholdColor = specSettings.colors.threshold.over
+							else
+								thresholdColor = specSettings.colors.threshold.under
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
+						elseif spell.settingKey == spells.devouringPlague3--[[@as TRB.Classes.SpellThreshold]].settingKey then
+							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif resourceAmount >= TRB.Data.character.maxResource then
+								showThreshold = false
+							elseif snapshots[spells.mindDevourer.id].buff.isActive and
+								currentResource >= spells.devouringPlague2:GetPrimaryResourceCost() then
+								thresholdColor = specSettings.colors.threshold.over
+							elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
+								spells.devouringPlague2:GetPrimaryResourceCost() > currentResource then
+								showThreshold = false
+							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						end
-
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spells[spell.settingKey].id], specSettings)
-
-						thresholdId = thresholdId + 1
+					--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
+					elseif resourceAmount == 0 then
+						showThreshold = false
+					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+						showThreshold = false
+					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+						showThreshold = false
+					elseif spell.hasCooldown then
+						if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+							thresholdColor = specSettings.colors.threshold.unusable
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+						elseif currentResource >= resourceAmount then
+							thresholdColor = specSettings.colors.threshold.over
+						else
+							thresholdColor = specSettings.colors.threshold.under
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
+					else -- This is an active/available/normal spell threshold
+						if currentResource >= resourceAmount then
+							thresholdColor = specSettings.colors.threshold.over
+						else
+							thresholdColor = specSettings.colors.threshold.under
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
 					end
+
+					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spells[spell.settingKey].id], specSettings)
+
+					thresholdId = thresholdId + 1
 				end
 
 				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or snapshots[spells.mindDevourer.id].buff.isActive then
@@ -3669,34 +3682,37 @@ local function UpdateResourceBar()
 				end
 
 				passiveBarValue = castingBarValue + passiveValue
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
+
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.passive
+						passiveBarColor = specSettings.colors.bar.spending
 					else
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
-						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						castingBarColor = specSettings.colors.bar.spending
+						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
-					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
-					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					castingBarColor = specSettings.colors.bar.casting
+					passiveBarColor = specSettings.colors.bar.passive
 				end
 
 				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
-					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.devouringPlagueUsableCasting, true))
+					castingBarColor = specSettings.colors.bar.devouringPlagueUsableCasting
 				else
-					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+					castingBarColor = specSettings.colors.bar.casting
 				end
-				
+
 				if specSettings.colors.bar.instantMindBlast.enabled and snapshots[spells.mindBlast.id].cooldown.charges > 0 and snapshots[spells.shadowyInsight.id].buff.isActive then
 					barColor = specSettings.colors.bar.instantMindBlast.color
 				elseif snapshots[spells.voidform.id].buff.isActive or snapshots[spells.darkAscension.id].buff.isActive then
@@ -3710,7 +3726,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfVoidform.enabled then
 						useEndOfVoidformColor = true
 						if specSettings.endOfVoidform.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
 							timeThreshold = gcd * specSettings.endOfVoidform.gcdsMax
 						elseif specSettings.endOfVoidform.mode == "time" then
 							timeThreshold = specSettings.endOfVoidform.timeMax
@@ -3731,7 +3747,11 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.base
 					end
 				end
-				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+				
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
 		
@@ -4282,6 +4302,7 @@ local function SwitchSpec()
 
 	if TRB.Data.barConstructedForSpec ~= nil then
 		TRB.Functions.Aura:ClearAuraInstanceIds()
+		TRB.Functions.Character:UpdateStatsSnapshot()
 	end
 
 	TRB.Functions.Class:EventRegistration()

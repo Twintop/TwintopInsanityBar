@@ -232,7 +232,7 @@ function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 	return r, g, b, a
 end
 
-function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frames, specId)
+function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frame, specId)
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key].color, true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
@@ -240,20 +240,22 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
 			colorTable[key].color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 		
-			if frameType == "backdrop" then
-				TRB.Functions.Color:SetBackdropColor(frames, colorTable[key].color, true, specId)
-			elseif frameType == "border" then
-				TRB.Functions.Color:SetBackdropBorderColor(frames, colorTable[key].color, true, specId)
-			elseif frameType == "bar" then
-				TRB.Functions.Color:SetStatusBarColor(frames, colorTable[key].color, true, specId)
-			elseif frameType == "threshold" then
-				TRB.Functions.Color:SetThresholdColor(frames, colorTable[key].color, true, specId)
+			if frame ~= nil then
+				if frameType == "backdrop" then
+					TRB.Functions.Color:SetBackdropColor(frame, colorTable[key].color, true, specId)
+				elseif frameType == "border" then
+					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key].color)
+				elseif frameType == "bar" then
+					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key].color)
+				elseif frameType == "threshold" then
+					TRB.Functions.Color:SetThresholdColor(frame, colorTable[key].color, true, specId)
+				end
 			end
 		end)
 	end
 end
 
-function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorControlsTable, key, frameType, frames, specId)
+function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorControlsTable, key, frameType, frame, specId)
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key], true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
@@ -261,14 +263,16 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorC
 			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
 			colorTable[key] = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 		
-			if frameType == "backdrop" then
-				TRB.Functions.Color:SetBackdropColor(frames, colorTable[key], true, specId)
-			elseif frameType == "border" then
-				TRB.Functions.Color:SetBackdropBorderColor(frames, colorTable[key], true, specId)
-			elseif frameType == "bar" then
-				TRB.Functions.Color:SetStatusBarColor(frames, colorTable[key], true, specId)
-			elseif frameType == "threshold" then
-				TRB.Functions.Color:SetThresholdColor(frames, colorTable[key], true, specId)
+			if frame ~= nil then
+				if frameType == "backdrop" then
+					TRB.Functions.Color:SetBackdropColor(frame, colorTable[key], true, specId)
+				elseif frameType == "border" then
+					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key])
+				elseif frameType == "bar" then
+					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key])
+				elseif frameType == "threshold" then
+					TRB.Functions.Color:SetThresholdColor(frame, colorTable[key], true, specId)
+				end
 			end
 		end)
 	end
