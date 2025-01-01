@@ -40,7 +40,7 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 	end
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	if not (TRB.Data.cache.values.threshold[key].value == value and TRB.Data.cache.values.threshold[key].maxResource == maxResource) then
+	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource then
 		local _, max = parentFrame:GetMinMaxValues()
 		local factor = (max - (settings.bar.border * 2)) / maxResource
 
@@ -244,7 +244,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			threshold.icon.cooldown:SetCooldown(0, 0)
 			cache.cooldown = false
 		end
-	elseif cache.shown == true then
+	elseif cache.shown ~= false then
 		threshold:Hide()
 		cache.shown = false
 	end
@@ -267,14 +267,18 @@ function TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(settings, s
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 5, castingBarValue, passiveValue)
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 6, castingBarValue, passiveValue)
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 7, castingBarValue, passiveValue)
+		TRB.Data.cache.values.threshold["showPassiveDisabled"] = false
 	else
-		TRB.Frames.passiveFrame.thresholds[1]:Hide()
-		TRB.Frames.passiveFrame.thresholds[2]:Hide()
-		TRB.Frames.passiveFrame.thresholds[3]:Hide()
-		TRB.Frames.passiveFrame.thresholds[4]:Hide()
-		TRB.Frames.passiveFrame.thresholds[5]:Hide()
-		TRB.Frames.passiveFrame.thresholds[6]:Hide()
-		TRB.Frames.passiveFrame.thresholds[7]:Hide()
+		if TRB.Data.cache.values.threshold["showPassiveDisabled"] ~= true then
+			TRB.Frames.passiveFrame.thresholds[1]:Hide()
+			TRB.Frames.passiveFrame.thresholds[2]:Hide()
+			TRB.Frames.passiveFrame.thresholds[3]:Hide()
+			TRB.Frames.passiveFrame.thresholds[4]:Hide()
+			TRB.Frames.passiveFrame.thresholds[5]:Hide()
+			TRB.Frames.passiveFrame.thresholds[6]:Hide()
+			TRB.Frames.passiveFrame.thresholds[7]:Hide()
+			TRB.Data.cache.values.threshold["showPassiveDisabled"] = true
+		end
 	end
 	return passiveValue, 6
 end
@@ -292,21 +296,33 @@ function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snap
 	if frame == nil or frame.thresholds == nil then
 		return passiveValue
 	end
+	TRB.Data.cache.values.threshold[snapshot.spell.id] = TRB.Data.cache.values.threshold[snapshot.spell.id] or {}
+	local cache = TRB.Data.cache.values.threshold[snapshot.spell.id]
 
 	local mana = overrideMana or snapshot.mana
 	if mana > 0 then
 		passiveValue = passiveValue + mana
 
 		if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(settings, frame.thresholds[thresholdId], frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 			---@diagnostic disable-next-line: undefined-field
-			frame.thresholds[thresholdId].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.mindbender, true))
-			frame.thresholds[thresholdId]:Show()
-		else
+			
+			if cache.color ~= settings.colors.threshold.mindbender then
+				frame.thresholds[thresholdId].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.mindbender, true))
+				cache.color = settings.colors.threshold.mindbender
+			end
+
+			if cache.shown ~= true then
+				frame.thresholds[thresholdId]:Show()
+				cache.shown = true
+			end
+		elseif cache.shown == true then
 			frame.thresholds[thresholdId]:Hide()
+			cache.shown = false
 		end
-	else
+	elseif cache.shown == true then
 		frame.thresholds[thresholdId]:Hide()
+		cache.shown = false
 	end
 	
 	return passiveValue
