@@ -56,20 +56,33 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 end
 
 ---Sets the icon for a threshold
----@param threshold frame
 ---@param spell TRB.Classes.SpellThreshold
+---@param key string
+---@param threshold frame
 ---@param settings table
-function TRB.Functions.Threshold:SetThresholdIcon(threshold, spell, settings)
+function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
 	if threshold.icon == nil then
 		return
 	end
 
-	threshold.icon.texture:SetTexture(spell.texture)
+	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
+	local cache = TRB.Data.cache.values.threshold[key]
+
+	if cache.texture ~= spell.texture then
+		threshold.icon.texture:SetTexture(spell.texture)
+		cache.texture = spell.texture
+	end
 	
 	if settings.thresholds.icons.enabled then
-		threshold.icon:Show()
+		if cache.iconShown ~= true then
+			threshold.icon:Show()
+			cache.iconShown = true
+		end
 	else
-		threshold.icon:Hide()
+		if cache.iconShown ~= false then
+			threshold.icon:Hide()
+			cache.iconShown = false
+		end
 	end
 end
 
@@ -163,12 +176,11 @@ function TRB.Functions.Threshold:RedrawThresholdLines(settings)
 		end
 	end
 
-	TRB.Frames.resourceFrame = resourceFrame
-	TRB.Frames.passiveFrame = passiveFrame
+	TRB.Data.cache.values.threshold = {}
 end
 
 ---Adjusts the display level, color, and cooldown status of a threshold and its icon.
----@param spell table
+---@param spell TRB.Classes.SpellThreshold
 ---@param key string
 ---@param threshold table
 ---@param showThreshold boolean
@@ -178,12 +190,14 @@ end
 ---@param snapshot TRB.Classes.Snapshot
 ---@param settings table
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
+	TRB.Data.cache.values.threshold[key] = {}-- TRB.Data.cache.values.threshold[key] or {}
 	local cache = TRB.Data.cache.values.threshold[key]
 	if settings.thresholds[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = false
+		
+		TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
 		
 		-- Split these out to only call methods if we need to
 		if settings.thresholds.outOfRange then
@@ -201,11 +215,8 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		if not spell.hasCooldown then
 			frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
 		end
-
-		if cache.shown ~= true then
-			threshold:Show()
-			cache.shown = true
-		end
+		
+		TRB.Functions.Threshold:Show(key, threshold)
 
 		-- Only check this first one as if one is different then all will be different
 		if cache.frameLevel ~= frameLevel then
@@ -244,9 +255,38 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			threshold.icon.cooldown:SetCooldown(0, 0)
 			cache.cooldown = false
 		end
-	elseif cache.shown ~= false then
+	else
+		TRB.Functions.Threshold:Hide(key, threshold)
+	end
+end
+
+function TRB.Functions.Threshold:Hide(key, threshold)
+	--[[
+	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
+
+	local isVisibleTime = debugprofilestop()
+	if TRB.Data.cache.values.threshold[key].shown ~= false then
 		threshold:Hide()
-		cache.shown = false
+		TRB.Data.cache.values.threshold[key].shown = false
+	end
+	]]
+	
+	if threshold:IsVisible() then
+		threshold:Hide()
+	end
+end
+
+function TRB.Functions.Threshold:Show(key, threshold)
+	--[[
+	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
+	if TRB.Data.cache.values.threshold[key].shown ~= true then
+		threshold:Show()
+		TRB.Data.cache.values.threshold[key].shown = true
+	end
+	]]
+
+	if not threshold:IsVisible() then
+		threshold:Show()
 	end
 end
 

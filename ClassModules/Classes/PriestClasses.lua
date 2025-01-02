@@ -530,7 +530,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
         primaryResourceType = Enum.PowerType.Mana,
         isTalent = true,
         duration = 12,
-        resourcePercent = 0.002
+        resourcePercent = 0.002,
+        hasCooldown = true
     })
 
     -- Voidweaver
@@ -552,7 +553,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
         primaryResourceType = Enum.PowerType.Mana,
         isTalent = true,
         duration = 15,
-        resourcePercent = 0.005
+        resourcePercent = 0.005,
+        hasCooldown = true
     })
     
     return self

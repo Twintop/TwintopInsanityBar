@@ -1021,7 +1021,7 @@ local function TargetsCleanup(clearAll)
 	targetData:Cleanup(clearAll)
 	if clearAll == true then
 		local specId = GetSpecialization()
-		if specId == 2 then
+		if specId == 1 then
 		elseif specId == 2 then
 		elseif specId == 3 then
 			targetData.custom.auspiciousSpiritsGenerate = 0
@@ -1032,38 +1032,18 @@ end
 local function ConstructResourceBar(settings)
 	local specId = GetSpecialization()
 
-	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
-	if entries > 0 then
-		for x = 1, entries do
-			resourceFrame.thresholds[x]:Hide()
-		end
+	for _, v in pairs(resourceFrame.thresholds) do
+		v:Hide();
 	end
-
-	entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
-	if entries > 0 then
-		for x = 1, entries do
-			passiveFrame.thresholds[x]:Hide()
-		end
+	
+	for _, v in pairs(passiveFrame.thresholds) do
+		v:Hide();
 	end
 
 	if specId == 1 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
-		local thresholdId = 1
-		for _, v in pairs(spells) do
-			local spell = v --[[@as TRB.Classes.SpellBase]]
-			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
-
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
-
-				thresholdId = thresholdId + 1
+		for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
+			if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+				TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 			end
 		end
 
@@ -1072,29 +1052,13 @@ local function ConstructResourceBar(settings)
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
 
-			TRB.Frames.passiveFrame.thresholds[x]:Show()
-			TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 			TRB.Frames.passiveFrame.thresholds[x]:Hide()
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
 	elseif specId == 2 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
-		local thresholdId = 1
-		for _, v in pairs(spells) do
-			local spell = v --[[@as TRB.Classes.SpellBase]]
-			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
-
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
-
-				thresholdId = thresholdId + 1
+		for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
+			if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+				TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 			end
 		end
 
@@ -1102,30 +1066,12 @@ local function ConstructResourceBar(settings)
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
-
-			TRB.Frames.passiveFrame.thresholds[x]:Show()
-			TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-			TRB.Frames.passiveFrame.thresholds[x]:Hide()
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
 	elseif specId == 3 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
-		local thresholdId = 1
-		for _, v in pairs(spells) do
-			local spell = v --[[@as TRB.Classes.SpellBase]]
-			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
-
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
-
-				thresholdId = thresholdId + 1
+		for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
+			if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+				TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 			end
 		end
 
@@ -1133,10 +1079,6 @@ local function ConstructResourceBar(settings)
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
-
-			TRB.Frames.passiveFrame.thresholds[x]:Show()
-			TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-			TRB.Frames.passiveFrame.thresholds[x]:Hide()
 		end
 		TRB.Frames.resource2ContainerFrame:Hide()
 	end
@@ -1703,12 +1645,14 @@ local function RefreshLookupData_Holy()
 	local _answeredPrayersStacks = snapshots[spells.answeredPrayers.id].buff.applications or 0
 	local answeredPrayersStacks = string.format("%.0f", _answeredPrayersStacks)
 	--$answeredPrayersMaxStacks
-	local _answeredPrayersMaxStacks = spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] or 0
+	local _answeredPrayersMaxStacks = 0	
+	if spells.answeredPrayers ~= nil and talents.talents[spells.answeredPrayers.talentId] ~= nil then
+		_answeredPrayersMaxStacks = spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] or 0
+	end
 	local answeredPrayersMaxStacks = string.format("%.0f", _answeredPrayersMaxStacks)
 	--$answeredPrayersRemainingStacks
 	local _answeredPrayersRemainingStacks = _answeredPrayersMaxStacks - _answeredPrayersStacks
 	local answeredPrayersRemainingStacks = string.format("%.0f", _answeredPrayersRemainingStacks)
-
 
 	--$solStacks
 	local _solStacks = snapshots[spells.surgeOfLight.id].buff.applications or 0
@@ -2875,9 +2819,10 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				local thresholdId = 1
-				for _, v in ipairs(TRB.Data.cache.thresholdSpells) do
-					local spell = v --[[@as TRB.Classes.SpellThreshold]]
+				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if resourceFrame.thresholds[thresholdId] == nil then
+						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
 					pairOffset = (thresholdId - 1) * 3
 						
 					local showThreshold = true
@@ -2962,8 +2907,6 @@ local function UpdateResourceBar()
 					end
 
 					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
-
-					thresholdId = thresholdId + 1
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -3233,9 +3176,10 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				local thresholdId = 1
-				for _, v in ipairs(TRB.Data.cache.thresholdSpells) do
-					local spell = v --[[@as TRB.Classes.SpellThreshold]]
+				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if resourceFrame.thresholds[thresholdId] == nil then
+						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
 					pairOffset = (thresholdId - 1) * 3
 					local showThreshold = true
 					local thresholdColor = specSettings.colors.threshold.over
@@ -3317,8 +3261,6 @@ local function UpdateResourceBar()
 					end
 
 					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
-
-					thresholdId = thresholdId + 1
 				end
 
 				local barColor = nil
@@ -3571,9 +3513,10 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				local thresholdId = 1
-				for _, v in ipairs(TRB.Data.cache.thresholdSpells) do
-					local spell = v --[[@as TRB.Classes.SpellThreshold]]
+				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if resourceFrame.thresholds[thresholdId] == nil then
+						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
 					pairOffset = (thresholdId - 1) * 3
 					local resourceAmount = spell:GetPrimaryResourceCost()
 					local showThreshold = true
@@ -3657,8 +3600,6 @@ local function UpdateResourceBar()
 
 					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spells[spell.settingKey].id], specSettings)
-
-					thresholdId = thresholdId + 1
 				end
 
 				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or snapshots[spells.mindDevourer.id].buff.isActive then
@@ -4123,11 +4064,9 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "discipline" then
-			talents = specCache.discipline.talents
-			TRB.Data.barConstructedForSpec = "discipline"
-			ConstructResourceBar(specCache.discipline.settings)
-		end
+		talents = specCache.discipline.talents
+		TRB.Data.barConstructedForSpec = "discipline"
+		ConstructResourceBar(specCache.discipline.settings)
 	elseif specId == 2 then
 		specCache.holy.talents:GetTalents()
 		FillSpellData_Holy()
@@ -4198,11 +4137,9 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "holy" then
-			talents = specCache.holy.talents
-			TRB.Data.barConstructedForSpec = "holy"
-			ConstructResourceBar(specCache.holy.settings)
-		end
+		talents = specCache.holy.talents
+		TRB.Data.barConstructedForSpec = "holy"
+		ConstructResourceBar(specCache.holy.settings)
 	elseif specId == 3 then
 		specCache.shadow.talents:GetTalents()
 		FillSpellData_Shadow()
@@ -4292,11 +4229,9 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "shadow" then
-			talents = specCache.shadow.talents
-			TRB.Data.barConstructedForSpec = "shadow"
-			ConstructResourceBar(specCache.shadow.settings)
-		end
+		talents = specCache.shadow.talents
+		TRB.Data.barConstructedForSpec = "shadow"
+		ConstructResourceBar(specCache.shadow.settings)
 	else
 		TRB.Data.barConstructedForSpec = nil
 	end
@@ -4405,6 +4340,7 @@ end)
 
 function TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Character:CheckCharacter()
+	TRB.Functions.Character:ResetCaches()
 	TRB.Data.character.className = "priest"
 	local specId = GetSpecialization()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
@@ -4438,7 +4374,6 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 
 		TRB.Data.character.maxResource2 = totalPowerWordCharges
-		TRB.Functions.Bar:SetPosition(TRB.Data.settings.priest.discipline, TRB.Frames.barContainerFrame)
 	elseif specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		TRB.Data.character.specName = "holy"
@@ -4467,7 +4402,6 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 
 		TRB.Data.character.maxResource2 = totalHolyWordCharges
-		TRB.Functions.Bar:SetPosition(TRB.Data.settings.priest.holy, TRB.Frames.barContainerFrame)
 	elseif specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"
@@ -4517,16 +4451,14 @@ function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.specSupported then
 		TRB.Functions.BarText:IsTtdActive(specSettings)
 		TRB.Functions.Class:CheckCharacter()
-
-		TRB.Functions.BarText:CreateBarTextFrames(specSettings)
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-		TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:EnableUnitAura()
 		TRB.Details.addonData.registered = true
+		TRB.Functions.Aura:EnableUnitAura()
+		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 	else
 		targetsTimerFrame:SetScript("OnUpdate", nil)
 		timerFrame:SetScript("OnUpdate", nil)

@@ -582,7 +582,6 @@ function TRB.Functions.Bar:Construct(settings)
 					insets = {0, 0, 0, 0}
 				})
 				
-				container:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.background, true))
 				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
 				container:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				container:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
@@ -591,7 +590,6 @@ function TRB.Functions.Bar:Construct(settings)
 				border:SetPoint("CENTER", container)
 				border:SetPoint("CENTER", 0, 0)
 				border:SetBackdropColor(0, 0, 0, 0)
-				border:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.border, true))
 				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				border:SetFrameLevel(TRB.Data.constants.frameLevels.cpBorder)
 		
@@ -600,7 +598,6 @@ function TRB.Functions.Bar:Construct(settings)
 				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
 				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
-				resource:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.base, true))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpResource)
 			end

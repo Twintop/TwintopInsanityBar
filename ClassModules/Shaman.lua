@@ -2197,16 +2197,14 @@ function TRB.Functions.Class:EventRegistration()
 
 	if TRB.Data.specSupported then
 		TRB.Functions.Class:CheckCharacter()
-
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-		TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:EnableUnitAura()
-
 		TRB.Details.addonData.registered = true
+		TRB.Functions.Aura:EnableUnitAura()
+		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 	else
 		targetsTimerFrame:SetScript("OnUpdate", nil)
 		timerFrame:SetScript("OnUpdate", nil)

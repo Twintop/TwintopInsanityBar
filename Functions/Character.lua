@@ -217,10 +217,19 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 	TRB.Data.snapshotData = cache.snapshotData
+	TRB.Data.snapshotData.attributes.isTracking = false
+	TRB.Functions.Character:ResetCaches()
+end
+
+function TRB.Functions.Character:ResetCaches()
 	TRB.Data.cache.barText = {}
 	TRB.Data.cache.symbols = {}
 	TRB.Data.cache.barTextTree = {}
-	TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData, TRB.Data.talents)
+	TRB.Data.cache.colors.border = {}
+	TRB.Data.cache.colors.bar = {}
+	TRB.Data.cache.values.bar = {}
+	TRB.Data.cache.values.threshold = {}
+	TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, TRB.Data.talents)
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
@@ -361,16 +370,23 @@ function TRB.Functions.Character:GetLatency()
 end
 
 ---Caches threshold spells for the current specialization that are currently available.
----@param spells TRB.Classes.SpellsData
+---@param spells TRB.Classes.SpecializationSpellsBase
 ---@param talents TRB.Classes.Talents
 function TRB.Functions.Character:GetThresholdSpells(spells, talents)
+	-- Note to future Twintop: using table.insert() and not keeping track of the thresholdIds manually results
+	-- in missing thresholds from the list. Sometimes. I don't know why, but it does, so we're doing it manually.
 	local thresholdSpells = {}
-	for _, v in pairs(TRB.Data.spellsData.spells) do
+	local thresholdId = 0
+	for _, v in pairs(spells) do
 		local spell = v --[[@as TRB.Classes.SpellBase]]
-		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-			if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected			
-			else
-				table.insert(thresholdSpells, spell)
+		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) then
+			spell = spell --[[@as TRB.Classes.SpellThreshold]]
+			if spell:IsValid() then
+				if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected			
+				else
+					thresholdId = thresholdId + 1
+					thresholdSpells[thresholdId] = spell
+				end
 			end
 		end
 	end

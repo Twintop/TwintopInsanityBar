@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 11.0.7.2-release (2024-01-04)
+## General
+
+
+
+## Priest
+### Discipline
+
+- (FIX) Show the cooldown swirl on Mindbender and Voidwraith's threshold icon.
+
+---
+
 # 11.0.7.1-release (2024-12-30)
 ## General
 

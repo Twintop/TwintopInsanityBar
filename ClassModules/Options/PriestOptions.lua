@@ -73,7 +73,6 @@ local function DisciplineLoadExtraBarTextSettings()
 	return textSettings
 end
 
-
 local function DisciplineLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.DisplayTextEntry[]
 	local textSettings = {
@@ -1670,11 +1669,13 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.powerWordRadianceEnabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.powerWordRadianceEnabled = self:GetChecked()
+		TRB.Functions.Class:CheckCharacter()
+		TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 		TRB.Functions.BarText:CreateBarTextFrames(spec)
 	end)
 
-	controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.holyWordSerenity
+	controls.colors.comboPoints.powerWordRadiance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.powerWordRadiance
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "powerWordRadiance")
 	end)
@@ -2448,6 +2449,8 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.bar.holyWordChastiseEnabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.holyWordChastiseEnabled = self:GetChecked()
+		TRB.Functions.Class:CheckCharacter()
+		TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 	end)
 
 	controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.bar.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
@@ -2465,6 +2468,8 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.bar.holyWordSanctifyEnabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.holyWordSanctifyEnabled = self:GetChecked()
+		TRB.Functions.Class:CheckCharacter()
+		TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 	end)
 
 	controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.bar.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
@@ -2482,6 +2487,8 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.bar.holyWordSerenityEnabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.holyWordSerenityEnabled = self:GetChecked()
+		TRB.Functions.Class:CheckCharacter()
+		TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 	end)
 
 	controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.bar.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
