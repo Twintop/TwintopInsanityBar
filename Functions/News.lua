@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 11.0.7.3-release (2024-01-04)
+# 11.0.7.3-release (2025-01-04)
 
 ## Priest
 ### Shadow
@@ -20,7 +20,7 @@ local content = [====[
 
 ---
 
-# 11.0.7.2-release (2024-01-04)
+# 11.0.7.2-release (2025-01-04)
 ## General
 
 - [#417 - REFACTOR](#417) Reduce the number of frame modification calls the bar makes frame to frame.
