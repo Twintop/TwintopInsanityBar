@@ -316,7 +316,6 @@ local function spellThreshold_IsValid(spell)
     if spell ~= nil and spell.id ~= nil and spell.primaryResourceType ~= nil and spell.settingKey ~= nil then
         return true
     end
-    print("Invalid: " .. spell.name)
     return false
 end
 

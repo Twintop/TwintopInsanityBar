@@ -1035,33 +1035,25 @@ local function ConstructResourceBar(settings)
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
+
+	for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
+		if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+		end
+	end
 	
 	for _, v in pairs(passiveFrame.thresholds) do
 		v:Hide();
 	end
 
 	if specId == 1 then
-		for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
-			if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-				TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-			end
-		end
-
 		for x = 1, 8 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
-
-			TRB.Frames.passiveFrame.thresholds[x]:Hide()
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
 	elseif specId == 2 then
-		for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
-			if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-				TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-			end
-		end
-
 		for x = 1, 8 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
@@ -1069,12 +1061,6 @@ local function ConstructResourceBar(settings)
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
 	elseif specId == 3 then
-		for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
-			if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-				TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-			end
-		end
-
 		for x = 1, 1 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
@@ -2774,6 +2760,7 @@ local function UpdateResourceBar()
 				end
 
 				passiveBarValue = castingBarValue + passiveValue
+
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
@@ -2810,7 +2797,7 @@ local function UpdateResourceBar()
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					if specSettings.thresholds.potionCooldown.enabled then
 						if specSettings.thresholds.potionCooldown.mode == "gcd" then
-							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 							potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
 						elseif specSettings.thresholds.potionCooldown.mode == "time" then
 							potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
@@ -2824,12 +2811,11 @@ local function UpdateResourceBar()
 						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
 					pairOffset = (thresholdId - 1) * 3
-						
 					local showThreshold = true
 					local thresholdColor = specSettings.colors.threshold.over
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-					local snapshot = snapshots[spell.id]
 					local resourceAmount = 0
+					local snapshot = snapshots[spell.id]
 
 					if spell.attributes.isPotion then
 						snapshot = snapshots[spells.algariManaPotionRank1.id]
@@ -2839,7 +2825,6 @@ local function UpdateResourceBar()
 							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
 							resourceAmount = castingBarValue + potionMana
 							if specSettings.thresholds[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 							else
 								showThreshold = false
 							end
@@ -2875,7 +2860,6 @@ local function UpdateResourceBar()
 									local totalActive = snapshot:TotalActive()
 
 									if (totalActive == 0 or talents:IsTalentActive(spells.depthOfShadows)) and shadowfiendMana > 0 and resourceAmount < TRB.Data.character.maxResource then
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 									else
 										showThreshold = false
 									end
@@ -2897,15 +2881,14 @@ local function UpdateResourceBar()
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 						else
 							showThreshold = false
 						end
 					else
 						resourceAmount = spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 					end
 
+					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
 				end
 
@@ -2918,7 +2901,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfRapture.enabled then
 						useEndOfRaptureColor = true
 						if specSettings.endOfRapture.mode == "gcd" then
-							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 							timeThreshold = gcd * specSettings.endOfRapture.gcdsMax
 						elseif specSettings.endOfRapture.mode == "time" then
 							timeThreshold = specSettings.endOfRapture.timeMax
@@ -3131,6 +3114,7 @@ local function UpdateResourceBar()
 				end
 
 				passiveBarValue = castingBarValue + passiveValue
+
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
@@ -3167,7 +3151,7 @@ local function UpdateResourceBar()
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					if specSettings.thresholds.potionCooldown.enabled then
 						if specSettings.thresholds.potionCooldown.mode == "gcd" then
-							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 							potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
 						elseif specSettings.thresholds.potionCooldown.mode == "time" then
 							potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
@@ -3195,7 +3179,6 @@ local function UpdateResourceBar()
 							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
 							resourceAmount = castingBarValue + potionMana
 							if specSettings.thresholds[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 							else
 								showThreshold = false
 							end
@@ -3215,7 +3198,6 @@ local function UpdateResourceBar()
 							end
 	
 							if not snapshot:IsAnyActive() and shadowfiendMana > 0 and resourceAmount < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 							else
 								showThreshold = false
 							end
@@ -3235,7 +3217,6 @@ local function UpdateResourceBar()
 							end
 	
 							if symbolOfHopeMana > 0 and resourceAmount < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 							else
 								showThreshold = false
 							end
@@ -3251,15 +3232,14 @@ local function UpdateResourceBar()
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 						else
 							showThreshold = false
 						end
 					else
 						resourceAmount = spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 					end
 
+					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
 				end
 
@@ -3295,7 +3275,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfApotheosis.enabled then
 						useEndOfApotheosisColor = true
 						if specSettings.endOfApotheosis.mode == "gcd" then
-							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 							timeThreshold = gcd * specSettings.endOfApotheosis.gcdsMax
 						elseif specSettings.endOfApotheosis.mode == "time" then
 							timeThreshold = specSettings.endOfApotheosis.timeMax
@@ -3522,6 +3502,7 @@ local function UpdateResourceBar()
 					local showThreshold = true
 					local thresholdColor = specSettings.colors.threshold.over
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+					local snapshot = snapshots[spell.id]
 					
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.settingKey == spells.devouringPlague--[[@as TRB.Classes.SpellThreshold]].settingKey then
@@ -3598,8 +3579,8 @@ local function UpdateResourceBar()
 						end
 					end
 
-					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spells[spell.settingKey].id], specSettings)
+					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
 				end
 
 				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or snapshots[spells.mindDevourer.id].buff.isActive then
@@ -3624,6 +3605,7 @@ local function UpdateResourceBar()
 				end
 
 				passiveBarValue = castingBarValue + passiveValue
+
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
@@ -3668,7 +3650,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfVoidform.enabled then
 						useEndOfVoidformColor = true
 						if specSettings.endOfVoidform.mode == "gcd" then
-							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 							timeThreshold = gcd * specSettings.endOfVoidform.gcdsMax
 						elseif specSettings.endOfVoidform.mode == "time" then
 							timeThreshold = specSettings.endOfVoidform.timeMax
@@ -4346,14 +4328,16 @@ function TRB.Functions.Class:CheckCharacter()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
+	local settings
 
 	if specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		TRB.Data.character.specName = "discipline"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
+		settings = TRB.Data.settings.priest.discipline
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
-		
+
 		if talents:IsTalentActive(spells.voidwraith) then
 			snapshots[spells.shadowfiend.id].spell = spells.voidwraith
 		else
@@ -4373,13 +4357,20 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 		end
 
-		TRB.Data.character.maxResource2 = totalPowerWordCharges
+		if settings ~= nil then
+			if totalPowerWordCharges ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = totalPowerWordCharges
+				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+			end
+		end
 	elseif specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		TRB.Data.character.specName = "holy"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
+		settings = TRB.Data.settings.priest.holy
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
+		
 
 		local totalHolyWordCharges = 0
 		
@@ -4401,7 +4392,12 @@ function TRB.Functions.Class:CheckCharacter()
 			totalHolyWordCharges = totalHolyWordCharges + 1
 		end
 
-		TRB.Data.character.maxResource2 = totalHolyWordCharges
+		if settings ~= nil then
+			if totalHolyWordCharges ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = totalHolyWordCharges
+				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+			end
+		end
 	elseif specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"

@@ -398,28 +398,14 @@ end
 
 local function ConstructResourceBar(settings)
 	local specId = GetSpecialization()
-	local entries = TRB.Functions.Table:Length(TRB.Frames.resourceFrame.thresholds)
-	if entries > 0 then
-		for x = 1, entries do
-			TRB.Frames.resourceFrame.thresholds[x]:Hide()
-		end
+
+	for _, v in pairs(resourceFrame.thresholds) do
+		v:Hide();
 	end
-
-	local thresholdId = 1
-	for _, v in pairs(TRB.Data.spellsData.spells) do
-		local spell = v --[[@as TRB.Classes.SpellBase]]
-		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-			spell = spell --[[@as TRB.Classes.SpellThreshold]]
-			if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-				TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-			end
-			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
-			TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
-
-			TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
-			TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-			TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
-			thresholdId = thresholdId + 1
+	
+	for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
+		if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 		end
 	end
 
@@ -431,7 +417,6 @@ local function ConstructResourceBar(settings)
 
 	TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Bar:Construct(settings)
-	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 end
 
 local function RefreshLookupData_Havoc()
@@ -453,8 +438,7 @@ local function RefreshLookupData_Havoc()
 			currentFuryColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
 			local _overThreshold = false
-			for _, v in pairs(spells) do
-				local spell = v --[[@as TRB.Classes.SpellBase]]
+			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedResource then
 					_overThreshold = true
 					break
@@ -681,8 +665,7 @@ local function RefreshLookupData_Vengeance()
 			currentFuryColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
 			local _overThreshold = false
-			for _, v in pairs(spells) do
-				local spell = v --[[@as TRB.Classes.SpellBase]]
+			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedResource then
 					_overThreshold = true
 					break
@@ -1030,10 +1013,12 @@ local function UpdateResourceBar()
 				else
 					castingBarValue = currentResource
 				end
+				passiveBarValue = castingBarValue + passiveValue
+
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
-				if castingBarValue < currentResource then --Using a spender
+				if castingBarValue < currentResource then --Using a spender					
 					if -snapshotData.casting.resourceFinal > passiveValue then
 						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
 						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
@@ -1057,76 +1042,73 @@ local function UpdateResourceBar()
 
 
 				local pairOffset = 0
-				local thresholdId = 1
-				for _, v in pairs(TRB.Data.spellsData.spells) do
-					local spell = v --[[@as TRB.Classes.SpellBase]]
-					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = spell:GetPrimaryResourceCost()
+				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if resourceFrame.thresholds[thresholdId] == nil then
+						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
+					pairOffset = (thresholdId - 1) * 3
+					local resourceAmount = spell:GetPrimaryResourceCost()
+					local showThreshold = true
+					local thresholdColor = specSettings.colors.threshold.over
+					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+					local snapshot = snapshots[spell.id]
 
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-
-						local showThreshold = true
-						local thresholdColor = specSettings.colors.threshold.over
-						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-						if metaTime > 0 and (spell.attributes.demonForm ~= nil and spell.attributes.demonForm == false) then
-							showThreshold = false
-						elseif metaTime == 0 and (spell.attributes.demonForm ~= nil and spell.attributes.demonForm == true) then
-							showThreshold = false
-						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-							showThreshold = false
-						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
-							showThreshold = false
-						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							if spell.id == spells.chaosStrike.id or spell.id == spells.annihilation.id then
-								if snapshots[spells.chaosTheory.id].buff.isActive or snapshots[spells.rendingStrike.id].buff.isActive or snapshots[spells.warbladesHunger.id].buff.isActive then
-									thresholdColor = specSettings.colors.threshold.special
-									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-							elseif spell.id == spells.bladeDance.id or spell.id == spells.deathSweep.id then
-								if snapshots[spell.id].cooldown:IsUnusable() then
-									thresholdColor = specSettings.colors.threshold.unusable
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshots[spells.glaiveFlurry.id].buff.isActive then
-									thresholdColor = specSettings.colors.threshold.special
-									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-							end
-						elseif resourceAmount == 0 then
-							showThreshold = false
-						elseif spell.hasCooldown then
-							if snapshots[spell.id].cooldown:IsUnusable() then
-								thresholdColor = specSettings.colors.threshold.unusable
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+					if metaTime > 0 and (spell.attributes.demonForm ~= nil and spell.attributes.demonForm == false) then
+						showThreshold = false
+					elseif metaTime == 0 and (spell.attributes.demonForm ~= nil and spell.attributes.demonForm == true) then
+						showThreshold = false
+					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+						showThreshold = false
+					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+						showThreshold = false
+					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						if spell.id == spells.chaosStrike.id or spell.id == spells.annihilation.id then
+							if snapshots[spells.chaosTheory.id].buff.isActive or snapshots[spells.rendingStrike.id].buff.isActive or snapshots[spells.warbladesHunger.id].buff.isActive then
+								thresholdColor = specSettings.colors.threshold.special
+								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
-						else -- This is an active/available/normal spell threshold
-							if currentResource >= resourceAmount then
+						elseif spell.id == spells.bladeDance.id or spell.id == spells.deathSweep.id then
+							if snapshots[spell.id].cooldown:IsUnusable() then
+								thresholdColor = specSettings.colors.threshold.unusable
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+							elseif snapshots[spells.glaiveFlurry.id].buff.isActive then
+								thresholdColor = specSettings.colors.threshold.special
+								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						end
-
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
-						thresholdId = thresholdId + 1
-						pairOffset = pairOffset + 3
+					elseif resourceAmount == 0 then
+						showThreshold = false
+					elseif spell.hasCooldown then
+						if snapshots[spell.id].cooldown:IsUnusable() then
+							thresholdColor = specSettings.colors.threshold.unusable
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+						elseif currentResource >= resourceAmount then
+							thresholdColor = specSettings.colors.threshold.over
+						else
+							thresholdColor = specSettings.colors.threshold.under
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
+					else -- This is an active/available/normal spell threshold
+						if currentResource >= resourceAmount then
+							thresholdColor = specSettings.colors.threshold.over
+						else
+							thresholdColor = specSettings.colors.threshold.under
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
 					end
+
+					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
 				end
 				
 				local barColor = specSettings.colors.bar.base
@@ -1137,7 +1119,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfMetamorphosis.enabled then
 						useEndOfMetamorphosisColor = true
 						if specSettings.endOfMetamorphosis.mode == "gcd" then
-							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 							timeThreshold = gcd * specSettings.endOfMetamorphosis.gcdsMax
 						elseif specSettings.endOfMetamorphosis.mode == "time" then
 							timeThreshold = specSettings.endOfMetamorphosis.timeMax
@@ -1202,6 +1184,8 @@ local function UpdateResourceBar()
 				else
 					castingBarValue = currentResource
 				end
+				passiveBarValue = castingBarValue + passiveValue
+
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
@@ -1229,66 +1213,62 @@ local function UpdateResourceBar()
 
 
 				local pairOffset = 0
-				local thresholdId = 1
-				for _, v in pairs(spells) do
-					local spell = v --[[@as TRB.Classes.SpellBase]]
-					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = spell:GetPrimaryResourceCost()
-
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-
-						local showThreshold = true
-						local thresholdColor = specSettings.colors.threshold.over
-						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-						if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-							showThreshold = false
-						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
-							showThreshold = false
-						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							if spell.id == spells.soulCleave.id or spell.id == spells.spiritBomb.id then
-								if snapshots[spells.soulFurnace.id].buff.isActive then
-									thresholdColor = specSettings.colors.threshold.special
-									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-							end
-						elseif resourceAmount == 0 then
-							showThreshold = false
-						elseif spell.hasCooldown then
-							if snapshots[spell.id].cooldown:IsUnusable() then
-								thresholdColor = specSettings.colors.threshold.unusable
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if resourceFrame.thresholds[thresholdId] == nil then
+						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
+					pairOffset = (thresholdId - 1) * 3
+					local resourceAmount = spell:GetPrimaryResourceCost()
+					local showThreshold = true
+					local thresholdColor = specSettings.colors.threshold.over
+					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+					local snapshot = snapshots[spell.id]
+					if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+						showThreshold = false
+					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+						showThreshold = false
+					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						if spell.id == spells.soulCleave.id or spell.id == spells.spiritBomb.id then
+							if snapshots[spells.soulFurnace.id].buff.isActive then
+								thresholdColor = specSettings.colors.threshold.special
+								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
-						else -- This is an active/available/normal spell threshold
-							if currentResource >= resourceAmount then
-								thresholdColor = specSettings.colors.threshold.over
-							else
-								thresholdColor = specSettings.colors.threshold.under
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-							end
 						end
-
-						if 	spell:Is("TRB.Classes.SpellComboPointThreshold") and
-							spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and
-							snapshotData.attributes.resource2 == 0 then
-								thresholdColor = specSettings.colors.threshold.unusable
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+					elseif resourceAmount == 0 then
+						showThreshold = false
+					elseif spell.hasCooldown then
+						if snapshots[spell.id].cooldown:IsUnusable() then
+							thresholdColor = specSettings.colors.threshold.unusable
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+						elseif currentResource >= resourceAmount then
+							thresholdColor = specSettings.colors.threshold.over
+						else
+							thresholdColor = specSettings.colors.threshold.under
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
-
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
-						thresholdId = thresholdId + 1
-						pairOffset = pairOffset + 3
+					else -- This is an active/available/normal spell threshold
+						if currentResource >= resourceAmount then
+							thresholdColor = specSettings.colors.threshold.over
+						else
+							thresholdColor = specSettings.colors.threshold.under
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
 					end
+
+					if 	spell:Is("TRB.Classes.SpellComboPointThreshold") and
+						spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and
+						snapshotData.attributes.resource2 == 0 then
+							thresholdColor = specSettings.colors.threshold.unusable
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+					end
+
+					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
 				end
 				
 				local barColor = specSettings.colors.bar.base
@@ -1299,7 +1279,7 @@ local function UpdateResourceBar()
 					if specSettings.endOfMetamorphosis.enabled then
 						useEndOfMetamorphosisColor = true
 						if specSettings.endOfMetamorphosis.mode == "gcd" then
-							local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 							timeThreshold = gcd * specSettings.endOfMetamorphosis.gcdsMax
 						elseif specSettings.endOfMetamorphosis.mode == "time" then
 							timeThreshold = specSettings.endOfMetamorphosis.timeMax

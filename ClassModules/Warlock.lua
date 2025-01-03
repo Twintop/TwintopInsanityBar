@@ -223,39 +223,23 @@ end
 
 local function ConstructResourceBar(settings)
 	local specId = GetSpecialization()
-	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
-	if entries > 0 then
-		for x = 1, entries do
-			resourceFrame.thresholds[x]:Hide()
+
+	for _, v in pairs(resourceFrame.thresholds) do
+		v:Hide();
+	end
+
+	for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
+		if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 		end
 	end
 
 	if specId == 1 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
-		local thresholdId = 1
-		for _, v in pairs(spells) do
-			local spell = v --[[@as TRB.Classes.SpellBase]]
-			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
-
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
-				thresholdId = thresholdId + 1
-			end
-		end
-		TRB.Frames.resource2ContainerFrame:Show()
     end
+	TRB.Frames.resource2ContainerFrame:Show()
+	
 	TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Bar:Construct(settings)
-	if specId == 1 then
-		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-	end
 end
 
 

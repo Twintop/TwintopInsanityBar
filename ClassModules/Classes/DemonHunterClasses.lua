@@ -210,16 +210,16 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
 
     -- Aldrachi Reaver
-    self.artOfTheGlaive = TRB.Classes.SpellThreshold:New({
+    self.artOfTheGlaive = TRB.Classes.SpellBase:New({
         id = 444661,
         buffId = 444661,
         talentId = 442290,
         isTalent = true
     })
-    self.glaiveFlurry = TRB.Classes.SpellThreshold:New({
+    self.glaiveFlurry = TRB.Classes.SpellBase:New({
         id = 442435
     })
-    self.rendingStrike = TRB.Classes.SpellThreshold:New({
+    self.rendingStrike = TRB.Classes.SpellBase:New({
         id = 442442
     })
     self.warbladesHunger = TRB.Classes.SpellBase:New({
@@ -230,7 +230,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
 
     -- Fel-Scarred
-    self.studentOfSuffering = TRB.Classes.SpellThreshold:New({
+    self.studentOfSuffering = TRB.Classes.SpellBase:New({
         id = 453239,
         buffId = 453239,
         talentId = 452412,
@@ -329,16 +329,16 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     })
 
     -- Aldrachi Reaver
-    self.artOfTheGlaive = TRB.Classes.SpellThreshold:New({
+    self.artOfTheGlaive = TRB.Classes.SpellBase:New({
         id = 444661,
         buffId = 444661,
         talentId = 442290,
         isTalent = true
     })
-    self.glaiveFlurry = TRB.Classes.SpellThreshold:New({
+    self.glaiveFlurry = TRB.Classes.SpellBase:New({
         id = 442435
     })
-    self.rendingStrike = TRB.Classes.SpellThreshold:New({
+    self.rendingStrike = TRB.Classes.SpellBase:New({
         id = 442442
     })
     self.warbladesHunger = TRB.Classes.SpellBase:New({
@@ -349,7 +349,7 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     })
 
     -- Fel-Scarred
-    self.studentOfSuffering = TRB.Classes.SpellThreshold:New({
+    self.studentOfSuffering = TRB.Classes.SpellBase:New({
         id = 453239,
         buffId = 453239,
         talentId = 452412,

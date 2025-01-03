@@ -725,6 +725,16 @@ local function GetReturnText(inputText)
 	return string.format("%s%s", inputText.color, inputText.text)
 end
 
+---Checks if any secondary stat ratings are nil
+---@return boolean
+local function AreSecondaryRatingsNil()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	if snapshotData.attributes.critRating == nil or snapshotData.attributes.masteryRating == nil or snapshotData.attributes.hasteRating == nil or snapshotData.attributes.versatilityOffensive == nil or snapshotData.attributes.versatilityDefensive == nil or snapshotData.attributes.versatilityRating == nil then
+		return true
+	end
+	return false
+end
+
 ---Refreshes the baseline lookup data with the current values.
 ---@param settings table
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
@@ -733,18 +743,52 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 
+	local checkSecondaryStats = true
+	if AreSecondaryRatingsNil() then
+		TRB.Functions.Character:UpdateStatsSnapshot()
+	else
+		checkSecondaryStats = false
+	end
+
+	--$critRating
+	local critRating = nil
+
+	--$masteryRating
+	local masteryRating = nil
+
+	--$hasteRating
+	local hasteRating = nil
+
+	--$vers
+	local versOff = nil
+	local versDef = nil
+
+	if checkSecondaryStats then
+		critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.critRating, settings.hastePrecision, "floor", true))
+		masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.masteryRating, settings.hastePrecision, "floor", true))
+		hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.hasteRating, settings.hastePrecision, "floor", true))
+		versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityOffensive, settings.hastePrecision))
+		versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityDefensive, settings.hastePrecision))
+	else
+		hasteRating = hasteRating or string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(0, settings.hastePrecision, "floor", true))
+		critRating = critRating or string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(0, settings.hastePrecision, "floor", true))
+		masteryRating = masteryRating or string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(0, settings.hastePrecision, "floor", true))
+		versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(0, settings.hastePrecision))
+		versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(0, settings.hastePrecision))
+	end
+
 	--$crit
 	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.crit, settings.hastePrecision))
 
-	--$critRating
-	local critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.critRating, settings.hastePrecision, "floor", true))
+	--$versRating
+	local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.versatilityRating, settings.hastePrecision, "floor", true))
 
 	--$mastery
 	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.mastery, settings.hastePrecision))
 
-	--$masteryRating
-	local masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.masteryRating, settings.hastePrecision, "floor", true))
-
+	--$haste
+	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.hastePrecision))
+		
 	--$gcd
 	local _gcd = 1.5 / (1 + (snapshotData.attributes.haste/100))
 	if _gcd > 1.5 then
@@ -753,19 +797,6 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		_gcd = 0.75
 	end
 	local gcd = string.format("%.2f", _gcd)
-
-	--$haste
-	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.hastePrecision))
-	
-	--$hasteRating
-	local hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.hasteRating, settings.hastePrecision, "floor", true))
-
-	--$vers
-	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityOffensive, settings.hastePrecision))
-	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityDefensive, settings.hastePrecision))
-
-	--$versRating
-	local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.versatilityRating, settings.hastePrecision, "floor", true))
 	
 	--$int
 	local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.hastePrecision, "floor", true))

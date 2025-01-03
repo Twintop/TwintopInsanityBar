@@ -1987,10 +1987,6 @@ L["PaladinHolyBarTextVariable_potionOfFrozenFocusTicks"] = "Number of ticks left
 L["PaladinHolyBarTextVariable_potionOfFrozenFocusTime"] = "Amount of time, in seconds, remaining of your channel of Potion of Frozen Focus"
 L["PaladinHolyBarTextVariable_potionCooldown"] = "How long, in seconds, is left on your potion's cooldown in MM:SS format"
 L["PaladinHolyBarTextVariable_potionCooldownSeconds"] = "How long, in seconds, is left on your potion's cooldown in seconds"
-L["PaladinHolyBarTextVariable_glimmerCount"] = "Number of Glimmers active on both friendly and hostile targets"
-L["PaladinHolyBarTextVariable_glimmerTime"] = "Time remaining on Glimmer on your current target"
-L["PaladinHolyBarTextVariable_glimmerMinTime"] = "Time until your oldest Glimmer buff/debuff expires"
-L["PaladinHolyBarTextVariable_glimmerMaxTime"] = "Time until your newest Glimmer buff/debuff expires"
 
 L["SoulShard1"] = "Soul Shard 1"
 L["SoulShard2"] = "Soul Shard 2"

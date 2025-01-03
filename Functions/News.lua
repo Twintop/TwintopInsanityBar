@@ -14,7 +14,15 @@ local content = [====[
 # 11.0.7.2-release (2024-01-04)
 ## General
 
+- [#417 - REFACTOR](#417) Reduce the number of frame modification calls the bar makes frame to frame.
+<br/>&emsp;&ensp;- Cache threshold line positions, colors, visibility, and icons.
+<br/>&emsp;&ensp;- Cache bar and combo point values and colors.
+<br/>&emsp;&ensp;- This change reduces overall CPU usage required for the entire bar by between 25%-50% depending on specialization.
 
+## Druid
+### Balance
+
+- (FIX) Correct an issue with Astral Communion's Lunar Power reduction in threshold calculations.
 
 ## Priest
 ### Discipline

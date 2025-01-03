@@ -27,8 +27,8 @@ local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
 	end
 end
 
-function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, parentFrame, value, maxResource)
-	if settings == nil or settings.bar == nil or thresholdLine == nil then
+function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource)
+	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
 		return
 	end
 
@@ -190,7 +190,7 @@ end
 ---@param snapshot TRB.Classes.Snapshot
 ---@param settings table
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
-	TRB.Data.cache.values.threshold[key] = {}-- TRB.Data.cache.values.threshold[key] or {}
+	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	local cache = TRB.Data.cache.values.threshold[key]
 	if settings.thresholds[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
@@ -245,6 +245,11 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			if cache.desaturated ~= (not thresholdUsable or outOfRange) then
 				threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
 				cache.desaturated = not thresholdUsable or outOfRange
+			end
+		else
+			if cache.desaturated ~= false then
+				threshold.icon.texture:SetDesaturated(false)
+				cache.desaturated = false
 			end
 		end
 		
@@ -344,7 +349,7 @@ function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snap
 		passiveValue = passiveValue + mana
 
 		if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], true, frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 			---@diagnostic disable-next-line: undefined-field
 			
 			if cache.color ~= settings.colors.threshold.mindbender then
