@@ -2742,10 +2742,7 @@ local function UpdateResourceBar()
 				if (talents:IsTalentActive(spells.shadowfiend) or talents:IsTalentActive(spells.mindbender) or talents:IsTalentActive(spells.voidwraith)) and specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame,thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
 				else
-					if TRB.Data.cache.values.threshold[spells.shadowfiend.id].shown ~= false then
-						TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
-						TRB.Data.cache.values.threshold[spells.shadowfiend.id].shown = false
-					end
+					TRB.Functions.Threshold:Hide(spells.shadowfiend.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 
 				thresholdCount = thresholdCount + 1
@@ -2753,10 +2750,7 @@ local function UpdateResourceBar()
 				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
-					if TRB.Data.cache.values.threshold[spells.cannibalize.id].shown ~= false then
-						TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
-						TRB.Data.cache.values.threshold[spells.cannibalize.id].shown = false
-					end
+					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 
 				passiveBarValue = castingBarValue + passiveValue
@@ -3103,14 +3097,14 @@ local function UpdateResourceBar()
 				if talents:IsTalentActive(spells.shadowfiend) and specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
 				else
-					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+					TRB.Functions.Threshold:Hide(spells.shadowfiend.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 
 				thresholdCount = thresholdCount + 1
 				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
-					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 
 				passiveBarValue = castingBarValue + passiveValue

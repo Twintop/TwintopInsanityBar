@@ -1427,14 +1427,14 @@ local function UpdateResourceBar()
 				if talents:IsTalentActive(spells.manaTeaCharges) and snapshots[spells.manaTeaRegen.id].buff.isActive and specSettings.thresholds.manaTeaCharges.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.manaTeaCharges.id] --[[@as TRB.Classes.Monk.ManaTea]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
-					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+					TRB.Functions.Threshold:Hide(spells.manaTeaCharges.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 				
 				thresholdCount = thresholdCount + 1
 				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
-					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 
 				passiveBarValue = castingBarValue + passiveValue

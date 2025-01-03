@@ -1351,7 +1351,7 @@ local function UpdateResourceBar()
 				if specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.emeraldCommunion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
-					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+					TRB.Functions.Threshold:Hide(spells.emeraldCommunion.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 				passiveBarValue = castingBarValue + passiveValue
 				
