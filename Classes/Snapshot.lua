@@ -601,7 +601,6 @@ function TRB.Classes.SnapshotCasting:GetCurrentGCDLockRemaining()
 		return self.gcdLockRemaining
 	end
 	local startTime, duration
----@diagnostic disable-next-line: redundant-parameter
 	local spellCooldown = C_Spell.GetSpellCooldown(61304) --[[@as SpellCooldownInfo]]
 	startTime = spellCooldown.startTime
 	duration = spellCooldown.duration
