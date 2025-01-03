@@ -3466,7 +3466,7 @@ local function UpdateResourceBar()
 					TRB.Data.cache.values.threshold["shadowfiend"] = TRB.Data.cache.values.threshold["shadowfiend"] or {}
 					local sfCache = TRB.Data.cache.values.threshold["shadowfiend"]
 					if (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], passiveFrame,(castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], true, passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 						
 						if sfCache.color ~= specSettings.colors.threshold.mindbender then
 							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))

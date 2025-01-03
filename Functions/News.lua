@@ -11,6 +11,15 @@ local content = [====[
 
 ---
 
+# 11.0.7.3-release (2024-01-04)
+
+## Priest
+### Shadow
+
+- (FIX) Fix Lua errors when using Shadowfiend.
+
+---
+
 # 11.0.7.2-release (2024-01-04)
 ## General
 
