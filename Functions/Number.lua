@@ -19,6 +19,13 @@ function TRB.Functions.Number:IsNumeric(data)
 	return false
 end
 
+---Determines if the parameter is an integer or not
+---@param number string
+---@return boolean
+function TRB.Functions.Number:IsInteger(number)
+	return not (number == "" or number:find("%D"))  -- str:match("%D") also works
+end
+
 ---Rounds the supplied number to a number of decimal places.
 ---@param num number # Number to round
 ---@param numDecimalPlaces number? # Number of decimal places to round to

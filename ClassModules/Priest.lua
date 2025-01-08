@@ -1968,12 +1968,14 @@ local function RefreshLookupData_Shadow()
 	local vampiricTouchTime
 
 	--$dpTime
-	local devouringPlagueTime
+	local _devouringPlagueTime
 	if target ~= nil then
-		devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(target.spells[spells.devouringPlague.id].remainingTime or 0)
+		_devouringPlagueTime = target.spells[spells.devouringPlague.id].remainingTime or 0
 	else
-		devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(0)
+		_devouringPlagueTime = 0
 	end
+
+	local devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(_devouringPlagueTime)
 
 	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.shadowWordPain.id].active then
@@ -2188,7 +2190,7 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$vtCount"] = _vampiricTouchCount
 	lookupLogic["$vtTime"] = _vampiricTouchTime
 	lookupLogic["$dpCount"] = devouringPlagueCount
-	lookupLogic["$dpTime"] = devouringPlagueTime
+	lookupLogic["$dpTime"] = _devouringPlagueTime
 	lookupLogic["$mdTime"] = _mdTime
 	lookupLogic["$mfiTime"] = _mfiTime
 	lookupLogic["$mfiStacks"] = _mfiStacks
@@ -4316,7 +4318,6 @@ end)
 
 function TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Character:CheckCharacter()
-	TRB.Functions.Character:ResetCaches()
 	TRB.Data.character.className = "priest"
 	local specId = GetSpecialization()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]

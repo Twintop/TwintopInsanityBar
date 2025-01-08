@@ -328,6 +328,7 @@ local function CreateBarTextTree(input)
 						local innerReturnText = {
 							logic = logicString,
 							logicVariables = {},
+							processedLogicStrings = {},
 							trueResult = CreateBarTextTree(trueText),
 							symbols = GetFromSymbolsCache(logicString)
 						}
@@ -444,6 +445,7 @@ local function RemoveInvalidVariablesFromBarText(tree)
 		if type(v) == "string" then
 			table.insert(returnText, v)
 		else
+			local canCache = true
 			local outputStringTable = {}
 			local s = 1
 			local index = 1
@@ -453,6 +455,10 @@ local function RemoveInvalidVariablesFromBarText(tree)
 					local valid = TRB.Functions.Class:IsValidVariableForSpec(nextVariable.variable)
 					if TRB.Data.lookupLogic[nextVariable.variable] and nextVariable.prevSymbol ~= "!" and ((nextVariable.prevSymbol ~= "{" and nextVariable.prevSymbol ~= "|" and nextVariable.prevSymbol ~= "&" and nextVariable.prevSymbol ~= "(") or (nextVariable.nextSymbol ~= "}" and nextVariable.nextSymbol ~= "|" and nextVariable.nextSymbol ~= "&" and nextVariable.nextSymbol ~= ")")) then
 						valid = TRB.Data.lookupLogic[nextVariable.variable]
+
+						if type(valid) == "number" and not TRB.Functions.Number:IsInteger(tostring(valid)) then
+							canCache = false
+						end
 					end
 
 					if nextVariable.beforeVarIsNot then
@@ -477,33 +483,52 @@ local function RemoveInvalidVariablesFromBarText(tree)
 					s = #v.logic + 2
 				end
 			end
-
-			local outputString = string.lower(table.concat(outputStringTable))
-			--outputString = string.gsub(outputString, " ", "") -- This is causing problems with ! nots
-			outputString = string.gsub(outputString, "%(%)", "")
-			outputString = string.gsub(outputString, "=", "==")
-			outputString = string.gsub(outputString, "!==", "!=")
-			outputString = string.gsub(outputString, "~==", "~=")
-			outputString = string.gsub(outputString, ">==", ">=")
-			outputString = string.gsub(outputString, "<==", "<=")
-			outputString = string.gsub(outputString, "===", "==")
-			outputString = string.gsub(outputString, "!=", "~=")
-			outputString = string.gsub(outputString, "!", " not ")
-			outputString = string.gsub(outputString, "&", " and ")
-			outputString = string.gsub(outputString, "||", " or ")
-			
-			local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
-			if resultCode then
-				local pcallSuccess, result = pcall(resultFunc)
-				if not pcallSuccess then-- Something went wrong, show the error text instead
-					table.insert(returnText, L["BarTextInvalidIfElseLogic"])
-				elseif result == true or result then
-					table.insert(returnText, RemoveInvalidVariablesFromBarText(v.trueResult))
-				elseif v.falseResult then
-					table.insert(returnText, RemoveInvalidVariablesFromBarText(v.falseResult))
+			local outputString = table.concat(outputStringTable)
+			local cacheKey = outputString
+			local processResult = v.processedLogicStrings[cacheKey]
+		
+			if processResult == nil or canCache == false then
+				outputString = string.lower(outputString)
+				--outputString = string.gsub(outputString, " ", "") -- This is causing problems with ! nots
+				outputString = string.gsub(outputString, "%(%)", "")
+				outputString = string.gsub(outputString, "=", "==")
+				outputString = string.gsub(outputString, "!==", "!=")
+				outputString = string.gsub(outputString, "~==", "~=")
+				outputString = string.gsub(outputString, ">==", ">=")
+				outputString = string.gsub(outputString, "<==", "<=")
+				outputString = string.gsub(outputString, "===", "==")
+				outputString = string.gsub(outputString, "!=", "~=")
+				outputString = string.gsub(outputString, "!", " not ")
+				outputString = string.gsub(outputString, "&", " and ")
+				outputString = string.gsub(outputString, "||", " or ")
+				
+				local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
+				if resultCode then
+					local pcallSuccess, result = pcall(resultFunc)
+					if not pcallSuccess then-- Something went wrong
+						processResult = "INVALID"
+					elseif result == true or result then
+						processResult = "TRUE"
+					elseif v.falseResult then
+						processResult = "FALSE"
+					else
+						processResult = "NONE"
+					end
+				else -- Something went wrong
+					processResult = "INVALID"
 				end
-			else -- Something went wrong, show the error text instead
+
+				if canCache then
+					v.processedLogicStrings[cacheKey] = processResult
+				end
+			end
+
+			if processResult == "INVALID" then-- Something went wrong, show the error text instead
 				table.insert(returnText, L["BarTextInvalidIfElseLogic"])
+			elseif processResult == "TRUE" then
+				table.insert(returnText, RemoveInvalidVariablesFromBarText(v.trueResult))
+			elseif processResult == "FALSE" then
+				table.insert(returnText, RemoveInvalidVariablesFromBarText(v.falseResult))
 			end
 		end
 	end
@@ -701,7 +726,10 @@ end
 local function GetReturnText(inputText)
 	local lookup = TRB.Data.lookup
 	lookup["color"] = inputText.color
+	local startTime = debugprofilestop()
 	inputText.text = RemoveInvalidVariablesFromBarText(GetFromBarTextTreeCache(inputText.text))
+	local endTime = debugprofilestop()
+	--print("GetReturnText: " .. endTime - startTime)
 
 	local cache = GetFromBarTextCache(inputText.text)
 	local mapping = {}
@@ -998,6 +1026,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, r
 		local textFrames = TRB.Frames.textFrames
 		local displayText = sharedSettings.displayText --[[@as TRB.Classes.DisplayText]]
 		local entries = TRB.Functions.Table:Length(displayText.barText)
+		local startTime = debugprofilestop()
 		if entries > 0 then
 			for i = 1, entries do
 				if displayText.barText[i].enabled then
@@ -1023,6 +1052,8 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, r
 				end
 			end
 		end
+		local endTime = debugprofilestop()
+		print("UpdateResourceBarText: " .. endTime - startTime)
 	end
 end
 
