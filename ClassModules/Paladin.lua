@@ -875,14 +875,11 @@ local function UpdateResourceBar()
 end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local currentTime = GetTime()
-	local triggerUpdate = false
 	local _
 	local specId = GetSpecialization()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
-	local snapshots = snapshotData.snapshots
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
@@ -941,22 +938,15 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 			targetData:Remove(entry.destinationGuid)
 			RefreshTargetTracking()
-			triggerUpdate = true
 		end
-	end
-
-	if triggerUpdate then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 end)
 
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
-	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
 		TargetsCleanup()
 		RefreshTargetTracking()
-		TRB.Functions.Class:TriggerResourceBarUpdates()
 		self.sinceLastUpdate = 0
 	end
 end
@@ -1124,6 +1114,7 @@ function TRB.Functions.Class:EventRegistration()
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Details.addonData.registered = true
 		TRB.Functions.Aura:EnableUnitAura()
+		TRB.Functions.Character:EnableCharacterChange()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 	else -- This should never happen
@@ -1134,6 +1125,7 @@ function TRB.Functions.Class:EventRegistration()
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Functions.Aura:DisableUnitAura()
+		TRB.Functions.Character:DisableCharacterChange()
 		TRB.Details.addonData.registered = false
 		barContainerFrame:Hide()
 	end
@@ -1361,9 +1353,6 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil
 end
 
---HACK to fix FPS
-local updateRateLimit = 0
-
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
 	if (specId ~= 1) then
@@ -1371,10 +1360,5 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		return
 	end
 
-	local currentTime = GetTime()
-
-	if updateRateLimit + 0.05 < currentTime then
-		updateRateLimit = currentTime
-		UpdateResourceBar()
-	end
+	UpdateResourceBar()
 end

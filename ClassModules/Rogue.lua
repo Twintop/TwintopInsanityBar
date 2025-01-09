@@ -3030,7 +3030,6 @@ local function UpdateResourceBar()
 end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local triggerUpdate = false
 	local _
 	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -3060,27 +3059,27 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 								snapshots[entry.spellId].cooldown:Reset()
 							end
 						end
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.rupture.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.internalBleeding.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.crimsonTempest.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.deadlyPoison.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.amplifyingPoison.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.kingsbane.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
@@ -3088,7 +3087,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.serratedBoneSpike.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						if entry.type == "SPELL_CAST_SUCCESS" then
 							snapshots[entry.spellId].buff:Initialize()
 						end
@@ -3176,7 +3175,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.rupture.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.secretTechnique.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
@@ -3223,19 +3222,19 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				end
 			elseif entry.spellId == spells.cripplingPoison.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
 			elseif entry.spellId == spells.woundPoison.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
 			elseif entry.spellId == spells.numbingPoison.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
 			elseif entry.spellId == spells.atrophicPoison.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
 			elseif entry.spellId == spells.gouge.id then
 				if entry.type == "SPELL_CAST_SUCCESS" then
@@ -3255,22 +3254,15 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 			targetData:Remove(entry.destinationGuid)
 			RefreshTargetTracking()
-			triggerUpdate = true
 		end
-	end
-
-	if triggerUpdate then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 end)
 
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
-	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
 		TargetsCleanup()
 		RefreshTargetTracking()
-		TRB.Functions.Class:TriggerResourceBarUpdates()
 		self.sinceLastUpdate = 0
 	end
 end
@@ -3525,6 +3517,7 @@ function TRB.Functions.Class:EventRegistration()
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Details.addonData.registered = true
 		TRB.Functions.Aura:EnableUnitAura()
+		TRB.Functions.Character:EnableCharacterChange()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 	else
@@ -3535,6 +3528,7 @@ function TRB.Functions.Class:EventRegistration()
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Functions.Aura:DisableUnitAura()
+		TRB.Functions.Character:DisableCharacterChange()
 		TRB.Details.addonData.registered = false
 		barContainerFrame:Hide()
 	end
@@ -3893,12 +3887,6 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil
 end
 
---HACK to fix FPS
-local updateRateLimit = 0
-local updateMemory = 0
-local highMemory = 0
-local currentMemory = 0
-
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
 	if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
@@ -3906,21 +3894,5 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		return
 	end
 
-	local currentTime = GetTime()
-
-	if updateRateLimit + 0.05 < currentTime then
-		updateRateLimit = currentTime
-		UpdateResourceBar()
-	end
-
-	--TODO #339: Remove commented out to do memory load testing
-	--[[if updateMemory + 5 < currentTime then
-		updateMemory = currentTime
-		UpdateAddOnMemoryUsage()
-		currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
-		print(string.format("%.2f (%.2f)", currentMemory, highMemory))
-		if currentMemory > highMemory then
-			highMemory = currentMemory
-		end
-	end]]
+	UpdateResourceBar()
 end

@@ -230,41 +230,42 @@ if classIndexId == 2 or classIndexId == 4 or classIndexId == 5 or classIndexId =
 end
 
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
-	---@type TRB.Classes.TargetData
-	local targetData = TRB.Data.snapshotData.targetData
-
 	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
+
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-		self.sinceLastUpdate = 0
-	end
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshotData.targetData
 
-	if self.characterCheckSinceLastUpdate >= TRB.Data.settings.core.dataRefreshRate then -- in seconds
-		TRB.Functions.Class:CheckCharacter()
-		self.characterCheckSinceLastUpdate  = 0
-	end
+		if self.characterCheckSinceLastUpdate >= TRB.Data.settings.core.dataRefreshRate then -- in seconds
+			TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
+			self.characterCheckSinceLastUpdate = 0
+		end
 
-	local guid = UnitGUID("target")
-	if targetData.currentTargetGuid ~= guid then
-		targetData.currentTargetGuid = guid
-	end
+		local guid = UnitGUID("target")
+		if targetData.currentTargetGuid ~= guid then
+			targetData.currentTargetGuid = guid
+		end
 
-	if guid ~= nil then
-		local isDead = UnitIsDeadOrGhost("target")
+		if guid ~= nil then
+			local isDead = UnitIsDeadOrGhost("target")
 
-		if isDead and targetData.targets[targetData.currentTargetGuid] ~= nil then
-			targetData:Remove(guid)
-		elseif guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
-			targetData:InitializeTarget(guid)
-			local target = targetData.targets[targetData.currentTargetGuid]
-			if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then
-				target.timeToDie:Update(currentTime)
-				self.ttdSinceLastUpdate = 0
+			if isDead and targetData.targets[targetData.currentTargetGuid] ~= nil then
+				targetData:Remove(guid)
+			elseif guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
+				targetData:InitializeTarget(guid)
+				local target = targetData.targets[targetData.currentTargetGuid]
+				if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then
+					target.timeToDie:Update(currentTime)
+					self.ttdSinceLastUpdate = 0
+				end
 			end
 		end
+		
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+		self.sinceLastUpdate = 0
 	end
 end
 

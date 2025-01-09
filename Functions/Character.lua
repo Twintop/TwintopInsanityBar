@@ -34,6 +34,53 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
+---Handles some change with the character's status
+---@param self any
+---@param event string
+---@param ... unknown
+local function CharacterChange(self, event, ...)
+	if event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST" then
+		C_Timer.After(0, function()
+			C_Timer.After(0.05, function()
+				TRB.Data.character.onTaxi = UnitOnTaxi("player")
+			end)
+		end)
+	elseif event == "PET_BATTLE_OPENING_START" or event == "PET_BATTLE_CLOSE" then
+		C_Timer.After(0, function()
+			C_Timer.After(0.05, function()
+				TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle()
+			end)
+		end)
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		TRB.Functions.Character:CheckCharacter()
+	else
+		TRB.Functions.Class:CheckCharacter()
+		--TRB.Functions.Character:CheckCharacter()
+		TRB.Functions.Character:UpdateStatsSnapshot()
+	end
+end
+
+local characterChangeFrame = CreateFrame("Frame")
+characterChangeFrame:SetScript("OnEvent", CharacterChange)
+
+function TRB.Functions.Character:EnableCharacterChange()
+	characterChangeFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_GAINED")
+	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_LOST")
+	characterChangeFrame:RegisterEvent("PET_BATTLE_OPENING_START")
+	characterChangeFrame:RegisterEvent("PET_BATTLE_CLOSE")
+	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+end
+
+function TRB.Functions.Character:DisableCharacterChange()
+	characterChangeFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_GAINED")
+	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_LOST")
+	characterChangeFrame:UnregisterEvent("PET_BATTLE_OPENING_START")
+	characterChangeFrame:UnregisterEvent("PET_BATTLE_CLOSE")
+	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end
+
 function TRB.Functions.Character:GetSpecializationName(className, specId)
     className = string.upper(className) -- Should be uppercase anyway from UnitClass() but let's be certain
 	if className == "DEATHKNIGHT" then
@@ -146,11 +193,6 @@ end
 
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
-	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle()
-	TRB.Data.character.onTaxi = UnitOnTaxi("player")
-	TRB.Data.character.advancedFlight = TRB.Details.addonData.libs.LibAdvFlight.IsAdvFlyEnabled()
-	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
-	TRB.Data.snapshotData:RefreshAllBuffs()
 end
 
 function TRB.Functions.Character:UpdateSnapshot()

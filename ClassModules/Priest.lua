@@ -3680,8 +3680,6 @@ local function UpdateResourceBar()
 end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local triggerUpdate = false
-
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local currentTime = GetTime()
 		local _
@@ -3737,13 +3735,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.type == "SPELL_ENERGIZE" and entry.spellId == snapshots[spells.shadowfiend.id].spell.energizeId then
 					local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 					shadowfiend:LogSwingTime(entry.sourceGuid, currentTime)
-					triggerUpdate = true
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 				if entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.mindbender.energizeId or entry.spellId == spells.shadowfiend.energizeId or entry.spellId == spells.voidwraith.energizeId) then
 					local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 					shadowfiend:LogSwingTime(entry.sourceGuid, currentTime)
-					triggerUpdate = true
 				end
 			end
 		end
@@ -3770,11 +3766,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			if specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
 				if entry.spellId == spells.atonement.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
-						triggerUpdate = targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.purgeTheWicked.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.powerWordRadiance.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
@@ -3783,12 +3779,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.evangelism.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
 						local targets = TRB.Data.snapshotData.targetData.targets
-						if TRB.Functions.Table:Length(targets) > 0 then
-							for guid, target in pairs(targets) do
-								if target.spells[spells.atonement.id].active and target.spells[spells.atonement.id].endTime ~= nil then
-									target.spells[spells.atonement.id].endTime = target.spells[spells.atonement.id].endTime + spells.evangelism.attributes.atonementMod
-									target.spells[spells.atonement.id].remainingTime = target.spells[spells.atonement.id].remainingTime + spells.evangelism.attributes.atonementMod
-								end
+						for _, target in pairs(targets) do
+							if target.spells[spells.atonement.id].active and target.spells[spells.atonement.id].endTime ~= nil then
+								target.spells[spells.atonement.id].endTime = target.spells[spells.atonement.id].endTime + spells.evangelism.attributes.atonementMod
+								target.spells[spells.atonement.id].remainingTime = target.spells[spells.atonement.id].remainingTime + spells.evangelism.attributes.atonementMod
 							end
 						end
 					end
@@ -3814,11 +3808,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 				if entry.spellId == spells.vampiricTouch.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.devouringPlague.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and entry.spellId == spells.auspiciousSpirits.attributes.idSpawn and entry.type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
 					for guid, _ in pairs(targetData.targets) do
@@ -3828,15 +3822,12 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] + 1
 						end
 					end
-					triggerUpdate = true
 				elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and entry.spellId == spells.auspiciousSpirits.attributes.idImpact and (entry.type == "SPELL_DAMAGE" or entry.type == "SPELL_MISSED" or entry.type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
 					if targetData:CheckTargetExists(entry.destinationGuid) then
 						targetData.targets[entry.destinationGuid].spells[spells.auspiciousSpirits.id].count = targetData.targets[entry.destinationGuid].spells[spells.auspiciousSpirits.id].count - 1
 						targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] - 1
 					end
-					triggerUpdate = true
 				elseif entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.shadowCrash.id or entry.spellId == spells.voidCrash.id) then
-					triggerUpdate = true
 				elseif entry.spellId == spells.deathspeaker.id then
 					if entry.type == "SPELL_AURA_APPLIED" then
 						if TRB.Data.settings.priest.shadow.audio.deathspeaker.enabled then
@@ -3859,7 +3850,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].tickTime = currentTime
 				elseif entry.spellId == spells.resonantEnergy.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
 			end
@@ -3889,14 +3880,14 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							end)
 						end)
 					end
-					snapshots[entry.spellId].buff:RequestRefresh(GetTime() + 0.05)--.buff:Initialize(entry.type)
+					snapshots[entry.spellId].buff:RequestRefresh(GetTime() + 0.05)
 				end
 			end
 
 			-- Spec agnostic
 			if entry.spellId == spells.shadowWordPain.id then
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
 			elseif 	entry.type == "SPELL_SUMMON" and
 					((specId == 3 and settings.mindbender.enabled) or (specId ~= 3 and settings.shadowfiend.enabled))
@@ -3939,22 +3930,15 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 			targetData:Remove(entry.destinationGuid)
 			RefreshTargetTracking()
-			triggerUpdate = true
 		end
-	end
-
-	if triggerUpdate then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 end)
 
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
-	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
 		TargetsCleanup()
 		RefreshTargetTracking()
-		TRB.Functions.Class:TriggerResourceBarUpdates()
 		self.sinceLastUpdate = 0
 	end
 end
@@ -4361,7 +4345,6 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		TRB.Data.character.specName = "holy"
----@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 		settings = TRB.Data.settings.priest.holy
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
@@ -4396,7 +4379,6 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"
----@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
 		
 		if talents:IsTalentActive(spells.voidwraith) then
@@ -4418,6 +4400,7 @@ function TRB.Functions.Class:EventRegistration()
 		specSettings = TRB.Data.settings.priest.discipline
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
+
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
@@ -4448,6 +4431,7 @@ function TRB.Functions.Class:EventRegistration()
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Details.addonData.registered = true
 		TRB.Functions.Aura:EnableUnitAura()
+		TRB.Functions.Character:EnableCharacterChange()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 	else
@@ -4458,6 +4442,7 @@ function TRB.Functions.Class:EventRegistration()
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Functions.Aura:DisableUnitAura()
+		TRB.Functions.Character:DisableCharacterChange()
 		TRB.Details.addonData.registered = false
 		TRB.Frames.barContainerFrame:Hide()
 	end
@@ -5004,7 +4989,6 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	local specId = GetSpecialization()
 	local settings = TRB.Data.settings.priest
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	if specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
@@ -5069,34 +5053,12 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil
 end
 
---HACK to fix FPS
-local updateRateLimit = 0
-local updateMemory = 0
-local highMemory = 0
-local currentMemory = 0
-
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
 	if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end
-
-	local currentTime = GetTime()
-
-	if updateRateLimit + 0.05 < currentTime then
-		updateRateLimit = currentTime
-		UpdateResourceBar()
-	end
-
-	--TODO #339: Remove commented out to do memory load testing
-	--[[if updateMemory + 5 < currentTime then
-		updateMemory = currentTime
-		UpdateAddOnMemoryUsage()
-		currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
-		print(string.format("%.2f (%.2f)", currentMemory, highMemory))
-		if currentMemory > highMemory then
-			highMemory = currentMemory
-		end
-	end]]
+	
+	UpdateResourceBar()
 end

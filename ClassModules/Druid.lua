@@ -3296,12 +3296,10 @@ end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
-	local triggerUpdate = false
 	local _
 	local specId = GetSpecialization()
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
@@ -3350,15 +3348,15 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
 				if entry.spellId == spells.moonfire.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.stellarFlare.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.sunfire.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.furyOfElune.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then -- Hardcasted
@@ -3407,46 +3405,38 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
 				if entry.spellId == spells.moonfire.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = GetCurrentSnapshot(spells.moonfire.attributes.bonuses)
-							triggerUpdate = true
 						elseif entry.type == "SPELL_AURA_REMOVED" then
 							snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = 0
-							triggerUpdate = true
 						end
 					end
 				elseif entry.spellId == spells.rake.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = GetCurrentSnapshot(spells.rake.attributes.bonuses)
-							triggerUpdate = true
 						elseif entry.type == "SPELL_AURA_REMOVED" then
 							snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = 0
-							triggerUpdate = true
 						end
 					end
 				elseif entry.spellId == spells.rip.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = GetCurrentSnapshot(spells.rip.attributes.bonuses)
-							triggerUpdate = true
 						elseif entry.type == "SPELL_AURA_REMOVED" then
 							snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = 0
-							triggerUpdate = true
 						end
 					end
 				elseif entry.spellId == spells.thrash.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = GetCurrentSnapshot(spells.thrash.attributes.bonuses)
-							triggerUpdate = true
 						elseif entry.type == "SPELL_AURA_REMOVED" then
 							snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = 0
-							triggerUpdate = true
 						end
 					end
 				elseif entry.spellId == spells.prowl.id or entry.spellId == spells.prowl.attributes.idIncarnation then
@@ -3526,11 +3516,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.moonfire.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.sunfire.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
 			end
@@ -3539,22 +3529,15 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 			targetData:Remove(entry.destinationGuid)
 			RefreshTargetTracking()
-			triggerUpdate = true
 		end
-	end
-
-	if triggerUpdate then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 end)
 
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
-	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
 		TargetsCleanup()
 		RefreshTargetTracking()
-		TRB.Functions.Class:TriggerResourceBarUpdates()
 		self.sinceLastUpdate = 0
 	end
 end
@@ -3838,6 +3821,7 @@ function TRB.Functions.Class:EventRegistration()
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Details.addonData.registered = true
 		TRB.Functions.Aura:EnableUnitAura()
+		TRB.Functions.Character:EnableCharacterChange()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 	else
@@ -3849,6 +3833,7 @@ function TRB.Functions.Class:EventRegistration()
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Functions.Aura:DisableUnitAura()
+		TRB.Functions.Character:DisableCharacterChange()
 		TRB.Details.addonData.registered = false
 		barContainerFrame:Hide()
 	end
@@ -4574,9 +4559,6 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil
 end
 
---HACK to fix FPS
-local updateRateLimit = 0
-
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
 	if specId ~= 1 and specId ~= 2 and specId ~= 4 then
@@ -4584,10 +4566,5 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		return
 	end
 
-	local currentTime = GetTime()
-
-	if updateRateLimit + 0.05 < currentTime then
-		updateRateLimit = currentTime
-		UpdateResourceBar()
-	end
+	UpdateResourceBar()
 end

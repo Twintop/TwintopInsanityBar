@@ -726,10 +726,7 @@ end
 local function GetReturnText(inputText)
 	local lookup = TRB.Data.lookup
 	lookup["color"] = inputText.color
-	local startTime = debugprofilestop()
 	inputText.text = RemoveInvalidVariablesFromBarText(GetFromBarTextTreeCache(inputText.text))
-	local endTime = debugprofilestop()
-	--print("GetReturnText: " .. endTime - startTime)
 
 	local cache = GetFromBarTextCache(inputText.text)
 	local mapping = {}
@@ -1025,8 +1022,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, r
 		---@type Frame[]
 		local textFrames = TRB.Frames.textFrames
 		local displayText = sharedSettings.displayText --[[@as TRB.Classes.DisplayText]]
-		local entries = TRB.Functions.Table:Length(displayText.barText)
-		local startTime = debugprofilestop()
+		local entries = #displayText.barText
 		if entries > 0 then
 			for i = 1, entries do
 				if displayText.barText[i].enabled then
@@ -1044,7 +1040,6 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, r
 
 					local returnText = GetReturnText(barText)
 
-					--local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
 					pcall(TryUpdateText, textFrames[i], returnText)
 					
 					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
@@ -1052,8 +1047,6 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, r
 				end
 			end
 		end
-		local endTime = debugprofilestop()
-		print("UpdateResourceBarText: " .. endTime - startTime)
 	end
 end
 
