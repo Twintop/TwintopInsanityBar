@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 11.0.7.4-release (2025-01-10)
+## General
+
+- [#417 - REFACTOR](#417) Further optimizations:
+<br/>&emsp;&ensp;- Add additional caching to previously processed bar text logic strings.
+<br/>&emsp;&ensp;- Prefer events over polling for several character statuses/properties.
+<br/>&emsp;&ensp;- Remove redundant bar update calls.
+<br/>&emsp;&ensp;- Rate limit more bar operations to the same 20Hz used by the UI updates.
+- (FIX) Fix an issue where primary and secondary stat values for bar text were not updating when changing gear.
+
+---
+
 # 11.0.7.3-release (2025-01-04)
 
 ## Priest
