@@ -270,6 +270,7 @@ function TRB.Functions.Character:ResetCaches()
 	TRB.Data.cache.colors.border = {}
 	TRB.Data.cache.colors.bar = {}
 	TRB.Data.cache.values.bar = {}
+	TRB.Data.cache.values.resource = {}
 	TRB.Data.cache.values.threshold = {}
 	TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, TRB.Data.talents)
 end

@@ -92,6 +92,7 @@ end
 ---@field private _lastNonZeroPrimaryResourceValue number? # What was the last non-zero primary resource value seen
 ---@field private _lastPrimaryResourceValueCheck number? # Timestamp of the last time a check was done
 ---@field private _isFreeCurrently boolean # Is this ability free now when it usually has a resource cost?
+---@field private _cacheKey string # Key used to cache the primary resource cost of the spell
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 
@@ -172,6 +173,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
         if self.primaryResourceTypeMod == nil then
             self.primaryResourceTypeMod = 1
         end
+        self._cacheKey = self.id .. "_" .. self.primaryResourceTypeMod
     end
 
 
@@ -250,20 +252,30 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
         if (self._lastPrimaryResourceValueCheck or 0) + primaryResourceCostEmbargoTimespan > currentTime then
             self._lastPrimaryResourceValueCheck = currentTime
             return self._lastNonZeroPrimaryResourceValue
-        end
-        local spc = C_Spell.GetSpellPowerCost(self.id)
-        if spc ~= nil then
-            for x = 1, #spc do
-                if spc[x].type == self.primaryResourceType then
-                    if spc[x][self.primaryResourceTypeProperty] > 0 then
-                        local value = spc[x][self.primaryResourceTypeProperty] * self.primaryResourceTypeMod
-                        self._lastNonZeroPrimaryResourceValue = value
-                        self._isFreeCurrently = false
-                        return value
-                    elseif spc[x][self.primaryResourceTypeProperty] == 0 then
-                        self._isFreeCurrently = true
+        end        
+        if TRB.Data.cache.values.resource[self._cacheKey] == nil then
+            local spc = C_Spell.GetSpellPowerCost(self.id)
+            if spc ~= nil then
+                for x = 1, #spc do
+                    if spc[x].type == self.primaryResourceType then
+                        if spc[x][self.primaryResourceTypeProperty] > 0 then
+                            local value = spc[x][self.primaryResourceTypeProperty] * self.primaryResourceTypeMod
+                            self._lastNonZeroPrimaryResourceValue = value
+                            self._isFreeCurrently = false
+                            TRB.Data.cache.values.resource[self._cacheKey] = value
+                            return value
+                        elseif spc[x][self.primaryResourceTypeProperty] == 0 then
+                            self._isFreeCurrently = true
+                            TRB.Data.cache.values.resource[self._cacheKey] = 0
+                        end
                     end
                 end
+            end
+        else
+            if TRB.Data.cache.values.resource[self._cacheKey] == 0 then
+                self._isFreeCurrently = true
+            else
+                return TRB.Data.cache.values.resource[self._cacheKey]
             end
         end
     elseif self.primaryResourceTypeProperty == "custom" then

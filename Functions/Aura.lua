@@ -13,6 +13,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 		--Only do a full refresh of buffs for now
 		TRB.Data.snapshotData:RefreshAllBuffs()
 		TRB.Functions.Character:UpdateStatsSnapshot()
+		TRB.Data.cache.values.resource = {}
 		return
 	end
 
@@ -26,6 +27,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 				end
 			end
 			TRB.Functions.Character:UpdateStatsSnapshot()
+			TRB.Data.cache.values.resource = {}
 		--[[else
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
 				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v]
@@ -48,6 +50,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 				end
 			end
 			TRB.Functions.Character:UpdateStatsSnapshot()
+			TRB.Data.cache.values.resource = {}
 		else
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
 				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v]
@@ -71,6 +74,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
 			end
 			TRB.Functions.Character:UpdateStatsSnapshot()
+			TRB.Data.cache.values.resource = {}
 		else
 			for _, v in pairs(info.removedAuraInstanceIDs) do
 				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v]
