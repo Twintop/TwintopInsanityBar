@@ -54,7 +54,7 @@ function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode, returnAsNumbe
 
 		if numDecimalPlaces == 0 then
 			if (tonumber(whole) or 0) < num then
-				whole = (tonumber(whole) or 0) + 1
+				whole = (tonumber(whole) or 0) + 1 --[[@as string|number]]
 			end
 
 			newNum = tostring(whole)
