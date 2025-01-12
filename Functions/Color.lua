@@ -26,7 +26,7 @@ function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust,
 	local _g = 1
 	local _b = 0
 
-	if not (s == nil) then
+	if not (s == nil) and #s == 8 then
 		_a = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 1, 2), 16)) * percentAlphaAdjust, 0, floor, true)
 		_r = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 3, 4), 16)) * percentColorAdjust, 0, floor, true)
 		_g = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 5, 6), 16)) * percentColorAdjust, 0, floor, true)

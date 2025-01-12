@@ -11,6 +11,15 @@ local content = [====[
 
 ---
 
+# 11.0.7.5-release (2025-01-12)
+## General
+
+- [#417 - REFACTOR](#417) Further optimizations:
+<br/>&emsp;&ensp;- Cache ability resource costs. Cache persists until a buff/debuff changes on the player.
+- (FIX) Fix corner case where a setting color's stored RGBA hexdecimal value is not exactly 8 digits long.
+
+---
+
 # 11.0.7.4-release (2025-01-10)
 ## General
 

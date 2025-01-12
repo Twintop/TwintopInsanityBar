@@ -244,7 +244,7 @@ end
 local primaryResourceCostEmbargoTimespan = 0.05
 
 ---Gets the current primary resource cost of the spell.
----@param dontReturnLastNonZero boolean? # If true, return 0 if not found instead of the last known value instead.
+---@param dontReturnLastNonZero boolean? # If true, return 0 if not found instead of the last known value.
 ---@return number # Primary resource cost of the spell.
 function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
     local currentTime = GetTime()
