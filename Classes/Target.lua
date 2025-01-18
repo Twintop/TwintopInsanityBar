@@ -288,19 +288,6 @@ function TRB.Classes.Target:UpdateAllSpellTracking(currentTime)
     end
 end
 
----Updates all spells tracked on this target
----@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
-function TRB.Classes.Target:UpdateAllSpellTrackingOLD(currentTime)
-    currentTime = currentTime or GetTime()
-    if TRB.Functions.Table:Length(self.spells) > 0 then
-        for spellId, _ in pairs(self.spells) do
-            if self.spells[spellId] ~= nil then
-                self.spells[spellId]:Update(currentTime)
-            end
-        end
-    end
-end
-
 ---Attempts to get the current health percent for this creature. May fail if this creature does not have a current UnitToken.
 ---@return number? # Returns the health percentage if the creature has a valid UnitToken; nil otherwise
 function TRB.Classes.Target:GetHealthPercent()
@@ -423,7 +410,7 @@ function TRB.Classes.TargetSpell:Update(currentTime)
     currentTime = currentTime or GetTime()
     -- TODO: Look into hooking into nameplates to get the info we need for this
     local unitToken = UnitTokenFromGUID(self.guid)
-
+    
     if unitToken ~= nil then
         if self.autoUpdate then
             if self.isDot then

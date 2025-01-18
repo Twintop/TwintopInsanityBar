@@ -2634,14 +2634,16 @@ local function UpdateSnapshot_Holy()
 end
 
 local function UpdateSnapshot_Shadow()
+	local startTime = debugprofilestop()
 	local currentTime = GetTime()
 	UpdateSnapshot()
+	local updateSnapshotTime = debugprofilestop()
 	UpdateExternalCallToTheVoidValues()
 	UpdateSnapshot_Voidweaver()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
-	
+
 	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
@@ -2650,12 +2652,23 @@ local function UpdateSnapshot_Shadow()
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 	
+	local getRemainingTimeTime = debugprofilestop()
+
 	snapshots[spells.mindBlast.id].cooldown:Refresh()
+
+	local mindBlastTime = debugprofilestop()
 
 	local devouredDespair = snapshots[spells.devouredDespair.id]
 	devouredDespair.buff:UpdateTicks()
 	devouredDespair.attributes.resourceRaw = devouredDespair.buff.resource
 	devouredDespair.attributes.resourceFinal = CalculateResourceGain(devouredDespair.attributes.resourceRaw)
+
+	local endTime = debugprofilestop()
+
+	--print("UpdateSnapshot", updateSnapshotTime - startTime)
+	--print("GetRemainingTime", getRemainingTimeTime - updateSnapshotTime)
+	--print("Mind Blast", mindBlastTime - getRemainingTimeTime)
+	--print("UpdateSnapshot_Shadow ", endTime - startTime)
 end
 
 local function UpdateResourceBar()
@@ -3418,11 +3431,17 @@ local function UpdateResourceBar()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		local specSettings = classSettings.shadow
 		local specCacheSettings = TRB.Data.specCache.shadow.settings
+		local startTime = debugprofilestop()
 		UpdateSnapshot_Shadow()
+		local updateSnapshotTime = debugprofilestop()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+		local hideResourceBarTime = 0
+		local barColorTime = 0
+		local thresholdTime = 0
 
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
+			hideResourceBarTime = debugprofilestop()
 
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
@@ -3487,6 +3506,8 @@ local function UpdateResourceBar()
 					TRB.Frames.passiveFrame.thresholds[1]:Hide()
 					passiveValue = 0
 				end
+
+				barColorTime = debugprofilestop()
 
 				local pairOffset = 0
 				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
@@ -3578,6 +3599,8 @@ local function UpdateResourceBar()
 					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
 				end
+
+				thresholdTime = debugprofilestop()
 
 				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or snapshots[spells.mindDevourer.id].buff.isActive then
 					if specSettings.colors.bar.flashEnabled then
@@ -3675,7 +3698,18 @@ local function UpdateResourceBar()
 			end
 		end
 		
+		local barTime = debugprofilestop()
+
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
+		local barTextTime = debugprofilestop()
+
+		--print("UpdateSnapshot_Shadow: " .. updateSnapshotTime - startTime)
+		--print("HideResourceBar: " .. hideResourceBarTime - updateSnapshotTime)
+		--print("BarColor: " .. barColorTime - hideResourceBarTime)
+		--print("Thresholds: " .. thresholdTime - barColorTime)
+		--print("Bar: " .. barTime - thresholdTime)
+		--print("BarText: " .. barTextTime - barTime)
+		--print("Total: " .. barTextTime - startTime)
 	end
 end
 

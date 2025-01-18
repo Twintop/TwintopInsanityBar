@@ -767,6 +767,9 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
+	
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
 
 	local checkSecondaryStats = true
 	if AreSecondaryRatingsNil() then
@@ -775,62 +778,125 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		checkSecondaryStats = false
 	end
 
-	--$critRating
-	local critRating = nil
+	if checkSecondaryStats or lookup["$haste"] == nil then
+		--$critRating
+		local critRating = nil
 
-	--$masteryRating
-	local masteryRating = nil
+		--$masteryRating
+		local masteryRating = nil
 
-	--$hasteRating
-	local hasteRating = nil
+		--$hasteRating
+		local hasteRating = nil
 
-	--$vers
-	local versOff = nil
-	local versDef = nil
+		--$vers
+		local versOff = nil
+		local versDef = nil
 
-	if checkSecondaryStats then
 		critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.critRating, settings.hastePrecision, "floor", true))
 		masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.masteryRating, settings.hastePrecision, "floor", true))
 		hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.hasteRating, settings.hastePrecision, "floor", true))
 		versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityOffensive, settings.hastePrecision))
 		versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityDefensive, settings.hastePrecision))
-	else
-		hasteRating = hasteRating or string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(0, settings.hastePrecision, "floor", true))
-		critRating = critRating or string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(0, settings.hastePrecision, "floor", true))
-		masteryRating = masteryRating or string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(0, settings.hastePrecision, "floor", true))
-		versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(0, settings.hastePrecision))
-		versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(0, settings.hastePrecision))
-	end
-
-	--$crit
-	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.crit, settings.hastePrecision))
-
-	--$versRating
-	local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.versatilityRating, settings.hastePrecision, "floor", true))
-
-	--$mastery
-	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.mastery, settings.hastePrecision))
-
-	--$haste
-	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.hastePrecision))
 		
-	--$gcd
-	local _gcd = 1.5 / (1 + (snapshotData.attributes.haste/100))
-	if _gcd > 1.5 then
-		_gcd = 1.5
-	elseif _gcd < 0.75 then
-		_gcd = 0.75
-	end
-	local gcd = string.format("%.2f", _gcd)
+		--$crit
+		local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.crit, settings.hastePrecision))
+
+		--$versRating
+		local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.versatilityRating, settings.hastePrecision, "floor", true))
+
+		--$mastery
+		local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.mastery, settings.hastePrecision))
+
+		--$haste
+		local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.hastePrecision))
+			
+		--$gcd
+		local _gcd = 1.5 / (1 + (snapshotData.attributes.haste/100))
+		if _gcd > 1.5 then
+			_gcd = 1.5
+		elseif _gcd < 0.75 then
+			_gcd = 0.75
+		end
+		local gcd = string.format("%.2f", _gcd)
+		
+		--$int
+		local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.hastePrecision, "floor", true))
+		--$agi
+		local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.agility, settings.hastePrecision, "floor", true))
+		--$str
+		local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.strength, settings.hastePrecision, "floor", true))
+		--$stam
+		local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.stamina, settings.hastePrecision, "floor", true))
+		
+		lookup["$haste"] = hastePercent
+		lookup["$hastePercent"] = hastePercent
+		lookup["$crit"] = critPercent
+		lookup["$critPercent"] = critPercent
+		lookup["$mastery"] = masteryPercent
+		lookup["$masteryPercent"] = masteryPercent
+		lookup["$vers"] = versOff
+		lookup["$versPercent"] = versOff
+		lookup["$versatility"] = versOff
+		lookup["$versatilityPercent"] = versOff
+		lookup["$oVers"] = versOff
+		lookup["$oVersPercent"] = versOff
+		lookup["$dVers"] = versDef
+		lookup["$dVersPercent"] = versDef
+
+		lookup["$hasteRating"] = hasteRating
+		lookup["$critRating"] = critRating
+		lookup["$masteryRating"] = masteryRating
+		lookup["$versRating"] = versRating
+		lookup["$versatilityRating"] = versRating
+		
+		lookup["$int"] = int
+		lookup["$intellect"] = int
+		lookup["$str"] = str
+		lookup["$strength"] = str
+		lookup["$agi"] = agi
+		lookup["$agility"] = agi
+		lookup["$stam"] = stam
+		lookup["$stamina"] = stam
+
+		lookup["$gcd"] = gcd
+
+		lookup["||n"] = string.format("\n")
+		lookup["||c"] = string.format("%s", "|c")
+		lookup["||r"] = string.format("%s", "|r")
+		lookup["%%"] = "%"
+
+		lookupLogic["$haste"] = snapshotData.attributes.haste
+		lookupLogic["$hastePercent"] = snapshotData.attributes.haste
+		lookupLogic["$crit"] = snapshotData.attributes.crit
+		lookupLogic["$critPercent"] = snapshotData.attributes.crit
+		lookupLogic["$mastery"] = snapshotData.attributes.mastery
+		lookupLogic["$masteryPercent"] = snapshotData.attributes.mastery
+		lookupLogic["$vers"] = snapshotData.attributes.versatilityOffensive
+		lookupLogic["$versPercent"] = snapshotData.attributes.versatilityOffensive
+		lookupLogic["$versatility"] = snapshotData.attributes.versatilityOffensive
+		lookupLogic["$versatilityPercent"] = snapshotData.attributes.versatilityOffensive
+		lookupLogic["$oVers"] = snapshotData.attributes.versatilityOffensive
+		lookupLogic["$oVersPercent"] = snapshotData.attributes.versatilityOffensive
+		lookupLogic["$dVers"] = snapshotData.attributes.versatilityDefensive
+		lookupLogic["$dVersPercent"] = snapshotData.attributes.versatilityDefensive
 	
-	--$int
-	local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.hastePrecision, "floor", true))
-	--$agi
-	local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.agility, settings.hastePrecision, "floor", true))
-	--$str
-	local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.strength, settings.hastePrecision, "floor", true))
-	--$stam
-	local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.stamina, settings.hastePrecision, "floor", true))
+		lookupLogic["$hasteRating"] = snapshotData.attributes.hasteRating
+		lookupLogic["$critRating"] = snapshotData.attributes.critRating
+		lookupLogic["$masteryRating"] = snapshotData.attributes.masteryRating
+		lookupLogic["$versRating"] = snapshotData.attributes.versatilityRating
+		lookupLogic["$versatilityRating"] = snapshotData.attributes.versatilityRating
+	
+		lookupLogic["$int"] = snapshotData.attributes.intellect
+		lookupLogic["$intellect"] = snapshotData.attributes.intellect
+		lookupLogic["$str"] = snapshotData.attributes.strength
+		lookupLogic["$strength"] = snapshotData.attributes.strength
+		lookupLogic["$agi"] = snapshotData.attributes.agility
+		lookupLogic["$agility"] = snapshotData.attributes.agility
+		lookupLogic["$stam"] = snapshotData.attributes.stamina
+		lookupLogic["$stamina"] = snapshotData.attributes.stamina
+	
+		lookupLogic["$gcd"] = _gcd
+	end
 
 	--$ttd
 	local _ttd = 0
@@ -849,84 +915,15 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local castingIcon = snapshotData.casting.icon or ""
 	local castingAmount = snapshotData.casting.resourceFinal or 0
 
-	local lookup = TRB.Data.lookup or {}
-	lookup["#casting"] = castingIcon
-	lookup["$haste"] = hastePercent
-	lookup["$hastePercent"] = hastePercent
-	lookup["$crit"] = critPercent
-	lookup["$critPercent"] = critPercent
-	lookup["$mastery"] = masteryPercent
-	lookup["$masteryPercent"] = masteryPercent
-	lookup["$vers"] = versOff
-	lookup["$versPercent"] = versOff
-	lookup["$versatility"] = versOff
-	lookup["$versatilityPercent"] = versOff
-	lookup["$oVers"] = versOff
-	lookup["$oVersPercent"] = versOff
-	lookup["$dVers"] = versDef
-	lookup["$dVersPercent"] = versDef
-
-	lookup["$hasteRating"] = hasteRating
-	lookup["$critRating"] = critRating
-	lookup["$masteryRating"] = masteryRating
-	lookup["$versRating"] = versRating
-	lookup["$versatilityRating"] = versRating
-	
-	lookup["$int"] = int
-	lookup["$intellect"] = int
-	lookup["$str"] = str
-	lookup["$strength"] = str
-	lookup["$agi"] = agi
-	lookup["$agility"] = agi
-	lookup["$stam"] = stam
-	lookup["$stamina"] = stam
 	lookup["$inCombat"] = tostring(UnitAffectingCombat("player"))
-
-	lookup["$gcd"] = gcd
+	lookup["#casting"] = castingIcon
 	lookup["$ttd"] = ttd
 	lookup["$ttdSeconds"] = ttdTotalSeconds
-	lookup["||n"] = string.format("\n")
-	lookup["||c"] = string.format("%s", "|c")
-	lookup["||r"] = string.format("%s", "|r")
-	lookup["%%"] = "%"
 
 
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$haste"] = snapshotData.attributes.haste
-	lookupLogic["$hastePercent"] = snapshotData.attributes.haste
-	lookupLogic["$crit"] = snapshotData.attributes.crit
-	lookupLogic["$critPercent"] = snapshotData.attributes.crit
-	lookupLogic["$mastery"] = snapshotData.attributes.mastery
-	lookupLogic["$masteryPercent"] = snapshotData.attributes.mastery
-	lookupLogic["$vers"] = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$versPercent"] = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$versatility"] = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$versatilityPercent"] = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$oVers"] = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$oVersPercent"] = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$dVers"] = snapshotData.attributes.versatilityDefensive
-	lookupLogic["$dVersPercent"] = snapshotData.attributes.versatilityDefensive
-
-	lookupLogic["$hasteRating"] = snapshotData.attributes.hasteRating
-	lookupLogic["$critRating"] = snapshotData.attributes.critRating
-	lookupLogic["$masteryRating"] = snapshotData.attributes.masteryRating
-	lookupLogic["$versRating"] = snapshotData.attributes.versatilityRating
-	lookupLogic["$versatilityRating"] = snapshotData.attributes.versatilityRating
-
-	lookupLogic["$int"] = snapshotData.attributes.intellect
-	lookupLogic["$intellect"] = snapshotData.attributes.intellect
-	lookupLogic["$str"] = snapshotData.attributes.strength
-	lookupLogic["$strength"] = snapshotData.attributes.strength
-	lookupLogic["$agi"] = snapshotData.attributes.agility
-	lookupLogic["$agility"] = snapshotData.attributes.agility
-	lookupLogic["$stam"] = snapshotData.attributes.stamina
-	lookupLogic["$stamina"] = snapshotData.attributes.stamina
-
-	lookupLogic["$gcd"] = _gcd
 	lookupLogic["$ttd"] = _ttd
 	lookupLogic["$ttdSeconds"] = _ttd
 	lookupLogic["$inCombat"] = tostring(UnitAffectingCombat("player"))
-	TRB.Data.lookupLogic = lookupLogic
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
 	
@@ -1014,8 +1011,14 @@ end
 ---@param refreshText boolean
 function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, refreshText)
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
+	local startTime = debugprofilestop()
 	TRB.Functions.BarText:RefreshLookupDataBase(settings)
+	local refreshTime = debugprofilestop()
 	TRB.Functions.RefreshLookupData()
+	local dataTime = debugprofilestop()
+
+	--print("Base", refreshTime - startTime)
+	--print("Lookup", dataTime - refreshTime)
 	
 	--Only parse bar text if we're we need to refresh the text
 	if settings ~= nil and sharedSettings ~= nil and sharedSettings.displayText ~= nil and refreshText then

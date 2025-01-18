@@ -95,6 +95,7 @@ end
 ---@field private refreshRequested boolean
 ---@field private refreshEmbargo number?
 ---@field private onlyRefreshOnRequest boolean
+---@field private lastRefreshGetTime number
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
@@ -157,6 +158,7 @@ function TRB.Classes.SnapshotBuff:Reset()
     self.resource = 0
     self.isCustom = false
     self.refreshRequested = false
+    self.lastRefreshGetTime = 0
 
     if self.customPropertiesDefinitions ~= nil then
         for _, prop in ipairs(self.customPropertiesDefinitions) do
@@ -184,6 +186,10 @@ end
 ---@return number # Duration remaining on the Snapshot
 function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 	currentTime = currentTime or GetTime()
+
+    if self.lastRefreshGetTime == currentTime then
+        return self.remaining
+    end
 
     if useLeeway == nil then
         useLeeway = false
