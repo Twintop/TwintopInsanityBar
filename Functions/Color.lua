@@ -26,11 +26,13 @@ function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust,
 	local _g = 1
 	local _b = 0
 
-	if not (s == nil) and #s == 8 then
-		_a = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 1, 2), 16)) * percentAlphaAdjust, 0, floor, true)
-		_r = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 3, 4), 16)) * percentColorAdjust, 0, floor, true)
-		_g = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 5, 6), 16)) * percentColorAdjust, 0, floor, true)
-		_b = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 7, 8), 16)) * percentColorAdjust, 0, floor, true)
+	if not (s == nil) then
+		if #s == 8 then
+			_a = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 1, 2), 16)) * percentAlphaAdjust, 0, floor, true)
+			_r = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 3, 4), 16)) * percentColorAdjust, 0, floor, true)
+			_g = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 5, 6), 16)) * percentColorAdjust, 0, floor, true)
+			_b = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 7, 8), 16)) * percentColorAdjust, 0, floor, true)
+		end
 	end
 
 	if normalize then
@@ -88,19 +90,19 @@ function TRB.Functions.Color:SetBackdropColor(frame, key, r, g, b, a)
 	if key == nil then
 		changed = true
 	else
-		if TRB.Data.cache.colors.border[key] == nil then
-			TRB.Data.cache.colors.border[key] = {
+		if TRB.Data.cache.colors.backdrop[key] == nil then
+			TRB.Data.cache.colors.backdrop[key] = {
 				r = r,
 				g = g,
 				b = b,
 				a = a
 			}
 			changed = true
-		elseif TRB.Data.cache.colors.border[key].r ~= r or TRB.Data.cache.colors.border[key].g ~= g or TRB.Data.cache.colors.border[key].b ~= b or TRB.Data.cache.colors.border[key].a ~= a then
-			TRB.Data.cache.colors.border[key].r = r
-			TRB.Data.cache.colors.border[key].g = g
-			TRB.Data.cache.colors.border[key].b = b
-			TRB.Data.cache.colors.border[key].a = a
+		elseif TRB.Data.cache.colors.backdrop[key].r ~= r or TRB.Data.cache.colors.backdrop[key].g ~= g or TRB.Data.cache.colors.backdrop[key].b ~= b or TRB.Data.cache.colors.backdrop[key].a ~= a then
+			TRB.Data.cache.colors.backdrop[key].r = r
+			TRB.Data.cache.colors.backdrop[key].g = g
+			TRB.Data.cache.colors.backdrop[key].b = b
+			TRB.Data.cache.colors.backdrop[key].a = a
 			changed = true
 		end
 	end

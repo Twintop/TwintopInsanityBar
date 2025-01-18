@@ -148,8 +148,7 @@ TRB.Data.cache.barTextTree = {}
 TRB.Data.cache.colors = {
 	bar = {},
 	border = {},
-	backdrop = {},
-	threshold = {}
+	backdrop = {}
 }
 TRB.Data.cache.values = {
 	bar = {},

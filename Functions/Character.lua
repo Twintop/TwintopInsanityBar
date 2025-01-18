@@ -269,6 +269,7 @@ function TRB.Functions.Character:ResetCaches()
 	TRB.Data.cache.barTextTree = {}
 	TRB.Data.cache.colors.border = {}
 	TRB.Data.cache.colors.bar = {}
+	TRB.Data.cache.colors.backdrop = {}
 	TRB.Data.cache.values.bar = {}
 	TRB.Data.cache.values.resource = {}
 	TRB.Data.cache.values.threshold = {}
