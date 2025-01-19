@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 5 then --Only do this if we're on a Priest!
+if TRB.Data.character.classId ~= 5 then --Only do this if we're on a Priest!
 	return
 end
 
@@ -21,7 +20,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -388,10 +386,6 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Discipline()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "priest", "discipline")
 end
 
@@ -558,10 +552,6 @@ local function FillSpellData_Discipline()
 end
 
 local function Setup_Holy()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "priest", "holy")
 end
 
@@ -755,10 +745,6 @@ local function FillSpellData_Holy()
 end
 
 local function Setup_Shadow()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "priest", "shadow")
 end
 
@@ -990,17 +976,16 @@ end
 
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
-	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	---@type TRB.Classes.TargetData
 	local targetData = snapshotData.targetData
 
-	if specId == 1 then -- Discipline
+	if TRB.Data.character.specId == 1 then -- Discipline
 		targetData:UpdateTrackedSpells(currentTime)
-	elseif specId == 2 then -- Holy
+	elseif TRB.Data.character.specId == 2 then -- Holy
 		targetData:UpdateTrackedSpells(currentTime)
-	elseif specId == 3 then -- Shadow
+	elseif TRB.Data.character.specId == 3 then -- Shadow
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		targetData:UpdateTrackedSpells(currentTime)
 
@@ -1020,18 +1005,15 @@ local function TargetsCleanup(clearAll)
 	local targetData = TRB.Data.snapshotData.targetData
 	targetData:Cleanup(clearAll)
 	if clearAll == true then
-		local specId = GetSpecialization()
-		if specId == 1 then
-		elseif specId == 2 then
-		elseif specId == 3 then
+		if TRB.Data.character.specId == 1 then
+		elseif TRB.Data.character.specId == 2 then
+		elseif TRB.Data.character.specId == 3 then
 			targetData.custom.auspiciousSpiritsGenerate = 0
 		end
 	end
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
@@ -1046,21 +1028,21 @@ local function ConstructResourceBar(settings)
 		v:Hide();
 	end
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		for x = 1, 8 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		for x = 1, 8 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		for x = 1, 1 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
@@ -2276,13 +2258,12 @@ local function CastingSpell()
 	local affectingCombat = UnitAffectingCombat("player")
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
-	local specId = GetSpecialization()
 
 	if currentSpellName == nil and currentChannelName == nil then
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 			if currentSpellName == nil then
 				TRB.Functions.Character:ResetCastingSnapshotData()
@@ -2306,7 +2287,7 @@ local function CastingSpell()
 				end
 			end
 			return true
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.symbolOfHope.id then
@@ -2357,7 +2338,7 @@ local function CastingSpell()
 				end
 			end
 			return true
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.mindFlay.id then
@@ -2674,14 +2655,13 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.priest
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		local specSettings = classSettings.discipline
 		local specCacheSettings = TRB.Data.specCache.discipline.settings
@@ -3016,7 +2996,7 @@ local function UpdateResourceBar()
 
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		local specSettings = classSettings.holy
 		local specCacheSettings = TRB.Data.specCache.holy.settings
@@ -3427,7 +3407,7 @@ local function UpdateResourceBar()
 
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		local specSettings = classSettings.shadow
 		local specCacheSettings = TRB.Data.specCache.shadow.settings
@@ -3717,7 +3697,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local currentTime = GetTime()
 		local _
-		local specId = GetSpecialization()
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -3726,19 +3705,19 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		local settings
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.priest.discipline
 			spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.priest.holy
 			spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.priest.shadow
 			spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		end
 
 		if entry.destinationGuid == TRB.Data.character.guid then
-			if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
+			if (TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 				if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 					local castByToken = UnitTokenFromGUID(entry.sourceGuid)
 					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
@@ -3770,7 +3749,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 					shadowfiend:LogSwingTime(entry.sourceGuid, currentTime)
 				end
-			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
+			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 				if entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.mindbender.energizeId or entry.spellId == spells.shadowfiend.energizeId or entry.spellId == spells.voidwraith.energizeId) then
 					local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 					shadowfiend:LogSwingTime(entry.sourceGuid, currentTime)
@@ -3779,7 +3758,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end
 		
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
+			if (TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
 					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
@@ -3797,7 +3776,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				end
 			end
 
-			if specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
 				if entry.spellId == spells.atonement.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
 						targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -3821,7 +3800,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						end
 					end
 				end
-			elseif specId == 2 and TRB.Data.barConstructedForSpec == "holy" then
+			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "holy" then
 				if entry.spellId == spells.holyWordSerenity.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -3839,7 +3818,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
-			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
+			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 				if entry.spellId == spells.vampiricTouch.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -3890,7 +3869,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 
 			-- Voidweaver
-			if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 3 and TRB.Data.barConstructedForSpec == "shadow") then
+			if (TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "shadow") then
 				if entry.spellId == spells.entropicRift.id then
 					if entry.type == "UNIT_DIED" then
 						snapshots[entry.spellId]:Reset()
@@ -3924,8 +3903,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
 			elseif 	entry.type == "SPELL_SUMMON" and
-					((specId == 3 and settings.mindbender.enabled) or (specId ~= 3 and settings.shadowfiend.enabled))
-					and (entry.spellId == spells.shadowfiend.id or (specId ~= 2 and (entry.spellId == spells.mindbender.id or entry.spellId == spells.voidwraith.id))) then
+					((TRB.Data.character.specId == 3 and settings.mindbender.enabled) or (TRB.Data.character.specId ~= 3 and settings.shadowfiend.enabled))
+					and (entry.spellId == spells.shadowfiend.id or (TRB.Data.character.specId ~= 2 and (entry.spellId == spells.mindbender.id or entry.spellId == spells.voidwraith.id))) then
 				local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 
 				C_Timer.After(0, function()
@@ -3935,10 +3914,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							if shadowfiend.spawns[x].guid == nil then
 								haveTotem, name, _, _, _ = GetTotemInfo(x)
 								if haveTotem then
-									if specId == 2 and name ~= spells.lightwell.name then
+									if TRB.Data.character.specId == 2 and name ~= spells.lightwell.name then
 										shadowfiend.spawns[x]:Activate(entry.spellId, entry.destinationGuid, currentTime)
 										break
-									elseif (specId == 1 or specId == 3) and name ~= spells.entropicRift.name then
+									elseif (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3) and name ~= spells.entropicRift.name then
 										shadowfiend.spawns[x]:Activate(entry.spellId, entry.destinationGuid, currentTime)
 										break
 									end
@@ -3948,7 +3927,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end)
 				end)
 			end
-		elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (entry.spellId == spells.idolOfCthun_Tendril.tickId or entry.spellId == spells.idolOfCthun_Lasher.tickId) and CheckVoidTendrilExists(entry.sourceGuid) then
+		elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (entry.spellId == spells.idolOfCthun_Tendril.tickId or entry.spellId == spells.idolOfCthun_Lasher.tickId) and CheckVoidTendrilExists(entry.sourceGuid) then
 			if entry.spellId == spells.idolOfCthun_Lasher.tickId and entry.type == "SPELL_DAMAGE" then
 				if currentTime > (snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].tickTime + 0.1) then --This is a new tick
 					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].targetsHit = 0
@@ -3988,8 +3967,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
+	TRB.Data.character.specId = GetSpecialization() or 0
+	if TRB.Data.character.specId == 1 then
 		specCache.discipline.talents:GetTalents()
 		FillSpellData_Discipline()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.discipline)
@@ -4063,7 +4042,7 @@ local function SwitchSpec()
 		talents = specCache.discipline.talents
 		TRB.Data.barConstructedForSpec = "discipline"
 		ConstructResourceBar(specCache.discipline.settings)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		specCache.holy.talents:GetTalents()
 		FillSpellData_Holy()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.holy)
@@ -4136,7 +4115,7 @@ local function SwitchSpec()
 		talents = specCache.holy.talents
 		TRB.Data.barConstructedForSpec = "holy"
 		ConstructResourceBar(specCache.holy.settings)
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		specCache.shadow.talents:GetTalents()
 		FillSpellData_Shadow()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.shadow)
@@ -4246,8 +4225,12 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 5 then
+	if TRB.Data.character.classId == nil then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+	
+	print(TRB.Data.character.classId, TRB.Data.character.specId, event)
+	if TRB.Data.character.classId == 5 then
 		if event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar" then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -4300,7 +4283,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -4337,13 +4320,13 @@ end)
 function TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "priest"
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local settings
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		TRB.Data.character.specName = "discipline"
 ---@diagnostic disable-next-line: missing-parameter
@@ -4376,7 +4359,7 @@ function TRB.Functions.Class:CheckCharacter()
 				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		TRB.Data.character.specName = "holy"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
@@ -4410,7 +4393,7 @@ function TRB.Functions.Class:CheckCharacter()
 				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
@@ -4428,9 +4411,8 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
 	local specSettings
-	if specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true then
 		specSettings = TRB.Data.settings.priest.discipline
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -4438,14 +4420,14 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
-	elseif specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
 		specSettings = TRB.Data.settings.priest.holy
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
-	elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
 		specSettings = TRB.Data.settings.priest.shadow
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Insanity
@@ -4484,18 +4466,17 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 or specId == 2 or specId == 3 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.priest.discipline
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.priest.holy
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.priest.shadow
 			notZeroShowValue = 0
 		end
@@ -4534,24 +4515,23 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local spells = spellsData.spells
 	local settings = nil
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		settings = TRB.Data.settings.priest.discipline
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		settings = TRB.Data.settings.priest.holy
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		settings = TRB.Data.settings.priest.shadow
 	else
 		return false
 	end
 
-	if specId == 1 or specId == 2 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HealerSpells]]
 		if var == "$resource" or var == "$mana" then
 			valid = true
@@ -4671,7 +4651,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	end
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		if var == "$passive" then
 			if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
@@ -4719,7 +4699,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		if var == "$passive" then
 			if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
@@ -4783,7 +4763,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		if var == "$vfTime" then
 			if (snapshots[spells.voidform.id].buff.remaining ~= nil and snapshots[spells.voidform.id].buff.remaining > 0) or
@@ -4965,7 +4945,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	-- Voidweaver
-	if specId == 1 or specId == 3 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.ShadowSpells]]
 		if var == "$entropicRiftTime" then
 			if snapshots[spells.entropicRift.id].buff.isActive then
@@ -4977,7 +4957,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	-- Spec Agnostic
 	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	if var == "$swpCount" then
-		if snapshotData.targetData.count[spells.shadowWordPain.id] > 0 or (specId == 1 and snapshotData.targetData.count[spells.purgeTheWicked.id] > 0) then
+		if snapshotData.targetData.count[spells.shadowWordPain.id] > 0 or (TRB.Data.character.specId == 1 and snapshotData.targetData.count[spells.purgeTheWicked.id] > 0) then
 			valid = true
 		end
 	elseif var == "$swpTime" then
@@ -4986,7 +4966,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			target ~= nil and
 			((target.spells[spells.shadowWordPain.id] ~= nil and
 			target.spells[spells.shadowWordPain.id].remainingTime > 0) or
-			(specId == 1 and target.spells[spells.purgeTheWicked.id] ~= nil and
+			(TRB.Data.character.specId == 1 and target.spells[spells.purgeTheWicked.id] ~= nil and
 			target.spells[spells.purgeTheWicked.id].remainingTime > 0)) then
 			valid = true
 		end		
@@ -5020,11 +5000,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local specId = GetSpecialization()
 	local settings = TRB.Data.settings.priest
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		if TRB.Functions.String:StartsWith(relativeToFrame, "PowerWord_") then
 			if TRB.Functions.String:Contains(relativeToFrame, "Radiance") and settings.discipline.colors.comboPoints.powerWordRadianceEnabled and talents:IsTalentActive(spells.powerWordRadiance) then
@@ -5035,7 +5014,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				end
 			end
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		if TRB.Functions.String:StartsWith(relativeToFrame, "HolyWord_") then
 			if TRB.Functions.String:Contains(relativeToFrame, "Serenity") and settings.holy.colors.comboPoints.holyWordSerenityEnabled and talents:IsTalentActive(spells.holyWordSerenity) then
@@ -5082,14 +5061,13 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount]
 			end
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 	end
 	return nil
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
+	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

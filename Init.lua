@@ -158,10 +158,11 @@ TRB.Data.cache.values = {
 TRB.Data.cache.thresholdSpells = {}
 TRB.Data.specCache = {}
 
--- This is here for reference/what every implementation should use as a minimum
 TRB.Data.character = {
 	guid = UnitGUID("player"),
 	raceId = 0,
+	specId = GetSpecialization() or 0,
+	classId = 0,
 	className = "",
 	specName = "",
 	maxResource = 100,
@@ -169,6 +170,7 @@ TRB.Data.character = {
 	items = {}
 }
 _, _, TRB.Data.character.raceId = UnitRace("player")
+_, _, TRB.Data.character.classId = UnitClass("player")
 
 ---@type TRB.Classes.SpellsData
 ---@diagnostic disable-next-line: missing-fields
