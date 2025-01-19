@@ -162,7 +162,7 @@ TRB.Data.character = {
 	guid = UnitGUID("player"),
 	raceId = 0,
 	specId = GetSpecialization() or 0,
-	classId = 0,
+	classId = classIndexId,
 	className = "",
 	specName = "",
 	maxResource = 100,
@@ -170,7 +170,6 @@ TRB.Data.character = {
 	items = {}
 }
 _, _, TRB.Data.character.raceId = UnitRace("player")
-_, _, TRB.Data.character.classId = UnitClass("player")
 
 ---@type TRB.Classes.SpellsData
 ---@diagnostic disable-next-line: missing-fields
@@ -219,7 +218,7 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 -- For the following specs, we need to have a secondary bar/bars created
 -- We're going to make these as StatusBars so we can use them for Death Knight runes in the future
-if classIndexId == 2 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 9 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then
+if TRB.Data.character.classId == 2 or TRB.Data.character.classId == 4 or TRB.Data.character.classId == 5 or TRB.Data.character.classId == 7 or TRB.Data.character.classId == 9 or TRB.Data.character.classId == 10 or TRB.Data.character.classId == 11 or TRB.Data.character.classId == 12 or TRB.Data.character.classId == 13 then
 	TRB.Frames.resource2Frames = {}
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	

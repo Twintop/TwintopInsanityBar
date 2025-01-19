@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 9 then --Only do this if we're on an Warlock!
+if TRB.Data.character.classId ~= 9 then --Only do this if we're on an Warlock!
 	return
 end
 TRB.Classes = TRB.Classes or {}

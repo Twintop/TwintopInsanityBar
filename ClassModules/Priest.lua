@@ -69,6 +69,9 @@ local function FillSpecializationCache()
 
 	specCache.discipline.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 1,
 		maxResource = 100,
 		effects = {
 		},
@@ -191,6 +194,9 @@ local function FillSpecializationCache()
 
 	specCache.holy.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 2,
 		maxResource = 100,
 		effects = {
 		},
@@ -320,6 +326,9 @@ local function FillSpecializationCache()
 
 	specCache.shadow.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 3,
 		maxResource = 100,
 		devouringPlagueThreshold = 50,
 		effects = {
@@ -4225,11 +4234,14 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	if TRB.Data.character.classId == nil then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
 		_, _, TRB.Data.character.classId = UnitClass("player")
 	end
-	
-	print(TRB.Data.character.classId, TRB.Data.character.specId, event)
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+
 	if TRB.Data.character.classId == 5 then
 		if event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar" then
 			if not TRB.Details.addonData.loaded then
@@ -4318,9 +4330,9 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "priest"
-	TRB.Data.character.specId = GetSpecialization()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots

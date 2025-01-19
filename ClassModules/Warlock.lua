@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 9 then --Only do this if we're on an Warlock!
+if TRB.Data.character.classId ~= 9 then --Only do this if we're on an Warlock!
 	return
 end
 
@@ -21,7 +20,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -45,6 +43,8 @@ local function FillSpecializationCache()
 
 	specCache.affliction.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 1,
 		maxResource = 10000,
 		maxResource2 = 5,
@@ -80,10 +80,6 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Affliction()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "warlock", "affliction")
 end
 
@@ -198,13 +194,12 @@ end
 
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
-	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	
 	---@type TRB.Classes.TargetData
 	local targetData = snapshotData.targetData
 
-	if specId == 1 then -- Affliction	
+	if TRB.Data.character.specId == 1 then -- Affliction	
 		targetData:UpdateTrackedSpells(currentTime)
 	end
 end
@@ -214,16 +209,13 @@ local function TargetsCleanup(clearAll)
 	local targetData = TRB.Data.snapshotData.targetData
 	targetData:Cleanup(clearAll)
 	if clearAll == true then
-		local specId = GetSpecialization()
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 		
 		end
 	end
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
@@ -234,7 +226,7 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
     end
 	TRB.Frames.resource2ContainerFrame:Show()
 	
@@ -620,15 +612,13 @@ local function UpdateSnapshot_Affliction()
 end
 
 local function UpdateResourceBar()
-	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.warlock
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.affliction
 		local specCacheSettings = TRB.Data.specCache.affliction.settings
 		UpdateSnapshot_Affliction()
@@ -741,8 +731,6 @@ local function UpdateResourceBar()
 end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local _
-	local specId = GetSpecialization()
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
@@ -751,13 +739,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 		
 		local settings
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 			settings = TRB.Data.settings.warlock.affliction
         end
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 1 and TRB.Data.barConstructedForSpec == "affliction" then --Affliction					
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "affliction" then --Affliction					
 				if entry.spellId == spells.unstableAffliction.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -833,8 +821,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
+	TRB.Data.character.specId = GetSpecialization()
+	if TRB.Data.character.specId == 1 then
 		specCache.affliction.talents:GetTalents()
 		FillSpellData_Affliction()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.affliction)
@@ -881,8 +869,15 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 9 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 9 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -923,7 +918,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -955,14 +950,14 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "warlock"
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 	TRB.Data.character.maxResource2 = 1
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
 	local settings = nil
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		settings = TRB.Data.settings.warlock.affliction
 		TRB.Data.character.specName = "affliction"
 
@@ -976,8 +971,7 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
@@ -1015,15 +1009,14 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 3
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.warlock.affliction
 		end
 
@@ -1058,20 +1051,21 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
+
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local spells
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local settings = nil
-	if specId == 1 then
+
+	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 		settings = TRB.Data.settings.warlock.affliction
 	else
 		return false
 	end
 
-	if specId == 1 then --Affliction
+	if TRB.Data.character.specId == 1 then --Affliction
 		if var == "$nightfallTime" then
 			if snapshots[spells.nightfall.id].buff.isActive then
 				valid = true
@@ -1255,8 +1249,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if (specId ~= 1) then
+	if (TRB.Data.character.specId ~= 1) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

@@ -1,7 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 11 then --Only do this if we're on a Druid!
+if TRB.Data.character.classId ~= 11 then --Only do this if we're on a Druid!
 	return
 end
 TRB.Classes = TRB.Classes or {}

@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 1 then --Only do this if we're on a Warrior!
+if TRB.Data.character.classId ~= 1 then --Only do this if we're on a Warrior!
 	return
 end
 
@@ -20,7 +19,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -44,6 +42,8 @@ local function FillSpecializationCache()
 
 	specCache.arms.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 1,
 		maxResource = 100,
 		effects = {
@@ -93,7 +93,9 @@ local function FillSpecializationCache()
 
 	specCache.fury.character = {
 		guid = UnitGUID("player"),
-		specId = 1,
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 2,
 		maxResource = 100,
 		effects = {
 		}
@@ -126,18 +128,10 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Arms()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "warrior", "arms")
 end
 
 local function Setup_Fury()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "warrior", "fury")
 end
 
@@ -306,13 +300,12 @@ end
 
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
-	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		targetData:UpdateTrackedSpells(currentTime)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		targetData:UpdateTrackedSpells(currentTime)
 	end
 end
@@ -324,8 +317,6 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
@@ -675,18 +666,14 @@ local function RefreshLookupData_Fury()
 end
 
 local function CastingSpell()
-	---@type table<integer, TRB.Classes.Snapshot>
-	local snapshots = TRB.Data.snapshotData.snapshots
-	local currentTime = GetTime()
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
-	local specId = GetSpecialization()
 
 	if currentSpellName == nil and currentChannelName == nil then
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			if currentSpellName == nil then
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
@@ -695,7 +682,7 @@ local function CastingSpell()
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
 			end
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			if currentSpellName == nil then
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
@@ -756,14 +743,13 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.warrior
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.arms
 		local specCacheSettings = TRB.Data.specCache.arms.settings
 		UpdateSnapshot_Arms()
@@ -939,7 +925,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fury
 		local specCacheSettings = TRB.Data.specCache.fury.settings
 		UpdateSnapshot_Fury()
@@ -1120,8 +1106,6 @@ end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
-	local _
-	local specId = GetSpecialization()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells|TRB.Classes.Warrior.FurySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1131,7 +1115,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 1 and TRB.Data.barConstructedForSpec == "arms" then --Arms
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "arms" then --Arms
 				if entry.spellId == spells.mortalStrike.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -1159,7 +1143,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
-			elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
+			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
 				if entry.spellId == spells.suddenDeath.id then
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_APPLIED_DOSE" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled then
@@ -1235,8 +1219,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
+	TRB.Data.character.specId = GetSpecialization()
+	if TRB.Data.character.specId == 1 then
 		specCache.arms.talents:GetTalents()
 		FillSpellData_Arms()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.arms)
@@ -1257,7 +1241,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "arms"
 			ConstructResourceBar(specCache.arms.settings)
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		specCache.fury.talents:GetTalents()
 		FillSpellData_Fury()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.fury)
@@ -1288,8 +1272,15 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 1 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 1 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -1336,7 +1327,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -1369,32 +1360,31 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "warrior"
 	TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 		TRB.Data.character.specName = "arms"
 
 		if talents:IsTalentActive(spells.bloodletting) then
 			TRB.Data.character.pandemicModifier = spells.bloodletting.attributes.pandemicModifier
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "fury"
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 	end
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
 		TRB.Data.specSupported = true
-	elseif specId == 2 and TRB.Data.settings.core.enabled.warrior.fury == true then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.warrior.fury == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
@@ -1430,16 +1420,15 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 or specId == 2 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
 		local settings
 		local notZeroShowValue = 0
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.warrior.arms
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.warrior.fury
 		end
 
@@ -1475,7 +1464,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
+
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -1483,17 +1472,18 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local spells
 	local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 	local settings = nil
-	if specId == 1 then
+
+	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 		settings = TRB.Data.settings.warrior.arms
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		settings = TRB.Data.settings.warrior.fury
 	else
 		return false
 	end
 
-	if specId == 1 then --Arms
+	if TRB.Data.character.specId == 1 then --Arms
 		if var == "$suddenDeathTime" then
 			if snapshots[spells.suddenDeath.id].buff.isActive then
 				valid = true
@@ -1539,7 +1529,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 2 then --Fury
+	elseif TRB.Data.character.specId == 2 then --Fury
 		if var == "$suddenDeathTime" then
 			if snapshots[spells.suddenDeath.id].buff.isActive then
 				valid = true
@@ -1617,7 +1607,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if GetSpecialization() ~= 1 and GetSpecialization() ~= 2 then
+	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

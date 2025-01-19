@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 7 then --Only do this if we're on a Shaman!
+if TRB.Data.character.classId ~= 7 then --Only do this if we're on a Shaman!
 	return
 end
 
@@ -20,7 +19,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 local specCache = {
 	elemental = TRB.Classes.SpecCache:New(),
@@ -65,6 +63,9 @@ local function FillSpecializationCache()
 	
 	specCache.elemental.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 1,
 		maxResource = 100,
 		earthShockThreshold = 60,
 		earthquakeThreshold = 60,
@@ -120,8 +121,9 @@ local function FillSpecializationCache()
 
 	specCache.enhancement.character = {
 		guid = UnitGUID("player"),
-	---@diagnostic disable-next-line: missing-parameter
-		specId = 1,
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 2,
 		maxResource = 10000,
 		maxResource2 = 10,
 		effects = {
@@ -160,6 +162,9 @@ local function FillSpecializationCache()
 
 	specCache.restoration.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 3,
 		maxResource = 100,
 		effects = {
 		},
@@ -241,26 +246,14 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Elemental()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "elemental")
 end
 
 local function Setup_Enhancement()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "enhancement")
 end
 
 local function Setup_Restoration()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "restoration")
 end
 
@@ -552,8 +545,6 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
@@ -568,11 +559,11 @@ local function ConstructResourceBar(settings)
 		v:Hide();
 	end
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		TRB.Frames.resource2ContainerFrame:Hide()
-	elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		TRB.Frames.resource2ContainerFrame:Show()
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		for x = 1, 7 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
@@ -1180,7 +1171,6 @@ end
 local function CastingSpell()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local specId = GetSpecialization()
 	local affectingCombat = UnitAffectingCombat("player")
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
@@ -1189,7 +1179,7 @@ local function CastingSpell()
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 			if currentSpellName == nil then
 				TRB.Functions.Character:ResetCastingSnapshotData()
@@ -1247,14 +1237,14 @@ local function CastingSpell()
 				end
 			end
 			return true
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			--[[if currentSpellName == nil then
 				return true
 			else]]
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
 			--end
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			if currentSpellName == nil then
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
@@ -1345,13 +1335,12 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.shaman
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.elemental
 		local specCacheSettings = TRB.Data.specCache.elemental.settings
 		UpdateSnapshot_Elemental()
@@ -1535,7 +1524,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.enhancement
 		local specCacheSettings = TRB.Data.specCache.enhancement.settings
 		UpdateSnapshot_Enhancement()
@@ -1614,7 +1603,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.restoration
 		local specCacheSettings = TRB.Data.specCache.restoration.settings
 		UpdateSnapshot_Restoration()
@@ -1772,7 +1761,6 @@ end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
-	local specId = GetSpecialization()
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1782,19 +1770,19 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		local settings
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 			settings = TRB.Data.settings.shaman.elemental
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 			settings = TRB.Data.settings.shaman.enhancement
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 			settings = TRB.Data.settings.shaman.restoration
 		end
 
 		if entry.destinationGuid == TRB.Data.character.guid then
-			if specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
+			if TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
 				if settings.passiveGeneration.symbolOfHope and
 				 (entry.spellId == spells.symbolOfHope.tickId or
 				 entry.spellId == spells.symbolOfHope.id) then
@@ -1827,7 +1815,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 1 and TRB.Data.barConstructedForSpec == "elemental" then
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "elemental" then
 				if entry.spellId == spells.chainLightning.id then
 					if entry.type == "SPELL_DAMAGE" then
 						local chainLightning = snapshots[spells.chainLightning.id]
@@ -1842,8 +1830,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshots[spells.icefury.id].buff:Initialize(entry.type)
 					snapshots[spells.icefury.id].attributes.resource = snapshots[spells.icefury.id].buff.applications * spells.frostShock.resource
 				end
-			elseif specId == 2 and TRB.Data.barConstructedForSpec == "enhancement" then
-			elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
+			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "enhancement" then
+			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
 				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
 					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
@@ -1885,9 +1873,9 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		specCache.elemental.talents:GetTalents()
 		FillSpellData_Elemental()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
@@ -1907,7 +1895,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "elemental"
 			ConstructResourceBar(specCache.elemental.settings)
 		end
-	elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		specCache.enhancement.talents:GetTalents()
 		FillSpellData_Enhancement()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
@@ -1927,7 +1915,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "enhancement"
 			ConstructResourceBar(specCache.enhancement.settings)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		specCache.restoration.talents:GetTalents()
 		FillSpellData_Restoration()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
@@ -1964,8 +1952,15 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 7 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 7 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -2019,7 +2014,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -2053,22 +2048,22 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "shaman"
-	local specId = GetSpecialization()
 	
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "elemental"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
-	elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		TRB.Data.character.specName = "enhancement"
 		local maxComboPoints = 10
 		if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
 			TRB.Functions.Bar:SetPosition(TRB.Data.settings.shaman.enhancement, TRB.Frames.barContainerFrame)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
 ---@diagnostic disable-next-line: missing-parameter
@@ -2078,15 +2073,14 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.enabled.shaman.elemental then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.shaman.elemental then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Maelstrom
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Id = nil
-	elseif specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.enhancement)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -2094,7 +2088,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = "SPELL"
 		TRB.Data.resource2Id = 344179
 		TRB.Data.resource2Factor = 1
-	elseif specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -2132,22 +2126,21 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 or (specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement) or specId == 3 then
+	if TRB.Data.character.specId == 1 or (TRB.Data.character.specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement) or TRB.Data.character.specId == 3 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 0
 		local includeComboPoints = false
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.shaman.elemental
 			notZeroShowValue = 0
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.shaman.enhancement
 			includeComboPoints = true
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.shaman.restoration
 		end
 
@@ -2182,26 +2175,26 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local spells
 	local settings = nil
-	if specId == 1 then
+
+	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 		settings = TRB.Data.settings.shaman.elemental
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 		settings = TRB.Data.settings.shaman.enhancement
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 		settings = TRB.Data.settings.shaman.restoration
 	else
 		return false
 	end
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		if var == "$resource" or var == "$maelstrom" then
 			if snapshotData.attributes.resource > 0 then
 				valid = true
@@ -2263,7 +2256,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 2 then --Enhancement
+	elseif TRB.Data.character.specId == 2 then --Enhancement
 		if var == "$casting" then
 			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
 				valid = true
@@ -2307,7 +2300,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$comboPointsMax"or var == "$maelstromWeaponMax" then
 			valid = true
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		if var == "$resource" or var == "$mana" then
 			valid = true
 		elseif var == "$resourceMax" or var == "$manaMax" then
@@ -2456,9 +2449,8 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if (specId ~= 1 and specId ~= 2 and specId ~= 3) or
-		(specId == 2 and not TRB.Data.settings.core.experimental.specs.shaman.enhancement) then
+	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3) or
+		(TRB.Data.character.specId == 2 and not TRB.Data.settings.core.experimental.specs.shaman.enhancement) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

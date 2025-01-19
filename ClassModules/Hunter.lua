@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 3 then --Only do this if we're on a Hunter!
+if TRB.Data.character.classId ~= 3 then --Only do this if we're on a Hunter!
 	return
 end
 
@@ -21,7 +20,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -47,8 +45,10 @@ local function FillSpecializationCache()
 
 	specCache.beastMastery.character = {
 		guid = UnitGUID("player"),
-		petGuid = UnitGUID("pet"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 1,
+		petGuid = UnitGUID("pet"),
 		maxResource = 100
 	}
 	
@@ -119,6 +119,8 @@ local function FillSpecializationCache()
 
 	specCache.marksmanship.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 2,
 		maxResource = 100
 	}
@@ -184,6 +186,8 @@ local function FillSpecializationCache()
 
 	specCache.survival.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 3,
 		maxResource = 100
 	}
@@ -224,26 +228,14 @@ local function FillSpecializationCache()
 end
 
 local function Setup_BeastMastery()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "hunter", "beastMastery")
 end
 
 local function Setup_Marksmanship()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "hunter", "marksmanship")
 end
 
 local function Setup_Survival()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "hunter", "survival")
 end
 
@@ -523,7 +515,7 @@ end
 
 local function CalculateAbilityResourceValue(resource, threshold)
 	local modifier = 1.0
-	if GetSpecialization() == 2 then
+	if TRB.Data.character.specId == 2 then
 		if resource > 0 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 			local trueshot = TRB.Data.snapshotData.snapshots[spells.trueshot.id] --[[@as TRB.Classes.Snapshot]]
@@ -1226,9 +1218,7 @@ end
 --TODO Refactor this to match other modules
 local function CastingSpell()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
 	local casting = snapshotData.casting
-	local specId = GetSpecialization()
 	local currentSpell = UnitCastingInfo("player")
 	local currentChannel = UnitChannelInfo("player")
 
@@ -1236,7 +1226,7 @@ local function CastingSpell()
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			if currentSpell == nil then
 				local spellName = select(1, currentChannel)
 				TRB.Functions.Character:ResetCastingSnapshotData()
@@ -1253,7 +1243,7 @@ local function CastingSpell()
 					return false
 				end
 			end
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 			if currentSpell == nil then				
 				local spellName = select(1, currentChannel)
@@ -1297,7 +1287,7 @@ local function CastingSpell()
 				UpdateCastingResourceFinal()
 			end
 			return true
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			if currentSpell == nil then
 				local spellName = select(1, currentChannel)
 				TRB.Functions.Character:ResetCastingSnapshotData()
@@ -1438,14 +1428,13 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.hunter
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.beastMastery
 		local specCacheSettings = TRB.Data.specCache.beastMastery.settings
 		UpdateSnapshot_BeastMastery()
@@ -1708,7 +1697,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.marksmanship
 		local specCacheSettings = TRB.Data.specCache.marksmanship.settings
 		UpdateSnapshot_Marksmanship()
@@ -1988,7 +1977,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.survival
 		local specCacheSettings = TRB.Data.specCache.survival.settings
 		UpdateSnapshot_Survival()
@@ -2206,8 +2195,6 @@ end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
-	local _
-	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -2218,7 +2205,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
 				if entry.spellId == spells.barrage.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -2254,7 +2241,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
-			elseif specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship
+			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship
 				if entry.spellId == spells.burstingShot.id then
 					snapshots[entry.spellId].cooldown:Initialize()
 				elseif entry.spellId == spells.aimedShot.id then
@@ -2279,7 +2266,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
-			elseif specId == 3 and TRB.Data.barConstructedForSpec == "survival" then --Survival
+			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "survival" then --Survival
 				if entry.spellId == spells.flankingStrike.id then
 					snapshots[entry.spellId].cooldown:Initialize()
 				elseif entry.spellId == spells.termsOfEngagement.id then
@@ -2332,8 +2319,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
+	TRB.Data.character.specId = GetSpecialization()
+	if TRB.Data.character.specId == 1 then
 		specCache.beastMastery.talents:GetTalents()
 		FillSpellData_BeastMastery()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.beastMastery)
@@ -2353,7 +2340,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "beastMastery"
 			ConstructResourceBar(specCache.beastMastery.settings)
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		specCache.marksmanship.talents:GetTalents()
 		FillSpellData_Marksmanship()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.marksmanship)
@@ -2373,7 +2360,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "marksmanship"
 			ConstructResourceBar(specCache.marksmanship.settings)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		specCache.survival.talents:GetTalents()
 		FillSpellData_Survival()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.survival)
@@ -2411,8 +2398,15 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 3 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 3 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -2465,7 +2459,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -2499,29 +2493,28 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "hunter"
 	TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "beastMastery"
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "marksmanship"
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "survival"
 	end
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.enabled.hunter.beastMastery == true then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.hunter.beastMastery == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 		TRB.Data.specSupported = true
-	elseif specId == 2 and TRB.Data.settings.core.enabled.hunter.marksmanship == true then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.hunter.marksmanship == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 		TRB.Data.specSupported = true
-	elseif specId == 3 and TRB.Data.settings.core.enabled.hunter.survival == true then
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.hunter.survival == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
 		TRB.Data.specSupported = true
 	else
@@ -2558,18 +2551,17 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 or specId == 2 or specId == 3 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.hunter.beastMastery
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.hunter.marksmanship
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.hunter.survival
 		end
 
@@ -2605,26 +2597,27 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
+
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local spells
 	local settings = nil
-	if specId == 1 then
+
+	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 		settings = TRB.Data.settings.hunter.beastMastery
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 		settings = TRB.Data.settings.hunter.marksmanship
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 		settings = TRB.Data.settings.hunter.survival
 	else
 		return false
 	end
 
-	if specId == 1 then --Beast Mastery
+	if TRB.Data.character.specId == 1 then --Beast Mastery
 		if var == "$barbedShotFocus" then
 			if snapshots[spells.barbedShot.id].buff.isActive then
 				valid = true
@@ -2650,7 +2643,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 2 then --Marksmanship
+	elseif TRB.Data.character.specId == 2 then --Marksmanship
 		if var == "$trueshotTime" then
 			if snapshots[spells.trueshot.id].buff.isActive then
 				valid = true
@@ -2664,7 +2657,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 3 then --Survivial
+	elseif TRB.Data.character.specId == 3 then --Survivial
 		if var == "$coordinatedAssaultTime" then
 			if snapshots[spells.coordinatedAssault.id].buff.isActive then
 				valid = true
@@ -2722,9 +2715,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
-			elseif specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
+			elseif TRB.Data.character.specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
 				valid = true
-			elseif specId == 3 and snapshots[spells.termsOfEngagement.id].buff.isActive then
+			elseif TRB.Data.character.specId == 3 and snapshots[spells.termsOfEngagement.id].buff.isActive then
 				valid = true
 			end
 		end
@@ -2757,13 +2750,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local specId = GetSpecialization()
 	return nil
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if specId ~= 1 and specId ~= 2 and specId ~= 3 then
+	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

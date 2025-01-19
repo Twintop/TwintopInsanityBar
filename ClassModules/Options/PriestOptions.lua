@@ -1,7 +1,6 @@
 ---@diagnostic disable: undefined-field
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 5 then --Only do this if we're on a Priest!
+if TRB.Data.character.classId ~= 5 then --Only do this if we're on a Priest!
 	return
 end
 

@@ -669,7 +669,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetWidth(spec)
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 			TRB.Functions.Bar:SetMinMax(spec)
@@ -690,7 +690,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 		controls.borderWidth.EditBox:SetText(tostring(borderSize))
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetHeight(spec)
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 		end
@@ -704,7 +704,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.xPos = value
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Frames.barContainerFrame:ClearAllPoints()
 			TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
 			TRB.Frames.barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
@@ -719,7 +719,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.yPos = value
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Frames.barContainerFrame:ClearAllPoints()
 			TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
 			TRB.Frames.barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
@@ -735,7 +735,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.border = value
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Frames.barContainerFrame:SetWidth(spec.bar.width-(spec.bar.border*2))
 			TRB.Frames.barContainerFrame:SetHeight(spec.bar.height-(spec.bar.border*2))
 			TRB.Frames.barBorderFrame:SetWidth(spec.bar.width)
@@ -786,7 +786,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			spec.thresholds.width = value
 
-			if GetSpecialization() == specId then
+			if TRB.Data.character.specId == specId then
 				TRB.Functions.Threshold:RedrawThresholdLines(spec)
 			end
 		end)
@@ -870,7 +870,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 			TRB.Functions.Bar:SetMinMax(spec)
 		end
@@ -894,7 +894,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 			TRB.Functions.Bar:SetMinMax(spec)
 		end
@@ -908,7 +908,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.comboPoints.xPos = value
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 		end
 	end)
@@ -920,7 +920,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.comboPoints.yPos = value
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 		end
 	end)
@@ -933,7 +933,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.comboPoints.border = value
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 			TRB.Functions.Bar:SetMinMax(spec)
 		end
@@ -955,7 +955,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.comboPoints.spacing = value
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 			TRB.Functions.Bar:SetMinMax(spec)
 		end
@@ -1009,7 +1009,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
 		LibDD:CloseDropDownMenus()
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 		end
 	end
@@ -1024,7 +1024,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.fullWidth = self:GetChecked()
 		
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 			TRB.Functions.Bar:SetMinMax(spec)
 		end
@@ -1059,7 +1059,7 @@ function TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls, textures, newV
 		end
 	end
 
-	if GetSpecialization() == specId then
+	if TRB.Data.character.specId == specId then
 		if includeComboPoints and variable == "comboPoints" then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			for x = 1, length do
@@ -1161,7 +1161,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, spec.textures.comboPointsBackgroundName)
 			end
 
-			if GetSpecialization() == specId then
+			if TRB.Data.character.specId == specId then
 				TRB.Frames.resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
 				TRB.Frames.passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
 				TRB.Frames.castingFrame:SetStatusBarTexture(spec.textures.castingBar)
@@ -1203,7 +1203,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		spec.textures.border = newValue
 		spec.textures.borderName = newName
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			if spec.bar.border < 1 then
 				TRB.Frames.barBorderFrame:SetBackdrop({ })
 			else
@@ -1224,7 +1224,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.comboPointsBorder = newValue
 			spec.textures.comboPointsBorderName = newName
 
-			if GetSpecialization() == specId then
+			if TRB.Data.character.specId == specId then
 				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					if spec.comboPoints.border < 1 then
@@ -1254,7 +1254,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		spec.textures.background = newValue
 		spec.textures.backgroundName = newName
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Frames.barContainerFrame:SetBackdrop({
 				bgFile = spec.textures.background,
 				tile = true,
@@ -1271,7 +1271,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.comboPointsBackground = newValue
 			spec.textures.comboPointsBackgroundName = newName
 
-			if GetSpecialization() == specId then
+			if TRB.Data.character.specId == specId then
 				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
@@ -1298,7 +1298,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.comboPointsBorder = newValue
 			spec.textures.comboPointsBorderName = newName
 
-			if GetSpecialization() == specId then
+			if TRB.Data.character.specId == specId then
 				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					if spec.comboPoints.border < 1 then
@@ -1322,7 +1322,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				spec.textures.border = newValue
 				spec.textures.borderName = newName
 
-				if GetSpecialization() == specId then
+				if TRB.Data.character.specId == specId then
 					if spec.bar.border < 1 then
 						TRB.Frames.barBorderFrame:SetBackdrop({ })
 					else
@@ -1349,7 +1349,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.comboPointsBackground = newValue
 			spec.textures.comboPointsBackgroundName = newName
 
-			if GetSpecialization() == specId then
+			if TRB.Data.character.specId == specId then
 				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
@@ -1369,7 +1369,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				spec.textures.background = newValue
 				spec.textures.backgroundName = newName
 
-				if GetSpecialization() == specId then
+				if TRB.Data.character.specId == specId then
 					TRB.Frames.barContainerFrame:SetBackdrop({ 
 						bgFile = spec.textures.background,
 						tile = true,
@@ -1582,7 +1582,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		spec.thresholds.icons.relativeTo = newValue
 		spec.thresholds.icons.relativeToName = newName
 		
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
 
@@ -1600,7 +1600,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.enabled = self:GetChecked()
 		
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
 	end)
@@ -1615,7 +1615,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.desaturated = self:GetChecked()
 		
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
 	end)
@@ -1639,7 +1639,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 		
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
 	end)
@@ -1662,7 +1662,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 		
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
 	end)
@@ -1676,7 +1676,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.xPos = value
 		
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
 	end)
@@ -1688,7 +1688,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.yPos = value
 		
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
 	end)
@@ -1711,7 +1711,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
 		controls.thresholdIconWidth.MinLabel:SetText(tostring(minsliderWidth))
 
-		if GetSpecialization() == specId then
+		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
 	end)

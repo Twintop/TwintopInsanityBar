@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 12 then --Only do this if we're on a Demon Hunter!
+if TRB.Data.character.classId ~= 12 then --Only do this if we're on a Demon Hunter!
 	return
 end
 

@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 13 then --Only do this if we're on a Evoker!
+if TRB.Data.character.classId ~= 13 then --Only do this if we're on a Evoker!
 	return
 end
 

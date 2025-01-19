@@ -391,7 +391,6 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 					border:ApplyBackdrop()
 				end
 				border:SetBackdropColor(0, 0, 0, 0)
-				print(settings.colors.comboPoints.border, tostring(settings.colors.comboPoints.border))
 				border:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.border, true))
 
 				border:SetWidth(nodeWidth)

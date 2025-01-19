@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 4 then --Only do this if we're on a Rogue!
+if TRB.Data.character.classId ~= 4 then --Only do this if we're on a Rogue!
 	return
 end
 

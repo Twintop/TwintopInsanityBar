@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 2 then --Only do this if we're on a Paladin!
+if TRB.Data.character.classId ~= 2 then --Only do this if we're on a Paladin!
 	return
 end
 

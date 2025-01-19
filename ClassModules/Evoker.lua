@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 13 then --Only do this if we're on an Evoker!
+if TRB.Data.character.classId ~= 13 then --Only do this if we're on an Evoker!
 	return
 end
 
@@ -21,7 +20,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -63,6 +61,8 @@ local function FillSpecializationCache()
 
 	specCache.devastation.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 1,
 		maxResource = 10000,
 		maxResource2 = 5,
@@ -106,6 +106,9 @@ local function FillSpecializationCache()
 
 	specCache.preservation.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 2,
 		maxResource = 100,
 		effects = {
 		},
@@ -207,7 +210,9 @@ local function FillSpecializationCache()
 
 	specCache.augmentation.character = {
 		guid = UnitGUID("player"),
-		specId = 1,
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 3,
 		maxResource = 10000,
 		maxResource2 = 5,
 		maxResource2Resource = 0,
@@ -239,26 +244,14 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Devastation()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "devastation")
 end
 
 local function Setup_Preservation()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "preservation")
 end
 
 local function Setup_Augmentation()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "augmentation")
 end
 
@@ -539,11 +532,10 @@ end
 
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
-	local specId = GetSpecialization()
 	
-	if specId == 1 then -- Devastation
-	elseif specId == 2 then -- Preservation
-	elseif specId == 3 then -- Augmentation
+	if TRB.Data.character.specId == 1 then -- Devastation
+	elseif TRB.Data.character.specId == 2 then -- Preservation
+	elseif TRB.Data.character.specId == 3 then -- Augmentation
 	end
 end
 
@@ -552,17 +544,14 @@ local function TargetsCleanup(clearAll)
 	local targetData = TRB.Data.snapshotData.targetData
 	targetData:Cleanup(clearAll)
 	if clearAll == true then
-		local specId = GetSpecialization()
-		if specId == 1 then
-		elseif specId == 2 then
-		elseif specId == 3 then
+		if TRB.Data.character.specId == 1 then
+		elseif TRB.Data.character.specId == 2 then
+		elseif TRB.Data.character.specId == 3 then
 		end
 	end
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
@@ -573,14 +562,14 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	if specId == 1 then
-	elseif specId == 2 then
+	if TRB.Data.character.specId == 1 then
+	elseif TRB.Data.character.specId == 2 then
 		for x = 1, 8 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 	end
 
 	TRB.Frames.resource2ContainerFrame:Show()
@@ -1060,23 +1049,21 @@ end
 local function CastingSpell()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
-	local currentTime = GetTime()
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
-	local specId = GetSpecialization()
 
 	if currentSpellName == nil and currentChannelName == nil then
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			--[[if currentSpellName == nil then
 				return true
 			else]]
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
 			--end
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.emeraldCommunion.id then
@@ -1108,7 +1095,7 @@ local function CastingSpell()
 				end
 			end
 			return true
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			--[[if currentSpellName == nil then
 				return true
 			else]]
@@ -1185,13 +1172,12 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.evoker
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.devastation
 		local specCacheSettings = TRB.Data.specCache.devastation.settings
 		UpdateSnapshot_Devastation()
@@ -1282,7 +1268,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.preservation
 		local specCacheSettings = TRB.Data.specCache.preservation.settings
 		UpdateSnapshot_Preservation()
@@ -1474,7 +1460,7 @@ local function UpdateResourceBar()
 
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.augmentation
 		local specCacheSettings = TRB.Data.specCache.augmentation.settings
 		UpdateSnapshot_Augmentation()
@@ -1570,8 +1556,6 @@ end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
-	local _
-	local specId = GetSpecialization()
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
@@ -1581,19 +1565,19 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 		
 		local settings
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 			settings = TRB.Data.settings.evoker.devastation
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 			settings = TRB.Data.settings.evoker.preservation
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 			settings = TRB.Data.settings.evoker.augmentation
 		end
 
 		if entry.destinationGuid == TRB.Data.character.guid then
-			if specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then -- Let's check raid effect mana stuff
+			if TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then -- Let's check raid effect mana stuff
 				if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 					local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 					local castByToken = UnitTokenFromGUID(entry.sourceGuid)
@@ -1620,8 +1604,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end	
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
-			elseif specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
+			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then
 				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
 					local channeledManaPotion = snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
@@ -1638,11 +1622,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
 				end
-			elseif specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
+			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
 			end
 
 			-- Scalecommander
-			if (specId == 1 and TRB.Data.barConstructedForSpec == "devastation") or (specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
+			if (TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "devastation") or (TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
 				if entry.spellId == spells.meltArmor.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -1651,7 +1635,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 
 			-- Chronowarden
-			--if (specId == 2 and TRB.Data.barConstructedForSpec == "preservation") or (specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
+			--if (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "preservation") or (TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
 			--end
 
 			-- Spec Agnostic
@@ -1692,8 +1676,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
+	TRB.Data.character.specId = GetSpecialization()
+	if TRB.Data.character.specId == 1 then
 		specCache.devastation.talents:GetTalents()
 		FillSpellData_Devastation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
@@ -1714,7 +1698,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "devastation"
 			ConstructResourceBar(specCache.devastation.settings)
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		specCache.preservation.talents:GetTalents()
 		FillSpellData_Preservation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
@@ -1731,7 +1715,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "preservation"
 			ConstructResourceBar(specCache.preservation.settings)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		specCache.augmentation.talents:GetTalents()
 		FillSpellData_Augmentation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
@@ -1769,8 +1753,15 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 13 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 13 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -1823,7 +1814,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -1858,22 +1849,22 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "evoker"
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 	TRB.Data.character.maxResource2 = 1
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
 	local settings = nil
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		settings = TRB.Data.settings.evoker.devastation
 		TRB.Data.character.specName = "devastation"
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 		settings = TRB.Data.settings.evoker.preservation
 		TRB.Data.character.specName = "preservation"
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		settings = TRB.Data.settings.evoker.augmentation
 		TRB.Data.character.specName = "augmentation"
 	end
@@ -1887,22 +1878,21 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.Essence
 		TRB.Data.resource2Factor = 1
-	elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.Essence
 		TRB.Data.resource2Factor = 1
-	elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation then
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1941,19 +1931,18 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 or specId == 2 or specId == 3 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = TRB.Data.character.maxResource2
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.evoker.devastation
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.evoker.preservation
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.evoker.augmentation
 		end
 
@@ -1987,27 +1976,28 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
+
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local spells
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local settings = nil
-	if specId == 1 then
+
+	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 		settings = TRB.Data.settings.evoker.devastation
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 		settings = TRB.Data.settings.evoker.preservation
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 		settings = TRB.Data.settings.evoker.augmentation
 	else
 		return false
 	end
 
-	if specId == 1 then --Devastation			
-	elseif specId == 2 then --Preservation
+	if TRB.Data.character.specId == 1 then --Devastation			
+	elseif TRB.Data.character.specId == 2 then --Preservation
 		if var == "$passive" then
 			if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
 				TRB.Functions.Class:IsValidVariableForSpec("$ecMana") or
@@ -2124,11 +2114,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 3 then -- Augmentation
+	elseif TRB.Data.character.specId == 3 then -- Augmentation
 	end
 
 	-- Chronowarden
-	if specId == 2 or specId == 3 then
+	if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		if var == "$temporalBurstTime" then
 			if snapshots[spells.temporalBurst.id].buff.isActive then
 				valid = true
@@ -2137,7 +2127,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	-- Scalecommander
-	if specId == 1 or specId == 3 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3 then
 		if var == "$meltArmorTime" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
@@ -2199,22 +2189,20 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	--local specId = GetSpecialization()
 	--local settings = TRB.Data.settings.evoker
 	--local spells = TRB.Data.spells
 	--local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	--[[
-	if specId == 1 then
-	elseif specId == 2 then
-	elseif specId == 3 then
+	if TRB.Data.character.specId == 1 then
+	elseif TRB.Data.character.specId == 2 then
+	elseif TRB.Data.character.specId == 3 then
 	end]]
 	return nil
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
+	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 3 then --Only do this if we're on a Hunter!
+if TRB.Data.character.classId ~= 3 then --Only do this if we're on a Hunter!
 	return
 end
 local L = TRB.Localization

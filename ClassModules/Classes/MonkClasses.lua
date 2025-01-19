@@ -1,7 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 10 then --Only do this if we're on a Monk!
+if TRB.Data.character.classId ~= 10 then --Only do this if we're on a Monk!
 	return
 end
 TRB.Classes = TRB.Classes or {}

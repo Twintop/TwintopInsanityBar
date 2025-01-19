@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 2 and classIndexId ~= 5 and classIndexId ~= 7 and classIndexId ~= 10 and classIndexId ~= 11 and classIndexId ~= 13 then --Only do this if we're on a Healer Class!
+if TRB.Data.character.classId ~= 2 and TRB.Data.character.classId ~= 5 and TRB.Data.character.classId ~= 7 and TRB.Data.character.classId ~= 10 and TRB.Data.character.classId ~= 11 and TRB.Data.character.classId ~= 13 then --Only do this if we're on a Healer Class!
 	return
 end
 

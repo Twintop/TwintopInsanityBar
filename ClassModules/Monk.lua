@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 10 then --Only do this if we're on a Monk!
+if TRB.Data.character.classId ~= 10 then --Only do this if we're on a Monk!
 	return
 end
 
@@ -21,7 +20,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -61,6 +59,9 @@ local function FillSpecializationCache()
 
 	specCache.mistweaver.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 2,
 		maxResource = 100,
 		effects = {
 		},
@@ -174,7 +175,9 @@ local function FillSpecializationCache()
 
 	specCache.windwalker.character = {
 		guid = UnitGUID("player"),
-		specId = 1,
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 3,
 		maxResource = 100,
 		maxResource2 = 5,
 		effects = {
@@ -226,18 +229,10 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Mistweaver()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "monk", "mistweaver")
 end
 
 local function Setup_Windwalker()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "monk", "windwalker")
 end
 
@@ -479,11 +474,10 @@ end
 
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
-	local specId = GetSpecialization()
 	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 	
-	if specId == 2 then -- Mistweaver
-	elseif specId == 3 then -- Windwalker
+	if TRB.Data.character.specId == 2 then -- Mistweaver
+	elseif TRB.Data.character.specId == 3 then -- Windwalker
 		targetData:UpdateTrackedSpells(currentTime)
 	end
 end
@@ -494,8 +488,6 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
@@ -506,7 +498,7 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	if specId == 2 then
+	if TRB.Data.character.specId == 2 then
 		for x = 1, 9 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
@@ -514,7 +506,7 @@ local function ConstructResourceBar(settings)
 		end
 
 		TRB.Frames.resource2ContainerFrame:Hide()
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		TRB.Frames.resource2ContainerFrame:Show()
 	end
 
@@ -1186,13 +1178,12 @@ local function CastingSpell()
 	--local affectingCombat = UnitAffectingCombat("player")
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
-	local specId = GetSpecialization()
 
 	if currentSpellName == nil and currentChannelName == nil then
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 2 then
+		if TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.soothingMist.id then
@@ -1227,7 +1218,7 @@ local function CastingSpell()
 				end
 			end
 			return true
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			if currentSpellName == nil then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 				if currentChannelId == spells.cracklingJadeLightning.id then
@@ -1370,13 +1361,12 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.monk
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	
-	if specId == 2 then
+	if TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.mistweaver
 		local specCacheSettings = TRB.Data.specCache.mistweaver.settings
 		UpdateSnapshot_Mistweaver()
@@ -1552,7 +1542,7 @@ local function UpdateResourceBar()
 
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.windwalker
 		local specCacheSettings = TRB.Data.specCache.windwalker.settings
 		UpdateSnapshot_Windwalker()
@@ -1734,7 +1724,6 @@ local function UpdateResourceBar()
 end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local specId = GetSpecialization()
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1744,16 +1733,16 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		local settings
-		if specId == 2 then
+		if TRB.Data.character.specId == 2 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 			settings = TRB.Data.settings.monk.mistweaver
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 			settings = TRB.Data.settings.monk.windwalker
 		end
 
 		if entry.destinationGuid == TRB.Data.character.guid then
-			if specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then -- Let's check raid effect mana stuff
+			if TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then -- Let's check raid effect mana stuff
 				if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 					local castByToken = UnitTokenFromGUID(entry.sourceGuid)
 					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
@@ -1786,7 +1775,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then
+			if TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then
 				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
 					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
@@ -1795,7 +1784,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
-			elseif specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
+			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
 				if entry.spellId == spells.danceOfChiJi.id then
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled and not snapshotData.audio.playedDanceOfChiJiCue then
@@ -1851,7 +1840,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 
 			-- Mistweaver or Windwalker / Conduit of the Celestials shared abilities
-			--if (specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver") or (specId == 3 and TRB.Data.barConstructedForSpec == "windwalker") then
+			--if (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver") or (TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "windwalker") then
 			--end
 		end
 
@@ -1882,9 +1871,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
-	elseif specId == 2 then
+	TRB.Data.character.specId = GetSpecialization()
+	if TRB.Data.character.specId == 2 then
 		specCache.mistweaver.talents:GetTalents()
 		FillSpellData_Mistweaver()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.mistweaver)
@@ -1904,7 +1892,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "mistweaver"
 			ConstructResourceBar(specCache.mistweaver.settings)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		specCache.windwalker.talents:GetTalents()
 		FillSpellData_Windwalker()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.windwalker)
@@ -1941,8 +1929,15 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 10 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 10 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -1989,7 +1984,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -2021,20 +2016,20 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "monk"
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 	local maxComboPoints = 0
 	local settings = nil
 	
-	if specId == 2 then
+	if TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		TRB.Data.character.specName = "mistweaver"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 ---@diagnostic disable-next-line: missing-parameter, missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
@@ -2053,13 +2048,12 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver then
+	if TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.mistweaver)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
-	elseif specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker then
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.windwalker)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy
@@ -2095,18 +2089,17 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 2 or specId == 3 then
+	if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 0
 		local includeComboPoints = false
-		if specId == 2 then
+		if TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.monk.mistweaver
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.monk.windwalker
 			includeComboPoints = true
 		end
@@ -2142,23 +2135,24 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
+
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local spells
 	local settings = nil
-	if specId == 2 then
+
+	if TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		settings = TRB.Data.settings.monk.mistweaver
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 		settings = TRB.Data.settings.monk.windwalker
 	else
 		return false
 	end
 
-	if specId == 2 then --Mistweaver
+	if TRB.Data.character.specId == 2 then --Mistweaver
 		if var == "$resource" or var == "$mana" then
 			valid = true
 		elseif var == "$resourceMax" or var == "$manaMax" then
@@ -2282,7 +2276,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 3 then --Windwalker
+	elseif TRB.Data.character.specId == 3 then --Windwalker
 		if var == "$casting" then
 			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
 				valid = true
@@ -2373,7 +2367,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	-- Mistweaver or Windwalker / Conduit of the Celestials shared abilities
-	if specId == 2 or specId == 3 then
+	if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		if var == "$hotjsStacks" then
 			if snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications > 0 then
 				valid = true
@@ -2395,13 +2389,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local specId = GetSpecialization()
 	return nil
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if specId ~= 2 and specId ~= 3 then
+	if TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

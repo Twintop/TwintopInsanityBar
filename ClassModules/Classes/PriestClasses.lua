@@ -1,7 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 5 then --Only do this if we're on a Priest!
+if TRB.Data.character.classId ~= 5 then --Only do this if we're on a Priest!
 	return
 end
 
@@ -165,7 +164,6 @@ function TRB.Classes.Priest.ShadowfiendEntry:Update()
         return
     end
 
-	local specId = GetSpecialization()
 	local currentTime = GetTime()
 
     self.startTime = startTime
@@ -199,13 +197,13 @@ function TRB.Classes.Priest.ShadowfiendEntry:Update()
         end
     end
 
-    if specId == 1 then
+    if TRB.Data.character.specId == 1 then
         self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercent * TRB.Data.character.maxResource
         self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw, false)
-    elseif specId == 2 then
+    elseif TRB.Data.character.specId == 2 then
         self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercent * TRB.Data.character.maxResource
         self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw, false)
-    elseif specId == 3 then
+    elseif TRB.Data.character.specId == 3 then
         self.resourceRaw = countValue * self.activeSpell.resource
         self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw)
     end
@@ -334,10 +332,9 @@ end
 ---@return number # Time until next melee swing
 ---@return number # Swing speed
 function TRB.Classes.Priest.Shadowfiend:GetMaximumValues()
-    local specId = GetSpecialization()
     local spell = nil
 
-    if specId == 1 or specId == 3 then
+    if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3 then
         if self.talents:IsTalentActive(self.voidwraith) then
             spell = self.voidwraith
         elseif self.talents:IsTalentActive(self.mindbender) then
@@ -345,7 +342,7 @@ function TRB.Classes.Priest.Shadowfiend:GetMaximumValues()
         else
             spell = self.shadowfiend
         end
-    elseif specId == 2 then
+    elseif TRB.Data.character.specId == 2 then
         if self.talents:IsTalentActive(self.shadowfiend) then
             spell = self.shadowfiend
         end

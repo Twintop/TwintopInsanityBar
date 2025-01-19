@@ -1,7 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 7 then --Only do this if we're on a Shaman!
+if TRB.Data.character.classId ~= 7 then --Only do this if we're on a Shaman!
 	return
 end
 TRB.Classes = TRB.Classes or {}

@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 11 then --Only do this if we're on a Druid!
+if TRB.Data.character.classId ~= 11 then --Only do this if we're on a Druid!
 	return
 end
 
@@ -20,7 +19,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -71,6 +69,9 @@ local function FillSpecializationCache()
 	
 	specCache.balance.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 1,
 		maxResource = 100,
 		pandemicModifier = 1.0,
 		effects = {
@@ -152,7 +153,9 @@ local function FillSpecializationCache()
 
 	specCache.feral.character = {
 		guid = UnitGUID("player"),
-		specId = 1,
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 2,
 		maxResource = 100,
 		maxResource2 = 5,
 		pandemicModifier = 1.0,
@@ -224,6 +227,9 @@ local function FillSpecializationCache()
 
 	specCache.restoration.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 4,
 		maxResource = 100,
 		effects = {
 		},
@@ -310,10 +316,6 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Balance()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "balance")
 end
 
@@ -477,10 +479,6 @@ local function FillSpellData_Balance()
 end
 
 local function Setup_Feral()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "feral")
 end
 
@@ -634,10 +632,6 @@ local function FillSpellData_Feral()
 end
 
 local function Setup_Restoration()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "restoration")
 end
 
@@ -813,20 +807,17 @@ end
 local function TargetsCleanup(clearAll)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
-	local specId = GetSpecialization()
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		targetData:Cleanup(clearAll)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		targetData:Cleanup(clearAll)
-	elseif specId == 4 then
+	elseif TRB.Data.character.specId == 4 then
 		targetData:Cleanup(clearAll)
 	end
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
@@ -837,11 +828,11 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		TRB.Frames.resource2ContainerFrame:Hide()
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		TRB.Frames.resource2ContainerFrame:Show()
-	elseif specId == 4 then
+	elseif TRB.Data.character.specId == 4 then
 		for x = 1, 7 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
@@ -2187,7 +2178,6 @@ end
 
 local function CastingSpell()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local specId = GetSpecialization()
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 
@@ -2195,7 +2185,7 @@ local function CastingSpell()
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			if currentSpellName == nil then
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
@@ -2247,7 +2237,7 @@ local function CastingSpell()
 				end
 			end
 			return true
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			if currentSpellName == nil then
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
@@ -2256,7 +2246,7 @@ local function CastingSpell()
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
 			end
-		elseif specId == 4 then
+		elseif TRB.Data.character.specId == 4 then
 			if currentSpellName == nil then
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
@@ -2464,13 +2454,12 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.druid
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.balance
 		local specCacheSettings = TRB.Data.specCache.balance.settings
 		UpdateSnapshot_Balance()
@@ -2765,7 +2754,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.feral
 		local specCacheSettings = TRB.Data.specCache.feral.settings
 		UpdateSnapshot_Feral()
@@ -3133,7 +3122,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 4 then
+	elseif TRB.Data.character.specId == 4 then
 		local specSettings = classSettings.restoration
 		local specCacheSettings = TRB.Data.specCache.restoration.settings
 		UpdateSnapshot_Restoration()
@@ -3296,8 +3285,6 @@ end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
-	local _
-	local specId = GetSpecialization()
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData --[[@as TRB.Classes.TargetData]]
@@ -3306,19 +3293,19 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		local settings
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 			settings = TRB.Data.settings.druid.balance
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 			settings = TRB.Data.settings.druid.feral
-		elseif specId == 4 then
+		elseif TRB.Data.character.specId == 4 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 			settings = TRB.Data.settings.druid.restoration
 		end
 
 		if entry.destinationGuid == TRB.Data.character.guid then
-			if specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
+			if TRB.Data.character.specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
 				if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 					local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 					local castByToken = UnitTokenFromGUID(entry.sourceGuid)
@@ -3345,7 +3332,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
 				if entry.spellId == spells.moonfire.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -3402,7 +3389,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						spells.newMoon.attributes.currentIcon = spellInfo.iconID
 					end
 				end
-			elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
+			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
 				if entry.spellId == spells.moonfire.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
@@ -3503,7 +3490,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
-			elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
+			elseif TRB.Data.character.specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
 				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
 					local channeledManaPotion = snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
@@ -3553,8 +3540,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
+	TRB.Data.character.specId = GetSpecialization()
+	if TRB.Data.character.specId == 1 then
 		specCache.balance.talents:GetTalents()
 		FillSpellData_Balance()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.balance)
@@ -3576,7 +3563,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "balance"
 			ConstructResourceBar(specCache.balance.settings)
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		specCache.feral.talents:GetTalents()
 		FillSpellData_Feral()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.feral)
@@ -3599,7 +3586,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "feral"
 			ConstructResourceBar(specCache.feral.settings)
 		end
-	elseif specId == 4 then
+	elseif TRB.Data.character.specId == 4 then
 		specCache.restoration.talents:GetTalents()
 		FillSpellData_Restoration()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
@@ -3637,8 +3624,15 @@ resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 11 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 11 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -3691,7 +3685,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -3726,11 +3720,11 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "druid"
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "balance"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
 		GetCurrentMoonSpell()
@@ -3761,7 +3755,7 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 
 		TRB.Data.character.items.twwSeason1SetBonusCount = twwSeason1SetBonusCount
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		TRB.Data.character.specName = "feral"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
@@ -3778,7 +3772,7 @@ function TRB.Functions.Class:CheckCharacter()
 		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then
 			TRB.Data.character.pandemicModifier = spells.circleOfLifeAndDeath.attributes.modifier
 		end
-	elseif specId == 4 then
+	elseif TRB.Data.character.specId == 4 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
@@ -3787,22 +3781,21 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.LunarPower
 		TRB.Data.resourceFactor = 10
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
-	elseif specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.feral)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.ComboPoints
 		TRB.Data.resource2Factor = 1
-	elseif specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
+	elseif TRB.Data.character.specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.restoration)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -3842,11 +3835,10 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 then --Balance is a special snowflake
+	if TRB.Data.character.specId == 1 then --Balance is a special snowflake
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 		local affectingCombat = UnitAffectingCombat("player")
 		local settings = TRB.Data.settings.druid.balance
@@ -3878,15 +3870,15 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 			end
 		end
-	elseif specId == 2 or specId == 4 then
+	elseif TRB.Data.character.specId == 2 or TRB.Data.character.specId == 4 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 0
 		local includeComboPoints = false
-		if specId == 2 then
+		if TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.druid.feral
 			includeComboPoints = true
-		elseif specId == 4 then
+		elseif TRB.Data.character.specId == 4 then
 			settings = TRB.Data.settings.druid.restoration
 		end
 
@@ -3919,19 +3911,20 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
+
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local settings = nil
-	if specId == 1 then
+
+	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 		settings = TRB.Data.settings.druid.balance
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		settings = TRB.Data.settings.druid.feral
-	elseif specId == 4 then
+	elseif TRB.Data.character.specId == 4 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		settings = TRB.Data.settings.druid.restoration
 	else
@@ -3940,7 +3933,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 
 	local affectingCombat = UnitAffectingCombat("player")
 
-	if specId == 1 then -- Balance
+	if TRB.Data.character.specId == 1 then -- Balance
 		if var == "$moonkinForm" then
 			if snapshots[spells.moonkinForm.id].buff.isActive then
 				valid = true
@@ -4116,7 +4109,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.dreamburst.id].buff.isActive then
 				valid = true
 			end
-	elseif specId == 2 then -- Feral
+	elseif TRB.Data.character.specId == 2 then -- Feral
 		if var == "$resource" or var == "$energy" then
 			if snapshotData.attributes.resource > 0 then
 				valid = true
@@ -4378,7 +4371,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 4 then --Restoration
+	elseif TRB.Data.character.specId == 4 then --Restoration
 		if var == "$resource" or var == "$mana" then
 			valid = true
 		elseif var == "$resourceMax" or var == "$manaMax" then
@@ -4546,22 +4539,20 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	--local specId = GetSpecialization()
 	--local settings = TRB.Data.settings.druid
 	--local spells = TRB.Data.spells
 	--local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
-	--[[if specId == 1 then
-	elseif specId == 2 then
-	elseif specId == 3 then
-	elseif specId == 4 then
+	--[[if TRB.Data.character.specId == 1 then
+	elseif TRB.Data.character.specId == 2 then
+	elseif TRB.Data.character.specId == 3 then
+	elseif TRB.Data.character.specId == 4 then
 	end]]
 	return nil
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if specId ~= 1 and specId ~= 2 and specId ~= 4 then
+	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 4 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

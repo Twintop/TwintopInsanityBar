@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 4 then --Only do this if we're on a Rogue!
+if TRB.Data.character.classId ~= 4 then --Only do this if we're on a Rogue!
 	return
 end
 
@@ -21,7 +20,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -47,6 +45,8 @@ local function FillSpecializationCache()
 
 	specCache.assassination.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 1,
 		maxResource = 100,
 		maxResource2 = 5,
@@ -118,7 +118,9 @@ local function FillSpecializationCache()
 
 	specCache.outlaw.character = {
 		guid = UnitGUID("player"),
-		specId = 1,
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 2,
 		maxResource = 100,
 		maxResource2 = 5,
 		effects = {
@@ -231,7 +233,9 @@ local function FillSpecializationCache()
 
 	specCache.subtlety.character = {
 		guid = UnitGUID("player"),
-		specId = 1,
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 3,
 		maxResource = 100,
 		maxResource2 = 5,
 		effects = {
@@ -306,10 +310,6 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Assassination()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "assassination")
 end
 
@@ -463,10 +463,6 @@ local function FillSpellData_Assassination()
 end
 
 local function Setup_Outlaw()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "outlaw")
 end
 
@@ -617,10 +613,6 @@ local function FillSpellData_Outlaw()
 end
 
 local function Setup_Subtlety()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "subtlety")
 end
 
@@ -744,8 +736,7 @@ local function FillSpellData_Subtlety()
 end
 
 local function IsTargetBleeding(guid)
-	local specId = GetSpecialization()
-	if specId == 1 then -- Assassination
+	if TRB.Data.character.specId == 1 then -- Assassination
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if guid == nil then
@@ -770,14 +761,13 @@ end
 
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
-	local specId = GetSpecialization()
 	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 	
-	if specId == 1 then -- Assassination
+	if TRB.Data.character.specId == 1 then -- Assassination
 		targetData:UpdateTrackedSpells(currentTime)
-	elseif specId == 2 then -- Outlaw
+	elseif TRB.Data.character.specId == 2 then -- Outlaw
 		targetData:UpdateTrackedSpells(currentTime)
-	elseif specId == 3 then -- Outlaw
+	elseif TRB.Data.character.specId == 3 then -- Outlaw
 		targetData:UpdateTrackedSpells(currentTime)
 	end
 end
@@ -2006,7 +1996,6 @@ local function FillSnapshotDataCasting(spell)
 end
 
 local function CastingSpell()
-	local specId = GetSpecialization()
 	local currentSpell = UnitCastingInfo("player")
 	local currentChannel = UnitChannelInfo("player")
 
@@ -2014,7 +2003,7 @@ local function CastingSpell()
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 1 or specId == 2 or specId == 3 then
+		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 			if currentSpell == nil then
 				local spellName = select(1, currentChannel)
 					TRB.Functions.Character:ResetCastingSnapshotData()
@@ -2135,13 +2124,12 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.rogue
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.assassination
 		local specCacheSettings = TRB.Data.specCache.assassination.settings
 		UpdateSnapshot_Assassination()
@@ -2404,7 +2392,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.outlaw
 		local specCacheSettings = TRB.Data.specCache.outlaw.settings
 		UpdateSnapshot_Outlaw()
@@ -2708,7 +2696,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.subtlety
 		local specCacheSettings = TRB.Data.specCache.subtlety.settings
 		UpdateSnapshot_Subtlety()
@@ -3030,8 +3018,6 @@ local function UpdateResourceBar()
 end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local _
-	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -3040,7 +3026,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 				if entry.spellId == spells.blindside.id then
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
@@ -3101,7 +3087,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.improvedGarrote.buffId then
 					snapshots[spells.improvedGarrote.id].buff:Initialize(entry.type)
 				end
-			elseif specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
+			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 				if entry.spellId == spells.betweenTheEyes.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
@@ -3167,7 +3153,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						end
 					end
 				end
-			elseif specId == 3 and TRB.Data.barConstructedForSpec == "subtlety" then
+			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "subtlety" then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				if entry.spellId == spells.goremawsBite.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
@@ -3188,8 +3174,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				end
 			end
 
-			--if (specId == 2 and TRB.Data.barConstructedForSpec == "outlaw") or
-			--   (specId == 3 and TRB.Data.barConstructedForSpec == "subtlety") then
+			--if (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "outlaw") or
+			--   (TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "subtlety") then
 			--	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells|TRB.Classes.Rogue.SubtletySpells]]
 			--end
 
@@ -3278,8 +3264,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
+	TRB.Data.character.specId = GetSpecialization()
+	if TRB.Data.character.specId == 1 then
 		specCache.assassination.talents:GetTalents()
 		FillSpellData_Assassination()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.assassination)
@@ -3314,7 +3300,7 @@ local function SwitchSpec()
 				TRB.Data.snapshotData.snapshots[spells.serratedBoneSpike.id].buff:Initialize()
 			end
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		specCache.outlaw.talents:GetTalents()
 		FillSpellData_Outlaw()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.outlaw)
@@ -3337,7 +3323,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "outlaw"
 			ConstructResourceBar(specCache.outlaw.settings)
 		end
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		specCache.subtlety.talents:GetTalents()
 		FillSpellData_Subtlety()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.subtlety)
@@ -3378,8 +3364,15 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 4 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 4 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -3432,7 +3425,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -3466,18 +3459,18 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "rogue"
-	local specId = GetSpecialization()
 	TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
 	local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 	local settings = nil
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		settings = TRB.Data.settings.rogue.assassination
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		settings = TRB.Data.settings.rogue.outlaw
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		settings = TRB.Data.settings.rogue.subtlety
 	end
 	
@@ -3490,14 +3483,13 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.enabled.rogue.assassination == true then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.rogue.assassination == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.assassination)
 		TRB.Data.specSupported = true
-	elseif specId == 2 and TRB.Data.settings.core.enabled.rogue.outlaw == true then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.rogue.outlaw == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.outlaw)
 		TRB.Data.specSupported = true
-	elseif specId == 3 and TRB.Data.settings.core.enabled.rogue.subtlety == true then
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.rogue.subtlety == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.subtlety)
 		TRB.Data.specSupported = true
 	else
@@ -3536,19 +3528,18 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 or specId == 2 or specId == 3 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 0
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.rogue.assassination
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.rogue.outlaw
-		elseif specId == 3 then
+		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.rogue.subtlety
 		end
 
@@ -3583,22 +3574,23 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
+
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local settings = nil
-	if specId == 1 then
+
+	if TRB.Data.character.specId == 1 then
 		settings = TRB.Data.settings.rogue.assassination
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		settings = TRB.Data.settings.rogue.outlaw
-	elseif specId == 3 then
+	elseif TRB.Data.character.specId == 3 then
 		settings = TRB.Data.settings.rogue.subtlety
 	else
 		return false
 	end
 
-	if specId == 1 then --Assassination
+	if TRB.Data.character.specId == 1 then --Assassination
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 		-- Bleeds
 		if var == "$isBleeding" then
@@ -3687,7 +3679,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 2 then --Outlaw
+	elseif TRB.Data.character.specId == 2 then --Outlaw
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 		-- Roll the Bones buff counts
 		if var == "$rtbCount" or var == "$rollTheBonesCount" then
@@ -3741,7 +3733,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 3 then --Subtlety
+	elseif TRB.Data.character.specId == 3 then --Subtlety
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 		if var == "$shadowTechniquesCount" then
 			if snapshots[spells.shadowTechniques.id].buff.applications > 0 then
@@ -3888,8 +3880,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
+	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

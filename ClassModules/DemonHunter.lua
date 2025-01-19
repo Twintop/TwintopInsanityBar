@@ -1,6 +1,5 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 12 then --Only do this if we're on a DemonHunter!
+if TRB.Data.character.classId ~=  12 then --Only do this if we're on a DemonHunter!
 	return
 end
 
@@ -20,7 +19,6 @@ local combatFrame = TRB.Frames.combatFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
-TRB.Data.character = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
@@ -52,6 +50,8 @@ local function FillSpecializationCache()
 
 	specCache.havoc.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 1,
 		maxResource = 120,
 		effects = {
@@ -138,6 +138,8 @@ local function FillSpecializationCache()
 
 	specCache.vengeance.character = {
 		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
 		specId = 2,
 		maxResource = 120,
 		effects = {
@@ -177,10 +179,6 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Havoc()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "demonhunter", "havoc")
 end
 
@@ -288,10 +286,6 @@ local function FillSpellData_Havoc()
 end
 
 local function Setup_Vengeance()
-	if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-		return
-	end
-
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "demonhunter", "vengeance")
 end
 
@@ -397,8 +391,6 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
 	end
@@ -409,9 +401,9 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		TRB.Frames.resource2ContainerFrame:Hide()
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		TRB.Frames.resource2ContainerFrame:Show()
 	end
 
@@ -841,13 +833,12 @@ local function CastingSpell()
 	local currentTime = GetTime()
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
-	local specId = GetSpecialization()
 
 	if currentSpellName == nil and currentChannelName == nil then
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return false
 	else
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.eyeBeam.id and talents:IsTalentActive(spells.blindFury) then
@@ -872,7 +863,7 @@ local function CastingSpell()
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
 			end
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		end
@@ -974,13 +965,12 @@ end
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
-	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.demonhunter
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.havoc
 		local specCacheSettings = TRB.Data.specCache.havoc.settings
 		UpdateSnapshot_Havoc()
@@ -1155,7 +1145,7 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.vengeance
 		local specCacheSettings = TRB.Data.specCache.vengeance.settings
 		UpdateSnapshot_Vengeance()
@@ -1345,23 +1335,20 @@ end
 
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local currentTime = GetTime()
-		local _
-		local specId = GetSpecialization()
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 		end
 
 		if entry.sourceGuid == TRB.Data.character.guid then
-			if specId == 1 and TRB.Data.barConstructedForSpec == "havoc" then --Havoc
+			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "havoc" then --Havoc
 				if entry.spellId == spells.bladeDance.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -1395,7 +1382,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
-			elseif specId == 2 and TRB.Data.barConstructedForSpec == "vengeance" then --Vengeance
+			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "vengeance" then --Vengeance
 				if entry.spellId == spells.felDevastation.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -1439,8 +1426,8 @@ end)
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	local specId = GetSpecialization()
-	if specId == 1 then
+	TRB.Data.character.specId = GetSpecialization()
+	if TRB.Data.character.specId == 1 then
 		specCache.havoc.talents:GetTalents()
 		FillSpellData_Havoc()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.havoc)
@@ -1458,7 +1445,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "havoc"
 			ConstructResourceBar(specCache.havoc.settings)
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		specCache.vengeance.talents:GetTalents()
 		FillSpellData_Vengeance()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.vengeance)
@@ -1493,8 +1480,15 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
-	local specId = GetSpecialization() or 0
-	if classIndexId == 12 then
+	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
+		_, _, TRB.Data.character.classId = UnitClass("player")
+	end
+
+	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
+		TRB.Data.character.specId = GetSpecialization()
+	end
+	
+	if TRB.Data.character.classId == 12 then
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -1541,7 +1535,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			TwintopInsanityBarSettings = TRB.Data.settings
 		end
 
-		if TRB.Details.addonData.loaded and specId > 0 then
+		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
 			if not TRB.Details.addonData.optionsPanel then
 				TRB.Details.addonData.optionsPanel = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
@@ -1574,7 +1568,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	TRB.Data.character.specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "demonhunter"
 	
@@ -1583,7 +1577,7 @@ function TRB.Functions.Class:CheckCharacter()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
-	if specId == 1 then
+	if TRB.Data.character.specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 		TRB.Data.character.specName = "havoc"
 
@@ -1604,7 +1598,7 @@ function TRB.Functions.Class:CheckCharacter()
 			snapshots[spells.immolationAura5.id].buff:SetTickData(false, 0, 0)
 			snapshots[spells.immolationAura6.id].buff:SetTickData(false, 0, 0)
 		end
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 		TRB.Data.character.specName = "vengeance"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
@@ -1621,15 +1615,14 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.enabled.demonhunter.havoc == true then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.demonhunter.havoc == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
-	elseif specId == 2 and TRB.Data.settings.core.enabled.demonhunter.vengeance == true then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.demonhunter.vengeance == true then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.vengeance)
 		TRB.Data.specSupported = true
@@ -1671,16 +1664,15 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 or specId == 2 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
 		local settings
 		local notZeroShowValue = 0
-		if specId == 1 then
+		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.demonhunter.havoc
-		elseif specId == 2 then
+		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.demonhunter.vengeance
 		end
 
@@ -1713,22 +1705,23 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if valid then
 		return valid
 	end
-	local specId = GetSpecialization()
+
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local settings = nil
 	local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
-	if specId == 1 then
+
+	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 		settings = TRB.Data.settings.demonhunter.havoc
-	elseif specId == 2 then
+	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 		settings = TRB.Data.settings.demonhunter.vengeance
 	else
 		return false
 	end
 	
-	if specId == 1 then --Havoc
+	if TRB.Data.character.specId == 1 then --Havoc
 		if var == "$bhFury" then
 			if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura1.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura2.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura3.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura4.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura5.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura6.id].buff.resource > 0 then
 				valid = true
@@ -1758,7 +1751,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
-	elseif specId == 2 then --Vengeance
+	elseif TRB.Data.character.specId == 2 then --Vengeance
 		if var == "$iaFury" then
 			if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 then
 				valid = true
@@ -1852,21 +1845,19 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	--local specId = GetSpecialization()
 	--local settings = TRB.Data.settings.demonhunter
 	--local spells = TRB.Data.spells
 	--local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	--[[
-	if specId == 1 then
-	elseif specId == 2 then
+	if TRB.Data.character.specId == 1 then
+	elseif TRB.Data.character.specId == 2 then
 	end]]
 	return nil
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	local specId = GetSpecialization()
-	if specId ~= 1 and specId ~= 2 then
+	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

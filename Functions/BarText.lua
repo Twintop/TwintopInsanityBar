@@ -1060,14 +1060,13 @@ end
 function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 	-- Only do this if we're on the current class and spec!
 	local currentClassId = select(3, UnitClass("player"))
-	local currentSpecId = GetSpecialization()
 
-	if classId ~= nil and specId ~= nil and (currentClassId ~= classId or currentSpecId ~= specId) then
+	if classId ~= nil and specId ~= nil and (currentClassId ~= classId or TRB.Data.character.specId ~= specId) then
 		return
 	end
 	
 	local className = string.lower(select(2, GetClassInfo(classId or currentClassId)))
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId or currentSpecId)
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId or TRB.Data.character.specId)
 	settings = TRB.Data.specCache[specName].settings
 
 	---@type Frame[]
