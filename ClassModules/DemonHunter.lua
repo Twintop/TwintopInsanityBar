@@ -1485,7 +1485,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	end
 
 	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
-		TRB.Data.character.specId = GetSpecialization()
+		TRB.Data.character.specId = GetSpecialization() or 0
 	end
 	
 	if TRB.Data.character.classId == 12 then
