@@ -269,7 +269,6 @@ function TRB.Functions.Threshold:Hide(key, threshold)
 	--[[
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 
-	local isVisibleTime = debugprofilestop()
 	if TRB.Data.cache.values.threshold[key].shown ~= false then
 		threshold:Hide()
 		TRB.Data.cache.values.threshold[key].shown = false

@@ -5,7 +5,6 @@ TRB.Functions.BarText = {}
 
 local function TryUpdateText(frame, text)
 	frame.font:SetText(text)
-	frame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 end
 
 ---Scans the input string for logic symbols and returns their positions and levels
@@ -739,8 +738,7 @@ local function GetReturnText(inputText)
 	end
 
 	if TRB.Functions.Table:Length(mapping) > 0 then
-		local result
-		result, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
+		_, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
 	elseif string.len(cache.stringFormat) > 0 then
 		inputText.text = cache.stringFormat
 	else
@@ -1011,14 +1009,8 @@ end
 ---@param refreshText boolean
 function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, refreshText)
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
-	local startTime = debugprofilestop()
 	TRB.Functions.BarText:RefreshLookupDataBase(settings)
-	local refreshTime = debugprofilestop()
 	TRB.Functions.RefreshLookupData()
-	local dataTime = debugprofilestop()
-
-	--print("Base", refreshTime - startTime)
-	--print("Lookup", dataTime - refreshTime)
 	
 	--Only parse bar text if we're we need to refresh the text
 	if settings ~= nil and sharedSettings ~= nil and sharedSettings.displayText ~= nil and refreshText then
@@ -1026,27 +1018,34 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, r
 		local textFrames = TRB.Frames.textFrames
 		local displayText = sharedSettings.displayText --[[@as TRB.Classes.DisplayText]]
 		local entries = #displayText.barText
-		if entries > 0 then
-			for i = 1, entries do
-				if displayText.barText[i].enabled then
-					local e = displayText.barText[i]
-					local color = e.color
-					
-					if e.useDefaultFontColor then
-						color = displayText.default.color
-					end
+		for i = 1, entries do
+			if displayText.barText[i].enabled then
+				local e = displayText.barText[i]
+				local color = e.color
+				
+				if e.useDefaultFontColor then
+					color = displayText.default.color
+				end
 
-					local barText = {
-						text = e.text,
-						color = string.format("|c%s", color)
-					}
+				local barText = {
+					text = e.text,
+					color = string.format("|c%s", color)
+				}
 
-					local returnText = GetReturnText(barText)
+				TRB.Data.cache.values.frame["textFrames" .. i] = TRB.Data.cache.values.frame["textFrames" .. i] or {}
 
-					pcall(TryUpdateText, textFrames[i], returnText)
-					
+				local returnText = GetReturnText(barText)
+
+				if TRB.Data.cache.values.frame["textFrames" .. i].text ~= returnText then
+					pcall(TryUpdateText, textFrames[i],  returnText)
+					--TryUpdateText(textFrames[i], returnText)
+					TRB.Data.cache.values.frame["textFrames" .. i].text = returnText
+				end
+				
+				if TRB.Data.cache.values.frame["textFrames" .. i].level ~= TRB.Data.settings.core.strata.level then
 					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+					TRB.Data.cache.values.frame["textFrames" .. i].level = TRB.Data.settings.core.strata.level
 				end
 			end
 		end

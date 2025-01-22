@@ -153,7 +153,8 @@ TRB.Data.cache.colors = {
 TRB.Data.cache.values = {
 	bar = {},
 	threshold = {},
-	resource = {}
+	resource = {},
+	frame = {}
 }
 TRB.Data.cache.thresholdSpells = {}
 TRB.Data.specCache = {}

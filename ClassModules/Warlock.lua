@@ -971,13 +971,13 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	if TRB.Data.character.specId == 1 then
+	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.warlock.affliction == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.SoulShards
 		TRB.Data.resource2Factor = 10
-	else -- This should never happen
+	else
 		TRB.Data.specSupported = false
 	end
 
@@ -992,7 +992,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Functions.Character:EnableCharacterChange()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else -- This should never happen
+	else
 		targetsTimerFrame:SetScript("OnUpdate", nil)
 		timerFrame:SetScript("OnUpdate", nil)
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
