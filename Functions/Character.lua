@@ -55,7 +55,6 @@ local function CharacterChange(self, event, ...)
 		TRB.Functions.Character:CheckCharacter()
 	else
 		TRB.Functions.Class:CheckCharacter()
-		--TRB.Functions.Character:CheckCharacter()
 		TRB.Functions.Character:UpdateStatsSnapshot()
 	end
 end
@@ -254,6 +253,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	Global_TwintopResourceBar = cache.Global_TwintopResourceBar
 
 	TRB.Data.character = cache.character
+	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
 	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons

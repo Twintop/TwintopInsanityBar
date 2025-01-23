@@ -553,6 +553,7 @@ local function ConstructResourceBar(settings)
 		if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
 			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 		end
+		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
 	end
 	
 	for _, v in pairs(passiveFrame.thresholds) do
@@ -568,6 +569,7 @@ local function ConstructResourceBar(settings)
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
+			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.passiveFrame.thresholds[x], settings, false)
 		end
 		TRB.Frames.resource2ContainerFrame:Hide()
 	end
@@ -1211,14 +1213,12 @@ local function CastingSpell()
 					FillSnapshotDataCasting(spell)
 					
 					local currentTime = GetTime()
-					local down, up, lagHome, lagWorld = GetNetStats()
-					local latency = lagWorld / 1000
 
 					if snapshots[spells.chainLightning.id].attributes.hitTime == nil then
 						snapshots[spells.chainLightning.id].attributes.targetsHit = 1
 						snapshots[spells.chainLightning.id].attributes.hitTime = currentTime
 						snapshots[spells.chainLightning.id].attributes.hasStruckTargets = false
-					elseif currentTime > (snapshots[spells.chainLightning.id].attributes.hitTime + (TRB.Functions.Character:GetCurrentGCDTime(true) * 4) + latency) then
+					elseif currentTime > (snapshots[spells.chainLightning.id].attributes.hitTime + (TRB.Functions.Character:GetCurrentGCDTime(true) * 4) + TRB.Data.character.latency) then
 						snapshots[spells.chainLightning.id].attributes.targetsHit = 1
 					end
 

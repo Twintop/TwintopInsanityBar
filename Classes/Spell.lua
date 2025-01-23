@@ -164,15 +164,17 @@ function TRB.Classes.SpellBase:New(spellAttributes)
         self.pandemicTime = self.baseDuration * 0.3
     end
 
+    if self.primaryResourceTypeMod == nil then
+        self.primaryResourceTypeMod = 1
+    end
+
     self._lastPrimaryResourceValueCheck = 0
     if self.primaryResourceType ~= nil then
         self._lastNonZeroPrimaryResourceValue = 0
         if self.primaryResourceTypeProperty == nil then
             self.primaryResourceTypeProperty = "cost"
         end
-        if self.primaryResourceTypeMod == nil then
-            self.primaryResourceTypeMod = 1
-        end
+        
         self._cacheKey = self.id .. "_" .. self.primaryResourceTypeMod
     end
 
@@ -252,7 +254,12 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
         if (self._lastPrimaryResourceValueCheck or 0) + primaryResourceCostEmbargoTimespan > currentTime then
             self._lastPrimaryResourceValueCheck = currentTime
             return self._lastNonZeroPrimaryResourceValue
-        end        
+        end
+
+        if self._cacheKey == nil then
+            self._cacheKey = self.id .. "_" .. self.primaryResourceTypeMod
+        end
+
         if TRB.Data.cache.values.resource[self._cacheKey] == nil then
             local spc = C_Spell.GetSpellPowerCost(self.id)
             if spc ~= nil then

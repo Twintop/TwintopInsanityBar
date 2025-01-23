@@ -306,6 +306,7 @@ local function ConstructResourceBar(settings)
 		if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
 			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 		end
+		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
 	end
 
 	if TRB.Data.character.specId == 1 then
@@ -313,6 +314,7 @@ local function ConstructResourceBar(settings)
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 			end
+			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.passiveFrame.thresholds[x], settings, true)
 		end
 	end
 	TRB.Frames.resource2ContainerFrame:Show()

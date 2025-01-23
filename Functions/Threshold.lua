@@ -1,6 +1,5 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
-local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Threshold = {}
 
@@ -114,7 +113,8 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.under, true))
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
-	
+	threshold.hasIcon = hasIcon
+
 	if hasIcon == true then
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
@@ -196,7 +196,11 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = false
-		
+
+		if threshold.texture == nil or threshold.icon == nil then
+			TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
+		end
+
 		TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
 		
 		-- Split these out to only call methods if we need to
@@ -228,6 +232,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			threshold:SetFrameLevel(thresholdFrameLevel)
 			threshold.icon:SetFrameLevel(thresholdIconLevel)
 			threshold.icon.cooldown:SetFrameLevel(thresholdIconCooldownLevel)
+
 			cache.frameLevel = frameLevel
 		end
 

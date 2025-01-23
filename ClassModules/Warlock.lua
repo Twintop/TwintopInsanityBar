@@ -224,6 +224,7 @@ local function ConstructResourceBar(settings)
 		if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
 			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 		end
+		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
 	end
 
 	if TRB.Data.character.specId == 1 then
