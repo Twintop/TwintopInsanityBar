@@ -11,14 +11,20 @@ local content = [====[
 
 ---
 
-# 11.0.7.5-release (2025-01-19)
+# 11.0.7.5-release (2025-01-24)
 ## General
 
 - [#417 - REFACTOR](#417) Further optimizations:
 <br/>&emsp;&ensp;- Cache ability resource costs. Cache persists until a buff/debuff changes on the player.
 <br/>&emsp;&ensp;- Cache computed buff durations. Cache persists until the next frame is rendered.
 <br/>&emsp;&ensp;- Cache bar text output of primary and secondary stats. Cache persists until a buff/debuff changes on the player.
+<br/>&emsp;&ensp;- Improve existing cache of class and specialization info.
 - (FIX) Fix corner case where a setting color's stored RGBA hexdecimal value is not exactly 8 digits long.
+
+## Warlock
+### Affliction
+
+- (FIX) Respect the Enable/Disable for Specialization setting toggle for Affliction.
 
 ---
 
