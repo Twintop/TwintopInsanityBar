@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.0.7.6-release (2025-01-24)
+## Monk
+### Mistweaver
+
+- (FIX) Fix Lua errors when constructing the bar.
+
+---
+
 # 11.0.7.5-release (2025-01-24)
 ## General
 
