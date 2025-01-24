@@ -572,8 +572,6 @@ local function FillSpellData_Holy()
 		{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },			
 		{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
 		{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
-		{ variable = "#coh", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = true },
-		{ variable = "#circleOfHealing", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = false },
 		{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
 		{ variable = "#heal", icon = spells.heal.icon, description = spells.heal.name, printInSettings = true },
 		{ variable = "#hf", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = true },
@@ -599,9 +597,6 @@ local function FillSpellData_Holy()
 		{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 		{ variable = "#poh", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = true },
 		{ variable = "#prayerOfHealing", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = false },
-		{ variable = "#pom", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = true },
-		{ variable = "#prayerOfMending", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = false },
-		{ variable = "#renew", icon = spells.renew.icon, description = spells.renew.name, printInSettings = true },
 		{ variable = "#sacredReverence", icon = spells.sacredReverence.icon, description = spells.sacredReverence.name, printInSettings = true },
 		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },
 		{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
@@ -2309,16 +2304,10 @@ local function CastingSpell()
 						snapshotData.casting.spellKey = "flashHeal"
 					elseif currentSpellId == spells.prayerOfHealing.id then
 						snapshotData.casting.spellKey = "prayerOfHealing"
-					elseif currentSpellId == spells.renew.id then --This shouldn't happen
-						snapshotData.casting.spellKey = "renew"
 					elseif currentSpellId == spells.smite.id then
 						snapshotData.casting.spellKey = "smite"
 					elseif talents:IsTalentActive(spells.voiceOfHarmony) then
-						if currentSpellId == spells.circleOfHealing.id then --Voice of Harmony / This shouldn't happen
-							snapshotData.casting.spellKey = "circleOfHealing"
-						elseif currentSpellId == spells.prayerOfMending.id then --Voice of Harmony / This shouldn't happen
-							snapshotData.casting.spellKey = "prayerOfMending"
-						elseif currentSpellId == spells.holyFire.id then --Voice of Harmony
+						if currentSpellId == spells.holyFire.id then --Voice of Harmony
 							snapshotData.casting.spellKey = "holyFire"
 						end
 					end
@@ -3985,8 +3974,6 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#answeredPrayers"] = spells.answeredPrayers.icon
 		lookup["#apotheosis"] = spells.apotheosis.icon
-		lookup["#coh"] = spells.circleOfHealing.icon
-		lookup["#circleOfHealing"] = spells.circleOfHealing.icon
 		lookup["#flashHeal"] = spells.flashHeal.icon
 		lookup["#heal"] = spells.heal.icon
 		lookup["#hf"] = spells.holyFire.icon
@@ -4014,9 +4001,6 @@ local function SwitchSpec()
 		lookup["#bow"] = spells.blessingOfWinter.icon
 		lookup["#poh"] = spells.prayerOfHealing.icon
 		lookup["#prayerOfHealing"] = spells.prayerOfHealing.icon
-		lookup["#pom"] = spells.prayerOfMending.icon
-		lookup["#prayerOfMending"] = spells.prayerOfMending.icon
-		lookup["#renew"] = spells.renew.icon
 		lookup["#smite"] = spells.smite.icon
 		lookup["#soh"] = spells.symbolOfHope.icon
 		lookup["#symbolOfHope"] = spells.symbolOfHope.icon

@@ -560,11 +560,8 @@ end
 ---@field public symbolOfHope TRB.Classes.SpellThreshold
 ---@field public smite TRB.Classes.Priest.HolyWordSpell
 ---@field public heal TRB.Classes.Priest.HolyWordSpell
----@field public prayerOfMending TRB.Classes.Priest.HolyWordSpell
----@field public renew TRB.Classes.Priest.HolyWordSpell
 ---@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
 ---@field public holyFire TRB.Classes.Priest.HolyWordSpell
----@field public circleOfHealing TRB.Classes.Priest.HolyWordSpell
 ---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
 ---@field public apotheosis TRB.Classes.Priest.HolyWordSpell
 TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
@@ -600,21 +597,6 @@ function TRB.Classes.Priest.HolySpells:New()
         baseline = true
     })
 
-    self.prayerOfMending = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 33076,
-        holyWordKey = "holyWordSerenity",
-        holyWordReduction = 2, -- Per rank of Voice of Harmony
-        isTalent = true,
-        baseline = true
-    })
-    self.renew = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 139,
-        holyWordKey = "holyWordSanctify",
-        holyWordReduction = 2,
-        isTalent = true,
-        baseline = true
-    })
-
     -- Holy Talent Abilities
     self.holyWordSerenity = TRB.Classes.SpellBase:New({
         id = 2050,
@@ -641,12 +623,6 @@ function TRB.Classes.Priest.HolySpells:New()
     self.holyFire = TRB.Classes.Priest.HolyWordSpell:New({
         id = 14914,
         holyWordKey = "holyWordChastise",
-        holyWordReduction = 2, -- Per rank of Voice of Harmony
-        isTalent = true
-    })
-    self.circleOfHealing = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 204883,
-        holyWordKey = "holyWordSanctify",
         holyWordReduction = 2, -- Per rank of Voice of Harmony
         isTalent = true
     })
