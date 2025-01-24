@@ -52,7 +52,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end 
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline
-				configuration.endOfRapture = settings.endOfRapture
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Holy

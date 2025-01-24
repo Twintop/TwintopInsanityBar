@@ -460,9 +460,7 @@ end
 ---@field public evangelism TRB.Classes.SpellBase
 ---@field public powerWordRadiance TRB.Classes.SpellBase
 ---@field public lightsPromise TRB.Classes.SpellBase
----@field public rapture TRB.Classes.SpellBase
 ---@field public shadowCovenant TRB.Classes.SpellBase
----@field public purgeTheWicked TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
 ---@field public depthOfShadows TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellThreshold
@@ -491,7 +489,7 @@ function TRB.Classes.Priest.DisciplineSpells:New()
         duration = 15
     })
     self.evangelism = TRB.Classes.SpellBase:New({
-        id = 246287,
+        id = 472433,
         atonementMod = 6
     })
     self.powerWordRadiance = TRB.Classes.SpellBase:New({
@@ -503,21 +501,10 @@ function TRB.Classes.Priest.DisciplineSpells:New()
         id = 322115,
         isTalent = true
     })
-    self.rapture = TRB.Classes.SpellBase:New({
-        id = 47536,
-        isTalent = true
-    })
     self.shadowCovenant = TRB.Classes.SpellBase:New({
         id = 322105,
         talentId = 314867,
         isTalent = true
-    })
-    self.purgeTheWicked = TRB.Classes.SpellBase:New({
-        id = 204213,
-        talentId = 204197,
-        baseDuration = 20,
-        pandemic = true,
-        isTalent = true,
     })
     self.mindbender = TRB.Classes.SpellThreshold:New({
         id = 123040,

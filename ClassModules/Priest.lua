@@ -156,8 +156,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[spells.rapture.id] = TRB.Classes.Snapshot:New(spells.rapture)
-	---@type TRB.Classes.Snapshot
 	specCache.discipline.snapshotData.snapshots[spells.atonement.id] = TRB.Classes.Snapshot:New(spells.atonement, {
 		minRemainingTime = 0,
 		maxRemainingTime = 0
@@ -412,11 +410,8 @@ local function FillSpellData_Discipline()
 
 		{ variable = "#atonement", icon = spells.atonement.icon, description = spells.atonement.name, printInSettings = true },
 		{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },
-		{ variable = "#ptw", icon = spells.purgeTheWicked.icon, description = spells.purgeTheWicked.name, printInSettings = true },
-		{ variable = "#purgeTheWicked", icon = spells.purgeTheWicked.icon, description = spells.purgeTheWicked.name, printInSettings = false },
 		{ variable = "#pwRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = true },
 		{ variable = "#powerWordRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = false },
-		{ variable = "#rapture", icon = spells.rapture.icon, description = spells.rapture.name, printInSettings = true },
 		{ variable = "#sc", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = true },
 		{ variable = "#shadowCovenant", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = false },
 		{ variable = "#sf", icon = string.format(L["PriestShadowIcon_sf"], spells.shadowfiend.icon, spells.mindbender.icon, spells.voidwraith.icon), description = spells.shadowfiend.name .. " / " .. spells.mindbender.name .. " / " .. spells.voidwraith.name, printInSettings = true },
@@ -503,9 +498,7 @@ local function FillSpellData_Discipline()
 
 		{ variable = "$solStacks", description = L["PriestDisciplineBarTextVariable_solStacks"], printInSettings = true, color = false },
 		{ variable = "$solTime", description = L["PriestDisciplineBarTextVariable_solTime"], printInSettings = true, color = false },
-		
-		{ variable = "$raptureTime", description = L["PriestDisciplineBarTextVariable_raptureTime"], printInSettings = true, color = false },
-		
+				
 		{ variable = "$scTime", description = L["PriestDisciplineBarTextVariable_scTime"], printInSettings = true, color = false },
 		{ variable = "$shadowCovenantTime", description = "", printInSettings = false, color = false },
 
@@ -1232,10 +1225,6 @@ local function RefreshLookupData_Discipline()
 	local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
 	local solTime = TRB.Functions.BarText:TimerPrecision(_solTime)
 
-	--$raptureTime
-	local _raptureTime = snapshots[spells.rapture.id].buff:GetRemainingTime(currentTime)
-	local raptureTime = TRB.Functions.BarText:TimerPrecision(_raptureTime)
-
 	--$scTime
 	local _scTime = snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
 	local scTime = TRB.Functions.BarText:TimerPrecision(_scTime)
@@ -1271,27 +1260,18 @@ local function RefreshLookupData_Discipline()
 
 	-----------
 	--$swpCount and $swpTime		
-	local _shadowWordPainCount
-	if talents:IsTalentActive(spells.purgeTheWicked) then
-		_shadowWordPainCount = snapshotData.targetData.count[spells.purgeTheWicked.id] or 0
-	else
-		_shadowWordPainCount = snapshotData.targetData.count[spells.shadowWordPain.id] or 0
-	end
+	local _shadowWordPainCount = snapshotData.targetData.count[spells.shadowWordPain.id] or 0
 	local shadowWordPainCount = string.format("%s", _shadowWordPainCount)
 	local _shadowWordPainTime = 0
 	
 	if target ~= nil then
-		if talents:IsTalentActive(spells.purgeTheWicked) then
-			_shadowWordPainTime = target.spells[spells.purgeTheWicked.id].remainingTime or 0
-		else
-			_shadowWordPainTime = target.spells[spells.shadowWordPain.id].remainingTime or 0
-		end
+		_shadowWordPainTime = target.spells[spells.shadowWordPain.id].remainingTime or 0
 	end
 
 	local shadowWordPainTime
 
 	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		if target ~= nil and (target.spells[spells.shadowWordPain.id].active or target.spells[spells.purgeTheWicked.id].active) then
+		if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 			if _shadowWordPainTime > spells.shadowWordPain.pandemicTime then
 				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
 				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
@@ -1393,7 +1373,6 @@ local function RefreshLookupData_Discipline()
 	lookup["$pwRadianceCharges"] = pwRadianceCharges
 	lookup["$radianceCharges"] = pwRadianceCharges
 	lookup["$powerWordRadianceCharges"] = pwRadianceCharges
-	lookup["$raptureTime"] = raptureTime
 	lookup["$scTime"] = scTime
 	lookup["$shadowCovenantTime"] = scTime
 	lookup["$atonementMinTime"] = atonementMinTime
@@ -1452,7 +1431,6 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$pwRadianceCharges"] = _pwRadianceCharges
 	lookupLogic["$radianceCharges"] = _pwRadianceCharges
 	lookupLogic["$powerWordRadianceCharges"] = _pwRadianceCharges
-	lookupLogic["$raptureTime"] = _raptureTime
 	lookupLogic["$scTime"] = _scTime
 	lookupLogic["$shadowCovenantTime"] = _scTime
 	lookupLogic["$atonementMinTime"] = _atonementMinTime
@@ -2601,7 +2579,6 @@ local function UpdateSnapshot_Discipline()
 	local snapshots = TRB.Data.snapshotData.snapshots
 
 	snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
-	snapshots[spells.rapture.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 end
@@ -2881,29 +2858,6 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
-
-				if snapshots[spells.rapture.id].buff.isActive then
-					local timeThreshold = 0
-					local useEndOfRaptureColor = false
-
-					if specSettings.endOfRapture.enabled then
-						useEndOfRaptureColor = true
-						if specSettings.endOfRapture.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfRapture.gcdsMax
-						elseif specSettings.endOfRapture.mode == "time" then
-							timeThreshold = specSettings.endOfRapture.timeMax
-						end
-					end
-
-					if useEndOfRaptureColor and snapshots[spells.rapture.id].buff.remaining <= timeThreshold then
-						barColor = specSettings.colors.bar.raptureEnd
-					else
-						barColor = specSettings.colors.bar.rapture
-					end
-				elseif barColor == nil then
-					barColor = specSettings.colors.bar.base
-				end
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
@@ -3759,10 +3713,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
 						targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif entry.spellId == spells.purgeTheWicked.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
 				elseif entry.spellId == spells.powerWordRadiance.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -3957,7 +3907,6 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
 		targetData:AddSpellTracking(spells.shadowWordPain)
-		targetData:AddSpellTracking(spells.purgeTheWicked)
 		targetData:AddSpellTracking(spells.atonement)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Discipline
@@ -3969,11 +3918,8 @@ local function SwitchSpec()
 		lookup["#pwRadiance"] = spells.powerWordRadiance.icon
 		lookup["#radiance"] = spells.powerWordRadiance.icon
 		lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon
-		lookup["#ptw"] = spells.purgeTheWicked.icon
-		lookup["#purgeTheWicked"] = spells.purgeTheWicked.icon
 		lookup["#swp"] = spells.shadowWordPain.icon
 		lookup["#shadowWordPain"] = spells.shadowWordPain.icon
-		lookup["#rapture"] = spells.rapture.icon
 		lookup["#sc"] = spells.shadowCovenant.icon
 		lookup["#shadowCovenant"] = spells.shadowCovenant.icon
 		lookup["#innervate"] = spells.innervate.icon
@@ -4651,10 +4597,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.powerWordRadiance.id].cooldown.charges > 0 then
 				valid = true
 			end
-		elseif var == "$raptureTime" then
-			if snapshots[spells.rapture.id].buff.isActive then
-				valid = true
-			end
 		elseif var == "$scTime" or var == "$shadowCovenantTime" then
 			if snapshots[spells.shadowCovenant.id].buff.isActive then
 				valid = true
@@ -4938,17 +4880,15 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	-- Spec Agnostic
 	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	if var == "$swpCount" then
-		if snapshotData.targetData.count[spells.shadowWordPain.id] > 0 or (TRB.Data.character.specId == 1 and snapshotData.targetData.count[spells.purgeTheWicked.id] > 0) then
+		if snapshotData.targetData.count[spells.shadowWordPain.id] > 0 then
 			valid = true
 		end
 	elseif var == "$swpTime" then
 		if not UnitIsDeadOrGhost("target") and
 			UnitCanAttack("player", "target") and
 			target ~= nil and
-			((target.spells[spells.shadowWordPain.id] ~= nil and
-			target.spells[spells.shadowWordPain.id].remainingTime > 0) or
-			(TRB.Data.character.specId == 1 and target.spells[spells.purgeTheWicked.id] ~= nil and
-			target.spells[spells.purgeTheWicked.id].remainingTime > 0)) then
+			(target.spells[spells.shadowWordPain.id] ~= nil and
+			target.spells[spells.shadowWordPain.id].remainingTime > 0) then
 			valid = true
 		end		
 	elseif var == "$sfMana" then

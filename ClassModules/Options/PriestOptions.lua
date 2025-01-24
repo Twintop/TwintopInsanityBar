@@ -105,7 +105,7 @@ local function DisciplineLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$raptureTime}[$raptureTime]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -188,7 +188,7 @@ local function DisciplineLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$raptureTime}[#rapture$raptureTime#rapture]||n{$scTime}[#sc$scTime#sc]",
+			text="||n{$scTime}[#sc$scTime#sc]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -334,12 +334,6 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true,
 		},
-		endOfRapture = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
-		},
 		shadowfiend={
 			mode="time",
 			swingsMax=4,
@@ -374,8 +368,6 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				surgeOfLight1="FFFCE58E",
 				surgeOfLight2="FFAF9942",
 				shadowCovenant="FFC4A5E2",
-				rapture="FFFADA5E",
-				raptureEnd="FFFF0000",
 				spending="FFFFFFFF",
 				passive="FF8080FF",
 				surgeOfLightBorderChange1=true,
@@ -1533,31 +1525,6 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"])
 	
-
-	yCoord = yCoord - 30
-	controls.colors.inRapture = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPickerRapture"], spec.colors.bar.rapture, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inRapture
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "rapture")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfRapture = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfRapture
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxRaptureEnd"])
-	f.tooltip = L["PriestDisciplineCheckboxRaptureEndTooltip"]
-	f:SetChecked(spec.endOfRapture.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfRapture.enabled = self:GetChecked()
-	end)
-
-	controls.colors.inRaptureEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPickerRaptureEnd"], spec.colors.bar.raptureEnd, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inRaptureEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "raptureEnd")
-	end)
-
 	yCoord = yCoord - 30
 	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
@@ -1698,58 +1665,6 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 5, 1, yCoord)
-	
-	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestDisciplineHeaderEndOfRaptureConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfRaptureModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfRaptureModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxRaptureGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfRapture.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfRaptureModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfRaptureModeTime:SetChecked(false)
-		spec.endOfRapture.mode = "gcd"
-	end)
-
-	title = L["PriestDisciplineRaptureGcds"]
-	controls.endOfRaptureGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfRapture.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfRaptureGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfRapture.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfRaptureModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture_Time", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfRaptureModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxRaptureTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfRapture.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfRaptureModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfRaptureModeTime:SetChecked(true)
-		spec.endOfRapture.mode = "time"
-	end)
-
-	title = L["PriestDisciplineRaptureTime"]
-	controls.endOfRaptureTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfRapture.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfRaptureTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfRapture.timeMax = value
-	end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.discipline = controls
