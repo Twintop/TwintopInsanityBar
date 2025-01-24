@@ -12,6 +12,11 @@ local content = [====[
 ---
 
 # 11.0.7.6-release (2025-01-24)
+## Evoker
+### Preservation
+
+- (FIX) Fix Lua errors when constructing the bar.
+
 ## Monk
 ### Mistweaver
 
