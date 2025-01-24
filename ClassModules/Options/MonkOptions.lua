@@ -1782,22 +1782,6 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overcapEnabled = self:GetChecked()
 	end)
-	
-
-	yCoord = yCoord - 30
-	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkWindwalkerMarkOfTheCraneTrackingHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 25
-
-	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_dotColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dotColor
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxMarkOfTheCraneTracking"])
-	f.tooltip = L["MonkWindwalkerCheckboxMarkOfTheCraneTrackingTooltip"]
-	f:SetChecked(spec.colors.text.dots.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.dots.enabled = self:GetChecked()
-	end)
 
 	controls.colors.dots = {}
 
