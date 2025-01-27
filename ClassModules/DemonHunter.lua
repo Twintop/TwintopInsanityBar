@@ -1076,6 +1076,19 @@ local function UpdateResourceBar()
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
+						elseif spell.id == spells.felEruption.id then
+							print(TRB.Data.character.isPvp, talents:IsTalentActive(spells.illidansGrasp))
+							if TRB.Data.character.isPvp and talents:IsTalentActive(spells.illidansGrasp) then
+								showThreshold = false
+							elseif snapshots[spell.id].cooldown:IsUnusable() then
+								thresholdColor = specSettings.colors.threshold.unusable
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+							elseif currentResource >= resourceAmount then
+								thresholdColor = specSettings.colors.threshold.over
+							else
+								thresholdColor = specSettings.colors.threshold.under
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
 						end
 					elseif resourceAmount == 0 then
 						showThreshold = false

@@ -26,6 +26,7 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public rendingStrike TRB.Classes.SpellBase
 ---@field public studentOfSuffering TRB.Classes.SpellBase
 ---@field public warbladesHunger TRB.Classes.SpellBase
+---@field public illidansGrasp TRB.Classes.SpellBase
 ---@field public throwGlaive TRB.Classes.SpellThreshold
 ---@field public bladeDance TRB.Classes.SpellThreshold
 ---@field public chaosStrike TRB.Classes.SpellThreshold
@@ -167,7 +168,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         settingKey = "felEruption",
         hasCooldown = true,
         isTalent = false,
-        baseline = true
+        baseline = true,
+        isSnowflake = true
     })
     self.blindFury = TRB.Classes.SpellBase:New({
         id = 203550,
@@ -237,6 +239,12 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         resourcePerTick = 5,
         tickRate = 2,
         hasTicks = true
+    })
+
+    --PVP
+    self.illidansGrasp = TRB.Classes.SpellBase:New({
+        id = 205630,
+        isPvp = true
     })
 
     return self

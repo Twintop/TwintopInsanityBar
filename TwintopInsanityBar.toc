@@ -1,4 +1,4 @@
-## Interface: 110007
+## Interface: 110100
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
@@ -13,13 +13,24 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 11.0.7.5
+## Version: 11.1.0.0
 ## X-ReleaseType: release
-## X-ReleaseDate: 2025-01-24
+## X-ReleaseDate: 2025-0?-??
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
+## Category-enUS: Combat
+## Category-deDE: Kampf
+## Category-esES: Combate
+## Category-esMX: Combate
+## Category-frFR: Combat
+## Category-itIT: Combattimento
+## Category-koKR: 전투
+## Category-ptBR: Combate
+## Category-ruRU: Бой
+## Category-zhCN: 战斗
+## Category-zhTW: 戰鬥
 ## X-Category: Interface Enhancements
 ## X-Website: https://github.com/Twintop/TwintopInsanityBar
 ## X-Curse-Project-ID: 293075
