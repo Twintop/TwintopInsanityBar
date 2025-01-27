@@ -1077,7 +1077,6 @@ local function UpdateResourceBar()
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						elseif spell.id == spells.felEruption.id then
-							print(TRB.Data.character.isPvp, talents:IsTalentActive(spells.illidansGrasp))
 							if TRB.Data.character.isPvp and talents:IsTalentActive(spells.illidansGrasp) then
 								showThreshold = false
 							elseif snapshots[spell.id].cooldown:IsUnusable() then
