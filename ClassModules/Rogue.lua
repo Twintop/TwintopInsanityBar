@@ -281,8 +281,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shadowyDuel.id] = TRB.Classes.Snapshot:New(spells.shadowyDuel)
-	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
