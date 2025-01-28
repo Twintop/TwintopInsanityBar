@@ -772,7 +772,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local checkSecondaryStats = true
 	if AreSecondaryRatingsNil() then
 		TRB.Functions.Character:UpdateStatsSnapshot()
-	else
+	elseif snapshotData.attributes.cacheRefresh == false then
 		checkSecondaryStats = false
 	end
 
@@ -894,6 +894,8 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		lookupLogic["$stamina"] = snapshotData.attributes.stamina
 	
 		lookupLogic["$gcd"] = _gcd
+
+		snapshotData.attributes.cacheRefresh = false
 	end
 
 	--$ttd

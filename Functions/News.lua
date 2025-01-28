@@ -11,6 +11,26 @@ local content = [====[
 
 ---
 
+# 11.0.7.7-release (2025-01-28)
+## General
+
+- [#418 - FIX](#418) Fix overly aggressive caching of primary and secondary stats for bar text.
+
+---
+
+# 11.0.7.6-release (2025-01-24)
+## Evoker
+### Preservation
+
+- (FIX) Fix Lua errors when constructing the bar.
+
+## Monk
+### Mistweaver
+
+- (FIX) Fix Lua errors when constructing the bar.
+
+---
+
 # 11.0.7.5-release (2025-01-24)
 ## General
 
