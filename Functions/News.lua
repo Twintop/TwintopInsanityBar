@@ -46,7 +46,6 @@ local content = [====[
 
 - [#416 - UPDATE](#416) Remove Mark of the Crane and related bar text variables.
 
-
 ## Priest
 ### Discipline
 
