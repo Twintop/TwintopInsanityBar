@@ -222,9 +222,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 			blackArrow = {
 				enabled = true,
 			},
-			direBeastBasilisk = {
-				enabled = true,
-			},
 			direBeastHawk = {
 				enabled = true,
 			}
@@ -545,13 +542,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 			explosiveShot = {
 				enabled = true,
 			},
-			barrage = {
-				enabled = true,
-			},
 			aimedShot = {
-				enabled = true,
-			},
-			chimaeraShot = {
 				enabled = true,
 			},
 			multiShot = {
@@ -560,13 +551,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 			burstingShot = {
 				enabled = true,
 			},
-			wailingArrow = {
-				enabled = true,
-			},
 			blackArrow = {
-				enabled = true,
-			},
-			sniperShot = {
 				enabled = true,
 			},
 		},
@@ -1440,17 +1425,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	controls.labels.pvpthreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 
-	controls.checkBoxes.direBeastBasiliskThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_direBeastBasilisk", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.direBeastBasiliskThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxDireBeastBasilisk"])
-	f.tooltip = L["HunterBeastMasteryThresholdCheckboxDireBeastBasiliskTooltip"]
-	f:SetChecked(spec.thresholds.direBeastBasilisk.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.direBeastBasilisk.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.direBeastHawkThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_direBeastHawk", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.direBeastHawkThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2218,18 +2192,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.arcaneShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.arcaneShot.enabled = self:GetChecked()
-		spec.thresholds.chimaeraShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.barrageThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBarrage"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxBarrageTooltip"]
-	f:SetChecked(spec.thresholds.barrage.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.barrage.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2299,17 +2261,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.wailingArrowThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxWailingArrow"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxWailingArrowTooltip"]
-	f:SetChecked(spec.thresholds.wailingArrow.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.wailingArrow.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 
@@ -2343,20 +2294,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.wingClip.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.wingClip.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.labels.pvpThreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.sniperShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_sniperShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sniperShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxSniperShot"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxSniperShotTooltip"]
-	f:SetChecked(spec.thresholds.sniperShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sniperShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

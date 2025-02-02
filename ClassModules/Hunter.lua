@@ -83,8 +83,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.direBeastBasilisk.id] = TRB.Classes.Snapshot:New(spells.direBeastBasilisk)
-	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.direBeastHawk.id] = TRB.Classes.Snapshot:New(spells.direBeastHawk)
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.barbedShot.id] = TRB.Classes.Snapshot:New(spells.barbedShot, {
@@ -137,8 +135,6 @@ local function FillSpecializationCache()
 		playedAimedShotCue = true
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
-	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.lockAndLoad.id] = TRB.Classes.Snapshot:New(spells.lockAndLoad)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
@@ -152,10 +148,6 @@ local function FillSpecializationCache()
 	specCache.marksmanship.snapshotData.snapshots[spells.burstingShot.id] = TRB.Classes.Snapshot:New(spells.burstingShot)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.explosiveShot.id] = TRB.Classes.Snapshot:New(spells.explosiveShot)
-	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.sniperShot.id] = TRB.Classes.Snapshot:New(spells.sniperShot)
-	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.barrage.id] = TRB.Classes.Snapshot:New(spells.barrage)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
 	---@type TRB.Classes.Snapshot
@@ -343,9 +335,7 @@ local function FillSpellData_Marksmanship()
 
 		{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = spells.aimedShot.name, printInSettings = true },
 		{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
-		{ variable = "#barrage", icon = spells.barrage.icon, description = spells.barrage.name, printInSettings = true },
 		{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = spells.burstingShot.name, printInSettings = true },
-		{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = spells.chimaeraShot.name, printInSettings = true },
 		{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = spells.explosiveShot.name, printInSettings = true },
 		{ variable = "#killShot", icon = spells.killShot.icon, description = spells.killShot.name, printInSettings = true },
 		{ variable = "#lockAndLoad", icon = spells.lockAndLoad.icon, description = spells.lockAndLoad.name, printInSettings = true },
@@ -356,8 +346,7 @@ local function FillSpellData_Marksmanship()
 		{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
 		{ variable = "#steadyFocus", icon = spells.steadyFocus.icon, description = spells.steadyFocus.name, printInSettings = true },
 		{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = spells.steadyShot.name, printInSettings = true },
-		{ variable = "#trueshot", icon = spells.trueshot.icon, description = spells.trueshot.name, printInSettings = true },
-		{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = spells.wailingArrow.name, printInSettings = true }
+		{ variable = "#trueshot", icon = spells.trueshot.icon, description = spells.trueshot.name, printInSettings = true }
 	}
 	specCache.marksmanship.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -921,9 +910,7 @@ local function RefreshLookupData_Marksmanship()
 	local lookup = TRB.Data.lookup or {}
 	lookup["#aimedShot"] = spells.aimedShot.icon
 	lookup["#arcaneShot"] = spells.arcaneShot.icon
-	lookup["#barrage"] = spells.barrage.icon
 	lookup["#burstingShot"] = spells.burstingShot.icon
-	lookup["#chimaeraShot"] = spells.chimaeraShot.icon
 	lookup["#explosiveShot"] = spells.explosiveShot.icon
 	lookup["#killShot"] = spells.killShot.icon
 	lookup["#lockAndLoad"] = spells.lockAndLoad.icon
@@ -935,7 +922,6 @@ local function RefreshLookupData_Marksmanship()
 	lookup["#steadyFocus"] = spells.steadyFocus.icon
 	lookup["#steadyShot"] = spells.steadyShot.icon
 	lookup["#trueshot"] = spells.trueshot.icon
-	lookup["#wailingArrow"] = spells.wailingArrow.icon
 	lookup["$steadyFocusTime"] = steadyFocusTime
 	lookup["$trueshotTime"] = trueshotTime
 	lookup["$lockAndLoadTime"] = lockAndLoadTime
@@ -1269,14 +1255,8 @@ local function CastingSpell()
 				local spellName = select(1, currentSpell)
 				if spellName == spells.aimedShot.name then
 					FillSnapshotDataCasting(spells.aimedShot)
-				elseif spellName == spells.wailingArrow.name then
-					FillSnapshotDataCasting(spells.wailingArrow)
 				elseif spellName == spells.steadyShot.name then
-					if talents:IsTalentActive(spells.improvedSteadyShot) then
-						FillSnapshotDataCasting(spells.improvedSteadyShot)
-					else
-						FillSnapshotDataCasting(spells.steadyShot)
-					end
+					FillSnapshotDataCasting(spells.steadyShot)
 				elseif spellName == spells.scareBeast.name then
 					FillSnapshotDataCasting(spells.scareBeast)
 				elseif spellName == spells.revivePet.name then
@@ -1404,7 +1384,6 @@ local function UpdateSnapshot_Marksmanship()
 
 	snapshots[spells.aimedShot.id].cooldown:Refresh()
 	snapshots[spells.burstingShot.id].cooldown:Refresh()
-	snapshots[spells.barrage.id].cooldown:Refresh()
 	snapshots[spells.explosiveShot.id].cooldown:Refresh()
 
 	snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
@@ -1784,11 +1763,6 @@ local function UpdateResourceBar()
 					passiveBarColor = specSettings.colors.bar.passive
 				end
 
-				local aimedShotOverride = false
-				if talents:IsTalentActive(spells.wailingArrow) and C_Spell.GetOverrideSpell(spells.aimedShot.id) == spells.wailingArrow.attributes.aimedShotOverrideId then
-					aimedShotOverride = true
-				end
-
 				local pairOffset = 0
 				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 					if resourceFrame.thresholds[thresholdId] == nil then
@@ -1802,19 +1776,8 @@ local function UpdateResourceBar()
 					local snapshot = snapshots[spell.id]
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-						if spell.id == spells.arcaneShot.id then
-							if talents:IsTalentActive(spells.chimaeraShot) == true then
-								showThreshold = false
-							elseif currentResource >= resourceAmount then
-								thresholdColor = specSettings.colors.threshold.over
-							else
-								thresholdColor = specSettings.colors.threshold.under
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-							end
-						elseif spell.id == spells.aimedShot.id then
-							if aimedShotOverride then
-								showThreshold = false
-							elseif snapshots[spell.id].cooldown:IsUnusable() then
+						if spell.id == spells.aimedShot.id then
+							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							elseif snapshots[spells.lockAndLoad.id].buff.isActive or currentResource >= resourceAmount then
@@ -1843,16 +1806,6 @@ local function UpdateResourceBar()
 								end
 							elseif snapshots[spell.id].cooldown.charges == 2 then
 								snapshotData.audio.playedAimedShotCue = true
-							end
-						elseif spell.id == spells.wailingArrow.id then
-							if not aimedShotOverride then
-								showThreshold = false
-							elseif currentResource >= resourceAmount then
-								thresholdColor = specSettings.colors.threshold.over
-								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-							else
-								thresholdColor = specSettings.colors.threshold.under
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						elseif spell.id == spells.killShot.id and not talents:IsTalentActive(spells.blackArrow) then
 							local targetUnitHealth
@@ -2233,10 +2186,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.direBeastBasilisk.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
 				elseif entry.spellId == spells.direBeastHawk.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -2256,12 +2205,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-				elseif entry.spellId == spells.wailingArrow.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.sniperShot.id then
-					snapshots[entry.spellId].cooldown:Initialize()
 				elseif entry.spellId == spells.blackArrow.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
