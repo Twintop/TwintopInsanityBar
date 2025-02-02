@@ -11,6 +11,59 @@ local content = [====[
 
 ---
 
+# 11.1.0.0-beta01 (2025-02-02)
+## General
+
+- [#416 - NEW](#416) Add addon category metadata for the new addon grouping system.
+
+## Demon Hunter 
+### Havoc
+
+- [#416 - NEW](#416) Add Illidan's Grasp support to hide the Fel Eruption threshold line when talented in PvP.
+
+## Druid
+### Balance
+
+- [#416 - UPDATE](#416) Flag Moonkin Form as a baseline ability.
+
+### Feral
+
+- [#416 - UPDATE](#416) Flag Thrash as a baseline ability.
+
+## Hunter
+### Beast Mastery
+
+- [#416 - UPDATE](#416) Remove Dire Beast: Basilisk as a threshold line option.
+
+### Marksmanship
+
+- [#416 - UPDATE](#416) Adjust the following spells:
+<br/>&emsp;&ensp;- Removed Improved Steady Shot, Steady Focus, Barrage, Chimaera Shot, Wailing Arrow, and Sniper Shot (PvP).
+<br/>&emsp;&ensp;- Flag Multi-Shot as a baseline ability.
+
+## Monk
+### Windwalker
+
+- [#416 - UPDATE](#416) Remove Mark of the Crane and related bar text variables.
+
+
+## Priest
+### Discipline
+
+- [#416 - UPDATE](#416) Adjust the following spells:
+<br/>&emsp;&ensp;- Update Evangelism spell ID.
+<br/>&emsp;&ensp;- Removed Rapture and Purge the Wicked.
+
+### Holy
+- [#416 - UPDATE](#416) Remove Circle of Healing.
+
+## Rogue
+### Subtlety
+
+- [#416 - UPDATE](#416) Remove Shadowy Duel.
+
+---
+
 # 11.0.7.7-release (2025-01-28)
 ## General
 
