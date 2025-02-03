@@ -950,7 +950,7 @@ local function RefreshLookupData_Balance()
 	--$passive
 	local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + snapshotData.snapshots[spells.forceOfNature.id].buff.resource
 	if talents:IsTalentActive(spells.naturesBalance) then
-		if UnitAffectingCombat("player") then
+		if TRB.Data.character.inCombat then
 			_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.resource
 		elseif normalizedAstralPower < 50 then
 			_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.attributes.outOfCombatResource
@@ -2474,7 +2474,7 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.neverShow == false then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 				refreshText = true
-				local affectingCombat = UnitAffectingCombat("player")
+				local affectingCombat = TRB.Data.character.inCombat
 				local passiveBarValue = 0
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
@@ -3247,7 +3247,7 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				local affectingCombat = UnitAffectingCombat("player")
+				local affectingCombat = TRB.Data.character.inCombat
 
 				if affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive then
 					barColor = specSettings.colors.bar.noEfflorescence
@@ -3531,14 +3531,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-combatFrame:SetScript("OnEvent", function(self, event, ...)
-	if event =="PLAYER_REGEN_DISABLED" then
-		TRB.Functions.Bar:ShowResourceBar()
-	else
-		TRB.Functions.Bar:HideResourceBar()
-	end
-end)
-
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -3808,32 +3800,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = false
 	end
 
-	if TRB.Data.specSupported then
-		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Details.addonData.registered = true
-		TRB.Functions.Aura:EnableUnitAura()
-		TRB.Functions.Character:EnableCharacterChange()
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else
-		TRB.Data.specSupported = false
-		targetsTimerFrame:SetScript("OnUpdate", nil)
-		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:DisableUnitAura()
-		TRB.Functions.Character:DisableCharacterChange()
-		TRB.Details.addonData.registered = false
-		barContainerFrame:Hide()
-	end
-
-	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
@@ -3842,7 +3809,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 then --Balance is a special snowflake
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
-		local affectingCombat = UnitAffectingCombat("player")
+		local affectingCombat = TRB.Data.character.inCombat
 		local settings = TRB.Data.settings.druid.balance
 		if not TRB.Data.specSupported or force or
 			(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.balance.displayBar.dragonriding) or
@@ -3933,7 +3900,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		return false
 	end
 
-	local affectingCombat = UnitAffectingCombat("player")
+	local affectingCombat = TRB.Data.character.inCombat
 
 	if TRB.Data.character.specId == 1 then -- Balance
 		if var == "$moonkinForm" then

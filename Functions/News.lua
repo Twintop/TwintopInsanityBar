@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.0.7.8-release (2025-02-05)
+## General
+
+- [#417 - REFACTOR](#417) Futher optimizations:
+<br/>&emsp;&ensp;- Reduce number of in combat checks.
+
+---
+
 # 11.0.7.7-release (2025-01-28)
 ## General
 

@@ -272,6 +272,14 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 end
 
 TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", TRB.Frames.barContainerFrame)
+TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
+	if event =="PLAYER_REGEN_DISABLED" then
+		TRB.Functions.Bar:ShowResourceBar()
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		TRB.Functions.Bar:HideResourceBar()
+	end
+	TRB.Data.character.inCombat = UnitAffectingCombat("player")
+end)
 
 -- Settings placeholders
 TRB.Frames.interfaceSettingsFrameContainer = {}

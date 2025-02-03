@@ -915,7 +915,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local castingIcon = snapshotData.casting.icon or ""
 	local castingAmount = snapshotData.casting.resourceFinal or 0
 
-	lookup["$inCombat"] = tostring(UnitAffectingCombat("player"))
+	lookup["$inCombat"] = tostring(TRB.Data.character.inCombat)
 	lookup["#casting"] = castingIcon
 	lookup["$ttd"] = ttd
 	lookup["$ttdSeconds"] = ttdTotalSeconds
@@ -923,7 +923,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 
 	lookupLogic["$ttd"] = _ttd
 	lookupLogic["$ttdSeconds"] = _ttd
-	lookupLogic["$inCombat"] = tostring(UnitAffectingCombat("player"))
+	lookupLogic["$inCombat"] = tostring(TRB.Data.character.inCombat)
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
 	
@@ -997,7 +997,7 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 			valid = true
 		end
 	elseif var == "$inCombat" then
-		if UnitAffectingCombat("player") then
+		if TRB.Data.character.inCombat then
 			valid = true
 		end
 	end

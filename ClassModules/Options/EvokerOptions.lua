@@ -8,16 +8,8 @@ local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local resourceFrame = TRB.Frames.resourceFrame
 local castingFrame = TRB.Frames.castingFrame
 local passiveFrame = TRB.Frames.passiveFrame
-local barBorderFrame = TRB.Frames.barBorderFrame
-
-local resourceFrame = TRB.Frames.resourceFrame
-local passiveFrame = TRB.Frames.passiveFrame
-local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 TRB.Options.Evoker = {}
 TRB.Options.Evoker.Devastation = {}
