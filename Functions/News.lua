@@ -16,6 +16,8 @@ local content = [====[
 
 - [#417 - REFACTOR](#417) Futher optimizations:
 <br/>&emsp;&ensp;- Reduce number of in combat checks.
+<br/>&emsp;&ensp;- Snapshot UnitToken of enemies/allies; change rules for updating these.
+<br/>&emsp;&ensp;- Only refresh primary and secondary stats once per frame at most.
 
 ---
 

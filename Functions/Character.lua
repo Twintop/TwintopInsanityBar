@@ -247,6 +247,7 @@ function TRB.Functions.Character:UpdateStatsSnapshot()
 	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
 
 	snapshotData.attributes.cacheRefresh = true
+	snapshotData.attributes.attributeRefresh = false
 end
 
 ---Loads data from the specialization cache in to the main TRB.Data table
