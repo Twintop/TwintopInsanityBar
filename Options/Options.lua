@@ -35,6 +35,7 @@ local specGlobalDefaults = {
 	--comboPoints = false,
 	--displayBar = false,
 	displayText = false,
+	textColors = false,
 	--textures = false,
 	--thresholds = false
 }
@@ -102,6 +103,40 @@ local function LoadDefaultSettings()
 				showPassive=true,
 				showCasting=true,
 				smooth=false
+			},
+			colors = {
+				text = {
+					current = {
+						color = "FFC2A3E0",
+						enabled = true
+					},
+					casting = {
+						color = "FFFFFFFF",
+						enabled = true
+					},
+					spending = {
+						color = "FF555555",
+						enabled = true
+					},
+					passive = {
+						color = "FFDF00FF",
+						enabled = true
+					},
+					overcap = {
+						color = "FFFF0000",
+						enabled = true
+					},
+					overThreshold = {
+						color = "FF00FF00",
+						enabled = false
+					},
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000",
+						pandemic="FFFFFF00"
+					}
+				},
 			},
 			comboPoints = {
 				width=25,
@@ -337,41 +372,46 @@ local function ConstructFontAndTextPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, nil, nil, yCoord)
 
-	--[[
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "currentInsanity")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextCasting"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextCasting"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "castingInsanity")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passiveInsanity")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
+	end)
+
+	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextSpending"], spec.colors.text.spending.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.spending
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerThresholdOver"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcapInsanity")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -395,7 +435,6 @@ local function ConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overcapEnabled = self:GetChecked()
 	end)
-	]]
 
 	--[[
 	yCoord = yCoord - 30
@@ -3322,6 +3361,84 @@ function TRB.Options:PortForwardSettings()
 		TwintopInsanityBarSettings.shaman.elemental.colors.text.castingMaelstrom = nil
 		TwintopInsanityBarSettings.shaman.elemental.colors.text.passiveMaelstrom = nil
 		TwintopInsanityBarSettings.shaman.elemental.colors.text.overcapMaelstrom = nil
+	end
+
+	-- Global color settings refactor
+	if TwintopInsanityBarSettings ~= nil and
+	TwintopInsanityBarSettings.priest ~= nil and
+	TwintopInsanityBarSettings.priest.discipline ~= nil and
+	TwintopInsanityBarSettings.priest.discipline.colors ~= nil and
+	TwintopInsanityBarSettings.priest.discipline.colors.text ~= nil and
+	TwintopInsanityBarSettings.priest.discipline.colors.text.current ~= nil and
+	type(TwintopInsanityBarSettings.priest.discipline.colors.text.current) == "string" then
+		TwintopInsanityBarSettings.priest.discipline.colors.text.current = {
+			color = TwintopInsanityBarSettings.priest.discipline.colors.text.current,
+			enabled = true
+		}
+		TwintopInsanityBarSettings.priest.discipline.colors.text.casting = {
+			color = TwintopInsanityBarSettings.priest.discipline.colors.text.casting,
+			enabled = true
+		}
+		TwintopInsanityBarSettings.priest.discipline.colors.text.passive = {
+			color = TwintopInsanityBarSettings.priest.discipline.colors.text.passive,
+			enabled = true
+		}
+	end
+	
+	if TwintopInsanityBarSettings ~= nil and
+	TwintopInsanityBarSettings.priest ~= nil and
+	TwintopInsanityBarSettings.priest.holy ~= nil and
+	TwintopInsanityBarSettings.priest.holy.colors ~= nil and
+	TwintopInsanityBarSettings.priest.holy.colors.text ~= nil and
+	TwintopInsanityBarSettings.priest.holy.colors.text.current ~= nil and
+	type(TwintopInsanityBarSettings.priest.holy.colors.text.current) == "string" then
+		TwintopInsanityBarSettings.priest.holy.colors.text.current = {
+			color = TwintopInsanityBarSettings.priest.holy.colors.text.current,
+			enabled = true
+		}
+		TwintopInsanityBarSettings.priest.holy.colors.text.casting = {
+			color = TwintopInsanityBarSettings.priest.holy.colors.text.casting,
+			enabled = true
+		}
+		TwintopInsanityBarSettings.priest.holy.colors.text.passive = {
+			color = TwintopInsanityBarSettings.priest.holy.colors.text.passive,
+			enabled = true
+		}
+	end
+	
+	if TwintopInsanityBarSettings ~= nil and
+	TwintopInsanityBarSettings.priest ~= nil and
+	TwintopInsanityBarSettings.priest.shadow ~= nil and
+	TwintopInsanityBarSettings.priest.shadow.colors ~= nil and
+	TwintopInsanityBarSettings.priest.shadow.colors.text ~= nil and
+	TwintopInsanityBarSettings.priest.shadow.colors.text.current ~= nil and
+	type(TwintopInsanityBarSettings.priest.shadow.colors.text.current) == "string" then
+		TwintopInsanityBarSettings.priest.shadow.colors.text.current = {
+			color = TwintopInsanityBarSettings.priest.shadow.colors.text.current,
+			enabled = true
+		}
+		TwintopInsanityBarSettings.priest.shadow.colors.text.casting = {
+			color = TwintopInsanityBarSettings.priest.shadow.colors.text.casting,
+			enabled = true
+		}
+		--[[TwintopInsanityBarSettings.priest.shadow.colors.text.spending = {
+			color = TwintopInsanityBarSettings.priest.shadow.colors.text.spending,
+			enabled = true
+		}]]
+		TwintopInsanityBarSettings.priest.shadow.colors.text.passive = {
+			color = TwintopInsanityBarSettings.priest.shadow.colors.text.passive,
+			enabled = true
+		}
+		TwintopInsanityBarSettings.priest.shadow.colors.text.overcap = {
+			color = TwintopInsanityBarSettings.priest.shadow.colors.text.overcap,
+			enabled = TwintopInsanityBarSettings.priest.shadow.colors.text.overcapEnabled
+		}
+		TwintopInsanityBarSettings.priest.shadow.colors.text.overThreshold = {
+			color = TwintopInsanityBarSettings.priest.shadow.colors.text.overThreshold,
+			enabled = TwintopInsanityBarSettings.priest.shadow.colors.text.overThresholdEnabled
+		}
+		TwintopInsanityBarSettings.priest.shadow.colors.text.overcapEnabled = nil
+		TwintopInsanityBarSettings.priest.shadow.colors.text.overThresholdEnabled = nil
 	end
 end
 

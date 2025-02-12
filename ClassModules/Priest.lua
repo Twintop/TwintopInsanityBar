@@ -1103,8 +1103,8 @@ local function RefreshLookupData_Discipline()
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = specSettings.colors.text.current
-	local castingManaColor = specSettings.colors.text.casting
+	local currentManaColor = specSettings.colors.text.current.color
+	local castingManaColor = specSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -1190,7 +1190,7 @@ local function RefreshLookupData_Discipline()
 	
 	--$sfMana
 	local _sfMana = shadowfiend.resourceFinal or 0
-	local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
+	local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
 	--$sfGcds
 	local _sfGcds = shadowfiend.remainingGcds
 	local sfGcds = string.format("%.0f", _sfGcds)
@@ -1203,7 +1203,7 @@ local function RefreshLookupData_Discipline()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -1476,8 +1476,8 @@ local function RefreshLookupData_Holy()
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = specSettings.colors.text.current
-	local castingManaColor = specSettings.colors.text.casting
+	local currentManaColor = specSettings.colors.text.current.color
+	local castingManaColor = specSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -1563,7 +1563,7 @@ local function RefreshLookupData_Holy()
 	
 	--$sfMana
 	local _sfMana = shadowfiend.resourceFinal or 0
-	local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
+	local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
 	--$sfGcds
 	local _sfGcds = shadowfiend.remainingGcds
 	local sfGcds = string.format("%.0f", _sfGcds)
@@ -1576,7 +1576,7 @@ local function RefreshLookupData_Holy()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -1873,18 +1873,18 @@ local function RefreshLookupData_Shadow()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentInsanityColor = specSettings.colors.text.current
-	local castingInsanityColor = specSettings.colors.text.casting
+	local currentInsanityColor = specSettings.colors.text.current.color
+	local castingInsanityColor = specSettings.colors.text.casting.color
 
 	local insanityThreshold = spells.devouringPlague:GetPrimaryResourceCost()
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentInsanityColor = specSettings.colors.text.overcap
-			castingInsanityColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
-			currentInsanityColor = specSettings.colors.text.overThreshold
-			castingInsanityColor = specSettings.colors.text.overThreshold
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentInsanityColor = specSettings.colors.text.overcap.color
+			castingInsanityColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled and normalizedInsanity >= insanityThreshold then
+			currentInsanityColor = specSettings.colors.text.overThreshold.color
+			castingInsanityColor = specSettings.colors.text.overThreshold.color
 		end
 	end
 
@@ -1927,7 +1927,7 @@ local function RefreshLookupData_Shadow()
 	local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, resourcePrecision, "ceil"))
 	--$passive
 	local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity
-	local passiveInsanity = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
+	local passiveInsanity = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
 	--$insanityTotal
 	local _insanityTotal = math.min(_passiveInsanity + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
 	local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityTotal, resourcePrecision, "floor"))

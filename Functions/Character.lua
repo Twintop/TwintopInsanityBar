@@ -217,8 +217,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 				snapshotData.attributes.resource2 = resourceBuff.applications or 0
 			else
 				snapshotData.attributes.resource2 = 0
-			end
-			
+			end			
 		elseif TRB.Data.resource2 == "CUSTOM" then
 			-- Do nothing
 		else
@@ -347,7 +346,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 
 	specCache.settings.displayText = {}
 	specCache.settings.displayText.barText = spec.displayText.barText
-	--if enabled and s.displayText then
+
 	if s.displayText then
 		specCache.settings.displayText.default = core.displayText.default
 	else
