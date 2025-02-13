@@ -262,11 +262,19 @@ local function HolyLoadDefaultSettings(includeBarText)
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				dots = {
+					options = {
+						enabled=true,
+					},
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFFFF00"
+					}
 				}
 			},
 			bar={
@@ -363,9 +371,9 @@ local function HolyLoadDefaultSettings(includeBarText)
 end
 
 local function LoadDefaultSettings(includeBarText)
-	local settings = TRB.Options.LoadDefaultSettings()
-	settings.paladin.holy = HolyLoadDefaultSettings(includeBarText)
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
+	settings.paladin.holy = HolyLoadDefaultSettings(includeBarText)
 	return settings
 end
 TRB.Options.Paladin.LoadDefaultSettings = LoadDefaultSettings

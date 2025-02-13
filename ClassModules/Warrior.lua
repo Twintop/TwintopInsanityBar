@@ -419,31 +419,31 @@ local function RefreshLookupData_Arms()
 
 	local deepWoundsTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.rend.debuffId].active then
 			if _rendTime > ((spells.rend.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
-				rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _rendCount)
-				rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_rendTime))
+				rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _rendCount)
+				rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_rendTime))
 			else
-				rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _rendCount)
-				rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_rendTime))
+				rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _rendCount)
+				rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_rendTime))
 			end
 		else
-			rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _rendCount)
-			rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _rendCount)
+			rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.deepWounds.id].active then
 			if _deepWoundsTime > ((spells.deepWounds.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
-				deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _deepWoundsCount)
-				deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_deepWoundsTime))
+				deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _deepWoundsCount)
+				deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_deepWoundsTime))
 			else
-				deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _deepWoundsCount)
-				deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_deepWoundsTime))
+				deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _deepWoundsCount)
+				deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_deepWoundsTime))
 			end
 		else
-			deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _deepWoundsCount)
-			deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _deepWoundsCount)
+			deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		rendTime = TRB.Functions.BarText:TimerPrecision(_rendTime)
@@ -1279,7 +1279,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Warrior.LoadDefaultSettings(false)
 
@@ -1296,7 +1296,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Warrior.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

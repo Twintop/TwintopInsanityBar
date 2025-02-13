@@ -1290,18 +1290,18 @@ local function RefreshLookupData_Discipline()
 
 	local shadowWordPainTime
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and (target.spells[spells.shadowWordPain.id].active or target.spells[spells.purgeTheWicked.id].active) then
 			if _shadowWordPainTime > spells.shadowWordPain.pandemicTime then
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			end
 		else
-			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _shadowWordPainCount)
+			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
@@ -1669,18 +1669,18 @@ local function RefreshLookupData_Holy()
 
 	local shadowWordPainTime
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 			if _shadowWordPainTime > spells.shadowWordPain.pandemicTime then
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			end
 		else
-			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _shadowWordPainCount)
+			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
@@ -1972,32 +1972,32 @@ local function RefreshLookupData_Shadow()
 
 	local devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(_devouringPlagueTime)
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 			if (not talents:IsTalentActive(spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.pandemicTime) or
 				(talents:IsTalentActive(spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.attributes.miseryPandemicTime) then
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			end
 		else
-			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _shadowWordPainCount)
+			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.vampiricTouch.id].active then
 			if target.spells[spells.vampiricTouch.id].remainingTime > spells.vampiricTouch.pandemicTime then
-				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _vampiricTouchCount)
-				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
+				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _vampiricTouchCount)
+				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
 			else
-				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _vampiricTouchCount)
-				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
+				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _vampiricTouchCount)
+				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
 			end
 		else
-			vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _vampiricTouchCount)
-			vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _vampiricTouchCount)
+			vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
@@ -4209,7 +4209,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Priest.LoadDefaultSettings(false)
 
@@ -4232,7 +4232,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Priest.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

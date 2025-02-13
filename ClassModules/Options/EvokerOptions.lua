@@ -745,11 +745,19 @@ local function PreservationLoadDefaultSettings(includeBarText)
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				dots = {
+					options = {
+						enabled=true,
+					},
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFFFF00"
+					}
 				}
 			},
 			bar={
@@ -1171,11 +1179,11 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 end
 
 local function LoadDefaultSettings(includeBarText)
-	local settings = TRB.Options.LoadDefaultSettings()
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
+
 	settings.evoker.devastation = DevastationLoadDefaultSettings(includeBarText)
 	settings.evoker.preservation = PreservationLoadDefaultSettings(includeBarText)
 	settings.evoker.augmentation = AugmentationLoadDefaultSettings(includeBarText)
-
 	return settings
 end
 TRB.Options.Evoker.LoadDefaultSettings = LoadDefaultSettings

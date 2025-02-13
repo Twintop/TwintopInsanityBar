@@ -645,18 +645,18 @@ local function RefreshLookupData_Elemental()
 
 	local flameShockTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.flameShock.id].active then
 			if _flameShockTime > spells.flameShock.pandemicTime then
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			else
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			end
 		else
-			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
-			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _flameShockCount)
+			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
@@ -805,18 +805,18 @@ local function RefreshLookupData_Enhancement()
 
 	local flameShockTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.flameShock.id].active then
 			if _flameShockTime > spells.flameShock.pandemicTime then
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			else
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			end
 		else
-			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
-			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _flameShockCount)
+			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
@@ -996,18 +996,18 @@ local function RefreshLookupData_Restoration()
 
 	local flameShockTime
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.flameShock.id].active then
 			if _flameShockTime > spells.flameShock.pandemicTime then
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			else
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			end
 		else
-			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
-			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _flameShockCount)
+			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
@@ -1958,7 +1958,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Shaman.LoadDefaultSettings(false)
 
@@ -1982,7 +1982,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Shaman.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

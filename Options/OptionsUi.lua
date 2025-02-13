@@ -2341,6 +2341,69 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	return yCoord
 end
 
+function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, classId, specId, yCoord, dotCheckbox, dotTooltip, showUp, showPandemic, showDown)
+	showUp = showUp or true
+	showPandemic = showPandemic or true
+	showDown = showDown or true
+	
+	local f = nil
+	local className
+
+	if classId ~= nil then
+		_, className, _ = GetClassInfo(classId)
+	else
+		className = "Global"
+	end
+
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	if specName == nil then
+		specName = ""
+	end	
+
+	yCoord = yCoord - 30
+	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 25
+
+	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_dotColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dotColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(dotCheckbox)
+	f.tooltip =  dotTooltip
+	f:SetChecked(spec.colors.text.dots.options.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.dots.options.enabled = self:GetChecked()
+	end)
+
+	controls.colors.dots = {}
+	
+	if showUp then
+		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up.color, 550, 25, oUi.xCoord, yCoord-30)
+		f = controls.colors.dots.up
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
+		end)
+	end
+
+	if showPandemic then
+		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic.color, 550, 25, oUi.xCoord, yCoord-60)
+		f = controls.colors.dots.pandemic
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+		end)
+	end
+
+	if showDown then
+		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down.color, 550, 25, oUi.xCoord, yCoord-90)
+		f = controls.colors.dots.down
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
+		end)
+	end
+
+	return yCoord
+end
+
 ---comment
 ---@param parent frame
 ---@param controls table

@@ -264,11 +264,19 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				current="FF4D4DFF",
 				casting="FFFFFFFF",
 				passive="FF8080FF",
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				dots = {
+					options = {
+						enabled=true,
+					},
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFFFF00"
+					}
 				}
 			},
 			bar={
@@ -597,9 +605,15 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				overcapEnabled=true,
 				dots={
 					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFF00FF"
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFF00FF"
+					}
 				}
 			},
 			bar = {
@@ -690,11 +704,10 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 end
 
 local function LoadDefaultSettings(includeBarText)
-	local settings = TRB.Options.LoadDefaultSettings()
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
 	settings.monk.mistweaver = MistweaverLoadDefaultSettings(includeBarText)
 	settings.monk.windwalker = WindwalkerLoadDefaultSettings(includeBarText)
-
 	return settings
 end
 TRB.Options.Monk.LoadDefaultSettings = LoadDefaultSettings
@@ -1017,41 +1030,9 @@ local function MistweaverConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
-	--[[
-	yCoord = yCoord - 30
-	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 25
-
-	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_dotColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dotColor
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-	f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "")
-	f:SetChecked(spec.colors.text.dots.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.dots.enabled = self:GetChecked()
-	end)
-
-	controls.colors.dots = {}
-
-	controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
-	f = controls.colors.dots.up
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
-	end)
-
-	controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
-	f = controls.colors.dots.pandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
-	end)
-
-	controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
-	f = controls.colors.dots.down
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
-	end)
+	--[[	
+	local dotVariables = ""
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 2, yCoord, dotVariables, true, false, true)
 	]]
 
 	yCoord = yCoord - 130
@@ -1783,7 +1764,7 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 		spec.colors.text.overcapEnabled = self:GetChecked()
 	end)
 	
-
+	--[[ Removed in 11.1
 	yCoord = yCoord - 30
 	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkWindwalkerMarkOfTheCraneTrackingHeader"], oUi.xCoord, yCoord)
 
@@ -1794,9 +1775,9 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxMarkOfTheCraneTracking"])
 	f.tooltip = L["MonkWindwalkerCheckboxMarkOfTheCraneTrackingTooltip"]
-	f:SetChecked(spec.colors.text.dots.enabled)
+	f:SetChecked(spec.colors.text.dots.options.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.dots.enabled = self:GetChecked()
+		spec.colors.text.dots.options.enabled = self:GetChecked()
 	end)
 
 	controls.colors.dots = {}
@@ -1817,7 +1798,7 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	f = controls.colors.dots.down
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
-	end)
+	end)]]
 
 	yCoord = yCoord - 130
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)

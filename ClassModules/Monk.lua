@@ -994,21 +994,21 @@ local function RefreshLookupData_Windwalker()
 
 	local motcTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if targetMotcId > 0 and target ~= nil and target.spells[spells.markOfTheCrane.id].active then
 			if not IsTargetLowestInMarkOfTheCraneList() then
-				motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, snapshots[spells.markOfTheCrane.id].attributes.count)
-				motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-				motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_motcTime))
+				motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, snapshots[spells.markOfTheCrane.id].attributes.count)
+				motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
+				motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_motcTime))
 			else
-				motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, snapshots[spells.markOfTheCrane.id].attributes.count)
-				motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-				motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_motcTime))
+				motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, snapshots[spells.markOfTheCrane.id].attributes.count)
+				motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
+				motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_motcTime))
 			end
 		else
-			motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, snapshots[spells.markOfTheCrane.id].attributes.count)
-			motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-			motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, snapshots[spells.markOfTheCrane.id].attributes.count)
+			motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
+			motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		motcTime = TRB.Functions.BarText:TimerPrecision(_motcTime)
@@ -1937,7 +1937,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Monk.LoadDefaultSettings(false)
 
@@ -1954,7 +1954,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Monk.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

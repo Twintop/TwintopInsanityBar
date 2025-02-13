@@ -637,7 +637,7 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 end
 
 local function LoadDefaultSettings(includeBarText)
-	local settings = TRB.Options.LoadDefaultSettings()
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
 	settings.demonhunter.havoc = HavocLoadDefaultSettings(includeBarText)
 	settings.demonhunter.vengeance = VengeanceLoadDefaultSettings(includeBarText)

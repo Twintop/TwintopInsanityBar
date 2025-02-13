@@ -676,18 +676,18 @@ local function RefreshLookupData_BeastMastery()
 
 	local serpentStingTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
 			--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			--[[else
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			end]]
 		else
-			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _serpentStingCount)
+			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
@@ -893,18 +893,18 @@ local function RefreshLookupData_Marksmanship()
 
 	local serpentStingTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
 			--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			--[[else
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			end]]
 		else
-			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _serpentStingCount)
+			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
@@ -1093,18 +1093,18 @@ local function RefreshLookupData_Survival()
 
 	local serpentStingTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
 			--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			--[[else
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			end]]
 		else
-			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _serpentStingCount)
+			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
@@ -2405,7 +2405,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Hunter.LoadDefaultSettings(false)
 
@@ -2428,7 +2428,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Hunter.LoadDefaultSettings(true)
 					TRB.Data.settings = settings
