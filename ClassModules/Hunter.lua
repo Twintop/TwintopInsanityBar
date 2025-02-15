@@ -574,13 +574,13 @@ local function RefreshLookupData_BeastMastery()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentFocusColor = specSettings.colors.text.current
-	local castingFocusColor = specSettings.colors.text.casting
+	local currentFocusColor = specSettings.colors.text.current.color
+	local castingFocusColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentFocusColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentFocusColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -590,13 +590,13 @@ local function RefreshLookupData_BeastMastery()
 			end
 
 			if _overThreshold then
-				currentFocusColor = specSettings.colors.text.overThreshold
+				currentFocusColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = specSettings.colors.text.spending
+		castingFocusColor = specSettings.colors.text.spending.color
 	end
 
 	--$focus
@@ -619,11 +619,11 @@ local function RefreshLookupData_BeastMastery()
 	end
 
 	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenFocus)
+	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _regenFocus)
 
 	--$barbedShotFocus
 	local _barbedShotFocus = snapshots[spells.barbedShot.id].attributes.resource
-	local barbedShotFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _barbedShotFocus)
+	local barbedShotFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _barbedShotFocus)
 
 	--$barbedShotTicks
 	local barbedShotTicks = string.format("%.0f", snapshots[spells.barbedShot.id].attributes.ticksRemaining)
@@ -645,8 +645,8 @@ local function RefreshLookupData_BeastMastery()
 	_passiveFocus = _regenFocus + _barbedShotFocus
 	_passiveFocusMinusRegen = _passiveFocus - _regenFocus
 
-	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveFocus)
-	local passiveFocusMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveFocusMinusRegen)
+	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveFocus)
+	local passiveFocusMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveFocusMinusRegen)
 	--$focusTotal
 	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
@@ -810,14 +810,14 @@ local function RefreshLookupData_Marksmanship()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentFocusColor = specSettings.colors.text.current
-	local castingFocusColor = specSettings.colors.text.casting
+	local currentFocusColor = specSettings.colors.text.current.color
+	local castingFocusColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentFocusColor = specSettings.colors.text.overcap
-			castingFocusColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentFocusColor = specSettings.colors.text.overcap.color
+			castingFocusColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -827,14 +827,14 @@ local function RefreshLookupData_Marksmanship()
 			end
 
 			if _overThreshold then
-				currentFocusColor = specSettings.colors.text.overThreshold
-				castingFocusColor = specSettings.colors.text.overThreshold
+				currentFocusColor = specSettings.colors.text.overThreshold.color
+				castingFocusColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = specSettings.colors.text.spending
+		castingFocusColor = specSettings.colors.text.spending.color
 	end
 
 	--$focus
@@ -856,10 +856,10 @@ local function RefreshLookupData_Marksmanship()
 	end
 
 	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenFocus)
+	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _regenFocus)
 	_passiveFocus = _regenFocus
 
-	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveFocus)
+	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveFocus)
 	--$focusTotal
 	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
@@ -1007,14 +1007,14 @@ local function RefreshLookupData_Survival()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentFocusColor = specSettings.colors.text.current
-	local castingFocusColor = specSettings.colors.text.casting
+	local currentFocusColor = specSettings.colors.text.current.color
+	local castingFocusColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentFocusColor = specSettings.colors.text.overcap
-			castingFocusColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentFocusColor = specSettings.colors.text.overcap.color
+			castingFocusColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1024,14 +1024,14 @@ local function RefreshLookupData_Survival()
 			end
 
 			if _overThreshold then
-				currentFocusColor = specSettings.colors.text.overThreshold
-				castingFocusColor = specSettings.colors.text.overThreshold
+				currentFocusColor = specSettings.colors.text.overThreshold.color
+				castingFocusColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = specSettings.colors.text.spending
+		castingFocusColor = specSettings.colors.text.spending.color
 	end
 
 	--$focus
@@ -1060,11 +1060,11 @@ local function RefreshLookupData_Survival()
 	end
 
 	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenFocus)
+	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _regenFocus)
 	_passiveFocus = _regenFocus + _toeFocus
 
 	--$passive
-	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveFocus)
+	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveFocus)
 	--$focusTotal
 	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)

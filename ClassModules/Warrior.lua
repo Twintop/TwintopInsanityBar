@@ -347,14 +347,14 @@ local function RefreshLookupData_Arms()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentRageColor = specSettings.colors.text.current
-	local castingRageColor = specSettings.colors.text.casting
+	local currentRageColor = specSettings.colors.text.current.color
+	local castingRageColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentRageColor = specSettings.colors.text.overcap
-			castingRageColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentRageColor = specSettings.colors.text.overcap.color
+			castingRageColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedRage then
@@ -364,14 +364,14 @@ local function RefreshLookupData_Arms()
 			end
 
 			if _overThreshold then
-				currentRageColor = specSettings.colors.text.overThreshold
-				castingRageColor = specSettings.colors.text.overThreshold
+				currentRageColor = specSettings.colors.text.overThreshold.color
+				castingRageColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingRageColor = specSettings.colors.text.spending
+		castingRageColor = specSettings.colors.text.spending.color
 	end
 
 	--$suddenDeathTime
@@ -385,7 +385,7 @@ local function RefreshLookupData_Arms()
 	local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	--$passive
 	local _passiveRage = 0
-	local passiveRage = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, resourcePrecision, "floor"))
+	local passiveRage = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveRage, resourcePrecision, "floor"))
 	
 	--$rageTotal
 	local _rageTotal = math.min(_passiveRage + snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
@@ -532,14 +532,14 @@ local function RefreshLookupData_Fury()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentRageColor = specSettings.colors.text.current
-	local castingRageColor = specSettings.colors.text.casting
+	local currentRageColor = specSettings.colors.text.current.color
+	local castingRageColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentRageColor = specSettings.colors.text.overcap
-			castingRageColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentRageColor = specSettings.colors.text.overcap.color
+			castingRageColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedRage then
@@ -549,14 +549,14 @@ local function RefreshLookupData_Fury()
 			end
 
 			if _overThreshold then
-				currentRageColor = specSettings.colors.text.overThreshold
-				castingRageColor = specSettings.colors.text.overThreshold
+				currentRageColor = specSettings.colors.text.overThreshold.color
+				castingRageColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingRageColor = specSettings.colors.text.spending
+		castingRageColor = specSettings.colors.text.spending.color
 	end
 
 	--$ravagerRage
@@ -573,7 +573,7 @@ local function RefreshLookupData_Fury()
 	local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	--$passive
 	local _passiveRage = _ravagerRage
-	local passiveRage = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, resourcePrecision, "floor"))
+	local passiveRage = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveRage, resourcePrecision, "floor"))
 	
 	--$rageTotal
 	local _rageTotal = math.min(_passiveRage + snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)

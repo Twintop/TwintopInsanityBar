@@ -809,14 +809,14 @@ local function RefreshLookupData_Assassination()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current
-	local castingEnergyColor = specSettings.colors.text.casting
+	local currentEnergyColor = specSettings.colors.text.current.color
+	local castingEnergyColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap
-			castingEnergyColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = specSettings.colors.text.overcap.color
+			castingEnergyColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -826,14 +826,14 @@ local function RefreshLookupData_Assassination()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold
-				castingEnergyColor = specSettings.colors.text.overThreshold
+				currentEnergyColor = specSettings.colors.text.overThreshold.color
+				castingEnergyColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = specSettings.colors.text.spending
+		castingEnergyColor = specSettings.colors.text.spending.color
 	end
 
 	--$energy
@@ -856,13 +856,13 @@ local function RefreshLookupData_Assassination()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
@@ -1285,14 +1285,14 @@ local function RefreshLookupData_Outlaw()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current
-	local castingEnergyColor = specSettings.colors.text.casting
+	local currentEnergyColor = specSettings.colors.text.current.color
+	local castingEnergyColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap
-			castingEnergyColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = specSettings.colors.text.overcap.color
+			castingEnergyColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1302,14 +1302,14 @@ local function RefreshLookupData_Outlaw()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold
-				castingEnergyColor = specSettings.colors.text.overThreshold
+				currentEnergyColor = specSettings.colors.text.overThreshold.color
+				castingEnergyColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = specSettings.colors.text.spending
+		castingEnergyColor = specSettings.colors.text.spending.color
 	end
 
 	--$energy
@@ -1332,13 +1332,13 @@ local function RefreshLookupData_Outlaw()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
@@ -1665,14 +1665,14 @@ local function RefreshLookupData_Subtlety()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current
-	local castingEnergyColor = specSettings.colors.text.casting
+	local currentEnergyColor = specSettings.colors.text.current.color
+	local castingEnergyColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap
-			castingEnergyColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = specSettings.colors.text.overcap.color
+			castingEnergyColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1682,14 +1682,14 @@ local function RefreshLookupData_Subtlety()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold
-				castingEnergyColor = specSettings.colors.text.overThreshold
+				currentEnergyColor = specSettings.colors.text.overThreshold.color
+				castingEnergyColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = specSettings.colors.text.spending
+		castingEnergyColor = specSettings.colors.text.spending.color
 	end
 
 	--$energy
@@ -1712,13 +1712,13 @@ local function RefreshLookupData_Subtlety()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)

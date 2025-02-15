@@ -923,8 +923,8 @@ local function RefreshLookupData_Balance()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentAstralPowerColor = specSettings.colors.text.current
-	local castingAstralPowerColor = specSettings.colors.text.casting
+	local currentAstralPowerColor = specSettings.colors.text.current.color
+	local castingAstralPowerColor = specSettings.colors.text.casting.color
 
 	local astralPowerThreshold = math.min(spells.starsurge:GetPrimaryResourceCost(), spells.starfall:GetPrimaryResourceCost())
 
@@ -933,12 +933,12 @@ local function RefreshLookupData_Balance()
 	end
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentAstralPowerColor = specSettings.colors.text.overcap
-			castingAstralPowerColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
-			currentAstralPowerColor = specSettings.colors.text.overThreshold
-			castingAstralPowerColor = specSettings.colors.text.overThreshold
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentAstralPowerColor = specSettings.colors.text.overcap.color
+			castingAstralPowerColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled and normalizedAstralPower >= astralPowerThreshold then
+			currentAstralPowerColor = specSettings.colors.text.overThreshold.color
+			castingAstralPowerColor = specSettings.colors.text.overThreshold.color
 		end
 	end
 
@@ -957,7 +957,7 @@ local function RefreshLookupData_Balance()
 		end
 	end
 
-	local passiveAstralPower = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveAstralPower, resourcePrecision, "ceil"))
+	local passiveAstralPower = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveAstralPower, resourcePrecision, "ceil"))
 	--$astralPowerTotal
 	local _astralPowerTotal = math.min(_passiveAstralPower + snapshotData.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
 	local astralPowerTotal = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(_astralPowerTotal, resourcePrecision, "floor"))
@@ -1300,14 +1300,14 @@ local function RefreshLookupData_Feral()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current
-	local castingEnergyColor = specSettings.colors.text.casting
+	local currentEnergyColor = specSettings.colors.text.current.color
+	local castingEnergyColor = specSettings.colors.text.casting.color
 	
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap
-			castingEnergyColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = specSettings.colors.text.overcap.color
+			castingEnergyColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1317,14 +1317,14 @@ local function RefreshLookupData_Feral()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold
-				castingEnergyColor = specSettings.colors.text.overThreshold
+				currentEnergyColor = specSettings.colors.text.overThreshold.color
+				castingEnergyColor = specSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = specSettings.colors.text.spending
+		castingEnergyColor = specSettings.colors.text.spending.color
 	end
 
 	--$energy
@@ -1347,13 +1347,13 @@ local function RefreshLookupData_Feral()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
@@ -1427,13 +1427,13 @@ local function RefreshLookupData_Feral()
 
 	if specSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.rip.id].active then
-			local ripColor = specSettings.colors.text.dots.same
+			local ripColor = specSettings.colors.text.dots.same.color
 			if _ripPercent > 1 then
-				ripColor = specSettings.colors.text.dots.better
+				ripColor = specSettings.colors.text.dots.better.color
 			elseif _ripPercent < 1 then
-				ripColor = specSettings.colors.text.dots.worse
+				ripColor = specSettings.colors.text.dots.worse.color
 			else
-				ripColor = specSettings.colors.text.dots.same
+				ripColor = specSettings.colors.text.dots.same.color
 			end
 
 			ripCount = string.format("|c%s%.0f|r", ripColor, _ripCount)
@@ -1450,13 +1450,13 @@ local function RefreshLookupData_Feral()
 		end
 
 		if target ~= nil and target.spells[spells.rake.debuffId].active then
-			local rakeColor = specSettings.colors.text.dots.same
+			local rakeColor = specSettings.colors.text.dots.same.color
 			if _rakePercent > 1 then
-				rakeColor = specSettings.colors.text.dots.better
+				rakeColor = specSettings.colors.text.dots.better.color
 			elseif _rakePercent < 1 then
-				rakeColor = specSettings.colors.text.dots.worse
+				rakeColor = specSettings.colors.text.dots.worse.color
 			else
-				rakeColor = specSettings.colors.text.dots.same
+				rakeColor = specSettings.colors.text.dots.same.color
 			end
 
 			rakeCount = string.format("|c%s%.0f|r", rakeColor, _rakeCount)
@@ -1473,13 +1473,13 @@ local function RefreshLookupData_Feral()
 		end
 
 		if target ~= nil and target.spells[spells.thrash.debuffId].active then
-			local thrashColor = specSettings.colors.text.dots.same
+			local thrashColor = specSettings.colors.text.dots.same.color
 			if _thrashPercent > 1 then
-				thrashColor = specSettings.colors.text.dots.better
+				thrashColor = specSettings.colors.text.dots.better.color
 			elseif _thrashPercent < 1 then
-				thrashColor = specSettings.colors.text.dots.worse
+				thrashColor = specSettings.colors.text.dots.worse.color
 			else
-				thrashColor = specSettings.colors.text.dots.same
+				thrashColor = specSettings.colors.text.dots.same.color
 			end
 
 			thrashCount = string.format("|c%s%.0f|r", thrashColor, _thrashCount)
@@ -1496,13 +1496,13 @@ local function RefreshLookupData_Feral()
 		end
 
 		if talents:IsTalentActive(spells.lunarInspiration) == true and target ~= nil and target.spells[spells.moonfire.debuffId].active then
-			local moonfireColor = specSettings.colors.text.dots.same
+			local moonfireColor = specSettings.colors.text.dots.same.color
 			if _moonfirePercent > 1 then
-				moonfireColor = specSettings.colors.text.dots.better
+				moonfireColor = specSettings.colors.text.dots.better.color
 			elseif _moonfirePercent < 1 then
-				moonfireColor = specSettings.colors.text.dots.worse
+				moonfireColor = specSettings.colors.text.dots.worse.color
 			else
-				moonfireColor = specSettings.colors.text.dots.same
+				moonfireColor = specSettings.colors.text.dots.same.color
 			end
 
 			moonfireCount = string.format("|c%s%.0f|r", moonfireColor, _moonfireCount)
@@ -1836,8 +1836,8 @@ local function RefreshLookupData_Restoration()
 ---@diagnostic disable-next-line: cast-local-type
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = TRB.Data.settings.druid.restoration.colors.text.current
-	local castingManaColor = TRB.Data.settings.druid.restoration.colors.text.casting
+	local currentManaColor = TRB.Data.settings.druid.restoration.colors.text.current.color
+	local castingManaColor = TRB.Data.settings.druid.restoration.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = TRB.Data.settings.druid.restoration.manaPrecision or 1
@@ -1921,7 +1921,7 @@ local function RefreshLookupData_Restoration()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -2836,7 +2836,7 @@ local function UpdateResourceBar()
 						overrideOk = false
 
 						if UnitIsDeadOrGhost("target") or not UnitCanAttack("player", "target") or snapshotData.targetData.currentTargetGuid == nil then
-							thresholdColor = specSettings.colors.text.dots.same
+							thresholdColor = specSettings.colors.text.dots.same.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
 						elseif snapshotData.targetData.targets == nil or snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid] == nil then
 							thresholdColor = specSettings.colors.text.dots.down.color
@@ -2849,13 +2849,13 @@ local function UpdateResourceBar()
 								thresholdColor = specSettings.colors.text.dots.down.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 							elseif snapshotValue > 1 then
-								thresholdColor = specSettings.colors.text.dots.better
+								thresholdColor = specSettings.colors.text.dots.better.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedBetter
 							elseif snapshotValue < 1 then
-								thresholdColor = specSettings.colors.text.dots.worse
+								thresholdColor = specSettings.colors.text.dots.worse.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 							else
-								thresholdColor = specSettings.colors.text.dots.same
+								thresholdColor = specSettings.colors.text.dots.same.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
 							end
 						end

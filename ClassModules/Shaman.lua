@@ -590,8 +590,8 @@ local function RefreshLookupData_Elemental()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentMaelstromColor = specSettings.colors.text.current
-	local castingMaelstromColor = specSettings.colors.text.casting
+	local currentMaelstromColor = specSettings.colors.text.current.color
+	local castingMaelstromColor = specSettings.colors.text.casting.color
 
 	local maelstromThreshold = TRB.Data.character.maxResource
 
@@ -606,12 +606,12 @@ local function RefreshLookupData_Elemental()
 	end
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentMaelstromColor = specSettings.colors.text.overcap
-			castingMaelstromColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled and snapshotData.attributes.resource >= maelstromThreshold then
-			currentMaelstromColor = specSettings.colors.text.overThreshold
-			castingMaelstromColor = specSettings.colors.text.overThreshold
+		if specSettings.colors.text.overcap.enabled and overcap then
+			currentMaelstromColor = specSettings.colors.text.overcap.color
+			castingMaelstromColor = specSettings.colors.text.overcap.color
+		elseif specSettings.colors.text.overThreshold.enabled and snapshotData.attributes.resource >= maelstromThreshold then
+			currentMaelstromColor = specSettings.colors.text.overThreshold.color
+			castingMaelstromColor = specSettings.colors.text.overThreshold.color
 		end
 	end
 
@@ -622,7 +622,7 @@ local function RefreshLookupData_Elemental()
 	--$passive
 	local _passiveMaelstrom = 0
 
-	local passiveMaelstrom = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveMaelstrom)
+	local passiveMaelstrom = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveMaelstrom)
 	--$maelstromTotal
 	local _maelstromTotal = math.min(_passiveMaelstrom + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local maelstromTotal = string.format("|c%s%.0f|r", currentMaelstromColor, _maelstromTotal)
@@ -788,7 +788,7 @@ local function RefreshLookupData_Enhancement()
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-	local currentManaColor = specSettings.colors.text.current
+	local currentManaColor = specSettings.colors.text.current.color
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
@@ -876,8 +876,8 @@ local function RefreshLookupData_Restoration()
 ---@diagnostic disable-next-line: cast-local-type
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = specSettings.colors.text.current
-	local castingManaColor = specSettings.colors.text.casting
+	local currentManaColor = specSettings.colors.text.current.color
+	local castingManaColor = specSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -961,7 +961,7 @@ local function RefreshLookupData_Restoration()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))

@@ -356,16 +356,13 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 		colors={
 			text = {
 				current = {
-					color = "FF4D4DFF",
-					enabled = true
+					color = "FF4D4DFF"
 				},
 				casting = {
-					color = "FFFFFFFF",
-					enabled = true
+					color = "FFFFFFFF"
 				},
 				passive = {
-					color = "FF8080FF",
-					enabled = true
+					color = "FF8080FF"
 				},
 				dots = {
 					options = {
@@ -882,16 +879,13 @@ local function HolyLoadDefaultSettings(includeBarText)
 		colors={
 			text = {
 				current = {
-					color = "FF4D4DFF",
-					enabled = true
+					color = "FF4D4DFF"
 				},
 				casting = {
-					color = "FFFFFFFF",
-					enabled = true
+					color = "FFFFFFFF"
 				},
 				passive = {
-					color = "FF8080FF",
-					enabled = true
+					color = "FF8080FF"
 				},
 				dots = {
 					options = {
@@ -1329,16 +1323,13 @@ local function ShadowLoadDefaultSettings(includeBarText)
 		colors={
 			text = {
 				current = {
-					color = "FFC2A3E0",
-					enabled = true
+					color = "FFC2A3E0"
 				},
 				casting = {
-					color = "FFFFFFFF",
-					enabled = true
+					color = "FFFFFFFF"
 				},
 				passive = {
-					color = "FFDF00FF",
-					enabled = true
+					color = "FFDF00FF"
 				},
 				overcap = {
 					color = "FFFF0000",
