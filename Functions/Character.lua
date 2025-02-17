@@ -264,7 +264,6 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.snapshotData.attributes.isTracking = false
 	TRB.Functions.Character:ResetCaches()
-	print("Cache loaded")
 end
 
 function TRB.Functions.Character:ResetCaches()
@@ -373,7 +372,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 	specCache.settings.colors.comboPoints = spec.colors.comboPoints
 
 	if s.textColors then
-		print("Text colors")
 		specCache.settings.colors.text.current = core.colors.text.current
 		specCache.settings.colors.text.casting = core.colors.text.casting
 		specCache.settings.colors.text.spending = core.colors.text.spending
@@ -381,7 +379,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 		specCache.settings.colors.text.overcap = core.colors.text.overcap
 		specCache.settings.colors.text.overThreshold = core.colors.text.overThreshold
 	else
-		print("No Text colors", s.textColors)
 		specCache.settings.colors.text.current = spec.colors.text.current
 		specCache.settings.colors.text.casting = spec.colors.text.casting
 		specCache.settings.colors.text.spending = spec.colors.text.spending
@@ -390,7 +387,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 		specCache.settings.colors.text.overThreshold = spec.colors.text.overThreshold
 	end
 
-	if enabled and s.dotColors then
+	if s.dotColors then
 		if className == "druid" and specName == "feral" then -- Kitty is a special snowflake
 			specCache.settings.colors.text.dots = {}
 			-- Use spec values

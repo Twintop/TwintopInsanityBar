@@ -2362,14 +2362,13 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 
 	yCoord = yCoord - 30
 	local lowerClassName = string.lower(className)
-	controls.checkBoxes.useGlobal = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_textColors", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.useGlobal
+	controls.checkBoxes.useGlobalTextColors = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_textColors", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.useGlobalTextColors
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-	f.tooltip = L["CheckboxUseGlobalTooltip_Font"]
+	f.tooltip = L["CheckboxUseGlobalTooltip_TextColors"]
 	f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textColors)
 	f:SetScript("OnClick", function(self, ...)
-		print("Click", lowerClassName, specName, self:GetChecked())
 		TRB.Data.settings.core.global[lowerClassName][specName].textColors = self:GetChecked()
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
@@ -2377,6 +2376,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 
 	return yCoord
 end
+
 function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, classId, specId, yCoord, dotCheckbox, dotTooltip, showUp, showPandemic, showDown)
 	showUp = showUp or true
 	showPandemic = showPandemic or true
@@ -2394,13 +2394,32 @@ function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spe
 	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
 	if specName == nil then
 		specName = ""
-	end	
+	end
 
 	yCoord = yCoord - 30
 	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 25
+	
+	controls.colors.text = controls.colors.text or {}
+	controls.checkBoxes = controls.checkBoxes or {}
 
+	if classId ~= nil and specId ~= nil then
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalDotColors = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_dotColors", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalDotColors
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		f.tooltip = L["CheckboxUseGlobalTooltip_DotColors"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].dotColors)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].dotColors = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
+			TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		end)
+	end
+
+	yCoord = yCoord - 30
 	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_dotColor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dotColor
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
