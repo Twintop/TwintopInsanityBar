@@ -7,15 +7,12 @@ local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local resource2Frame = TRB.Frames.resource2Frame
 local resourceFrame = TRB.Frames.resourceFrame
 local castingFrame = TRB.Frames.castingFrame
 local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -588,6 +585,7 @@ local function RefreshLookupData_Devastation()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local specSettings = TRB.Data.settings.evoker.devastation
+	local sharedSettings = TRB.Data.specCache["devastation"].settings
 	--Spec specific implementation
 	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
@@ -596,7 +594,7 @@ local function RefreshLookupData_Devastation()
 	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
-	local currentManaColor = specSettings.colors.text.current.color
+	local currentManaColor = sharedSettings.colors.text.current.color
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
@@ -667,6 +665,7 @@ local function RefreshLookupData_Preservation()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.evoker.preservation
+	local sharedSettings = TRB.Data.specCache["preservation"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
@@ -675,8 +674,8 @@ local function RefreshLookupData_Preservation()
 	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
-	local currentManaColor = specSettings.colors.text.current.color
-	local castingManaColor = specSettings.colors.text.casting.color
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -769,7 +768,7 @@ local function RefreshLookupData_Preservation()
 
 	--$passive
 	local _passiveMana = _ecMana + _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -956,6 +955,7 @@ local function RefreshLookupData_Augmentation()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local specSettings = TRB.Data.settings.evoker.augmentation
+	local sharedSettings = TRB.Data.specCache["augmentation"].settings
 	--Spec specific implementation
 	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
@@ -964,7 +964,7 @@ local function RefreshLookupData_Augmentation()
 	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
-	local currentManaColor = specSettings.colors.text.current.color
+	local currentManaColor = sharedSettings.colors.text.current.color
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))

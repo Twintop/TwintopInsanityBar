@@ -13,8 +13,6 @@ local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -580,6 +578,7 @@ end
 
 local function RefreshLookupData_Elemental()
 	local specSettings = TRB.Data.settings.shaman.elemental
+	local sharedSettings = TRB.Data.specCache["elemental"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -590,8 +589,8 @@ local function RefreshLookupData_Elemental()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentMaelstromColor = specSettings.colors.text.current.color
-	local castingMaelstromColor = specSettings.colors.text.casting.color
+	local currentMaelstromColor = sharedSettings.colors.text.current.color
+	local castingMaelstromColor = sharedSettings.colors.text.casting.color
 
 	local maelstromThreshold = TRB.Data.character.maxResource
 
@@ -605,13 +604,13 @@ local function RefreshLookupData_Elemental()
 		maelstromThreshold = math.min(maelstromThreshold, spells.elementalBlast:GetPrimaryResourceCost())
 	end
 
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcap.enabled and overcap then
-			currentMaelstromColor = specSettings.colors.text.overcap.color
-			castingMaelstromColor = specSettings.colors.text.overcap.color
-		elseif specSettings.colors.text.overThreshold.enabled and snapshotData.attributes.resource >= maelstromThreshold then
-			currentMaelstromColor = specSettings.colors.text.overThreshold.color
-			castingMaelstromColor = specSettings.colors.text.overThreshold.color
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentMaelstromColor = sharedSettings.colors.text.overcap.color
+			castingMaelstromColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled and snapshotData.attributes.resource >= maelstromThreshold then
+			currentMaelstromColor = sharedSettings.colors.text.overThreshold.color
+			castingMaelstromColor = sharedSettings.colors.text.overThreshold.color
 		end
 	end
 
@@ -622,7 +621,7 @@ local function RefreshLookupData_Elemental()
 	--$passive
 	local _passiveMaelstrom = 0
 
-	local passiveMaelstrom = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveMaelstrom)
+	local passiveMaelstrom = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveMaelstrom)
 	--$maelstromTotal
 	local _maelstromTotal = math.min(_passiveMaelstrom + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local maelstromTotal = string.format("|c%s%.0f|r", currentMaelstromColor, _maelstromTotal)
@@ -645,18 +644,18 @@ local function RefreshLookupData_Elemental()
 
 	local flameShockTime
 
-	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.flameShock.id].active then
 			if _flameShockTime > spells.flameShock.pandemicTime then
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			else
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			end
 		else
-			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _flameShockCount)
-			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
+			flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _flameShockCount)
+			flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
@@ -777,6 +776,7 @@ end
 
 local function RefreshLookupData_Enhancement()
 	local specSettings = TRB.Data.settings.shaman.enhancement
+	local sharedSettings = TRB.Data.specCache["enhancement"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -788,7 +788,7 @@ local function RefreshLookupData_Enhancement()
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-	local currentManaColor = specSettings.colors.text.current.color
+	local currentManaColor = sharedSettings.colors.text.current.color
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
@@ -805,18 +805,18 @@ local function RefreshLookupData_Enhancement()
 
 	local flameShockTime
 
-	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.flameShock.id].active then
 			if _flameShockTime > spells.flameShock.pandemicTime then
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			else
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			end
 		else
-			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _flameShockCount)
-			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
+			flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _flameShockCount)
+			flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
@@ -864,6 +864,7 @@ end
 
 local function RefreshLookupData_Restoration()
 	local specSettings = TRB.Data.settings.shaman.restoration
+	local sharedSettings = TRB.Data.specCache["restoration"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -876,8 +877,8 @@ local function RefreshLookupData_Restoration()
 ---@diagnostic disable-next-line: cast-local-type
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = specSettings.colors.text.current.color
-	local castingManaColor = specSettings.colors.text.casting.color
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -961,7 +962,7 @@ local function RefreshLookupData_Restoration()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -996,18 +997,18 @@ local function RefreshLookupData_Restoration()
 
 	local flameShockTime
 
-	if specSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.flameShock.id].active then
 			if _flameShockTime > spells.flameShock.pandemicTime then
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			else
-				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, _flameShockCount)
-				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
+				flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _flameShockCount)
+				flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 			end
 		else
-			flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, _flameShockCount)
-			flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
+			flameShockCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _flameShockCount)
+			flameShockTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
@@ -1359,7 +1360,7 @@ local function UpdateResourceBar()
 
 				local passiveValue = 0
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then

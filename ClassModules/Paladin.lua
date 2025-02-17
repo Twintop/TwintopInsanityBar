@@ -7,15 +7,12 @@ local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local resource2Frame = TRB.Frames.resource2Frame
 local resourceFrame = TRB.Frames.resourceFrame
 local castingFrame = TRB.Frames.castingFrame
 local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -328,15 +325,15 @@ local function RefreshLookupData_Holy()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.paladin.holy
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+	local sharedSettings = TRB.Data.specCache["holy"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = specSettings.colors.text.current.color
-	local castingManaColor = specSettings.colors.text.casting.color
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -427,7 +424,7 @@ local function RefreshLookupData_Holy()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))

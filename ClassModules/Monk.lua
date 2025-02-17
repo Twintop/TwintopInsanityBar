@@ -7,15 +7,12 @@ local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local resource2Frame = TRB.Frames.resource2Frame
 local resourceFrame = TRB.Frames.resourceFrame
 local castingFrame = TRB.Frames.castingFrame
 local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -622,14 +619,15 @@ local function RefreshLookupData_Mistweaver()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.mistweaver
+	local sharedSettings = TRB.Data.specCache["mistweaver"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = specSettings.colors.text.current.color
-	local castingManaColor = specSettings.colors.text.casting.color
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -718,7 +716,7 @@ local function RefreshLookupData_Mistweaver()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -890,6 +888,7 @@ local function RefreshLookupData_Windwalker()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.windwalker
+	local sharedSettings = TRB.Data.specCache["windwalker"].settings
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local _
@@ -902,14 +901,14 @@ local function RefreshLookupData_Windwalker()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current.color
-	local castingEnergyColor = specSettings.colors.text.casting.color
+	local currentEnergyColor = sharedSettings.colors.text.current.color
+	local castingEnergyColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcap.enabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap.color
-			castingEnergyColor = specSettings.colors.text.overcap.color
-		elseif specSettings.colors.text.overThreshold.enabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = sharedSettings.colors.text.overcap.color
+			castingEnergyColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -919,8 +918,8 @@ local function RefreshLookupData_Windwalker()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold.color
-				castingEnergyColor = specSettings.colors.text.overThreshold.color
+				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
@@ -945,13 +944,13 @@ local function RefreshLookupData_Windwalker()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
@@ -990,21 +989,21 @@ local function RefreshLookupData_Windwalker()
 
 	local motcTime
 
-	if specSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if targetMotcId > 0 and target ~= nil and target.spells[spells.markOfTheCrane.id].active then
 			if not IsTargetLowestInMarkOfTheCraneList() then
-				motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, snapshots[spells.markOfTheCrane.id].attributes.count)
-				motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-				motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_motcTime))
+				motcCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, snapshots[spells.markOfTheCrane.id].attributes.count)
+				motcActiveCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
+				motcTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_motcTime))
 			else
-				motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, snapshots[spells.markOfTheCrane.id].attributes.count)
-				motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-				motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_motcTime))
+				motcCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, snapshots[spells.markOfTheCrane.id].attributes.count)
+				motcActiveCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
+				motcTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_motcTime))
 			end
 		else
-			motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, snapshots[spells.markOfTheCrane.id].attributes.count)
-			motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-			motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
+			motcCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, snapshots[spells.markOfTheCrane.id].attributes.count)
+			motcActiveCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
+			motcTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		motcTime = TRB.Functions.BarText:TimerPrecision(_motcTime)
@@ -1673,7 +1672,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
 				elseif snapshots[spells.danceOfChiJi.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.borderChiJi
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
