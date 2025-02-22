@@ -928,7 +928,6 @@ local function RefreshLookupData_Balance()
 	local astralPowerThreshold = math.min(spells.starsurge:GetPrimaryResourceCost(), spells.starfall:GetPrimaryResourceCost())
 
 	if TRB.Data.character.inCombat then
-		print(sharedSettings.colors.text.overThreshold.enabled, normalizedAstralPower, astralPowerThreshold)
 		if sharedSettings.colors.text.overcap.enabled and overcap then
 			currentAstralPowerColor = sharedSettings.colors.text.overcap.color
 			castingAstralPowerColor = sharedSettings.colors.text.overcap.color

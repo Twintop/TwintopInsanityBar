@@ -278,7 +278,6 @@ TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		TRB.Data.character.inCombat = false--UnitAffectingCombat("player")
 	end
-	print(event, TRB.Data.character.inCombat)
 	TRB.Functions.Bar:ShowResourceBar()
 end)
 
