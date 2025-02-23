@@ -790,23 +790,23 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		local versOff = nil
 		local versDef = nil
 
-		critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.critRating, settings.hastePrecision, "floor", true))
-		masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.masteryRating, settings.hastePrecision, "floor", true))
-		hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.hasteRating, settings.hastePrecision, "floor", true))
-		versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityOffensive, settings.hastePrecision))
-		versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityDefensive, settings.hastePrecision))
+		critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.critRating, settings.precision.secondary, "floor", true))
+		masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.masteryRating, settings.precision.secondary, "floor", true))
+		hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.hasteRating, settings.precision.secondary, "floor", true))
+		versOff = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityOffensive, settings.precision.secondary))
+		versDef = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityDefensive, settings.precision.secondary))
 		
 		--$crit
-		local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.crit, settings.hastePrecision))
+		local critPercent = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.crit, settings.precision.secondary))
 
 		--$versRating
-		local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.versatilityRating, settings.hastePrecision, "floor", true))
+		local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.versatilityRating, settings.precision.secondary, "floor", true))
 
 		--$mastery
-		local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.mastery, settings.hastePrecision))
+		local masteryPercent = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.mastery, settings.precision.secondary))
 
 		--$haste
-		local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.hastePrecision))
+		local hastePercent = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.precision.secondary))
 			
 		--$gcd
 		local _gcd = 1.5 / (1 + (snapshotData.attributes.haste/100))
@@ -818,13 +818,13 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		local gcd = string.format("%.2f", _gcd)
 		
 		--$int
-		local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.hastePrecision, "floor", true))
+		local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.precision.secondary, "floor", true))
 		--$agi
-		local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.agility, settings.hastePrecision, "floor", true))
+		local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.agility, settings.precision.secondary, "floor", true))
 		--$str
-		local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.strength, settings.hastePrecision, "floor", true))
+		local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.strength, settings.precision.secondary, "floor", true))
 		--$stam
-		local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.stamina, settings.hastePrecision, "floor", true))
+		local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.stamina, settings.precision.secondary, "floor", true))
 		
 		lookup["$haste"] = hastePercent
 		lookup["$hastePercent"] = hastePercent
@@ -1011,7 +1011,7 @@ end
 ---@param refreshText boolean
 function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, refreshText)
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
-	TRB.Functions.BarText:RefreshLookupDataBase(settings)
+	TRB.Functions.BarText:RefreshLookupDataBase(sharedSettings)
 	TRB.Functions.RefreshLookupData()
 	
 	--Only parse bar text if we're we need to refresh the text

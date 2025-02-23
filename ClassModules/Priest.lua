@@ -1890,7 +1890,7 @@ local function RefreshLookupData_Shadow()
 	end
 
 	--$insanity
-	local resourcePrecision = specSettings.resourcePrecision or 0
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentInsanity = normalizedInsanity
 	local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
 	--$casting

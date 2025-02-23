@@ -2070,6 +2070,10 @@ function TRB.Functions.Class:HideResourceBar(force)
 		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.monk.windwalker
 			includeComboPoints = true
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+			if talents:IsTalentActive(spells.combatWisdom) then
+				notZeroShowValueComboPoints = 2
+			end
 		end
 
 		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, includeComboPoints, notZeroShowValueComboPoints)

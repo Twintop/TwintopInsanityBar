@@ -114,14 +114,12 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 
 	if includeFontAndText then
 		configuration.colors.text = settings.colors.text
-		configuration.hastePrecision = settings.hastePrecision
+		configuration.precision = settings.precision
 		configuration.displayText.default = settings.displayText.default
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
-				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Fury
-				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 2 then -- Paladins
 			if specId == 1 then -- Holy
@@ -142,7 +140,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Shadow
 				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
 				configuration.hasteThreshold = settings.hasteThreshold
-				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
@@ -158,7 +155,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
-				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Feral
 			elseif specId == 4 then -- Restoration
 			end
@@ -179,9 +175,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
-				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Fury
-				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 2 then -- Paladin
 			if specId == 2 then -- Holy

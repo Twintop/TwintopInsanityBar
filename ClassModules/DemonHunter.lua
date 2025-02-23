@@ -486,7 +486,7 @@ local function RefreshLookupData_Havoc()
 	local sosTime = TRB.Functions.BarText:TimerPrecision(_sosTime)
 
 	--$fury
-	local resourcePrecision = specSettings.resourcePrecision or 0
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedResource, resourcePrecision, "floor"))
 	--$casting
 	local _castingFury = snapshotData.casting.resourceFinal
@@ -700,7 +700,7 @@ local function RefreshLookupData_Vengeance()
 	local sosTime = TRB.Functions.BarText:TimerPrecision(_sosTime)
 
 	--$fury
-	local resourcePrecision = specSettings.resourcePrecision or 0
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedResource, resourcePrecision, "floor"))
 	--$casting
 	local _castingFury = snapshotData.casting.resourceFinal

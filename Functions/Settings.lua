@@ -11,6 +11,7 @@ local specGlobalDefaults = {
 	displayText = false,
 	textColors = false,
     dotColors = false,
+	precision = false,
 	--textures = false,
 	--thresholds = false
 }
@@ -78,6 +79,10 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				showPassive=true,
 				showCasting=true,
 				smooth=false
+			},
+			precision = {
+				secondary = 2,
+				resource = 0
 			},
 			colors = {
 				text = {
@@ -618,7 +623,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.priest.shadow ~= nil and
 		TwintopInsanityBarSettings.priest.shadow.insanityPrecision ~= nil
 		then
-		TwintopInsanityBarSettings.priest.shadow.resourcePrecision = TwintopInsanityBarSettings.priest.shadow.insanityPrecision
+		TwintopInsanityBarSettings.priest.shadow.precision.resource = TwintopInsanityBarSettings.priest.shadow.insanityPrecision
 		TwintopInsanityBarSettings.priest.shadow.insanityPrecision = nil
 	end
 
@@ -628,7 +633,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.warrior.arms ~= nil and
 		TwintopInsanityBarSettings.warrior.arms.ragePrecision ~= nil
 		then
-		TwintopInsanityBarSettings.warrior.arms.resourcePrecision = TwintopInsanityBarSettings.warrior.arms.ragePrecision
+		TwintopInsanityBarSettings.warrior.arms.precision.resource = TwintopInsanityBarSettings.warrior.arms.ragePrecision
 		TwintopInsanityBarSettings.warrior.arms.ragePrecision = nil
 	end
 
@@ -638,7 +643,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.warrior.fury ~= nil and
 		TwintopInsanityBarSettings.warrior.fury.ragePrecision ~= nil
 		then
-		TwintopInsanityBarSettings.warrior.fury.resourcePrecision = TwintopInsanityBarSettings.warrior.fury.ragePrecision
+		TwintopInsanityBarSettings.warrior.fury.precision.resource = TwintopInsanityBarSettings.warrior.fury.ragePrecision
 		TwintopInsanityBarSettings.warrior.fury.ragePrecision = nil
 	end
 
@@ -648,7 +653,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.druid.balance ~= nil and
 		TwintopInsanityBarSettings.druid.balance.astralPowerPrecision ~= nil
 		then
-		TwintopInsanityBarSettings.druid.balance.resourcePrecision = TwintopInsanityBarSettings.druid.balance.astralPowerPrecision
+		TwintopInsanityBarSettings.druid.balance.precision.resource = TwintopInsanityBarSettings.druid.balance.astralPowerPrecision
 		TwintopInsanityBarSettings.druid.balance.astralPowerPrecision = nil
 	end
 
@@ -658,7 +663,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
 		TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision ~= nil
 		then
-		TwintopInsanityBarSettings.demonhunter.havoc.resourcePrecision = TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision
+		TwintopInsanityBarSettings.demonhunter.havoc.precision.resource = TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision
 		TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision = nil
 	end
 
@@ -2169,6 +2174,30 @@ function TRB.Functions.Settings:PortForwardSettings()
         TwintopInsanityBarSettings.warrior.fury.colors.text.dots.enabled = nil
 		TwintopInsanityBarSettings.warrior.fury.colors.text.overcapEnabled = nil
 		TwintopInsanityBarSettings.warrior.fury.colors.text.overThresholdEnabled = nil
+	end
+
+	-- Change to new bar text format
+	if TwintopInsanityBarSettings ~= nil then
+		local classLength = TRB.Functions.Table:Length(TwintopInsanityBarSettings)
+		if classLength > 0 then
+			for class, classValue in pairs(TwintopInsanityBarSettings) do
+				if class ~= "core" then
+					local specLength = TRB.Functions.Table:Length(classValue)
+					if specLength > 0 then
+						for _, specValue in pairs(classValue) do
+							if specValue.hastePrecision ~= nil or specValue.resourcePrecision ~= nil then
+								specValue.precision = {
+									secondary = specValue.hastePrecision or 0,
+									resource = specValue.resourcePrecision or 0
+								}
+								specValue.hastePrecision = nil
+								specValue.resourcePrecision = nil
+							end
+						end
+					end
+				end
+			end
+		end
 	end
 end
 

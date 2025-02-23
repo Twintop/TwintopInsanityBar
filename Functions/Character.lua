@@ -404,6 +404,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 	else
 		specCache.settings.colors.text.dots = spec.colors.text.dots
 	end
+
+	if s.precision then
+		specCache.settings.precision = core.precision
+	else
+		specCache.settings.precision = spec.precision
+	end
 end
 
 function TRB.Functions.Character:IsComboPointUser()
