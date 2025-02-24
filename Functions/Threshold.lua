@@ -43,7 +43,7 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		local _, max = parentFrame:GetMinMaxValues()
 		local factor = (max - (settings.bar.border * 2)) / maxResource
 
-		thresholdLine:SetPoint("LEFT", parentFrame,	"LEFT",	(value * factor), 0)
+		thresholdLine:SetPoint("LEFT", parentFrame,	"LEFT",	math.floor(value * factor), 0)
 		TRB.Data.cache.values.threshold[key].value = value
 		TRB.Data.cache.values.threshold[key].maxResource = maxResource
 	end

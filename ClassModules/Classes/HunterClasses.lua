@@ -91,7 +91,6 @@ end
 ---@field public killCommand TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
 ---@field public blackArrow TRB.Classes.SpellThreshold
----@field public direBeastBasilisk TRB.Classes.SpellThreshold
 ---@field public direBeastHawk TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.BeastMasterySpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
 TRB.Classes.Hunter.BeastMasterySpells.__index = TRB.Classes.Hunter.BeastMasterySpells
@@ -220,14 +219,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     })
 
     -- PvP
-    self.direBeastBasilisk = TRB.Classes.SpellThreshold:New({
-        id = 205691,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "direBeastBasilisk",
-        hasCooldown = true,
-        cooldown = 120,
-        isPvp = true,
-    })
     self.direBeastHawk = TRB.Classes.SpellThreshold:New({
         id = 208652,
         primaryResourceType = Enum.PowerType.Focus,
@@ -243,21 +234,15 @@ end
 
 ---@class TRB.Classes.Hunter.MarksmanshipSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public steadyShot TRB.Classes.SpellBase
----@field public improvedSteadyShot TRB.Classes.SpellBase
 ---@field public rapidFire TRB.Classes.SpellBase
 ---@field public deathblow TRB.Classes.SpellBase
----@field public steadyFocus TRB.Classes.SpellBase
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public lockAndLoad TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public aimedShot TRB.Classes.SpellThreshold
----@field public barrage TRB.Classes.SpellThreshold
----@field public chimaeraShot TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
 ---@field public burstingShot TRB.Classes.SpellThreshold
----@field public wailingArrow TRB.Classes.SpellThreshold
 ---@field public blackArrow TRB.Classes.SpellThreshold
----@field public sniperShot TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.MarksmanshipSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
 TRB.Classes.Hunter.MarksmanshipSpells.__index = TRB.Classes.Hunter.MarksmanshipSpells
 
@@ -282,6 +267,12 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         settingKey = "arcaneShot",
         baseline = true
     })
+    self.multiShot = TRB.Classes.SpellThreshold:New({
+        id = 257620,
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "multiShot",
+        baseline = true
+    })
 
     -- Marksmanship Spec Talents
     self.aimedShot = TRB.Classes.SpellThreshold:New({
@@ -293,19 +284,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         isTalent = true,
         hasCharges = true
     })
-    self.barrage = TRB.Classes.SpellThreshold:New({
-        id = 120360,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "barrage",
-        isTalent = true,
-        hasCooldown = true,
-        cooldown = 20
-    })
-    self.improvedSteadyShot = TRB.Classes.SpellBase:New({
-        id = 321018,
-        resource = 20,
-        isTalent = true
-    })
     self.rapidFire = TRB.Classes.SpellBase:New({
         id = 257044,
         resource = 1,
@@ -313,23 +291,11 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         duration = 2, --On cast then every 1/3 sec, hasted
         isTalent = true
     })
-    self.chimaeraShot = TRB.Classes.SpellThreshold:New({
-        id = 342049,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "chimaeraShot",
-        isTalent = true
-    })
     self.deathblow = TRB.Classes.SpellBase:New({
         id = 378770,
         talentId = 378769,
         isTalent = true,
         isBuff = true
-    })
-    self.multiShot = TRB.Classes.SpellThreshold:New({
-        id = 257620,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "multiShot",
-        isTalent = true
     })
     self.burstingShot = TRB.Classes.SpellThreshold:New({
         id = 186387,
@@ -356,18 +322,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         isTalent = true
     })
 
-    self.wailingArrow = TRB.Classes.SpellThreshold:New({
-        id = 355589,
-        talentId = 459806,
-        aimedShotOverrideId = 392060,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "wailingArrow",
-        hasCooldown = true,
-        cooldown = 60,
-        isTalent = true,
-        isSnowflake = true
-    })
-
     -- Dark Ranger
     self.blackArrow = TRB.Classes.SpellThreshold:New({
         id = 466930,
@@ -380,16 +334,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         isTalent = true,
         isSnowflake = true,
         baseline = false -- When subTreeActive = true
-    })
-
-    -- PvP
-    self.sniperShot = TRB.Classes.SpellThreshold:New({
-        id = 203155,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "sniperShot",
-        hasCooldown = true,
-        cooldown = 10,
-        isPvp = true,
     })
 
     return self

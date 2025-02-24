@@ -97,7 +97,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.moonkinForm = TRB.Classes.SpellBase:New({
         id = 24858,
-        isTalent = true
+        isTalent = true,
+        baseline = true
     })
     self.sunfire = TRB.Classes.SpellBase:New({
         id = 164815,
@@ -369,7 +370,8 @@ function TRB.Classes.Druid.FeralSpells:New()
             momentOfClarity = true,
             tigersFury = true
         },
-        isTalent = true
+        isTalent = true,
+        baseline = true
     })
     self.rip = TRB.Classes.SpellComboPointThreshold:New({
         id = 1079,

@@ -203,14 +203,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.markOfTheCrane.id] = TRB.Classes.Snapshot:New(spells.markOfTheCrane, {
-		count = 0,
-		activeCount = 0,
-		minEndTime = nil,
-		maxEndTime = nil,
-		list = {}
-	})
-	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentReady.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentReady, nil, true)
@@ -511,107 +503,6 @@ local function ConstructResourceBar(settings)
 
 	TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Bar:Construct(settings)
-end
-
-local function GetGuidPositionInMarkOfTheCraneList(guid)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-	local markOfTheCrane = TRB.Data.snapshotData.snapshots[spells.markOfTheCrane.id] --[[@as TRB.Classes.Snapshot]]
-	local entries = TRB.Functions.Table:Length(markOfTheCrane.attributes.list)
-	for x = 1, entries do
-		if markOfTheCrane.attributes.list[x].guid == guid then
-			return x
-		end
-	end
-	return 0
-end
-
-local function ApplyMarkOfTheCrane(guid)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local markOfTheCrane = snapshotData.snapshots[spells.markOfTheCrane.id]
-	local targetData = snapshotData.targetData
-	local currentTime = GetTime()
-	targetData.targets[guid].spells[spells.markOfTheCrane.id].active = true
-	targetData.targets[guid].spells[spells.markOfTheCrane.id].remainingTime = spells.markOfTheCrane.duration
-	local listPosition = GetGuidPositionInMarkOfTheCraneList(guid)
-	if listPosition > 0 then
-		markOfTheCrane.attributes.list[listPosition].startTime = currentTime
-		markOfTheCrane.attributes.list[listPosition].endTime = currentTime + spells.markOfTheCrane.duration
-	else
-		targetData.count[spells.markOfTheCrane.id] = targetData.count[spells.markOfTheCrane.id] + 1
-		table.insert(markOfTheCrane.attributes.list, {
-			guid = guid,
-			endTime = currentTime + spells.markOfTheCrane.duration
-		})
-	end
-end
-
-local function GetOldestOrExpiredMarkOfTheCraneListEntry(any, aliveOnly)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local markOfTheCrane = snapshotData.snapshots[spells.markOfTheCrane.id]
-	local targetData = snapshotData.targetData
-	local currentTime = GetTime()
-	local entries = TRB.Functions.Table:Length(markOfTheCrane.attributes.list)
-	local oldestTime = currentTime
-	local oldestId = 0
-
-	if any then
-		oldestTime = oldestTime + spells.markOfTheCrane.duration
-	end
-
-	for x = 1, entries do
-		local listItem = markOfTheCrane.attributes.list[x]
-		local target = targetData.targets[listItem.guid]
-
-		if target ~= nil and target.spells[spells.markOfTheCrane.id].active and listItem.endTime > currentTime then
-			targetData.targets[listItem.guid].spells[spells.markOfTheCrane.id].remainingTime = listItem.endTime - currentTime
-		end
-
-		if listItem.endTime < oldestTime and (not aliveOnly or target ~= nil) then
-			oldestId = x
-			oldestTime = listItem.endTime
-		end
-	end
-	return oldestId
-end
-
-local function RemoveExcessMarkOfTheCraneEntries()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local markOfTheCrane = snapshotData.snapshots[spells.markOfTheCrane.id]
-	local targetData = snapshotData.targetData
-	while true do
-		local id = GetOldestOrExpiredMarkOfTheCraneListEntry(false)
-
-		if id == 0 then
-			return
-		else
-			if targetData.targets[markOfTheCrane.attributes.list[id].guid] ~= nil then
-				targetData.targets[markOfTheCrane.attributes.list[id].guid].spells[spells.markOfTheCrane.id].active = false
-				targetData.targets[markOfTheCrane.attributes.list[id].guid].spells[spells.markOfTheCrane.id].remainingTime = 0
-			end
-			table.remove(markOfTheCrane.attributes.list, id)
-		end
-	end
-end
-
-local function IsTargetLowestInMarkOfTheCraneList()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local targetData = snapshotData.targetData
-	if targetData.currentTargetGuid == nil then
-		return false
-	end
-
-	local markOfTheCrane = snapshotData.snapshots[spells.markOfTheCrane.id]
-
-	local oldest = GetOldestOrExpiredMarkOfTheCraneListEntry(true, true)
-	if oldest > 0 and markOfTheCrane.attributes.list[oldest].guid == targetData.currentTargetGuid then
-		return true
-	end
-
-	return false
 end
 
 local function RefreshLookupData_Mistweaver()
@@ -964,50 +855,6 @@ local function RefreshLookupData_Windwalker()
 	--$danceOfChiJiTime
 	local _danceOfChiJiTime = snapshots[spells.danceOfChiJi.id].buff:GetRemainingTime(currentTime)
 	local danceOfChiJiTime = TRB.Functions.BarText:TimerPrecision(_danceOfChiJiTime)
-	
-	--$motcMinTime
-	local _motcMinTime = (snapshots[spells.markOfTheCrane.id].attributes.minEndTime or 0) - currentTime
-	local motcMinTime = TRB.Functions.BarText:TimerPrecision(_motcMinTime)
-	
-	--$motcMaxTime
-	local _motcMaxTime = (snapshots[spells.markOfTheCrane.id].attributes.maxEndTime or 0) - currentTime
-	local motcMaxTime = TRB.Functions.BarText:TimerPrecision(_motcMaxTime)
-
-	
-	local targetMotcId = GetGuidPositionInMarkOfTheCraneList(targetData.currentTargetGuid)
-	--$motcTime
-	local _motcTime = 0
-
-	if targetMotcId > 0 and target ~= nil then
-		_motcTime = snapshots[spells.markOfTheCrane.id].attributes.list[targetMotcId].endTime - currentTime
-	end
-
-	local _motcCount = snapshots[spells.markOfTheCrane.id].attributes.count or 0
-	local motcCount = tostring(_motcCount)
-	local _motcActiveCount = snapshots[spells.markOfTheCrane.id].attributes.activeCount or 0
-	local motcActiveCount = tostring(_motcActiveCount)
-
-	local motcTime
-
-	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		if targetMotcId > 0 and target ~= nil and target.spells[spells.markOfTheCrane.id].active then
-			if not IsTargetLowestInMarkOfTheCraneList() then
-				motcCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, snapshots[spells.markOfTheCrane.id].attributes.count)
-				motcActiveCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-				motcTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_motcTime))
-			else
-				motcCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, snapshots[spells.markOfTheCrane.id].attributes.count)
-				motcActiveCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-				motcTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_motcTime))
-			end
-		else
-			motcCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, snapshots[spells.markOfTheCrane.id].attributes.count)
-			motcActiveCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-			motcTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-	else
-		motcTime = TRB.Functions.BarText:TimerPrecision(_motcTime)
-	end
 
 	--$hotjsStacks
 	local _hotjsStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
@@ -1034,15 +881,6 @@ local function RefreshLookupData_Windwalker()
 	Global_TwintopResourceBar.resource.regen = _regenEnergy
 	
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.motcCount = _motcCount
-	Global_TwintopResourceBar.dots.motcActiveCount = _motcActiveCount
-
-	Global_TwintopResourceBar.markOfTheCrane = Global_TwintopResourceBar.markOfTheCrane or {}
-	Global_TwintopResourceBar.markOfTheCrane.count = _motcCount
-	Global_TwintopResourceBar.markOfTheCrane.activeCount = _motcActiveCount
-	Global_TwintopResourceBar.markOfTheCrane.targetTime = _motcTime
-	Global_TwintopResourceBar.markOfTheCrane.minTime = _motcMinTime
-	Global_TwintopResourceBar.markOfTheCrane.maxTime = _motcMaxTime
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#blackoutKick"] = spells.blackoutKick.icon
@@ -1096,11 +934,6 @@ local function RefreshLookupData_Windwalker()
 	lookup["$resourceOvercap"] = overcap
 	lookup["$energyOvercap"] = overcap
 	lookup["$danceOfChiJiTime"] = danceOfChiJiTime
-	lookup["$motcMinTime"] = motcMinTime
-	lookup["$motcMaxTime"] = motcMaxTime
-	lookup["$motcTime"] = motcTime
-	lookup["$motcCount"] = motcCount
-	lookup["$motcActiveCount"] = motcActiveCount
 	lookup["$hotjsStacks"] = _hotjsStacks
 	lookup["$hotjsMaxStacks"] = _hotjsMaxStacks
 	lookup["$hotjsRemainingStacks"] = _hotjsRemainingStacks
@@ -1140,11 +973,6 @@ local function RefreshLookupData_Windwalker()
 	lookupLogic["$resourceOvercap"] = overcap
 	lookupLogic["$energyOvercap"] = overcap
 	lookupLogic["$danceOfChiJiTime"] = _danceOfChiJiTime
-	lookupLogic["$motcMinTime"] = _motcMinTime
-	lookupLogic["$motcMaxTime"] = _motcMaxTime
-	lookupLogic["$motcTime"] = _motcTime
-	lookupLogic["$motcCount"] = _motcCount
-	lookupLogic["$motcActiveCount"] = _motcActiveCount
 	lookupLogic["$hotjsStacks"] = _hotjsStacks
 	lookupLogic["$hotjsMaxStacks"] = _hotjsMaxStacks
 	lookupLogic["$hotjsRemainingStacks"] = _hotjsRemainingStacks
@@ -1236,49 +1064,6 @@ local function CastingSpell()
 	end
 end
 
-local function UpdateMarkOfTheCrane()
-	RemoveExcessMarkOfTheCraneEntries()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-	local markOfTheCrane = TRB.Data.snapshotData.snapshots[spells.markOfTheCrane.id] --[[@as TRB.Classes.Snapshot]]
-	local entries = TRB.Functions.Table:Length(markOfTheCrane.attributes.list)
-	local minEndTime = nil
-	local maxEndTime = nil
-	local activeCount = 0
-	local currentTime = GetTime()
-	if entries > 0 then
-		for x = 1, entries do
-			activeCount = activeCount + 1
-			markOfTheCrane.buff.isActive = true
-
-			if markOfTheCrane.attributes.list[x].endTime > (maxEndTime or 0) then
-				maxEndTime = markOfTheCrane.attributes.list[x].endTime
-			end
-			
-			if markOfTheCrane.attributes.list[x].endTime < (minEndTime or currentTime+999) then
-				minEndTime = markOfTheCrane.attributes.list[x].endTime
-			end
-		end
-	end
-
-	if activeCount > 0 then
-		markOfTheCrane.buff.isActive = true
-	else
-		markOfTheCrane.buff.isActive = false
-	end
-
-	markOfTheCrane.attributes.count = C_Spell.GetSpellCastCount(spells.spinningCraneKick.id)
-
-	-- Avoid race conditions from combat log events saying we have 6 marks when 5 is the max
-	if markOfTheCrane.attributes.count < activeCount then
-		markOfTheCrane.attributes.activeCount = markOfTheCrane.attributes.count
-	else
-		markOfTheCrane.attributes.activeCount = activeCount
-	end
-
-	markOfTheCrane.attributes.minEndTime = minEndTime
-	markOfTheCrane.attributes.maxEndTime = maxEndTime
-end
-
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 	--local currentTime = GetTime()
@@ -1335,7 +1120,6 @@ end
 
 local function UpdateSnapshot_Windwalker()
 	UpdateSnapshot()
-	UpdateMarkOfTheCrane()
 
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
@@ -1791,32 +1575,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					elseif entry.type == "SPELL_AURA_REMOVED" then
 						snapshotData.audio.playedDanceOfChiJiCue = false
 					end
-				elseif entry.spellId == spells.markOfTheCrane.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
-							ApplyMarkOfTheCrane(entry.destinationGuid)
-						elseif entry.type == "SPELL_AURA_REMOVED" then
-							targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-						end
-					end
-				elseif entry.spellId == spells.tigerPalm.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						if entry.type == "SPELL_DAMAGE" then
-							ApplyMarkOfTheCrane(entry.destinationGuid)
-						end
-					end
-				elseif entry.spellId == spells.blackoutKick.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						if entry.type == "SPELL_DAMAGE" then
-							ApplyMarkOfTheCrane(entry.destinationGuid)
-						end
-					end
-				elseif entry.spellId == spells.risingSunKick.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						if entry.type == "SPELL_DAMAGE" then
-							ApplyMarkOfTheCrane(entry.destinationGuid)
-						end
-					end
 				elseif entry.spellId == spells.detox.id then
 					if entry.type == "SPELL_DISPEL" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -1890,7 +1648,6 @@ local function SwitchSpec()
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
-		targetData:AddSpellTracking(spells.markOfTheCrane, nil, nil, nil, true)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Windwalker
 		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.monk.windwalker)
@@ -1910,6 +1667,12 @@ local function SwitchSpec()
 	end
 
 	TRB.Functions.Class:EventRegistration()
+
+	C_Timer.After(0, function()
+		C_Timer.After(1, function()
+			TRB.Functions.Class:CheckCharacter()
+		end)
+	end)
 end
 
 resourceFrame:RegisterEvent("ADDON_LOADED")
@@ -2032,8 +1795,7 @@ function TRB.Functions.Class:CheckCharacter()
 				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
 		end
-	end
-	
+	end	
 end
 
 function TRB.Functions.Class:EventRegistration()
@@ -2262,30 +2024,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$danceOfChiJiTime" then
 			if snapshots[spells.danceOfChiJi.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$motcCount" then
-			if snapshots[spells.markOfTheCrane.id].attributes.count > 0 then
-				valid = true
-			end
-		elseif var == "$motcActiveCount" then
-			if snapshots[spells.markOfTheCrane.id].attributes.activeCount > 0 then
-				valid = true
-			end
-		elseif var == "$motcMinTime" then
-			if snapshots[spells.markOfTheCrane.id].attributes.minEndTime ~= nil then
-				valid = true
-			end
-		elseif var == "$motcMaxTime" then
-			if snapshots[spells.markOfTheCrane.id].attributes.maxEndTime ~= nil then
-				valid = true
-			end
-		elseif var == "$motcTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.markOfTheCrane.id] ~= nil and
-				target.spells[spells.markOfTheCrane.id].remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$hotjsReady" then

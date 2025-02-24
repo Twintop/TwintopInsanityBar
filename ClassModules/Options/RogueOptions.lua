@@ -1092,9 +1092,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			dismantle = {
 				enabled = false,
 			},
-			shadowyDuel = {
-				enabled = false,
-			},
 			--Trickster
 			coupDeGrace = {
 				enabled = true,
@@ -3737,17 +3734,6 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.dismantle.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.dismantle.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.shadowyDuelThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shadowyDuel", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.shadowyDuelThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Shadowy Duel")
-	f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shadowy Duel."
-	f:SetChecked(spec.thresholds.shadowyDuel.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shadowyDuel.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

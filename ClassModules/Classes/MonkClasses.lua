@@ -161,7 +161,6 @@ end
 
 
 ---@class TRB.Classes.Monk.WindwalkerSpells : TRB.Classes.SpecializationSpellsBase
----@field public markOfTheCrane TRB.Classes.SpellBase
 ---@field public touchOfDeath TRB.Classes.SpellBase
 ---@field public paralysisRank2 TRB.Classes.SpellBase
 ---@field public strikeOfTheWindlord TRB.Classes.SpellBase
@@ -214,12 +213,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
         isTalent = false,
         baseline = true,
         isSnowflake = true
-    })
-    self.markOfTheCrane = TRB.Classes.SpellBase:New({
-        id = 228287,
-        duration = 20,
-        isTalent = false,
-        baseline = true
     })
     self.spinningCraneKick = TRB.Classes.SpellComboPoint:New({
         id = 101546,

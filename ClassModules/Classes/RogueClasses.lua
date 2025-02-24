@@ -719,16 +719,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 382512,
         isTalent = true
     })
-
-    -- PvP
-    self.shadowyDuel = TRB.Classes.SpellThreshold:New({
-        id = 207736,
-        primaryResourceType = Enum.PowerType.Energy,
-        settingKey = "dismantle",
-        hasCooldown = true,
-        isPvp = true
-    })
-
     -- Trickster
     self.coupDeGrace = TRB.Classes.SpellComboPointThreshold:New({
         id = 441776,
