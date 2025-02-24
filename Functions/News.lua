@@ -20,6 +20,7 @@ local content = [====[
 <br/>&emsp;&ensp;- Snapshot UnitToken of enemies/allies; change rules for updating these.
 <br/>&emsp;&ensp;- Only refresh primary and secondary stats once per frame at most.
 - [#418 - NEW](#418) Add Global Bar Setting support for resource font colors, DoT colors, and decimal precision for secondary stats and resource bar text values.
+- [#419 - FIX](#419) Adjust threshold line calculations to avoid off-by-1 pixel rendering issues.
 
 ## Demon Hunter 
 ### Havoc
