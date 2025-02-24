@@ -609,20 +609,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
