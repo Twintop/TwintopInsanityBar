@@ -172,7 +172,10 @@ end
 
 local function HolyLoadDefaultSettings(includeBarText)
 	local settings = {
-		hastePrecision=2,
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
 		thresholds = {
 			width = 2,
 			overlapBorder=true,
@@ -259,14 +262,14 @@ local function HolyLoadDefaultSettings(includeBarText)
 		},
 		colors={
 			text = {
-				current="FF4D4DFF",
-				casting="FFFFFFFF",
-				passive="FF8080FF",
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				current = {
+					color = "FF4D4DFF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
 				}
 			},
 			bar={
@@ -363,9 +366,9 @@ local function HolyLoadDefaultSettings(includeBarText)
 end
 
 local function LoadDefaultSettings(includeBarText)
-	local settings = TRB.Options.LoadDefaultSettings()
-	settings.paladin.holy = HolyLoadDefaultSettings(includeBarText)
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
+	settings.paladin.holy = HolyLoadDefaultSettings(includeBarText)
 	return settings
 end
 TRB.Options.Paladin.LoadDefaultSettings = LoadDefaultSettings
@@ -665,42 +668,29 @@ local function HolyConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerManaTextColorsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 2, 1, yCoord)
+	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassiveMana"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
-	yCoord = yCoord - 130
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-	title = L["SecondaryDecimalPrecision"]
-	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.hastePrecision = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 2, 1, yCoord)
 end
 
 local function HolyConstructAudioAndTrackingPanel(parent)

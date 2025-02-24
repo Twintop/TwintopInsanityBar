@@ -207,6 +207,8 @@ end
 ---@field public spells table<integer, TRB.Classes.TargetSpell>
 ---@field public auraInstanceIds table<integer, TRB.Classes.TargetSpell>
 ---@field public isFriend boolean
+---@field public unitToken UnitToken?
+---@field private lastRefreshGetTime number
 TRB.Classes.Target = {}
 TRB.Classes.Target.__index = TRB.Classes.Target
 
@@ -223,6 +225,8 @@ function TRB.Classes.Target:New(guid, isFriend)
     self.spells = {}
     self.auraInstanceIds = {}
     self.isFriend = isFriend or false
+    self.unitToken = nil
+    self.lastRefreshGetTime = 0
     return self
 end
 
@@ -248,7 +252,6 @@ function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapsh
 
     if id ~= nil and self.spells[id] == nil then
         self.spells[id] = TRB.Classes.TargetSpell:New(spell, self, isDot, hasCounter, hasSnapshot, autoUpdate)
-        self.spells[id]:SetTargetGuid(self.guid)
     end
 end
 
@@ -291,15 +294,33 @@ end
 ---Attempts to get the current health percent for this creature. May fail if this creature does not have a current UnitToken.
 ---@return number? # Returns the health percentage if the creature has a valid UnitToken; nil otherwise
 function TRB.Classes.Target:GetHealthPercent()
-    -- TODO: Look into hooking into nameplates to get the info we need for this
-    local unitToken = UnitTokenFromGUID(self.guid)
-	if unitToken ~= nil then
-		local health = UnitHealth(unitToken)
-		local maxHealth = UnitHealthMax(unitToken)
+    self:UpdateUnitToken()
+	if self.unitToken ~= nil then
+		local health = UnitHealth(self.unitToken)
+		local maxHealth = UnitHealthMax(self.unitToken)
 		return health / maxHealth
 	else
 		return nil
 	end
+end
+
+---Updates the UnitToken for the target. This check runs no more than once per frame.
+function TRB.Classes.Target:UpdateUnitToken()
+    local currentTime = GetTime()
+    if self.lastRefreshGetTime == currentTime then
+        return
+    end
+
+    local guidCheck = nil
+    
+    if self.unitToken ~= nil then
+        guidCheck = UnitGUID(self.unitToken)
+    end
+
+    if guidCheck ~= self.guid then
+        self.unitToken = UnitTokenFromGUID(self.guid)
+    end    
+    self.lastRefreshGetTime = currentTime
 end
 
 
@@ -317,7 +338,6 @@ end
 ---@field public stacks integer
 ---@field public autoUpdate boolean
 ---@field public auraInstanceId? integer
----@field private guid string
 ---@field private target TRB.Classes.Target
 TRB.Classes.TargetSpell = {}
 TRB.Classes.TargetSpell.__index = TRB.Classes.TargetSpell
@@ -368,12 +388,6 @@ function TRB.Classes.TargetSpell:New(spell, target, isDot, hasCounter, hasSnapsh
     return self
 end
 
----Sets the target's GUID that is associated with this instance of a TargetSpell
----@param guid string # The GUID of the target
-function TRB.Classes.TargetSpell:SetTargetGuid(guid)
-    self.guid = guid
-end
-
 ---Sets the aura related date for the target spell
 ---@param self TRB.Classes.TargetSpell
 ---@param unitToken string
@@ -408,22 +422,21 @@ end
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.TargetSpell:Update(currentTime)
     currentTime = currentTime or GetTime()
-    -- TODO: Look into hooking into nameplates to get the info we need for this
-    local unitToken = UnitTokenFromGUID(self.guid)
+    self.target:UpdateUnitToken()
     
-    if unitToken ~= nil then
+    if self.target.unitToken ~= nil then
         if self.autoUpdate then
             if self.isDot then
                 if self.spell.isBuff and self.spell.isDebuff then -- Buff on friendly, debuff on unfriendly
                     if self.target ~= nil and self.target.isFriend then
-                        SetAuraData(self, unitToken, true)
+                        SetAuraData(self, self.target.unitToken, true)
                     else
-                        SetAuraData(self, unitToken, false)
+                        SetAuraData(self, self.target.unitToken, false)
                     end
                 elseif self.spell.isBuff then
-                    SetAuraData(self, unitToken, true)
+                    SetAuraData(self, self.target.unitToken, true)
                 else
-                    SetAuraData(self, unitToken, false)
+                    SetAuraData(self, self.target.unitToken, false)
                 end
 
                 if self.auraInstanceId ~= nil then

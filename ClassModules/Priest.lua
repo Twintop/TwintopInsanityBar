@@ -13,8 +13,6 @@ local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 ---@type TRB.Classes.Talents
 local talents
@@ -1081,6 +1079,7 @@ end
 
 local function RefreshLookupData_Discipline()
 	local specSettings = TRB.Data.settings.priest.discipline
+	local sharedSettings = TRB.Data.specCache["discipline"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1091,8 +1090,8 @@ local function RefreshLookupData_Discipline()
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = specSettings.colors.text.current
-	local castingManaColor = specSettings.colors.text.casting
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -1178,7 +1177,7 @@ local function RefreshLookupData_Discipline()
 	
 	--$sfMana
 	local _sfMana = shadowfiend.resourceFinal or 0
-	local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
+	local sfMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
 	--$sfGcds
 	local _sfGcds = shadowfiend.remainingGcds
 	local sfGcds = string.format("%.0f", _sfGcds)
@@ -1191,7 +1190,7 @@ local function RefreshLookupData_Discipline()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -1265,18 +1264,18 @@ local function RefreshLookupData_Discipline()
 
 	local shadowWordPainTime
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 			if _shadowWordPainTime > spells.shadowWordPain.pandemicTime then
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			end
 		else
-			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _shadowWordPainCount)
+			shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
@@ -1441,6 +1440,7 @@ local function RefreshLookupData_Holy()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.priest.holy
+	local sharedSettings = TRB.Data.specCache["holy"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -1449,8 +1449,8 @@ local function RefreshLookupData_Holy()
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = specSettings.colors.text.current
-	local castingManaColor = specSettings.colors.text.casting
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
@@ -1536,7 +1536,7 @@ local function RefreshLookupData_Holy()
 	
 	--$sfMana
 	local _sfMana = shadowfiend.resourceFinal or 0
-	local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
+	local sfMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
 	--$sfGcds
 	local _sfGcds = shadowfiend.remainingGcds
 	local sfGcds = string.format("%.0f", _sfGcds)
@@ -1549,7 +1549,7 @@ local function RefreshLookupData_Holy()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -1642,18 +1642,18 @@ local function RefreshLookupData_Holy()
 
 	local shadowWordPainTime
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 			if _shadowWordPainTime > spells.shadowWordPain.pandemicTime then
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			end
 		else
-			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _shadowWordPainCount)
+			shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
@@ -1823,6 +1823,7 @@ end
 
 local function RefreshLookupData_Shadow()
 	local specSettings = TRB.Data.settings.priest.shadow
+	local sharedSettings = TRB.Data.specCache["shadow"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1846,23 +1847,23 @@ local function RefreshLookupData_Shadow()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentInsanityColor = specSettings.colors.text.current
-	local castingInsanityColor = specSettings.colors.text.casting
+	local currentInsanityColor = sharedSettings.colors.text.current.color
+	local castingInsanityColor = sharedSettings.colors.text.casting.color
 
 	local insanityThreshold = spells.devouringPlague:GetPrimaryResourceCost()
 
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentInsanityColor = specSettings.colors.text.overcap
-			castingInsanityColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
-			currentInsanityColor = specSettings.colors.text.overThreshold
-			castingInsanityColor = specSettings.colors.text.overThreshold
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentInsanityColor = sharedSettings.colors.text.overcap.color
+			castingInsanityColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled and normalizedInsanity >= insanityThreshold then
+			currentInsanityColor = sharedSettings.colors.text.overThreshold.color
+			castingInsanityColor = sharedSettings.colors.text.overThreshold.color
 		end
 	end
 
 	--$insanity
-	local resourcePrecision = specSettings.resourcePrecision or 0
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentInsanity = normalizedInsanity
 	local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
 	--$casting
@@ -1900,7 +1901,7 @@ local function RefreshLookupData_Shadow()
 	local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, resourcePrecision, "ceil"))
 	--$passive
 	local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity
-	local passiveInsanity = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
+	local passiveInsanity = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
 	--$insanityTotal
 	local _insanityTotal = math.min(_passiveInsanity + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
 	local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityTotal, resourcePrecision, "floor"))
@@ -1945,32 +1946,32 @@ local function RefreshLookupData_Shadow()
 
 	local devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(_devouringPlagueTime)
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 			if (not talents:IsTalentActive(spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.pandemicTime) or
 				(talents:IsTalentActive(spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.attributes.miseryPandemicTime) then
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			else
-				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _shadowWordPainCount)
+				shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			end
 		else
-			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-			shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			shadowWordPainCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _shadowWordPainCount)
+			shadowWordPainTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.vampiricTouch.id].active then
 			if target.spells[spells.vampiricTouch.id].remainingTime > spells.vampiricTouch.pandemicTime then
-				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _vampiricTouchCount)
-				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
+				vampiricTouchCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _vampiricTouchCount)
+				vampiricTouchTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
 			else
-				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _vampiricTouchCount)
-				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
+				vampiricTouchCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _vampiricTouchCount)
+				vampiricTouchTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
 			end
 		else
-			vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _vampiricTouchCount)
-			vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			vampiricTouchCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _vampiricTouchCount)
+			vampiricTouchTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
@@ -2240,7 +2241,7 @@ local function CastingSpell()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
-	local affectingCombat = UnitAffectingCombat("player")
+	local affectingCombat = TRB.Data.character.inCombat
 	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 
@@ -3369,7 +3370,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				local barColor = specSettings.colors.bar.base
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 						snapshotData.audio.overcapCue = true
@@ -3873,14 +3874,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-combatFrame:SetScript("OnEvent", function(self, event, ...)
-	if event =="PLAYER_REGEN_DISABLED" then
-		TRB.Functions.Bar:ShowResourceBar()
-	else
-		TRB.Functions.Bar:HideResourceBar()
-	end
-end)
-
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -4147,7 +4140,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Priest.LoadDefaultSettings(false)
 
@@ -4170,7 +4163,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Priest.LoadDefaultSettings(true)
 					TRB.Data.settings = settings
@@ -4349,31 +4342,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = false
 	end
 
-	if TRB.Data.specSupported then
-		TRB.Functions.BarText:IsTtdActive(specSettings)
-		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Details.addonData.registered = true
-		TRB.Functions.Aura:EnableUnitAura()
-		TRB.Functions.Character:EnableCharacterChange()
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else
-		targetsTimerFrame:SetScript("OnUpdate", nil)
-		timerFrame:SetScript("OnUpdate", nil)
-		TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-		TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:DisableUnitAura()
-		TRB.Functions.Character:DisableCharacterChange()
-		TRB.Details.addonData.registered = false
-		TRB.Frames.barContainerFrame:Hide()
-	end
-	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)

@@ -13,8 +13,6 @@ local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 ---@type TRB.Classes.Talents
 local talents
@@ -550,6 +548,7 @@ end
 
 local function RefreshLookupData_BeastMastery()
 	local specSettings = TRB.Data.settings.hunter.beastMastery
+	local sharedSettings = TRB.Data.specCache["beastMastery"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -563,13 +562,13 @@ local function RefreshLookupData_BeastMastery()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentFocusColor = specSettings.colors.text.current
-	local castingFocusColor = specSettings.colors.text.casting
+	local currentFocusColor = sharedSettings.colors.text.current.color
+	local castingFocusColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentFocusColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentFocusColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -579,13 +578,13 @@ local function RefreshLookupData_BeastMastery()
 			end
 
 			if _overThreshold then
-				currentFocusColor = specSettings.colors.text.overThreshold
+				currentFocusColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = specSettings.colors.text.spending
+		castingFocusColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$focus
@@ -608,11 +607,11 @@ local function RefreshLookupData_BeastMastery()
 	end
 
 	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenFocus)
+	local regenFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenFocus)
 
 	--$barbedShotFocus
 	local _barbedShotFocus = snapshots[spells.barbedShot.id].attributes.resource
-	local barbedShotFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _barbedShotFocus)
+	local barbedShotFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _barbedShotFocus)
 
 	--$barbedShotTicks
 	local barbedShotTicks = string.format("%.0f", snapshots[spells.barbedShot.id].attributes.ticksRemaining)
@@ -634,8 +633,8 @@ local function RefreshLookupData_BeastMastery()
 	_passiveFocus = _regenFocus + _barbedShotFocus
 	_passiveFocusMinusRegen = _passiveFocus - _regenFocus
 
-	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveFocus)
-	local passiveFocusMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveFocusMinusRegen)
+	local passiveFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveFocus)
+	local passiveFocusMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveFocusMinusRegen)
 	--$focusTotal
 	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
@@ -665,18 +664,18 @@ local function RefreshLookupData_BeastMastery()
 
 	local serpentStingTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
 			--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			--[[else
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			end]]
 		else
-			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _serpentStingCount)
+			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
@@ -786,6 +785,7 @@ end
 
 local function RefreshLookupData_Marksmanship()
 	local specSettings = TRB.Data.settings.hunter.marksmanship
+	local sharedSettings = TRB.Data.specCache["marksmanship"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -799,14 +799,14 @@ local function RefreshLookupData_Marksmanship()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentFocusColor = specSettings.colors.text.current
-	local castingFocusColor = specSettings.colors.text.casting
+	local currentFocusColor = sharedSettings.colors.text.current.color
+	local castingFocusColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentFocusColor = specSettings.colors.text.overcap
-			castingFocusColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentFocusColor = sharedSettings.colors.text.overcap.color
+			castingFocusColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -816,14 +816,14 @@ local function RefreshLookupData_Marksmanship()
 			end
 
 			if _overThreshold then
-				currentFocusColor = specSettings.colors.text.overThreshold
-				castingFocusColor = specSettings.colors.text.overThreshold
+				currentFocusColor = sharedSettings.colors.text.overThreshold.color
+				castingFocusColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = specSettings.colors.text.spending
+		castingFocusColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$focus
@@ -845,10 +845,10 @@ local function RefreshLookupData_Marksmanship()
 	end
 
 	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenFocus)
+	local regenFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenFocus)
 	_passiveFocus = _regenFocus
 
-	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveFocus)
+	local passiveFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveFocus)
 	--$focusTotal
 	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
@@ -882,18 +882,18 @@ local function RefreshLookupData_Marksmanship()
 
 	local serpentStingTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
 			--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			--[[else
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			end]]
 		else
-			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _serpentStingCount)
+			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
@@ -980,6 +980,7 @@ end
 
 local function RefreshLookupData_Survival()
 	local specSettings = TRB.Data.settings.hunter.survival
+	local sharedSettings = TRB.Data.specCache["survival"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -993,14 +994,14 @@ local function RefreshLookupData_Survival()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentFocusColor = specSettings.colors.text.current
-	local castingFocusColor = specSettings.colors.text.casting
+	local currentFocusColor = sharedSettings.colors.text.current.color
+	local castingFocusColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentFocusColor = specSettings.colors.text.overcap
-			castingFocusColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentFocusColor = sharedSettings.colors.text.overcap.color
+			castingFocusColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1010,14 +1011,14 @@ local function RefreshLookupData_Survival()
 			end
 
 			if _overThreshold then
-				currentFocusColor = specSettings.colors.text.overThreshold
-				castingFocusColor = specSettings.colors.text.overThreshold
+				currentFocusColor = sharedSettings.colors.text.overThreshold.color
+				castingFocusColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = specSettings.colors.text.spending
+		castingFocusColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$focus
@@ -1046,11 +1047,11 @@ local function RefreshLookupData_Survival()
 	end
 
 	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenFocus)
+	local regenFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenFocus)
 	_passiveFocus = _regenFocus + _toeFocus
 
 	--$passive
-	local passiveFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveFocus)
+	local passiveFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveFocus)
 	--$focusTotal
 	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
@@ -1079,18 +1080,18 @@ local function RefreshLookupData_Survival()
 
 	local serpentStingTime
 
-	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
 			--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			--[[else
-				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
+				serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _serpentStingCount)
+				serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 			end]]
 		else
-			serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _serpentStingCount)
+			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
@@ -1608,7 +1609,7 @@ local function UpdateResourceBar()
 
 				local barbedShotPartialCharges = snapshots[spells.barbedShot.id].cooldown.charges + bsPartial
 				local beastialWrathCooldownRemaining = snapshots[spells.beastialWrath.id].cooldown:GetRemainingTime(currentTime)
-				local affectingCombat = UnitAffectingCombat("player")
+				local affectingCombat = TRB.Data.character.inCombat
 				local reactionTimeGcds = math.min(gcd * 1.5, 2)
 
 				if snapshots[spells.frenzy.id].buff.isActive then
@@ -1645,7 +1646,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.beastCleave.color
 				end
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -1694,7 +1695,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 				local barBorderColor = specSettings.colors.bar.border
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -1705,7 +1706,7 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
-				if UnitAffectingCombat("player") and specSettings.steadyFocus.enabled and talents:IsTalentActive(spells.steadyFocus) then
+				if TRB.Data.character.inCombat and specSettings.steadyFocus.enabled and talents:IsTalentActive(spells.steadyFocus) then
 					local timeThreshold = 0
 
 					if specSettings.steadyFocus.mode == "gcd" then
@@ -1948,7 +1949,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 				local barBorderColor = specSettings.colors.bar.border
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2107,7 +2108,7 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 						snapshotData.audio.overcapCue = true
 						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
@@ -2252,14 +2253,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-combatFrame:SetScript("OnEvent", function(self, event, ...)
-	if event =="PLAYER_REGEN_DISABLED" then
-		TRB.Functions.Bar:ShowResourceBar()
-	else
-		TRB.Functions.Bar:HideResourceBar()
-	end
-end)
-
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -2356,7 +2349,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Hunter.LoadDefaultSettings(false)
 
@@ -2379,7 +2372,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Hunter.LoadDefaultSettings(true)
 					TRB.Data.settings = settings
@@ -2465,33 +2458,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = false
 	end
 
-	if TRB.Data.specSupported then
-		TRB.Data.resource = Enum.PowerType.Focus
-		TRB.Data.resourceFactor = 1
-
-		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Details.addonData.registered = true
-		TRB.Functions.Aura:EnableUnitAura()
-		TRB.Functions.Character:EnableCharacterChange()
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else
-		targetsTimerFrame:SetScript("OnUpdate", nil)
-		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:DisableUnitAura()
-		TRB.Functions.Character:DisableCharacterChange()
-		TRB.Details.addonData.registered = false
-		barContainerFrame:Hide()
-	end
-	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)

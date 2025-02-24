@@ -8,16 +8,8 @@ local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local resourceFrame = TRB.Frames.resourceFrame
 local castingFrame = TRB.Frames.castingFrame
 local passiveFrame = TRB.Frames.passiveFrame
-local barBorderFrame = TRB.Frames.barBorderFrame
-
-local resourceFrame = TRB.Frames.resourceFrame
-local passiveFrame = TRB.Frames.passiveFrame
-local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 TRB.Options.Evoker = {}
 TRB.Options.Evoker.Devastation = {}
@@ -341,7 +333,10 @@ end
 
 local function DevastationLoadDefaultSettings(includeBarText)
 	local settings = {
-		hastePrecision=2,
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
 		thresholds = {
 			width = 2,
 			overlapBorder=true,
@@ -395,13 +390,15 @@ local function DevastationLoadDefaultSettings(includeBarText)
 		},
 		colors = {
 			text = {
-				current="FF4D4DFF",
-				casting="FFFFFFFF",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
-				left="FFFFFFFF",
-				middle="FFFFFFFF",
-				right="FFFFFFFF"
+				current = {
+					color = "FF4D4DFF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
+				}
 			},
 			bar = {
 				border="FF000099",
@@ -663,7 +660,10 @@ end
 
 local function PreservationLoadDefaultSettings(includeBarText)
 	local settings = {
-		hastePrecision=2,
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
 		thresholds = {
 			width = 2,
 			overlapBorder=true,
@@ -750,14 +750,14 @@ local function PreservationLoadDefaultSettings(includeBarText)
 		},
 		colors={
 			text = {
-				current="FF4D4DFF",
-				casting="FFFFFFFF",
-				passive="FF8080FF",
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				current = {
+					color = "FF4D4DFF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
 				}
 			},
 			bar={
@@ -1026,7 +1026,10 @@ end
 
 local function AugmentationLoadDefaultSettings(includeBarText)
 	local settings = {
-		hastePrecision=2,
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
 		thresholds = {
 			width = 2,
 			overlapBorder=true,
@@ -1074,13 +1077,15 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 		},
 		colors = {
 			text = {
-				current="FF4D4DFF",
-				casting="FFFFFFFF",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
-				left="FFFFFFFF",
-				middle="FFFFFFFF",
-				right="FFFFFFFF"
+				current = {
+					color = "FF4D4DFF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
+				}
 			},
 			bar = {
 				border="FF000099",
@@ -1179,11 +1184,11 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 end
 
 local function LoadDefaultSettings(includeBarText)
-	local settings = TRB.Options.LoadDefaultSettings()
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
+
 	settings.evoker.devastation = DevastationLoadDefaultSettings(includeBarText)
 	settings.evoker.preservation = PreservationLoadDefaultSettings(includeBarText)
 	settings.evoker.augmentation = AugmentationLoadDefaultSettings(includeBarText)
-
 	return settings
 end
 TRB.Options.Evoker.LoadDefaultSettings = LoadDefaultSettings
@@ -1439,29 +1444,17 @@ local function DevastationConstructFontAndTextPanel(parent)
 
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DPSManaTextColorsHeader"], oUi.xCoord, yCoord)
+	
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 13, 1, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	yCoord = yCoord - 130
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-	title = L["SecondaryDecimalPrecision"]
-	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.hastePrecision = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 13, 1, yCoord)
 end
 
 local function DevastationConstructAudioAndTrackingPanel(parent)
@@ -1892,10 +1885,10 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 		spec.bar.showCasting = self:GetChecked()
 	end)
 
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.spending
+	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 2)
 	end)
 
 	yCoord = yCoord - 30
@@ -2040,42 +2033,29 @@ local function PreservationConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerManaTextColorsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 13, 2, yCoord)
+
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassiveMana"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
-	yCoord = yCoord - 130
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-	title = L["SecondaryDecimalPrecision"]
-	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.hastePrecision = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = controls
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 13, 2, yCoord)
 end
 
 local function PreservationConstructAudioAndTrackingPanel(parent)
@@ -2727,28 +2707,16 @@ local function AugmentationConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DPSManaTextColorsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 13, 3, yCoord)
+	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	yCoord = yCoord - 130
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-	title = L["SecondaryDecimalPrecision"]
-	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.hastePrecision = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 13, 3, yCoord)
 end
 
 local function AugmentationConstructAudioAndTrackingPanel(parent)

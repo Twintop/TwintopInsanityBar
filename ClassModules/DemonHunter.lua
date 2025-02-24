@@ -13,8 +13,6 @@ local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -417,19 +415,20 @@ local function RefreshLookupData_Havoc()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.havoc
+	local sharedSettings = TRB.Data.specCache["havoc"].settings
 	local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 	--Spec specific implementation
 
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentFuryColor = specSettings.colors.text.current
-	local castingFuryColor = specSettings.colors.text.casting
+	local currentFuryColor = sharedSettings.colors.text.current.color
+	local castingFuryColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentFuryColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentFuryColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedResource then
@@ -439,13 +438,13 @@ local function RefreshLookupData_Havoc()
 			end
 
 			if _overThreshold then
-				currentFuryColor = specSettings.colors.text.overThreshold
+				currentFuryColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingFuryColor = specSettings.colors.text.spending
+		castingFuryColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$metamorphosisTime
@@ -487,14 +486,14 @@ local function RefreshLookupData_Havoc()
 	local sosTime = TRB.Functions.BarText:TimerPrecision(_sosTime)
 
 	--$fury
-	local resourcePrecision = specSettings.resourcePrecision or 0
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedResource, resourcePrecision, "floor"))
 	--$casting
 	local _castingFury = snapshotData.casting.resourceFinal
 	local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
 	--$passive
 	local _passiveFury = bhFury + tacticalRetreatFury + sosFury
-	local passiveFury = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveFury, resourcePrecision, "floor"))
+	local passiveFury = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveFury, resourcePrecision, "floor"))
 	
 	--$furyTotal
 	local _furyTotal = math.min(_passiveFury + snapshotData.casting.resourceFinal + normalizedResource, TRB.Data.character.maxResource)
@@ -644,19 +643,20 @@ local function RefreshLookupData_Vengeance()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.vengeance
+	local sharedSettings = TRB.Data.specCache["vengeance"].settings
 	local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 	--Spec specific implementation
 
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentFuryColor = specSettings.colors.text.current
-	local castingFuryColor = specSettings.colors.text.casting
+	local currentFuryColor = sharedSettings.colors.text.current.color
+	local castingFuryColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentFuryColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentFuryColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedResource then
@@ -666,13 +666,13 @@ local function RefreshLookupData_Vengeance()
 			end
 
 			if _overThreshold then
-				currentFuryColor = specSettings.colors.text.overThreshold
+				currentFuryColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingFuryColor = specSettings.colors.text.spending
+		castingFuryColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$metamorphosisTime
@@ -700,14 +700,14 @@ local function RefreshLookupData_Vengeance()
 	local sosTime = TRB.Functions.BarText:TimerPrecision(_sosTime)
 
 	--$fury
-	local resourcePrecision = specSettings.resourcePrecision or 0
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedResource, resourcePrecision, "floor"))
 	--$casting
 	local _castingFury = snapshotData.casting.resourceFinal
 	local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
 	--$passive
 	local _passiveFury = iaFury + sosFury
-	local passiveFury = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveFury, resourcePrecision, "floor"))
+	local passiveFury = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveFury, resourcePrecision, "floor"))
 	
 	--$furyTotal
 	local _furyTotal = math.min(_passiveFury + snapshotData.casting.resourceFinal + normalizedResource, TRB.Data.character.maxResource)
@@ -1138,11 +1138,11 @@ local function UpdateResourceBar()
 
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true			
+						snapshotData.audio.overcapCue = true
 						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 					end
 				else
@@ -1298,11 +1298,11 @@ local function UpdateResourceBar()
 
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true			
+						snapshotData.audio.overcapCue = true
 						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 					end
 				else
@@ -1428,14 +1428,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-combatFrame:SetScript("OnEvent", function(self, event, ...)
-	if event =="PLAYER_REGEN_DISABLED" then
-		TRB.Functions.Bar:ShowResourceBar()
-	else
-		TRB.Functions.Bar:HideResourceBar()
-	end
-end)
-
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -1507,7 +1499,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.DemonHunter.LoadDefaultSettings(false)
 
@@ -1524,7 +1516,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.DemonHunter.LoadDefaultSettings(true)
 					TRB.Data.settings = settings
@@ -1648,32 +1640,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = false
 	end
 
-	if TRB.Data.specSupported then
-		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Details.addonData.registered = true
-		TRB.Functions.Aura:EnableUnitAura()
-		TRB.Functions.Character:EnableCharacterChange()
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else
-		TRB.Data.specSupported = false
-		targetsTimerFrame:SetScript("OnUpdate", nil)
-		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:DisableUnitAura()
-		TRB.Functions.Character:DisableCharacterChange()
-		TRB.Details.addonData.registered = false
-		barContainerFrame:Hide()
-	end
-
-	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)

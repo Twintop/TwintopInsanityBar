@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 11.1.0.0-beta01 (2025-02-02)
+# 11.1.0.0-release (2025-02-25)
 ## General
 
 - [#416 - NEW](#416) Add addon category metadata for the new addon grouping system.
@@ -60,6 +60,16 @@ local content = [====[
 ### Subtlety
 
 - [#416 - UPDATE](#416) Remove Shadowy Duel.
+
+---
+
+# 11.0.7.8-release (2025-02-05)
+## General
+
+- [#417 - REFACTOR](#417) Futher optimizations:
+<br/>&emsp;&ensp;- Reduce number of in combat checks.
+<br/>&emsp;&ensp;- Snapshot UnitToken of enemies/allies; change rules for updating these.
+<br/>&emsp;&ensp;- Only refresh primary and secondary stats once per frame at most.
 
 ---
 

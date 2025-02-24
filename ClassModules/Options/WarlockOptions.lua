@@ -172,7 +172,10 @@ end
 
 local function AfflictionLoadDefaultSettings(includeBarText)
 	local settings = {
-		hastePrecision=2,
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
 		thresholds = {
 			width = 2,
 			overlapBorder=true,
@@ -222,14 +225,28 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 		},
 		colors={
 			text = {
-				current="FF4D4DFF",
-				casting="FFFFFFFF",
-				passive="FF8080FF",
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				current = {
+					color = "FF4D4DFF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				dots = {
+					options = {
+						enabled=true,
+					},
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFFFF00"
+					}
 				}
 			},
 			bar={
@@ -334,9 +351,9 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 end
 
 local function LoadDefaultSettings(includeBarText)
-	local settings = TRB.Options.LoadDefaultSettings()
-	settings.warlock.affliction = AfflictionLoadDefaultSettings(includeBarText)
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
+	settings.warlock.affliction = AfflictionLoadDefaultSettings(includeBarText)
 	return settings
 end
 TRB.Options.Warlock.LoadDefaultSettings = LoadDefaultSettings
@@ -694,76 +711,32 @@ local function AfflictionConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockManaTextColorsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 9, 1, yCoord)
+	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCastingMana"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCastingMana"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassiveMana"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
+	
+	local dotVariables = "$agonyCount/$agonyStacks/$agonyTime, $corruptionCount/$corruptionTime, $hauntCount/$hauntTime, $unstableAffliction"
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 9, 1, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
 
-	yCoord = yCoord - 30
-	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_dotColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dotColor
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-	f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$agonyCount/$agonyStacks/$agonyTime, $corruptionCount/$corruptionTime, $hauntCount/$hauntTime, $unstableAffliction")
-	f:SetChecked(spec.colors.text.dots.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.dots.enabled = self:GetChecked()
-	end)
-
-	controls.colors.dots = {}
-
-	controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
-	f = controls.colors.dots.up
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
-	end)
-
-	controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
-	f = controls.colors.dots.pandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
-	end)
-
-	controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
-	f = controls.colors.dots.down
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
-	end)
-
-	yCoord = yCoord - 130
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-	title = L["SecondaryDecimalPrecision"]
-	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.hastePrecision = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.affliction = controls
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 1, yCoord)
 end
 
 local function AfflictionConstructAudioAndTrackingPanel(parent)

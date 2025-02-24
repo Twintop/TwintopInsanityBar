@@ -217,8 +217,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 				snapshotData.attributes.resource2 = resourceBuff.applications or 0
 			else
 				snapshotData.attributes.resource2 = 0
-			end
-			
+			end			
 		elseif TRB.Data.resource2 == "CUSTOM" then
 			-- Do nothing
 		else
@@ -247,6 +246,7 @@ function TRB.Functions.Character:UpdateStatsSnapshot()
 	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
 
 	snapshotData.attributes.cacheRefresh = true
+	snapshotData.attributes.attributeRefresh = false
 end
 
 ---Loads data from the specialization cache in to the main TRB.Data table
@@ -256,6 +256,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 
 	TRB.Data.character = cache.character
 	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
+	TRB.Data.character.inCombat = UnitAffectingCombat("player")
 	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
@@ -345,7 +346,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 
 	specCache.settings.displayText = {}
 	specCache.settings.displayText.barText = spec.displayText.barText
-	--if enabled and s.displayText then
+
 	if s.displayText then
 		specCache.settings.displayText.default = core.displayText.default
 	else
@@ -364,7 +365,51 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 		specCache.settings.thresholds = spec.thresholds
 	end
 
-	specCache.settings.colors = spec.colors
+	specCache.settings.colors = {}
+	specCache.settings.colors.text = {}
+	specCache.settings.colors.bar = spec.colors.bar
+	specCache.settings.colors.threshold = spec.colors.threshold
+	specCache.settings.colors.comboPoints = spec.colors.comboPoints
+
+	if s.textColors then
+		specCache.settings.colors.text.current = core.colors.text.current
+		specCache.settings.colors.text.casting = core.colors.text.casting
+		specCache.settings.colors.text.spending = core.colors.text.spending
+		specCache.settings.colors.text.passive = core.colors.text.passive
+		specCache.settings.colors.text.overcap = core.colors.text.overcap
+		specCache.settings.colors.text.overThreshold = core.colors.text.overThreshold
+	else
+		specCache.settings.colors.text.current = spec.colors.text.current
+		specCache.settings.colors.text.casting = spec.colors.text.casting
+		specCache.settings.colors.text.spending = spec.colors.text.spending
+		specCache.settings.colors.text.passive = spec.colors.text.passive
+		specCache.settings.colors.text.overcap = spec.colors.text.overcap
+		specCache.settings.colors.text.overThreshold = spec.colors.text.overThreshold
+	end
+
+	if s.dotColors then
+		if className == "druid" and specName == "feral" then -- Kitty is a special snowflake
+			specCache.settings.colors.text.dots = {}
+			-- Use spec values
+			specCache.settings.colors.text.dots.same = spec.colors.text.dots.same
+			specCache.settings.colors.text.dots.worse = spec.colors.text.dots.worse
+			specCache.settings.colors.text.dots.better = spec.colors.text.dots.better
+
+			-- Use available global values
+			specCache.settings.colors.text.dots.options = core.colors.text.dots.options
+			specCache.settings.colors.text.dots.down = core.colors.text.dots.down
+		else
+			specCache.settings.colors.text.dots = core.colors.text.dots
+		end
+	else
+		specCache.settings.colors.text.dots = spec.colors.text.dots
+	end
+
+	if s.precision then
+		specCache.settings.precision = core.precision
+	else
+		specCache.settings.precision = spec.precision
+	end
 end
 
 function TRB.Functions.Character:IsComboPointUser()
@@ -434,4 +479,37 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 		end
 	end
 	TRB.Data.cache.thresholdSpells = thresholdSpells
+end
+
+function TRB.Functions.Character:EventRegistration()
+	local barContainerFrame = TRB.Frames.barContainerFrame
+	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
+	local timerFrame = TRB.Frames.timerFrame
+	local combatFrame = TRB.Frames.combatFrame
+
+	if TRB.Data.specSupported then
+		TRB.Functions.Class:CheckCharacter()
+		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Details.addonData.registered = true
+		TRB.Functions.Aura:EnableUnitAura()
+		TRB.Functions.Character:EnableCharacterChange()
+		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+	else
+		targetsTimerFrame:SetScript("OnUpdate", nil)
+		timerFrame:SetScript("OnUpdate", nil)
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Functions.Aura:DisableUnitAura()
+		TRB.Functions.Character:DisableCharacterChange()
+		TRB.Details.addonData.registered = false
+		barContainerFrame:Hide()
+	end
+
+	TRB.Functions.Bar:HideResourceBar()
 end

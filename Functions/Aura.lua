@@ -9,10 +9,12 @@ TRB.Functions.Aura = {}
 ---@param unit UnitToken
 ---@param info UnitAuraUpdateInfo
 local function AuraUpdateEvent(self, event, unit, info)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
 	if info.isFullUpdate then
 		--Only do a full refresh of buffs for now
 		TRB.Data.snapshotData:RefreshAllBuffs()
-		TRB.Functions.Character:UpdateStatsSnapshot()
+		snapshotData.attributes.attributeRefresh = false
 		TRB.Data.cache.values.resource = {}
 		return
 	end
@@ -26,7 +28,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 					snapshot.buff:RefreshWithAuraData(v)
 				end
 			end
-			TRB.Functions.Character:UpdateStatsSnapshot()
+			snapshotData.attributes.attributeRefresh = false
 			TRB.Data.cache.values.resource = {}
 		--[[else
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
@@ -49,11 +51,11 @@ local function AuraUpdateEvent(self, event, unit, info)
 					snapshot:Refresh()
 				end
 			end
-			TRB.Functions.Character:UpdateStatsSnapshot()
+			snapshotData.attributes.attributeRefresh = false
 			TRB.Data.cache.values.resource = {}
 		else
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
-				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v]
+				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v] --[[@as TRB.Classes.Target]]
 
 				if target ~= nil then
 					local targetSpell = target.auraInstanceIds[v]
@@ -73,7 +75,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 				end
 				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
 			end
-			TRB.Functions.Character:UpdateStatsSnapshot()
+			snapshotData.attributes.attributeRefresh = false
 			TRB.Data.cache.values.resource = {}
 		else
 			for _, v in pairs(info.removedAuraInstanceIDs) do

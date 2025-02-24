@@ -13,8 +13,6 @@ local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -915,6 +913,7 @@ local function RefreshLookupData_Balance()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.druid.balance
+	local sharedSettings = TRB.Data.specCache["balance"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -923,41 +922,37 @@ local function RefreshLookupData_Balance()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentAstralPowerColor = specSettings.colors.text.current
-	local castingAstralPowerColor = specSettings.colors.text.casting
+	local currentAstralPowerColor = sharedSettings.colors.text.current.color
+	local castingAstralPowerColor = sharedSettings.colors.text.casting.color
 
 	local astralPowerThreshold = math.min(spells.starsurge:GetPrimaryResourceCost(), spells.starfall:GetPrimaryResourceCost())
 
-	if snapshotData.snapshots[spells.astralCommunion.id].buff.isActive then
-		astralPowerThreshold = astralPowerThreshold + spells.astralCommunion.attributes.resourceMod
-	end
-
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentAstralPowerColor = specSettings.colors.text.overcap
-			castingAstralPowerColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
-			currentAstralPowerColor = specSettings.colors.text.overThreshold
-			castingAstralPowerColor = specSettings.colors.text.overThreshold
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentAstralPowerColor = sharedSettings.colors.text.overcap.color
+			castingAstralPowerColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled and normalizedAstralPower >= astralPowerThreshold then
+			currentAstralPowerColor = sharedSettings.colors.text.overThreshold.color
+			castingAstralPowerColor = sharedSettings.colors.text.overThreshold.color
 		end
 	end
 
 	--$astralPower
-	local resourcePrecision = specSettings.resourcePrecision or 0
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
 	--$casting
 	local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	--$passive
 	local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + snapshotData.snapshots[spells.forceOfNature.id].buff.resource
 	if talents:IsTalentActive(spells.naturesBalance) then
-		if UnitAffectingCombat("player") then
+		if TRB.Data.character.inCombat then
 			_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.resource
 		elseif normalizedAstralPower < 50 then
 			_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.attributes.outOfCombatResource
 		end
 	end
 
-	local passiveAstralPower = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveAstralPower, resourcePrecision, "ceil"))
+	local passiveAstralPower = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveAstralPower, resourcePrecision, "ceil"))
 	--$astralPowerTotal
 	local _astralPowerTotal = math.min(_passiveAstralPower + snapshotData.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
 	local astralPowerTotal = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(_astralPowerTotal, resourcePrecision, "floor"))
@@ -1002,44 +997,44 @@ local function RefreshLookupData_Balance()
 
 	local stellarFlareTime
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.moonfire.id].active then
 			if _moonfireTime > (TRB.Data.character.pandemicModifier * spells.moonfire.pandemicTime) then
-				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _moonfireCount)
-				moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
+				moonfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _moonfireCount)
+				moonfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 			else
-				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _moonfireCount)
-				moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
+				moonfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _moonfireCount)
+				moonfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 			end
 		else
-			moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
-			moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			moonfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _moonfireCount)
+			moonfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.stellarFlare.id].active then
 			if _stellarFlareTime > (TRB.Data.character.pandemicModifier * spells.stellarFlare.pandemicTime) then
-				stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _stellarFlareCount)
-				stellarFlareTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_stellarFlareTime))
+				stellarFlareCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _stellarFlareCount)
+				stellarFlareTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_stellarFlareTime))
 			else
-				stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _stellarFlareCount)
-				stellarFlareTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_stellarFlareTime))
+				stellarFlareCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _stellarFlareCount)
+				stellarFlareTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_stellarFlareTime))
 			end
 		else
-			stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _stellarFlareCount)
-			stellarFlareTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			stellarFlareCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _stellarFlareCount)
+			stellarFlareTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.sunfire.id].active then
 			if _sunfireTime > (TRB.Data.character.pandemicModifier * spells.sunfire.pandemicTime) then
-				sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _sunfireCount)
-				sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
+				sunfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _sunfireCount)
+				sunfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
 			else
-				sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _sunfireCount)
-				sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
+				sunfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _sunfireCount)
+				sunfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
 			end
 		else
-			sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _sunfireCount)
-			sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			sunfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _sunfireCount)
+			sunfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		sunfireTime = TRB.Functions.BarText:TimerPrecision(_sunfireTime)
@@ -1281,6 +1276,7 @@ local function RefreshLookupData_Feral()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.druid.feral
+	local sharedSettings = TRB.Data.specCache["feral"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -1300,14 +1296,14 @@ local function RefreshLookupData_Feral()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current
-	local castingEnergyColor = specSettings.colors.text.casting
+	local currentEnergyColor = sharedSettings.colors.text.current.color
+	local castingEnergyColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap
-			castingEnergyColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = sharedSettings.colors.text.overcap.color
+			castingEnergyColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1317,14 +1313,14 @@ local function RefreshLookupData_Feral()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold
-				castingEnergyColor = specSettings.colors.text.overThreshold
+				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = specSettings.colors.text.spending
+		castingEnergyColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$energy
@@ -1347,13 +1343,13 @@ local function RefreshLookupData_Feral()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
@@ -1425,15 +1421,15 @@ local function RefreshLookupData_Feral()
 		_thrashPercent = (_thrashSnapshot / _currentSnapshotThrash)
 	end
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.rip.id].active then
-			local ripColor = specSettings.colors.text.dots.same
+			local ripColor = sharedSettings.colors.text.dots.same.color
 			if _ripPercent > 1 then
-				ripColor = specSettings.colors.text.dots.better
+				ripColor = sharedSettings.colors.text.dots.better.color
 			elseif _ripPercent < 1 then
-				ripColor = specSettings.colors.text.dots.worse
+				ripColor = sharedSettings.colors.text.dots.worse.color
 			else
-				ripColor = specSettings.colors.text.dots.same
+				ripColor = sharedSettings.colors.text.dots.same.color
 			end
 
 			ripCount = string.format("|c%s%.0f|r", ripColor, _ripCount)
@@ -1442,21 +1438,21 @@ local function RefreshLookupData_Feral()
 			ripPercent = string.format("|c%s%.0f|r", ripColor, TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor"))
 			ripTime = string.format("|c%s%s|r", ripColor, TRB.Functions.BarText:TimerPrecision(_ripTime))
 		else
-			ripCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ripCount)
-			ripSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-			ripCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor"))
-			ripPercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-			ripTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			ripCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ripCount)
+			ripSnapshot = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, 0)
+			ripCurrent = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor"))
+			ripPercent = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, 0)
+			ripTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.rake.debuffId].active then
-			local rakeColor = specSettings.colors.text.dots.same
+			local rakeColor = sharedSettings.colors.text.dots.same.color
 			if _rakePercent > 1 then
-				rakeColor = specSettings.colors.text.dots.better
+				rakeColor = sharedSettings.colors.text.dots.better.color
 			elseif _rakePercent < 1 then
-				rakeColor = specSettings.colors.text.dots.worse
+				rakeColor = sharedSettings.colors.text.dots.worse.color
 			else
-				rakeColor = specSettings.colors.text.dots.same
+				rakeColor = sharedSettings.colors.text.dots.same.color
 			end
 
 			rakeCount = string.format("|c%s%.0f|r", rakeColor, _rakeCount)
@@ -1465,21 +1461,21 @@ local function RefreshLookupData_Feral()
 			rakePercent = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor"))
 			rakeTime = string.format("|c%s%s|r", rakeColor, TRB.Functions.BarText:TimerPrecision(_rakeTime))
 		else
-			rakeCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _rakeCount)
-			rakeSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-			rakeCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor"))
-			rakePercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-			rakeTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			rakeCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _rakeCount)
+			rakeSnapshot = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, 0)
+			rakeCurrent = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor"))
+			rakePercent = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, 0)
+			rakeTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.thrash.debuffId].active then
-			local thrashColor = specSettings.colors.text.dots.same
+			local thrashColor = sharedSettings.colors.text.dots.same.color
 			if _thrashPercent > 1 then
-				thrashColor = specSettings.colors.text.dots.better
+				thrashColor = sharedSettings.colors.text.dots.better.color
 			elseif _thrashPercent < 1 then
-				thrashColor = specSettings.colors.text.dots.worse
+				thrashColor = sharedSettings.colors.text.dots.worse.color
 			else
-				thrashColor = specSettings.colors.text.dots.same
+				thrashColor = sharedSettings.colors.text.dots.same.color
 			end
 
 			thrashCount = string.format("|c%s%.0f|r", thrashColor, _thrashCount)
@@ -1488,21 +1484,21 @@ local function RefreshLookupData_Feral()
 			thrashPercent = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor"))
 			thrashTime = string.format("|c%s%s|r", thrashColor, TRB.Functions.BarText:TimerPrecision(_thrashTime))
 		else
-			thrashCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _thrashCount)
-			thrashSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-			thrashCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
-			thrashPercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-			thrashTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			thrashCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _thrashCount)
+			thrashSnapshot = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, 0)
+			thrashCurrent = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
+			thrashPercent = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, 0)
+			thrashTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if talents:IsTalentActive(spells.lunarInspiration) == true and target ~= nil and target.spells[spells.moonfire.debuffId].active then
-			local moonfireColor = specSettings.colors.text.dots.same
+			local moonfireColor = sharedSettings.colors.text.dots.same.color
 			if _moonfirePercent > 1 then
-				moonfireColor = specSettings.colors.text.dots.better
+				moonfireColor = sharedSettings.colors.text.dots.better.color
 			elseif _moonfirePercent < 1 then
-				moonfireColor = specSettings.colors.text.dots.worse
+				moonfireColor = sharedSettings.colors.text.dots.worse.color
 			else
-				moonfireColor = specSettings.colors.text.dots.same
+				moonfireColor = sharedSettings.colors.text.dots.same.color
 			end
 
 			moonfireCount = string.format("|c%s%.0f|r", moonfireColor, _moonfireCount)
@@ -1511,11 +1507,11 @@ local function RefreshLookupData_Feral()
 			moonfirePercent = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor"))
 			moonfireTime = string.format("|c%s%s|r", moonfireColor, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 		else
-			moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
-			moonfireSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-			moonfireCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
-			moonfirePercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-			moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			moonfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _moonfireCount)
+			moonfireSnapshot = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, 0)
+			moonfireCurrent = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
+			moonfirePercent = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, 0)
+			moonfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		ripTime = TRB.Functions.BarText:TimerPrecision(_ripTime)
@@ -1827,6 +1823,7 @@ local function RefreshLookupData_Restoration()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.druid.restoration
+	local sharedSettings = TRB.Data.specCache["restoration"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -1836,8 +1833,8 @@ local function RefreshLookupData_Restoration()
 ---@diagnostic disable-next-line: cast-local-type
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = TRB.Data.settings.druid.restoration.colors.text.current
-	local castingManaColor = TRB.Data.settings.druid.restoration.colors.text.casting
+	local currentManaColor = TRB.Data.settings.druid.restoration.colors.text.current.color
+	local castingManaColor = TRB.Data.settings.druid.restoration.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = TRB.Data.settings.druid.restoration.manaPrecision or 1
@@ -1921,7 +1918,7 @@ local function RefreshLookupData_Restoration()
 
 	--$passive
 	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
-	local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+	local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -1982,31 +1979,31 @@ local function RefreshLookupData_Restoration()
 
 	local moonfireTime
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.moonfire.id].active then
 			if _moonfireTime > spells.moonfire.pandemicTime then
-				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _moonfireCount)
-				moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
+				moonfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _moonfireCount)
+				moonfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 			else
-				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _moonfireCount)
-				moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
+				moonfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _moonfireCount)
+				moonfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 			end
 		else
-			moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
-			moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			moonfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _moonfireCount)
+			moonfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if target ~= nil and target.spells[spells.sunfire.id].active then
 			if _sunfireTime > spells.sunfire.pandemicTime then
-				sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _sunfireCount)
-				sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
+				sunfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _sunfireCount)
+				sunfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
 			else
-				sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _sunfireCount)
-				sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
+				sunfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _sunfireCount)
+				sunfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
 			end
 		else
-			sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _sunfireCount)
-			sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			sunfireCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _sunfireCount)
+			sunfireTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		sunfireTime = TRB.Functions.BarText:TimerPrecision(_sunfireTime)
@@ -2474,14 +2471,14 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.neverShow == false then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 				refreshText = true
-				local affectingCombat = UnitAffectingCombat("player")
+				local affectingCombat = TRB.Data.character.inCombat
 				local passiveBarValue = 0
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local flashBar = false
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2836,26 +2833,26 @@ local function UpdateResourceBar()
 						overrideOk = false
 
 						if UnitIsDeadOrGhost("target") or not UnitCanAttack("player", "target") or snapshotData.targetData.currentTargetGuid == nil then
-							thresholdColor = specSettings.colors.text.dots.same
+							thresholdColor = specCacheSettings.colors.text.dots.same.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
 						elseif snapshotData.targetData.targets == nil or snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid] == nil then
-							thresholdColor = specSettings.colors.text.dots.down
+							thresholdColor = specCacheSettings.colors.text.dots.down.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 						else
 							local snapshotValue = (snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].spells[spell.debuffId].snapshot or 1) / TRB.Data.snapshotData.attributes.bleeds[spell.settingKey]
 							local bleedUp = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].spells[spell.debuffId].active
 							
 							if not bleedUp then
-								thresholdColor = specSettings.colors.text.dots.down
+								thresholdColor = specCacheSettings.colors.text.dots.down.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 							elseif snapshotValue > 1 then
-								thresholdColor = specSettings.colors.text.dots.better
+								thresholdColor = specCacheSettings.colors.text.dots.better.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedBetter
 							elseif snapshotValue < 1 then
-								thresholdColor = specSettings.colors.text.dots.worse
+								thresholdColor = specCacheSettings.colors.text.dots.worse.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 							else
-								thresholdColor = specSettings.colors.text.dots.same
+								thresholdColor = specCacheSettings.colors.text.dots.same.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
 							end
 						end
@@ -3034,7 +3031,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				if IsStealthed() then
 					barBorderColor = specSettings.colors.bar.borderStealth
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -3247,7 +3244,7 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				local affectingCombat = UnitAffectingCombat("player")
+				local affectingCombat = TRB.Data.character.inCombat
 
 				if affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive then
 					barColor = specSettings.colors.bar.noEfflorescence
@@ -3531,14 +3528,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-combatFrame:SetScript("OnEvent", function(self, event, ...)
-	if event =="PLAYER_REGEN_DISABLED" then
-		TRB.Functions.Bar:ShowResourceBar()
-	else
-		TRB.Functions.Bar:HideResourceBar()
-	end
-end)
-
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -3640,7 +3629,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Druid.LoadDefaultSettings(false)
 
@@ -3663,7 +3652,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Druid.LoadDefaultSettings(true)
 					TRB.Data.settings = settings
@@ -3808,32 +3797,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = false
 	end
 
-	if TRB.Data.specSupported then
-		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Details.addonData.registered = true
-		TRB.Functions.Aura:EnableUnitAura()
-		TRB.Functions.Character:EnableCharacterChange()
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else
-		TRB.Data.specSupported = false
-		targetsTimerFrame:SetScript("OnUpdate", nil)
-		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:DisableUnitAura()
-		TRB.Functions.Character:DisableCharacterChange()
-		TRB.Details.addonData.registered = false
-		barContainerFrame:Hide()
-	end
-
-	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
@@ -3842,7 +3806,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 then --Balance is a special snowflake
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
-		local affectingCombat = UnitAffectingCombat("player")
+		local affectingCombat = TRB.Data.character.inCombat
 		local settings = TRB.Data.settings.druid.balance
 		if not TRB.Data.specSupported or force or
 			(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.balance.displayBar.dragonriding) or
@@ -3933,7 +3897,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		return false
 	end
 
-	local affectingCombat = UnitAffectingCombat("player")
+	local affectingCombat = TRB.Data.character.inCombat
 
 	if TRB.Data.character.specId == 1 then -- Balance
 		if var == "$moonkinForm" then

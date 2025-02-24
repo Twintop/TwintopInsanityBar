@@ -14,8 +14,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 11.1.0.0
-## X-ReleaseType: beta01
-## X-ReleaseDate: 2025-02-02
+## X-ReleaseType: release
+## X-ReleaseDate: 2025-02-25
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -109,6 +109,7 @@ Functions\Item.lua
 Functions\IO.lua
 Functions\LibSharedMedia.lua
 Functions\Number.lua
+Functions\Settings.lua
 Functions\String.lua
 Functions\Table.lua
 Functions\Talent.lua

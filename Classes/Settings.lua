@@ -7,9 +7,10 @@ TRB.Classes = TRB.Classes or {}
 ---@field public colors table?
 ---@field public comboPoints table?
 ---@field public displayBar table?
----@field public displayText table?
+---@field public displayText TRB.Classes.DisplayText
 ---@field public textures table?
 ---@field public thresholds table?
+---@field public precision table?
 TRB.Classes.SharedSpecSetting = {}
 TRB.Classes.SharedSpecSetting.__index = TRB.Classes.SharedSpecSetting
 
@@ -26,6 +27,7 @@ function TRB.Classes.SharedSpecSetting:New()
     self.displayText = nil
     self.textures = nil
     self.thresholds = nil
+    self.precision = nil
 
     return self
 end

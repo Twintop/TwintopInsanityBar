@@ -7,15 +7,12 @@ local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local resource2Frame = TRB.Frames.resource2Frame
 local resourceFrame = TRB.Frames.resourceFrame
 local castingFrame = TRB.Frames.castingFrame
 local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-local timerFrame = TRB.Frames.timerFrame
-local combatFrame = TRB.Frames.combatFrame
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -794,6 +791,7 @@ end
 
 local function RefreshLookupData_Assassination()
 	local specSettings = TRB.Data.settings.rogue.assassination
+	local sharedSettings = TRB.Data.specCache["assassination"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -807,14 +805,14 @@ local function RefreshLookupData_Assassination()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current
-	local castingEnergyColor = specSettings.colors.text.casting
+	local currentEnergyColor = sharedSettings.colors.text.current.color
+	local castingEnergyColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap
-			castingEnergyColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = sharedSettings.colors.text.overcap.color
+			castingEnergyColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -824,14 +822,14 @@ local function RefreshLookupData_Assassination()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold
-				castingEnergyColor = specSettings.colors.text.overThreshold
+				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = specSettings.colors.text.spending
+		castingEnergyColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$energy
@@ -854,13 +852,13 @@ local function RefreshLookupData_Assassination()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
@@ -956,102 +954,102 @@ local function RefreshLookupData_Assassination()
 	end
 
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		-- Bleeds
 		if _ctTime > spells.crimsonTempest.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			ctCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ctCount)
-			ctTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ctTime))
+			ctCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _ctCount)
+			ctTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_ctTime))
 		elseif _ctTime > 0 then
-			ctCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _ctCount)
-			ctTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_ctTime))
+			ctCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _ctCount)
+			ctTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_ctTime))
 		else
-			ctCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ctCount)
-			ctTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			ctCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ctCount)
+			ctTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _garroteTime > spells.garrote.pandemicTime then
-			garroteCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _garroteCount)
-			garroteTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_garroteTime))
+			garroteCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _garroteCount)
+			garroteTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_garroteTime))
 		elseif _garroteTime > 0 then
-			garroteCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _garroteCount)
-			garroteTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_garroteTime))
+			garroteCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _garroteCount)
+			garroteTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_garroteTime))
 		else
-			garroteCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _garroteCount)
-			garroteTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			garroteCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _garroteCount)
+			garroteTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 					
 		if _ibTime > 0 then
-			ibCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ibCount)
-			ibTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ibTime))
+			ibCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _ibCount)
+			ibTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_ibTime))
 		else
-			ibCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ibCount)
-			ibTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			ibCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ibCount)
+			ibTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _ruptureTime > spells.rupture.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
+			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _ruptureCount)
+			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 		elseif _ruptureTime > 0 then
-			ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
+			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _ruptureCount)
+			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 		else
-			ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ruptureCount)
+			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		--Poisons
 		if _cpTime > 0 then
-			cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _cpCount)
-			cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_cpTime))
+			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _cpCount)
+			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_cpTime))
 		else
-			cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _cpCount)
-			cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _cpCount)
+			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _dpTime > 0 then
-			dpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _dpCount)
-			dpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_dpTime))
+			dpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _dpCount)
+			dpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_dpTime))
 		else
-			dpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _dpCount)
-			dpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			dpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _dpCount)
+			dpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _npTime > 0 then
-			npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _npCount)
-			npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_npTime))
+			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _npCount)
+			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_npTime))
 		else
-			npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _npCount)
-			npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _npCount)
+			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _wpTime > 0 then
-			wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _wpCount)
-			wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_wpTime))
+			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _wpCount)
+			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_wpTime))
 		else
-			wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _wpCount)
-			wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _wpCount)
+			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _atrophicPoisonTime > 0 then
-			atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
+			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _atrophicPoisonCount)
+			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
 		else
-			atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _atrophicPoisonCount)
+			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _amplifyingPoisonTime > 0 then
-			amplifyingPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _amplifyingPoisonCount)
-			amplifyingPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_amplifyingPoisonTime))
+			amplifyingPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _amplifyingPoisonCount)
+			amplifyingPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_amplifyingPoisonTime))
 		else
-			amplifyingPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _amplifyingPoisonCount)
-			amplifyingPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			amplifyingPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _amplifyingPoisonCount)
+			amplifyingPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _sbsOnTarget == false and talents:IsTalentActive(spells.serratedBoneSpike) then
-			sbsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _sbsCount)
+			sbsCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _sbsCount)
 		else
-			sbsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _sbsCount)
+			sbsCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _sbsCount)
 		end
 	else
 		-- Bleeds
@@ -1075,11 +1073,11 @@ local function RefreshLookupData_Assassination()
 	local sadTime
 	
 	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	elseif _sadTime > 0 then
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	else
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 	end
 
 	
@@ -1271,6 +1269,7 @@ end
 
 local function RefreshLookupData_Outlaw()
 	local specSettings = TRB.Data.settings.rogue.outlaw
+	local sharedSettings = TRB.Data.specCache["outlaw"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1283,14 +1282,14 @@ local function RefreshLookupData_Outlaw()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current
-	local castingEnergyColor = specSettings.colors.text.casting
+	local currentEnergyColor = sharedSettings.colors.text.current.color
+	local castingEnergyColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap
-			castingEnergyColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = sharedSettings.colors.text.overcap.color
+			castingEnergyColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1300,14 +1299,14 @@ local function RefreshLookupData_Outlaw()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold
-				castingEnergyColor = specSettings.colors.text.overThreshold
+				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = specSettings.colors.text.spending
+		castingEnergyColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$energy
@@ -1330,13 +1329,13 @@ local function RefreshLookupData_Outlaw()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
@@ -1381,38 +1380,38 @@ local function RefreshLookupData_Outlaw()
 	end
 
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		--Poisons
 		if _atrophicPoisonTime > 0 then
-			atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
+			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _atrophicPoisonCount)
+			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
 		else
-			atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _atrophicPoisonCount)
+			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _cpTime > 0 then
-			cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _cpCount)
-			cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_cpTime))
+			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _cpCount)
+			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_cpTime))
 		else
-			cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _cpCount)
-			cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _cpCount)
+			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _npTime > 0 then
-			npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _npCount)
-			npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_npTime))
+			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _npCount)
+			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_npTime))
 		else
-			npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _npCount)
-			npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _npCount)
+			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _wpTime > 0 then
-			wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _wpCount)
-			wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_wpTime))
+			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _wpCount)
+			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_wpTime))
 		else
-			wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _wpCount)
-			wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _wpCount)
+			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		-- Poisons
@@ -1427,11 +1426,11 @@ local function RefreshLookupData_Outlaw()
 	local sadTime
 	
 	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	elseif _sadTime > 0 then
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	else
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 	end
 
 	local rollTheBones = snapshots[spells.rollTheBones.id]
@@ -1650,6 +1649,7 @@ end
 
 local function RefreshLookupData_Subtlety()
 	local specSettings = TRB.Data.settings.rogue.subtlety
+	local sharedSettings = TRB.Data.specCache["subtlety"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1663,14 +1663,14 @@ local function RefreshLookupData_Subtlety()
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-	local currentEnergyColor = specSettings.colors.text.current
-	local castingEnergyColor = specSettings.colors.text.casting
+	local currentEnergyColor = sharedSettings.colors.text.current.color
+	local castingEnergyColor = sharedSettings.colors.text.casting.color
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = specSettings.colors.text.overcap
-			castingEnergyColor = specSettings.colors.text.overcap
-		elseif specSettings.colors.text.overThresholdEnabled then
+	if TRB.Data.character.inCombat then
+		if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentEnergyColor = sharedSettings.colors.text.overcap.color
+			castingEnergyColor = sharedSettings.colors.text.overcap.color
+		elseif sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1680,14 +1680,14 @@ local function RefreshLookupData_Subtlety()
 			end
 
 			if _overThreshold then
-				currentEnergyColor = specSettings.colors.text.overThreshold
-				castingEnergyColor = specSettings.colors.text.overThreshold
+				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = specSettings.colors.text.spending
+		castingEnergyColor = sharedSettings.colors.text.spending.color
 	end
 
 	--$energy
@@ -1710,13 +1710,13 @@ local function RefreshLookupData_Subtlety()
 	end
 
 	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+	local regenEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenEnergy)
 
 	_passiveEnergy = _regenEnergy
 	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-	local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+	local passiveEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergy)
+	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
 	--$energyTotal
 	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
 	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
@@ -1766,50 +1766,50 @@ local function RefreshLookupData_Subtlety()
 		_wpTime = target.spells[spells.woundPoison.id].remainingTime or 0
 	end
 
-	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		-- Bleeds
 		if _ruptureTime > spells.rupture.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
+			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _ruptureCount)
+			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 		elseif _ruptureTime > 0 then
-			ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
+			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _ruptureCount)
+			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 		else
-			ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ruptureCount)
+			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		--Poisons
 		if _cpTime > 0 then
-			cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _cpCount)
-			cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_cpTime))
+			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _cpCount)
+			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_cpTime))
 		else
-			cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _cpCount)
-			cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _cpCount)
+			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _npTime > 0 then
-			npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _npCount)
-			npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_npTime))
+			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _npCount)
+			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_npTime))
 		else
-			npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _npCount)
-			npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _npCount)
+			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _wpTime > 0 then
-			wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _wpCount)
-			wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_wpTime))
+			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _wpCount)
+			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_wpTime))
 		else
-			wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _wpCount)
-			wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _wpCount)
+			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if _atrophicPoisonTime > 0 then
-			atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
+			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _atrophicPoisonCount)
+			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
 		else
-			atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _atrophicPoisonCount)
+			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 		end
 	else
 		-- Bleeds
@@ -1828,11 +1828,11 @@ local function RefreshLookupData_Subtlety()
 	local sadTime
 	
 	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	elseif _sadTime > 0 then
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	else
-		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
+		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
 	end
 
 	--$flagellationTime
@@ -2299,7 +2299,7 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				local affectingCombat = UnitAffectingCombat("player")
+				local affectingCombat = TRB.Data.character.inCombat
 
 				if affectingCombat then
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
@@ -2313,7 +2313,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				if IsStealthed() or stealthViaBuff then
 					barBorderColor = specSettings.colors.bar.borderStealth
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2616,7 +2616,7 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				local affectingCombat = UnitAffectingCombat("player")
+				local affectingCombat = TRB.Data.character.inCombat
 
 				if affectingCombat then
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
@@ -2635,7 +2635,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderRtbGood
 				elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == false and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 					barBorderColor = specSettings.colors.bar.borderRtbBad
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2924,7 +2924,7 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				local affectingCombat = UnitAffectingCombat("player")
+				local affectingCombat = TRB.Data.character.inCombat
 
 				if affectingCombat then
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
@@ -2943,7 +2943,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderShadowcraft
 				elseif stealthViaBuff or IsStealthed() then
 					barBorderColor = specSettings.colors.bar.borderStealth
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -3252,14 +3252,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-combatFrame:SetScript("OnEvent", function(self, event, ...)
-	if event =="PLAYER_REGEN_DISABLED" then
-		TRB.Functions.Bar:ShowResourceBar()
-	else
-		TRB.Functions.Bar:HideResourceBar()
-	end
-end)
-
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -3377,7 +3369,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				TRB.Details.addonData.loaded = true
 
 				if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
-					TRB.Options:PortForwardSettings()
+					TRB.Functions.Settings:PortForwardSettings()
 
 					local settings = TRB.Options.Rogue.LoadDefaultSettings(false)
 
@@ -3400,7 +3392,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
-					TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
+					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
 					local settings = TRB.Options.Rogue.LoadDefaultSettings(true)
 					TRB.Data.settings = settings
@@ -3495,35 +3487,14 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = false
 	end
 
-	if TRB.Data.specSupported then
+	if TRB.Data.specSupported then		
 		TRB.Data.resource = Enum.PowerType.Energy
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.ComboPoints
 		TRB.Data.resource2Factor = 1
-
-		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Details.addonData.registered = true
-		TRB.Functions.Aura:EnableUnitAura()
-		TRB.Functions.Character:EnableCharacterChange()
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else
-		targetsTimerFrame:SetScript("OnUpdate", nil)
-		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:DisableUnitAura()
-		TRB.Functions.Character:DisableCharacterChange()
-		TRB.Details.addonData.registered = false
-		barContainerFrame:Hide()
 	end
-	TRB.Functions.Bar:HideResourceBar()
+
+	TRB.Functions.Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)

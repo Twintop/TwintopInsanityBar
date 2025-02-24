@@ -6,6 +6,10 @@ local oUi = TRB.Data.constants.optionsUi
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 local L = TRB.Localization
 
+local function GetUseGlobalSettingsColor()
+	return 100/255, 225/255, 200/225
+end
+
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
@@ -2258,6 +2262,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		f = controls.checkBoxes.useGlobal
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
 		f.tooltip = L["CheckboxUseGlobalTooltip_Font"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayText)
 		f:SetScript("OnClick", function(self, ...)
@@ -2336,6 +2341,183 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.displayText.default.fontSize = value
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end)
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, classId, specId, yCoord)
+	local className
+
+	if classId ~= nil then
+		_, className, _ = GetClassInfo(classId)
+	else
+		className = "Global"
+	end
+
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	if specName == nil then
+		specName = ""
+	end
+
+	local f = nil
+
+	controls.colors.text = controls.colors.text or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	yCoord = yCoord - 30
+	local lowerClassName = string.lower(className)
+	controls.checkBoxes.useGlobalTextColors = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_textColors", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.useGlobalTextColors
+	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+	getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+	f.tooltip = L["CheckboxUseGlobalTooltip_TextColors"]
+	f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textColors)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.global[lowerClassName][specName].textColors = self:GetChecked()
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end)
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, classId, specId, yCoord, dotCheckbox, dotTooltip, showUp, showPandemic, showDown)
+	showUp = showUp or true
+	showPandemic = showPandemic or true
+	showDown = showDown or true
+	
+	local f = nil
+	local className
+
+	if classId ~= nil then
+		_, className, _ = GetClassInfo(classId)
+	else
+		className = "Global"
+	end
+
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	if specName == nil then
+		specName = ""
+	end
+
+	yCoord = yCoord - 30
+	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
+	
+	controls.colors.text = controls.colors.text or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 25
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalDotColors = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_dotColors", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalDotColors
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_DotColors"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].dotColors)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].dotColors = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
+			TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		end)
+	end
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_dotColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dotColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(dotCheckbox)
+	f.tooltip =  dotTooltip
+	f:SetChecked(spec.colors.text.dots.options.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.dots.options.enabled = self:GetChecked()
+	end)
+
+	controls.colors.dots = {}
+	
+	if showUp then
+		yCoord = yCoord - 30
+		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up.color, 550, 25, oUi.xCoord, yCoord)
+		f = controls.colors.dots.up
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
+		end)
+	end
+
+	if showPandemic then
+		yCoord = yCoord - 30
+		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic.color, 550, 25, oUi.xCoord, yCoord)
+		f = controls.colors.dots.pandemic
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+		end)
+	end
+
+	if showDown then
+		yCoord = yCoord - 30
+		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down.color, 550, 25, oUi.xCoord, yCoord)
+		f = controls.colors.dots.down
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
+		end)
+	end
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, classId, specId, yCoord)
+	local className
+
+	if classId ~= nil then
+		_, className, _ = GetClassInfo(classId)
+	else
+		className = "Global"
+	end
+
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	if specName == nil then
+		specName = ""
+	end
+
+	local f = nil
+	local title = ""
+
+	controls.colors.text = controls.colors.text or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	yCoord = yCoord - 30
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 25
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalPrecision = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_precision", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalPrecision
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_Precision"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].precision)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].precision = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
+			TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+			TRB.Data.snapshotData.attributes.cacheRefresh = true
+		end)
+	end
+	yCoord = yCoord - 50
+
+	title = L["SecondaryDecimalPrecision"]
+	controls.precisionSecondary = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.precision.secondary, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.precisionSecondary:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.precision.secondary = value
+		TRB.Data.snapshotData.attributes.cacheRefresh = true
 	end)
 
 	return yCoord

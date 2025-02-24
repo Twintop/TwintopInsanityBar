@@ -205,7 +205,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		
 		-- Split these out to only call methods if we need to
 		if settings.thresholds.outOfRange then
-			if UnitAffectingCombat("player") then
+			if TRB.Data.character.inCombat then
 				if C_Spell.IsSpellInRange(spell.name, "target") == 0 then
 					outOfRange = true
 					thresholdColor = settings.colors.threshold.outOfRange

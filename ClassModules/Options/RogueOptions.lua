@@ -175,7 +175,10 @@ end
 
 local function AssassinationLoadDefaultSettings(includeBarText)
 	local settings = {
-		hastePrecision=2,
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
 		thresholds = {
 			width = 2,
 			overlapBorder=true,
@@ -309,19 +312,36 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 		},
 		colors = {
 			text = {
-				current="FFFFFF00",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FFD59900",
-				overcap="FFFF0000",
-				overThreshold="FF00FF00",
-				overThresholdEnabled=false,
-				overcapEnabled=true,
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				current = {
+					color = "FFFFFF00"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FFD59900"
+				},
+				overcap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				overThreshold = {
+					color = "FF00FF00",
+					enabled = false
+				},
+				dots = {
+					options = {
+						enabled=true,
+					},
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFFFF00"
+					}
 				}
 			},
 			bar = {
@@ -565,7 +585,10 @@ end
 
 local function OutlawLoadDefaultSettings(includeBarText)
 	local settings = {
-		hastePrecision=2,
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
 		thresholds = {
 			width = 2,
 			overlapBorder=true,
@@ -699,19 +722,36 @@ local function OutlawLoadDefaultSettings(includeBarText)
 		},
 		colors = {
 			text = {
-				current="FFFFFF00",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FFD59900",
-				overcap="FFFF0000",
-				overThreshold="FF00FF00",
-				overThresholdEnabled=false,
-				overcapEnabled=true,
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				current = {
+					color = "FFFFFF00"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FFD59900"
+				},
+				overcap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				overThreshold = {
+					color = "FF00FF00",
+					enabled = false
+				},
+				dots = {
+					options = {
+						enabled=true,
+					},
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFFFF00"
+					}
 				}
 			},
 			bar = {
@@ -958,7 +998,10 @@ end
 
 local function SubtletyLoadDefaultSettings(includeBarText)
 	local settings = {
-		hastePrecision=2,
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
 		thresholds = {
 			width = 2,
 			overlapBorder=true,
@@ -1096,19 +1139,36 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 		},
 		colors = {
 			text = {
-				current="FFFFFF00",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FFD59900",
-				overcap="FFFF0000",
-				overThreshold="FF00FF00",
-				overThresholdEnabled=false,
-				overcapEnabled=true,
-				dots={
-					enabled=true,
-					up="FFFFFFFF",
-					down="FFFF0000",
-					pandemic="FFFFFF00"
+				current = {
+					color = "FFFFFF00"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FFD59900"
+				},
+				overcap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				overThreshold = {
+					color = "FF00FF00",
+					enabled = false
+				},
+				dots = {
+					options = {
+						enabled=true,
+					},
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFFFF00"
+					}
 				}
 			},
 			bar = {
@@ -1192,7 +1252,7 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 end
 
 local function LoadDefaultSettings(includeBarText)
-	local settings = TRB.Options.LoadDefaultSettings()
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
 	settings.rogue.assassination = AssassinationLoadDefaultSettings(includeBarText)
 	settings.rogue.outlaw = OutlawLoadDefaultSettings(includeBarText)
@@ -1781,42 +1841,44 @@ local function AssassinationConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 4, 1, yCoord)
+	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 	
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerPassiveEnergy"], spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerPassiveEnergy"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overThresholdEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 	f.tooltip = L["CheckboxThresholdOverTooltip"]
-	f:SetChecked(spec.colors.text.overThresholdEnabled)
+	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overThresholdEnabled = self:GetChecked()
+		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
 	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1824,63 +1886,14 @@ local function AssassinationConstructFontAndTextPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 	f.tooltip = L["CheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcapEnabled)
+	f:SetChecked(spec.colors.text.overcap.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcapEnabled = self:GetChecked()
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 	
-
-	yCoord = yCoord - 30
-	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 25
-
-	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_dotColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dotColor
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueDotChangeColorCheckbox"])
-	f.tooltip = L["RogueDotChangeColorCheckboxTooltip"]
-	f:SetChecked(spec.colors.text.dots.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.dots.enabled = self:GetChecked()
-	end)
-
-	controls.colors.dots = {}
-
-	controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
-	f = controls.colors.dots.up
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
-	end)
-
-	controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
-	f = controls.colors.dots.pandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
-	end)
-
-	controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
-	f = controls.colors.dots.down
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
-	end)
-
-
-	yCoord = yCoord - 130
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-	title = L["SecondaryDecimalPrecision"]
-	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.hastePrecision = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 1, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
+	
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 1, yCoord)
 end
 
 local function AssassinationConstructAudioAndTrackingPanel(parent)
@@ -2796,42 +2809,44 @@ local function OutlawConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 4, 2, yCoord)
+	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 	
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerPassiveEnergy"], spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerPassiveEnergy"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overThresholdEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 	f.tooltip = L["CheckboxThresholdOverTooltip"]
-	f:SetChecked(spec.colors.text.overThresholdEnabled)
+	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overThresholdEnabled = self:GetChecked()
+		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
 	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2839,63 +2854,14 @@ local function OutlawConstructFontAndTextPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 	f.tooltip = L["CheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcapEnabled)
+	f:SetChecked(spec.colors.text.overcap.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcapEnabled = self:GetChecked()
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 	
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 2, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
 
-	yCoord = yCoord - 30
-	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 25
-
-	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_dotColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dotColor
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueDotChangeColorCheckbox"])
-	f.tooltip = L["RogueDotChangeColorCheckboxTooltip"]
-	f:SetChecked(spec.colors.text.dots.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.dots.enabled = self:GetChecked()
-	end)
-
-	controls.colors.dots = {}
-
-	controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
-	f = controls.colors.dots.up
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
-	end)
-
-	controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
-	f = controls.colors.dots.pandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
-	end)
-
-	controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
-	f = controls.colors.dots.down
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
-	end)
-
-
-	yCoord = yCoord - 130
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-	title = L["SecondaryDecimalPrecision"]
-	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.hastePrecision = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 2, yCoord)
 end
 
 local function OutlawConstructAudioAndTrackingPanel(parent)
@@ -3804,42 +3770,44 @@ local function SubtletyConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 4, 3, yCoord)
+	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 	
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerPassiveEnergy"], spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerPassiveEnergy"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overThresholdEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 	f.tooltip = L["CheckboxThresholdOverTooltip"]
-	f:SetChecked(spec.colors.text.overThresholdEnabled)
+	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overThresholdEnabled = self:GetChecked()
+		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
 	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -3847,63 +3815,14 @@ local function SubtletyConstructFontAndTextPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 	f.tooltip = L["CheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcapEnabled)
+	f:SetChecked(spec.colors.text.overcap.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcapEnabled = self:GetChecked()
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 	
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 3, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
 
-	yCoord = yCoord - 30
-	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 25
-
-	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_dotColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dotColor
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueDotChangeColorCheckbox"])
-	f.tooltip = L["RogueDotChangeColorCheckboxTooltip"]
-	f:SetChecked(spec.colors.text.dots.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.dots.enabled = self:GetChecked()
-	end)
-
-	controls.colors.dots = {}
-
-	controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
-	f = controls.colors.dots.up
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
-	end)
-
-	controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
-	f = controls.colors.dots.pandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
-	end)
-
-	controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
-	f = controls.colors.dots.down
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
-	end)
-
-
-	yCoord = yCoord - 130
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-	title = L["SecondaryDecimalPrecision"]
-	controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.hastePrecision = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = controls
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 3, yCoord)
 end
 
 local function SubtletyConstructAudioAndTrackingPanel(parent)
