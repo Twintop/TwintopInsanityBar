@@ -3955,7 +3955,7 @@ local function ShadowConstructFontAndTextPanel(parent)
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overThresholdEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 	f.tooltip = L["PriestShadowCheckboxThresholdOverTooltip"]
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
@@ -3976,7 +3976,7 @@ local function ShadowConstructFontAndTextPanel(parent)
 	local dotVariables = "$swpCount/$swpTime, $vtCount/$vtTime"
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 5, 3, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
 
-	yCoord = yCoord - 130
+	yCoord = yCoord - 40
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderHasteThreshold"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
@@ -4037,6 +4037,8 @@ local function ShadowConstructFontAndTextPanel(parent)
 		self.EditBox:SetText(value)
 		spec.hasteThreshold = value
 	end)
+
+	yCoord = yCoord - 10
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 5, 3, yCoord)
 
