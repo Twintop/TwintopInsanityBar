@@ -2701,7 +2701,7 @@ local function UpdateResourceBar()
 				thresholdCount = thresholdCount + 1
 				TRB.Data.cache.values.threshold[spells.shadowfiend.id] = TRB.Data.cache.values.threshold[spells.shadowfiend.id] or {}
 				if (talents:IsTalentActive(spells.shadowfiend) or talents:IsTalentActive(spells.mindbender) or talents:IsTalentActive(spells.voidwraith)) and specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame,thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
 				else
 					TRB.Functions.Threshold:Hide(spells.shadowfiend.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
@@ -2709,7 +2709,7 @@ local function UpdateResourceBar()
 				thresholdCount = thresholdCount + 1
 				TRB.Data.cache.values.threshold[spells.cannibalize.id] = TRB.Data.cache.values.threshold[spells.cannibalize.id] or {}
 				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
@@ -2799,7 +2799,11 @@ local function UpdateResourceBar()
 									local shadowfiendMana
 
 									if spell.id == spells.voidwraith.id and vwActive then
-										shadowfiendMana = swingsRemaining * snapshot.voidwraith.attributes.resourcePercent * TRB.Data.character.maxResource
+										if mbActive then
+											shadowfiendMana = swingsRemaining * snapshot.voidwraith.attributes.resourcePercentMindbender * TRB.Data.character.maxResource
+										else
+											shadowfiendMana = swingsRemaining * snapshot.voidwraith.attributes.resourcePercent * TRB.Data.character.maxResource
+										end
 									elseif spell.id == spells.mindbender.id and mbActive then
 										shadowfiendMana = swingsRemaining * snapshot.mindbender.attributes.resourcePercent * TRB.Data.character.maxResource
 									else

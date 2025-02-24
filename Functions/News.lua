@@ -51,6 +51,7 @@ local content = [====[
 
 - [#416 - UPDATE](#416) Adjust the following spells:
 <br/>&emsp;&ensp;- Update Evangelism spell ID.
+<br/>&emsp;&ensp;- Update Voidwraith's mana regen value when also talented into Mindbender.
 <br/>&emsp;&ensp;- Removed Rapture and Purge the Wicked.
 
 ### Holy
