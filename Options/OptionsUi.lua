@@ -6,6 +6,10 @@ local oUi = TRB.Data.constants.optionsUi
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 local L = TRB.Localization
 
+local function GetUseGlobalSettingsColor()
+	return 100/255, 225/255, 200/225
+end
+
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
@@ -2258,6 +2262,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		f = controls.checkBoxes.useGlobal
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
 		f.tooltip = L["CheckboxUseGlobalTooltip_Font"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayText)
 		f:SetScript("OnClick", function(self, ...)
@@ -2366,6 +2371,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 	f = controls.checkBoxes.useGlobalTextColors
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+	getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
 	f.tooltip = L["CheckboxUseGlobalTooltip_TextColors"]
 	f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textColors)
 	f:SetScript("OnClick", function(self, ...)
@@ -2409,6 +2415,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spe
 		f = controls.checkBoxes.useGlobalDotColors
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
 		f.tooltip = L["CheckboxUseGlobalTooltip_DotColors"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].dotColors)
 		f:SetScript("OnClick", function(self, ...)
@@ -2490,6 +2497,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		f = controls.checkBoxes.useGlobalPrecision
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
 		f.tooltip = L["CheckboxUseGlobalTooltip_Precision"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].precision)
 		f:SetScript("OnClick", function(self, ...)

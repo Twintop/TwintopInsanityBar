@@ -229,4 +229,9 @@ if locale == "enGB" then
     L["WarlockAfflictionCheckboxMalignOmenTooltip"] = "When checked, filled and unfilled Soul Shards will be this colour to show that the next cast of Malefic Rapture will also use a Malign Omen proc."
     L["WarlockAfflictionCheckboxSucculentSoulTooltip"] = "When checked, filled and unfilled Soul Shards borders will be this colour to show that the next cast of Malefic Rapture will also use a Succulent Soul proc."
     L["WarlockAfflictionCheckboxShadowEmbraceNotMaxTooltip"] = "When checked, the Mana Bar colour will change when the current target does not have maximum stacks of Shadow Embrace. Only active when talented into Shadow Embrace."
+    L["CheckboxUseGlobalTooltip_TextColors"] = "When checked, the global settings for resource text colours will be used."
+    L["CheckboxUseGlobalTooltip_DotColors"] = "When checked, the global settings for DoT text colours will be used."
+    L["GlobalTextColorsHeader"] = "Resource Text Colours"
+    L["GlobalCheckboxThresholdOverTooltip"] = "This will change the Resource text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+    L["GlobalCheckboxThresholdOvercapTooltip"] = "This will change the Resource text colour when your current resource or a hardcast spell will result in overcapping maximum resources."
 end
