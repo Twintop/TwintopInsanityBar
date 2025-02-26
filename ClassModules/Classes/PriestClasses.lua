@@ -47,7 +47,7 @@ TRB.Classes.Priest.ShadowfiendEntry.__index = TRB.Classes.Priest.ShadowfiendEntr
 ---@param talents TRB.Classes.Talents # Talents list
 ---@return TRB.Classes.Priest.ShadowfiendEntry
 function TRB.Classes.Priest.ShadowfiendEntry:New(totemId, resourceCalculationFunction, settings, shadowfiend, mindbender, voidwraith, talents)
-    ---@diagnostic disable-next-line: missing-fields
+---@diagnostic disable-next-line: missing-fields
     local self = {} --[[@as TRB.Classes.Priest.ShadowfiendEntry]]
     self = setmetatable(self, TRB.Classes.Priest.ShadowfiendEntry)
 
