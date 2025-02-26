@@ -296,8 +296,8 @@ end
 function TRB.Classes.Target:GetHealthPercent()
     self:UpdateUnitToken()
 	if self.unitToken ~= nil then
-		local health = UnitHealth(unitToken)
-		local maxHealth = UnitHealthMax(unitToken)
+		local health = UnitHealth(self.unitToken)
+		local maxHealth = UnitHealthMax(self.unitToken)
 		return health / maxHealth
 	else
 		return nil
