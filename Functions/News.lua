@@ -11,10 +11,16 @@ local content = [====[
 
 ---
 
-# 11.1.0.0-beta01 (2025-02-02)
+# 11.1.0.1-release (2025-02-26)
 ## General
 
+- [#418 - ROLLBACK)(#417) Rollback changes releated to global bar settings for now.
 - [#416 - NEW](#416) Add addon category metadata for the new addon grouping system.
+- [#417 - REFACTOR](#417) Futher optimizations:
+<br/>&emsp;&ensp;- Reduce number of in combat checks.
+<br/>&emsp;&ensp;- Snapshot UnitToken of enemies/allies; change rules for updating these.
+<br/>&emsp;&ensp;- Only refresh primary and secondary stats once per frame at most.
+- [#419 - FIX](#419) Adjust threshold line calculations to avoid off-by-1 pixel rendering issues.
 
 ## Demon Hunter 
 ### Havoc
@@ -51,6 +57,7 @@ local content = [====[
 
 - [#416 - UPDATE](#416) Adjust the following spells:
 <br/>&emsp;&ensp;- Update Evangelism spell ID.
+<br/>&emsp;&ensp;- Update Voidwraith's mana regen value when also talented into Mindbender.
 <br/>&emsp;&ensp;- Removed Rapture and Purge the Wicked.
 
 ### Holy

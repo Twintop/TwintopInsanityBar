@@ -272,6 +272,10 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 end
 
 TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", TRB.Frames.barContainerFrame)
+TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
+	TRB.Data.character.inCombat = UnitAffectingCombat("player")
+	TRB.Functions.Bar:ShowResourceBar()
+end)
 
 -- Settings placeholders
 TRB.Frames.interfaceSettingsFrameContainer = {}

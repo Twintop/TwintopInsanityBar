@@ -566,7 +566,7 @@ local function RefreshLookupData_BeastMastery()
 	local currentFocusColor = specSettings.colors.text.current
 	local castingFocusColor = specSettings.colors.text.casting
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+	if TRB.Data.character.inCombat then
 		if specSettings.colors.text.overcapEnabled and overcap then
 			currentFocusColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
@@ -802,7 +802,7 @@ local function RefreshLookupData_Marksmanship()
 	local currentFocusColor = specSettings.colors.text.current
 	local castingFocusColor = specSettings.colors.text.casting
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+	if TRB.Data.character.inCombat then
 		if specSettings.colors.text.overcapEnabled and overcap then
 			currentFocusColor = specSettings.colors.text.overcap
 			castingFocusColor = specSettings.colors.text.overcap
@@ -996,7 +996,7 @@ local function RefreshLookupData_Survival()
 	local currentFocusColor = specSettings.colors.text.current
 	local castingFocusColor = specSettings.colors.text.casting
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+	if TRB.Data.character.inCombat then
 		if specSettings.colors.text.overcapEnabled and overcap then
 			currentFocusColor = specSettings.colors.text.overcap
 			castingFocusColor = specSettings.colors.text.overcap
@@ -1645,7 +1645,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.beastCleave.color
 				end
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -1694,7 +1694,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 				local barBorderColor = specSettings.colors.bar.border
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -1948,7 +1948,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 				local barBorderColor = specSettings.colors.bar.border
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2107,7 +2107,7 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 						snapshotData.audio.overcapCue = true
 						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
@@ -2251,14 +2251,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 		self.sinceLastUpdate = 0
 	end
 end
-
-combatFrame:SetScript("OnEvent", function(self, event, ...)
-	if event =="PLAYER_REGEN_DISABLED" then
-		TRB.Functions.Bar:ShowResourceBar()
-	else
-		TRB.Functions.Bar:HideResourceBar()
-	end
-end)
 
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
@@ -2465,33 +2457,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = false
 	end
 
-	if TRB.Data.specSupported then
-		TRB.Data.resource = Enum.PowerType.Focus
-		TRB.Data.resourceFactor = 1
-
-		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Details.addonData.registered = true
-		TRB.Functions.Aura:EnableUnitAura()
-		TRB.Functions.Character:EnableCharacterChange()
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else
-		targetsTimerFrame:SetScript("OnUpdate", nil)
-		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:DisableUnitAura()
-		TRB.Functions.Character:DisableCharacterChange()
-		TRB.Details.addonData.registered = false
-		barContainerFrame:Hide()
-	end
-	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)

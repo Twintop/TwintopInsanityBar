@@ -247,6 +247,7 @@ function TRB.Functions.Character:UpdateStatsSnapshot()
 	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
 
 	snapshotData.attributes.cacheRefresh = true
+	snapshotData.attributes.attributeRefresh = false
 end
 
 ---Loads data from the specialization cache in to the main TRB.Data table
@@ -256,6 +257,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 
 	TRB.Data.character = cache.character
 	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
+	TRB.Data.character.inCombat = UnitAffectingCombat("player")
 	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
@@ -263,6 +265,39 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.snapshotData.attributes.isTracking = false
 	TRB.Functions.Character:ResetCaches()
+end
+
+function TRB.Functions.Character:EventRegistration()
+	local barContainerFrame = TRB.Frames.barContainerFrame
+	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
+	local timerFrame = TRB.Frames.timerFrame
+	local combatFrame = TRB.Frames.combatFrame
+
+	if TRB.Data.specSupported then
+		TRB.Functions.Class:CheckCharacter()
+		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Details.addonData.registered = true
+		TRB.Functions.Aura:EnableUnitAura()
+		TRB.Functions.Character:EnableCharacterChange()
+		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+	else
+		targetsTimerFrame:SetScript("OnUpdate", nil)
+		timerFrame:SetScript("OnUpdate", nil)
+		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		TRB.Functions.Aura:DisableUnitAura()
+		TRB.Functions.Character:DisableCharacterChange()
+		TRB.Details.addonData.registered = false
+		barContainerFrame:Hide()
+	end
+
+	TRB.Functions.Bar:HideResourceBar()
 end
 
 function TRB.Functions.Character:ResetCaches()

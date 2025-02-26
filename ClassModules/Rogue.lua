@@ -810,7 +810,7 @@ local function RefreshLookupData_Assassination()
 	local currentEnergyColor = specSettings.colors.text.current
 	local castingEnergyColor = specSettings.colors.text.casting
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+	if TRB.Data.character.inCombat then
 		if specSettings.colors.text.overcapEnabled and overcap then
 			currentEnergyColor = specSettings.colors.text.overcap
 			castingEnergyColor = specSettings.colors.text.overcap
@@ -1286,7 +1286,7 @@ local function RefreshLookupData_Outlaw()
 	local currentEnergyColor = specSettings.colors.text.current
 	local castingEnergyColor = specSettings.colors.text.casting
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+	if TRB.Data.character.inCombat then
 		if specSettings.colors.text.overcapEnabled and overcap then
 			currentEnergyColor = specSettings.colors.text.overcap
 			castingEnergyColor = specSettings.colors.text.overcap
@@ -1666,7 +1666,7 @@ local function RefreshLookupData_Subtlety()
 	local currentEnergyColor = specSettings.colors.text.current
 	local castingEnergyColor = specSettings.colors.text.casting
 	
-	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+	if TRB.Data.character.inCombat then
 		if specSettings.colors.text.overcapEnabled and overcap then
 			currentEnergyColor = specSettings.colors.text.overcap
 			castingEnergyColor = specSettings.colors.text.overcap
@@ -2313,7 +2313,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				if IsStealthed() or stealthViaBuff then
 					barBorderColor = specSettings.colors.bar.borderStealth
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2635,7 +2635,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderRtbGood
 				elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == false and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 					barBorderColor = specSettings.colors.bar.borderRtbBad
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2943,7 +2943,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderShadowcraft
 				elseif stealthViaBuff or IsStealthed() then
 					barBorderColor = specSettings.colors.bar.borderStealth
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -3252,14 +3252,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-combatFrame:SetScript("OnEvent", function(self, event, ...)
-	if event =="PLAYER_REGEN_DISABLED" then
-		TRB.Functions.Bar:ShowResourceBar()
-	else
-		TRB.Functions.Bar:HideResourceBar()
-	end
-end)
-
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -3495,35 +3487,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = false
 	end
 
-	if TRB.Data.specSupported then
-		TRB.Data.resource = Enum.PowerType.Energy
-		TRB.Data.resourceFactor = 1
-		TRB.Data.resource2 = Enum.PowerType.ComboPoints
-		TRB.Data.resource2Factor = 1
-
-		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Details.addonData.registered = true
-		TRB.Functions.Aura:EnableUnitAura()
-		TRB.Functions.Character:EnableCharacterChange()
-		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-	else
-		targetsTimerFrame:SetScript("OnUpdate", nil)
-		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		TRB.Functions.Aura:DisableUnitAura()
-		TRB.Functions.Character:DisableCharacterChange()
-		TRB.Details.addonData.registered = false
-		barContainerFrame:Hide()
-	end
-	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
