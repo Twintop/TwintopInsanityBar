@@ -14,15 +14,22 @@ local content = [====[
 # 11.1.0.2-release (2025-02-26)
 ## General
 
-- [#418 - ROLLBACK](#418) Fix settings corruption error.
-- [#418 - NEW](#418) Add Global Bar Setting support for resource font colors, DoT colors, and decimal precision for secondary stats and resource bar text values.
+- [#418 - FIX](#418) Fix regression with secondary stat values not updating for bar text.
+
+---
+
+# 11.1.0.2-release (2025-02-26)
+## General
+
+- [#405 - ROLLBACK](#405) Fix settings corruption error.
+- [#405 - NEW](#405) Add Global Bar Setting support for resource font colors, DoT colors, and decimal precision for secondary stats and resource bar text values.
 
 ---
 
 # 11.1.0.1-release (2025-02-26)
 ## General
 
-- [#418 - ROLLBACK] Rollback changes releated to global bar settings for now.
+- [#405 - ROLLBACK](#405) Rollback changes releated to global bar settings for now.
 
 ---
 
@@ -34,7 +41,7 @@ local content = [====[
 <br/>&emsp;&ensp;- Reduce number of in combat checks.
 <br/>&emsp;&ensp;- Snapshot UnitToken of enemies/allies; change rules for updating these.
 <br/>&emsp;&ensp;- Only refresh primary and secondary stats once per frame at most.
-- [#418 - NEW](#418) Add Global Bar Setting support for resource font colors, DoT colors, and decimal precision for secondary stats and resource bar text values.
+- [#405 - NEW](#405) Add Global Bar Setting support for resource font colors, DoT colors, and decimal precision for secondary stats and resource bar text values.
 - [#419 - FIX](#419) Adjust threshold line calculations to avoid off-by-1 pixel rendering issues.
 
 ## Demon Hunter 
