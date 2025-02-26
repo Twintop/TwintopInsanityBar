@@ -14,7 +14,7 @@ local content = [====[
 # 11.1.0.1-release (2025-02-26)
 ## General
 
-- [#418 - ROLLBACK)(#417) Rollback changes releated to global bar settings for now.
+- [#418 - ROLLBACK](#418) Rollback changes releated to global bar settings for now.
 - [#416 - NEW](#416) Add addon category metadata for the new addon grouping system.
 - [#417 - REFACTOR](#417) Futher optimizations:
 <br/>&emsp;&ensp;- Reduce number of in combat checks.
