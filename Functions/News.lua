@@ -11,6 +11,21 @@ local content = [====[
 
 ---
 
+# 11.1.0.2-release (2025-02-26)
+## General
+
+- [#418 - ROLLBACK](#418) Fix settings corruption error.
+- [#418 - NEW](#418) Add Global Bar Setting support for resource font colors, DoT colors, and decimal precision for secondary stats and resource bar text values.
+
+---
+
+# 11.1.0.1-release (2025-02-26)
+## General
+
+- [#418 - ROLLBACK] Rollback changes releated to global bar settings for now.
+
+---
+
 # 11.1.0.0-release (2025-02-25)
 ## General
 
