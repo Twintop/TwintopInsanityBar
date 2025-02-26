@@ -319,7 +319,7 @@ function TRB.Classes.Target:UpdateUnitToken()
 
     if guidCheck ~= self.guid then
         self.unitToken = UnitTokenFromGUID(self.guid)
-    end
+    end    
     self.lastRefreshGetTime = currentTime
 end
 

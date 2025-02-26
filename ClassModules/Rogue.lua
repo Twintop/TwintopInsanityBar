@@ -3486,6 +3486,13 @@ function TRB.Functions.Class:EventRegistration()
 	else
 		TRB.Data.specSupported = false
 	end
+	
+	if TRB.Data.specSupported then		
+		TRB.Data.resource = Enum.PowerType.Energy
+		TRB.Data.resourceFactor = 1
+		TRB.Data.resource2 = Enum.PowerType.ComboPoints
+		TRB.Data.resource2Factor = 1
+	end
 
 	TRB.Functions.Character:EventRegistration()
 end
