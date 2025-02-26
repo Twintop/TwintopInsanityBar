@@ -274,6 +274,11 @@ end
 TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", TRB.Frames.barContainerFrame)
 TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	TRB.Data.character.inCombat = UnitAffectingCombat("player")
+	if event == "PLAYER_REGEN_DISABLED" then
+		TRB.Data.character.inCombat = true--UnitAffectingCombat("player")
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		TRB.Data.character.inCombat = false--UnitAffectingCombat("player")
+	end
 	TRB.Functions.Bar:ShowResourceBar()
 end)
 
