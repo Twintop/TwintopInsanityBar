@@ -323,6 +323,7 @@ function TRB.Classes.Target:UpdateUnitToken()
     self.lastRefreshGetTime = currentTime
 end
 
+
 ---@class TRB.Classes.TargetSpell
 ---@field public id integer
 ---@field public spell table
