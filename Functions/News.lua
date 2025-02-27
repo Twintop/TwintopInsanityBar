@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 11.1.0.2-release (2025-02-26)
+# 11.1.0.3-release (2025-02-27)
 ## General
 
 - [#418 - FIX](#418) Fix regression with secondary stat values not updating for bar text.
