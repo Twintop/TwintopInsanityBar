@@ -99,7 +99,7 @@ end
 ---@return number # Swing speed
 function TRB.Classes.Priest.ShadowfiendEntry:GetShadowfiendValues()
 	local currentTime = GetTime()
-    local swingSpeed = 1.5 / (1 + (TRB.Data.snapshotData.attributes.haste / 100))
+    local swingSpeed = 1.5 / (1 + ((TRB.Data.snapshotData.attributes.haste or 0) / 100))
 	local gcd = swingSpeed
 	local swingsRemaining = 0
 	local gcdsRemaining = 0

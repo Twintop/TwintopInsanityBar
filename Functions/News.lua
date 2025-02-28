@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.0.4-release (2025-02-28)
+## Priest
+
+- (FIX) Fix intermittent Lua errors when switching specializations.
+
+---
+
 # 11.1.0.3-release (2025-02-27)
 ## General
 
