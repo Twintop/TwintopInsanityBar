@@ -1187,7 +1187,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting  then
+				if CastingSpell() and specSettings.colors.bar.showCasting  then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1195,14 +1195,14 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if talents:IsTalentActive(spells.manaTeaCharges) and snapshots[spells.manaTeaRegen.id].buff.isActive and specSettings.thresholds.manaTeaCharges.enabled and specSettings.bar.showPassive then
+				if talents:IsTalentActive(spells.manaTeaCharges) and snapshots[spells.manaTeaRegen.id].buff.isActive and specSettings.thresholds.manaTeaCharges.enabled and specSettings.colors.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.manaTeaCharges.id] --[[@as TRB.Classes.Monk.ManaTea]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.manaTeaCharges.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 				
 				thresholdCount = thresholdCount + 1
-				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
+				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.colors.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
@@ -1341,7 +1341,7 @@ local function UpdateResourceBar()
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
 						if specSettings.generation.mode == "time" then
 							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
@@ -1351,7 +1351,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

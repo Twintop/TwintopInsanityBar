@@ -242,9 +242,7 @@ local function BalanceLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		colors = {
 			text = {
@@ -296,7 +294,9 @@ local function BalanceLoadDefaultSettings(includeBarText)
 				flashPeriod=0.5,
 				flashEnabled=true,
 				flashSsEnabled=true,
-				overcapEnabled=true
+				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -755,9 +755,7 @@ local function FeralLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -768,12 +766,7 @@ local function FeralLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-			consistentUnfilledColor = false,
-			generation = true,
-			spec={
-				predatorRevealedColor = true
-			}
+			fullWidth=true
 		},
 		colors = {
 			text = {
@@ -825,6 +818,8 @@ local function FeralLoadDefaultSettings(includeBarText)
 				spending="FF555555",
 				passive="FF9F4500",
 				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FFFF7C0A",
@@ -833,7 +828,11 @@ local function FeralLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				predatorRevealed="FF009900",
-				sameColor=false
+				sameColor=false,
+				consistentUnfilledColor = false,
+				spec={
+					predatorRevealedColor = true
+				}
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -1120,9 +1119,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		passiveGeneration = {
 			innervate = true,
@@ -1175,7 +1172,9 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				spending="FFFFFFFF",
 				passive="FF8080FF",
 				innervateBorderChange=true,
-				potionOfChilledClarityBorderChange=true
+				potionOfChilledClarityBorderChange=true,
+				showPassive=true,
+				showCasting=true
 			},
 			threshold={
 				unusable="FFFF0000",
@@ -1428,9 +1427,9 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
@@ -1445,9 +1444,9 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -2291,9 +2290,9 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -2330,9 +2329,9 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxShowIncomingGeneration"])
 	f.tooltip = L["DruidFeralCheckboxShowIncomingGeneration"]
-	f:SetChecked(spec.comboPoints.generation)
+	f:SetChecked(spec.colors.comboPoints.generation)
 	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.generation = self:GetChecked()
+		spec.colors.comboPoints.generation = self:GetChecked()
 	end)
 
 	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
@@ -2378,9 +2377,9 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxEnablePredatorRevealed"])
 	f.tooltip = L["DruidFeralCheckboxEnablePredatorRevealedTooltip"]
-	f:SetChecked(spec.comboPoints.spec.predatorRevealedColor)
+	f:SetChecked(spec.colors.comboPoints.spec.predatorRevealedColor)
 	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.spec.predatorRevealedColor = self:GetChecked()
+		spec.colors.comboPoints.spec.predatorRevealedColor = self:GetChecked()
 	end)
 
 	controls.colors.comboPoints.predatorRevealed = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerPredatorRevealed"], spec.colors.comboPoints.predatorRevealed, 300, 25, oUi.xCoord2, yCoord)
@@ -2395,9 +2394,9 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
 	f.tooltip = L["DruidFeralCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
 	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.consistentUnfilledColor = self:GetChecked()
+		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
@@ -3267,9 +3266,9 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
@@ -3284,9 +3283,9 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)

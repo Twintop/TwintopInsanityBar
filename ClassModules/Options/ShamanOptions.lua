@@ -235,9 +235,7 @@ local function ElementalLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		colors = {
 			text = {
@@ -290,7 +288,9 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				primalFracture = {
 					color = "FFFF9900",
 					enabled = true
-				}
+				},
+				showPassive=true,
+				showCasting=true
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -544,9 +544,7 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 			yPos=-215,
 			border=1,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=false,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -598,6 +596,8 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 				passive="FF8080FF",
 				inAscendance="FFFA8128",
 				inAscendance1GCD="FFFF0000",
+				showPassive=false,
+				showCasting=true
 			},
 			comboPoints = {
 				border="ff0071df",
@@ -887,9 +887,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		passiveGeneration = {
 			innervate = true,
@@ -940,7 +938,9 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				inAscendance="FFFA8128",
 				inAscendance1GCD="FFFF0000",
 				innervateBorderChange=true,
-				potionOfChilledClarityBorderChange=true
+				potionOfChilledClarityBorderChange=true,
+				showPassive=true,
+				showCasting=true
 			},
 			threshold={
 				unusable="FFFF0000",
@@ -1150,9 +1150,9 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
@@ -1167,9 +1167,9 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -2272,9 +2272,9 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
@@ -2289,9 +2289,9 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)

@@ -248,9 +248,7 @@ local function HavocLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		colors = {
 			text = {
@@ -282,6 +280,8 @@ local function HavocLoadDefaultSettings(includeBarText)
 				metamorphosis="FF67F100",
 				metamorphosisEnding="FFFF0000",
 				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -547,9 +547,7 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -592,6 +590,8 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				metamorphosis="FF67F100",
 				metamorphosisEnding="FFFF0000",
 				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FF660088",
@@ -807,9 +807,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
@@ -824,9 +824,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -1475,9 +1475,9 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)

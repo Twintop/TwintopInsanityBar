@@ -291,9 +291,7 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -304,11 +302,7 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-			consistentUnfilledColor = false,
-			spec={
-				serratedBoneSpikeColor = true
-			}
+			fullWidth=true
 		},
 		colors = {
 			text = {
@@ -356,6 +350,8 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				spending="FF555555",
 				passive="FF9F4500",
 				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -365,7 +361,11 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				final="FFFF0000",
 				echoingReprimand="FF68CCEF",
 				serratedBoneSpike="FF40BF40",
-				sameColor=false
+				sameColor=false,
+				consistentUnfilledColor = false,
+				spec={
+					serratedBoneSpikeColor = true
+				}
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -704,9 +704,7 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -717,8 +715,7 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-			consistentUnfilledColor = false
+			fullWidth=true
 		},
 		colors = {
 			text = {
@@ -768,6 +765,8 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				spending="FF555555",
 				passive="FF9F4500",
 				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -776,7 +775,8 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				echoingReprimand="FF68CCEF",
-				sameColor=false
+				sameColor=false,
+				consistentUnfilledColor = false
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -1121,9 +1121,7 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -1134,8 +1132,7 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-			consistentUnfilledColor = false
+			fullWidth=true
 		},
 		colors = {
 			text = {
@@ -1184,6 +1181,8 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				spending="FF555555",
 				passive="FF9F4500",
 				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -1193,7 +1192,8 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				final="FFFF0000",
 				echoingReprimand="FF68CCEF",
 				shadowTechniques="FF431863",
-				sameColor=false
+				sameColor=false,
+				consistentUnfilledColor = false
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -1396,9 +1396,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -1491,9 +1491,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
 	f.tooltip = L["RogueCheckboxAlwaysDefaultBackground"]
-	f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
 	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.consistentUnfilledColor = self:GetChecked()
+		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 20
@@ -1502,9 +1502,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueColorPickerSeratedBoneSpike"])
 	f.tooltip = L["RogueColorPickerSeratedBoneSpikeTooltip"]
-	f:SetChecked(spec.comboPoints.spec.serratedBoneSpikeColor)
+	f:SetChecked(spec.colors.comboPoints.spec.serratedBoneSpikeColor)
 	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.spec.serratedBoneSpikeColor = self:GetChecked()
+		spec.colors.comboPoints.spec.serratedBoneSpikeColor = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 40
@@ -2360,9 +2360,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -2463,9 +2463,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
 	f.tooltip = L["RogueOutlawCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
 	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.consistentUnfilledColor = self:GetChecked()
+		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 
 
@@ -3326,9 +3326,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -3428,9 +3428,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
 	f.tooltip = L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
 	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.consistentUnfilledColor = self:GetChecked()
+		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 40

@@ -704,7 +704,7 @@ local function UpdateResourceBar()
 					if specSettings.colors.comboPoints.malignOmen.enabled and snapshotData.snapshots[spells.malignOmen.id].buff.isActive then
 						if x <= normalizedResource2 and snapshotData.snapshots[spells.malignOmen.id].buff.applications > (normalizedResource2 - x) then
 							cpColor = specSettings.colors.comboPoints.malignOmen.color
-						elseif not specSettings.comboPoints.consistentUnfilledColor and x > normalizedResource2 and x <= snapshotData.snapshots[spells.malignOmen.id].buff.applications then
+						elseif not specSettings.colors.comboPoints.consistentUnfilledColor and x > normalizedResource2 and x <= snapshotData.snapshots[spells.malignOmen.id].buff.applications then
 							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.malignOmen.color, true)
 						end
 					end

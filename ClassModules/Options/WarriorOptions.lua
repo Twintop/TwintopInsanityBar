@@ -257,9 +257,7 @@ local function ArmsLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		colors = {
 			text = {
@@ -304,6 +302,8 @@ local function ArmsLoadDefaultSettings(includeBarText)
 				spending="FF555555",
 				passive="FFEA3C53",
 				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -587,9 +587,7 @@ local function FuryLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		colors = {
 			text = {
@@ -635,6 +633,8 @@ local function FuryLoadDefaultSettings(includeBarText)
 				passive="FFEA3C53",
 				enrage="FFFFCC55",
 				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
 			},
 			threshold = {
 				under="FFFFFFFF",
@@ -838,9 +838,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -1552,9 +1552,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)

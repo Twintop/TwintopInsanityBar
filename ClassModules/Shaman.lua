@@ -1375,7 +1375,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.primalFracture.color
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1638,7 +1638,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting  then
+				if CastingSpell() and specSettings.colors.bar.showCasting  then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

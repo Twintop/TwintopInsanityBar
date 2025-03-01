@@ -373,9 +373,7 @@ local function DevastationLoadDefaultSettings(includeBarText)
 			yPos=-215,
 			border=2,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=false,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -417,6 +415,8 @@ local function DevastationLoadDefaultSettings(includeBarText)
 					color = "FFFF9900",
 					enabled = true
 				},
+				showPassive=false,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FF246759",
@@ -727,9 +727,7 @@ local function PreservationLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -782,6 +780,8 @@ local function PreservationLoadDefaultSettings(includeBarText)
 					color = "FFFCE58E",
 					enabled = true
 				},
+				showPassive=true,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FF246759",
@@ -1060,9 +1060,7 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 			yPos=-215,
 			border=2,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=false,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -1108,6 +1106,8 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 					color = "FFFCE58E",
 					enabled = true
 				},
+				showPassive=false,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FF246759",
@@ -1880,9 +1880,9 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
@@ -1897,9 +1897,9 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)

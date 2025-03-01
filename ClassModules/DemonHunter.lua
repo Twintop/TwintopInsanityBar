@@ -989,7 +989,7 @@ local function UpdateResourceBar()
 				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if snapshots[spells.immolationAura.id].buff.resource > 0 or snapshots[spells.immolationAura1.id].buff.resource > 0 or snapshots[spells.immolationAura2.id].buff.resource > 0 or snapshots[spells.immolationAura3.id].buff.resource > 0 or snapshots[spells.immolationAura4.id].buff.resource > 0 or snapshots[spells.immolationAura5.id].buff.resource > 0 or snapshots[spells.immolationAura6.id].buff.resource > 0 then
 						passiveValue = passiveValue + snapshots[spells.immolationAura.id].buff.resource + snapshots[spells.immolationAura1.id].buff.resource + snapshots[spells.immolationAura2.id].buff.resource + snapshots[spells.immolationAura3.id].buff.resource + snapshots[spells.immolationAura4.id].buff.resource + snapshots[spells.immolationAura5.id].buff.resource + snapshots[spells.immolationAura6.id].buff.resource
 					end
@@ -999,7 +999,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1176,13 +1176,13 @@ local function UpdateResourceBar()
 				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if snapshots[spells.immolationAura.id].buff.resource then
 						passiveValue = passiveValue + snapshots[spells.immolationAura.id].buff.resource
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

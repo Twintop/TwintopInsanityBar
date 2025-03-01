@@ -1328,7 +1328,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting  then
+				if CastingSpell() and specSettings.colors.bar.showCasting  then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1336,7 +1336,7 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.emeraldCommunion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.emeraldCommunion.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])

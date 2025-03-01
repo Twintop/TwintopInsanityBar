@@ -2489,14 +2489,14 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
 				end
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					passiveValue = snapshots[spells.furyOfElune.id].buff.resource + snapshots[spells.sunderedFirmament.id].buff.resource
 
 					if talents:IsTalentActive(spells.naturesBalance) then
@@ -2772,7 +2772,7 @@ local function UpdateResourceBar()
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
 						if specSettings.generation.mode == "time" then
 							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
@@ -2782,7 +2782,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -3076,7 +3076,7 @@ local function UpdateResourceBar()
 							cpColor = specSettings.colors.comboPoints.final
 						end
 					else
-						if specSettings.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 and (snapshots[spells.berserk.id].attributes.untilNextTick <= snapshots[spells.predatorRevealed.id].attributes.untilNextTick or prTickShown > 0 or prTotalCps == 0) then
+						if specSettings.colors.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 and (snapshots[spells.berserk.id].attributes.untilNextTick <= snapshots[spells.predatorRevealed.id].attributes.untilNextTick or prTickShown > 0 or prTotalCps == 0) then
 							TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, berserkNextTick * 1000, spells.berserk.tickRate * 1000)
 							berserkTickShown = 1
 
@@ -3085,7 +3085,7 @@ local function UpdateResourceBar()
 							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-						elseif specSettings.comboPoints.generation and prTime ~= nil and prTime > 0 and x <= (snapshotData.attributes.resource2 + prTotalCps) then
+						elseif specSettings.colors.comboPoints.generation and prTime ~= nil and prTime > 0 and x <= (snapshotData.attributes.resource2 + prTotalCps) then
 							if x == snapshotData.attributes.resource2 + berserkTickShown + 1 then
 								TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, spells.predatorRevealed.tickRate * 1000)
 							else
@@ -3094,14 +3094,14 @@ local function UpdateResourceBar()
 
 							prTickShown = prTickShown + 1
 
-							if specSettings.comboPoints.spec.predatorRevealedColor and x > snapshotData.attributes.resource2 and x <= (snapshotData.attributes.resource2 + prTotalCps) then
+							if specSettings.colors.comboPoints.spec.predatorRevealedColor and x > snapshotData.attributes.resource2 and x <= (snapshotData.attributes.resource2 + prTotalCps) then
 								cpBorderColor = specSettings.colors.comboPoints.predatorRevealed
 
 								if specSettings.comboPoints.sameColor ~= true then
 									cpColor = specSettings.colors.comboPoints.predatorRevealed
 								end
 
-								if not specSettings.comboPoints.consistentUnfilledColor then
+								if not specSettings.colors.comboPoints.consistentUnfilledColor then
 									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.predatorRevealed, true)
 								end
 							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
@@ -3155,7 +3155,7 @@ local function UpdateResourceBar()
 					end
 				end
 			
-				if CastingSpell() and specSettings.bar.showCasting  then
+				if CastingSpell() and specSettings.colors.bar.showCasting  then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

@@ -764,10 +764,10 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -940,13 +940,13 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if snapshots[spells.ravager.id].buff.resource > 0 then
 						passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

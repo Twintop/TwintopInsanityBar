@@ -1433,7 +1433,7 @@ local function UpdateResourceBar()
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
 						if specSettings.generation.mode == "time" then
 							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
@@ -1443,7 +1443,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1722,7 +1722,7 @@ local function UpdateResourceBar()
 				end
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
 						if specSettings.generation.mode == "time" then
 							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
@@ -1732,7 +1732,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1961,7 +1961,7 @@ local function UpdateResourceBar()
 				end
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
 						if specSettings.generation.mode == "time" then
 							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
@@ -1973,7 +1973,7 @@ local function UpdateResourceBar()
 					passiveValue = passiveValue + snapshots[spells.termsOfEngagement.id].buff.resource
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

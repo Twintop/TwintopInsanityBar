@@ -1298,8 +1298,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.shaman.elemental.colors.text.overcapMaelstrom = nil
 	end
 
-	-- Global color settings refactor	
-	
 	if TwintopInsanityBarSettings ~= nil then
 		local classLength = TRB.Functions.Table:Length(TwintopInsanityBarSettings)
 		if classLength > 0 then
@@ -1308,6 +1306,24 @@ function TRB.Functions.Settings:PortForwardSettings()
 					local specLength = TRB.Functions.Table:Length(classValue)
 					if specLength > 0 then
 						for spec, specValue in pairs(classValue) do
+							
+						end
+					end
+				end
+			end
+		end
+	end
+
+	-- Recent bar-wide refactors, starting February 2025
+	if TwintopInsanityBarSettings ~= nil then
+		local classLength = TRB.Functions.Table:Length(TwintopInsanityBarSettings)
+		if classLength > 0 then
+			for class, classValue in pairs(TwintopInsanityBarSettings) do
+				if class ~= "core" then
+					local specLength = TRB.Functions.Table:Length(classValue)
+					if specLength > 0 then
+						for spec, specValue in pairs(classValue) do
+							-- Global color settings refactor
 							if specValue ~= nil and
 							specValue.colors ~= nil and
 							specValue.colors.text ~= nil and
@@ -1381,22 +1397,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 								specValue.colors.text = newColorsText
 							end
-						end
-					end
-				end
-			end
-		end
-	end
 
-	-- Change to new bar text format
-	if TwintopInsanityBarSettings ~= nil then
-		local classLength = TRB.Functions.Table:Length(TwintopInsanityBarSettings)
-		if classLength > 0 then
-			for class, classValue in pairs(TwintopInsanityBarSettings) do
-				if class ~= "core" then
-					local specLength = TRB.Functions.Table:Length(classValue)
-					if specLength > 0 then
-						for _, specValue in pairs(classValue) do
+							-- Change to new bar text format
 							if specValue.hastePrecision ~= nil or specValue.resourcePrecision ~= nil then
 								specValue.precision = {
 									secondary = specValue.hastePrecision or 0,
@@ -1404,6 +1406,74 @@ function TRB.Functions.Settings:PortForwardSettings()
 								}
 								specValue.hastePrecision = nil
 								specValue.resourcePrecision = nil
+							end
+							
+							-- Move bar settings for global settings
+							if specValue ~= nil and
+							specValue.bar ~= nil and
+							(specValue.bar.showPassive ~= nil or specValue.bar.showCasting ~= nil) then
+								specValue.colors = specValue.colors or {}
+								specValue.colors.bar = specValue.colors.bar or {}
+								specValue.colors.bar.showPassive = specValue.bar.showPassive
+								specValue.colors.bar.showCasting = specValue.bar.showCasting
+
+								specValue.bar.showPassive = nil
+								specValue.bar.showCasting = nil
+							end
+
+							-- Extra variables for Holy Priest
+							if spec == "holy" and class == "priest" then
+								if specValue ~= nil and
+								specValue.bar ~= nil and
+								(specValue.bar.holyWordChastiseEnabled ~= nil or specValue.bar.holyWordSanctifyEnabled ~= nil or specValue.bar.holyWordSerenityEnabled ~= nil) then
+									specValue.colors = specValue.colors or {}
+									specValue.colors.bar = specValue.colors.bar or {}
+									specValue.colors.bar.holyWordChastiseEnabled = specValue.bar.holyWordChastiseEnabled
+									specValue.colors.bar.holyWordSanctifyEnabled = specValue.bar.holyWordSanctifyEnabled
+									specValue.colors.bar.holyWordSerenityEnabled = specValue.bar.holyWordSerenityEnabled
+
+									specValue.bar.holyWordChastiseEnabled = nil
+									specValue.bar.holyWordSanctifyEnabled = nil
+									specValue.bar.holyWordSerenityEnabled = nil
+								end
+							end
+							
+							-- Move combo point settings for global settings
+							if specValue ~= nil and
+							specValue.comboPoints ~= nil and
+							specValue.comboPoints.consistentUnfilledColor ~= nil then
+								specValue.colors = specValue.colors or {}
+								specValue.colors.comboPoints = specValue.colors.bar or {}
+								specValue.colors.comboPoints.consistentUnfilledColor = specValue.bar.consistentUnfilledColor
+
+								specValue.comboPoints.consistentUnfilledColor = nil
+							end
+
+							-- Extra variables for Feral Druid
+							if spec == "feral" then
+								if specValue ~= nil and
+								specValue.comboPoints ~= nil and
+								(specValue.comboPoints.generation ~= nil or specValue.comboPoints.spec ~= nil) then
+									specValue.colors = specValue.colors or {}
+									specValue.colors.comboPoints = specValue.colors.comboPoints or {}
+									specValue.colors.comboPoints.generation = specValue.comboPoints.generation
+									specValue.colors.comboPoints.spec = specValue.comboPoints.spec
+
+									specValue.comboPoints.spec = nil
+								end
+							end
+
+							-- Extra variables for Assassination Rogue
+							if spec == "assassination" then
+								if specValue ~= nil and
+								specValue.comboPoints ~= nil and
+								specValue.comboPoints.spec ~= nil then
+									specValue.colors = specValue.colors or {}
+									specValue.colors.comboPoints = specValue.colors.comboPoints or {}
+									specValue.colors.comboPoints.spec = specValue.comboPoints.spec
+
+									specValue.comboPoints.spec = nil
+								end
 							end
 						end
 					end

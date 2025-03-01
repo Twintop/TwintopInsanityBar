@@ -206,9 +206,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			yPos=-215,
 			border=2,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -266,7 +264,9 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				shadowEmbraceNotMax = {
 					color = "FFFF0000",
 					enabled = true
-				}
+				},
+				showPassive=true,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FF4749B5",
@@ -275,6 +275,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false,
+				consistentUnfilledColor = false,
 				succulentSoul = {
 					color = "FF31001B",
 					enabled = true,
@@ -500,9 +501,9 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
@@ -517,9 +518,9 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -675,9 +676,9 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsCheckboxAlwaysDefaultBackground"])
 	f.tooltip = L["WarlockSoulShardsCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
 	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.consistentUnfilledColor = self:GetChecked()
+		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)

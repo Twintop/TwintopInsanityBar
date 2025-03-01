@@ -322,9 +322,7 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -392,6 +390,8 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				shadowCovenantBorderChange=true,
 				innervateBorderChange=true,
 				potionOfChilledClarityBorderChange=true,
+				showPassive=true,
+				showCasting=true
 			},
 			comboPoints = {
 				border="FF000099",
@@ -837,12 +837,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true,
-			holyWordChastiseEnabled=false,
-			holyWordSanctifyEnabled=true,
-			holyWordSerenityEnabled=true
+			pinToPersonalResourceDisplay=false
 		},
 		comboPoints = {
 			width=25,
@@ -923,6 +918,11 @@ local function HolyLoadDefaultSettings(includeBarText)
 				resonantWordsBorderChange=true,
 				lightweaverBorderChange=true,
 				potionOfChilledClarityBorderChange=true,
+				showPassive=true,
+				showCasting=true,
+				holyWordChastiseEnabled=false,
+				holyWordSanctifyEnabled=true,
+				holyWordSerenityEnabled=true
 			},
 			comboPoints = {
 				border="FF000099",
@@ -1298,9 +1298,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 			yPos=-200,
 			border=4,
 			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false,
-			showPassive=true,
-			showCasting=true
+			pinToPersonalResourceDisplay=false
 		},
 		mindbender={ --TODO: Rename this shadowfiend to be consistent with Discipline and Holy
 			mode="gcd",
@@ -1385,7 +1383,9 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				flashPeriod=0.5,
 				flashEnabled=true,
 				overcapEnabled=true,
-				mindFlayInsanityBorderChange=true
+				mindFlayInsanityBorderChange=true,
+				showPassive=true,
+				showCasting=true
 			},
 			threshold={
 				under="FFFFFFFF",
@@ -1586,9 +1586,9 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
@@ -1603,9 +1603,9 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -2368,9 +2368,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordChastise"])
 	f.tooltip = L["PriestHolyCheckboxHolyWordChastiseTooltip"]
-	f:SetChecked(spec.bar.holyWordChastiseEnabled)
+	f:SetChecked(spec.colors.bar.holyWordChastiseEnabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.holyWordChastiseEnabled = self:GetChecked()
+		spec.colors.bar.holyWordChastiseEnabled = self:GetChecked()
 	end)
 
 	controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.bar.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
@@ -2385,9 +2385,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordSanctify"])
 	f.tooltip = L["PriestHolyCheckboxHolyWordSanctifyTooltip"]
-	f:SetChecked(spec.bar.holyWordSanctifyEnabled)
+	f:SetChecked(spec.colors.bar.holyWordSanctifyEnabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.holyWordSanctifyEnabled = self:GetChecked()
+		spec.colors.bar.holyWordSanctifyEnabled = self:GetChecked()
 	end)
 
 	controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.bar.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
@@ -2402,9 +2402,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordSerenity"])
 	f.tooltip = L["PriestHolyCheckboxHolyWordSerenityTooltip"]
-	f:SetChecked(spec.bar.holyWordSerenityEnabled)
+	f:SetChecked(spec.colors.bar.holyWordSerenityEnabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.holyWordSerenityEnabled = self:GetChecked()
+		spec.colors.bar.holyWordSerenityEnabled = self:GetChecked()
 	end)
 
 	controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.bar.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
@@ -2443,9 +2443,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 
 	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
@@ -2460,9 +2460,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -3558,9 +3558,9 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
 	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showCasting)
+	f:SetChecked(spec.colors.bar.showCasting)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showCasting = self:GetChecked()
+		spec.colors.bar.showCasting = self:GetChecked()
 	end)
 	
 	yCoord = yCoord - 30
@@ -3582,9 +3582,9 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
 	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.bar.showPassive)
+	f:SetChecked(spec.colors.bar.showPassive)
 	f:SetScript("OnClick", function(self, ...)
-		spec.bar.showPassive = self:GetChecked()
+		spec.colors.bar.showPassive = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

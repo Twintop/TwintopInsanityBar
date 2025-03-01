@@ -2146,7 +2146,7 @@ local function UpdateResourceBar()
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
 						if specSettings.generation.mode == "time" then
 							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
@@ -2156,7 +2156,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -2333,7 +2333,7 @@ local function UpdateResourceBar()
 				
 				local sbsCp = 0
 				
-				if specSettings.comboPoints.spec.serratedBoneSpikeColor and talents:IsTalentActive(spells.serratedBoneSpike) and snapshotData.targetData.currentTargetGuid ~= nil and snapshots[spells.serratedBoneSpike.id].buff.applications > 0 then
+				if specSettings.colors.comboPoints.spec.serratedBoneSpikeColor and talents:IsTalentActive(spells.serratedBoneSpike) and snapshotData.targetData.currentTargetGuid ~= nil and snapshots[spells.serratedBoneSpike.id].buff.applications > 0 then
 					sbsCp = 1 + snapshotData.targetData.count[spells.serratedBoneSpike.debuffId]
 				end
 
@@ -2363,7 +2363,7 @@ local function UpdateResourceBar()
 						sbs = true
 						cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
 						cpColor = specSettings.colors.comboPoints.serratedBoneSpike
-						if not specSettings.comboPoints.consistentUnfilledColor then
+						if not specSettings.colors.comboPoints.consistentUnfilledColor then
 							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.serratedBoneSpike, true)
 						end
 					end
@@ -2377,7 +2377,7 @@ local function UpdateResourceBar()
 									cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
 								end
 			
-								if not specSettings.comboPoints.consistentUnfilledColor then
+								if not specSettings.colors.comboPoints.consistentUnfilledColor then
 									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 								end
 							end
@@ -2409,7 +2409,7 @@ local function UpdateResourceBar()
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
 						if specSettings.generation.mode == "time" then
 							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
@@ -2419,7 +2419,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -2681,7 +2681,7 @@ local function UpdateResourceBar()
 								cpColor = specSettings.colors.comboPoints.echoingReprimand
 								cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
 			
-								if not specSettings.comboPoints.consistentUnfilledColor then
+								if not specSettings.colors.comboPoints.consistentUnfilledColor then
 									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 								end
 							end
@@ -2713,7 +2713,7 @@ local function UpdateResourceBar()
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 				local passiveValue = 0
-				if specSettings.bar.showPassive then
+				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
 						if specSettings.generation.mode == "time" then
 							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
@@ -2723,7 +2723,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.bar.showCasting then
+				if CastingSpell() and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -2990,7 +2990,7 @@ local function UpdateResourceBar()
 								cpColor = specSettings.colors.comboPoints.echoingReprimand
 								cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
 			
-								if not specSettings.comboPoints.consistentUnfilledColor then
+								if not specSettings.colors.comboPoints.consistentUnfilledColor then
 									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 								end
 								isCharged = true
@@ -3001,7 +3001,7 @@ local function UpdateResourceBar()
 					if not isCharged and x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.applications + snapshotData.attributes.resource2) >= x then
 						cpBorderColor = specSettings.colors.comboPoints.shadowTechniques
 
-						if not specSettings.comboPoints.consistentUnfilledColor then
+						if not specSettings.colors.comboPoints.consistentUnfilledColor then
 							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.shadowTechniques, true)
 						end
 					end
