@@ -535,13 +535,13 @@ local function ConstructGlobalOptionsPanel()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
 
-	tabsheets[5]:Show()
-	tabsheets[5].selected = true
-	tabs[5]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	tabsheets[1]:Show()
+	tabsheets[1].selected = true
+	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 	parent.tabs = tabs
 	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[5]
-	parent.lastTabId = 5
+	parent.lastTab = tabsheets[1]
+	parent.lastTabId = 1
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
