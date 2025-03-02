@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 11.1.0.5-release (2025-03-02)
+# 11.1.0.5-release (2025-03-03)
 ## General
 
 - [#423 - NEW](#423) Add Global Bar Setting support for position and size for the main bar and combo point UI elements.
