@@ -23,7 +23,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.protection = {}
 ]]
 
 local function ArmsLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -101,7 +101,7 @@ end
 TRB.Options.Warrior.ArmsLoadDefaultBarTextSimpleSettings = ArmsLoadDefaultBarTextSimpleSettings
 
 local function ArmsLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -365,7 +365,7 @@ end
 
 
 local function FuryLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -443,7 +443,7 @@ end
 TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings = FuryLoadDefaultBarTextSimpleSettings
 
 local function FuryLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,

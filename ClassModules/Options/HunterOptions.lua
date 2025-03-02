@@ -19,7 +19,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.survival = {}
 
 local function BeastMasteryLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -97,7 +97,7 @@ end
 TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSimpleSettings = BeastMasteryLoadDefaultBarTextSimpleSettings
 
 local function BeastMasteryLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -371,7 +371,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 end
 
 local function MarksmanshipLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -449,7 +449,7 @@ end
 TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSimpleSettings = MarksmanshipLoadDefaultBarTextSimpleSettings
 
 local function MarksmanshipLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -750,7 +750,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 end
 
 local function SurvivalLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -828,7 +828,7 @@ end
 TRB.Options.Hunter.SurvivalLoadDefaultBarTextSimpleSettings = SurvivalLoadDefaultBarTextSimpleSettings
 
 local function SurvivalLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,

@@ -16,7 +16,7 @@ TRB.Options.DemonHunter.Havoc = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = {}
 
 local function HavocLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -94,7 +94,7 @@ end
 TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings = HavocLoadDefaultBarTextSimpleSettings
 
 local function HavocLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -333,7 +333,7 @@ local function HavocLoadDefaultSettings(includeBarText)
 end
 
 local function VengeanceLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -411,7 +411,7 @@ end
 TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSimpleSettings = VengeanceLoadDefaultBarTextSimpleSettings
 
 local function VengeanceLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,

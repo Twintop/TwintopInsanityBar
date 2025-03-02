@@ -18,7 +18,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.holy = {}
 
 -- Holy
 local function HolyLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -95,7 +95,7 @@ end
 TRB.Options.Paladin.HolyLoadDefaultBarTextSimpleSettings = HolyLoadDefaultBarTextSimpleSettings
 
 local function HolyLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,

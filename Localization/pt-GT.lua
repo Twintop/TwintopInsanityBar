@@ -2120,4 +2120,5 @@ if locale == "ptBR" or locale == "ptPT" then
     L["GlobalCheckboxThresholdOvercapTooltip"] = "Isso mudará a cor do texto de recursos quando seu recurso atual ou uma magia de conjuração resultarem em sobrecarregar o máximo de recursos."
     L["GlobalResourceDecimalPrecision"] = "Precisão decimal de recursos"
     L["CheckboxUseGlobalTooltip_Precision"] = "Quando marcada, as configurações globais para precisão decimal e de recursos no texto de barra serão usadas."
+    L["Resource"] = "Recurso"
 end

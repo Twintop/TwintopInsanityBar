@@ -759,7 +759,7 @@ local function AreSecondaryRatingsNil()
 end
 
 ---Refreshes the baseline lookup data with the current values.
----@param settings table
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	--Spec specific implementations also needed. This is general/cross-spec data
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -809,7 +809,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		local hastePercent = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.precision.secondary))
 			
 		--$gcd
-		local _gcd = 1.5 / (1 + (snapshotData.attributes.haste/100))
+		local _gcd = 1.5 / (1 + ((snapshotData.attributes.haste or 0)  / 100))
 		if _gcd > 1.5 then
 			_gcd = 1.5
 		elseif _gcd < 0.75 then
@@ -937,12 +937,12 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 end
 
 ---Checks if Time to Die (TTD) is used at all by display text within the settings provided
----@param settings table
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:IsTtdActive(settings)
 	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 	local found = false
 	if settings ~= nil and settings.displayText ~= nil then
-		local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		local entries = TRB.Functions.Table:Length(displayText.barText)
 		if entries > 0 then
 			for i = 1, entries do
@@ -1006,19 +1006,18 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 end
 
 ---Updates the resource bar text based on the settings
----@param settings table
----@param sharedSettings table
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param refreshText boolean
-function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, refreshText)
+function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
-	TRB.Functions.BarText:RefreshLookupDataBase(sharedSettings)
+	TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	TRB.Functions.RefreshLookupData()
 	
 	--Only parse bar text if we're we need to refresh the text
-	if settings ~= nil and sharedSettings ~= nil and sharedSettings.displayText ~= nil and refreshText then
+	if settings ~= nil and settings.displayText ~= nil and refreshText then
 		---@type Frame[]
 		local textFrames = TRB.Frames.textFrames
-		local displayText = sharedSettings.displayText --[[@as TRB.Classes.DisplayText]]
+		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		local entries = #displayText.barText
 		for i = 1, entries do
 			if displayText.barText[i].enabled then
@@ -1055,30 +1054,25 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, sharedSettings, r
 end
 
 ---Builds the required bar text frames
----@param settings table
 ---@param classId integer?
 ---@param specId integer?
-function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
-	-- Only do this if we're on the current class and spec!
-	local currentClassId = select(3, UnitClass("player"))
-
-	if classId ~= nil and specId ~= nil and (currentClassId ~= classId or TRB.Data.character.specId ~= specId) then
-		return
-	end
+function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	classId = classId or TRB.Data.character.classId
+	specId = specId or TRB.Data.character.specId
 	
-	local className = string.lower(select(2, GetClassInfo(classId or currentClassId)))
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId or TRB.Data.character.specId)
-	settings = TRB.Data.specCache[specName].settings
+	local className = string.lower(select(2, GetClassInfo(classId)))
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	local settings = TRB.Data.specCache[specName].settings
 
 	---@type Frame[]
 	local textFrames = TRB.Frames.textFrames
-	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 	
 	local entries = TRB.Functions.Table:Length(displayText.barText)
 	local frameCount = 0
 	if entries > 0 then
+		frameCount = 1
 		for i = 1, entries do
-			frameCount = frameCount + 1
 			local e = displayText.barText[i]
 
 			local fontFace = e.fontFace
@@ -1096,14 +1090,15 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 			local relativeTo = e.position.relativeTo
 			---@type Frame
 			local relativeToFrame
+			local isEnabled = true
 			
 			if e.position.relativeToFrame == "UIParent" then
 				relativeToFrame = UIParent
 			elseif e.position.relativeToFrame == "AllComboPoints" then
 			else
-				relativeToFrame = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
+				relativeToFrame, isEnabled = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
 
-				if relativeToFrame == nil then
+				if relativeToFrame == nil and isEnabled then
 					relativeToFrame = _G["TwintopResourceBarFrame_"..e.position.relativeToFrame]
 				end
 			end
@@ -1120,7 +1115,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 ---@diagnostic disable-next-line: undefined-field
 			local font = textFrames[frameCount].font
 
-			if relativeToFrame ~= nil and e.enabled then
+			if relativeToFrame ~= nil and e.enabled and isEnabled then
 				font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 				font:SetJustifyH(fontJustifyHorizontal)
 				font:SetFont(fontFace, fontSize, "OUTLINE")
@@ -1135,6 +1130,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 				textFrames[frameCount]:Hide()
 				font:Hide()
 			end
+			frameCount = frameCount + 1
 		end
 	end
 	
@@ -1170,9 +1166,9 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 end
 
 ---Hides all bar text
----@param settings table
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:Hide(settings)
-	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 	---@type Frame[]
 	local textFrames = TRB.Frames.textFrames
 	local entries = TRB.Functions.Table:Length(displayText.barText)
@@ -1186,15 +1182,16 @@ function TRB.Functions.BarText:Hide(settings)
 end
 
 ---Shows all enabled bar text
----@param settings table
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:Show(settings)
-	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 	---@type Frame[]
 	local textFrames = TRB.Frames.textFrames
 	local entries = TRB.Functions.Table:Length(displayText.barText)
 	if entries > 0 then
 		for i = 1, entries do
-			if displayText.barText[i].enabled then
+			local _, isEnabled = TRB.Functions.Class:GetBarTextFrame(displayText.barText[i].position.relativeToFrame)
+			if displayText.barText[i].enabled and isEnabled then
 				textFrames[i]:Show()
 				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Show()

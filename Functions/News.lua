@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 11.1.0.5-release (2025-03-02)
+## General
+
+- [#423 - NEW](#423) Add Global Bar Setting support for position and size for the main bar and combo point UI elements.
+
+## Priest
+### Holy
+
+- (FIX) Prevent bar text from disabled Holy Words from displaying.
+
+---
+
 # 11.1.0.4-release (2025-02-28)
 ## Priest
 

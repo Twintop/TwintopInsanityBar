@@ -391,7 +391,7 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Discipline()
-	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "priest", "discipline")
+	TRB.Functions.Character:FillSpecializationCacheSettings("priest", "discipline")
 end
 
 local function FillSpellData_Discipline()
@@ -552,7 +552,7 @@ local function FillSpellData_Discipline()
 end
 
 local function Setup_Holy()
-	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "priest", "holy")
+	TRB.Functions.Character:FillSpecializationCacheSettings("priest", "holy")
 end
 
 local function FillSpellData_Holy()
@@ -740,7 +740,7 @@ local function FillSpellData_Holy()
 end
 
 local function Setup_Shadow()
-	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "priest", "shadow")
+	TRB.Functions.Character:FillSpecializationCacheSettings("priest", "shadow")
 end
 
 local function FillSpellData_Shadow()
@@ -2632,7 +2632,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.discipline
 		local specCacheSettings = TRB.Data.specCache.discipline.settings
 		UpdateSnapshot_Discipline()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
 
@@ -2721,22 +2721,22 @@ local function UpdateResourceBar()
 
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.passive
 						passiveBarColor = specSettings.colors.bar.spending
 					else
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.spending
 						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 					castingBarColor = specSettings.colors.bar.casting
 					passiveBarColor = specSettings.colors.bar.passive
 				end
@@ -2924,7 +2924,7 @@ local function UpdateResourceBar()
 					end
 
 					local comboPointName = "comboPoint" .. currentCp
-					TRB.Functions.Bar:SetValue(specSettings, comboPointName, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
+					TRB.Functions.Bar:SetValue(specCacheSettings, comboPointName, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[currentCp].resourceFrame, comboPointName, cp1Color)
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[currentCp].borderFrame, comboPointName, cpBorderColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[currentCp].containerFrame, comboPointName, cpBR, cpBG, cpBB, cpBA)
@@ -2932,7 +2932,7 @@ local function UpdateResourceBar()
 
 					if hasCp2 then
 						comboPointName = "comboPoint" .. currentCp
-						TRB.Functions.Bar:SetValue(specSettings, comboPointName, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
+						TRB.Functions.Bar:SetValue(specCacheSettings, comboPointName, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
 						TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[currentCp].resourceFrame, comboPointName, cp2Color)
 						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[currentCp].borderFrame, comboPointName, cpBorderColor)
 						TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[currentCp].containerFrame, comboPointName, cpBR, cpBG, cpBB, cpBA)
@@ -2941,14 +2941,14 @@ local function UpdateResourceBar()
 				end
 			end
 
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		local specSettings = classSettings.holy
 		local specCacheSettings = TRB.Data.specCache.holy.settings
 		UpdateSnapshot_Holy()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
 
@@ -3056,22 +3056,22 @@ local function UpdateResourceBar()
 
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.passive
 						passiveBarColor = specSettings.colors.bar.spending
 					else
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.spending
 						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 					castingBarColor = specSettings.colors.bar.casting
 					passiveBarColor = specSettings.colors.bar.passive
 				end
@@ -3144,7 +3144,7 @@ local function UpdateResourceBar()
 						snapshot = snapshots[spells.symbolOfHope.id]
 						local currentManaPercent = (currentResource / TRB.Data.character.maxResource) * 100
 						if not snapshot.buff.isActive and currentManaPercent <= specSettings.thresholds[spell.settingKey].minimumManaPercent and specSettings.thresholds[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds[spell.settingKey].cooldown) then
-							local symbolOfHopeMana = symbolOfHope:CalculateTime(spells.symbolOfHope.ticks+1, (spells.symbolOfHope.duration / (1 + (snapshotData.attributes.haste / 100))) / spells.symbolOfHope.ticks, 0, true)
+							local symbolOfHopeMana = symbolOfHope:CalculateTime(spells.symbolOfHope.ticks+1, (spells.symbolOfHope.duration / (1 + ((snapshotData.attributes.haste or 0) / 100))) / spells.symbolOfHope.ticks, 0, true)
 
 							resourceAmount = castingBarValue + symbolOfHopeMana
 							if snapshot.cooldown:IsUnusable() then
@@ -3334,7 +3334,7 @@ local function UpdateResourceBar()
 						end
 
 						local comboPointName = "comboPoint" .. currentCp
-						TRB.Functions.Bar:SetValue(specSettings, comboPointName, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
+						TRB.Functions.Bar:SetValue(specCacheSettings, comboPointName, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
 						TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[currentCp].resourceFrame, comboPointName, cp1Color)
 						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[currentCp].borderFrame, comboPointName, cpBorderColor)
 						TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[currentCp].containerFrame, comboPointName, cpBR, cpBG, cpBB, cpBA)
@@ -3342,7 +3342,7 @@ local function UpdateResourceBar()
 	
 						if hasCp2 then
 							comboPointName = "comboPoint" .. currentCp
-							TRB.Functions.Bar:SetValue(specSettings, comboPointName, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
+							TRB.Functions.Bar:SetValue(specCacheSettings, comboPointName, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
 							TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[currentCp].resourceFrame, comboPointName, cp2Color)
 							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[currentCp].borderFrame, comboPointName, cpBorderColor)
 							TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[currentCp].containerFrame, comboPointName, cpBR, cpBG, cpBB, cpBA)
@@ -3352,14 +3352,14 @@ local function UpdateResourceBar()
 				end
 			end
 
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		local specSettings = classSettings.shadow
 		local specCacheSettings = TRB.Data.specCache.shadow.settings
 		UpdateSnapshot_Shadow()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
 
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
@@ -3547,22 +3547,22 @@ local function UpdateResourceBar()
 
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.passive
 						passiveBarColor = specSettings.colors.bar.spending
 					else
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.spending
 						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 					castingBarColor = specSettings.colors.bar.casting
 					passiveBarColor = specSettings.colors.bar.passive
 				end
@@ -3615,7 +3615,7 @@ local function UpdateResourceBar()
 			end
 		end
 
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
 
@@ -3896,7 +3896,7 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.atonement)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Discipline
-		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.priest.discipline)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.discipline.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.discipline)
 
 		local lookup = TRB.Data.lookup or {}
@@ -3965,7 +3965,7 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.shadowWordPain)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
-		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.priest.holy)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.holy.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 
 		local lookup = TRB.Data.lookup or {}
@@ -4037,7 +4037,7 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.resonantEnergy)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Shadow
-		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.priest.shadow)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.shadow.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
 
 		local lookup = {}
@@ -4231,14 +4231,13 @@ function TRB.Functions.Class:CheckCharacter()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
-	local settings
 
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		TRB.Data.character.specName = "discipline"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-		settings = TRB.Data.settings.priest.discipline
+		local settings = TRB.Data.settings.priest.discipline
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 
 		if talents:IsTalentActive(spells.voidwraith) then
@@ -4253,51 +4252,53 @@ function TRB.Functions.Class:CheckCharacter()
 		
 		local totalPowerWordCharges = 0
 		
-		if talents:IsTalentActive(spells.powerWordRadiance) and TRB.Data.settings.priest.discipline.colors.comboPoints.powerWordRadianceEnabled then
+		if talents:IsTalentActive(spells.powerWordRadiance) and settings.colors.comboPoints.powerWordRadianceEnabled then
 			totalPowerWordCharges = totalPowerWordCharges + 1
 			if talents:IsTalentActive(spells.lightsPromise) then
 				totalPowerWordCharges = totalPowerWordCharges + 1
 			end
 		end
-
-		if settings ~= nil then
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+	
+		if sharedSettings ~= nil then
 			if totalPowerWordCharges ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = totalPowerWordCharges
-				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		TRB.Data.character.specName = "holy"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-		settings = TRB.Data.settings.priest.holy
+		local settings = TRB.Data.settings.priest.holy
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 		
 
 		local totalHolyWordCharges = 0
 		
-		if talents:IsTalentActive(spells.holyWordSerenity) and TRB.Data.settings.priest.holy.colors.comboPoints.holyWordSerenityEnabled then
+		if talents:IsTalentActive(spells.holyWordSerenity) and settings.colors.comboPoints.holyWordSerenityEnabled then
 			totalHolyWordCharges = totalHolyWordCharges + 1
 			if talents:IsTalentActive(spells.miracleWorker) then
 				totalHolyWordCharges = totalHolyWordCharges + 1
 			end
 		end
 		
-		if talents:IsTalentActive(spells.holyWordSanctify) and TRB.Data.settings.priest.holy.colors.comboPoints.holyWordSanctifyEnabled then
+		if talents:IsTalentActive(spells.holyWordSanctify) and settings.colors.comboPoints.holyWordSanctifyEnabled then
 			totalHolyWordCharges = totalHolyWordCharges + 1
 			if talents:IsTalentActive(spells.miracleWorker) then
 				totalHolyWordCharges = totalHolyWordCharges + 1
 			end
 		end
 		
-		if talents:IsTalentActive(spells.holyWordChastise) and TRB.Data.settings.priest.holy.colors.comboPoints.holyWordChastiseEnabled then
+		if talents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastiseEnabled then
 			totalHolyWordCharges = totalHolyWordCharges + 1
 		end
-
-		if settings ~= nil then
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+	
+		if sharedSettings ~= nil then
 			if totalHolyWordCharges ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = totalHolyWordCharges
-				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -4318,9 +4319,7 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
-	local specSettings
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true then
-		specSettings = TRB.Data.settings.priest.discipline
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 
@@ -4328,14 +4327,12 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
-		specSettings = TRB.Data.settings.priest.holy
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
-		specSettings = TRB.Data.settings.priest.shadow
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Insanity
 		TRB.Data.resourceFactor = 100
@@ -4353,18 +4350,17 @@ function TRB.Functions.Class:HideResourceBar(force)
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-		local settings
+
 		local notZeroShowValue = TRB.Data.character.maxResource
-		if TRB.Data.character.specId == 1 then
-			settings = TRB.Data.settings.priest.discipline
-		elseif TRB.Data.character.specId == 2 then
-			settings = TRB.Data.settings.priest.holy
-		elseif TRB.Data.character.specId == 3 then
-			settings = TRB.Data.settings.priest.shadow
+		if TRB.Data.character.specId == 3 then
 			notZeroShowValue = 0
 		end
+		local sharedSettings
+		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		end
 
-		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue)
+		TRB.Functions.Bar:HideResourceBarGeneric(sharedSettings, force, notZeroShowValue)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false
@@ -4885,10 +4881,14 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		if TRB.Functions.String:StartsWith(relativeToFrame, "PowerWord_") then
 			if TRB.Functions.String:Contains(relativeToFrame, "Radiance") and settings.discipline.colors.comboPoints.powerWordRadianceEnabled and talents:IsTalentActive(spells.powerWordRadiance) then
 				if TRB.Functions.String:EndsWith(relativeToFrame, "1") then
-					return _G["TwintopResourceBarFrame_ComboPoint_1"]
+					return _G["TwintopResourceBarFrame_ComboPoint_1"], true
 				elseif TRB.Functions.String:EndsWith(relativeToFrame, "2") and talents:IsTalentActive(spells.lightsPromise) then
-					return _G["TwintopResourceBarFrame_ComboPoint_2"]
+					return _G["TwintopResourceBarFrame_ComboPoint_2"], true
+				else
+					return nil, false
 				end
+			else
+				return nil, false
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -4896,9 +4896,11 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		if TRB.Functions.String:StartsWith(relativeToFrame, "HolyWord_") then
 			if TRB.Functions.String:Contains(relativeToFrame, "Serenity") and settings.holy.colors.comboPoints.holyWordSerenityEnabled and talents:IsTalentActive(spells.holyWordSerenity) then
 				if TRB.Functions.String:EndsWith(relativeToFrame, "1") then
-					return _G["TwintopResourceBarFrame_ComboPoint_1"]
+					return _G["TwintopResourceBarFrame_ComboPoint_1"], true
 				elseif TRB.Functions.String:EndsWith(relativeToFrame, "2") and talents:IsTalentActive(spells.miracleWorker) then
-					return _G["TwintopResourceBarFrame_ComboPoint_2"]
+					return _G["TwintopResourceBarFrame_ComboPoint_2"], true
+				else
+					return nil, false
 				end
 			elseif TRB.Functions.String:Contains(relativeToFrame, "Sanctify") and settings.holy.colors.comboPoints.holyWordSanctifyEnabled and talents:IsTalentActive(spells.holyWordSanctify) then
 				if TRB.Functions.String:EndsWith(relativeToFrame, "1") then
@@ -4909,7 +4911,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 							nextHwCount = nextHwCount + 1
 						end
 					end
-					return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount]
+					return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount], true
 				elseif TRB.Functions.String:EndsWith(relativeToFrame, "2") and talents:IsTalentActive(spells.miracleWorker) then
 					local nextHwCount = 2
 					if settings.holy.colors.comboPoints.holyWordSerenityEnabled and talents:IsTalentActive(spells.holyWordSerenity) then
@@ -4918,7 +4920,9 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 							nextHwCount = nextHwCount + 1
 						end
 					end
-					return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount]
+					return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount], true
+				else
+					return nil, false
 				end
 			elseif TRB.Functions.String:EndsWith(relativeToFrame, "Chastise_1") and settings.holy.colors.comboPoints.holyWordChastiseEnabled and talents:IsTalentActive(spells.holyWordChastise) then
 				local nextHwCount = 1
@@ -4935,12 +4939,14 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 						nextHwCount = nextHwCount + 1
 					end
 				end
-				return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount]
+				return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount], true
+			else
+				return nil, false
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
 	end
-	return nil
+	return nil, true
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

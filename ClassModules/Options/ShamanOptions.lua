@@ -23,7 +23,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = {}
 -- Elemental
 
 local function ElementalLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -101,7 +101,7 @@ end
 TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings = ElementalLoadDefaultBarTextSimpleSettings
 
 local function ElementalLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -348,7 +348,7 @@ end
 
 -- Enhancement
 local function EnhancementLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -426,7 +426,7 @@ end
 TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings = EnhancementLoadDefaultBarTextSimpleSettings
 
 local function EnhancementLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -664,7 +664,7 @@ end
 
 -- Restoration
 local function RestorationLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -742,7 +742,7 @@ end
 TRB.Options.Shaman.RestorationLoadDefaultBarTextSimpleSettings = RestorationLoadDefaultBarTextSimpleSettings
 
 local function RestorationLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,

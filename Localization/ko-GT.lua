@@ -2120,4 +2120,5 @@ if locale == "koKR" then
     L["GlobalCheckboxThresholdOvercapTooltip"] = "이렇게 하면 현재 리소스나 하드캐스팅 주문으로 인해 최대 리소스가 초과될 때 리소스 텍스트 색상이 변경됩니다."
     L["GlobalResourceDecimalPrecision"] = "리소스 소수점 정밀도"
     L["CheckboxUseGlobalTooltip_Precision"] = "체크 시, 막대 텍스트의 소수점 및 리소스 정밀도에 대한 글로벌 설정이 사용됩니다."
+    L["Resource"] = "의지"
 end

@@ -6,7 +6,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public Global_TwintopResourceBar table
 ---@field public barTextVariables table
 ---@field public character table
----@field public settings TRB.Classes.SharedSpecSetting
+---@field public settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public spellsData TRB.Classes.SpellsData
 ---@field public snapshotData TRB.Classes.SnapshotData
 ---@field public talents TRB.Classes.Talents

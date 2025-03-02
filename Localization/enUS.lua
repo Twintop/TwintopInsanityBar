@@ -2206,3 +2206,4 @@ L["GlobalCheckboxThresholdOverTooltip"] = "This will change the Resource text co
 L["GlobalCheckboxThresholdOvercapTooltip"] = "This will change the Resource text color when your current resource or a hardcast spell will result in overcapping maximum resources."
 L["GlobalResourceDecimalPrecision"] = "Resource Decimal Precision"
 L["CheckboxUseGlobalTooltip_Precision"] = "When checked, the global settings for decimal and resource precision in bar text will be used."
+L["Resource"] = "Resource"

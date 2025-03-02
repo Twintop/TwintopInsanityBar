@@ -648,8 +648,54 @@ function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeTex
 	end
 end
 
+local function AdjustBarBorder()
+	local specCacheEntry = TRB.Data.specCache[TRB.Data.character.specName].settings
+	TRB.Frames.barContainerFrame:SetWidth(specCacheEntry.bar.width - (specCacheEntry.bar.border * 2))
+	TRB.Frames.barContainerFrame:SetHeight(specCacheEntry.bar.height - (specCacheEntry.bar.border * 2))
+	TRB.Frames.barBorderFrame:SetWidth(specCacheEntry.bar.width)
+	TRB.Frames.barBorderFrame:SetHeight(specCacheEntry.bar.height)
+	if specCacheEntry.bar.border < 1 then
+		TRB.Frames.barBorderFrame:SetBackdrop({
+			edgeFile = specCacheEntry.textures.border,
+			tile = true,
+			tileSize = 4,
+			edgeSize = 1,
+			insets = {0, 0, 0, 0}
+		})
+		TRB.Frames.barBorderFrame:Hide()
+	else
+		TRB.Frames.barBorderFrame:SetBackdrop({
+			edgeFile = specCacheEntry.textures.border,
+			tile = true,
+			tileSize = 4,
+			edgeSize = specCacheEntry.bar.border,
+			insets = {0, 0, 0, 0}
+		})
+		TRB.Frames.barBorderFrame:Show()
+	end
+	TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+	TRB.Frames.barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specCacheEntry.colors.bar.border, true))
+
+	TRB.Functions.Bar:SetMinMax(specCacheEntry)
+	TRB.Functions.Bar:SetHeight(specCacheEntry)
+	TRB.Functions.Bar:SetPosition(specCacheEntry, TRB.Frames.barContainerFrame)
+	TRB.Functions.Bar:SetMinMax(specCacheEntry)
+end
+
 function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
-	local _, className, _ = GetClassInfo(classId)
+	local className
+
+	if classId ~= nil then
+		_, className, _ = GetClassInfo(classId)
+	else
+		className = "Global"
+	end
+
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	if specName == nil then
+		specName = ""
+	end
+
 	local f = nil	
 	local title = ""
 
@@ -658,6 +704,34 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
 	controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarPositionSize"], oUi.xCoord, yCoord)
+
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalBarDimensions = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_barDimensions", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalBarDimensions
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_BarDimensions"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].bar)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].bar = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+
+			TRB.Functions.Bar:SetHeight(TRB.Data.specCache[specName].settings)
+			TRB.Functions.Bar:SetWidth(TRB.Data.specCache[specName].settings)
+			
+			TRB.Frames.barContainerFrame:ClearAllPoints()
+			TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
+			TRB.Frames.barContainerFrame:SetPoint("CENTER", TRB.Data.specCache[specName].settings.bar.xPos, TRB.Data.specCache[specName].settings.bar.yPos)
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[specName].settings, TRB.Frames.barContainerFrame)
+			
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[specName].settings)
+
+			AdjustBarBorder()
+		end)
+	end
 
 	yCoord = yCoord - 40
 	title = L["BarWidth"]
@@ -673,10 +747,10 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetWidth(spec)
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetWidth(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
 		end
 	end)
 
@@ -687,16 +761,16 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.height = value
 
-		local maxBorderSize = math.min(math.floor((spec.bar.height) / TRB.Data.constants.borderWidthFactor), math.floor((spec.bar.width) / TRB.Data.constants.borderWidthFactor))-1
+		local maxBorderSize = math.max(math.min(math.floor((spec.bar.height) / TRB.Data.constants.borderWidthFactor), math.floor((spec.bar.width) / TRB.Data.constants.borderWidthFactor))-1, 0)
 		local borderSize = math.min(maxBorderSize, spec.bar.border)
 
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 		controls.borderWidth.EditBox:SetText(tostring(borderSize))
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetHeight(spec)
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetHeight(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
 		end
 	end)
 
@@ -708,11 +782,11 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.xPos = value
 
-		if TRB.Data.character.specId == specId then
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			TRB.Frames.barContainerFrame:ClearAllPoints()
 			TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
-			TRB.Frames.barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Frames.barContainerFrame:SetPoint("CENTER", TRB.Data.specCache[TRB.Data.character.specName].settings.bar.xPos, TRB.Data.specCache[TRB.Data.character.specName].settings.bar.yPos)
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
 		end
 	end)
 
@@ -723,11 +797,11 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.yPos = value
 
-		if TRB.Data.character.specId == specId then
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			TRB.Frames.barContainerFrame:ClearAllPoints()
 			TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
-			TRB.Frames.barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Frames.barContainerFrame:SetPoint("CENTER", TRB.Data.specCache[TRB.Data.character.specName].settings.bar.xPos, TRB.Data.specCache[TRB.Data.character.specName].settings.bar.yPos)
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
 		end
 	end)
 
@@ -739,37 +813,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.border = value
 
-		if TRB.Data.character.specId == specId then
-			TRB.Frames.barContainerFrame:SetWidth(spec.bar.width-(spec.bar.border*2))
-			TRB.Frames.barContainerFrame:SetHeight(spec.bar.height-(spec.bar.border*2))
-			TRB.Frames.barBorderFrame:SetWidth(spec.bar.width)
-			TRB.Frames.barBorderFrame:SetHeight(spec.bar.height)
-			if spec.bar.border < 1 then
-				TRB.Frames.barBorderFrame:SetBackdrop({
-					edgeFile = spec.textures.border,
-					tile = true,
-					tileSize = 4,
-					edgeSize = 1,
-					insets = {0, 0, 0, 0}
-				})
-				TRB.Frames.barBorderFrame:Hide()
-			else
-				TRB.Frames.barBorderFrame:SetBackdrop({
-					edgeFile = spec.textures.border,
-					tile = true,
-					tileSize=4,
-					edgeSize=spec.bar.border,
-					insets = {0, 0, 0, 0}
-				})
-				TRB.Frames.barBorderFrame:Show()
-			end
-			TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
-
-			TRB.Functions.Bar:SetMinMax(spec)
-			TRB.Functions.Bar:SetHeight(spec)
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			AdjustBarBorder()
 		end
 
 		local minsliderWidth = math.max((spec.bar.border)*2+1, 120)
@@ -782,42 +827,29 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.width.MinLabel:SetText(tostring(minsliderWidth))
 	end)
 
-	if spec.thresholds ~= nil then
-		title = L["ThresholdLineWidth"]
-		controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			spec.thresholds.width = value
-
-			if TRB.Data.character.specId == specId then
-				TRB.Functions.Threshold:RedrawThresholdLines(spec)
-			end
-		end)
-	end
-
-	yCoord = yCoord - 40
-
 	--NOTE: the order of these checkboxes is reversed!
 
-	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.lockPosition
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DragAndDropEnabled"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["DragAndDropTooltip"]
 	f:SetChecked(spec.bar.dragAndDrop)
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.dragAndDrop = self:GetChecked()
-		TRB.Frames.barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-		TRB.Frames.barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
+
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Frames.barContainerFrame:SetMovable((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+			TRB.Frames.barContainerFrame:EnableMouse((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+		end
 	end)
 
 	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
-	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.pinToPRD
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PinToPRDEnabled"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["PinToPRDTooltip"]
@@ -827,10 +859,14 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
-		TRB.Frames.barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-		TRB.Frames.barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-		TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Frames.barContainerFrame:SetMovable((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+			TRB.Frames.barContainerFrame:EnableMouse((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+		end
 	end)
+
+	yCoord = yCoord - 30
 
 	return yCoord
 end
@@ -844,7 +880,19 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		secondaryResourceString = L["ResourceComboPoints"]
 	end
 
-	local _, className, _ = GetClassInfo(classId)
+	local className
+
+	if classId ~= nil then
+		_, className, _ = GetClassInfo(classId)
+	else
+		className = "Global"
+	end
+
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	if specName == nil then
+		specName = ""
+	end
+
 	local f = nil
 
 	local title = ""
@@ -854,6 +902,25 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
 	controls.comboPointPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryPositionAndSize"], secondaryResourceString), oUi.xCoord, yCoord)
+
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_comboPoints", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalComboPoints
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_ComboPoints"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].comboPoints)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].comboPoints = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[specName].settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[specName].settings)
+		end)
+	end
 
 	yCoord = yCoord - 40
 	title = string.format(L["SecondaryWidth"], secondaryResourceString)
@@ -874,9 +941,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
 		end
 	end)
 
@@ -898,9 +965,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		controls.comboPointBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
 		end
 	end)
 
@@ -912,8 +979,8 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.comboPoints.xPos = value
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
 		end
 	end)
 
@@ -924,8 +991,8 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.comboPoints.yPos = value
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
 		end
 	end)
 
@@ -937,9 +1004,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.comboPoints.border = value
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
 		end
 
 		local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
@@ -959,15 +1026,15 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.comboPoints.spacing = value
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
 		end
 	end)
 
 	yCoord = yCoord - 40
 	-- Create the dropdown, and configure its appearance
-	controls.dropDown.comboPointsRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_comboPointsRelativeTo", parent)
+	controls.dropDown.comboPointsRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specName.."_comboPointsRelativeTo", parent)
 	controls.dropDown.comboPointsRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], secondaryResourceString, primaryResourceString), oUi.xCoord, yCoord)
 	controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
@@ -1013,12 +1080,12 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
 		LibDD:CloseDropDownMenus()
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
 		end
 	end
 
-	controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.comboPointsFullWidth
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], secondaryResourceString))
@@ -1028,9 +1095,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.fullWidth = self:GetChecked()
 		
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
 		end
 	end)
 
@@ -1720,6 +1787,18 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		end
 	end)
 
+	title = L["ThresholdLineWidth"]
+	controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.thresholds.width = value
+
+		if TRB.Data.character.specId == specId then
+			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		end
+	end)
+
 	return yCoord
 end
 
@@ -2267,8 +2346,8 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayText)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].displayText = self:GetChecked()
-			TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
-			TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		end)
 		yCoord = yCoord - 30
 	end
@@ -2321,7 +2400,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		spec.displayText.default.fontFaceName = newName
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, newName)
 		LibDD:CloseDropDownMenus()
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
 
 	yCoord = yCoord - 30
@@ -2330,7 +2409,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	f = controls.colors.text.color
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.displayText.default, controls.colors.text, "color")
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	yCoord = yCoord - 60
@@ -2340,7 +2419,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.displayText.default.fontSize = value
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	return yCoord
@@ -2376,8 +2455,8 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 	f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textColors)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.global[lowerClassName][specName].textColors = self:GetChecked()
-		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	return yCoord
@@ -2420,8 +2499,8 @@ function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spe
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].dotColors)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].dotColors = self:GetChecked()
-			TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
-			TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		end)
 	end
 
@@ -2502,8 +2581,8 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].precision)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].precision = self:GetChecked()
-			TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, TRB.Data.specCache, lowerClassName, specName)
-			TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			TRB.Data.snapshotData.attributes.cacheRefresh = true
 		end)
 	end
@@ -2589,7 +2668,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		}
 	}
 
-	---@type TRB.Classes.DisplayTextEntry
+	---@type TRB.Classes.Settings.DisplayTextEntry
 	---@diagnostic disable-next-line: missing-fields
 	local workingBarText = {}
 
@@ -2634,7 +2713,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextHorizontal:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		workingBarText.position.xPos = value
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	title = L["VerticalOffset"]
@@ -2643,7 +2722,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextVertical:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		workingBarText.position.yPos = value
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	yCoord = yCoord - 40
@@ -2932,7 +3011,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		workingBarText.position.relativeToName = newName
 		LibDD:UIDropDownMenu_SetText(barTextRelativeTo, newName)
 		LibDD:CloseDropDownMenus()
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
 
 	yCoord = yCoord - 60
@@ -2987,7 +3066,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		workingBarText.fontFaceName = newName
 		LibDD:UIDropDownMenu_SetText(font, newName)
 		LibDD:CloseDropDownMenus()
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
 
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
@@ -2997,7 +3076,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	useDefaultFontFace.tooltip = L["UseDefaultFontFaceTooltip"]
 	useDefaultFontFace:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontFace = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	-- Create the dropdown, and configure its appearance
@@ -3039,7 +3118,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		workingBarText.fontJustifyHorizontalName = newName
 		LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, newName)
 		LibDD:CloseDropDownMenus()
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
 	
 	yCoord = yCoord - 100
@@ -3049,7 +3128,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	fontSize:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		workingBarText.fontSize = value
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
@@ -3059,7 +3138,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	useDefaultFontSize.tooltip = L["UseDefaultFontSizeTooltip"]
 	useDefaultFontSize:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontSize = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	controls.colors = controls.colors or {}
@@ -3078,7 +3157,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	useDefaultFontColor.tooltip = L["UseDefaultFontColorTooltip"]
 	useDefaultFontColor:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontColor = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 
@@ -3090,7 +3169,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 													590, 45, oUi.xCoord, yCoord)
 	barText:SetCursorPosition(0)
 
-	---@param displayText TRB.Classes.DisplayText
+	---@param displayText TRB.Classes.Settings.DisplayText
 	---@param btt table # LibScrollingTable
 	local function SetTableValues(displayText, btt)
 		local dataTable = {}
@@ -3123,7 +3202,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		btt:EnableSelection(true)
 	end
 
-	---@return TRB.Classes.DisplayTextEntry
+	---@return TRB.Classes.Settings.DisplayTextEntry
 	local function GetNewDisplayTextEntry()
 		return {
 			enabled = true,
@@ -3151,7 +3230,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	end
 
 	---@param guid string
-	---@param dt TRB.Classes.DisplayText
+	---@param dt TRB.Classes.Settings.DisplayText
 	local function FillBarTextEditorFields(guid, dt)
 		local found = false
 		local e = TRB.Functions.Table:Length(dt.barText)
@@ -3194,30 +3273,30 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	SetTableValues(spec.displayText, barTextTable)
 
 	addButton:SetScript("OnClick", function(self, ...)
-		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		local newEntry = GetNewDisplayTextEntry()
 		table.insert(displayText.barText, newEntry)
 		SetTableValues(displayText, barTextTable)
 		barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		FillBarTextEditorFields(newEntry.guid, displayText)
 	end)
 	
 	barTextEntryEnabled:SetScript("OnClick", function(self, ...)
 		workingBarText.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	barTextName:SetScript("OnTextChanged", function(self, input)
 		workingBarText.name = self:GetText()
-		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		SetTableValues(displayText, barTextTable)
 	end)
 
 	barText:SetScript("OnTextChanged", function(self, input)
 		workingBarText.text = self:GetText()
-		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		SetTableValues(displayText, barTextTable)
 		TRB.Data.cache.barText = {}
 		TRB.Data.cache.symbols = {}
@@ -3229,13 +3308,13 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		workingBarText.position.relativeToFrameName = newName
 		LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, newName)
 		LibDD:CloseDropDownMenus()
-		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		SetTableValues(displayText, barTextTable)
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
 
 	---Deletes a specified bar text row
-	---@param displayText TRB.Classes.DisplayText
+	---@param displayText TRB.Classes.Settings.DisplayText
 	---@param deleteClassId integer
 	---@param deleteSpecId integer
 	---@param row integer
@@ -3246,7 +3325,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 ---@diagnostic disable-next-line: missing-fields
 		workingBarText = {}
 		SetTableValues(displayText, btt)
-		TRB.Functions.BarText:CreateBarTextFrames(spec, deleteClassId, deleteSpecId)
+		TRB.Functions.BarText:CreateBarTextFrames(deleteClassId, deleteSpecId)
 		_G["TwintopResourceBar_"..deleteClassId.."_"..deleteSpecId.."_BarTextOptionsFrame"]:Hide()
 	end
 

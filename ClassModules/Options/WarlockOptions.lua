@@ -18,7 +18,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.affliction = {}
 
 --Affliction
 local function AfflictionLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -95,7 +95,7 @@ end
 TRB.Options.Warlock.AfflictionLoadDefaultBarTextSimpleSettings = AfflictionLoadDefaultBarTextSimpleSettings
 
 local function AfflictionLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -414,21 +414,6 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	--[[
-	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_ResetBarTextNarrowAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["WarlockAfflictionFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = AfflictionLoadDefaultBarTextNarrowAdvancedSettings()
-			ReloadUI()
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-	]]
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -447,13 +432,6 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	--[[
-	controls.resetButton2 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedNarrow"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton2:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetBarTextNarrowAdvanced")
-	end)
-	]]
 
 	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton3:SetScript("OnClick", function(self, ...)
@@ -493,41 +471,6 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
-
-	--[[
-	yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.spending
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
-	end)]]
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.shadowEmbraceNotMax = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_shadowEmbraceNotMax", parent, "ChatConfigCheckButtonTemplate")

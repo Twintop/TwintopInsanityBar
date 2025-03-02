@@ -2120,4 +2120,5 @@ if locale == "zhCN" then
     L["GlobalCheckboxThresholdOvercapTooltip"] = "当您的当前资源或施放法术将导致超出最大资源上限时，这将更改资源文本颜色。"
     L["GlobalResourceDecimalPrecision"] = "资源小数精度"
     L["CheckboxUseGlobalTooltip_Precision"] = "选中后，将使用条形文本中的小数和资源精度的全局设置。"
+    L["Resource"] = "资源"
 end

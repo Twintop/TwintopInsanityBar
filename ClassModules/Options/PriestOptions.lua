@@ -19,7 +19,7 @@ TRB.Options.Priest.Shadow = {}
 
 
 local function DisciplineLoadExtraBarTextSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -27,7 +27,7 @@ local function DisciplineLoadExtraBarTextSettings()
 			useDefaultFontFace = false,
 			guid=TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$pwRadianceTime&$hwSerenityCharges=0}[$pwRadianceTime]",
+			text = "{$pwRadianceTime&$pwRadianceCharges=0}[$pwRadianceTime]",
 			fontFaceName = "Friz Quadrata TT",
 			fontSize = 14,
 			name = "PW Radiance 1",
@@ -50,7 +50,7 @@ local function DisciplineLoadExtraBarTextSettings()
 			useDefaultFontFace = false,
 			guid=TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$pwRadianceTime&$hwSerenityCharges=1}[$pwRadianceTime]",
+			text = "{$pwRadianceTime&$pwRadianceCharges=1}[$pwRadianceTime]",
 			fontFaceName = "Friz Quadrata TT",
 			fontSize = 14,
 			name = "PW Radiance 2",
@@ -73,7 +73,7 @@ local function DisciplineLoadExtraBarTextSettings()
 end
 
 local function DisciplineLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -156,7 +156,7 @@ end
 TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings = DisciplineLoadDefaultBarTextSimpleSettings
 
 local function DisciplineLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -468,7 +468,7 @@ end
 
 
 local function HolyLoadExtraBarTextSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -591,7 +591,7 @@ local function HolyLoadExtraBarTextSettings()
 end
 
 local function HolyLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -674,7 +674,7 @@ end
 TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings = HolyLoadDefaultBarTextSimpleSettings
 
 local function HolyLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -1018,7 +1018,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 end
 
 local function ShadowLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -1096,7 +1096,7 @@ end
 TRB.Options.Priest.ShadowLoadDefaultBarTextSimpleSettings = ShadowLoadDefaultBarTextSimpleSettings
 
 local function ShadowLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -1173,7 +1173,7 @@ local function ShadowLoadDefaultBarTextAdvancedSettings()
 end
 
 local function ShadowLoadDefaultBarTextNarrowAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -1633,7 +1633,6 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.bar.shadowCovenantBorderChange)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.shadowCovenantBorderChange = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(spec)
 	end)
 	
 	controls.colors.shadowCovenant = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPickerShadowCovenant"], spec.colors.bar.shadowCovenant, 300, 25, oUi.xCoord2, yCoord)
@@ -1690,7 +1689,11 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.powerWordRadianceEnabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.powerWordRadianceEnabled = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(spec)
+		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 1 then
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.discipline.settings)
+		end
 	end)
 
 	controls.colors.comboPoints.powerWordRadiance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance, 300, 25, oUi.xCoord2, yCoord)
@@ -2562,7 +2565,11 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.holyWordSerenityEnabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.holyWordSerenityEnabled = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(spec)
+		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.holy.settings)
+		end
 	end)
 
 	controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.comboPoints.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
@@ -2580,7 +2587,11 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.holyWordSanctifyEnabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.holyWordSanctifyEnabled = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(spec)
+		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.holy.settings)
+		end
 	end)
 
 	controls.colors.comboPoints.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.comboPoints.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
@@ -2598,7 +2609,11 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.holyWordChastiseEnabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.holyWordChastiseEnabled = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(spec)
+		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.holy.settings)
+		end
 	end)
 
 	controls.colors.comboPoints.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.comboPoints.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)

@@ -22,7 +22,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = {}
 
 -- Mistweaver
 local function MistweaverLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -100,7 +100,7 @@ end
 TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings = MistweaverLoadDefaultBarTextSimpleSettings
 
 local function MistweaverLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -354,7 +354,7 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 end
 
 local function WindwalkerLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -432,7 +432,7 @@ end
 TRB.Options.Monk.WindwalkerLoadDefaultBarTextSimpleSettings = WindwalkerLoadDefaultBarTextSimpleSettings
 
 local function WindwalkerLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,

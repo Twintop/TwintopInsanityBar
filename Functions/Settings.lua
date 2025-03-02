@@ -3,10 +3,11 @@ local L = TRB.Localization
 
 TRB.Functions.Settings = {}
 
+--[[@type TRB.Classes.Settings.SpecializationGlobalEnabled]]
 local specGlobalDefaults = {
 	--specEnable = false,
-	--bar = false,
-	--comboPoints = false,
+	bar = false,
+	comboPoints = false,
 	--displayBar = false,
 	displayText = false,
 	textColors = false,
@@ -17,10 +18,12 @@ local specGlobalDefaults = {
 }
 
 function TRB.Functions.Settings:LoadDefaultSettings()
+	
 	local settings = {
 		core = {
 			dataRefreshRate = 5.0,
 			reactionTime = 0.1,
+			smoothBarValueUpdates = true,
 			news = {
 				enabled = true,
 				lastUpdate = ""
@@ -31,14 +34,14 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				precision = 1
 			},
 			audio = {
-				channel={
-					name=L["AudioChannelMaster"],
-					channel="Master"
+				channel = {
+					name = L["AudioChannelMaster"],
+					channel = "Master"
 				}
 			},
-			strata={
-				level="BACKGROUND",
-				name=L["StrataBackground"]
+			strata = {
+				level = "BACKGROUND",
+				name = L["StrataBackground"]
 			},
 			timers = {
 				precisionLow = 1,
@@ -47,38 +50,46 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			},
 			thresholds = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true,
+				overlapBorder = true,
+				outOfRange = true,
 				icons = {
-					showCooldown=true,
-					border=2,
+					showCooldown = true,
+					border = 2,
 					relativeTo = "TOP",
 					relativeToName = L["PositionAbove"],
-					enabled=true,
-					desaturated=true,
-					xPos=0,
-					yPos=-12,
-					width=24,
-					height=24
+					enabled = true,
+					desaturated = true,
+					xPos = 0,
+					yPos = -12,
+					width = 24,
+					height = 24
 				}
 			},
 			displayBar = {
-				alwaysShow=false,
-				notZeroShow=true,
-				neverShow=false,
-				dragonriding=true
+				alwaysShow = false,
+				notZeroShow = true,
+				neverShow = false,
+				dragonriding = true
 			},
 			bar = {
-				width=1555,
-				height=34,
-				xPos=0,
-				yPos=200,
-				border=4,
-				dragAndDrop=false,
-				pinToPersonalResourceDisplay=false,
-				showPassive=true,
-				showCasting=true,
-				smooth=false
+				width = 555,
+				height = 34,
+				xPos = 0,
+				yPos = -200,
+				border = 4,
+				dragAndDrop = false,
+				pinToPersonalResourceDisplay = false
+			},
+			comboPoints = {
+				width = 25,
+				height = 13,
+				xPos = 0,
+				yPos = 4,
+				border = 1,
+				spacing = 14,
+				relativeTo = "TOP",
+				relativeToName = L["PositionAboveMiddle"],
+				fullWidth = false,
 			},
 			precision = {
 				secondary = 2,
@@ -112,7 +123,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					},
                     dots = {
                         options = {
-                            enabled=true,
+                            enabled = true,
                         },
                         up = {
                             color = "FFFFFFFF"
@@ -126,43 +137,32 @@ function TRB.Functions.Settings:LoadDefaultSettings()
                     }
 				},
 			},
-			comboPoints = {
-				width=25,
-				height=13,
-				xPos=0,
-				yPos=4,
-				border=1,
-				spacing=14,
-				relativeTo="TOP",
-				relativeToName = L["PositionAboveMiddle"],
-				fullWidth=false,
-			},
 			textures={
-				background="Interface\\Tooltips\\UI-Tooltip-Background",
-				backgroundName="Blizzard Tooltip",
-				border="Interface\\Buttons\\WHITE8X8",
-				borderName="1 Pixel",
-				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-				resourceBarName="Blizzard",
-				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-				passiveBarName="Blizzard",
-				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-				castingBarName="Blizzard",
-				textureLock=true,
-				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-				comboPointsBackgroundName="Blizzard Tooltip",
-				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
-				comboPointsBorderName="1 Pixel",
-				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
-				comboPointsBarName="Blizzard",
+				background = "Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName = "Blizzard Tooltip",
+				border = "Interface\\Buttons\\WHITE8X8",
+				borderName = "1 Pixel",
+				resourceBar = "Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName = "Blizzard",
+				passiveBar = "Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName = "Blizzard",
+				castingBar = "Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName = "Blizzard",
+				textureLock = true,
+				comboPointsBackground = "Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName = "Blizzard Tooltip",
+				comboPointsBorder = "Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName = "1 Pixel",
+				comboPointsBar = "Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName = "Blizzard",
 			},
 			displayText={
 				default = {
-					fontFace="Fonts\\FRIZQT__.TTF",
-					fontFaceName="Friz Quadrata TT",
+					fontFace = "Fonts\\FRIZQT__.TTF",
+					fontFaceName = "Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
 					fontJustifyHorizontalName = L["PositionLeft"],
-					fontSize=18,
+					fontSize = 18,
 					color = "FFFFFFFF",
 				},
 				barText = {}
@@ -678,8 +678,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 						for spec, specValue in pairs(classValue) do
 							if specValue.displayText ~= nil and specValue.displayText.fontSizeLock ~= nil then
 								specValue.displayText.default = {
-									fontFace="Fonts\\FRIZQT__.TTF",
-									fontFaceName="Friz Quadrata TT",
+									fontFace = "Fonts\\FRIZQT__.TTF",
+									fontFaceName = "Friz Quadrata TT",
 									fontJustifyHorizontal = "LEFT",
 									fontJustifyHorizontalName = L["PositionLeft"],
 									fontSize=18,
@@ -783,7 +783,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 										enabled = false
 									end
 
-									---@type TRB.Classes.DisplayTextEntry[]
+									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
 										{
 											enabled = enabled,
@@ -908,7 +908,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 								elseif class == "priest" and spec == "holy" then
 									local enabled = true
 
-									---@type TRB.Classes.DisplayTextEntry[]
+									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
 										{
 											useDefaultFontColor = false,
@@ -1033,7 +1033,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 								elseif class == "evoker" then
 									local enabled = true
 
-									---@type TRB.Classes.DisplayTextEntry[]
+									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
 										{
 											enabled = enabled,
@@ -1298,20 +1298,35 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.shaman.elemental.colors.text.overcapMaelstrom = nil
 	end
 
-	if TwintopInsanityBarSettings ~= nil then
-		local classLength = TRB.Functions.Table:Length(TwintopInsanityBarSettings)
-		if classLength > 0 then
-			for class, classValue in pairs(TwintopInsanityBarSettings) do
-				if class ~= "core" then
-					local specLength = TRB.Functions.Table:Length(classValue)
-					if specLength > 0 then
-						for spec, specValue in pairs(classValue) do
-							
-						end
-					end
-				end
-			end
-		end
+	-- Move bar smoothing setting and reset bar and comboPoint global settings
+	if TwintopInsanityBarSettings ~= nil and
+	TwintopInsanityBarSettings.core ~= nil and
+	TwintopInsanityBarSettings.core.smoothBarValueUpdates == nil then
+		TwintopInsanityBarSettings.core.smoothBarValueUpdates = TwintopInsanityBarSettings.core.bar.smooth
+
+		
+		TwintopInsanityBarSettings.core.bar = {
+			width = 555,
+			height = 34,
+			xPos = 0,
+			yPos = -200,
+			border = 4,
+			dragAndDrop = false,
+			pinToPersonalResourceDisplay = false
+		}
+		TwintopInsanityBarSettings.core.comboPoints = {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = false,
+		}
+
+		TwintopInsanityBarSettings.core.bar.smooth = nil
 	end
 
 	-- Recent bar-wide refactors, starting February 2025
@@ -1319,7 +1334,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 		local classLength = TRB.Functions.Table:Length(TwintopInsanityBarSettings)
 		if classLength > 0 then
 			for class, classValue in pairs(TwintopInsanityBarSettings) do
-				if class ~= "core" then
+				if class == "core" then
+				else
 					local specLength = TRB.Functions.Table:Length(classValue)
 					if specLength > 0 then
 						for spec, specValue in pairs(classValue) do

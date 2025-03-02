@@ -29,12 +29,37 @@ TRB.Options.fonts.options.exportSpec = f4
 TRB.Options.variables = {}
 TRB.Options.variables.barTextInstructions = L["BarTextInstructions"]
 
-local function ConstructEnabledForSpecsPanel(parent)
+local function ConstructBarColorsAndBehaviorPanel(parent)
 	if parent == nil then
 		return
 	end
 
+	local spec = TRB.Data.settings.core
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
+
+	yCoord = yCoord - 60
+	--[[
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false)
+
+	yCoord = yCoord - 100
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
+	]]
 end
+
 
 local function ConstructFontAndTextPanel(parent)
 	if parent == nil then
@@ -154,9 +179,9 @@ local function ConstructMiscellaneousPanel(parent)
 	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxSmoothBar"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["GlobalOptionsCheckboxSmoothBarTooltip"]
-	f:SetChecked(TRB.Data.settings.core.bar.smooth)
+	f:SetChecked(TRB.Data.settings.core.smoothBarValueUpdates)
 	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.bar.smooth = self:GetChecked()
+		TRB.Data.settings.core.smoothBarValueUpdates = self:GetChecked()
 		TRB.Functions.Bar:UpdateSmoothBar()
 	end)
 
@@ -454,16 +479,12 @@ local function ConstructMiscellaneousPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.experimental.specs.shaman.enhancement = self:GetChecked()
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls = controls
 end
 
 local function ConstructGlobalOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	interfaceSettingsFrame.controls.global = interfaceSettingsFrame.controls.global or {}
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.global
+	local controls = interfaceSettingsFrame.controls.global or {}
 	local yCoord = 0
 	local f = nil
 
@@ -491,14 +512,6 @@ local function ConstructGlobalOptionsPanel()
 		StaticPopup_Show("TwintopResourceBar_Import")
 	end)
 
-	--[[
-		TODO: Exporting of Globals
-	controls.buttons.exportButton_Priest_Shadow_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Priest_Shadow_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["GlobalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 5, 3, true, true, true, true, false)
-	end)
-	]]
-
 	yCoord = yCoord - 52
 
 	local tabs = {}
@@ -506,10 +519,10 @@ local function ConstructGlobalOptionsPanel()
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab6", L["TabMiscellaneous"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabMiscellaneous"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -530,7 +543,10 @@ local function ConstructGlobalOptionsPanel()
 	parent.lastTab = tabsheets[5]
 	parent.lastTabId = 5
 
-	--ConstructEnabledForSpecsPanel(tabsheets[1].scrollFrame.scrollChild)
+	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
+
+	ConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	ConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
 	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 	--ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
@@ -1963,19 +1979,19 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 10.63)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.82)
+	local localeText2 = string.format(percentFormat, 10.62)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.81)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 13.04)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.43)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 13.03)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
 
 	local localeText3 = "unfung; Google Translate"
 	localeText3 = localeText3 .. "\n" .. "Twintop"

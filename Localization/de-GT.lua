@@ -2120,4 +2120,5 @@ L["CannibalizeIfForsaken"] = "Kannibalisieren (wenn im Stich gelassen)"
     L["GlobalCheckboxThresholdOvercapTooltip"] = "Dadurch wird die Ressourcentextfarbe geändert, wenn Ihre aktuelle Ressource oder ein Hardcast-Zauber dazu führt, dass die maximale Ressourcengrenze überschritten wird."
     L["GlobalResourceDecimalPrecision"] = "Dezimalgenauigkeit für Ressourcen"
     L["CheckboxUseGlobalTooltip_Precision"] = "Wenn aktiviert, werden die globalen Einstellungen für Dezimal- und Ressourcengenauigkeit im Balkentext verwendet."
+    L["Resource"] = "Ressource"
 end

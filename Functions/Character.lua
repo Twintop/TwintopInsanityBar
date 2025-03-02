@@ -280,8 +280,6 @@ function TRB.Functions.Character:ResetCaches()
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
----@param settings table
----@param cache table<string, TRB.Classes.SharedSpecSetting> # The full cache of all specs for the current class
 ---@param className string # Class name
 ---| '"demonhunter"' # Demon Hunter
 ---| '"druid"' # Druid 
@@ -317,35 +315,29 @@ end
 ---| '"affliction"' # Affliction (Warlock)
 ---| '"arms"' # Arms (Warrior)
 ---| '"fury"' # Fury (Warrior)
-function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache, className, specName)
-	local specCache = cache[specName]
-	local core = settings.core
-	local s = core.global[className][specName] --[[@as TRB.Classes.GlobalSpecSetting]]
+function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
+	local specCache = TRB.Data.specCache[specName] --[[@as TRB.Classes.SpecCache]]
+	local core = TRB.Data.settings.core --[[@as TRB.Classes.Settings.Core]]
+	local s = core.global[className][specName] --[[@as TRB.Classes.Settings.SpecializationGlobalEnabled]]
 	local enabled = (core.global.globalEnable or s.specEnable) and specCache.settings ~= nil
-	local spec = settings[className][specName] --[[@as TRB.Classes.GlobalSpecSetting]]
+	local spec = TRB.Data.settings[className][specName] --[[@as TRB.Classes.Settings.SpecializationSettingsBase]]
 
-	if enabled and s.bar then
+	if s.bar then
 		specCache.settings.bar = core.bar
-		--print("bar!")
 	else
-		--print("no bar :(")
 		specCache.settings.bar = spec.bar
 	end
 
-	if enabled and s.comboPoints then
+	if s.comboPoints then
 		specCache.settings.comboPoints = core.comboPoints
 	else
 		specCache.settings.comboPoints = spec.comboPoints
 	end
 
-	if enabled and s.displayBar then
-		specCache.settings.displayBar = core.displayBar
-	else
-		specCache.settings.displayBar = spec.displayBar
-	end
-
-	specCache.settings.displayText = {}
-	specCache.settings.displayText.barText = spec.displayText.barText
+---@diagnostic disable-next-line: missing-fields
+	specCache.settings.displayText = {
+		barText = spec.displayText.barText
+	}
 
 	if s.displayText then
 		specCache.settings.displayText.default = core.displayText.default
@@ -353,23 +345,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 		specCache.settings.displayText.default = spec.displayText.default
 	end
 
-	if enabled and s.textures then
-		specCache.settings.textures = core.textures
-	else
-		specCache.settings.textures = spec.textures
-	end
-
-	if enabled and s.thresholds then
-		specCache.settings.thresholds = core.thresholds
-	else
-		specCache.settings.thresholds = spec.thresholds
-	end
-
-	specCache.settings.colors = {}
-	specCache.settings.colors.text = {}
-	specCache.settings.colors.bar = spec.colors.bar
-	specCache.settings.colors.threshold = spec.colors.threshold
-	specCache.settings.colors.comboPoints = spec.colors.comboPoints
+	specCache.settings.colors = {
+		text = {},
+		bar = spec.colors.bar,
+		threshold = spec.colors.threshold,
+		comboPoints = spec.colors.comboPoints
+	}
 
 	if s.textColors then
 		specCache.settings.colors.text.current = core.colors.text.current
@@ -410,6 +391,11 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache
 	else
 		specCache.settings.precision = spec.precision
 	end
+	
+	--NYI	
+	specCache.settings.displayBar = spec.displayBar
+	specCache.settings.textures = spec.textures
+	specCache.settings.thresholds = spec.thresholds
 end
 
 function TRB.Functions.Character:IsComboPointUser()

@@ -19,7 +19,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = {}
 
 local function AssassinationLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -97,7 +97,7 @@ end
 TRB.Options.Rogue.AssassinationLoadDefaultBarTextSimpleSettings = AssassinationLoadDefaultBarTextSimpleSettings
 
 local function AssassinationLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -429,7 +429,7 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 end
 
 local function OutlawLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -507,7 +507,7 @@ end
 TRB.Options.Rogue.OutlawLoadDefaultBarTextSimpleSettings = OutlawLoadDefaultBarTextSimpleSettings
 
 local function OutlawLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -842,7 +842,7 @@ end
 
 
 local function SubtletyLoadDefaultBarTextSimpleSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
@@ -920,7 +920,7 @@ end
 TRB.Options.Rogue.SubtletyLoadDefaultBarTextSimpleSettings = SubtletyLoadDefaultBarTextSimpleSettings
 
 local function SubtletyLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.DisplayTextEntry[]
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
 			useDefaultFontColor = false,

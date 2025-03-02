@@ -3,6 +3,9 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
 
+---Computes the width of each Combo Point node
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@return number
 local function GetComboPointNodeWidth(settings)
 	if settings.comboPoints ~= nil and TRB.Data.character.maxResource2 ~= nil and TRB.Data.character.maxResource2 > 0 then
 		if settings.comboPoints.fullWidth then
@@ -17,6 +20,9 @@ local function GetComboPointNodeWidth(settings)
 	return 0
 end
 
+---Computes the absolute min/max values for the bar
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@return table
 function TRB.Functions.Bar:GetSanityCheckValues(settings)
 	local sc = {}
 	if settings ~= nil then
@@ -28,7 +34,7 @@ function TRB.Functions.Bar:GetSanityCheckValues(settings)
 		end
 
 		if settings.comboPoints ~= nil then
-			sc.comboPointsMaxWidth = math.floor(GetScreenWidth() / 6)
+			sc.comboPointsMaxWidth = math.floor(GetScreenWidth() / 10) -- This should really be based on the maximum Combo Points for a specialization. Enhancement Shaman would be max (10), Discipline Priest would be min (2)
 			sc.comboPointsMinWidth = math.max(math.ceil(settings.comboPoints.border * 2), 1)
 			sc.comboPointsMaxHeight = math.floor(GetScreenHeight())
 			sc.comboPointsMinHeight = math.max(math.ceil(settings.comboPoints.border * 2), 1)
@@ -37,6 +43,8 @@ function TRB.Functions.Bar:GetSanityCheckValues(settings)
 	return sc
 end
 
+---Updates absolute min/max values for the bar
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.Bar:UpdateSanityCheckValues(settings)
 	local sc = TRB.Functions.Bar:GetSanityCheckValues(settings)
 	if settings ~= nil and settings.bar ~= nil then
@@ -68,7 +76,7 @@ end
 
 ---Shows or hides the resource bar based on general/generic logic.
 ---Most classes will use this, the exception being Druids because of Balance with Nature's Balance.
----@param settings table
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param force boolean
 ---@param notZeroShowValue number
 ---@param includeComboPoints boolean?
@@ -120,82 +128,95 @@ function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)
 		flashPeriod = 0.5
 	end
 	
-	frame:SetAlpha(((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime()/flashPeriod)))) + alphaOffset)
+	frame:SetAlpha(((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime() / flashPeriod)))) + alphaOffset)
 end
 
 function TRB.Functions.Bar:SetHeight(settings)
 	local value = settings.bar.height
 
-	TRB.Frames.barContainerFrame:SetHeight(value-(settings.bar.border*2))
+	TRB.Frames.barContainerFrame:SetHeight(value - (settings.bar.border * 2))
 	TRB.Frames.barBorderFrame:SetHeight(settings.bar.height)
-	TRB.Frames.resourceFrame:SetHeight(value-(settings.bar.border*2))
-	TRB.Frames.castingFrame:SetHeight(value-(settings.bar.border*2))
-	TRB.Frames.passiveFrame:SetHeight(value-(settings.bar.border*2))
+	TRB.Frames.resourceFrame:SetHeight(value - (settings.bar.border * 2))
+	TRB.Frames.castingFrame:SetHeight(value - (settings.bar.border * 2))
+	TRB.Frames.passiveFrame:SetHeight(value - (settings.bar.border * 2))
 	TRB.Functions.Threshold:RedrawThresholdLines(settings)
 end
 
 function TRB.Functions.Bar:SetWidth(settings)
 	local value = settings.bar.width
 
-	TRB.Frames.barContainerFrame:SetWidth(value-(settings.bar.border*2))
+	TRB.Frames.barContainerFrame:SetWidth(value - (settings.bar.border * 2))
 	TRB.Frames.barBorderFrame:SetWidth(settings.bar.width)
-	TRB.Frames.resourceFrame:SetWidth(value-(settings.bar.border*2))
-	TRB.Frames.castingFrame:SetWidth(value-(settings.bar.border*2))
-	TRB.Frames.passiveFrame:SetWidth(value-(settings.bar.border*2))
+	TRB.Frames.resourceFrame:SetWidth(value - (settings.bar.border * 2))
+	TRB.Frames.castingFrame:SetWidth(value - (settings.bar.border * 2))
+	TRB.Frames.passiveFrame:SetWidth(value - (settings.bar.border * 2))
 	TRB.Functions.Bar:SetMinMax(settings)
 end
 
 function TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 	if TRB.Functions.Number:IsNumeric(xOfs) and TRB.Functions.Number:IsNumeric(yOfs) then
-		if xOfs < math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2) then
-			xOfs = math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2)
-		elseif xOfs > math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2) then
-			xOfs = math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2)
+		if xOfs < math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth / 2) then
+			xOfs = math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth / 2)
+		elseif xOfs > math.floor(TRB.Data.sanityCheckValues.barMaxWidth / 2) then
+			xOfs = math.floor(TRB.Data.sanityCheckValues.barMaxWidth / 2)
 		end
 
-		if yOfs < math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2) then
-			yOfs = math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight/2)
-		elseif yOfs > math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2) then
-			yOfs = math.floor(TRB.Data.sanityCheckValues.barMaxHeight/2)
+		if yOfs < math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight / 2) then
+			yOfs = math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight / 2)
+		elseif yOfs > math.floor(TRB.Data.sanityCheckValues.barMaxHeight / 2) then
+			yOfs = math.floor(TRB.Data.sanityCheckValues.barMaxHeight / 2)
 		end
 
-		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal:SetValue(xOfs)
-		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal.EditBox:SetText(TRB.Functions.Number:RoundTo(xOfs, 0, nil, true))
-		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical:SetValue(yOfs)
-		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical.EditBox:SetText(TRB.Functions.Number:RoundTo(yOfs, 0, nil, true))
+		if TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar then
+			TRB.Frames.interfaceSettingsFrameContainer.controls["global"].horizontal:SetValue(xOfs)
+			TRB.Frames.interfaceSettingsFrameContainer.controls["global"].horizontal.EditBox:SetText(TRB.Functions.Number:RoundTo(xOfs, 0, nil, true))
+			TRB.Frames.interfaceSettingsFrameContainer.controls["global"].vertical:SetValue(yOfs)
+			TRB.Frames.interfaceSettingsFrameContainer.controls["global"].vertical.EditBox:SetText(TRB.Functions.Number:RoundTo(yOfs, 0, nil, true))
+		else
+			TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal:SetValue(xOfs)
+			TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal.EditBox:SetText(TRB.Functions.Number:RoundTo(xOfs, 0, nil, true))
+			TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical:SetValue(yOfs)
+			TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical.EditBox:SetText(TRB.Functions.Number:RoundTo(yOfs, 0, nil, true))
+		end
 	end
 end
 
 function TRB.Functions.Bar:GetPosition(settings)
-	local point, relativeTo, relativePoint, xOfs, yOfs = TRB.Frames.barContainerFrame:GetPoint()
+	local _, _, relativePoint, xOfs, yOfs = TRB.Frames.barContainerFrame:GetPoint()
 
 	if relativePoint == "CENTER" then
 		--No action needed.
 	elseif relativePoint == "TOP" then
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight / 2) + yOfs - (settings.bar.height / 2))
 	elseif relativePoint == "TOPRIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth / 2) + xOfs - (settings.bar.width / 2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight / 2) + yOfs - (settings.bar.height / 2))
 	elseif relativePoint == "RIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth / 2) + xOfs - (settings.bar.width / 2))
 	elseif relativePoint == "BOTTOMRIGHT" then
-		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth/2) + xOfs - (settings.bar.width/2))
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
+		xOfs = ((TRB.Data.sanityCheckValues.barMaxWidth / 2) + xOfs - (settings.bar.width / 2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight / 2) - yOfs - (settings.bar.height / 2))
 	elseif relativePoint == "BOTTOM" then
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight / 2) - yOfs - (settings.bar.height / 2))
 	elseif relativePoint == "BOTTOMLEFT" then
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
-		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight/2) - yOfs - (settings.bar.height/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth / 2) - xOfs - (settings.bar.width / 2))
+		yOfs = -((TRB.Data.sanityCheckValues.barMaxHeight / 2) - yOfs - (settings.bar.height / 2))
 	elseif relativePoint == "LEFT" then
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth / 2) - xOfs - (settings.bar.width / 2))
 	elseif relativePoint == "TOPLEFT" then
-		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth/2) - xOfs - (settings.bar.width/2))
-		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight/2) + yOfs - (settings.bar.height/2))
+		xOfs = -((TRB.Data.sanityCheckValues.barMaxWidth / 2) - xOfs - (settings.bar.width / 2))
+		yOfs = ((TRB.Data.sanityCheckValues.barMaxHeight / 2) + yOfs - (settings.bar.height / 2))
 	end
 
 	TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 end
 
+---Sets the values for a resource bar
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param key string
+---@param bar frame
+---@param value number
+---@param maxResource number
 function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 	value = value or 0
 	maxResource = maxResource or 1
@@ -221,12 +242,19 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 	end
 end
 
+---Sets the value for a primary resource bar
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param key string
+---@param bar frame
+---@param value number
 function TRB.Functions.Bar:SetPrimaryValue(settings, key, bar, value)
 	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
 		TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)
 	end
 end
 
+---Sets the minimum and maximum values for all bars
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.Bar:SetMinMax(settings)
 	if settings ~= nil and settings.bar ~= nil then
 		TRB.Frames.resourceFrame:SetMinMaxValues(0, settings.bar.width)
@@ -247,6 +275,9 @@ function TRB.Functions.Bar:SetMinMax(settings)
 	end
 end
 
+---Sets the positioning of the `containerFrame` with respect to the Personal Resource Display
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param containerFrame frame
 function TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(settings, containerFrame)
 	if settings.bar.pinToPersonalResourceDisplay then
 		containerFrame:ClearAllPoints()
@@ -254,6 +285,9 @@ function TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(settings, contai
 	end
 end
 
+---Sets the position of the `containerFrame`
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param containerFrame frame
 function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	if settings == nil then
 		return
@@ -373,7 +407,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 					border.backdropInfo = {
 						edgeFile = settings.textures.comboPointsBorder,
 						tile = true,
-						tileSize=4,
+						tileSize = 4,
 						edgeSize = 1,
 						insets = {0, 0, 0, 0}
 					}
@@ -412,7 +446,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 end
 
 function TRB.Functions.Bar:UpdateSmoothBar()
-	if TRB.Data.settings.core.bar.smooth then
+	if TRB.Data.settings.core.smoothBarValueUpdates then
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.passiveFrame)
@@ -500,7 +534,7 @@ function TRB.Functions.Bar:Construct(settings)
 			barBorderFrame.backdropInfo = {
 				edgeFile = settings.textures.border,
 				tile = true,
-				tileSize=4,
+				tileSize = 4,
 				edgeSize = 1,
 				insets = {0, 0, 0, 0}
 			}
@@ -609,6 +643,6 @@ function TRB.Functions.Bar:Construct(settings)
 
 		TRB.Functions.Bar:UpdateSmoothBar()
 
-		TRB.Functions.BarText:CreateBarTextFrames(settings)
+		TRB.Functions.BarText:CreateBarTextFrames()
 	end
 end

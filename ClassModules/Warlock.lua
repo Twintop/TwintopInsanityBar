@@ -77,7 +77,7 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Affliction()
-	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "warlock", "affliction")
+	TRB.Functions.Character:FillSpecializationCacheSettings("warlock", "affliction")
 end
 
 local function FillSpellData_Affliction()
@@ -619,7 +619,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.affliction
 		local specCacheSettings = TRB.Data.specCache.affliction.settings
 		UpdateSnapshot_Affliction()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
 
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
@@ -637,9 +637,9 @@ local function UpdateResourceBar()
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
-				TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
-				TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-				TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 
 				barContainerFrame:SetAlpha(1.0)
 
@@ -691,14 +691,14 @@ local function UpdateResourceBar()
 					local cpBB = cpBackgroundBlue
 
 					if normalizedResource2 >= x then
-						TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 						if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 							cpColor = specSettings.colors.comboPoints.penultimate
 						elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 							cpColor = specSettings.colors.comboPoints.final
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 					end
 
 					if specSettings.colors.comboPoints.malignOmen.enabled and snapshotData.snapshots[spells.malignOmen.id].buff.isActive then
@@ -723,7 +723,7 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
 
@@ -822,7 +822,7 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Affliction
-		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.warlock.affliction)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.affliction.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.affliction)
 		targetData:AddSpellTracking(spells.unstableAffliction)
 		targetData:AddSpellTracking(spells.agony)
@@ -944,16 +944,16 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 	TRB.Data.character.maxResource2 = 1
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
-	local settings = nil
+	local sharedSettings = nil
 	if TRB.Data.character.specId == 1 then
-		settings = TRB.Data.settings.warlock.affliction
 		TRB.Data.character.specName = "affliction"
-
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
     end
-	if settings ~= nil then
+
+	if sharedSettings ~= nil then
 		if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
-			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
 		end
 	end
 end
@@ -977,14 +977,14 @@ function TRB.Functions.Class:HideResourceBar(force)
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
 	if TRB.Data.character.specId == 1 then
-		local settings
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 3
-		if TRB.Data.character.specId == 1 then
-			settings = TRB.Data.settings.warlock.affliction
+		local sharedSettings
+		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 		end
 
-		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, true, notZeroShowValueComboPoints)
+		TRB.Functions.Bar:HideResourceBarGeneric(sharedSettings, force, notZeroShowValue, true, notZeroShowValueComboPoints)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false
@@ -1209,7 +1209,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	return nil
+	return nil, true
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

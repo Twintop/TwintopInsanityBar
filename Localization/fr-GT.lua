@@ -2122,4 +2122,5 @@ if locale == "frFR" then
     L["GlobalCheckboxThresholdOvercapTooltip"] = "Cela modifiera la couleur du texte des ressources lorsque votre ressource actuelle ou un sort incanté entraînera un dépassement du plafond des ressources maximales."
     L["GlobalResourceDecimalPrecision"] = "Précision décimale des ressources"
     L["CheckboxUseGlobalTooltip_Precision"] = "Lorsque cette case est cochée, les paramètres globaux de précision décimale et des ressources dans le texte de la barre seront utilisés."
+    L["Resource"] = "Ressource"
 end

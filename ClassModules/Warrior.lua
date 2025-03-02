@@ -126,11 +126,11 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Arms()
-	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "warrior", "arms")
+	TRB.Functions.Character:FillSpecializationCacheSettings("warrior", "arms")
 end
 
 local function Setup_Fury()
-	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "warrior", "fury")
+	TRB.Functions.Character:FillSpecializationCacheSettings("warrior", "fury")
 end
 
 local function FillSpellData_Arms()
@@ -751,7 +751,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.arms
 		local specCacheSettings = TRB.Data.specCache.arms.settings
 		UpdateSnapshot_Arms()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
 
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
@@ -780,22 +780,22 @@ local function UpdateResourceBar()
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.passive
 						passiveBarColor = specSettings.colors.bar.spending
 					else
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.spending
 						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 					castingBarColor = specSettings.colors.bar.casting
 					passiveBarColor = specSettings.colors.bar.passive
 				end
@@ -922,12 +922,12 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fury
 		local specCacheSettings = TRB.Data.specCache.fury.settings
 		UpdateSnapshot_Fury()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
 
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
@@ -959,22 +959,22 @@ local function UpdateResourceBar()
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", passiveFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.passive
 						passiveBarColor = specSettings.colors.bar.spending
 					else
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
 						castingBarColor = specSettings.colors.bar.spending
 						passiveBarColor = specSettings.colors.bar.passive
 					end
 				else
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, "casting", castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 					castingBarColor = specSettings.colors.bar.casting
 					passiveBarColor = specSettings.colors.bar.passive
 				end
@@ -1098,7 +1098,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
-		TRB.Functions.BarText:UpdateResourceBarText(specSettings, specCacheSettings, refreshText)
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
 
@@ -1223,7 +1223,7 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.rend)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Arms
-		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.warrior.arms)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.arms.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
 		
 		if TRB.Data.barConstructedForSpec ~= "arms" then
@@ -1237,7 +1237,7 @@ local function SwitchSpec()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.fury)
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Fury
-		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.warrior.fury)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.fury.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
 		
 		if TRB.Data.barConstructedForSpec ~= "fury" then
@@ -1391,15 +1391,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
-		local settings
 		local notZeroShowValue = 0
-		if TRB.Data.character.specId == 1 then
-			settings = TRB.Data.settings.warrior.arms
-		elseif TRB.Data.character.specId == 2 then
-			settings = TRB.Data.settings.warrior.fury
+		local sharedSettings
+		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 		end
 
-		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue)
+		TRB.Functions.Bar:HideResourceBarGeneric(sharedSettings, force, notZeroShowValue)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false
@@ -1570,7 +1568,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	return nil
+	return nil, true
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
