@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.1.0.6-release (2025-03-08)
+## General
+
+- (FIX) Fix a caching issue with threshold lines.
+- (UPDATE) Change overcap check logic to be inclusive of threshold values.
+
+---
+
 # 11.1.0.5-release (2025-03-03)
 ## General
 
