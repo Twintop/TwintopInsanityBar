@@ -670,24 +670,6 @@ local function RefreshLookupData_Mistweaver()
 
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
-	lookup["#manaTea"] = spells.manaTea.icon
-	lookup["#sheilunsGift"] = spells.sheilunsGift.icon
-	lookup["#innervate"] = spells.innervate.icon
-	lookup["#mr"] = spells.moltenRadiance.icon
-	lookup["#moltenRadiance"] = spells.moltenRadiance.icon
-	lookup["#mtt"] = spells.manaTideTotem.icon
-	lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-	lookup["#soh"] = spells.symbolOfHope.icon
-	lookup["#symbolOfHope"] = spells.symbolOfHope.icon
-	lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
-	lookup["#bow"] = spells.blessingOfWinter.icon
-	lookup["#amp"] = spells.algariManaPotionRank1.icon
-	lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
-	lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#pocc"] = spells.potionOfChilledClarity.icon
-	lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 	lookup["$manaTotal"] = manaTotal
 	lookup["$manaMax"] = manaMax
 	lookup["$mana"] = currentMana
@@ -883,27 +865,6 @@ local function RefreshLookupData_Windwalker()
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#blackoutKick"] = spells.blackoutKick.icon
-	lookup["#cracklingJadeLightning"] = spells.cracklingJadeLightning.icon
-	lookup["#cjl"] = spells.cracklingJadeLightning.icon
-	lookup["#danceOfChiJi"] = spells.danceOfChiJi.icon
-	lookup["#detox"] = spells.detox.icon
-	lookup["#disable"] = spells.disable.icon
-	lookup["#expelHarm"] = spells.expelHarm.icon
-	lookup["#fistsOfFury"] = spells.fistsOfFury.icon
-	lookup["#fof"] = spells.fistsOfFury.icon
-	lookup["#flurryCharge"] = spells.flurryCharge.icon
-	lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
-	lookup["#paralysis"] = spells.paralysis.icon
-	lookup["#risingSunKick"] = spells.risingSunKick.icon
-	lookup["#rsk"] = spells.risingSunKick.icon
-	lookup["#spinningCraneKick"] = spells.spinningCraneKick.icon
-	lookup["#sck"] = spells.spinningCraneKick.icon
-	lookup["#strikeOfTheWindlord"] = spells.strikeOfTheWindlord.icon
-	lookup["#tigerPalm"] = spells.tigerPalm.icon
-	lookup["#touchOfDeath"] = spells.touchOfDeath.icon
-	lookup["#vivify"] = spells.vivify.icon
-
 	lookup["$energyTotal"] = energyTotal
 	lookup["$energyMax"] = TRB.Data.character.maxResource
 	lookup["$energy"] = currentEnergy
@@ -1632,6 +1593,28 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.mistweaver.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.mistweaver)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
+		lookup["#manaTea"] = spells.manaTea.icon
+		lookup["#sheilunsGift"] = spells.sheilunsGift.icon
+		lookup["#innervate"] = spells.innervate.icon
+		lookup["#mr"] = spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
+		lookup["#mtt"] = spells.manaTideTotem.icon
+		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
+		lookup["#soh"] = spells.symbolOfHope.icon
+		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
+		lookup["#bow"] = spells.blessingOfWinter.icon
+		lookup["#amp"] = spells.algariManaPotionRank1.icon
+		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
+		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#pocc"] = spells.potionOfChilledClarity.icon
+		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "mistweaver" then
 			talents = specCache.mistweaver.talents
 			specCache.mistweaver.snapshotData.snapshots[spells.manaTeaCharges.id].attributes.talents = talents
@@ -1652,6 +1635,30 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Windwalker
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.windwalker.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.windwalker)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#blackoutKick"] = spells.blackoutKick.icon
+		lookup["#cracklingJadeLightning"] = spells.cracklingJadeLightning.icon
+		lookup["#cjl"] = spells.cracklingJadeLightning.icon
+		lookup["#danceOfChiJi"] = spells.danceOfChiJi.icon
+		lookup["#detox"] = spells.detox.icon
+		lookup["#disable"] = spells.disable.icon
+		lookup["#expelHarm"] = spells.expelHarm.icon
+		lookup["#fistsOfFury"] = spells.fistsOfFury.icon
+		lookup["#fof"] = spells.fistsOfFury.icon
+		lookup["#flurryCharge"] = spells.flurryCharge.icon
+		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
+		lookup["#paralysis"] = spells.paralysis.icon
+		lookup["#risingSunKick"] = spells.risingSunKick.icon
+		lookup["#rsk"] = spells.risingSunKick.icon
+		lookup["#spinningCraneKick"] = spells.spinningCraneKick.icon
+		lookup["#sck"] = spells.spinningCraneKick.icon
+		lookup["#strikeOfTheWindlord"] = spells.strikeOfTheWindlord.icon
+		lookup["#tigerPalm"] = spells.tigerPalm.icon
+		lookup["#touchOfDeath"] = spells.touchOfDeath.icon
+		lookup["#vivify"] = spells.vivify.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "windwalker" then
 			talents = specCache.windwalker.talents

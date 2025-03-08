@@ -696,18 +696,6 @@ local function RefreshLookupData_BeastMastery()
 	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#barbedShot"] = spells.barbedShot.icon
-	lookup["#barrage"] = spells.barrage.icon
-	lookup["#beastCleave"] = spells.beastCleave.icon
-	lookup["#beastialWrath"] = spells.beastialWrath.icon
-	lookup["#cobraShot"] = spells.cobraShot.icon
-	lookup["#frenzy"] = spells.frenzy.icon
-	lookup["#killCommand"] = spells.killCommand.icon
-	lookup["#killShot"] = spells.killShot.icon
-	lookup["#multiShot"] = spells.multiShot.icon
-	lookup["#revivePet"] = spells.revivePet.icon
-	lookup["#scareBeast"] = spells.scareBeast.icon
-	lookup["#serpentSting"] = spells.serpentSting.icon
 	lookup["$frenzyTime"] = frenzyTime
 	lookup["$frenzyStacks"] = frenzyStacks
 	lookup["$focusPlusCasting"] = focusPlusCasting
@@ -908,20 +896,6 @@ local function RefreshLookupData_Marksmanship()
 	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#aimedShot"] = spells.aimedShot.icon
-	lookup["#arcaneShot"] = spells.arcaneShot.icon
-	lookup["#burstingShot"] = spells.burstingShot.icon
-	lookup["#explosiveShot"] = spells.explosiveShot.icon
-	lookup["#killShot"] = spells.killShot.icon
-	lookup["#lockAndLoad"] = spells.lockAndLoad.icon
-	lookup["#multiShot"] = spells.multiShot.icon
-	lookup["#rapidFire"] = spells.rapidFire.icon
-	lookup["#revivePet"] = spells.revivePet.icon
-	lookup["#scareBeast"] = spells.scareBeast.icon
-	lookup["#serpentSting"] = spells.serpentSting.icon
-	lookup["#steadyFocus"] = spells.steadyFocus.icon
-	lookup["#steadyShot"] = spells.steadyShot.icon
-	lookup["#trueshot"] = spells.trueshot.icon
 	lookup["$steadyFocusTime"] = steadyFocusTime
 	lookup["$trueshotTime"] = trueshotTime
 	lookup["$lockAndLoadTime"] = lockAndLoadTime
@@ -1111,22 +1085,6 @@ local function RefreshLookupData_Survival()
 	Global_TwintopResourceBar.termsOfEngagement.ticks = _toeTicks
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#arcaneShot"] = spells.arcaneShot.icon
-	lookup["#butchery"] = spells.butchery.icon
-	lookup["#coordinatedAssault"] = spells.coordinatedAssault.icon
-	lookup["#ca"] = spells.coordinatedAssault.icon
-	lookup["#flankingStrike"] = spells.flankingStrike.icon
-	lookup["#harpoon"] = spells.harpoon.icon
-	lookup["#killCommand"] = spells.killCommand.icon
-	lookup["#killShot"] = spells.killShot.icon
-	lookup["#mongooseBite"] = spells.mongooseBite.icon
-	lookup["#raptorStrike"] = spells.raptorStrike.icon
-	lookup["#revivePet"] = spells.revivePet.icon
-	lookup["#scareBeast"] = spells.scareBeast.icon
-	lookup["#serpentSting"] = spells.serpentSting.icon
-	lookup["#termsOfEngagement"] = spells.termsOfEngagement.icon
-	lookup["#wingClip"] = spells.wingClip.icon
-	lookup["#wildfireBomb"] = spells.wildfireBomb.icon
 	lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 	lookup["$focusPlusCasting"] = focusPlusCasting
 	lookup["$serpentSting"] = ""
@@ -2272,6 +2230,22 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.beastMastery.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#barbedShot"] = spells.barbedShot.icon
+		lookup["#barrage"] = spells.barrage.icon
+		lookup["#beastCleave"] = spells.beastCleave.icon
+		lookup["#beastialWrath"] = spells.beastialWrath.icon
+		lookup["#cobraShot"] = spells.cobraShot.icon
+		lookup["#frenzy"] = spells.frenzy.icon
+		lookup["#killCommand"] = spells.killCommand.icon
+		lookup["#killShot"] = spells.killShot.icon
+		lookup["#multiShot"] = spells.multiShot.icon
+		lookup["#revivePet"] = spells.revivePet.icon
+		lookup["#scareBeast"] = spells.scareBeast.icon
+		lookup["#serpentSting"] = spells.serpentSting.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "beastMastery" then
 			talents = specCache.beastMastery.talents
 			TRB.Data.barConstructedForSpec = "beastMastery"
@@ -2291,6 +2265,24 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Marksmanship
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.marksmanship.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#aimedShot"] = spells.aimedShot.icon
+		lookup["#arcaneShot"] = spells.arcaneShot.icon
+		lookup["#burstingShot"] = spells.burstingShot.icon
+		lookup["#explosiveShot"] = spells.explosiveShot.icon
+		lookup["#killShot"] = spells.killShot.icon
+		lookup["#lockAndLoad"] = spells.lockAndLoad.icon
+		lookup["#multiShot"] = spells.multiShot.icon
+		lookup["#rapidFire"] = spells.rapidFire.icon
+		lookup["#revivePet"] = spells.revivePet.icon
+		lookup["#scareBeast"] = spells.scareBeast.icon
+		lookup["#serpentSting"] = spells.serpentSting.icon
+		lookup["#steadyFocus"] = spells.steadyFocus.icon
+		lookup["#steadyShot"] = spells.steadyShot.icon
+		lookup["#trueshot"] = spells.trueshot.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "marksmanship" then
 			talents = specCache.marksmanship.talents
@@ -2312,6 +2304,25 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.survival.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#arcaneShot"] = spells.arcaneShot.icon
+		lookup["#butchery"] = spells.butchery.icon
+		lookup["#coordinatedAssault"] = spells.coordinatedAssault.icon
+		lookup["#ca"] = spells.coordinatedAssault.icon
+		lookup["#flankingStrike"] = spells.flankingStrike.icon
+		lookup["#harpoon"] = spells.harpoon.icon
+		lookup["#killCommand"] = spells.killCommand.icon
+		lookup["#killShot"] = spells.killShot.icon
+		lookup["#mongooseBite"] = spells.mongooseBite.icon
+		lookup["#raptorStrike"] = spells.raptorStrike.icon
+		lookup["#revivePet"] = spells.revivePet.icon
+		lookup["#scareBeast"] = spells.scareBeast.icon
+		lookup["#serpentSting"] = spells.serpentSting.icon
+		lookup["#termsOfEngagement"] = spells.termsOfEngagement.icon
+		lookup["#wingClip"] = spells.wingClip.icon
+		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "survival" then
 			talents = specCache.survival.talents

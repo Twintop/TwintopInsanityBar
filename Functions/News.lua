@@ -15,7 +15,12 @@ local content = [====[
 ## General
 
 - (FIX) Fix a caching issue with threshold lines.
-- (UPDATE) Change overcap check logic to be inclusive of threshold values.
+- (UPDATE) Change overcap check logic to be inclusive of the configured value.
+
+## Warrior
+### Arms
+
+- (NEW) Add support for tracking Ravager.
 
 ---
 

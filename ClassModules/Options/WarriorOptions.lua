@@ -156,7 +156,7 @@ local function ArmsLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]$rage",
+			text="{$casting}[#casting$casting+]{$passive}[$passive+]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",

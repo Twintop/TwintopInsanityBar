@@ -706,18 +706,6 @@ local function RefreshLookupData_Elemental()
 	Global_TwintopResourceBar.icefury.remaining = icefuryTime
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#ascendance"] = spells.ascendance.icon
-	lookup["#chainLightning"] = spells.chainLightning.icon
-	lookup["#elementalBlast"] = spells.elementalBlast.icon
-	lookup["#eogs"] = spells.echoesOfGreatSundering.icon
-	lookup["#flameShock"] = spells.flameShock.icon
-	lookup["#frostShock"] = spells.frostShock.icon
-	lookup["#icefury"] = spells.icefury.icon
-	lookup["#lavaBurst"] = spells.lavaBurst.icon
-	lookup["#lightningBolt"] = spells.lightningBolt.icon
-	lookup["#primalFracture"] = spells.primalFracture.icon
-	lookup["#stormkeeper"] = spells.stormkeeper.icon
-	lookup["#tempest"] = spells.stormkeeper.icon
 	lookup["$maelstromPlusCasting"] = maelstromPlusCasting
 	lookup["$maelstromPlusPassive"] = maelstromPlusPassive
 	lookup["$maelstromTotal"] = maelstromTotal
@@ -831,8 +819,6 @@ local function RefreshLookupData_Enhancement()
 	Global_TwintopResourceBar.dots.fsCount = flameShockCount or 0
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#ascendance"] = spells.ascendance.icon
-	lookup["#flameShock"] = spells.flameShock.icon
 	lookup["$manaMax"] = TRB.Data.character.maxResource
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1037,24 +1023,6 @@ local function RefreshLookupData_Restoration()
 	Global_TwintopResourceBar.dots.fsCount = flameShockCount or 0
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#ascendance"] = spells.ascendance.icon
-	lookup["#flameShock"] = spells.flameShock.icon
-	lookup["#innervate"] = spells.innervate.icon
-	lookup["#mtt"] = spells.manaTideTotem.icon
-	lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-	lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
-	lookup["#bow"] = spells.blessingOfWinter.icon
-	lookup["#mr"] = spells.moltenRadiance.icon
-	lookup["#moltenRadiance"] = spells.moltenRadiance.icon
-	lookup["#soh"] = spells.symbolOfHope.icon
-	lookup["#symbolOfHope"] = spells.symbolOfHope.icon
-	lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#amp"] = spells.algariManaPotionRank1.icon
-	lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
-	lookup["#pocc"] = spells.potionOfChilledClarity.icon
-	lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
-	lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
 	lookup["$fsCount"] = flameShockCount
 	lookup["$fsTime"] = flameShockTime
 	lookup["$manaPlusCasting"] = manaPlusCasting
@@ -1882,6 +1850,22 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Elemental
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.elemental.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#ascendance"] = spells.ascendance.icon
+		lookup["#chainLightning"] = spells.chainLightning.icon
+		lookup["#elementalBlast"] = spells.elementalBlast.icon
+		lookup["#eogs"] = spells.echoesOfGreatSundering.icon
+		lookup["#flameShock"] = spells.flameShock.icon
+		lookup["#frostShock"] = spells.frostShock.icon
+		lookup["#icefury"] = spells.icefury.icon
+		lookup["#lavaBurst"] = spells.lavaBurst.icon
+		lookup["#lightningBolt"] = spells.lightningBolt.icon
+		lookup["#primalFracture"] = spells.primalFracture.icon
+		lookup["#stormkeeper"] = spells.stormkeeper.icon
+		lookup["#tempest"] = spells.stormkeeper.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 		
 		if TRB.Data.barConstructedForSpec ~= "elemental" then
 			talents = specCache.elemental.talents
@@ -1903,6 +1887,12 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.enhancement.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.enhancement)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#ascendance"] = spells.ascendance.icon
+		lookup["#flameShock"] = spells.flameShock.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "enhancement" then
 			talents = specCache.enhancement.talents
 			TRB.Data.barConstructedForSpec = "enhancement"
@@ -1922,6 +1912,28 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.restoration.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#ascendance"] = spells.ascendance.icon
+		lookup["#flameShock"] = spells.flameShock.icon
+		lookup["#innervate"] = spells.innervate.icon
+		lookup["#mtt"] = spells.manaTideTotem.icon
+		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
+		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
+		lookup["#bow"] = spells.blessingOfWinter.icon
+		lookup["#mr"] = spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
+		lookup["#soh"] = spells.symbolOfHope.icon
+		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#amp"] = spells.algariManaPotionRank1.icon
+		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
+		lookup["#pocc"] = spells.potionOfChilledClarity.icon
+		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
+		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "restoration" then
 			talents = specCache.restoration.talents

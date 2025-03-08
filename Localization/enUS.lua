@@ -2207,3 +2207,7 @@ L["GlobalCheckboxThresholdOvercapTooltip"] = "This will change the Resource text
 L["GlobalResourceDecimalPrecision"] = "Resource Decimal Precision"
 L["CheckboxUseGlobalTooltip_Precision"] = "When checked, the global settings for decimal and resource precision in bar text will be used."
 L["Resource"] = "Resource"
+
+
+L["WarriorArmsBarTextVariable_ravagerTicks"] = "Number of expected ticks remaining on Ravager"
+L["WarriorArmsBarTextVariable_ravagerRage"] = "Rage from Ravager"

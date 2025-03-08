@@ -1140,42 +1140,9 @@ local function RefreshLookupData_Balance()
 	Global_TwintopResourceBar.furyOfElune.remaining = foeTime or 0
 	
 	local lookup = TRB.Data.lookup or {}
-	lookup["#wrath"] = spells.wrath.icon
-	lookup["#moonkinForm"] = spells.moonkinForm.icon
-	lookup["#starfire"] = spells.starfire.icon
-	lookup["#sunfire"] = spells.sunfire.icon
-	lookup["#moonfire"] = spells.moonfire.icon
-	lookup["#starsurge"] = spells.starsurge.icon
-	lookup["#starfall"] = spells.starfall.icon
 	lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
-	lookup["#celestialAlignment"] = spells.celestialAlignment.icon
-	lookup["#icoe"] = spells.incarnationChosenOfElune.icon
-	lookup["#coe"] = spells.incarnationChosenOfElune.icon
-	lookup["#incarnation"] = spells.incarnationChosenOfElune.icon
-	lookup["#incarnationChosenOfElune"] = spells.incarnationChosenOfElune.icon
-	lookup["#solar"] = spells.eclipseSolar.icon
-	lookup["#eclipseSolar"] = spells.eclipseSolar.icon
-	lookup["#solarEclipse"] = spells.eclipseSolar.icon
-	lookup["#lunar"] = spells.eclipseLunar.icon
-	lookup["#eclipseLunar"] = spells.eclipseLunar.icon
-	lookup["#lunarEclipse"] = spells.eclipseLunar.icon
-	lookup["#naturesBalance"] = spells.naturesBalance.icon
-	lookup["#soulOfTheForest"] = spells.soulOfTheForest.icon
-	lookup["#foe"] = spells.furyOfElune.icon
-	lookup["#furyOfElune"] = spells.furyOfElune.icon
-	lookup["#sunderedFirmament"] = spells.sunderedFirmament.icon
-	lookup["#stellarFlare"] = spells.stellarFlare.icon
-	lookup["#newMoon"] = spells.newMoon.icon
-	lookup["#halfMoon"] = spells.halfMoon.icon
-	lookup["#fullMoon"] = spells.fullMoon.icon
 	lookup["#moon"] = currentMoonIcon
 	lookup["#starweaver"] = starweaverIcon
-	lookup["#starweaversWarp"] = spells.starweaversWarp.icon
-	lookup["#starweaversWeft"] = spells.starweaversWeft.icon
-	lookup["#starlord"] = spells.starlord.icon
-	lookup["#bb"] = spells.bounteousBloom.icon
-	lookup["#bounteousBloom"] = spells.bounteousBloom.icon
-	lookup["#dreamburst"] = spells.dreamburst.icon
 	lookup["$moonkinForm"] = ""
 	lookup["$eclipseTime"] = eclipseTime
 	lookup["$eclipse"] = ""
@@ -1644,33 +1611,6 @@ local function RefreshLookupData_Feral()
 	Global_TwintopResourceBar.dots.moonfireCurrent = _currentSnapshotMoonfire or 0
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
-	lookup["#berserk"] = spells.berserk.icon
-	lookup["#bloodtalons"] = spells.bloodtalons.icon
-	lookup["#brutalSlash"] = spells.brutalSlash.icon
-	lookup["#carnivorousInstinct"] = spells.carnivorousInstinct.icon
-	lookup["#catForm"] = spells.catForm.icon
-	lookup["#clearcasting"] = spells.clearcasting.icon
-	lookup["#feralFrenzy"] = spells.feralFrenzy.icon
-	lookup["#ferociousBite"] = spells.ferociousBite.icon
-	lookup["#incarnation"] = spells.incarnationAvatarOfAshamane.icon
-	lookup["#incarnationAvatarOfAshamane"] = spells.incarnationAvatarOfAshamane.icon
-	lookup["#lunarInspiration"] = spells.lunarInspiration.icon
-	lookup["#maim"] = spells.maim.icon
-	lookup["#moonfire"] = spells.moonfire.icon
-	lookup["#predatorRevealed"] = spells.predatorRevealed.icon
-	lookup["#primalWrath"] = spells.primalWrath.icon
-	lookup["#prowl"] = spells.prowl.icon
-	lookup["#stealth"] = spells.prowl.icon
-	lookup["#rake"] = spells.rake.icon
-	lookup["#ravage"] = spells.ravage.icon
-	lookup["#rip"] = spells.rip.icon
-	lookup["#shadowmeld"] = spells.shadowmeld.icon
-	lookup["#shred"] = spells.shred.icon
-	lookup["#suddenAmbush"] = spells.suddenAmbush.icon
-	lookup["#swipe"] = spells.swipe.icon
-	lookup["#thrash"] = spells.thrash.icon
-	lookup["#tigersFury"] = spells.tigersFury.icon
 	lookup["$ripCount"] = ripCount
 	lookup["$ripTime"] = ripTime
 	lookup["$ripSnapshot"] = ripSnapshot
@@ -2033,27 +1973,6 @@ local function RefreshLookupData_Restoration()
 	Global_TwintopResourceBar.dots.moonfireCount = _moonfireCount or 0
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#efflorescence"] = spells.efflorescence.icon
-	lookup["#incarnation"] = spells.incarnationTreeOfLife.icon
-	lookup["#clearcasting"] = spells.clearcasting.icon
-	lookup["#sunfire"] = spells.sunfire.icon
-	lookup["#moonfire"] = spells.moonfire.icon
-	lookup["#innervate"] = spells.innervate.icon
-	lookup["#mr"] = spells.moltenRadiance.icon
-	lookup["#moltenRadiance"] = spells.moltenRadiance.icon
-	lookup["#mtt"] = spells.manaTideTotem.icon
-	lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-	lookup["#soh"] = spells.symbolOfHope.icon
-	lookup["#symbolOfHope"] = spells.symbolOfHope.icon
-	lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
-	lookup["#bow"] = spells.blessingOfWinter.icon
-	lookup["#amp"] = spells.algariManaPotionRank1.icon
-	lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
-	lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#pocc"] = spells.potionOfChilledClarity.icon
-	lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
-	lookup["#reforestation"] = spells.reforestation.icon
 	lookup["$manaTotal"] = manaTotal
 	lookup["$manaMax"] = manaMax
 	lookup["$mana"] = currentMana
@@ -2275,7 +2194,7 @@ local function CastingSpell()
 end
 
 ---Calculates the incoming combo points for a given effect
----@param spell any
+---@param spell TRB.Classes.SpellBase
 ---@param buffSnapshot TRB.Classes.Snapshot
 ---@param cpSnapshot TRB.Classes.Snapshot
 local function CalculateIncomingComboPointsForEffect(spell, buffSnapshot, cpSnapshot)
@@ -2283,8 +2202,8 @@ local function CalculateIncomingComboPointsForEffect(spell, buffSnapshot, cpSnap
 	local remainingTime = buffSnapshot.buff.remaining
 
 	if remainingTime > 0 then
-		local untilNextTick = spell.tickRate - (currentTime - (cpSnapshot.attributes.lastTick or currentTime))
-		local totalCps = TRB.Functions.Number:RoundTo(remainingTime / spell.tickRate, 0, "ceil", true) or 0
+		local untilNextTick = spell:GetTickRate() - (currentTime - (cpSnapshot.attributes.lastTick or currentTime))
+		local totalCps = TRB.Functions.Number:RoundTo(remainingTime / spell:GetTickRate(), 0, "ceil", true) or 0
 
 		if buffSnapshot.buff.endTime < currentTime then
 			totalCps = 1
@@ -3052,11 +2971,11 @@ local function UpdateResourceBar()
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 				local berserkTotalCps = snapshots[spells.berserk.id].attributes.ticks
-				local berserkNextTick = spells.berserk.tickRate - snapshots[spells.berserk.id].attributes.untilNextTick
+				local berserkNextTick = spells.berserk:GetTickRate() - snapshots[spells.berserk.id].attributes.untilNextTick
 
 				local prTime = snapshots[spells.predatorRevealed.id].buff.remaining
 				local prTotalCps = snapshots[spells.predatorRevealed.id].attributes.ticks
-				local prNextTick = spells.predatorRevealed.tickRate - snapshots[spells.predatorRevealed.id].attributes.untilNextTick
+				local prNextTick = spells.predatorRevealed:GetTickRate() - snapshots[spells.predatorRevealed.id].attributes.untilNextTick
 
 				local prTickShown = 0
 				local berserkTickShown = 0
@@ -3077,7 +2996,7 @@ local function UpdateResourceBar()
 						end
 					else
 						if specSettings.colors.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 and (snapshots[spells.berserk.id].attributes.untilNextTick <= snapshots[spells.predatorRevealed.id].attributes.untilNextTick or prTickShown > 0 or prTotalCps == 0) then
-							TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, berserkNextTick * 1000, spells.berserk.tickRate * 1000)
+							TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, berserkNextTick * 1000, spells.berserk:GetTickRate() * 1000)
 							berserkTickShown = 1
 
 							if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
@@ -3087,7 +3006,7 @@ local function UpdateResourceBar()
 							end
 						elseif specSettings.colors.comboPoints.generation and prTime ~= nil and prTime > 0 and x <= (snapshotData.attributes.resource2 + prTotalCps) then
 							if x == snapshotData.attributes.resource2 + berserkTickShown + 1 then
-								TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, spells.predatorRevealed.tickRate * 1000)
+								TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, spells.predatorRevealed:GetTickRate() * 1000)
 							else
 								TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 							end
@@ -3549,6 +3468,43 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.balance.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#wrath"] = spells.wrath.icon
+		lookup["#moonkinForm"] = spells.moonkinForm.icon
+		lookup["#starfire"] = spells.starfire.icon
+		lookup["#sunfire"] = spells.sunfire.icon
+		lookup["#moonfire"] = spells.moonfire.icon
+		lookup["#starsurge"] = spells.starsurge.icon
+		lookup["#starfall"] = spells.starfall.icon
+		lookup["#celestialAlignment"] = spells.celestialAlignment.icon
+		lookup["#icoe"] = spells.incarnationChosenOfElune.icon
+		lookup["#coe"] = spells.incarnationChosenOfElune.icon
+		lookup["#incarnation"] = spells.incarnationChosenOfElune.icon
+		lookup["#incarnationChosenOfElune"] = spells.incarnationChosenOfElune.icon
+		lookup["#solar"] = spells.eclipseSolar.icon
+		lookup["#eclipseSolar"] = spells.eclipseSolar.icon
+		lookup["#solarEclipse"] = spells.eclipseSolar.icon
+		lookup["#lunar"] = spells.eclipseLunar.icon
+		lookup["#eclipseLunar"] = spells.eclipseLunar.icon
+		lookup["#lunarEclipse"] = spells.eclipseLunar.icon
+		lookup["#naturesBalance"] = spells.naturesBalance.icon
+		lookup["#soulOfTheForest"] = spells.soulOfTheForest.icon
+		lookup["#foe"] = spells.furyOfElune.icon
+		lookup["#furyOfElune"] = spells.furyOfElune.icon
+		lookup["#sunderedFirmament"] = spells.sunderedFirmament.icon
+		lookup["#stellarFlare"] = spells.stellarFlare.icon
+		lookup["#newMoon"] = spells.newMoon.icon
+		lookup["#halfMoon"] = spells.halfMoon.icon
+		lookup["#fullMoon"] = spells.fullMoon.icon
+		lookup["#starweaversWarp"] = spells.starweaversWarp.icon
+		lookup["#starweaversWeft"] = spells.starweaversWeft.icon
+		lookup["#starlord"] = spells.starlord.icon
+		lookup["#bb"] = spells.bounteousBloom.icon
+		lookup["#bounteousBloom"] = spells.bounteousBloom.icon
+		lookup["#dreamburst"] = spells.dreamburst.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "balance" then
 			talents = specCache.balance.talents
 			TRB.Data.barConstructedForSpec = "balance"
@@ -3572,6 +3528,37 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.feral.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.feral)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
+		lookup["#berserk"] = spells.berserk.icon
+		lookup["#bloodtalons"] = spells.bloodtalons.icon
+		lookup["#brutalSlash"] = spells.brutalSlash.icon
+		lookup["#carnivorousInstinct"] = spells.carnivorousInstinct.icon
+		lookup["#catForm"] = spells.catForm.icon
+		lookup["#clearcasting"] = spells.clearcasting.icon
+		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
+		lookup["#ferociousBite"] = spells.ferociousBite.icon
+		lookup["#incarnation"] = spells.incarnationAvatarOfAshamane.icon
+		lookup["#incarnationAvatarOfAshamane"] = spells.incarnationAvatarOfAshamane.icon
+		lookup["#lunarInspiration"] = spells.lunarInspiration.icon
+		lookup["#maim"] = spells.maim.icon
+		lookup["#moonfire"] = spells.moonfire.icon
+		lookup["#predatorRevealed"] = spells.predatorRevealed.icon
+		lookup["#primalWrath"] = spells.primalWrath.icon
+		lookup["#prowl"] = spells.prowl.icon
+		lookup["#stealth"] = spells.prowl.icon
+		lookup["#rake"] = spells.rake.icon
+		lookup["#ravage"] = spells.ravage.icon
+		lookup["#rip"] = spells.rip.icon
+		lookup["#shadowmeld"] = spells.shadowmeld.icon
+		lookup["#shred"] = spells.shred.icon
+		lookup["#suddenAmbush"] = spells.suddenAmbush.icon
+		lookup["#swipe"] = spells.swipe.icon
+		lookup["#thrash"] = spells.thrash.icon
+		lookup["#tigersFury"] = spells.tigersFury.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "feral" then
 			talents = specCache.feral.talents
 			TRB.Data.barConstructedForSpec = "feral"
@@ -3592,6 +3579,31 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.restoration)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.restoration)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#efflorescence"] = spells.efflorescence.icon
+		lookup["#incarnation"] = spells.incarnationTreeOfLife.icon
+		lookup["#clearcasting"] = spells.clearcasting.icon
+		lookup["#sunfire"] = spells.sunfire.icon
+		lookup["#moonfire"] = spells.moonfire.icon
+		lookup["#innervate"] = spells.innervate.icon
+		lookup["#mr"] = spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
+		lookup["#mtt"] = spells.manaTideTotem.icon
+		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
+		lookup["#soh"] = spells.symbolOfHope.icon
+		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
+		lookup["#bow"] = spells.blessingOfWinter.icon
+		lookup["#amp"] = spells.algariManaPotionRank1.icon
+		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
+		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#pocc"] = spells.potionOfChilledClarity.icon
+		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
+		lookup["#reforestation"] = spells.reforestation.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "restoration" then
 			talents = specCache.restoration.talents

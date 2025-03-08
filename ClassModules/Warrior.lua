@@ -74,6 +74,8 @@ local function FillSpecializationCache()
 	specCache.arms.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
 	---@type TRB.Classes.Snapshot
 	specCache.arms.snapshotData.snapshots[spells.stormOfSwords.id] = TRB.Classes.Snapshot:New(spells.stormOfSwords)
+	---@type TRB.Classes.Snapshot
+	specCache.arms.snapshotData.snapshots[spells.ravager.id] = TRB.Classes.Snapshot:New(spells.ravager)
 
 	-- Fury
 
@@ -150,10 +152,12 @@ local function FillSpellData_Arms()
 		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },			
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
 		{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = spells.mortalStrike.name, printInSettings = true },
+		{ variable = "#ravager", icon = spells.ravager.icon, description = spells.ravager.name, printInSettings = true },
 		{ variable = "#rend", icon = spells.rend.icon, description = spells.rend.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
 		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
-		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true },			
+		{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true },
+		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true },
 	}
 	specCache.arms.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -208,6 +212,9 @@ local function FillSpellData_Arms()
 		{ variable = "$rendTime", description = L["WarriorArmsBarTextVariable_rendTime"], printInSettings = true, color = false },
 
 		{ variable = "$suddenDeathTime", description = L["WarriorArmsBarTextVariable_suddenDeathTime"], printInSettings = true, color = false },
+		
+		{ variable = "$ravagerTicks", description = L["WarriorArmsBarTextVariable_ravagerTicks"], printInSettings = true, color = false },
+		{ variable = "$ravagerRage", description = L["WarriorArmsBarTextVariable_ravagerRage"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -231,6 +238,7 @@ local function FillSpellData_Fury()
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
 		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
+		{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true },
 		{ variable = "#ravager", icon = spells.ravager.icon, description = spells.ravager.name, printInSettings = true },
 		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true }
 	}
@@ -418,6 +426,13 @@ local function RefreshLookupData_Arms()
 
 	local deepWoundsTime
 
+	--$ravagerRage
+	local _ravagerRage = snapshots[spells.ravager.id].buff.resource
+	local ravagerRage = string.format("%.0f", _ravagerRage)
+	--$ravagerTicks
+	local _ravagerTicks = snapshots[spells.ravager.id].buff.ticks
+	local ravagerTicks = string.format("%.0f", _ravagerTicks)
+
 	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.rend.debuffId].active then
 			if _rendTime > ((spells.rend.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
@@ -456,24 +471,20 @@ local function RefreshLookupData_Arms()
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
 	Global_TwintopResourceBar.dots.rendCount = _rendCount
 	Global_TwintopResourceBar.dots.deepWoundsCount = _deepWoundsCount
+	
+	Global_TwintopResourceBar.ravager = Global_TwintopResourceBar.ravager or {}
+	Global_TwintopResourceBar.ravager.rage = _ravagerRage
+	Global_TwintopResourceBar.ravager.ticks = _ravagerTicks
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#charge"] = spells.charge.icon
-	lookup["#cleave"] = spells.cleave.icon
-	lookup["#deepWounds"] = spells.deepWounds.icon
-	lookup["#execute"] = spells.execute.icon
-	lookup["#impendingVictory"] = spells.impendingVictory.icon
-	lookup["#mortalStrike"] = spells.mortalStrike.icon
-	lookup["#rend"] = spells.rend.icon
-	lookup["#shieldBlock"] = spells.shieldBlock.icon
-	lookup["#slam"] = spells.slam.icon
-	lookup["#whirlwind"] = spells.whirlwind.icon
 	lookup["$rend"] = ""
 	lookup["$rendCount"] = rendCount
 	lookup["$rendTime"] = rendTime
 	lookup["$deepWoundsCount"] = deepWoundsCount
 	lookup["$deepWoundsTime"] = deepWoundsTime
 	lookup["$suddenDeathTime"] = suddenDeathTime
+	lookup["$ravagerRage"] = ravagerRage
+	lookup["$ravagerTicks"] = ravagerTicks
 	lookup["$rageTotal"] = rageTotal
 	lookup["$rageMax"] = TRB.Data.character.maxResource
 	lookup["$rage"] = currentRage
@@ -498,6 +509,8 @@ local function RefreshLookupData_Arms()
 	lookupLogic["$deepWoundsCount"] = _deepWoundsCount
 	lookupLogic["$deepWoundsTime"] = _deepWoundsTime
 	lookupLogic["$suddenDeathTime"] = _suddenDeathTime
+	lookupLogic["$ravagerRage"] = _ravagerRage
+	lookupLogic["$ravagerTicks"] = _ravagerTicks
 	lookupLogic["$rageTotal"] = _rageTotal
 	lookupLogic["$rageMax"] = TRB.Data.character.maxResource
 	lookupLogic["$rage"] = normalizedRage
@@ -606,14 +619,6 @@ local function RefreshLookupData_Fury()
 	Global_TwintopResourceBar.ravager.ticks = _ravagerTicks
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#charge"] = spells.charge.icon
-	lookup["#enrage"] = spells.enrage.icon
-	lookup["#execute"] = spells.execute.icon
-	lookup["#impendingVictory"] = spells.impendingVictory.icon
-	lookup["#ravager"] = spells.ravager.icon
-	lookup["#shieldBlock"] = spells.shieldBlock.icon
-	lookup["#slam"] = spells.slam.icon
-	lookup["#whirlwind"] = spells.whirlwind.icon
 	lookup["$suddenDeathTime"] = suddenDeathTime
 	lookup["$enrageTime"] = enrageTime
 	lookup["$whirlwindTime"] = whirlwindTime
@@ -706,6 +711,7 @@ local function UpdateSnapshot()
 	snapshots[spells.impendingVictory.id].cooldown:Refresh()
 	snapshots[spells.thunderClap.id].cooldown:Refresh()
 	snapshots[spells.shieldBlock.id].cooldown:Refresh()
+	snapshots[spells.ravager.id].buff:UpdateTicks(currentTime)
 end
 
 local function UpdateSnapshot_Arms()
@@ -733,7 +739,6 @@ local function UpdateSnapshot_Fury()
 
 	snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.ravager.id].buff:UpdateTicks(currentTime)
 
 	snapshots[spells.execute.id].cooldown:Refresh()
 end
@@ -765,6 +770,9 @@ local function UpdateResourceBar()
 
 				local passiveValue = 0
 				if specSettings.colors.bar.showPassive then
+					if snapshots[spells.ravager.id].buff.resource > 0 then
+						passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource
+					end
 				end
 
 				if CastingSpell() and specSettings.colors.bar.showCasting then
@@ -805,7 +813,7 @@ local function UpdateResourceBar()
 					targetUnitHealth = target:GetHealthPercent()
 				end
 				
-				local healthMinimum = spells.execute.attributes.healthMinimum				
+				local healthMinimum = spells.execute.attributes.healthMinimum
 				if talents:IsTalentActive(spells.massacre) then
 					healthMinimum = spells.massacre.attributes.healthMinimum
 				end
@@ -1148,25 +1156,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-				elseif entry.spellId == spells.ravager.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then -- Ravager used
-						local duration = spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
-						snapshots[entry.spellId].buff:InitializeCustom(duration)
-		
-						if talents:IsTalentActive(spells.stormOfSteel) then
-							snapshots[entry.spellId].buff:SetTickData(true, spells.ravager.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
-						else
-							snapshots[entry.spellId].buff:SetTickData(true, spells.ravager.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
-						end
-
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				elseif entry.spellId == spells.ravager.energizeId then
-					if entry.type == "SPELL_ENERGIZE" then
-						if snapshots[spells.ravager.id].buff.isActive then
-							snapshots[spells.ravager.id].buff:UpdateTicks(currentTime)
-						end
-					end
 				end
 			end
 
@@ -1186,6 +1175,25 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			elseif entry.spellId == spells.shieldBlock.id then
 				if entry.type == "SPELL_CAST_SUCCESS" then
 					snapshots[entry.spellId].cooldown:Initialize()
+				end
+			elseif entry.spellId == spells.ravager.id then
+				if entry.type == "SPELL_CAST_SUCCESS" then -- Ravager used
+					local duration = spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
+					snapshots[entry.spellId].buff:InitializeCustom(duration)
+	
+					if spells.stormOfSteel ~= nil and talents:IsTalentActive(spells.stormOfSteel) then
+						snapshots[entry.spellId].buff:SetTickData(true, spells.ravager.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.ravager:GetTickRate())
+					else
+						snapshots[entry.spellId].buff:SetTickData(true, spells.ravager.resourcePerTick, spells.ravager:GetTickRate())
+					end
+
+					snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+				end
+			elseif entry.spellId == spells.ravager.energizeId then
+				if entry.type == "SPELL_ENERGIZE" then
+					if snapshots[spells.ravager.id].buff.isActive then
+						snapshots[spells.ravager.id].buff:UpdateTicks(currentTime)
+					end
 				end
 			end
 		end
@@ -1226,6 +1234,21 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.arms.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
 		
+		local lookup = TRB.Data.lookup or {}
+		lookup["#charge"] = spells.charge.icon
+		lookup["#cleave"] = spells.cleave.icon
+		lookup["#deepWounds"] = spells.deepWounds.icon
+		lookup["#execute"] = spells.execute.icon
+		lookup["#impendingVictory"] = spells.impendingVictory.icon
+		lookup["#mortalStrike"] = spells.mortalStrike.icon
+		lookup["#ravager"] = spells.ravager.icon
+		lookup["#rend"] = spells.rend.icon
+		lookup["#shieldBlock"] = spells.shieldBlock.icon
+		lookup["#slam"] = spells.slam.icon
+		lookup["#suddenDeath"] = spells.suddenDeath.icon
+		lookup["#whirlwind"] = spells.whirlwind.icon
+		TRB.Data.lookup = lookup
+		
 		if TRB.Data.barConstructedForSpec ~= "arms" then
 			talents = specCache.arms.talents
 			TRB.Data.barConstructedForSpec = "arms"
@@ -1239,6 +1262,19 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Fury
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.fury.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
+		
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+		local lookup = TRB.Data.lookup or {}
+		lookup["#charge"] = spells.charge.icon
+		lookup["#enrage"] = spells.enrage.icon
+		lookup["#execute"] = spells.execute.icon
+		lookup["#impendingVictory"] = spells.impendingVictory.icon
+		lookup["#ravager"] = spells.ravager.icon
+		lookup["#shieldBlock"] = spells.shieldBlock.icon
+		lookup["#slam"] = spells.slam.icon
+		lookup["#suddenDeath"] = spells.suddenDeath.icon
+		lookup["#whirlwind"] = spells.whirlwind.icon
+		TRB.Data.lookup = lookup
 		
 		if TRB.Data.barConstructedForSpec ~= "fury" then
 			talents = specCache.fury.talents
@@ -1488,9 +1524,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$passive" then
-			valid = false
+			if snapshots[spells.ravager.id].buff.resource > 0 then
+				valid = true
+			end
 		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-			if currentResource > 0 then
+			if currentResource > 0 or snapshots[spells.ravager.id].buff.resource > 0 then
 				valid = true
 			end
 		end
@@ -1525,14 +1563,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.whirlwind.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$ravagerTicks" then
-			if snapshots[spells.ravager.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ravagerResource" or var == "$ravagerRage" then
-			if snapshots[spells.ravager.id].buff.isActive then
-				valid = true
-			end
 		end
 	end
 
@@ -1560,6 +1590,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif var == "$casting" then
 		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
+			valid = true
+		end
+	elseif var == "$ravagerTicks" then
+		if snapshots[spells.ravager.id].buff.isActive then
+			valid = true
+		end
+	elseif var == "$ravagerResource" or var == "$ravagerRage" then
+		if snapshots[spells.ravager.id].buff.isActive then
 			valid = true
 		end
 	end

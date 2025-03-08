@@ -84,6 +84,7 @@ end
 ---@field public ticks integer? # How many ticks this spell have at the beginning.
 ---@field public tickRate number? # How many seconds between ticks.
 ---@field public resourcePerTick number? # How many resources are generated per tick.
+---@field public isHasted boolean? # Does this spell's cooldown, tick rate, etc. benefit from haste?
 ---@field public isBuff boolean? # Is this spell a buff?
 ---@field public isPvp boolean? # Is this a PvP only spell?
 ---@field public tocMinVersion number? # Minimum TOC version of WoW before attempting to use/load this spell.
@@ -141,6 +142,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
             (key == "ticks"                            and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "tickRate"                         and type(value) == "number") or
             (key == "resourcePerTick"                  and type(value) == "number") or
+            (key == "isHasted"                         and type(value) == "boolean") or
             (key == "isBuff"                           and type(value) == "boolean") or
             (key == "isPvp"                            and type(value) == "boolean") or
             (key == "tocMinVersion"                    and type(value) == "number") then
@@ -186,6 +188,13 @@ function TRB.Classes.SpellBase:New(spellAttributes)
     self._isFreeCurrently = false
 
     return self
+end
+
+function TRB.Classes.SpellBase:GetTickRate()
+    if self.isHasted then
+        return self.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
+    end
+    return self.tickRate
 end
 
 ---Gets the cache key for the spell. If the _cacheKey is not set, it will be set to the id, primaryResourceTypeProperty, and primaryResourceTypeMod.

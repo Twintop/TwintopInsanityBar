@@ -466,21 +466,6 @@ local function RefreshLookupData_Holy()
 	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
-	lookup["#bow"] = spells.blessingOfWinter.icon
-	lookup["#innervate"] = spells.innervate.icon
-	lookup["#mtt"] = spells.manaTideTotem.icon
-	lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-	lookup["#mr"] = spells.moltenRadiance.icon
-	lookup["#moltenRadiance"] = spells.moltenRadiance.icon
-	lookup["#soh"] = spells.symbolOfHope.icon
-	lookup["#symbolOfHope"] = spells.symbolOfHope.icon
-	lookup["#amp"] = spells.algariManaPotionRank1.icon
-	lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
-	lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#pocc"] = spells.potionOfChilledClarity.icon
-	lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 	lookup["$manaTotal"] = manaTotal
 	lookup["$manaMax"] = manaMax
 	lookup["$mana"] = currentMana
@@ -943,12 +928,32 @@ local function SwitchSpec()
 		FillSpellData_Holy()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.holy)
 
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.holy.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.paladin.holy)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
+		lookup["#bow"] = spells.blessingOfWinter.icon
+		lookup["#innervate"] = spells.innervate.icon
+		lookup["#mtt"] = spells.manaTideTotem.icon
+		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
+		lookup["#mr"] = spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
+		lookup["#soh"] = spells.symbolOfHope.icon
+		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#amp"] = spells.algariManaPotionRank1.icon
+		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
+		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#pocc"] = spells.potionOfChilledClarity.icon
+		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "holy" then
 			talents = specCache.holy.talents

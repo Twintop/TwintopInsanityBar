@@ -355,7 +355,7 @@ function TRB.Classes.Healer.Cannibalize:Update()
 end
 
 function TRB.Classes.Healer.Cannibalize:GetMaxManaReturn()
-    return (TRB.Data.snapshotData.attributes.manaRegen * self.spell.duration) + (self.spell.duration / self.spell.tickRate) * self.spell.resourcePerTick * TRB.Data.character.maxResource
+    return (TRB.Data.snapshotData.attributes.manaRegen * self.spell.duration) + (self.spell.duration / self.spell:GetTickRate()) * self.spell.resourcePerTick * TRB.Data.character.maxResource
 end
 
 --[[

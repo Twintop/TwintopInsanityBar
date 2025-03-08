@@ -224,7 +224,7 @@ function TRB.Classes.SnapshotBuff:UpdateTicks(currentTime)
     if self.hasTicks then
         currentTime = currentTime or GetTime()
         self:GetRemainingTime(currentTime)
-        self.ticks = math.ceil(self.remaining / self.tickRate)
+        self.ticks = math.ceil(self.remaining / self:GetTickRate())
         self.resource = self.ticks * self.resourcePerTick
     end
 end

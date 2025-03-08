@@ -1103,30 +1103,6 @@ local function RefreshLookupData_Assassination()
 	Global_TwintopResourceBar.dots.serratedBoneSpikeCount = _sbsCount
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#amplifyingPoison"] = spells.amplifyingPoison.icon
-	lookup["#atrophicPoison"] = spells.atrophicPoison.icon
-	lookup["#blindside"] = spells.blindside.icon
-	lookup["#crimsonTempest"] = spells.crimsonTempest.icon
-	lookup["#ct"] = spells.crimsonTempest.icon
-	lookup["#cripplingPoison"] = spells.cripplingPoison.icon
-	lookup["#cp"] = spells.cripplingPoison.icon
-	lookup["#deadlyPoison"] = spells.deadlyPoison.icon
-	lookup["#dp"] = spells.deadlyPoison.icon
-	lookup["#deathFromAbove"] = spells.deathFromAbove.icon
-	lookup["#dismantle"] = spells.dismantle.icon
-	lookup["#garrote"] = spells.garrote.icon
-	lookup["#internalBleeding"] = spells.internalBleeding.icon
-	lookup["#ib"] = spells.internalBleeding.icon
-	lookup["#numbingPoison"] = spells.numbingPoison.icon
-	lookup["#np"] = spells.numbingPoison.icon
-	lookup["#rupture"] = spells.rupture.icon
-	lookup["#sad"] = spells.sliceAndDice.icon
-	lookup["#sliceAndDice"] = spells.sliceAndDice.icon
-	lookup["#serratedBoneSpike"] = spells.serratedBoneSpike.icon
-	lookup["#stealth"] = spells.stealth.icon
-	lookup["#woundPoison"] = spells.woundPoison.icon
-	lookup["#wp"] = spells.woundPoison.icon
-
 	lookup["$energyTotal"] = energyTotal
 	lookup["$energyMax"] = TRB.Data.character.maxResource
 	lookup["$energy"] = currentEnergy
@@ -1486,37 +1462,6 @@ local function RefreshLookupData_Outlaw()
 	Global_TwintopResourceBar.dots.woundPoisonCount = _wpCount
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#adrenalineRush"] = spells.adrenalineRush.icon
-	lookup["#atrophicPoison"] = spells.atrophicPoison.icon
-	lookup["#betweenTheEyes"] = spells.betweenTheEyes.icon
-	lookup["#bladeFlurry"] = spells.bladeFlurry.icon
-	lookup["#bladeRush"] = spells.bladeRush.icon
-	lookup["#broadside"] = spells.broadside.icon
-	lookup["#buriedTreasure"] = spells.buriedTreasure.icon
-	lookup["#deathFromAbove"] = spells.numbingPoison.icon
-	lookup["#dispatch"] = spells.dispatch.icon
-	lookup["#dismantle"] = spells.numbingPoison.icon
-	lookup["#dreadblades"] = spells.dreadblades.icon
-	lookup["#cripplingPoison"] = spells.cripplingPoison.icon
-	lookup["#cp"] = spells.cripplingPoison.icon
-	lookup["#dismantle"] = spells.dismantle.icon
-	lookup["#ghostlyStrike"] = spells.ghostlyStrike.icon
-	lookup["#grandMelee"] = spells.grandMelee.icon
-	lookup["#numbingPoison"] = spells.numbingPoison.icon
-	lookup["#np"] = spells.numbingPoison.icon
-	lookup["#opportunity"] = spells.opportunity.icon
-	lookup["#pistolShot"] = spells.pistolShot.icon
-	lookup["#rollTheBones"] = spells.rollTheBones.icon
-	lookup["#ruthlessPrecision"] = spells.ruthlessPrecision.icon
-	lookup["#sad"] = spells.sliceAndDice.icon
-	lookup["#sliceAndDice"] = spells.sliceAndDice.icon
-	lookup["#sinisterStrike"] = spells.sinisterStrike.icon
-	lookup["#skullAndCrossbones"] = spells.skullAndCrossbones.icon
-	lookup["#stealth"] = spells.stealth.icon
-	lookup["#trueBearing"] = spells.trueBearing.icon
-	lookup["#woundPoison"] = spells.woundPoison.icon
-	lookup["#wp"] = spells.woundPoison.icon
-
 	lookup["$energyTotal"] = energyTotal
 	lookup["$energyMax"] = TRB.Data.character.maxResource
 	lookup["$energy"] = currentEnergy
@@ -1859,23 +1804,6 @@ local function RefreshLookupData_Subtlety()
 	Global_TwintopResourceBar.dots.ruptureCount = _ruptureCount
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#cripplingPoison"] = spells.cripplingPoison.icon
-	lookup["#cp"] = spells.cripplingPoison.icon
-	lookup["#deathFromAbove"] = spells.deathFromAbove.icon
-	lookup["#dismantle"] = spells.dismantle.icon
-	lookup["#flagellation"] = spells.flagellation.icon
-	lookup["#numbingPoison"] = spells.numbingPoison.icon
-	lookup["#np"] = spells.numbingPoison.icon
-	lookup["#rupture"] = spells.rupture.icon
-	lookup["#sad"] = spells.sliceAndDice.icon
-	lookup["#sliceAndDice"] = spells.sliceAndDice.icon
-	lookup["#sod"] = spells.symbolsOfDeath.icon
-	lookup["#symbolsOfDeath"] = spells.symbolsOfDeath.icon
-	lookup["#shadowTechniques"] = spells.shadowTechniques.icon
-	lookup["#stealth"] = spells.stealth.icon
-	lookup["#woundPoison"] = spells.woundPoison.icon
-	lookup["#wp"] = spells.woundPoison.icon
-
 	lookup["$energyTotal"] = energyTotal
 	lookup["$energyMax"] = TRB.Data.character.maxResource
 	lookup["$energy"] = currentEnergy
@@ -3283,6 +3211,33 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.assassination.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.assassination)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#amplifyingPoison"] = spells.amplifyingPoison.icon
+		lookup["#atrophicPoison"] = spells.atrophicPoison.icon
+		lookup["#blindside"] = spells.blindside.icon
+		lookup["#crimsonTempest"] = spells.crimsonTempest.icon
+		lookup["#ct"] = spells.crimsonTempest.icon
+		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
+		lookup["#cp"] = spells.cripplingPoison.icon
+		lookup["#deadlyPoison"] = spells.deadlyPoison.icon
+		lookup["#dp"] = spells.deadlyPoison.icon
+		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
+		lookup["#dismantle"] = spells.dismantle.icon
+		lookup["#garrote"] = spells.garrote.icon
+		lookup["#internalBleeding"] = spells.internalBleeding.icon
+		lookup["#ib"] = spells.internalBleeding.icon
+		lookup["#numbingPoison"] = spells.numbingPoison.icon
+		lookup["#np"] = spells.numbingPoison.icon
+		lookup["#rupture"] = spells.rupture.icon
+		lookup["#sad"] = spells.sliceAndDice.icon
+		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
+		lookup["#serratedBoneSpike"] = spells.serratedBoneSpike.icon
+		lookup["#stealth"] = spells.stealth.icon
+		lookup["#woundPoison"] = spells.woundPoison.icon
+		lookup["#wp"] = spells.woundPoison.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "assassination" then
 			talents = specCache.assassination.talents
 			TRB.Data.barConstructedForSpec = "assassination"
@@ -3309,6 +3264,40 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.outlaw.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.outlaw)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#adrenalineRush"] = spells.adrenalineRush.icon
+		lookup["#atrophicPoison"] = spells.atrophicPoison.icon
+		lookup["#betweenTheEyes"] = spells.betweenTheEyes.icon
+		lookup["#bladeFlurry"] = spells.bladeFlurry.icon
+		lookup["#bladeRush"] = spells.bladeRush.icon
+		lookup["#broadside"] = spells.broadside.icon
+		lookup["#buriedTreasure"] = spells.buriedTreasure.icon
+		lookup["#deathFromAbove"] = spells.numbingPoison.icon
+		lookup["#dispatch"] = spells.dispatch.icon
+		lookup["#dismantle"] = spells.numbingPoison.icon
+		lookup["#dreadblades"] = spells.dreadblades.icon
+		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
+		lookup["#cp"] = spells.cripplingPoison.icon
+		lookup["#dismantle"] = spells.dismantle.icon
+		lookup["#ghostlyStrike"] = spells.ghostlyStrike.icon
+		lookup["#grandMelee"] = spells.grandMelee.icon
+		lookup["#numbingPoison"] = spells.numbingPoison.icon
+		lookup["#np"] = spells.numbingPoison.icon
+		lookup["#opportunity"] = spells.opportunity.icon
+		lookup["#pistolShot"] = spells.pistolShot.icon
+		lookup["#rollTheBones"] = spells.rollTheBones.icon
+		lookup["#ruthlessPrecision"] = spells.ruthlessPrecision.icon
+		lookup["#sad"] = spells.sliceAndDice.icon
+		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
+		lookup["#sinisterStrike"] = spells.sinisterStrike.icon
+		lookup["#skullAndCrossbones"] = spells.skullAndCrossbones.icon
+		lookup["#stealth"] = spells.stealth.icon
+		lookup["#trueBearing"] = spells.trueBearing.icon
+		lookup["#woundPoison"] = spells.woundPoison.icon
+		lookup["#wp"] = spells.woundPoison.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "outlaw" then
 			talents = specCache.outlaw.talents
 			TRB.Data.barConstructedForSpec = "outlaw"
@@ -3332,6 +3321,26 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Subtlety
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.subtlety.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.subtlety)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
+		lookup["#cp"] = spells.cripplingPoison.icon
+		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
+		lookup["#dismantle"] = spells.dismantle.icon
+		lookup["#flagellation"] = spells.flagellation.icon
+		lookup["#numbingPoison"] = spells.numbingPoison.icon
+		lookup["#np"] = spells.numbingPoison.icon
+		lookup["#rupture"] = spells.rupture.icon
+		lookup["#sad"] = spells.sliceAndDice.icon
+		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
+		lookup["#sod"] = spells.symbolsOfDeath.icon
+		lookup["#symbolsOfDeath"] = spells.symbolsOfDeath.icon
+		lookup["#shadowTechniques"] = spells.shadowTechniques.icon
+		lookup["#stealth"] = spells.stealth.icon
+		lookup["#woundPoison"] = spells.woundPoison.icon
+		lookup["#wp"] = spells.woundPoison.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "subtlety" then
 			talents = specCache.subtlety.talents

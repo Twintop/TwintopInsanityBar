@@ -544,26 +544,6 @@ local function RefreshLookupData_Havoc()
 	Global_TwintopResourceBar.studentOfSuffering.time = sosTime
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
-	lookup["#annihilation"] = spells.annihilation.icon
-	lookup["#bladeDance"] = spells.bladeDance.icon
-	lookup["#blindFury"] = spells.blindFury.icon
-	lookup["#bh"] = spells.burningHatred.icon
-	lookup["#burningHatred"] = spells.burningHatred.icon
-	lookup["#chaosNova"] = spells.chaosNova.icon
-	lookup["#chaosStrike"] = spells.chaosStrike.icon
-	lookup["#deathSweep"] = spells.deathSweep.icon
-	lookup["#eyeBeam"] = spells.eyeBeam.icon
-	lookup["#felBarrage"] = spells.felBarrage.icon
-	lookup["#felEruption"] = spells.felEruption.icon
-	lookup["#glaiveFlurry"] = spells.glaiveFlurry.icon
-	lookup["#glaiveTempest"] = spells.glaiveTempest.icon
-	lookup["#immolationAura"] = spells.immolationAura.icon
-	lookup["#metamorphosis"] = spells.metamorphosis.icon
-	lookup["#meta"] = spells.metamorphosis.icon
-	lookup["#rendingStrike"] = spells.rendingStrike.icon
-	lookup["#tacticalRetreat"] = spells.tacticalRetreat.icon
-	lookup["#unboundChaos"] = spells.unboundChaos.icon
 	lookup["$metaTime"] = metamorphosisTime
 	lookup["$metamorphosisTime"] = metamorphosisTime
 	lookup["$bhFury"] = bhFury
@@ -843,14 +823,13 @@ local function CastingSpell()
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.eyeBeam.id and talents:IsTalentActive(spells.blindFury) then
-					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					TRB.Data.snapshotData.casting.spellId = spells.eyeBeam.id
 					--TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
 					TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
 					TRB.Data.snapshotData.casting.icon = spells.eyeBeam.icon
 					local remainingTime = TRB.Data.snapshotData.casting.endTime - currentTime
 					--TODO: use SnapshotBuff:UpdateTicks() instead?
-					local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury.tickRate * (gcd / 1.5)), 0, "ceil", true)
+					local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
 					local resource = ticks * spells.blindFury.resource
 					TRB.Data.snapshotData.casting.resourceRaw = resource
 					TRB.Data.snapshotData.casting.resourceFinal = resource
@@ -1445,6 +1424,30 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.havoc.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
+		lookup["#annihilation"] = spells.annihilation.icon
+		lookup["#bladeDance"] = spells.bladeDance.icon
+		lookup["#blindFury"] = spells.blindFury.icon
+		lookup["#bh"] = spells.burningHatred.icon
+		lookup["#burningHatred"] = spells.burningHatred.icon
+		lookup["#chaosNova"] = spells.chaosNova.icon
+		lookup["#chaosStrike"] = spells.chaosStrike.icon
+		lookup["#deathSweep"] = spells.deathSweep.icon
+		lookup["#eyeBeam"] = spells.eyeBeam.icon
+		lookup["#felBarrage"] = spells.felBarrage.icon
+		lookup["#felEruption"] = spells.felEruption.icon
+		lookup["#glaiveFlurry"] = spells.glaiveFlurry.icon
+		lookup["#glaiveTempest"] = spells.glaiveTempest.icon
+		lookup["#immolationAura"] = spells.immolationAura.icon
+		lookup["#metamorphosis"] = spells.metamorphosis.icon
+		lookup["#meta"] = spells.metamorphosis.icon
+		lookup["#rendingStrike"] = spells.rendingStrike.icon
+		lookup["#tacticalRetreat"] = spells.tacticalRetreat.icon
+		lookup["#unboundChaos"] = spells.unboundChaos.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "havoc" then
 			talents = specCache.havoc.talents
 			TRB.Data.barConstructedForSpec = "havoc"
@@ -1462,6 +1465,18 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Vengeance
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.vengeance.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.vengeance)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
+		lookup["#glaiveFlurry"] = spells.glaiveFlurry.icon
+		lookup["#ia"] = spells.immolationAura.icon
+		lookup["#immolationAura"] = spells.immolationAura.icon
+		lookup["#metamorphosis"] = spells.metamorphosis.icon
+		lookup["#meta"] = spells.metamorphosis.icon
+		lookup["#rendingStrike"] = spells.rendingStrike.icon
+		lookup["#soulFragments"] = spells.soulFragments.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "vengeance" then
 			talents = specCache.vengeance.talents
@@ -1587,13 +1602,13 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "havoc"
 
 		if talents:IsTalentActive(spells.burningHatred) then
-			snapshots[spells.immolationAura.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
-			snapshots[spells.immolationAura1.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
-			snapshots[spells.immolationAura2.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
-			snapshots[spells.immolationAura3.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
-			snapshots[spells.immolationAura4.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
-			snapshots[spells.immolationAura5.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
-			snapshots[spells.immolationAura6.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
+			snapshots[spells.immolationAura.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
+			snapshots[spells.immolationAura1.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
+			snapshots[spells.immolationAura2.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
+			snapshots[spells.immolationAura3.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
+			snapshots[spells.immolationAura4.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
+			snapshots[spells.immolationAura5.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
+			snapshots[spells.immolationAura6.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
 		else
 			snapshots[spells.immolationAura.id].buff:SetTickData(false, 0, 0)
 			snapshots[spells.immolationAura1.id].buff:SetTickData(false, 0, 0)

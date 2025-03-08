@@ -15,6 +15,7 @@ TRB.Classes.Warrior = TRB.Classes.Warrior or {}
 ---@field public massacre TRB.Classes.SpellBase
 ---@field public bloodletting TRB.Classes.SpellBase
 ---@field public stormOfSwords TRB.Classes.SpellBase
+---@field public ravager TRB.Classes.SpellBase
 ---@field public execute TRB.Classes.SpellThreshold
 ---@field public executeMinimum TRB.Classes.SpellThreshold
 ---@field public executeMaximum TRB.Classes.SpellThreshold
@@ -194,6 +195,15 @@ function TRB.Classes.Warrior.ArmsSpells:New()
         talentId = 386634,
         isTalent = true
     })
+    self.ravager = TRB.Classes.SpellBase:New({
+        id = 228920,
+        hasTicks = true,
+        tickRate = 2,
+        duration = 12,
+        resourcePerTick = 10,
+        energizeId = 334934,
+        isHasted = true
+    })
 
     return self
 end
@@ -345,9 +355,9 @@ function TRB.Classes.Warrior.FurySpells:New()
         tickRate = 2,
         duration = 12,
         resourcePerTick = 10,
-        energizeId = 334934
+        energizeId = 334934,
+        isHasted = true
     })
-    -- TODO: Maybe implement this
     self.bladestorm = TRB.Classes.SpellBase:New({
         id = 227847,
         hasTicks = true,

@@ -49,10 +49,11 @@ function TRB.Classes.Evoker.PreservationSpells:New()
     --TODO: Make this a proper threshold, like Shadowfiend
     self.emeraldCommunion = TRB.Classes.SpellBase:New({
         id = 370960,
-        duration = 5.0, --Hasted
+        duration = 5.0,
         resourcePerTick = 0.02,
         tickRate = 1,
-        isTalent = true
+        isTalent = true,
+        isHasted = true
     })
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 369299,

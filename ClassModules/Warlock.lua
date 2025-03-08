@@ -495,20 +495,7 @@ local function RefreshLookupData_Affliction()
 	Global_TwintopResourceBar.dots.soulRotCount = _soulRotCount or 0
 	Global_TwintopResourceBar.dots.vileTaintCount = _vileTaintCount or 0
 
-	local lookup = TRB.Data.lookup or {}
-	
-	lookup["#ua"] = spells.unstableAffliction.icon
-	lookup["#agony"] = spells.agony.icon
-	lookup["#corruption"] = spells.corruption.icon
-	lookup["#haunt"] = spells.haunt.icon
-	lookup["#vileTaint"] = spells.vileTaint.icon
-	lookup["#soulRot"] = spells.soulRot.icon
-	lookup["#phantomSingularity"] = spells.phantomSingularity.icon
-	lookup["#nightfall"] = spells.nightfall.icon
-	lookup["#tormentedCrescendo"] = spells.tormentedCrescendo.icon
-	lookup["#succulentSoul"] = spells.succulentSoul.icon
-	lookup["#malignOmen"] = spells.malignOmen.icon
-	lookup["#shadowEmbrace"] = spells.shadowEmbrace.icon
+	local lookup = TRB.Data.lookup or {}	
 	lookup["$resourceTotal"] = manaTotal
 	lookup["$manaTotal"] = manaTotal
 	lookup["$resourceMax"] = manaMax
@@ -833,6 +820,22 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.soulRot)
 		targetData:AddSpellTracking(spells.phantomSingularity)
 		targetData:AddSpellTracking(spells.shadowEmbrace)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#ua"] = spells.unstableAffliction.icon
+		lookup["#agony"] = spells.agony.icon
+		lookup["#corruption"] = spells.corruption.icon
+		lookup["#haunt"] = spells.haunt.icon
+		lookup["#vileTaint"] = spells.vileTaint.icon
+		lookup["#soulRot"] = spells.soulRot.icon
+		lookup["#phantomSingularity"] = spells.phantomSingularity.icon
+		lookup["#nightfall"] = spells.nightfall.icon
+		lookup["#tormentedCrescendo"] = spells.tormentedCrescendo.icon
+		lookup["#succulentSoul"] = spells.succulentSoul.icon
+		lookup["#malignOmen"] = spells.malignOmen.icon
+		lookup["#shadowEmbrace"] = spells.shadowEmbrace.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "affliction" then
 			talents = specCache.affliction.talents

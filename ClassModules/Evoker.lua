@@ -626,9 +626,6 @@ local function RefreshLookupData_Devastation()
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#eb"] = spells.essenceBurst.icon
-	lookup["#essenceBurst"] = spells.essenceBurst.icon
-	lookup["#meltArmor"] = spells.meltArmor.icon
 	lookup["$manaMax"] = TRB.Data.character.maxResource
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -833,26 +830,6 @@ local function RefreshLookupData_Preservation()
 	Global_TwintopResourceBar.emeraldCommunion.ticks = _ecTicks
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#eb"] = spells.essenceBurst.icon
-	lookup["#temporalBurst"] = spells.temporalBurst.icon
-	lookup["#essenceBurst"] = spells.essenceBurst.icon
-	lookup["#ec"] = spells.emeraldCommunion.icon
-	lookup["#emeraldCommunion"] = spells.emeraldCommunion.icon
-	lookup["#innervate"] = spells.innervate.icon
-	lookup["#mtt"] = spells.manaTideTotem.icon
-	lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-	lookup["#mr"] = spells.moltenRadiance.icon
-	lookup["#moltenRadiance"] = spells.moltenRadiance.icon
-	lookup["#soh"] = spells.symbolOfHope.icon
-	lookup["#symbolOfHope"] = spells.symbolOfHope.icon
-	lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
-	lookup["#bow"] = spells.blessingOfWinter.icon
-	lookup["#amp"] = spells.algariManaPotionRank1.icon
-	lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
-	lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
-	lookup["#pocc"] = spells.potionOfChilledClarity.icon
-	lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 	lookup["$manaTotal"] = manaTotal
 	lookup["$manaMax"] = manaMax
 	lookup["$mana"] = currentMana
@@ -1000,10 +977,6 @@ local function RefreshLookupData_Augmentation()
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#eb"] = spells.essenceBurst.icon
-	lookup["#essenceBurst"] = spells.essenceBurst.icon
-	lookup["#meltArmor"] = spells.meltArmor.icon
-	lookup["#temporalBurst"] = spells.temporalBurst.icon
 	lookup["$manaMax"] = TRB.Data.character.maxResource
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1617,9 +1590,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.emeraldCommunion.id then
 					if entry.type == "SPELL_PERIODIC_ENERGIZE" then
 						if not snapshots[entry.spellId].buff.isActive then
-							local duration = spells.emeraldCommunion.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)								
+							local duration = spells.emeraldCommunion.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
 							snapshots[entry.spellId].buff:InitializeCustom(duration)
-							snapshots[entry.spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
+							snapshots[entry.spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion:GetTickRate())
 						end
 						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 					end
@@ -1671,12 +1644,12 @@ local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Data.character.specId = GetSpecialization()
+	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	if TRB.Data.character.specId == 1 then
 		specCache.devastation.talents:GetTalents()
 		FillSpellData_Devastation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
 		
-		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -1687,6 +1660,13 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.devastation.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 
+		local lookup = TRB.Data.lookup or {}
+		lookup["#eb"] = spells.essenceBurst.icon
+		lookup["#essenceBurst"] = spells.essenceBurst.icon
+		lookup["#meltArmor"] = spells.meltArmor.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
 		if TRB.Data.barConstructedForSpec ~= "devastation" then
 			talents = specCache.devastation.talents
 			TRB.Data.barConstructedForSpec = "devastation"
@@ -1696,6 +1676,8 @@ local function SwitchSpec()
 		specCache.preservation.talents:GetTalents()
 		FillSpellData_Preservation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
+		
+		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -1703,6 +1685,30 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.preservation.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#eb"] = spells.essenceBurst.icon
+		lookup["#temporalBurst"] = spells.temporalBurst.icon
+		lookup["#essenceBurst"] = spells.essenceBurst.icon
+		lookup["#ec"] = spells.emeraldCommunion.icon
+		lookup["#emeraldCommunion"] = spells.emeraldCommunion.icon
+		lookup["#innervate"] = spells.innervate.icon
+		lookup["#mtt"] = spells.manaTideTotem.icon
+		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
+		lookup["#mr"] = spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
+		lookup["#soh"] = spells.symbolOfHope.icon
+		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
+		lookup["#bow"] = spells.blessingOfWinter.icon
+		lookup["#amp"] = spells.algariManaPotionRank1.icon
+		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
+		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
+		lookup["#pocc"] = spells.potionOfChilledClarity.icon
+		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "preservation" then
 			talents = specCache.devastation.talents
@@ -1714,7 +1720,6 @@ local function SwitchSpec()
 		FillSpellData_Augmentation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
 		
-		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -1724,6 +1729,14 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Augmentation
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.augmentation.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#eb"] = spells.essenceBurst.icon
+		lookup["#essenceBurst"] = spells.essenceBurst.icon
+		lookup["#meltArmor"] = spells.meltArmor.icon
+		lookup["#temporalBurst"] = spells.temporalBurst.icon
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "augmentation" then
 			talents = specCache.augmentation.talents
