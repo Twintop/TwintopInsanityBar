@@ -449,6 +449,7 @@ end
 function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 	-- Note to future Twintop: using table.insert() and not keeping track of the thresholdIds manually results
 	-- in missing thresholds from the list. Sometimes. I don't know why, but it does, so we're doing it manually.
+	---@type TRB.Classes.SpellThreshold[]
 	local thresholdSpells = {}
 	local thresholdId = 0
 	for _, v in pairs(spells) do

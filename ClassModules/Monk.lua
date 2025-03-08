@@ -1255,7 +1255,7 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					if resourceFrame.thresholds[thresholdId] == nil then
 						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
@@ -1385,7 +1385,7 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for thresholdId, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					if resourceFrame.thresholds[thresholdId] == nil then
 						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
@@ -2050,9 +2050,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
 			local threshold = ((snapshotData.attributes.resource / TRB.Data.resourceFactor) + snapshotData.casting.resourceFinal)
-			if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+			if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) <= threshold then
 				return true
-			elseif settings.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+			elseif settings.overcap.mode == "fixed" and settings.overcap.fixed <= threshold then
 				return true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then

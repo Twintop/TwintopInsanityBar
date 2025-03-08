@@ -175,7 +175,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
             self.primaryResourceTypeProperty = "cost"
         end
         
-        self._cacheKey = self.id .. "_" .. self.primaryResourceTypeMod
+        self:GetCacheKey()
     end
 
 
@@ -186,6 +186,15 @@ function TRB.Classes.SpellBase:New(spellAttributes)
     self._isFreeCurrently = false
 
     return self
+end
+
+---Gets the cache key for the spell. If the _cacheKey is not set, it will be set to the id, primaryResourceTypeProperty, and primaryResourceTypeMod.
+---@return string # Cache key
+function TRB.Classes.SpellBase:GetCacheKey()
+    if self._cacheKey == nil then
+        self._cacheKey = self.id .. "_" .. self.primaryResourceTypeProperty .. "_" .. self.primaryResourceTypeMod
+    end
+    return self._cacheKey
 end
 
 ---Fills extra spell data from various API calls. Properties to be filled include: `name`, `icon`, and `texture`.
@@ -256,9 +265,7 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
             return self._lastNonZeroPrimaryResourceValue
         end
 
-        if self._cacheKey == nil then
-            self._cacheKey = self.id .. "_" .. self.primaryResourceTypeMod
-        end
+        self:GetCacheKey()
 
         if TRB.Data.cache.values.resource[self._cacheKey] == nil then
             local spc = C_Spell.GetSpellPowerCost(self.id)
