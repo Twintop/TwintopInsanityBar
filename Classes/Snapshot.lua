@@ -51,7 +51,7 @@ TRB.Classes.Snapshot.__index = TRB.Classes.Snapshot
 ---Creates a new Snapshot object
 ---@param spell TRB.Classes.SpellBase # Spell we are snapshotting
 ---@param attributes table? # Custom attributes to be tracked
----@param simpleBuff (trbBuffSimpleMode|boolean)? # Should the buff tracking always run in simple mode?
+---@param simpleBuff trbBuffSimpleMode? # Should the buff tracking always run in simple mode?
 ---@param onlyRefreshOnRequest boolean? # Should the buff refresh only occur when explictly requested?
 ---@return TRB.Classes.Snapshot
 function TRB.Classes.Snapshot:New(spell, attributes, simpleBuff, onlyRefreshOnRequest)
@@ -104,14 +104,14 @@ TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
 ---Creates a new Snapshot object
 ---@param parent TRB.Classes.Snapshot
----@param simpleBuff (trbBuffSimpleMode|boolean)? # Should the buff tracking always run in simple mode?
+---@param simpleBuff trbBuffSimpleMode? # Should the buff tracking always run in simple mode?
 ---@param onlyRefreshOnRequest boolean? # Should the buff refresh only occur when explictly requested?
 ---@return TRB.Classes.SnapshotBuff
 function TRB.Classes.SnapshotBuff:New(parent, simpleBuff, onlyRefreshOnRequest)
 	local self = {}
 	setmetatable(self, TRB.Classes.SnapshotBuff)
 
-	if simpleBuff == true or simpleBuff == "always" then
+	if simpleBuff == "always" then
 		self.sometimesSimple = false
         self.alwaysSimple = true
 		self.currentlySimple = true
