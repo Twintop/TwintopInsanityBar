@@ -276,7 +276,7 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero, ind
 		end
 
 		if indirectCall == true then
-            self._cacheKey = TRB.Classes.SpellBase.GetCacheKey(self)
+            TRB.Classes.SpellBase.GetCacheKey(self)
         else
 		    self:GetCacheKey()
         end
