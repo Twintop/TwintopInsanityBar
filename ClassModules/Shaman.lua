@@ -89,9 +89,9 @@ local function FillSpecializationCache()
 		hasStruckTargets = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.surgeOfPower.id] = TRB.Classes.Snapshot:New(spells.surgeOfPower, nil, true)
+	specCache.elemental.snapshotData.snapshots[spells.surgeOfPower.id] = TRB.Classes.Snapshot:New(spells.surgeOfPower, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.powerOfTheMaelstrom.id] = TRB.Classes.Snapshot:New(spells.powerOfTheMaelstrom, nil, true)
+	specCache.elemental.snapshotData.snapshots[spells.powerOfTheMaelstrom.id] = TRB.Classes.Snapshot:New(spells.powerOfTheMaelstrom, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.elemental.snapshotData.snapshots[spells.icefury.id] = TRB.Classes.Snapshot:New(spells.icefury, {
 		resource = 0
@@ -1221,7 +1221,7 @@ local function CastingSpell()
 				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
 
 				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000

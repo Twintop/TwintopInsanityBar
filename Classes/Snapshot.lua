@@ -51,14 +51,14 @@ TRB.Classes.Snapshot.__index = TRB.Classes.Snapshot
 ---Creates a new Snapshot object
 ---@param spell TRB.Classes.SpellBase # Spell we are snapshotting
 ---@param attributes table? # Custom attributes to be tracked
----@param alwaysSimpleBuff boolean? # Should the buff tracking always run in simple mode?
+---@param simpleBuff (trbBuffSimpleMode|boolean)? # Should the buff tracking always run in simple mode?
 ---@param onlyRefreshOnRequest boolean? # Should the buff refresh only occur when explictly requested?
 ---@return TRB.Classes.Snapshot
-function TRB.Classes.Snapshot:New(spell, attributes, alwaysSimpleBuff, onlyRefreshOnRequest)
+function TRB.Classes.Snapshot:New(spell, attributes, simpleBuff, onlyRefreshOnRequest)
 	local self = {}
 	setmetatable(self, TRB.Classes.Snapshot)
 	self.spell = spell
-	self.buff = TRB.Classes.SnapshotBuff:New(self, alwaysSimpleBuff, onlyRefreshOnRequest)
+	self.buff = TRB.Classes.SnapshotBuff:New(self, simpleBuff, onlyRefreshOnRequest)
 	self.cooldown = TRB.Classes.SnapshotCooldown:New(self)
 	self:Reset()
 	self.attributes = attributes or {}
@@ -85,33 +85,44 @@ end
 ---@field public customPropertiesDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
 ---@field public alwaysSimple boolean?
+---@field public currentlySimple boolean? # Is the buff currently running in simple mode?
+---@field public sometimesSimple boolean? # Should the buff tracking run in simple mode sometimes? Example: Sustained Potency + Voidform + stun
 ---@field public hasTicks boolean
 ---@field private resourcePerTick number
 ---@field private tickRate number
 ---@field public ticks number
 ---@field public resource number
 ---@field public isCustom boolean
----@field protected parent TRB.Classes.Snapshot
+---@field public parent TRB.Classes.Snapshot
 ---@field private refreshRequested boolean
 ---@field private refreshEmbargo number?
 ---@field private onlyRefreshOnRequest boolean
 ---@field private lastRefreshGetTime number
+---@field public previousRemaining number
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
 ---Creates a new Snapshot object
 ---@param parent TRB.Classes.Snapshot
----@param alwaysSimpleBuff boolean? # Should the buff tracking always run in simple mode?
+---@param simpleBuff (trbBuffSimpleMode|boolean)? # Should the buff tracking always run in simple mode?
 ---@param onlyRefreshOnRequest boolean? # Should the buff refresh only occur when explictly requested?
 ---@return TRB.Classes.SnapshotBuff
-function TRB.Classes.SnapshotBuff:New(parent, alwaysSimpleBuff, onlyRefreshOnRequest)
+function TRB.Classes.SnapshotBuff:New(parent, simpleBuff, onlyRefreshOnRequest)
 	local self = {}
 	setmetatable(self, TRB.Classes.SnapshotBuff)
 
-	if alwaysSimpleBuff ~= nil then
-		self.alwaysSimple = alwaysSimpleBuff
-	else
+	if simpleBuff == true or simpleBuff == "always" then
+		self.sometimesSimple = false
+        self.alwaysSimple = true
+		self.currentlySimple = true
+	elseif simpleBuff == "sometimes" then
+		self.sometimesSimple = true
 		self.alwaysSimple = false
+		self.currentlySimple = false
+	else
+        self.sometimesSimple = false
+		self.alwaysSimple = false
+		self.currentlySimple = false
 	end
 
 	if onlyRefreshOnRequest ~= nil then
@@ -159,6 +170,7 @@ function TRB.Classes.SnapshotBuff:Reset()
 	self.isCustom = false
 	self.refreshRequested = false
 	self.lastRefreshGetTime = 0
+	self.previousRemaining = 0
 
 	if self.customPropertiesDefinitions ~= nil then
 		for _, prop in ipairs(self.customPropertiesDefinitions) do
@@ -187,8 +199,13 @@ end
 function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 	currentTime = currentTime or GetTime()
 
-	if self.lastRefreshGetTime == currentTime then
-		return self.remaining
+    if self.currentlySimple then
+        self.lastRefreshGetTime = currentTime
+        return self.previousRemaining
+    end
+
+    if self.lastRefreshGetTime == currentTime then
+        return self.remaining
 	end
 
 	if useLeeway == nil then
@@ -262,7 +279,16 @@ end
 ---@return integer? # The SpellID of the buff, if found
 local function ParseBuffData(buff, aura)
 	if aura ~= nil then
-		buff.auraInstanceId = aura.auraInstanceID
+        if (buff.sometimesSimple or buff.alwaysSimple) and (aura.expirationTime <= 0 or aura.duration <= 0) then
+            -- Make sure we have the most up-to-date remaining time before we set the buff to simple mode
+            buff:GetRemainingTime()
+            buff.currentlySimple = true
+        else
+            buff.currentlySimple = false
+        end
+        buff.previousRemaining = buff.remaining
+
+        buff.auraInstanceId = aura.auraInstanceID
 		buff.applications = aura.applications
 		buff.duration = aura.duration
 		buff.endTime = aura.expirationTime
@@ -308,7 +334,7 @@ function TRB.Classes.SnapshotBuff:RefreshWithAuraData(auraData)
 	end
 
 	ParseBuffData(self, auraData)
-	if self.alwaysSimple then
+	if self.currentlySimple then
 		self.isActive = true
 	else
 		local currentTime = GetTime()
@@ -358,7 +384,7 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 			else
 				ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
 			end
-			if not simple and not self.alwaysSimple then
+			if not simple and not self.currentlySimple then
 				self:GetRemainingTime()
 
 				if self.hasTicks then
@@ -387,7 +413,7 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 				foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
 			end
 
-			if simple or self.alwaysSimple then
+			if self.currentlySimple then
 				self.isActive = foundId == id
 			else
 				if self.endTime ~= nil and self.endTime > currentTime then
@@ -641,3 +667,9 @@ function TRB.Classes.BuffCustomProperty:New(index, dataType, name, modifier)
 	self.modifier = modifier or 1
 	return self
 end
+
+
+---@alias trbBuffSimpleMode
+---| '"always"' # Always run in simple mode
+---| '"sometimes"' # Run in simple mode sometimes
+---| '"never"' # Never run in simple mode

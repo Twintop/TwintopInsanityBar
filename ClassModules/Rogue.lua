@@ -82,7 +82,7 @@ local function FillSpecializationCache()
 		isActiveStealth = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(spells.serratedBoneSpike, nil, true)
+	specCache.assassination.snapshotData.snapshots[spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(spells.serratedBoneSpike, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.kingsbane.id] = TRB.Classes.Snapshot:New(spells.kingsbane)
 	---@type TRB.Classes.Snapshot
@@ -208,7 +208,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.trueBearing.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.trueBearing.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, true)
+	specCache.outlaw.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, "always")
 
 	specCache.outlaw.barTextVariables = {
 		icons = {},
@@ -282,21 +282,21 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(spells.shotInTheDark, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(spells.shotInTheDark, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(spells.shadowTechniques, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(spells.shadowTechniques, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.flagellation.id] = TRB.Classes.Snapshot:New(spells.flagellation)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.silentStorm.id] = TRB.Classes.Snapshot:New(spells.silentStorm, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.silentStorm.id] = TRB.Classes.Snapshot:New(spells.silentStorm, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.finalityBlackPowder.id] = TRB.Classes.Snapshot:New(spells.finalityBlackPowder, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.finalityBlackPowder.id] = TRB.Classes.Snapshot:New(spells.finalityBlackPowder, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(spells.finalityEviscerate, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(spells.finalityEviscerate, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.finalityRupture.id] = TRB.Classes.Snapshot:New(spells.finalityRupture, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.finalityRupture.id] = TRB.Classes.Snapshot:New(spells.finalityRupture, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, "always")
 
 	specCache.subtlety.barTextVariables = {
 		icons = {},

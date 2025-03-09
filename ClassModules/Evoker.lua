@@ -1055,7 +1055,7 @@ local function CastingSpell()
 				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
 
 				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000

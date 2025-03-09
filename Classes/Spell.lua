@@ -265,8 +265,9 @@ local primaryResourceCostEmbargoTimespan = 0.05
 
 ---Gets the current primary resource cost of the spell.
 ---@param dontReturnLastNonZero boolean? # If true, return 0 if not found instead of the last known value.
+---@param indirectCall boolean? # Is this call indirect?
 ---@return number # Primary resource cost of the spell.
-function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
+function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero, indirectCall)
 	local currentTime = GetTime()
 	if self.primaryResourceType ~= nil and self.primaryResourceTypeProperty ~= "custom" then
 		if (self._lastPrimaryResourceValueCheck or 0) + primaryResourceCostEmbargoTimespan > currentTime then
@@ -274,7 +275,11 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
 			return self._lastNonZeroPrimaryResourceValue
 		end
 
-		self:GetCacheKey()
+		if indirectCall == true then
+            self._cacheKey = TRB.Classes.SpellBase.GetCacheKey(self)
+        else
+		    self:GetCacheKey()
+        end
 
 		if TRB.Data.cache.values.resource[self._cacheKey] == nil then
 			local spc = C_Spell.GetSpellPowerCost(self.id)

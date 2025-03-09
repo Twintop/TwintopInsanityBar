@@ -77,7 +77,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.frenzy.id] = TRB.Classes.Snapshot:New(spells.frenzy)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.cobraSting.id] = TRB.Classes.Snapshot:New(spells.cobraSting, nil, true)
+	specCache.beastMastery.snapshotData.snapshots[spells.cobraSting.id] = TRB.Classes.Snapshot:New(spells.cobraSting, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
 	---@type TRB.Classes.Snapshot
@@ -209,7 +209,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(spells.wildfireBomb)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[spells.bombardier.id] = TRB.Classes.Snapshot:New(spells.bombardier, nil, true)
+	specCache.survival.snapshotData.snapshots[spells.bombardier.id] = TRB.Classes.Snapshot:New(spells.bombardier, nil, "always")
 	
 	specCache.survival.barTextVariables = {
 		icons = {},

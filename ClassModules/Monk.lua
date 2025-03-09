@@ -143,13 +143,13 @@ local function FillSpecializationCache()
 		spells.energizingBrew,
 		specCache.mistweaver.talents)
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification, nil, true)
+	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.mistweaver.snapshotData.snapshots[spells.sheilunsGift.id] = TRB.Classes.Snapshot:New(spells.sheilunsGift)
 	---@type TRB.Classes.Snapshot
 	specCache.mistweaver.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, true)
+	specCache.mistweaver.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, "always")
 
 	specCache.mistweaver.barTextVariables = {
 		icons = {},
@@ -205,9 +205,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentReady.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentReady, nil, true)
+	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentReady.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentReady, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, true)
+	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.flurryCharge.id] = TRB.Classes.Snapshot:New(spells.flurryCharge)
 
@@ -989,7 +989,7 @@ local function CastingSpell()
 				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
 
 				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000

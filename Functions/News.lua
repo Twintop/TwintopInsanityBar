@@ -11,11 +11,20 @@ local content = [====[
 
 ---
 
-# 11.1.0.6-release (2025-03-08)
+# 11.1.0.6-release (2025-03-09)
 ## General
 
 - (FIX) Fix a caching issue with threshold lines.
 - (UPDATE) Change overcap check logic to be inclusive of the configured value.
+
+## Priest
+### Holy
+
+- [#424 - FIX](#424) Prevent the bar color and duration of Apotheosis from being set to 0 when stunned or out of combat while talented into Sustained Potency.
+
+### Shadow
+
+- [#424 - FIX](#424) Prevent the bar color and duration of Voidform and Dark Ascension from being set to 0 when stunned or out of combat while talented into Sustained Potency.
 
 ## Warrior
 ### Arms

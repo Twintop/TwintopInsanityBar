@@ -263,7 +263,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Healer.Cannibalize
 	specCache.holy.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis)
+	specCache.holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis, nil, "sometimes")
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
 	---@type TRB.Classes.Snapshot
@@ -287,9 +287,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Healer.BlessingOfWinter
 	specCache.holy.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, true)
+	specCache.holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.answeredPrayers.id] = TRB.Classes.Snapshot:New(spells.answeredPrayers, nil, true)
+	specCache.holy.snapshotData.snapshots[spells.answeredPrayers.id] = TRB.Classes.Snapshot:New(spells.answeredPrayers, nil, "always")
 
 	-- Shadow
 	specCache.shadow.Global_TwintopResourceBar = {
@@ -345,9 +345,9 @@ local function FillSpecializationCache()
 		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform)
+	specCache.shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform, nil, "sometimes")
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.darkAscension.id] = TRB.Classes.Snapshot:New(spells.darkAscension)
+	specCache.shadow.snapshotData.snapshots[spells.darkAscension.id] = TRB.Classes.Snapshot:New(spells.darkAscension, nil, "sometimes")
 	---@type TRB.Classes.Priest.Shadowfiend
 	specCache.shadow.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Priest.Shadowfiend:New(TRB.Data.settings.priest.shadow.mindbender, specCache.shadow.talents, CalculateManaGain, spells.shadowfiend, spells.mindbender, spells.voidwraith)
 	---@type TRB.Classes.Snapshot
@@ -2258,7 +2258,7 @@ local function CastingSpell()
 				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
 
 				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -2290,7 +2290,7 @@ local function CastingSpell()
 				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
 
 				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000

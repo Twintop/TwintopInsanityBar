@@ -89,7 +89,7 @@ local function FillSpecializationCache()
 		playedstarweaverCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.moonkinForm.id] = TRB.Classes.Snapshot:New(spells.moonkinForm, nil, true)
+	specCache.balance.snapshotData.snapshots[spells.moonkinForm.id] = TRB.Classes.Snapshot:New(spells.moonkinForm, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.furyOfElune.id] = TRB.Classes.Snapshot:New(spells.furyOfElune, {
 		guid = nil
@@ -181,9 +181,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.tigersFury.id] = TRB.Classes.Snapshot:New(spells.tigersFury)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.shadowmeld.id] = TRB.Classes.Snapshot:New(spells.shadowmeld, nil, true)
+	specCache.feral.snapshotData.snapshots[spells.shadowmeld.id] = TRB.Classes.Snapshot:New(spells.shadowmeld, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.prowl.id] = TRB.Classes.Snapshot:New(spells.prowl, nil, true)
+	specCache.feral.snapshotData.snapshots[spells.prowl.id] = TRB.Classes.Snapshot:New(spells.prowl, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.suddenAmbush.id] = TRB.Classes.Snapshot:New(spells.suddenAmbush)
 	---@type TRB.Classes.Snapshot
@@ -299,7 +299,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Healer.PotionOfChilledClarity
 	specCache.restoration.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
 	---@type TRB.Classes.Snapshot
-	specCache.restoration.snapshotData.snapshots[spells.reforestation.id] = TRB.Classes.Snapshot:New(spells.reforestation, nil, true)
+	specCache.restoration.snapshotData.snapshots[spells.reforestation.id] = TRB.Classes.Snapshot:New(spells.reforestation, nil, "always")
 	---@type TRB.Classes.Healer.MoltenRadiance
 	specCache.restoration.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
@@ -2172,7 +2172,7 @@ local function CastingSpell()
 				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
 
 				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
