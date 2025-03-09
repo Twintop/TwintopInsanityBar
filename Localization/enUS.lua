@@ -2211,3 +2211,5 @@ L["Resource"] = "Resource"
 
 L["WarriorArmsBarTextVariable_ravagerTicks"] = "Number of expected ticks remaining on Ravager"
 L["WarriorArmsBarTextVariable_ravagerRage"] = "Rage from Ravager"
+L["WarriorFuryBarTextVariable_bladestormTicks"] = "Number of expected ticks remaining on Bladestorm"
+L["WarriorFuryBarTextVariable_bladestormRage"] = "Rage from Bladestorm"

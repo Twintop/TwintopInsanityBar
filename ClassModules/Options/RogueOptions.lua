@@ -106,7 +106,7 @@ local function AssassinationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[       ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[      ]  TTD: $ttd]",
+			text="#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[	   ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[	  ]  TTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -929,7 +929,7 @@ local function SubtletyLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="#shadowTechniques $shadowTechniquesCount    #rupture $ruptureCount {$ruptureTime}[ $ruptureTime]||n{$ttd}[TTD: $ttd] ",
+			text="#shadowTechniques $shadowTechniquesCount	#rupture $ruptureCount {$ruptureTime}[ $ruptureTime]||n{$ttd}[TTD: $ttd] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -1652,17 +1652,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.poisonedKnife.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.poisonedKnife.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.serratedBoneSpikeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSerratedBoneSpike"])
-	f.tooltip = L["RogueAssassinationThresholdSerratedBoneSpikeTooltip"]
-	f:SetChecked(spec.thresholds.serratedBoneSpike.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.serratedBoneSpike.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

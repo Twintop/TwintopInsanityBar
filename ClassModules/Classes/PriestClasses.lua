@@ -48,36 +48,36 @@ TRB.Classes.Priest.ShadowfiendEntry.__index = TRB.Classes.Priest.ShadowfiendEntr
 ---@return TRB.Classes.Priest.ShadowfiendEntry
 function TRB.Classes.Priest.ShadowfiendEntry:New(totemId, resourceCalculationFunction, settings, shadowfiend, mindbender, voidwraith, talents)
 ---@diagnostic disable-next-line: missing-fields
-    local self = {} --[[@as TRB.Classes.Priest.ShadowfiendEntry]]
-    self = setmetatable(self, TRB.Classes.Priest.ShadowfiendEntry)
+	local self = {} --[[@as TRB.Classes.Priest.ShadowfiendEntry]]
+	self = setmetatable(self, TRB.Classes.Priest.ShadowfiendEntry)
 
-    self.totemId = totemId
-    self.resourceCalculationFunction = resourceCalculationFunction
-    self.settings = settings
-    self.shadowfiend = shadowfiend
-    self.mindbender = mindbender
-    self.voidwraith = voidwraith
-    self.talents = talents
+	self.totemId = totemId
+	self.resourceCalculationFunction = resourceCalculationFunction
+	self.settings = settings
+	self.shadowfiend = shadowfiend
+	self.mindbender = mindbender
+	self.voidwraith = voidwraith
+	self.talents = talents
 
-    self:Reset()
+	self:Reset()
 
-    return self
+	return self
 end
 
 ---Resets the Shadowfiend snapshot to default/empty values
 function TRB.Classes.Priest.ShadowfiendEntry:Reset()
-    self.guid = nil
-    self.startTime = nil
-    self.duration = 0
-    self.remaining = 0
-    self.swingTime = nil
-    self.remainingGcds = 0
-    self.remainingSwings = 0
-    self.remainingTime = 0
-    self.resourceRaw = 0
-    self.resourceFinal = 0
-    self.spellId = nil
-    self.activeSpell = nil
+	self.guid = nil
+	self.startTime = nil
+	self.duration = 0
+	self.remaining = 0
+	self.swingTime = nil
+	self.remainingGcds = 0
+	self.remainingSwings = 0
+	self.remainingTime = 0
+	self.resourceRaw = 0
+	self.resourceFinal = 0
+	self.spellId = nil
+	self.activeSpell = nil
 end
 
 ---Activates the entry with the guid provided and updates with initial values
@@ -85,10 +85,10 @@ end
 ---@param guid string # Guid of the spawn
 ---@param currentTime number # Current timestamp
 function TRB.Classes.Priest.ShadowfiendEntry:Activate(spellId, guid, currentTime)
-    self.spellId = spellId
-    self.guid = guid
-    self.swingTime = currentTime
-    self:Update()
+	self.spellId = spellId
+	self.guid = guid
+	self.swingTime = currentTime
+	self:Update()
 end
 
 ---Gets Shadowfiend values based on current state of the spawn
@@ -99,7 +99,7 @@ end
 ---@return number # Swing speed
 function TRB.Classes.Priest.ShadowfiendEntry:GetShadowfiendValues()
 	local currentTime = GetTime()
-    local swingSpeed = 1.5 / (1 + ((TRB.Data.snapshotData.attributes.haste or 0) / 100))
+	local swingSpeed = 1.5 / (1 + ((TRB.Data.snapshotData.attributes.haste or 0) / 100))
 	local gcd = swingSpeed
 	local swingsRemaining = 0
 	local gcdsRemaining = 0
@@ -109,7 +109,7 @@ function TRB.Classes.Priest.ShadowfiendEntry:GetShadowfiendValues()
 	end
 
 	local timeToNextSwing = swingSpeed - (currentTime - self.swingTime)
-    local timeRemaining = self.startTime + self.duration - currentTime
+	local timeRemaining = self.startTime + self.duration - currentTime
 
 	if timeToNextSwing < 0 then
 		timeToNextSwing = 0
@@ -134,91 +134,91 @@ function TRB.Classes.Priest.ShadowfiendEntry:GetShadowfiendValues()
 end
 
 function TRB.Classes.Priest.ShadowfiendEntry:Update()
-    local haveTotem, name, startTime, duration, _ = GetTotemInfo(self.totemId)
+	local haveTotem, name, startTime, duration, _ = GetTotemInfo(self.totemId)
 
-    if haveTotem then
-        if name == self.shadowfiend.name then
-            self.type = "Shadowfiend"
-            self.activeSpell = self.shadowfiend
-        elseif name == self.voidwraith.name then
-            self.type = "Voidwraith"
-            self.activeSpell = self.voidwraith
-        elseif name == self.mindbender.name then
-            self.type = "Mindbender"
-            self.activeSpell = self.mindbender
-        else -- Sha Beast?
-            if self.spellId == self.shadowfiend.id then
-                self.type = "Shadowfiend"
-                self.activeSpell = self.shadowfiend
-            elseif self.mindbender ~= nil and self.spellId == self.mindbender.id then
-                self.type = "Mindbender"
-                self.activeSpell = self.mindbender
-            elseif self.voidwraith ~= nil and self.spellId == self.voidwraith.id then
-                self.type = "Voidwraith"
-                self.activeSpell = self.voidwraith
-            else
-                self:Reset()
-                return
-            end
-        end
+	if haveTotem then
+		if name == self.shadowfiend.name then
+			self.type = "Shadowfiend"
+			self.activeSpell = self.shadowfiend
+		elseif name == self.voidwraith.name then
+			self.type = "Voidwraith"
+			self.activeSpell = self.voidwraith
+		elseif name == self.mindbender.name then
+			self.type = "Mindbender"
+			self.activeSpell = self.mindbender
+		else -- Sha Beast?
+			if self.spellId == self.shadowfiend.id then
+				self.type = "Shadowfiend"
+				self.activeSpell = self.shadowfiend
+			elseif self.mindbender ~= nil and self.spellId == self.mindbender.id then
+				self.type = "Mindbender"
+				self.activeSpell = self.mindbender
+			elseif self.voidwraith ~= nil and self.spellId == self.voidwraith.id then
+				self.type = "Voidwraith"
+				self.activeSpell = self.voidwraith
+			else
+				self:Reset()
+				return
+			end
+		end
 
-        if TRB.Data.character.specId == 1 and self.type == "Voidwraith" and self.mindbender ~= nil and self.talents:IsTalentActive(self.mindbender) then
-            self.type = "Voidbender"
-        end
-    else
-        if self.guid ~= nil then
-            self:Reset()
-        end
-        return
-    end
+		if TRB.Data.character.specId == 1 and self.type == "Voidwraith" and self.mindbender ~= nil and self.talents:IsTalentActive(self.mindbender) then
+			self.type = "Voidbender"
+		end
+	else
+		if self.guid ~= nil then
+			self:Reset()
+		end
+		return
+	end
 
 	local currentTime = GetTime()
 
-    self.startTime = startTime
-    self.duration = duration
-    self.remaining = currentTime - startTime + duration
+	self.startTime = startTime
+	self.duration = duration
+	self.remaining = currentTime - startTime + duration
 
-    local timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = self:GetShadowfiendValues()
-    self.remainingTime = timeRemaining
-    self.remainingSwings = swingsRemaining
-    self.remainingGcds = gcdsRemaining
+	local timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = self:GetShadowfiendValues()
+	self.remainingTime = timeRemaining
+	self.remainingSwings = swingsRemaining
+	self.remainingGcds = gcdsRemaining
 
-    local countValue = 0
+	local countValue = 0
 
-    if self.settings.mode == "swing" then
-        if self.remainingSwings > self.settings.swingsMax then
-            countValue = self.settings.swingsMax
-        else
-            countValue = self.remainingSwings
-        end
-    elseif self.settings.mode == "time" then
-        if self.remainingTime > self.settings.timeMax then
-            countValue = math.ceil((self.settings.timeMax - timeToNextSwing) / swingSpeed)
-        else
-            countValue = math.ceil((self.remainingTime - timeToNextSwing) / swingSpeed)
-        end
-    else --assume GCD
-        if self.remainingGcds > self.settings.gcdsMax then
-            countValue = self.settings.gcdsMax
-        else
-            countValue = self.remainingGcds
-        end
-    end
+	if self.settings.mode == "swing" then
+		if self.remainingSwings > self.settings.swingsMax then
+			countValue = self.settings.swingsMax
+		else
+			countValue = self.remainingSwings
+		end
+	elseif self.settings.mode == "time" then
+		if self.remainingTime > self.settings.timeMax then
+			countValue = math.ceil((self.settings.timeMax - timeToNextSwing) / swingSpeed)
+		else
+			countValue = math.ceil((self.remainingTime - timeToNextSwing) / swingSpeed)
+		end
+	else --assume GCD
+		if self.remainingGcds > self.settings.gcdsMax then
+			countValue = self.settings.gcdsMax
+		else
+			countValue = self.remainingGcds
+		end
+	end
 
-    if TRB.Data.character.specId == 1 then
-        if self.type == "Voidbender" then
-            self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercentMindbender * TRB.Data.character.maxResource
-        else
-            self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercent * TRB.Data.character.maxResource
-        end
-        self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw, false)
-    elseif TRB.Data.character.specId == 2 then
-        self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercent * TRB.Data.character.maxResource
-        self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw, false)
-    elseif TRB.Data.character.specId == 3 then
-        self.resourceRaw = countValue * self.activeSpell.resource
-        self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw)
-    end
+	if TRB.Data.character.specId == 1 then
+		if self.type == "Voidbender" then
+			self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercentMindbender * TRB.Data.character.maxResource
+		else
+			self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercent * TRB.Data.character.maxResource
+		end
+		self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw, false)
+	elseif TRB.Data.character.specId == 2 then
+		self.resourceRaw = countValue * self.activeSpell.attributes.resourcePercent * TRB.Data.character.maxResource
+		self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw, false)
+	elseif TRB.Data.character.specId == 3 then
+		self.resourceRaw = countValue * self.activeSpell.resource
+		self.resourceFinal = self.resourceCalculationFunction(self.resourceRaw)
+	end
 end
 
 
@@ -248,93 +248,93 @@ TRB.Classes.Priest.Shadowfiend.__index = TRB.Classes.Priest.Shadowfiend
 ---@return TRB.Classes.Priest.Shadowfiend
 function TRB.Classes.Priest.Shadowfiend:New(settings, talents, resourceCalculationFunction, shadowfiend, mindbender, voidwraith)
 ---@diagnostic disable-next-line: missing-fields
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
-    self = setmetatable(snapshot:New(shadowfiend), {__index = TRB.Classes.Priest.Shadowfiend})
+	---@type TRB.Classes.Snapshot
+	local snapshot = TRB.Classes.Snapshot
+	self = setmetatable(snapshot:New(shadowfiend), {__index = TRB.Classes.Priest.Shadowfiend})
 
-    self.settings = settings
-    self.resourceCalculationFunction = resourceCalculationFunction
-    self.talents = talents
-    self.shadowfiend = shadowfiend
-    self.mindbender = mindbender
-    self.voidwraith = voidwraith
-    self.spawns = {}
-    self.remainingGcds = 0
-    self.remainingSwings = 0
-    self.remainingTime = 0
-    
-    for x = 1, 5 do
-        self.spawns[x] = TRB.Classes.Priest.ShadowfiendEntry:New(x, resourceCalculationFunction, settings, shadowfiend, mindbender, voidwraith, talents)
-    end
+	self.settings = settings
+	self.resourceCalculationFunction = resourceCalculationFunction
+	self.talents = talents
+	self.shadowfiend = shadowfiend
+	self.mindbender = mindbender
+	self.voidwraith = voidwraith
+	self.spawns = {}
+	self.remainingGcds = 0
+	self.remainingSwings = 0
+	self.remainingTime = 0
+	
+	for x = 1, 5 do
+		self.spawns[x] = TRB.Classes.Priest.ShadowfiendEntry:New(x, resourceCalculationFunction, settings, shadowfiend, mindbender, voidwraith, talents)
+	end
 
-    self.resourceRaw = 0
-    self.resourceFinal = 0
+	self.resourceRaw = 0
+	self.resourceFinal = 0
 
-    return self
+	return self
 end
 
 function TRB.Classes.Priest.Shadowfiend:LogSwingTime(guid, currentTime)
-    for x = 1, #self.spawns do
-        if self.spawns[x].guid == guid then
-            self.spawns[x].swingTime = currentTime
-            return
-        end
-    end
+	for x = 1, #self.spawns do
+		if self.spawns[x].guid == guid then
+			self.spawns[x].swingTime = currentTime
+			return
+		end
+	end
 end
 
 ---Updates all values of all Shadowfiend spawns
 function TRB.Classes.Priest.Shadowfiend:Update()
-    if self.settings.enabled then
-        local resourceRaw = 0
-        local resourceFinal = 0
-        local remainingSwings = 0
-        local remainingGcds = 0
-        local remainingTime = 0
-        
-        for x = 1, #self.spawns do
-            if self.spawns[x].guid ~= nil then -- Only update if we had a spawn tracked
-                self.spawns[x]:Update()
-                if self.spawns[x].guid ~= nil then -- Only update max values if we still have a spawn after update
-                    resourceRaw = resourceRaw + self.spawns[x].resourceRaw
-                    resourceFinal = resourceFinal + self.spawns[x].resourceFinal
-                    remainingSwings = math.max(remainingSwings, self.spawns[x].remainingSwings)
-                    remainingGcds = math.max(remainingGcds, self.spawns[x].remainingGcds)
-                    remainingTime = math.max(remainingTime, self.spawns[x].remainingTime)
-                end
-            end
-        end
+	if self.settings.enabled then
+		local resourceRaw = 0
+		local resourceFinal = 0
+		local remainingSwings = 0
+		local remainingGcds = 0
+		local remainingTime = 0
+		
+		for x = 1, #self.spawns do
+			if self.spawns[x].guid ~= nil then -- Only update if we had a spawn tracked
+				self.spawns[x]:Update()
+				if self.spawns[x].guid ~= nil then -- Only update max values if we still have a spawn after update
+					resourceRaw = resourceRaw + self.spawns[x].resourceRaw
+					resourceFinal = resourceFinal + self.spawns[x].resourceFinal
+					remainingSwings = math.max(remainingSwings, self.spawns[x].remainingSwings)
+					remainingGcds = math.max(remainingGcds, self.spawns[x].remainingGcds)
+					remainingTime = math.max(remainingTime, self.spawns[x].remainingTime)
+				end
+			end
+		end
 
-        self.resourceRaw = resourceRaw
-        self.resourceFinal = resourceFinal
-        self.remainingSwings = remainingSwings
-        self.remainingGcds = remainingGcds
-        self.remainingTime = remainingTime
+		self.resourceRaw = resourceRaw
+		self.resourceFinal = resourceFinal
+		self.remainingSwings = remainingSwings
+		self.remainingGcds = remainingGcds
+		self.remainingTime = remainingTime
 
-        self.cooldown:Refresh(true)
-    end
+		self.cooldown:Refresh(true)
+	end
 end
 
 ---Is there currently a Shadowfiend, Mindbender, or Voidwraith spawned?
 ---@return boolean
 function TRB.Classes.Priest.Shadowfiend:IsAnyActive()
-    for x = 1, #self.spawns do
-        if self.spawns[x].guid ~= nil then
-            return true
-        end
-    end
-    return false
+	for x = 1, #self.spawns do
+		if self.spawns[x].guid ~= nil then
+			return true
+		end
+	end
+	return false
 end
 
 ---Gets a count of the currently active spawns
 ---@return integer # Count of currently active spawns
 function TRB.Classes.Priest.Shadowfiend:TotalActive()
-    local count = 0
-    for x = 1, #self.spawns do
-        if self.spawns[x].guid ~= nil then
-            count = count + 1
-        end
-    end
-    return count
+	local count = 0
+	for x = 1, #self.spawns do
+		if self.spawns[x].guid ~= nil then
+			count = count + 1
+		end
+	end
+	return count
 end
 
 ---Gets the theoretical maximum values for the talented spawn type
@@ -344,33 +344,33 @@ end
 ---@return number # Time until next melee swing
 ---@return number # Swing speed
 function TRB.Classes.Priest.Shadowfiend:GetMaximumValues()
-    local spell = nil
+	local spell = nil
 
-    if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3 then
-        if self.talents:IsTalentActive(self.voidwraith) then
-            spell = self.voidwraith
-        elseif self.talents:IsTalentActive(self.mindbender) then
-            spell = self.mindbender
-        else
-            spell = self.shadowfiend
-        end
-    elseif TRB.Data.character.specId == 2 then
-        if self.talents:IsTalentActive(self.shadowfiend) then
-            spell = self.shadowfiend
-        end
-    end
-    
-    if spell == nil then
-        return 0, 0, 0, 0, 0
-    end
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3 then
+		if self.talents:IsTalentActive(self.voidwraith) then
+			spell = self.voidwraith
+		elseif self.talents:IsTalentActive(self.mindbender) then
+			spell = self.mindbender
+		else
+			spell = self.shadowfiend
+		end
+	elseif TRB.Data.character.specId == 2 then
+		if self.talents:IsTalentActive(self.shadowfiend) then
+			spell = self.shadowfiend
+		end
+	end
+	
+	if spell == nil then
+		return 0, 0, 0, 0, 0
+	end
 
 ---@diagnostic disable-next-line: missing-fields
-    return TRB.Classes.Priest.ShadowfiendEntry.GetShadowfiendValues({
-        swingTime = GetTime(),
-        remaining = spell.duration,
-        duration = spell.duration,
-        startTime = GetTime()
-    })
+	return TRB.Classes.Priest.ShadowfiendEntry.GetShadowfiendValues({
+		swingTime = GetTime(),
+		remaining = spell.duration,
+		duration = spell.duration,
+		startTime = GetTime()
+	})
 end
 
 
@@ -385,25 +385,25 @@ TRB.Classes.Priest.HolyWordSpell.__index = TRB.Classes.Priest.HolyWordSpell
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
 ---@return TRB.Classes.Priest.HolyWordSpell
 function TRB.Classes.Priest.HolyWordSpell:New(spellAttributes)
-    ---@type TRB.Classes.SpellBase
-    local spellBase = TRB.Classes.SpellBase
-    self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.Priest.HolyWordSpell})
+	---@type TRB.Classes.SpellBase
+	local spellBase = TRB.Classes.SpellBase
+	self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.Priest.HolyWordSpell})
 
-    table.insert(self.classTypes, "TRB.Classes.Priest.HolyWordSpell")
-    
-    self.holyWordModifier = 1
-    self.holyWordReduction = 0
+	table.insert(self.classTypes, "TRB.Classes.Priest.HolyWordSpell")
+	
+	self.holyWordModifier = 1
+	self.holyWordReduction = 0
 
-    for key, value in pairs(spellAttributes) do
-        if  (key == "holyWordReduction" and type(value) == "number") or
-            (key == "holyWordModifier"  and type(value) == "number") or
-            (key == "holyWordKey") then
-            self[key] = value
-            self.attributes[key] = nil
-        end
-    end
+	for key, value in pairs(spellAttributes) do
+		if  (key == "holyWordReduction" and type(value) == "number") or
+			(key == "holyWordModifier"  and type(value) == "number") or
+			(key == "holyWordKey") then
+			self[key] = value
+			self.attributes[key] = nil
+		end
+	end
 
-    return self
+	return self
 end
 
 
@@ -416,54 +416,54 @@ TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
 function TRB.Classes.Priest.HealerSpells:New()
-    ---@type TRB.Classes.Healer.HealerSpells
-    local base = TRB.Classes.Healer.HealerSpells
-    self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
+	---@type TRB.Classes.Healer.HealerSpells
+	local base = TRB.Classes.Healer.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
 
-    -- Priest Class Baseline Abilities
-    self.shadowWordPain = TRB.Classes.SpellBase:New({
-        id = 589,
-        baseDuration = 16,
-        pandemic = true,
-        isTalent = false,
-        baseline = true
-    })
+	-- Priest Class Baseline Abilities
+	self.shadowWordPain = TRB.Classes.SpellBase:New({
+		id = 589,
+		baseDuration = 16,
+		pandemic = true,
+		isTalent = false,
+		baseline = true
+	})
 
-    -- Priest Talent Abilities
-    self.shadowfiend = TRB.Classes.SpellThreshold:New({
-        id = 34433,
-        iconName = "spell_shadow_shadowfiend",
-        energizeId = 343727,
-        settingKey = "shadowfiend",
-        primaryResourceType = Enum.PowerType.Mana,
-        isTalent = true,
-        baseline = false,
-        resourcePercent = 0.005,
-        duration = 15,
-        hasCooldown = true
-    })
-    self.surgeOfLight = TRB.Classes.SpellBase:New({
-        id = 114255,
-        duration = 20,
-        isTalent = true
-    })
+	-- Priest Talent Abilities
+	self.shadowfiend = TRB.Classes.SpellThreshold:New({
+		id = 34433,
+		iconName = "spell_shadow_shadowfiend",
+		energizeId = 343727,
+		settingKey = "shadowfiend",
+		primaryResourceType = Enum.PowerType.Mana,
+		isTalent = true,
+		baseline = false,
+		resourcePercent = 0.005,
+		duration = 15,
+		hasCooldown = true
+	})
+	self.surgeOfLight = TRB.Classes.SpellBase:New({
+		id = 114255,
+		duration = 20,
+		isTalent = true
+	})
 
-    -- Racials
-    self.cannibalize = TRB.Classes.SpellThreshold:New({
-        id = 20577,
-        buffId = 20578,
-        baseline = true,
-        resourcePerTick = 0.07,
-        duration = 10,
-        hasTicks = true,
-        tickRate = 2,
-        settingKey = "cannibalize",
-        primaryResourceType = Enum.PowerType.Mana,
-        isSnowflake = true,
-        hasCooldown = true
-    })
+	-- Racials
+	self.cannibalize = TRB.Classes.SpellThreshold:New({
+		id = 20577,
+		buffId = 20578,
+		baseline = true,
+		resourcePerTick = 0.07,
+		duration = 10,
+		hasTicks = true,
+		tickRate = 2,
+		settingKey = "cannibalize",
+		primaryResourceType = Enum.PowerType.Mana,
+		isSnowflake = true,
+		hasCooldown = true
+	})
 
-    return self
+	return self
 end
 
 
@@ -481,80 +481,80 @@ TRB.Classes.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Pr
 TRB.Classes.Priest.DisciplineSpells.__index = TRB.Classes.Priest.DisciplineSpells
 
 function TRB.Classes.Priest.DisciplineSpells:New()
-    ---@type TRB.Classes.Priest.HealerSpells
-    local base = TRB.Classes.Priest.HealerSpells
-    self = setmetatable(base:New(), TRB.Classes.Priest.DisciplineSpells) --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	---@type TRB.Classes.Priest.HealerSpells
+	local base = TRB.Classes.Priest.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Priest.DisciplineSpells) --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
-    -- Priest Class Baseline Abilities
-    self.shadowfiend.baseline = true
-    self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
-    
-    -- Discipline Baseline Abilities
+	-- Priest Class Baseline Abilities
+	self.shadowfiend.baseline = true
+	self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
+	
+	-- Discipline Baseline Abilities
 
-    -- Priest Talent Abilities
+	-- Priest Talent Abilities
 
-    -- Discipline Talent Abilities
-    self.atonement = TRB.Classes.SpellBase:New({
-        id = 194384,
-        isTalent = true,
-        isBuff = true,
-        duration = 15
-    })
-    self.evangelism = TRB.Classes.SpellBase:New({
-        id = 472433,
-        atonementMod = 6
-    })
-    self.powerWordRadiance = TRB.Classes.SpellBase:New({
-        id = 194509,
-        isTalent = true,
-        hasCharges = true
-    })
-    self.lightsPromise = TRB.Classes.SpellBase:New({
-        id = 322115,
-        isTalent = true
-    })
-    self.shadowCovenant = TRB.Classes.SpellBase:New({
-        id = 322105,
-        talentId = 314867,
-        isTalent = true
-    })
-    self.mindbender = TRB.Classes.SpellThreshold:New({
-        id = 123040,
-        iconName = "spell_shadow_soulleech_3",
-        energizeId = 123051,
-        settingKey = "mindbender",
-        primaryResourceType = Enum.PowerType.Mana,
-        isTalent = true,
-        duration = 12,
-        resourcePercent = 0.002,
-        hasCooldown = true
-    })
+	-- Discipline Talent Abilities
+	self.atonement = TRB.Classes.SpellBase:New({
+		id = 194384,
+		isTalent = true,
+		isBuff = true,
+		duration = 15
+	})
+	self.evangelism = TRB.Classes.SpellBase:New({
+		id = 472433,
+		atonementMod = 6
+	})
+	self.powerWordRadiance = TRB.Classes.SpellBase:New({
+		id = 194509,
+		isTalent = true,
+		hasCharges = true
+	})
+	self.lightsPromise = TRB.Classes.SpellBase:New({
+		id = 322115,
+		isTalent = true
+	})
+	self.shadowCovenant = TRB.Classes.SpellBase:New({
+		id = 322105,
+		talentId = 314867,
+		isTalent = true
+	})
+	self.mindbender = TRB.Classes.SpellThreshold:New({
+		id = 123040,
+		iconName = "spell_shadow_soulleech_3",
+		energizeId = 123051,
+		settingKey = "mindbender",
+		primaryResourceType = Enum.PowerType.Mana,
+		isTalent = true,
+		duration = 12,
+		resourcePercent = 0.002,
+		hasCooldown = true
+	})
 
-    -- Voidweaver
-    self.entropicRift = TRB.Classes.SpellBase:New({
-        id = 450193,
-        talentId = 447444,
-        isTalent = true,
-        duration = 8
-    })
-    self.depthOfShadows = TRB.Classes.SpellBase:New({
-        id = 451308,
-        isTalent = true
-    })
-    self.voidwraith = TRB.Classes.SpellThreshold:New({
-        id = 451235,
-        talentId = 451234,
-        settingKey = "voidwraith",
-        energizeId = 262485,
-        primaryResourceType = Enum.PowerType.Mana,
-        isTalent = true,
-        duration = 15,
-        resourcePercent = 0.005,
-        resourcePercentMindbender = 0.002,
-        hasCooldown = true
-    })
-    
-    return self
+	-- Voidweaver
+	self.entropicRift = TRB.Classes.SpellBase:New({
+		id = 450193,
+		talentId = 447444,
+		isTalent = true,
+		duration = 8
+	})
+	self.depthOfShadows = TRB.Classes.SpellBase:New({
+		id = 451308,
+		isTalent = true
+	})
+	self.voidwraith = TRB.Classes.SpellThreshold:New({
+		id = 451235,
+		talentId = 451234,
+		settingKey = "voidwraith",
+		energizeId = 262485,
+		primaryResourceType = Enum.PowerType.Mana,
+		isTalent = true,
+		duration = 15,
+		resourcePercent = 0.005,
+		resourcePercentMindbender = 0.002,
+		hasCooldown = true
+	})
+	
+	return self
 end
 
 
@@ -581,136 +581,136 @@ TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.H
 TRB.Classes.Priest.HolySpells.__index = TRB.Classes.Priest.HolySpells
 
 function TRB.Classes.Priest.HolySpells:New()
-    ---@type TRB.Classes.Priest.HealerSpells
-    local base = TRB.Classes.Priest.HealerSpells
-    self = setmetatable(base:New(), TRB.Classes.Priest.HolySpells) --[[@as TRB.Classes.Priest.HolySpells]]
+	---@type TRB.Classes.Priest.HealerSpells
+	local base = TRB.Classes.Priest.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Priest.HolySpells) --[[@as TRB.Classes.Priest.HolySpells]]
 
-    -- Priest Class Baseline Abilities
-    self.flashHeal = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 2061,
-        holyWordKey = "holyWordSerenity",
-        holyWordReduction = 6,
-        isTalent = false,
-        baseline = true
-    })
-    self.smite = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 585,
-        holyWordKey = "holyWordChastise",
-        holyWordReduction = 4,
-        isTalent = false,
-        baseline = true
-    })
+	-- Priest Class Baseline Abilities
+	self.flashHeal = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 2061,
+		holyWordKey = "holyWordSerenity",
+		holyWordReduction = 6,
+		isTalent = false,
+		baseline = true
+	})
+	self.smite = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 585,
+		holyWordKey = "holyWordChastise",
+		holyWordReduction = 4,
+		isTalent = false,
+		baseline = true
+	})
 
-    -- Holy Baseline Abilities
-    self.heal = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 2060,
-        holyWordKey = "holyWordSerenity",
-        holyWordReduction = 6,
-        isTalent = false,
-        baseline = true
-    })
+	-- Holy Baseline Abilities
+	self.heal = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 2060,
+		holyWordKey = "holyWordSerenity",
+		holyWordReduction = 6,
+		isTalent = false,
+		baseline = true
+	})
 
-    -- Holy Talent Abilities
-    self.holyWordSerenity = TRB.Classes.SpellBase:New({
-        id = 2050,
-        duration = 60,
-        hasCharges = true
-    })
-    self.prayerOfHealing = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 596,
-        holyWordKey = "holyWordSanctify",
-        holyWordReduction = 6,
-        isTalent = true
-    })
-    self.holyWordChastise = TRB.Classes.SpellBase:New({
-        id = 88625,
-        duration = 60,
-        isTalent = true
-    })
-    self.holyWordSanctify = TRB.Classes.SpellBase:New({
-        id = 34861,
-        duration = 60,
-        isTalent = true,
-        hasCharges = true
-    })
-    self.holyFire = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 14914,
-        holyWordKey = "holyWordChastise",
-        holyWordReduction = 2, -- Per rank of Voice of Harmony
-        isTalent = true
-    })
-    self.symbolOfHope = TRB.Classes.SpellThreshold:New({
-        id = 64901,
-        duration = 4.0, --Hasted
-        resourcePercent = 0.02,
-        settingKey = "symbolOfHope",
-        primaryResourceType = Enum.PowerType.Mana,
-        ticks = 4,
-        tickId = 265144,
-        isTalent = true,
-        hasCooldown = true
-    })
-    self.lightOfTheNaaru = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 196985,
-        holyWordModifier = 0.1, -- Per rank
-        isTalent = true
-    })
-    self.voiceOfHarmony = TRB.Classes.SpellBase:New({
-        id = 390994,
-        isTalent = true
-    })
-    self.apotheosis = TRB.Classes.Priest.HolyWordSpell:New({
-        id = 200183,
-        holyWordModifier = 4, -- 300% more
-        duration = 20,
-        isTalent = true
-    })
-    self.resonantWords = TRB.Classes.SpellBase:New({
-        id = 372313,
-        talentId = 372309,
-        isTalent = true
-    })
-    self.lightweaver = TRB.Classes.SpellBase:New({
-        id = 390993,
-        talentId = 390992,
-        isTalent = true
-    })
-    self.miracleWorker = TRB.Classes.SpellBase:New({
-        id = 235587,
-        isTalent = true
-    })
-    self.lightwell = TRB.Classes.SpellBase:New({
-        id = 372835,
-        isTalent = true
-    })
-    self.answeredPrayers = TRB.Classes.SpellBase:New({
-        id = 394289,
-        talentId = 391387,
-        isTalent = true,
-        maxStackRank = {
-            [0] = 0,
-            [1] = 100,
-            [2] = 50
-        }
-    })
+	-- Holy Talent Abilities
+	self.holyWordSerenity = TRB.Classes.SpellBase:New({
+		id = 2050,
+		duration = 60,
+		hasCharges = true
+	})
+	self.prayerOfHealing = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 596,
+		holyWordKey = "holyWordSanctify",
+		holyWordReduction = 6,
+		isTalent = true
+	})
+	self.holyWordChastise = TRB.Classes.SpellBase:New({
+		id = 88625,
+		duration = 60,
+		isTalent = true
+	})
+	self.holyWordSanctify = TRB.Classes.SpellBase:New({
+		id = 34861,
+		duration = 60,
+		isTalent = true,
+		hasCharges = true
+	})
+	self.holyFire = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 14914,
+		holyWordKey = "holyWordChastise",
+		holyWordReduction = 2, -- Per rank of Voice of Harmony
+		isTalent = true
+	})
+	self.symbolOfHope = TRB.Classes.SpellThreshold:New({
+		id = 64901,
+		duration = 4.0, --Hasted
+		resourcePercent = 0.02,
+		settingKey = "symbolOfHope",
+		primaryResourceType = Enum.PowerType.Mana,
+		ticks = 4,
+		tickId = 265144,
+		isTalent = true,
+		hasCooldown = true
+	})
+	self.lightOfTheNaaru = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 196985,
+		holyWordModifier = 0.1, -- Per rank
+		isTalent = true
+	})
+	self.voiceOfHarmony = TRB.Classes.SpellBase:New({
+		id = 390994,
+		isTalent = true
+	})
+	self.apotheosis = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 200183,
+		holyWordModifier = 4, -- 300% more
+		duration = 20,
+		isTalent = true
+	})
+	self.resonantWords = TRB.Classes.SpellBase:New({
+		id = 372313,
+		talentId = 372309,
+		isTalent = true
+	})
+	self.lightweaver = TRB.Classes.SpellBase:New({
+		id = 390993,
+		talentId = 390992,
+		isTalent = true
+	})
+	self.miracleWorker = TRB.Classes.SpellBase:New({
+		id = 235587,
+		isTalent = true
+	})
+	self.lightwell = TRB.Classes.SpellBase:New({
+		id = 372835,
+		isTalent = true
+	})
+	self.answeredPrayers = TRB.Classes.SpellBase:New({
+		id = 394289,
+		talentId = 391387,
+		isTalent = true,
+		maxStackRank = {
+			[0] = 0,
+			[1] = 100,
+			[2] = 50
+		}
+	})
 
-    -- Set Bonuses
-    self.sacredReverence = TRB.Classes.SpellBase:New({ -- T31 4P
-        id = 423510,
-    })
+	-- Set Bonuses
+	self.sacredReverence = TRB.Classes.SpellBase:New({ -- T31 4P
+		id = 423510,
+	})
 
-    self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
+	self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
 
-    -- Archon
-    self.resonantEnergy = TRB.Classes.SpellBase:New({
-        id = 453845,
-        debuffId = 453850,
-        isTalent = true,
-        duration = 8,
-        maxStacks = 5
-    })
+	-- Archon
+	self.resonantEnergy = TRB.Classes.SpellBase:New({
+		id = 453845,
+		debuffId = 453850,
+		isTalent = true,
+		duration = 8,
+		maxStacks = 5
+	})
 
-    return self
+	return self
 end
 
 
@@ -765,291 +765,291 @@ TRB.Classes.Priest.ShadowSpells = setmetatable({}, {__index = TRB.Classes.Specia
 TRB.Classes.Priest.ShadowSpells.__index = TRB.Classes.Priest.ShadowSpells
 
 function TRB.Classes.Priest.ShadowSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Priest.ShadowSpells) --[[@as TRB.Classes.Priest.ShadowSpells]]
+	---@type TRB.Classes.SpecializationSpellsBase
+	local base = TRB.Classes.SpecializationSpellsBase
+	self = setmetatable(base:New(), TRB.Classes.Priest.ShadowSpells) --[[@as TRB.Classes.Priest.ShadowSpells]]
 
-    -- Priest Class Baseline Abilities
-    self.mindBlast = TRB.Classes.SpellBase:New({
-        id = 8092,
-        resource = 6,
-        isTalent = false,
-        baseline = true,
-        hasCharges = true
-    })
-    self.shadowWordPain = TRB.Classes.SpellBase:New({
-        id = 589,
-        resource = 3,
-        baseDuration = 16,
-        pandemic = true,
-        isTalent = false,
-        baseline = true,
-        miseryPandemic = 21,
-        miseryPandemicTime = 21 * 0.3,
-    })
+	-- Priest Class Baseline Abilities
+	self.mindBlast = TRB.Classes.SpellBase:New({
+		id = 8092,
+		resource = 6,
+		isTalent = false,
+		baseline = true,
+		hasCharges = true
+	})
+	self.shadowWordPain = TRB.Classes.SpellBase:New({
+		id = 589,
+		resource = 3,
+		baseDuration = 16,
+		pandemic = true,
+		isTalent = false,
+		baseline = true,
+		miseryPandemic = 21,
+		miseryPandemicTime = 21 * 0.3,
+	})
 
-    -- Shadow Baseline Abilities
-    self.mindFlay = TRB.Classes.SpellBase:New({
-        id = 15407,
-        resource = 2,
-        isTalent = false,
-        baseline = true
-    })
-    self.vampiricTouch = TRB.Classes.SpellBase:New({
-        id = 34914,
-        resource = 4,
-        baseDuration = 21,
-        pandemic = true,
-        isTalent = false,
-        baseline = true
-    })
-    self.voidBolt = TRB.Classes.SpellBase:New({
-        id = 205448,
-        resource = 10,
-        isTalent = false,
-        baseline = true
-    })
+	-- Shadow Baseline Abilities
+	self.mindFlay = TRB.Classes.SpellBase:New({
+		id = 15407,
+		resource = 2,
+		isTalent = false,
+		baseline = true
+	})
+	self.vampiricTouch = TRB.Classes.SpellBase:New({
+		id = 34914,
+		resource = 4,
+		baseDuration = 21,
+		pandemic = true,
+		isTalent = false,
+		baseline = true
+	})
+	self.voidBolt = TRB.Classes.SpellBase:New({
+		id = 205448,
+		resource = 10,
+		isTalent = false,
+		baseline = true
+	})
 
 
-    -- Priest Talent Abilities			
-    self.shadowfiend = TRB.Classes.SpellBase:New({
-        id = 34433,
-        iconName = "spell_shadow_shadowfiend",
-        energizeId = 279420,
-        resource = 2,
-        isTalent = true,
-        baseline = true
-    })
-    self.massDispel = TRB.Classes.SpellBase:New({
-        id = 32375,
-        isTalent = true
-    })
-    self.twistOfFate = TRB.Classes.SpellBase:New({
-        id = 390978,
-        isTalent = true
-    })
-    self.halo = TRB.Classes.SpellBase:New({
-        id = 120644,
-        isTalent = true,
-        resource = 10
-    })
+	-- Priest Talent Abilities			
+	self.shadowfiend = TRB.Classes.SpellBase:New({
+		id = 34433,
+		iconName = "spell_shadow_shadowfiend",
+		energizeId = 279420,
+		resource = 2,
+		isTalent = true,
+		baseline = true
+	})
+	self.massDispel = TRB.Classes.SpellBase:New({
+		id = 32375,
+		isTalent = true
+	})
+	self.twistOfFate = TRB.Classes.SpellBase:New({
+		id = 390978,
+		isTalent = true
+	})
+	self.halo = TRB.Classes.SpellBase:New({
+		id = 120644,
+		isTalent = true,
+		resource = 10
+	})
 
-    -- Shadow Talent Abilities			
-    self.devouringPlague = TRB.Classes.SpellThreshold:New({
-        id = 335467,
-        primaryResourceType = Enum.PowerType.Insanity,
-        settingKey = "devouringPlague",
-        isTalent = true,
-        isSnowflake = true
-    })
-    self.devouringPlague2 = TRB.Classes.SpellThreshold:New({
-        id = 335467,
-        primaryResourceType = Enum.PowerType.Insanity,
-        primaryResourceTypeMod = 2,
-        settingKey = "devouringPlague2",
-        isTalent = true,
-        isSnowflake = true
-    })
-    self.devouringPlague3 = TRB.Classes.SpellThreshold:New({
-        id = 335467,
-        primaryResourceType = Enum.PowerType.Insanity,
-        primaryResourceTypeMod = 3,
-        settingKey = "devouringPlague3",
-        isTalent = true,
-        isSnowflake = true
-    })
-    self.shadowyApparition = TRB.Classes.SpellBase:New({
-        id = 341491,
-        isTalent = true
-    })
-    self.auspiciousSpirits = TRB.Classes.SpellBase:New({
-        id = 155271,
-        idSpawn = 341263,
-        idImpact = 413231,
-        resource = 1,
-        targetChance = function(num)
-            if num == 0 then
-                return 0
-            else
-                return 0.8*(num^(-0.8))
-            end
-        end,
-        isTalent = true
-    })
-    self.misery = TRB.Classes.SpellBase:New({
-        id = 238558,
-        isTalent = true
-    })
-    self.hallucinations = TRB.Classes.SpellBase:New({
-        id = 280752,
-        resource = 4,
-        isTalent = true
-    })
-    self.voidEruption = TRB.Classes.SpellBase:New({
-        id = 228260,
-        isTalent = true
-    })
-    self.voidform = TRB.Classes.SpellBase:New({
-        id = 194249,
-        isTalent = true
-    })
-    self.darkAscension = TRB.Classes.SpellBase:New({
-        id = 391109,
-        resource = 30,
-        isTalent = true
-    })
-    self.mindSpike = TRB.Classes.SpellBase:New({
-        id = 73510,
-        resource = 4,
-        isTalent = true
-    })
-    self.surgeOfInsanity = TRB.Classes.SpellBase:New({
-        id = 391399,
-        isTalent = true
-    })
-    self.mindFlayInsanity = TRB.Classes.SpellBase:New({
-        id = 391401,
-        buffId = 391401,
-        castId = 391403,
-        resource = 3
-    })
-    self.mindSpikeInsanity = TRB.Classes.SpellBase:New({
-        id = 407468,
-        buffId = 407468,
-        castId = 407466,
-        resource = 12
-    })
-    self.deathspeaker = TRB.Classes.SpellBase:New({
-        id = 392511,
-        talentId = 392507,
-        isTalent = true
-    })
-    self.voidTorrent = TRB.Classes.SpellBase:New({
-        id = 263165,
-        resource = 6,
-        isTalent = true
-    })
-    self.shadowCrash = TRB.Classes.SpellBase:New({
-        id = 205385,
-        resource = 6,
-        isTalent = true
-    })
-    self.voidCrash = TRB.Classes.SpellBase:New({
-        id = 457042,
-        resource = 6,
-        isTalent = true
-    })
-    self.shadowyInsight = TRB.Classes.SpellBase:New({
-        id = 375981,
-        isTalent = true
-    })
-    self.mindMelt = TRB.Classes.SpellBase:New({
-        id = 391092,
-        isTalent = true
-    })
-    self.mindbender = TRB.Classes.SpellBase:New({
-        id = 200174,
-        iconName = "spell_shadow_soulleech_3",
-        energizeId = 200010,
-        resource = 2,
-        isTalent = true
-    })
-    self.devouredDespair = TRB.Classes.SpellBase:New({ -- Idol of Y'Shaarj proc
-        id = 373317,
-        resource = 5,
-        resourcePerTick = 5,
-        tickRate = 1,
-        hasTicks = true
-    })
-    self.mindDevourer = TRB.Classes.SpellBase:New({
-        id = 373204,
-        talentId = 373202,
-        isTalent = true
-    })
-    self.idolOfCthun = TRB.Classes.SpellBase:New({
-        id = 377349,
-    })
-    self.idolOfCthun_Tendril = TRB.Classes.SpellBase:New({
-        id = 377355,
-        tickId = 193473,
-    })
-    self.idolOfCthun_Lasher = TRB.Classes.SpellBase:New({
-        id = 377357,
-        tickId = 394979,
-    })
-    self.lashOfInsanity_Tendril = TRB.Classes.SpellBase:New({
-        id = 344838,
-        resource = 1,
-        duration = 15,
-        ticks = 10,
-        tickDuration = 1.5
-    })
-    self.lashOfInsanity_Lasher = TRB.Classes.SpellBase:New({
-        id = 344838, --Doesn't actually exist / unused?
-        resource = 1,
-        duration = 15,
-        ticks = 10,
-        tickDuration = 1.5
-    })
-    self.idolOfYoggSaron = TRB.Classes.SpellBase:New({
-        id = 373276,
-        talentId = 373273,
-        isTalent = true,
-        requiredStacks = 25
-    })
-    self.thingFromBeyond = TRB.Classes.SpellBase:New({
-        id = 373277,
-        isTalent = true,
-        duration = 20
-    })
+	-- Shadow Talent Abilities			
+	self.devouringPlague = TRB.Classes.SpellThreshold:New({
+		id = 335467,
+		primaryResourceType = Enum.PowerType.Insanity,
+		settingKey = "devouringPlague",
+		isTalent = true,
+		isSnowflake = true
+	})
+	self.devouringPlague2 = TRB.Classes.SpellThreshold:New({
+		id = 335467,
+		primaryResourceType = Enum.PowerType.Insanity,
+		primaryResourceTypeMod = 2,
+		settingKey = "devouringPlague2",
+		isTalent = true,
+		isSnowflake = true
+	})
+	self.devouringPlague3 = TRB.Classes.SpellThreshold:New({
+		id = 335467,
+		primaryResourceType = Enum.PowerType.Insanity,
+		primaryResourceTypeMod = 3,
+		settingKey = "devouringPlague3",
+		isTalent = true,
+		isSnowflake = true
+	})
+	self.shadowyApparition = TRB.Classes.SpellBase:New({
+		id = 341491,
+		isTalent = true
+	})
+	self.auspiciousSpirits = TRB.Classes.SpellBase:New({
+		id = 155271,
+		idSpawn = 341263,
+		idImpact = 413231,
+		resource = 1,
+		targetChance = function(num)
+			if num == 0 then
+				return 0
+			else
+				return 0.8*(num^(-0.8))
+			end
+		end,
+		isTalent = true
+	})
+	self.misery = TRB.Classes.SpellBase:New({
+		id = 238558,
+		isTalent = true
+	})
+	self.hallucinations = TRB.Classes.SpellBase:New({
+		id = 280752,
+		resource = 4,
+		isTalent = true
+	})
+	self.voidEruption = TRB.Classes.SpellBase:New({
+		id = 228260,
+		isTalent = true
+	})
+	self.voidform = TRB.Classes.SpellBase:New({
+		id = 194249,
+		isTalent = true
+	})
+	self.darkAscension = TRB.Classes.SpellBase:New({
+		id = 391109,
+		resource = 30,
+		isTalent = true
+	})
+	self.mindSpike = TRB.Classes.SpellBase:New({
+		id = 73510,
+		resource = 4,
+		isTalent = true
+	})
+	self.surgeOfInsanity = TRB.Classes.SpellBase:New({
+		id = 391399,
+		isTalent = true
+	})
+	self.mindFlayInsanity = TRB.Classes.SpellBase:New({
+		id = 391401,
+		buffId = 391401,
+		castId = 391403,
+		resource = 3
+	})
+	self.mindSpikeInsanity = TRB.Classes.SpellBase:New({
+		id = 407468,
+		buffId = 407468,
+		castId = 407466,
+		resource = 12
+	})
+	self.deathspeaker = TRB.Classes.SpellBase:New({
+		id = 392511,
+		talentId = 392507,
+		isTalent = true
+	})
+	self.voidTorrent = TRB.Classes.SpellBase:New({
+		id = 263165,
+		resource = 6,
+		isTalent = true
+	})
+	self.shadowCrash = TRB.Classes.SpellBase:New({
+		id = 205385,
+		resource = 6,
+		isTalent = true
+	})
+	self.voidCrash = TRB.Classes.SpellBase:New({
+		id = 457042,
+		resource = 6,
+		isTalent = true
+	})
+	self.shadowyInsight = TRB.Classes.SpellBase:New({
+		id = 375981,
+		isTalent = true
+	})
+	self.mindMelt = TRB.Classes.SpellBase:New({
+		id = 391092,
+		isTalent = true
+	})
+	self.mindbender = TRB.Classes.SpellBase:New({
+		id = 200174,
+		iconName = "spell_shadow_soulleech_3",
+		energizeId = 200010,
+		resource = 2,
+		isTalent = true
+	})
+	self.devouredDespair = TRB.Classes.SpellBase:New({ -- Idol of Y'Shaarj proc
+		id = 373317,
+		resource = 5,
+		resourcePerTick = 5,
+		tickRate = 1,
+		hasTicks = true
+	})
+	self.mindDevourer = TRB.Classes.SpellBase:New({
+		id = 373204,
+		talentId = 373202,
+		isTalent = true
+	})
+	self.idolOfCthun = TRB.Classes.SpellBase:New({
+		id = 377349,
+	})
+	self.idolOfCthun_Tendril = TRB.Classes.SpellBase:New({
+		id = 377355,
+		tickId = 193473,
+	})
+	self.idolOfCthun_Lasher = TRB.Classes.SpellBase:New({
+		id = 377357,
+		tickId = 394979,
+	})
+	self.lashOfInsanity_Tendril = TRB.Classes.SpellBase:New({
+		id = 344838,
+		resource = 1,
+		duration = 15,
+		ticks = 10,
+		tickDuration = 1.5
+	})
+	self.lashOfInsanity_Lasher = TRB.Classes.SpellBase:New({
+		id = 344838, --Doesn't actually exist / unused?
+		resource = 1,
+		duration = 15,
+		ticks = 10,
+		tickDuration = 1.5
+	})
+	self.idolOfYoggSaron = TRB.Classes.SpellBase:New({
+		id = 373276,
+		talentId = 373273,
+		isTalent = true,
+		requiredStacks = 25
+	})
+	self.thingFromBeyond = TRB.Classes.SpellBase:New({
+		id = 373277,
+		isTalent = true,
+		duration = 20
+	})
 
-    -- Archon
-    self.resonantEnergy = TRB.Classes.SpellBase:New({
-        id = 453845,
-        debuffId = 453850,
-        isTalent = true,
-        duration = 8,
-        maxStacks = 5
-    })
+	-- Archon
+	self.resonantEnergy = TRB.Classes.SpellBase:New({
+		id = 453845,
+		debuffId = 453850,
+		isTalent = true,
+		duration = 8,
+		maxStacks = 5
+	})
 
-    -- Voidweaver
-    self.entropicRift = TRB.Classes.SpellBase:New({
-        id = 450193,
-        talentId = 447444,
-        isTalent = true,
-        duration = 8
-    })
-    self.voidBlast = TRB.Classes.SpellBase:New({
-        id = 450983,
-        talentId = 450405,
-        resource = 6,
-        isTalent = true,
-        hasCharges = true
-    })
-    self.voidInfusion = TRB.Classes.SpellBase:New({
-        id = 450612,
-        resourceMod = 2,
-        isTalent = true
-    })
-    self.depthOfShadows = TRB.Classes.SpellBase:New({
-        id = 451308,
-        isTalent = true
-    })
-    self.voidwraith = TRB.Classes.SpellBase:New({
-        id = 451235,
-        talentId = 451234,
-        energizeId = 262485,
-        resource = 2,
-        isTalent = true
-    })
+	-- Voidweaver
+	self.entropicRift = TRB.Classes.SpellBase:New({
+		id = 450193,
+		talentId = 447444,
+		isTalent = true,
+		duration = 8
+	})
+	self.voidBlast = TRB.Classes.SpellBase:New({
+		id = 450983,
+		talentId = 450405,
+		resource = 6,
+		isTalent = true,
+		hasCharges = true
+	})
+	self.voidInfusion = TRB.Classes.SpellBase:New({
+		id = 450612,
+		resourceMod = 2,
+		isTalent = true
+	})
+	self.depthOfShadows = TRB.Classes.SpellBase:New({
+		id = 451308,
+		isTalent = true
+	})
+	self.voidwraith = TRB.Classes.SpellBase:New({
+		id = 451235,
+		talentId = 451234,
+		energizeId = 262485,
+		resource = 2,
+		isTalent = true
+	})
 
-    -- PvP Talents
-    self.mindgames = TRB.Classes.SpellBase:New({
-        id = 375901,
-        isTalent = true,
-        resource = 10,
-        isPvp = true
-    })
+	-- PvP Talents
+	self.mindgames = TRB.Classes.SpellBase:New({
+		id = 375901,
+		isTalent = true,
+		resource = 10,
+		isPvp = true
+	})
 
-    return self
+	return self
 end

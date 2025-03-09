@@ -14,22 +14,22 @@ TRB.Classes.Evoker.DevastationSpells = setmetatable({}, {__index = TRB.Classes.S
 TRB.Classes.Evoker.DevastationSpells.__index = TRB.Classes.Evoker.DevastationSpells
 
 function TRB.Classes.Evoker.DevastationSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Evoker.DevastationSpells) --[[@as TRB.Classes.Evoker.DevastationSpells]]
+	---@type TRB.Classes.SpecializationSpellsBase
+	local base = TRB.Classes.SpecializationSpellsBase
+	self = setmetatable(base:New(), TRB.Classes.Evoker.DevastationSpells) --[[@as TRB.Classes.Evoker.DevastationSpells]]
 
-    self.essenceBurst = TRB.Classes.SpellBase:New({
-        id = 359618,
-        isBuff = true
-    })
+	self.essenceBurst = TRB.Classes.SpellBase:New({
+		id = 359618,
+		isBuff = true
+	})
 
-    -- Scalecommander
-    self.meltArmor = TRB.Classes.SpellBase:New({
-        id = 441172,
-        talentId = 441176,
-        isTalent = true
-    })
-    return self
+	-- Scalecommander
+	self.meltArmor = TRB.Classes.SpellBase:New({
+		id = 441172,
+		talentId = 441176,
+		isTalent = true
+	})
+	return self
 end
 
 
@@ -40,33 +40,33 @@ TRB.Classes.Evoker.PreservationSpells = setmetatable({}, {__index = TRB.Classes.
 TRB.Classes.Evoker.PreservationSpells.__index = TRB.Classes.Evoker.PreservationSpells
 
 function TRB.Classes.Evoker.PreservationSpells:New()
-    ---@type TRB.Classes.Healer.HealerSpells
-    local base = TRB.Classes.Healer.HealerSpells
-    self = setmetatable(base:New(), TRB.Classes.Evoker.PreservationSpells) --[[@as TRB.Classes.Evoker.PreservationSpells]]
-    -- Evoker Class Talents		
+	---@type TRB.Classes.Healer.HealerSpells
+	local base = TRB.Classes.Healer.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Evoker.PreservationSpells) --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	-- Evoker Class Talents		
 	
-    -- Preservation Spec Talents			
-    --TODO: Make this a proper threshold, like Shadowfiend
-    self.emeraldCommunion = TRB.Classes.SpellBase:New({
-        id = 370960,
-        duration = 5.0,
-        resourcePerTick = 0.02,
-        tickRate = 1,
-        isTalent = true,
-        isHasted = true
-    })
-    self.essenceBurst = TRB.Classes.SpellBase:New({
-        id = 369299,
-        isBuff = true
-    })
-    
-    -- Chronowarden
-    self.temporalBurst = TRB.Classes.SpellBase:New({
-        id = 431698,
-        isBuff = true
-    })
+	-- Preservation Spec Talents			
+	--TODO: Make this a proper threshold, like Shadowfiend
+	self.emeraldCommunion = TRB.Classes.SpellBase:New({
+		id = 370960,
+		duration = 5.0,
+		resourcePerTick = 0.02,
+		tickRate = 1,
+		isTalent = true,
+		isHasted = true
+	})
+	self.essenceBurst = TRB.Classes.SpellBase:New({
+		id = 369299,
+		isBuff = true
+	})
+	
+	-- Chronowarden
+	self.temporalBurst = TRB.Classes.SpellBase:New({
+		id = 431698,
+		isBuff = true
+	})
 
-    return self
+	return self
 end
 
 
@@ -78,26 +78,26 @@ TRB.Classes.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.
 TRB.Classes.Evoker.AugmentationSpells.__index = TRB.Classes.Evoker.AugmentationSpells
 
 function TRB.Classes.Evoker.AugmentationSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Evoker.AugmentationSpells) --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	---@type TRB.Classes.SpecializationSpellsBase
+	local base = TRB.Classes.SpecializationSpellsBase
+	self = setmetatable(base:New(), TRB.Classes.Evoker.AugmentationSpells) --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
-    self.essenceBurst = TRB.Classes.SpellBase:New({
-        id = 392268,
-        isBuff = true
-    })
-    
-    -- Chronowarden
-    self.temporalBurst = TRB.Classes.SpellBase:New({
-        id = 431698,
-        isBuff = true
-    })
+	self.essenceBurst = TRB.Classes.SpellBase:New({
+		id = 392268,
+		isBuff = true
+	})
+	
+	-- Chronowarden
+	self.temporalBurst = TRB.Classes.SpellBase:New({
+		id = 431698,
+		isBuff = true
+	})
 
-    -- Scalecommander
-    self.meltArmor = TRB.Classes.SpellBase:New({
-        id = 441172,
-        talentId = 441176,
-        isTalent = true
-    })
-    return self
+	-- Scalecommander
+	self.meltArmor = TRB.Classes.SpellBase:New({
+		id = 441172,
+		talentId = 441176,
+		isTalent = true
+	})
+	return self
 end

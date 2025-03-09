@@ -225,7 +225,7 @@ local function ConstructResourceBar(settings)
 	end
 
 	if TRB.Data.character.specId == 1 then
-    end
+	end
 	TRB.Frames.resource2ContainerFrame:Show()
 	
 	TRB.Functions.Class:CheckCharacter()
@@ -726,7 +726,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		if TRB.Data.character.specId == 1 then
 			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 			settings = TRB.Data.settings.warlock.affliction
-        end
+		end
 
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "affliction" then --Affliction					
@@ -951,7 +951,7 @@ function TRB.Functions.Class:CheckCharacter()
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "affliction"
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
-    end
+	end
 
 	if sharedSettings ~= nil then
 		if maxComboPoints ~= TRB.Data.character.maxResource2 then

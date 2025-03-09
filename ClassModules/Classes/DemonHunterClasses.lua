@@ -41,213 +41,213 @@ TRB.Classes.DemonHunter.HavocSpells = setmetatable({}, {__index = TRB.Classes.Sp
 TRB.Classes.DemonHunter.HavocSpells.__index = TRB.Classes.DemonHunter.HavocSpells
 
 function TRB.Classes.DemonHunter.HavocSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.DemonHunter.HavocSpells) --[[@as TRB.Classes.DemonHunter.HavocSpells]]
-    --Demon Hunter Class Baseline Abilities
-    self.immolationAura = TRB.Classes.SpellBase:New({
-        id = 258920,
-        resource = 20,
-        cooldown = 30,
-        isTalent = false,
-        baseline = true
-    })
-    self.immolationAura1 = TRB.Classes.SpellBase:New({
-        id = 427912,
-    })
-    self.immolationAura2 = TRB.Classes.SpellBase:New({
-        id = 427913,
-    })
-    self.immolationAura3 = TRB.Classes.SpellBase:New({
-        id = 427914,
-    })
-    self.immolationAura4 = TRB.Classes.SpellBase:New({
-        id = 427915,
-    })
-    self.immolationAura5 = TRB.Classes.SpellBase:New({
-        id = 427916,
-    })
-    self.immolationAura6 = TRB.Classes.SpellBase:New({
-        id = 427917,
-    })
-    self.metamorphosis = TRB.Classes.SpellBase:New({
-        id = 162264,
-        isTalent = false,
-        baseline = true
-    })
-    self.throwGlaive = TRB.Classes.SpellThreshold:New({
-        id = 185123,
-        primaryResourceType = Enum.PowerType.Fury,
-        settingKey = "throwGlaive",
-        hasCooldown = true,
-        hasCharges = true,
-        isTalent = false,
-        baseline = true
-    })
+	---@type TRB.Classes.SpecializationSpellsBase
+	local base = TRB.Classes.SpecializationSpellsBase
+	self = setmetatable(base:New(), TRB.Classes.DemonHunter.HavocSpells) --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	--Demon Hunter Class Baseline Abilities
+	self.immolationAura = TRB.Classes.SpellBase:New({
+		id = 258920,
+		resource = 20,
+		cooldown = 30,
+		isTalent = false,
+		baseline = true
+	})
+	self.immolationAura1 = TRB.Classes.SpellBase:New({
+		id = 427912,
+	})
+	self.immolationAura2 = TRB.Classes.SpellBase:New({
+		id = 427913,
+	})
+	self.immolationAura3 = TRB.Classes.SpellBase:New({
+		id = 427914,
+	})
+	self.immolationAura4 = TRB.Classes.SpellBase:New({
+		id = 427915,
+	})
+	self.immolationAura5 = TRB.Classes.SpellBase:New({
+		id = 427916,
+	})
+	self.immolationAura6 = TRB.Classes.SpellBase:New({
+		id = 427917,
+	})
+	self.metamorphosis = TRB.Classes.SpellBase:New({
+		id = 162264,
+		isTalent = false,
+		baseline = true
+	})
+	self.throwGlaive = TRB.Classes.SpellThreshold:New({
+		id = 185123,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "throwGlaive",
+		hasCooldown = true,
+		hasCharges = true,
+		isTalent = false,
+		baseline = true
+	})
 
-    --Havoc Baseline Abilities
-    self.bladeDance = TRB.Classes.SpellThreshold:New({
-        id = 188499,
-        primaryResourceType = Enum.PowerType.Fury,
-        cooldown = 9,
-        settingKey = "bladeDance",
-        hasCooldown = true,
-        demonForm = false,
-        isTalent = false,
-        baseline = true,
-        isSnowflake = true
-    })
-    self.chaosStrike = TRB.Classes.SpellThreshold:New({
-        id = 162794,
-        primaryResourceType = Enum.PowerType.Fury,
-        settingKey = "chaosStrike",
-        hasCooldown = false,
-        isSnowflake = true,
-        demonForm = false,
-        isTalent = false,
-        baseline = true
-    })
-    self.annihilation = TRB.Classes.SpellThreshold:New({
-        id = 201427,
-        primaryResourceType = Enum.PowerType.Fury,
-        settingKey = "annihilation",
-        hasCooldown = false,
-        demonForm = true,
-        isTalent = false,
-        baseline = true
-    })
-    self.deathSweep = TRB.Classes.SpellThreshold:New({
-        id = 210152,
-        primaryResourceType = Enum.PowerType.Fury,
-        cooldown = 9,
-        settingKey = "deathSweep",
-        hasCooldown = true,
-        demonForm = true,
-        isTalent = false,
-        baseline = true,
-        isSnowflake = true
-    })
+	--Havoc Baseline Abilities
+	self.bladeDance = TRB.Classes.SpellThreshold:New({
+		id = 188499,
+		primaryResourceType = Enum.PowerType.Fury,
+		cooldown = 9,
+		settingKey = "bladeDance",
+		hasCooldown = true,
+		demonForm = false,
+		isTalent = false,
+		baseline = true,
+		isSnowflake = true
+	})
+	self.chaosStrike = TRB.Classes.SpellThreshold:New({
+		id = 162794,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "chaosStrike",
+		hasCooldown = false,
+		isSnowflake = true,
+		demonForm = false,
+		isTalent = false,
+		baseline = true
+	})
+	self.annihilation = TRB.Classes.SpellThreshold:New({
+		id = 201427,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "annihilation",
+		hasCooldown = false,
+		demonForm = true,
+		isTalent = false,
+		baseline = true
+	})
+	self.deathSweep = TRB.Classes.SpellThreshold:New({
+		id = 210152,
+		primaryResourceType = Enum.PowerType.Fury,
+		cooldown = 9,
+		settingKey = "deathSweep",
+		hasCooldown = true,
+		demonForm = true,
+		isTalent = false,
+		baseline = true,
+		isSnowflake = true
+	})
 
-    -- Demon Hunter Talent Abilities
-    self.chaosNova = TRB.Classes.SpellThreshold:New({
-        id = 179057,
-        primaryResourceType = Enum.PowerType.Fury,
-        settingKey = "chaosNova",
-        hasCooldown = true,
-        isTalent = true
-    })
+	-- Demon Hunter Talent Abilities
+	self.chaosNova = TRB.Classes.SpellThreshold:New({
+		id = 179057,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "chaosNova",
+		hasCooldown = true,
+		isTalent = true
+	})
 
-    -- Havoc Talent Abilities
-    self.eyeBeam = TRB.Classes.SpellThreshold:New({
-        id = 198013,
-        primaryResourceType = Enum.PowerType.Fury,
-        duration = 2,
-        settingKey = "eyeBeam",
-        hasCooldown = true,
-        isTalent = true
-    })
-    self.burningHatred = TRB.Classes.SpellBase:New({
-        id = 258922,
-        talentId = 320374,
-        resourcePerTick = 4,
-        tickRate = 1,
-        hasTicks = true,
-        duration = 12,
-        isTalent = true
-    })
-    self.felfireHeart = TRB.Classes.SpellBase:New({ --TODO: figure out how this plays with Burning Hatred
-        id = 388109,
-        duration = 4, -- These don't match what's seen on the PTR, should be 2,
-        ticks = 4, --2,
-        isTalent = true
-    })
-    self.felEruption = TRB.Classes.SpellThreshold:New({
-        id = 211881,
-        primaryResourceType = Enum.PowerType.Fury,
-        cooldown = 30,
-        settingKey = "felEruption",
-        hasCooldown = true,
-        isTalent = false,
-        baseline = true,
-        isSnowflake = true
-    })
-    self.blindFury = TRB.Classes.SpellBase:New({
-        id = 203550,
-        durationModifier = 1.5,
-        tickRate = 0.1,
-        resource = 4,
-        isHasted = true,
-        isTalent = true
-    })
-    self.glaiveTempest = TRB.Classes.SpellThreshold:New({
-        id = 342817,
-        primaryResourceType = Enum.PowerType.Fury,
-        cooldown = 20,
-        settingKey = "glaiveTempest",
-        hasCooldown = true,
-        isTalent = true
-    })
-    self.unboundChaos = TRB.Classes.SpellBase:New({
-        id = 347462,
-        duration = 20
-    })
-    self.tacticalRetreat = TRB.Classes.SpellBase:New({
-        id = 389890,
-        resourcePerTick = 8,
-        tickRate = 1,
-        hasTicks = true,
-        isTalent = true
-    })
-    self.chaosTheory = TRB.Classes.SpellBase:New({
-        id = 390195
-    })
-    self.felBarrage = TRB.Classes.SpellThreshold:New({
-        id = 258925,
-        primaryResourceType = Enum.PowerType.Fury,
-        cooldown = 90,
-        settingKey = "felBarrage",
-        hasCooldown = true,
-        isTalent = true
-    })
+	-- Havoc Talent Abilities
+	self.eyeBeam = TRB.Classes.SpellThreshold:New({
+		id = 198013,
+		primaryResourceType = Enum.PowerType.Fury,
+		duration = 2,
+		settingKey = "eyeBeam",
+		hasCooldown = true,
+		isTalent = true
+	})
+	self.burningHatred = TRB.Classes.SpellBase:New({
+		id = 258922,
+		talentId = 320374,
+		resourcePerTick = 4,
+		tickRate = 1,
+		hasTicks = true,
+		duration = 12,
+		isTalent = true
+	})
+	self.felfireHeart = TRB.Classes.SpellBase:New({ --TODO: figure out how this plays with Burning Hatred
+		id = 388109,
+		duration = 4, -- These don't match what's seen on the PTR, should be 2,
+		ticks = 4, --2,
+		isTalent = true
+	})
+	self.felEruption = TRB.Classes.SpellThreshold:New({
+		id = 211881,
+		primaryResourceType = Enum.PowerType.Fury,
+		cooldown = 30,
+		settingKey = "felEruption",
+		hasCooldown = true,
+		isTalent = false,
+		baseline = true,
+		isSnowflake = true
+	})
+	self.blindFury = TRB.Classes.SpellBase:New({
+		id = 203550,
+		durationModifier = 1.5,
+		tickRate = 0.1,
+		resource = 4,
+		isHasted = true,
+		isTalent = true
+	})
+	self.glaiveTempest = TRB.Classes.SpellThreshold:New({
+		id = 342817,
+		primaryResourceType = Enum.PowerType.Fury,
+		cooldown = 20,
+		settingKey = "glaiveTempest",
+		hasCooldown = true,
+		isTalent = true
+	})
+	self.unboundChaos = TRB.Classes.SpellBase:New({
+		id = 347462,
+		duration = 20
+	})
+	self.tacticalRetreat = TRB.Classes.SpellBase:New({
+		id = 389890,
+		resourcePerTick = 8,
+		tickRate = 1,
+		hasTicks = true,
+		isTalent = true
+	})
+	self.chaosTheory = TRB.Classes.SpellBase:New({
+		id = 390195
+	})
+	self.felBarrage = TRB.Classes.SpellThreshold:New({
+		id = 258925,
+		primaryResourceType = Enum.PowerType.Fury,
+		cooldown = 90,
+		settingKey = "felBarrage",
+		hasCooldown = true,
+		isTalent = true
+	})
 
-    -- Aldrachi Reaver
-    self.artOfTheGlaive = TRB.Classes.SpellBase:New({
-        id = 444661,
-        buffId = 444661,
-        talentId = 442290,
-        isTalent = true
-    })
-    self.glaiveFlurry = TRB.Classes.SpellBase:New({
-        id = 442435
-    })
-    self.rendingStrike = TRB.Classes.SpellBase:New({
-        id = 442442
-    })
-    self.warbladesHunger = TRB.Classes.SpellBase:New({
-        id = 442503,
-        talentId = 442502,
-        isTalent = true,
-        isBuff = true
-    })
+	-- Aldrachi Reaver
+	self.artOfTheGlaive = TRB.Classes.SpellBase:New({
+		id = 444661,
+		buffId = 444661,
+		talentId = 442290,
+		isTalent = true
+	})
+	self.glaiveFlurry = TRB.Classes.SpellBase:New({
+		id = 442435
+	})
+	self.rendingStrike = TRB.Classes.SpellBase:New({
+		id = 442442
+	})
+	self.warbladesHunger = TRB.Classes.SpellBase:New({
+		id = 442503,
+		talentId = 442502,
+		isTalent = true,
+		isBuff = true
+	})
 
-    -- Fel-Scarred
-    self.studentOfSuffering = TRB.Classes.SpellBase:New({
-        id = 453239,
-        buffId = 453239,
-        talentId = 452412,
-        isTalent = true,
-        resourcePerTick = 5,
-        tickRate = 2,
-        hasTicks = true
-    })
+	-- Fel-Scarred
+	self.studentOfSuffering = TRB.Classes.SpellBase:New({
+		id = 453239,
+		buffId = 453239,
+		talentId = 452412,
+		isTalent = true,
+		resourcePerTick = 5,
+		tickRate = 2,
+		hasTicks = true
+	})
 
-    --PVP
-    self.illidansGrasp = TRB.Classes.SpellBase:New({
-        id = 205630,
-        isPvp = true
-    })
+	--PVP
+	self.illidansGrasp = TRB.Classes.SpellBase:New({
+		id = 205630,
+		isPvp = true
+	})
 
-    return self
+	return self
 end
 
 
@@ -269,102 +269,102 @@ TRB.Classes.DemonHunter.VengeanceSpells = setmetatable({}, {__index = TRB.Classe
 TRB.Classes.DemonHunter.VengeanceSpells.__index = TRB.Classes.DemonHunter.VengeanceSpells
 
 function TRB.Classes.DemonHunter.VengeanceSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.DemonHunter.VengeanceSpells) --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	---@type TRB.Classes.SpecializationSpellsBase
+	local base = TRB.Classes.SpecializationSpellsBase
+	self = setmetatable(base:New(), TRB.Classes.DemonHunter.VengeanceSpells) --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 
-    --Resource
-    self.soulFragments = TRB.Classes.SpellBase:New({
-        id = 203981,
-        attributes = {},
-        maxResource = 5
-    })
+	--Resource
+	self.soulFragments = TRB.Classes.SpellBase:New({
+		id = 203981,
+		attributes = {},
+		maxResource = 5
+	})
 
-    --Demon Hunter Class Baseline Abilities
-    self.immolationAura = TRB.Classes.SpellBase:New({
-        id = 258920,
-        resourcePerTick = 2,
-        tickRate = 1,
-        hasTicks = true,
-        isTalent = false,
-        baseline = true
-    })
-    self.metamorphosis = TRB.Classes.SpellBase:New({
-        id = 187827,
-        isTalent = false,
-        baseline = true
-    })
+	--Demon Hunter Class Baseline Abilities
+	self.immolationAura = TRB.Classes.SpellBase:New({
+		id = 258920,
+		resourcePerTick = 2,
+		tickRate = 1,
+		hasTicks = true,
+		isTalent = false,
+		baseline = true
+	})
+	self.metamorphosis = TRB.Classes.SpellBase:New({
+		id = 187827,
+		isTalent = false,
+		baseline = true
+	})
 
-    --Vengeance Baseline Abilities
-    self.soulCleave = TRB.Classes.SpellThreshold:New({
-        id = 228477,
-        primaryResourceType = Enum.PowerType.Fury,
-        settingKey = "soulCleave",
-        isTalent = false,
-        baseline = true,
-        isSnowflake = true
-    })
+	--Vengeance Baseline Abilities
+	self.soulCleave = TRB.Classes.SpellThreshold:New({
+		id = 228477,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "soulCleave",
+		isTalent = false,
+		baseline = true,
+		isSnowflake = true
+	})
 
-    -- Demon Hunter Talent Abilities
-    self.chaosNova = TRB.Classes.SpellThreshold:New({
-        id = 179057,
-        primaryResourceType = Enum.PowerType.Fury,
-        settingKey = "chaosNova",
-        hasCooldown = true,
-        isTalent = true
-    })
+	-- Demon Hunter Talent Abilities
+	self.chaosNova = TRB.Classes.SpellThreshold:New({
+		id = 179057,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "chaosNova",
+		hasCooldown = true,
+		isTalent = true
+	})
 
-    -- Vengeance Talent Abilities
-    self.felDevastation = TRB.Classes.SpellThreshold:New({
-        id = 212084,
-        primaryResourceType = Enum.PowerType.Fury,
-        settingKey = "felDevastation",
-        hasCooldown = true,
-        isTalent = true
-    })
-    self.spiritBomb = TRB.Classes.SpellComboPointThreshold:New({
-        id = 247454,
-        primaryResourceType = Enum.PowerType.Fury,
-        settingKey = "spiritBomb",
-        comboPoints = true,
-        isTalent = true,
-        isSnowflake = true
-    })
-    self.soulFurnace = TRB.Classes.SpellBase:New({
-        id = 391172,
-        isTalent = true
-    })
+	-- Vengeance Talent Abilities
+	self.felDevastation = TRB.Classes.SpellThreshold:New({
+		id = 212084,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "felDevastation",
+		hasCooldown = true,
+		isTalent = true
+	})
+	self.spiritBomb = TRB.Classes.SpellComboPointThreshold:New({
+		id = 247454,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "spiritBomb",
+		comboPoints = true,
+		isTalent = true,
+		isSnowflake = true
+	})
+	self.soulFurnace = TRB.Classes.SpellBase:New({
+		id = 391172,
+		isTalent = true
+	})
 
-    -- Aldrachi Reaver
-    self.artOfTheGlaive = TRB.Classes.SpellBase:New({
-        id = 444661,
-        buffId = 444661,
-        talentId = 442290,
-        isTalent = true
-    })
-    self.glaiveFlurry = TRB.Classes.SpellBase:New({
-        id = 442435
-    })
-    self.rendingStrike = TRB.Classes.SpellBase:New({
-        id = 442442
-    })
-    self.warbladesHunger = TRB.Classes.SpellBase:New({
-        id = 442503,
-        talentId = 442502,
-        isTalent = true,
-        isBuff = true
-    })
+	-- Aldrachi Reaver
+	self.artOfTheGlaive = TRB.Classes.SpellBase:New({
+		id = 444661,
+		buffId = 444661,
+		talentId = 442290,
+		isTalent = true
+	})
+	self.glaiveFlurry = TRB.Classes.SpellBase:New({
+		id = 442435
+	})
+	self.rendingStrike = TRB.Classes.SpellBase:New({
+		id = 442442
+	})
+	self.warbladesHunger = TRB.Classes.SpellBase:New({
+		id = 442503,
+		talentId = 442502,
+		isTalent = true,
+		isBuff = true
+	})
 
-    -- Fel-Scarred
-    self.studentOfSuffering = TRB.Classes.SpellBase:New({
-        id = 453239,
-        buffId = 453239,
-        talentId = 452412,
-        isTalent = true,
-        resourcePerTick = 5,
-        tickRate = 2,
-        hasTicks = true
-    })
+	-- Fel-Scarred
+	self.studentOfSuffering = TRB.Classes.SpellBase:New({
+		id = 453239,
+		buffId = 453239,
+		talentId = 452412,
+		isTalent = true,
+		resourcePerTick = 5,
+		tickRate = 2,
+		hasTicks = true
+	})
 
-    return self
+	return self
 end

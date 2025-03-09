@@ -19,21 +19,21 @@ TRB.Classes.SpellsData.__index = TRB.Classes.SpellsData
 ---Create a new SpellsData
 ---@return TRB.Classes.SpellsData
 function TRB.Classes.SpellsData:New()
-    local self = {}
-    setmetatable(self, TRB.Classes.SpellsData)
-    
-    ---@type TRB.Classes.SpecializationSpellsBase
-    self.spells = TRB.Classes.SpecializationSpellsBase:New()
+	local self = {}
+	setmetatable(self, TRB.Classes.SpellsData)
+	
+	---@type TRB.Classes.SpecializationSpellsBase
+	self.spells = TRB.Classes.SpecializationSpellsBase:New()
 
-    return self
+	return self
 end
 
 ---Fills extra spell data for all spells in the dictionary.
 function TRB.Classes.SpellsData:FillSpellData()
 	for _, v in pairs(self.spells) do
-        ---@type TRB.Classes.SpellBase
-        local spell = v
-        spell:FillSpellData()
+		---@type TRB.Classes.SpellBase
+		local spell = v
+		spell:FillSpellData()
 	end
 end
 
@@ -45,9 +45,9 @@ TRB.Classes.SpecializationSpellsBase.__index = TRB.Classes.SpecializationSpellsB
 ---Create a new SpecializationSpellsBase
 ---@return TRB.Classes.SpecializationSpellsBase
 function TRB.Classes.SpecializationSpellsBase:New()
-    local self = {}
-    setmetatable(self, TRB.Classes.SpecializationSpellsBase)
-    return self
+	local self = {}
+	setmetatable(self, TRB.Classes.SpecializationSpellsBase)
+	return self
 end
 
 
@@ -101,164 +101,164 @@ TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
 ---@return TRB.Classes.SpellBase
 function TRB.Classes.SpellBase:New(spellAttributes)
-    ---@diagnostic disable-next-line: missing-fields
-    local self = {} --[[@as TRB.Classes.SpellBase]]
-    setmetatable(self, TRB.Classes.SpellBase)
-    
-    self.classTypes = {
-        "TRB.Classes.SpellBase"
-    }
+	---@diagnostic disable-next-line: missing-fields
+	local self = {} --[[@as TRB.Classes.SpellBase]]
+	setmetatable(self, TRB.Classes.SpellBase)
+	
+	self.classTypes = {
+		"TRB.Classes.SpellBase"
+	}
 
-    ---@type { [string]: any }
-    local attributes = {}
-    for key, value in pairs(spellAttributes) do
-        if  (key == "id"                               and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "spellId"                          and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "buffId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "debuffId"                         and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "energizeId"                       and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "talentId"                         and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "castId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "tickId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "itemId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "iconName") or
-            (key == "useSpellIcon"                     and type(value) == "boolean") or
-            (key == "texture") or
-            (key == "baseline"                         and type(value) == "boolean") or
-            (key == "isTalent"                         and type(value) == "boolean") or
-            (key == "primaryResourceType") or
-            (key == "primaryResourceTypeMod"           and type(value) == "number") or
-            (key == "primaryResourceTypeProperty") or
-            (key == "primaryResourceTypePropertyValue" and type(value) == "number") or
-            (key == "resource"                         and type(value) == "number") or
-            (key == "duration"                         and type(value) == "number") or
-            (key == "baseDuration"                     and type(value) == "number") or
-            (key == "pandemic"                         and type(value) == "boolean") or
-            (key == "pandemicTime"                     and type(value) == "number") or
-            (key == "hasCooldown"                      and type(value) == "boolean") or
-            (key == "hasCharges"                       and type(value) == "boolean") or
-            (key == "hasCastCount"                     and type(value) == "boolean") or
-            (key == "hasTicks"                         and type(value) == "boolean") or
-            (key == "ticks"                            and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "tickRate"                         and type(value) == "number") or
-            (key == "resourcePerTick"                  and type(value) == "number") or
-            (key == "isHasted"                         and type(value) == "boolean") or
-            (key == "isBuff"                           and type(value) == "boolean") or
-            (key == "isPvp"                            and type(value) == "boolean") or
-            (key == "tocMinVersion"                    and type(value) == "number") then
-            self[key] = value
-        elseif key == "name" or key == "icon" then
-            print(string.format("TRB: Unexpected property `%s` provided with value `%s`.", key, value))
-        elseif key == "attributes" then
-            --Do nothing, we'll merge after
-        else
-            attributes[key] = value
-        end
-    end
+	---@type { [string]: any }
+	local attributes = {}
+	for key, value in pairs(spellAttributes) do
+		if  (key == "id"							   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "spellId"						  and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "buffId"						   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "debuffId"						 and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "energizeId"					   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "talentId"						 and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "castId"						   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "tickId"						   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "itemId"						   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "iconName") or
+			(key == "useSpellIcon"					 and type(value) == "boolean") or
+			(key == "texture") or
+			(key == "baseline"						 and type(value) == "boolean") or
+			(key == "isTalent"						 and type(value) == "boolean") or
+			(key == "primaryResourceType") or
+			(key == "primaryResourceTypeMod"		   and type(value) == "number") or
+			(key == "primaryResourceTypeProperty") or
+			(key == "primaryResourceTypePropertyValue" and type(value) == "number") or
+			(key == "resource"						 and type(value) == "number") or
+			(key == "duration"						 and type(value) == "number") or
+			(key == "baseDuration"					 and type(value) == "number") or
+			(key == "pandemic"						 and type(value) == "boolean") or
+			(key == "pandemicTime"					 and type(value) == "number") or
+			(key == "hasCooldown"					  and type(value) == "boolean") or
+			(key == "hasCharges"					   and type(value) == "boolean") or
+			(key == "hasCastCount"					 and type(value) == "boolean") or
+			(key == "hasTicks"						 and type(value) == "boolean") or
+			(key == "ticks"							and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "tickRate"						 and type(value) == "number") or
+			(key == "resourcePerTick"				  and type(value) == "number") or
+			(key == "isHasted"						 and type(value) == "boolean") or
+			(key == "isBuff"						   and type(value) == "boolean") or
+			(key == "isPvp"							and type(value) == "boolean") or
+			(key == "tocMinVersion"					and type(value) == "number") then
+			self[key] = value
+		elseif key == "name" or key == "icon" then
+			print(string.format("TRB: Unexpected property `%s` provided with value `%s`.", key, value))
+		elseif key == "attributes" then
+			--Do nothing, we'll merge after
+		else
+			attributes[key] = value
+		end
+	end
 
-    if spellAttributes["attributes"] ~= nil then
-        TRB.Functions.Table:Merge(attributes, spellAttributes["attributes"])
-    end
+	if spellAttributes["attributes"] ~= nil then
+		TRB.Functions.Table:Merge(attributes, spellAttributes["attributes"])
+	end
 
-    self.attributes = attributes
+	self.attributes = attributes
 
-    if self.pandemic and self.baseDuration ~= nil and type(self.baseDuration) == "number" and self.baseDuration > 0 and self.pandemicTime == nil then
-        self.pandemicTime = self.baseDuration * 0.3
-    end
+	if self.pandemic and self.baseDuration ~= nil and type(self.baseDuration) == "number" and self.baseDuration > 0 and self.pandemicTime == nil then
+		self.pandemicTime = self.baseDuration * 0.3
+	end
 
-    if self.primaryResourceTypeMod == nil then
-        self.primaryResourceTypeMod = 1
-    end
+	if self.primaryResourceTypeMod == nil then
+		self.primaryResourceTypeMod = 1
+	end
 
-    self._lastPrimaryResourceValueCheck = 0
-    if self.primaryResourceType ~= nil then
-        self._lastNonZeroPrimaryResourceValue = 0
-        if self.primaryResourceTypeProperty == nil then
-            self.primaryResourceTypeProperty = "cost"
-        end
-        
-        self:GetCacheKey()
-    end
+	self._lastPrimaryResourceValueCheck = 0
+	if self.primaryResourceType ~= nil then
+		self._lastNonZeroPrimaryResourceValue = 0
+		if self.primaryResourceTypeProperty == nil then
+			self.primaryResourceTypeProperty = "cost"
+		end
+		
+		self:GetCacheKey()
+	end
 
 
-    self.name = ""
-    self.icon = ""
-    self.texture = ""
+	self.name = ""
+	self.icon = ""
+	self.texture = ""
 
-    self._isFreeCurrently = false
+	self._isFreeCurrently = false
 
-    return self
+	return self
 end
 
 function TRB.Classes.SpellBase:GetTickRate()
-    if self.isHasted then
-        return self.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
-    end
-    return self.tickRate
+	if self.isHasted then
+		return self.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
+	end
+	return self.tickRate
 end
 
 ---Gets the cache key for the spell. If the _cacheKey is not set, it will be set to the id, primaryResourceTypeProperty, and primaryResourceTypeMod.
 ---@return string # Cache key
 function TRB.Classes.SpellBase:GetCacheKey()
-    if self._cacheKey == nil then
-        self._cacheKey = self.id .. "_" .. self.primaryResourceTypeProperty .. "_" .. self.primaryResourceTypeMod
-    end
-    return self._cacheKey
+	if self._cacheKey == nil then
+		self._cacheKey = self.id .. "_" .. self.primaryResourceTypeProperty .. "_" .. self.primaryResourceTypeMod
+	end
+	return self._cacheKey
 end
 
 ---Fills extra spell data from various API calls. Properties to be filled include: `name`, `icon`, and `texture`.
 function TRB.Classes.SpellBase:FillSpellData()
-    if self.tocMinVersion == nil or TRB.Details.addonData.toc >= self.tocMinVersion then
-        if self.itemId ~= nil and self.useSpellIcon ~= true then
-            local _, name, icon
+	if self.tocMinVersion == nil or TRB.Details.addonData.toc >= self.tocMinVersion then
+		if self.itemId ~= nil and self.useSpellIcon ~= true then
+			local _, name, icon
 
-            name, _, _, _, _, _, _, _, _, icon = C_Item.GetItemInfo(self.itemId)
-            if name ~= nil then
-                self.name = name
-            end
+			name, _, _, _, _, _, _, _, _, icon = C_Item.GetItemInfo(self.itemId)
+			if name ~= nil then
+				self.name = name
+			end
 
-            if self.iconName ~= nil then
-                icon = "Interface\\Icons\\" .. self.iconName
-            end
-            
-            if icon ~= nil then
-                self.icon = string.format("|T%s:0|t", icon)
-                self.texture = icon
-            end
-        elseif self.id ~= nil or (self.spellId ~= nil and self.useSpellIcon == true) then
-            local spellInfo
-            local icon
-            if self.spellId ~= nil and self.useSpellIcon == true then
-                spellInfo = C_Spell.GetSpellInfo(self.spellId) --[[@as SpellInfo]]
+			if self.iconName ~= nil then
+				icon = "Interface\\Icons\\" .. self.iconName
+			end
+			
+			if icon ~= nil then
+				self.icon = string.format("|T%s:0|t", icon)
+				self.texture = icon
+			end
+		elseif self.id ~= nil or (self.spellId ~= nil and self.useSpellIcon == true) then
+			local spellInfo
+			local icon
+			if self.spellId ~= nil and self.useSpellIcon == true then
+				spellInfo = C_Spell.GetSpellInfo(self.spellId) --[[@as SpellInfo]]
 
-                if spellInfo == nil then
-                    spellInfo = C_Spell.GetSpellInfo(self.id)
-                end
-            else
-                spellInfo = C_Spell.GetSpellInfo(self.id) --[[@as SpellInfo]]
-            end
+				if spellInfo == nil then
+					spellInfo = C_Spell.GetSpellInfo(self.id)
+				end
+			else
+				spellInfo = C_Spell.GetSpellInfo(self.id) --[[@as SpellInfo]]
+			end
 
-            if spellInfo == nil then
-                print("MISSING", self.id, self.spellId)
-                spellInfo = {
-                    name = "MISSING"
-                }
-            end
+			if spellInfo == nil then
+				print("MISSING", self.id, self.spellId)
+				spellInfo = {
+					name = "MISSING"
+				}
+			end
 
-            if self.iconName ~= nil then
-                icon = "Interface\\Icons\\" .. self.iconName
-            else
-                icon = spellInfo.originalIconID
-            end
+			if self.iconName ~= nil then
+				icon = "Interface\\Icons\\" .. self.iconName
+			else
+				icon = spellInfo.originalIconID
+			end
 
-            self.icon = string.format("|T%s:0|t", icon)
-            self.name = spellInfo.name
+			self.icon = string.format("|T%s:0|t", icon)
+			self.name = spellInfo.name
 
-            if self.settingKey ~= nil then
-                self.texture = icon
-            end
-        end
-    end
+			if self.settingKey ~= nil then
+				self.texture = icon
+			end
+		end
+	end
 end
 
 local primaryResourceCostEmbargoTimespan = 0.05
@@ -267,79 +267,79 @@ local primaryResourceCostEmbargoTimespan = 0.05
 ---@param dontReturnLastNonZero boolean? # If true, return 0 if not found instead of the last known value.
 ---@return number # Primary resource cost of the spell.
 function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
-    local currentTime = GetTime()
-    if self.primaryResourceType ~= nil and self.primaryResourceTypeProperty ~= "custom" then
-        if (self._lastPrimaryResourceValueCheck or 0) + primaryResourceCostEmbargoTimespan > currentTime then
-            self._lastPrimaryResourceValueCheck = currentTime
-            return self._lastNonZeroPrimaryResourceValue
-        end
+	local currentTime = GetTime()
+	if self.primaryResourceType ~= nil and self.primaryResourceTypeProperty ~= "custom" then
+		if (self._lastPrimaryResourceValueCheck or 0) + primaryResourceCostEmbargoTimespan > currentTime then
+			self._lastPrimaryResourceValueCheck = currentTime
+			return self._lastNonZeroPrimaryResourceValue
+		end
 
-        self:GetCacheKey()
+		self:GetCacheKey()
 
-        if TRB.Data.cache.values.resource[self._cacheKey] == nil then
-            local spc = C_Spell.GetSpellPowerCost(self.id)
-            if spc ~= nil then
-                for x = 1, #spc do
-                    if spc[x].type == self.primaryResourceType then
-                        if spc[x][self.primaryResourceTypeProperty] > 0 then
-                            local value = spc[x][self.primaryResourceTypeProperty] * self.primaryResourceTypeMod
-                            self._lastNonZeroPrimaryResourceValue = value
-                            self._isFreeCurrently = false
-                            TRB.Data.cache.values.resource[self._cacheKey] = value
-                            return value
-                        elseif spc[x][self.primaryResourceTypeProperty] == 0 then
-                            self._isFreeCurrently = true
-                            TRB.Data.cache.values.resource[self._cacheKey] = 0
-                        end
-                    end
-                end
-            end
-        else
-            if TRB.Data.cache.values.resource[self._cacheKey] == 0 then
-                self._isFreeCurrently = true
-            else
-                return TRB.Data.cache.values.resource[self._cacheKey]
-            end
-        end
-    elseif self.primaryResourceTypeProperty == "custom" then
-        return self.primaryResourceTypePropertyValue
-    end
+		if TRB.Data.cache.values.resource[self._cacheKey] == nil then
+			local spc = C_Spell.GetSpellPowerCost(self.id)
+			if spc ~= nil then
+				for x = 1, #spc do
+					if spc[x].type == self.primaryResourceType then
+						if spc[x][self.primaryResourceTypeProperty] > 0 then
+							local value = spc[x][self.primaryResourceTypeProperty] * self.primaryResourceTypeMod
+							self._lastNonZeroPrimaryResourceValue = value
+							self._isFreeCurrently = false
+							TRB.Data.cache.values.resource[self._cacheKey] = value
+							return value
+						elseif spc[x][self.primaryResourceTypeProperty] == 0 then
+							self._isFreeCurrently = true
+							TRB.Data.cache.values.resource[self._cacheKey] = 0
+						end
+					end
+				end
+			end
+		else
+			if TRB.Data.cache.values.resource[self._cacheKey] == 0 then
+				self._isFreeCurrently = true
+			else
+				return TRB.Data.cache.values.resource[self._cacheKey]
+			end
+		end
+	elseif self.primaryResourceTypeProperty == "custom" then
+		return self.primaryResourceTypePropertyValue
+	end
 
-    if dontReturnLastNonZero == true then
-        return 0
-    end
+	if dontReturnLastNonZero == true then
+		return 0
+	end
 
 	return self._lastNonZeroPrimaryResourceValue
 end
 
 ---Resets the last non-zero resource value to 0.
 function TRB.Classes.SpellBase:ResetPrimaryResourceCost()
-    self._lastNonZeroPrimaryResourceValue = 0
-    self._isFreeCurrently = false
+	self._lastNonZeroPrimaryResourceValue = 0
+	self._isFreeCurrently = false
 end
 
 ---Is this ability free (resource cost = 0) to cast currently? 
 ---@return boolean
 function TRB.Classes.SpellBase:IsFree()
-    return self._isFreeCurrently
+	return self._isFreeCurrently
 end
 
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.
 ---@param spellType trbSpellType # Spell Class type we're checking
 ---@return boolean # Is it of this type
 function TRB.Classes.SpellBase:Is(spellType)
-    for _, value in ipairs(self.classTypes) do
-        if spellType == value then
-            return true
-        end
-    end
-    return false
+	for _, value in ipairs(self.classTypes) do
+		if spellType == value then
+			return true
+		end
+	end
+	return false
 end
 
 ---Determines if the spell is in a valid state. Mostly used by inherited classes to add extra checking.
 ---@return boolean
 function TRB.Classes.SpellBase:IsValid()
-    return true
+	return true
 end
 
 
@@ -348,10 +348,10 @@ end
 ---@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold # Spell to check
 ---@return boolean # Is this a valid Threshold spell
 local function spellThreshold_IsValid(spell)
-    if spell ~= nil and spell.id ~= nil and spell.primaryResourceType ~= nil and spell.settingKey ~= nil then
-        return true
-    end
-    return false
+	if spell ~= nil and spell.id ~= nil and spell.primaryResourceType ~= nil and spell.settingKey ~= nil then
+		return true
+	end
+	return false
 end
 
 
@@ -365,34 +365,34 @@ TRB.Classes.SpellThreshold.__index = TRB.Classes.SpellThreshold
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
 ---@return TRB.Classes.SpellThreshold
 function TRB.Classes.SpellThreshold:New(spellAttributes)
-    ---@type TRB.Classes.SpellBase
-    local spellBase = TRB.Classes.SpellBase
-    ---@type TRB.Classes.SpellThreshold
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.SpellThreshold})
-    self.isSnowflake = false
+	---@type TRB.Classes.SpellBase
+	local spellBase = TRB.Classes.SpellBase
+	---@type TRB.Classes.SpellThreshold
+	---@diagnostic disable-next-line: assign-type-mismatch
+	local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.SpellThreshold})
+	self.isSnowflake = false
 
-    table.insert(self.classTypes, "TRB.Classes.SpellThreshold")
-    
-    for key, value in pairs(spellAttributes) do
-        if  (key == "settingKey") or
-            (key == "isSnowflake"   and type(value) == "boolean") then
-            self[key] = value
-            self.attributes[key] = nil
-        end
-    end
+	table.insert(self.classTypes, "TRB.Classes.SpellThreshold")
+	
+	for key, value in pairs(spellAttributes) do
+		if  (key == "settingKey") or
+			(key == "isSnowflake"   and type(value) == "boolean") then
+			self[key] = value
+			self.attributes[key] = nil
+		end
+	end
 
-    return self
+	return self
 end
 
 ---Determines if the spell is in a valid state. Mostly used by inherited classes to add extra checking.
 ---@return boolean # Is this valid
 function TRB.Classes.SpellThreshold:IsValid()
-    local base = TRB.Classes.SpellBase
-    if spellThreshold_IsValid(self) then
-        return base.IsValid(self)
-    end
-    return false
+	local base = TRB.Classes.SpellBase
+	if spellThreshold_IsValid(self) then
+		return base.IsValid(self)
+	end
+	return false
 end
 
 
@@ -408,26 +408,26 @@ TRB.Classes.SpellComboPoint.__index = TRB.Classes.SpellComboPoint
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
 ---@return TRB.Classes.SpellComboPoint
 function TRB.Classes.SpellComboPoint:New(spellAttributes)
-    ---@type TRB.Classes.SpellBase
-    local spellBase = TRB.Classes.SpellBase
-    ---@type TRB.Classes.SpellComboPoint
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.SpellComboPoint})
-    
-    self.comboPoints = false
-    self.comboPointsGenerated = 0
+	---@type TRB.Classes.SpellBase
+	local spellBase = TRB.Classes.SpellBase
+	---@type TRB.Classes.SpellComboPoint
+	---@diagnostic disable-next-line: assign-type-mismatch
+	local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.SpellComboPoint})
+	
+	self.comboPoints = false
+	self.comboPointsGenerated = 0
 
-    table.insert(self.classTypes, "TRB.Classes.SpellComboPoint")
-    
-    for key, value in pairs(spellAttributes) do
-        if  (key == "comboPointsGenerated"   and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "comboPoints"            and type(value) == "boolean") then
-            self[key] = value
-            self.attributes[key] = nil
-        end
-    end
+	table.insert(self.classTypes, "TRB.Classes.SpellComboPoint")
+	
+	for key, value in pairs(spellAttributes) do
+		if  (key == "comboPointsGenerated"   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "comboPoints"			and type(value) == "boolean") then
+			self[key] = value
+			self.attributes[key] = nil
+		end
+	end
 
-    return self
+	return self
 end
 
 
@@ -442,32 +442,32 @@ TRB.Classes.SpellComboPointThreshold.__index = TRB.Classes.SpellComboPointThresh
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
 ---@return TRB.Classes.SpellComboPointThreshold
 function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
-    ---@type TRB.Classes.SpellComboPoint
-    local base = TRB.Classes.SpellComboPoint
-    ---@type TRB.Classes.SpellComboPointThreshold
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    local self = setmetatable(base:New(spellAttributes), {__index = TRB.Classes.SpellComboPointThreshold})
-    self.isSnowflake = false
+	---@type TRB.Classes.SpellComboPoint
+	local base = TRB.Classes.SpellComboPoint
+	---@type TRB.Classes.SpellComboPointThreshold
+	---@diagnostic disable-next-line: assign-type-mismatch
+	local self = setmetatable(base:New(spellAttributes), {__index = TRB.Classes.SpellComboPointThreshold})
+	self.isSnowflake = false
 
-    table.insert(self.classTypes, "TRB.Classes.SpellComboPointThreshold")
-    
-    for key, value in pairs(spellAttributes) do
-        if  (key == "settingKey") or
-            (key == "isSnowflake"   and type(value) == "boolean") then
-            self[key] = value
-            self.attributes[key] = nil
-        end
-    end
+	table.insert(self.classTypes, "TRB.Classes.SpellComboPointThreshold")
+	
+	for key, value in pairs(spellAttributes) do
+		if  (key == "settingKey") or
+			(key == "isSnowflake"   and type(value) == "boolean") then
+			self[key] = value
+			self.attributes[key] = nil
+		end
+	end
 
-    return self
+	return self
 end
 
 ---Determines if the spell is in a valid state. Mostly used by inherited classes to add extra checking.
 ---@return boolean # Is this valid
 function TRB.Classes.SpellComboPointThreshold:IsValid()
-    local base = TRB.Classes.SpellComboPoint
-    if spellThreshold_IsValid(self) then
-        return base.IsValid(self)
-    end
-    return false
+	local base = TRB.Classes.SpellComboPoint
+	if spellThreshold_IsValid(self) then
+		return base.IsValid(self)
+	end
+	return false
 end

@@ -122,6 +122,8 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.fury.snapshotData.snapshots[spells.ravager.id] = TRB.Classes.Snapshot:New(spells.ravager)
 	---@type TRB.Classes.Snapshot
+	specCache.fury.snapshotData.snapshots[spells.bladestorm.id] = TRB.Classes.Snapshot:New(spells.bladestorm)
+	---@type TRB.Classes.Snapshot
 	specCache.fury.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)
 	---@type TRB.Classes.Snapshot
 	specCache.fury.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
@@ -232,6 +234,7 @@ local function FillSpellData_Fury()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
+		{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = spells.bladestorm.name, printInSettings = true },
 		{ variable = "#charge", icon = spells.charge.icon, description = spells.charge.name, printInSettings = true },
 		{ variable = "#enrage", icon = spells.enrage.icon, description = spells.enrage.name, printInSettings = true },
 		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
@@ -293,8 +296,11 @@ local function FillSpellData_Fury()
 
 		{ variable = "$suddenDeathTime", description = L["WarriorFuryBarTextVariable_suddenDeathTime"], printInSettings = true, color = false },
 		
-		{ variable = "$ravagerTicks", description = L["WarriorFuryBarTextVariable_ravagerTicks"], printInSettings = true, color = false }, 
-		{ variable = "$ravagerRage", description = L["WarriorFuryBarTextVariable_ravagerRage"], printInSettings = true, color = false }, 
+		{ variable = "$ravagerTicks", description = L["WarriorFuryBarTextVariable_ravagerTicks"], printInSettings = true, color = false },
+		{ variable = "$ravagerRage", description = L["WarriorFuryBarTextVariable_ravagerRage"], printInSettings = true, color = false },
+		
+		{ variable = "$bladestormTicks", description = L["WarriorFuryBarTextVariable_bladestormicks"], printInSettings = true, color = false },
+		{ variable = "$bladestormRage", description = L["WarriorFuryBarTextVariable_bladestormRage"], printInSettings = true, color = false },
 
 		{ variable = "$whirlwindTime", description = L["WarriorFuryBarTextVariable_whirlwindTime"], printInSettings = true, color = false },
 		{ variable = "$whirlwindStacks", description = L["WarriorFuryBarTextVariable_whirlwindStacks"], printInSettings = true, color = false },
@@ -568,6 +574,13 @@ local function RefreshLookupData_Fury()
 	if snapshotData.casting.resourceFinal < 0 then
 		castingRageColor = sharedSettings.colors.text.spending.color
 	end
+	
+	--$bladestormRage
+	local _bladestormRage = snapshots[spells.bladestorm.id].buff.resource
+	local bladestormRage = string.format("%.0f", _bladestormRage)
+	--$bladestormTicks
+	local _bladestormTicks = snapshots[spells.bladestorm.id].buff.ticks
+	local bladestormTicks = string.format("%.0f", _bladestormTicks)
 
 	--$ravagerRage
 	local _ravagerRage = snapshots[spells.ravager.id].buff.resource
@@ -582,7 +595,7 @@ local function RefreshLookupData_Fury()
 	--$casting
 	local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	--$passive
-	local _passiveRage = _ravagerRage
+	local _passiveRage = _ravagerRage + _bladestormRage
 	local passiveRage = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveRage, resourcePrecision, "floor"))
 	
 	--$rageTotal
@@ -614,6 +627,10 @@ local function RefreshLookupData_Fury()
 	Global_TwintopResourceBar.resource.resource = normalizedRage
 	Global_TwintopResourceBar.resource.passive = _passiveRage
 	
+	Global_TwintopResourceBar.bladestorm = Global_TwintopResourceBar.bladestorm or {}
+	Global_TwintopResourceBar.bladestorm.rage = _bladestormRage
+	Global_TwintopResourceBar.bladestorm.ticks = _bladestormTicks
+	
 	Global_TwintopResourceBar.ravager = Global_TwintopResourceBar.ravager or {}
 	Global_TwintopResourceBar.ravager.rage = _ravagerRage
 	Global_TwintopResourceBar.ravager.ticks = _ravagerTicks
@@ -640,6 +657,8 @@ local function RefreshLookupData_Fury()
 	lookup["$rageOvercap"] = overcap
 	lookup["$ravagerRage"] = ravagerRage
 	lookup["$ravagerTicks"] = ravagerTicks
+	lookup["$bladestormRage"] = bladestormRage
+	lookup["$bladestormTicks"] = bladestormTicks
 	TRB.Data.lookup = lookup
 
 
@@ -664,7 +683,9 @@ local function RefreshLookupData_Fury()
 	lookupLogic["$resourceOvercap"] = overcap
 	lookupLogic["$rageOvercap"] = overcap
 	lookupLogic["$ravagerRage"] = _ravagerRage
-	lookupLogic["$ravagerTicks"] = ravagerTicks
+	lookupLogic["$ravagerTicks"] = _ravagerTicks
+	lookupLogic["$bladestormRage"] = _bladestormRage
+	lookupLogic["$bladestormTicks"] = _bladestormTicks
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -739,6 +760,7 @@ local function UpdateSnapshot_Fury()
 
 	snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
 
 	snapshots[spells.execute.id].cooldown:Refresh()
 end
@@ -770,9 +792,7 @@ local function UpdateResourceBar()
 
 				local passiveValue = 0
 				if specSettings.colors.bar.showPassive then
-					if snapshots[spells.ravager.id].buff.resource > 0 then
-						passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource
-					end
+					passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource
 				end
 
 				if CastingSpell() and specSettings.colors.bar.showCasting then
@@ -949,9 +969,7 @@ local function UpdateResourceBar()
 
 				local passiveValue = 0
 				if specSettings.colors.bar.showPassive then
-					if snapshots[spells.ravager.id].buff.resource > 0 then
-						passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource
-					end
+					passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource + snapshots[spells.bladestorm.id].buff.resource
 				end
 
 				if CastingSpell() and specSettings.colors.bar.showCasting then
@@ -1156,6 +1174,25 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
+				elseif entry.spellId == spells.bladestorm.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then -- Bladestorm used
+						local duration = spells.bladestorm.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
+						snapshots[entry.spellId].buff:InitializeCustom(duration)
+		
+						if spells.stormOfSteel ~= nil and talents:IsTalentActive(spells.stormOfSteel) then
+							snapshots[entry.spellId].buff:SetTickData(true, spells.bladestorm.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.bladestorm:GetTickRate())
+						else
+							snapshots[entry.spellId].buff:SetTickData(true, spells.bladestorm.resourcePerTick, spells.bladestorm:GetTickRate())
+						end
+	
+						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+					end
+				elseif entry.spellId == spells.bladestorm.energizeId then
+					if entry.type == "SPELL_ENERGIZE" then
+						if snapshots[spells.bladestorm.id].buff.isActive then
+							snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
+						end
+					end
 				end
 			end
 
@@ -1265,6 +1302,7 @@ local function SwitchSpec()
 		
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		local lookup = TRB.Data.lookup or {}
+		lookup["#bladestorm"] = spells.bladestorm.icon
 		lookup["#charge"] = spells.charge.icon
 		lookup["#enrage"] = spells.enrage.icon
 		lookup["#execute"] = spells.execute.icon
@@ -1544,11 +1582,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$passive" then
-			if snapshots[spells.ravager.id].buff.resource > 0 then
+			if snapshots[spells.bladestorm.id].buff.resource > 0 or snapshots[spells.ravager.id].buff.resource > 0 then
 				valid = true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-			if currentResource > 0 or snapshots[spells.ravager.id].buff.resource > 0 then
+			if currentResource > 0 or snapshots[spells.bladestorm.id].buff.resource > 0 or snapshots[spells.ravager.id].buff.resource > 0 then
 				valid = true
 			end
 		elseif var == "$enrageTime" then
@@ -1561,6 +1599,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$whirlwindStacks" then
 			if snapshots[spells.whirlwind.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$bladestormTicks" then
+			if snapshots[spells.bladestorm.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$bladestormResource" or var == "$bladestormRage" then
+			if snapshots[spells.bladestorm.id].buff.isActive then
 				valid = true
 			end
 		end
