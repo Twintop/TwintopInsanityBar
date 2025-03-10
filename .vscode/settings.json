@@ -1,0 +1,18 @@
+{
+    "Lua.diagnostics.globals": [
+        "GameFontHighlightSmall",
+        "GameFontGreenSmall",
+        "GameFontNormalSmall",
+        "GameFontWhite",
+        "StaticPopupDialogs",
+        "GameFontNormal",
+        "PanelTemplates_TabResize",
+        "PanelTemplates_DeselectTab",
+        "Settings",
+        "GameFontHighlight",
+        "getglobal",
+        "CloseDropDownMenus",
+        "UIParent",
+        "StaticPopup_Show"
+    ]
+}

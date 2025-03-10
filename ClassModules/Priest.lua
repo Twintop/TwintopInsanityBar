@@ -3780,6 +3780,12 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
+				elseif entry.spellId == spells.powerInfusion.id then
+					if entry.type == "SPELL_AURA_APPLIED" then
+						if TRB.Data.settings.priest.shadow.audio.powerInfusion.enabled then
+							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.powerInfusion.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					end
 				elseif entry.type == "SPELL_SUMMON" and settings.voidTendrilTracker and (entry.spellId == spells.idolOfCthun_Tendril.id or entry.spellId == spells.idolOfCthun_Lasher.id) then
 					InitializeVoidTendril(entry.destinationGuid)
 					if entry.spellId == spells.idolOfCthun_Tendril.id then

@@ -2213,3 +2213,8 @@ L["WarriorArmsBarTextVariable_ravagerTicks"] = "Number of expected ticks remaini
 L["WarriorArmsBarTextVariable_ravagerRage"] = "Rage from Ravager"
 L["WarriorFuryBarTextVariable_bladestormTicks"] = "Number of expected ticks remaining on Bladestorm"
 L["WarriorFuryBarTextVariable_bladestormRage"] = "Rage from Bladestorm"
+
+L["CheckboxUseGlobalTooltip_BarDimensions"] = "When checked, the global settings for bar position and size will be used."
+L["GlobalAudioCheckboxPowerInfusion"] = "Play audio cue when a Power Infusion occurs"
+L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Play audio cue when a Power Infusion occurs"
+L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Play audio cue when a Deathspeaker proc occurs"
