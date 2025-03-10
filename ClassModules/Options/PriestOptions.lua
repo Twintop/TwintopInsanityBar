@@ -1073,7 +1073,7 @@ local function ShadowLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid=TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
+			text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",

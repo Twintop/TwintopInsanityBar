@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.1.0.7-release (2025-03-11)
+## Priest
+### Shadow
+
+- [#426 - NEW](#426) Add TWW S2 2-piece bonus support for Jackpot! When the set bonus is active, casting Void Eruption or Dark Ascension will also include the Insanity gain from Void Bolt in the casting bar and related bar text variables.
+
+---
+
 # 11.1.0.6-release (2025-03-10)
 ## General
 

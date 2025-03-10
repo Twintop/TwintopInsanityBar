@@ -330,7 +330,7 @@ local function FillSpecializationCache()
 		effects = {
 		},
 		items = {
-			callToTheVoid = false
+			twwSeason2SetBonusCount = 0
 		}
 	}
 
@@ -2362,6 +2362,17 @@ local function CastingSpell()
 					snapshotData.casting.resourceRaw = spells.darkAscension.resource
 					snapshotData.casting.spellId = spells.darkAscension.id
 					snapshotData.casting.icon = spells.darkAscension.icon
+
+					if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
+						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.voidBolt.resource
+					end
+				elseif currentSpellId == spells.voidEruption.id then
+					if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
+						snapshotData.casting.startTime = currentTime
+						snapshotData.casting.resourceRaw = spells.voidBolt.resource
+						snapshotData.casting.spellId = spells.darkAscension.id
+						snapshotData.casting.icon = spells.darkAscension.icon
+					end
 				elseif currentSpellId == spells.vampiricTouch.id then
 					snapshotData.casting.startTime = currentTime
 					snapshotData.casting.resourceRaw = spells.vampiricTouch.resource
@@ -3933,7 +3944,7 @@ local function SwitchSpec()
 			lookup["#mindbender"] = spells.voidwraith.icon
 			lookup["#shadowfiend"] = spells.voidwraith.icon
 			lookup["#voidwraith"] = spells.voidwraith.icon
-		else	
+		else
 			if specCache.discipline.talents:IsTalentActive(spells.mindbender) then
 				lookup["#sf"] = spells.mindbender.icon
 				lookup["#mindbender"] = spells.mindbender.icon
@@ -4320,6 +4331,33 @@ function TRB.Functions.Class:CheckCharacter()
 				snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
 			end
 		end
+		
+		local twwSeason2SetBonus = spells.twwSeason2SetBonus
+
+		local headItemLink = GetInventoryItemLink("player", 1)
+		local shoulderItemLink = GetInventoryItemLink("player", 3)
+		local chestItemLink = GetInventoryItemLink("player", 5)
+		local handItemLink = GetInventoryItemLink("player", 10)
+		local legItemLink = GetInventoryItemLink("player", 7)
+
+		local twwSeason2SetBonusCount = 0
+		if TRB.Functions.Item:DoesItemLinkMatchId(headItemLink, twwSeason2SetBonus.attributes.headId) then
+			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
+		end
+		if TRB.Functions.Item:DoesItemLinkMatchId(shoulderItemLink, twwSeason2SetBonus.attributes.shoulderId) then
+			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
+		end
+		if TRB.Functions.Item:DoesItemLinkMatchId(chestItemLink, twwSeason2SetBonus.attributes.chestId) then
+			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
+		end
+		if TRB.Functions.Item:DoesItemLinkMatchId(handItemLink, twwSeason2SetBonus.attributes.handId) then
+			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
+		end
+		if TRB.Functions.Item:DoesItemLinkMatchId(legItemLink, twwSeason2SetBonus.attributes.legId) then
+			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
+		end
+
+		TRB.Data.character.items.twwSeason2SetBonusCount = twwSeason2SetBonusCount
 	end
 end
 
@@ -4724,7 +4762,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$cttvEquipped" then
-			if TRB.Data.settings.priest.shadow.voidTendrilTracker and (talents:IsTalentActive(spells.idolOfCthun) or TRB.Data.character.items.callToTheVoid == true) then
+			if TRB.Data.settings.priest.shadow.voidTendrilTracker and (talents:IsTalentActive(spells.idolOfCthun)) then
 				valid = true
 			end
 		elseif var == "$ecttvCount" then

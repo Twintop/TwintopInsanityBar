@@ -758,6 +758,7 @@ end
 ---@field public voidInfusion TRB.Classes.SpellBase
 ---@field public depthOfShadows TRB.Classes.SpellBase
 ---@field public voidwraith TRB.Classes.SpellBase
+---@field public twwSeason2SetBonus TRB.Classes.SpellBase
 ---@field public devouringPlague TRB.Classes.SpellThreshold
 ---@field public devouringPlague2 TRB.Classes.SpellThreshold
 ---@field public devouringPlague3 TRB.Classes.SpellThreshold
@@ -1050,6 +1051,15 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resource = 10,
 		isPvp = true
 	})
+
+    --Set Bonuses
+    self.twwSeason2SetBonus = TRB.Classes.SpellBase:New({
+        headId = 229334,
+        shoulderId = 229332,
+        chestId = 229337,
+        handId = 229335,
+        legId = 229333
+    })
 
 	return self
 end

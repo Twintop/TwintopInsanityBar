@@ -32,7 +32,13 @@ function TRB.Functions.Item:DoesItemLinkMatchId(itemLink, id)
 	-- Note for Future Twintop:
 	--  1  = Item Name
 	--  2  = Item Id
-	if tonumber(parts[2]) == id then
+	--[[
+		2025-03-10:
+			There is a bug (?) on 11.1.5 PTR where there is an extra entry at the start of the parts table.
+	 		We're going to check both part[2] and part[3] to account for this.
+	]]
+
+	if tonumber(parts[2]) == id or (type(parts[2] == "string") and tonumber(parts[3]) == id) then
 		return true
 	end
 	return false
