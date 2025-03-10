@@ -72,9 +72,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Evoker.DevastationSpells
 	specCache.devastation.spellsData.spells = TRB.Classes.Evoker.DevastationSpells:New()
-	---@type TRB.Classes.Evoker.DevastationSpells
-	---@diagnostic disable-next-line: assign-type-mismatch
-	local spells = specCache.devastation.spellsData.spells
+	local spells = specCache.devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 
 	specCache.devastation.snapshotData.attributes.manaRegen = 0
 	specCache.devastation.snapshotData.audio = {
@@ -1644,16 +1642,17 @@ local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Data.character.specId = GetSpecialization()
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	if TRB.Data.character.specId == 1 then
 		specCache.devastation.talents:GetTalents()
 		FillSpellData_Devastation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
-		
+
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
-		local targetData = TRB.Data.snapshotData.targetData
+		local targetData = TRB.Data.snapshotData.targetData	
+		
 		targetData:AddSpellTracking(spells.meltArmor)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
@@ -1675,8 +1674,9 @@ local function SwitchSpec()
 	elseif TRB.Data.character.specId == 2 then
 		specCache.preservation.talents:GetTalents()
 		FillSpellData_Preservation()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
-		
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)		
+
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 		---@type TRB.Classes.TargetData
@@ -1719,7 +1719,8 @@ local function SwitchSpec()
 		specCache.augmentation.talents:GetTalents()
 		FillSpellData_Augmentation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
-		
+
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -1822,19 +1823,20 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		end
 
 		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
-			if not TRB.Details.addonData.optionsPanel then
-				TRB.Details.addonData.optionsPanel = true
+			if not TRB.Details.addonData.optionsPanelStarted then
+				TRB.Details.addonData.optionsPanelStarted = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 				C_Timer.After(0, function()
 					C_Timer.After(1, function()
-						TRB.Data.barConstructedForSpec = nil
 						TRB.Data.settings.evoker.devastation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Devastation Evoker", TRB.Data.settings.evoker.devastation)
 						TRB.Data.settings.evoker.preservation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Preservation Evoker", TRB.Data.settings.evoker.preservation)
 						TRB.Data.settings.evoker.augmentation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Augmentation Evoker", TRB.Data.settings.evoker.augmentation)
+						
 						FillSpellData_Devastation()
 						FillSpellData_Preservation()
 						FillSpellData_Augmentation()
 
+						TRB.Data.barConstructedForSpec = nil
 						SwitchSpec()
 
 						TRB.Options.Evoker.ConstructOptionsPanel(specCache)
@@ -1843,12 +1845,15 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 						end
+
 						TRB.Functions.Class:EventRegistration()
+						TRB.Functions.News:Init()
+						TRB.Details.addonData.optionsPanelFinished = true
 					end)
 				end)
 			end
 
-			if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
+			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
 				SwitchSpec()
 			end
 		end

@@ -1255,12 +1255,14 @@ local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Data.character.specId = GetSpecialization()
+	
 	if TRB.Data.character.specId == 1 then
 		specCache.arms.talents:GetTalents()
 		FillSpellData_Arms()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.arms)
 
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1300,7 +1302,8 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.fury.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
 		
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		local lookup = TRB.Data.lookup or {}
 		lookup["#bladestorm"] = spells.bladestorm.icon
 		lookup["#charge"] = spells.charge.icon
@@ -1392,8 +1395,8 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		end
 
 		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
-			if not TRB.Details.addonData.optionsPanel then
-				TRB.Details.addonData.optionsPanel = true
+			if not TRB.Details.addonData.optionsPanelStarted then
+				TRB.Details.addonData.optionsPanelStarted = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 				C_Timer.After(0, function()
 					C_Timer.After(1, function()
@@ -1405,18 +1408,22 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 						TRB.Data.barConstructedForSpec = nil
 						SwitchSpec()
+
 						TRB.Options.Warrior.ConstructOptionsPanel(specCache)
+
 						-- Reconstruct just in case
 						if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 						end
+
 						TRB.Functions.Class:EventRegistration()
 						TRB.Functions.News:Init()
+						TRB.Details.addonData.optionsPanelFinished = true
 					end)
 				end)
 			end
 
-			if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
+			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
 				SwitchSpec()
 			end
 		end

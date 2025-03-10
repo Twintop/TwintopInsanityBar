@@ -1580,12 +1580,14 @@ local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Data.character.specId = GetSpecialization()
+
 	if TRB.Data.character.specId == 2 then
 		specCache.mistweaver.talents:GetTalents()
 		FillSpellData_Mistweaver()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.mistweaver)
-		
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
+
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1626,8 +1628,9 @@ local function SwitchSpec()
 		specCache.windwalker.talents:GetTalents()
 		FillSpellData_Windwalker()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.windwalker)
-		
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1744,30 +1747,34 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		end
 
 		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
-			if not TRB.Details.addonData.optionsPanel then
-				TRB.Details.addonData.optionsPanel = true
+			if not TRB.Details.addonData.optionsPanelStarted then
+				TRB.Details.addonData.optionsPanelStarted = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 				C_Timer.After(0, function()
 					C_Timer.After(1, function()
-						TRB.Data.barConstructedForSpec = nil
 						TRB.Data.settings.monk.windwalker = TRB.Functions.LibSharedMedia:ValidateLsmValues("Windwalker Monk", TRB.Data.settings.monk.windwalker)
 						TRB.Data.settings.monk.mistweaver = TRB.Functions.LibSharedMedia:ValidateLsmValues("Mistweaver Monk", TRB.Data.settings.monk.mistweaver)
 						FillSpellData_Windwalker()
 						FillSpellData_Mistweaver()
 
+						TRB.Data.barConstructedForSpec = nil
 						SwitchSpec()
+
 						TRB.Options.Monk.ConstructOptionsPanel(specCache)
+
 						-- Reconstruct just in case
 						if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 						end
+
 						TRB.Functions.Class:EventRegistration()
 						TRB.Functions.News:Init()
+						TRB.Details.addonData.optionsPanelFinished = true
 					end)
 				end)
 			end
 
-			if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
+			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
 				SwitchSpec()
 			end
 		end
@@ -1833,7 +1840,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		if TRB.Data.character.specId == 3 then
 			includeComboPoints = true
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-			if talents:IsTalentActive(spells.combatWisdom) then
+			if talents ~= nil and talents:IsTalentActive(spells.combatWisdom) then
 				notZeroShowValueComboPoints = 2
 			end
 		end

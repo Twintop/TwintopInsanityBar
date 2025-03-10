@@ -1841,7 +1841,8 @@ local function SwitchSpec()
 		FillSpellData_Elemental()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
 
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1876,8 +1877,9 @@ local function SwitchSpec()
 		specCache.enhancement.talents:GetTalents()
 		FillSpellData_Enhancement()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
-					
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+			
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]		
+		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1903,7 +1905,8 @@ local function SwitchSpec()
 		FillSpellData_Restoration()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
 
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -2020,8 +2023,8 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 		end
 
 		if TRB.Details.addonData.loaded and TRB.Data.character.specId > 0 then
-			if not TRB.Details.addonData.optionsPanel then
-				TRB.Details.addonData.optionsPanel = true
+			if not TRB.Details.addonData.optionsPanelStarted then
+				TRB.Details.addonData.optionsPanelStarted = true
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 				C_Timer.After(0, function()
 					C_Timer.After(1, function()
@@ -2033,19 +2036,24 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						FillSpellData_Enhancement()
 						FillSpellData_Restoration()
 
+						TRB.Data.barConstructedForSpec = nil
 						SwitchSpec()
+
 						TRB.Options.Shaman.ConstructOptionsPanel(specCache)
+
 						-- Reconstruct just in case
 						if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 							ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 						end
+
 						TRB.Functions.Class:EventRegistration()
 						TRB.Functions.News:Init()
+						TRB.Details.addonData.optionsPanelFinished = true
 					end)
 				end)
 			end
 
-			if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
+			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
 				SwitchSpec()
 			end
 		end
