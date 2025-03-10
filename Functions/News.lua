@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 11.1.0.6-release (2025-03-09)
+# 11.1.0.6-release (2025-03-10)
 ## General
 
 - (FIX) Fix a caching issue with threshold lines.

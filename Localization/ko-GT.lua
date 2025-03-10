@@ -2121,4 +2121,8 @@ if locale == "koKR" then
     L["GlobalResourceDecimalPrecision"] = "리소스 소수점 정밀도"
     L["CheckboxUseGlobalTooltip_Precision"] = "체크 시, 막대 텍스트의 소수점 및 리소스 정밀도에 대한 글로벌 설정이 사용됩니다."
     L["Resource"] = "의지"
+    L["WarriorArmsBarTextVariable_ravagerTicks"] = "Ravager에서 남은 틱 수"
+    L["WarriorArmsBarTextVariable_ravagerRage"] = "Ravager에서 분노"
+    L["WarriorFuryBarTextVariable_bladestormTicks"] = "Bladestorm에서 남은 틱 수"
+    L["WarriorFuryBarTextVariable_bladestormRage"] = "Bladestorm에서 분노"
 end

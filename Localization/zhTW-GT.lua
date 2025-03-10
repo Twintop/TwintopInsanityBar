@@ -2121,4 +2121,8 @@ if locale == "zhTW" then
     L["GlobalResourceDecimalPrecision"] = "資源小數精度"
     L["CheckboxUseGlobalTooltip_Precision"] = "選取後，將使用條形文字中的小數和資源精確度的全域設定。"
     L["Resource"] = "資源"
+    L["WarriorArmsBarTextVariable_ravagerTicks"] = "掠奪者剩餘的預期滴答數"
+    L["WarriorArmsBarTextVariable_ravagerRage"] = "掠奪者怒氣"
+    L["WarriorFuryBarTextVariable_bladestormTicks"] = "劍刃風暴剩餘的預期滴答數"
+    L["WarriorFuryBarTextVariable_bladestormRage"] = "刃風暴怒氣"
 end

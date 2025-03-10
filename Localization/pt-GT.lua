@@ -2121,4 +2121,8 @@ if locale == "ptBR" or locale == "ptPT" then
     L["GlobalResourceDecimalPrecision"] = "Precisão decimal de recursos"
     L["CheckboxUseGlobalTooltip_Precision"] = "Quando marcada, as configurações globais para precisão decimal e de recursos no texto de barra serão usadas."
     L["Resource"] = "Recurso"
+    L["WarriorArmsBarTextVariable_ravagerTicks"] = "Número de ticks restantes esperados em Ravager"
+    L["WarriorArmsBarTextVariable_ravagerRage"] = "Fúria de Ravager"
+    L["WarriorFuryBarTextVariable_bladestormTicks"] = "Número de ticks restantes esperados em Bladestorm"
+    L["WarriorFuryBarTextVariable_bladestormRage"] = "Fúria de Bladestorm"
 end

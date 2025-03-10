@@ -2121,4 +2121,8 @@ L["CannibalizeIfForsaken"] = "Kannibalisieren (wenn im Stich gelassen)"
     L["GlobalResourceDecimalPrecision"] = "Dezimalgenauigkeit für Ressourcen"
     L["CheckboxUseGlobalTooltip_Precision"] = "Wenn aktiviert, werden die globalen Einstellungen für Dezimal- und Ressourcengenauigkeit im Balkentext verwendet."
     L["Resource"] = "Ressource"
+    L["WarriorArmsBarTextVariable_ravagerTicks"] = "Anzahl der voraussichtlich verbleibenden Ticks bei Ravager"
+    L["WarriorArmsBarTextVariable_ravagerRage"] = "Rage von Ravager"
+    L["WarriorFuryBarTextVariable_bladestormTicks"] = "Anzahl der voraussichtlich verbleibenden Ticks bei Bladestorm"
+    L["WarriorFuryBarTextVariable_bladestormRage"] = "Rage von Bladestorm"
 end

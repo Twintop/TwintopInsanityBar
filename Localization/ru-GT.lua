@@ -2121,4 +2121,8 @@ if locale == "ruRU" then
     L["GlobalResourceDecimalPrecision"] = "Точность десятичной дроби ресурса"
     L["CheckboxUseGlobalTooltip_Precision"] = "Если отмечено, будут использоваться глобальные настройки для точности десятичной дроби и ресурса в тексте панели."
     L["Resource"] = "Ресурс"
+    L["WarriorArmsBarTextVariable_ravagerTicks"] = "Количество ожидаемых тиков, оставшихся на Ravager"
+    L["WarriorArmsBarTextVariable_ravagerRage"] = "Ярость от Ravager"
+    L["WarriorFuryBarTextVariable_bladestormTicks"] = "Количество ожидаемых тиков, оставшихся на Bladestorm"
+    L["WarriorFuryBarTextVariable_bladestormRage"] = "Ярость от Bladestorm"
 end
