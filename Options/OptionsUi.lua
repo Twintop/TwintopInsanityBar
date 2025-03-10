@@ -269,13 +269,13 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorC
 		
 			if frame ~= nil then
 				if frameType == "backdrop" then
-					TRB.Functions.Color:SetBackdropColor(frame, colorTable[key], true, specId)
+					TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
 				elseif frameType == "border" then
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key])
 				elseif frameType == "bar" then
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key])
 				elseif frameType == "threshold" then
-					TRB.Functions.Color:SetThresholdColor(frame, colorTable[key], true, specId)
+					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key].color, true, specId)
 				end
 			end
 		end)
