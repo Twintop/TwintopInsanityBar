@@ -834,7 +834,10 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		isTalent = true,
 		resource = 10
 	})
-
+	self.powerInfusion = TRB.Classes.SpellBase:New({
+		id = 10060,
+		isTalent = true
+	})
 	-- Shadow Talent Abilities			
 	self.devouringPlague = TRB.Classes.SpellThreshold:New({
 		id = 335467,

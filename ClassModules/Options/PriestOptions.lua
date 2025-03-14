@@ -1429,6 +1429,12 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			powerInfusion={
+				name = "Power Infusion Audio",
+				enabled = false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
 		textures={
@@ -4263,6 +4269,70 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 		CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 		PlaySoundFile(spec.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
+	end
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.powerInfusionProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_PowerInfusion_Sound", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.powerInfusionProc
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalAudioCheckboxPowerInfusion"])
+	f.tooltip = L["GlobalAudioCheckboxPowerInfusionTooltip"]
+	f:SetChecked(spec.audio.powerInfusion.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.audio.powerInfusion.enabled = self:GetChecked()
+
+		if spec.audio.powerInfusion.enabled then
+			PlaySoundFile(spec.audio.powerInfusion.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+	end)
+
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.powerInfusionProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Shadow_PowerInfusion_ProcAudio", parent)
+	controls.dropDown.powerInfusionProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.powerInfusionProcAudio, oUi.sliderWidth)
+	LibDD:UIDropDownMenu_SetText(controls.dropDown.powerInfusionProcAudio, spec.audio.powerInfusion.soundName)
+	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.powerInfusionProcAudio, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	LibDD:UIDropDownMenu_Initialize(controls.dropDown.powerInfusionProcAudio, function(self, level, menuList)
+		local entries = 25
+		local info = LibDD:UIDropDownMenu_CreateInfo()
+		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
+				info.menuList = i
+				LibDD:UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(soundsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = sounds[v]
+					info.checked = sounds[v] == spec.audio.powerInfusion.sound
+					info.func = self.SetValue
+					info.arg1 = sounds[v]
+					info.arg2 = v
+					LibDD:UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	-- Implement the function to change the audio
+	function controls.dropDown.powerInfusionProcAudio:SetValue(newValue, newName)
+		spec.audio.powerInfusion.sound = newValue
+		spec.audio.powerInfusion.soundName = newName
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.powerInfusionProcAudio, newName)
+		CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+		PlaySoundFile(spec.audio.powerInfusion.sound, TRB.Data.settings.core.audio.channel.channel)
 	end
 
 	yCoord = yCoord - 60
