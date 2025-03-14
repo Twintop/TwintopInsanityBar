@@ -82,10 +82,10 @@ end
 ---@param includeComboPoints boolean?
 ---@param notZeroShowValueComboPoints number?
 function TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, includeComboPoints, notZeroShowValueComboPoints)
+	---@type TRB.Classes.SnapshotData
+	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 	if settings ~= nil then
 		local affectingCombat = TRB.Data.character.inCombat
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 		if not TRB.Data.specSupported or force or
 			(TRB.Data.character.advancedFlight and not settings.displayBar.dragonriding) or
 			((not affectingCombat) and

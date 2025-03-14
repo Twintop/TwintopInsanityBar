@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.0.8-release (2025-03-14)
+## General
+
+- [#428 - FIX](#428) Fix a Lua error that occurs sporadically when mounting or on a dynamic flight mount.
+
+---
+
 # 11.1.0.7-release (2025-03-11)
 ## Priest
 ### Shadow

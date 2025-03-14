@@ -1168,12 +1168,21 @@ end
 ---Hides all bar text
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:Hide(settings)
-	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
-	---@type Frame[]
-	local textFrames = TRB.Frames.textFrames
-	local entries = TRB.Functions.Table:Length(displayText.barText)
-	if entries > 0 then
-		for i = 1, entries do
+	if 1 == 2 then-- settings ~= nil then
+		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
+		---@type Frame[]
+		local textFrames = TRB.Frames.textFrames
+		local entries = TRB.Functions.Table:Length(displayText.barText)
+		if entries > 0 then
+			for i = 1, entries do
+				textFrames[i]:Hide()
+				---@diagnostic disable-next-line: undefined-field
+				textFrames[i].font:Hide()
+			end
+		end
+	else
+		local textFrames = TRB.Frames.textFrames
+		for i = 1, #textFrames do
 			textFrames[i]:Hide()
 			---@diagnostic disable-next-line: undefined-field
 			textFrames[i].font:Hide()
