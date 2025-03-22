@@ -101,7 +101,9 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 	if settings.audio ~= nil then
 		for k, v in pairs(settings.audio) do
 			if v.soundName == nil or not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.SOUND, v.soundName) then
-				if v.name ~= nil and v.soundName ~= nil then
+				if type(v.name) == "table" or type(v.soundName) == "table" then
+					print(string.format(L["LSMInvalidSound"], specName))
+				elseif v.name ~= nil and v.soundName ~= nil then
 					print(string.format(L["LSMInvalidSoundNameBoth"], specName, v.name, v.soundName))
 				elseif v.soundName ~= nil then
 					print(string.format(L["LSMInvalidSoundNameOnlySoundName"], specName, v.soundName))

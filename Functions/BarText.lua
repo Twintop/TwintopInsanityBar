@@ -1060,8 +1060,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	classId = classId or TRB.Data.character.classId
 	specId = specId or TRB.Data.character.specId
 	
-	local className = string.lower(select(2, GetClassInfo(classId)))
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
 	local settings = TRB.Data.specCache[specName].settings
 
 	---@type Frame[]

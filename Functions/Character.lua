@@ -80,6 +80,26 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
+function TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, lowerCaseClass)
+	local className
+	if classId ~= nil then
+		className = select(2, GetClassInfo(classId))
+	else
+		className = "Global"
+	end
+
+	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	if specName == nil then
+		specName = ""
+	end
+
+	if lowerCaseClass then
+		return string.lower(className), specName
+	else
+		return className, specName
+	end
+end
+
 function TRB.Functions.Character:GetSpecializationName(className, specId)
     className = string.upper(className) -- Should be uppercase anyway from UnitClass() but let's be certain
 	if className == "DEATHKNIGHT" then

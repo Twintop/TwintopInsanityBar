@@ -683,18 +683,7 @@ local function AdjustBarBorder()
 end
 
 function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
-	local className
-
-	if classId ~= nil then
-		_, className, _ = GetClassInfo(classId)
-	else
-		className = "Global"
-	end
-
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
-	if specName == nil then
-		specName = ""
-	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 
 	local f = nil	
 	local title = ""
@@ -880,18 +869,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		secondaryResourceString = L["ResourceComboPoints"]
 	end
 
-	local className
-
-	if classId ~= nil then
-		_, className, _ = GetClassInfo(classId)
-	else
-		className = "Global"
-	end
-
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
-	if specName == nil then
-		specName = ""
-	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 
 	local f = nil
 
@@ -2312,18 +2290,7 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 end
 
 function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, classId, specId, yCoord)
-	local className
-
-	if classId ~= nil then
-		_, className, _ = GetClassInfo(classId)
-	else
-		className = "Global"
-	end
-
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
-	if specName == nil then
-		specName = ""
-	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 
 	local f = nil
 	local title = ""
@@ -2426,18 +2393,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 end
 
 function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, classId, specId, yCoord)
-	local className
-
-	if classId ~= nil then
-		_, className, _ = GetClassInfo(classId)
-	else
-		className = "Global"
-	end
-
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
-	if specName == nil then
-		specName = ""
-	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 
 	local f = nil
 
@@ -2468,18 +2424,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spe
 	showDown = showDown or true
 	
 	local f = nil
-	local className
-
-	if classId ~= nil then
-		_, className, _ = GetClassInfo(classId)
-	else
-		className = "Global"
-	end
-
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
-	if specName == nil then
-		specName = ""
-	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 
 	yCoord = yCoord - 30
 	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
@@ -2548,18 +2493,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spe
 end
 
 function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, classId, specId, yCoord)
-	local className
-
-	if classId ~= nil then
-		_, className, _ = GetClassInfo(classId)
-	else
-		className = "Global"
-	end
-
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
-	if specName == nil then
-		specName = ""
-	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 
 	local f = nil
 	local title = ""
@@ -2602,7 +2536,79 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 	return yCoord
 end
 
----comment
+function TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, name, spec, classId, specId, yCoord, localization, localizationTooltip)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	
+	controls.checkBoxes[name] = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_" .. name .. "Checkbox", parent, "ChatConfigCheckButtonTemplate")
+
+	local f = controls.checkBoxes[name]
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(localization)
+	f.tooltip = localizationTooltip
+	f:SetChecked(spec.audio[name].enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.audio[name].enabled = self:GetChecked()
+		if spec.audio[name].enabled then
+			PlaySoundFile(spec.audio[name].sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+	end)
+	TRB.Functions.OptionsUi:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
+
+	yCoord = yCoord - 60
+	return yCoord
+end
+
+local sounds = {}
+local soundsList = {}
+local soundPairs = {}
+local soundPairsByName = {}
+local function FillSoundCache()
+	if TRB.Functions.Table:Length(sounds) == 0 then
+		sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+		soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+
+		local x = 1
+		for k, v in pairs(soundsList) do
+			table.insert(soundPairs, { v, sounds[v] })
+			soundPairsByName[sounds[v]] = v
+			x = x + 1
+		end
+	end
+end
+
+function TRB.Functions.OptionsUi:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
+	FillSoundCache()
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+
+	controls.dropDown = controls.dropDown or {}
+
+	controls.dropDown[name .. "Audio"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_" .. name .. "Audio", parent, "WowStyle1DropdownTemplate")
+	local dd = controls.dropDown[name .. "Audio"]
+	dd:SetWidth(oUi.sliderWidth)
+	dd:SetDefaultText(spec.audio[name].soundName)
+	local function IsSelected(value)
+		return value == spec.audio[name].sound
+	end
+	
+	local function SetSelected(newValue)
+		spec.audio[name].sound = newValue
+		spec.audio[name].soundName = soundPairsByName[newValue]
+		dd:SetDefaultText(spec.audio[name].soundName)
+		PlaySoundFile(spec.audio[name].sound, TRB.Data.settings.core.audio.channel.channel)
+	end
+
+	local function Generator(dropdown, rootDescription)
+		for k, v in pairs(soundPairs) do
+			rootDescription:CreateRadio(v[1], IsSelected, SetSelected, v[2])
+		end
+		rootDescription:SetScrollMode(400)
+
+	end
+	dd:SetupMenu(Generator)
+	dd:SetPoint("TOPLEFT", oUi.xPadding2, yCoord-20)
+end
+
+---
 ---@param parent frame
 ---@param controls table
 ---@param spec table
