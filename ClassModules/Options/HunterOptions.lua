@@ -2483,7 +2483,7 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxUnblinkingVigil"], L["HunterMarksmanshipCheckboxUnblinkingVigilTooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "secretsOfTheUnblinkingVigil", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxUnblinkingVigil"], L["HunterMarksmanshipCheckboxUnblinkingVigilTooltip"])
 
 	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)

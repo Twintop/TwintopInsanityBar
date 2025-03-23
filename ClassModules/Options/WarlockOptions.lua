@@ -303,7 +303,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			},
 			barText = {}
 		},
-		audio={
+		audio = {
 			tormentedCrescendo={
 				name = L["WarlockAfflictionAudioTormentedCrescendo1"],
 				enabled=false,

@@ -626,12 +626,6 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 		},
 		textures = {
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -960,7 +954,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			},
 			barText = {}
 		},
-		audio={
+		audio = {
 			innervate={
 				name = L["Innervate"],
 				enabled=false,

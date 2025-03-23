@@ -445,12 +445,6 @@ local function DevastationLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			essenceBurst={
 				name = L["EvokerAudioEssenceBurstStack1"],
 				enabled=false,
@@ -809,7 +803,7 @@ local function PreservationLoadDefaultSettings(includeBarText)
 			},
 			barText = {}
 		},
-		audio={
+		audio = {
 			innervate={
 				name = L["Innervate"],
 				enabled=false,
@@ -1136,12 +1130,6 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			essenceBurst={
 				name = L["EvokerAudioEssenceBurstStack1"],
 				enabled=false,

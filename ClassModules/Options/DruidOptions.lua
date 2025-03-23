@@ -1194,7 +1194,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			},
 			barText = {}
 		},
-		audio={
+		audio = {
 			innervate={
 				name = L["Innervate"],
 				enabled=false,

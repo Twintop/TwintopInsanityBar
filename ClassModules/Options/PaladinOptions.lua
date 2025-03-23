@@ -317,7 +317,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 			},
 			barText = {}
 		},
-		audio={
+		audio = {
 			innervate={
 				name = L["Innervate"],
 				enabled=false,

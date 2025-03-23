@@ -418,7 +418,7 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 			},
 			barText = {}
 		},
-		audio={
+		audio = {
 			innervate={
 				name = L["Innervate"],
 				enabled=false,
@@ -957,7 +957,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 			},
 			barText = {}
 		},
-		audio={
+		audio = {
 			innervate={
 				name = L["Innervate"],
 				enabled=false,
@@ -1405,7 +1405,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 			},
 			barText = {}
 		},
-		audio={
+		audio = {
 			overcap={
 				name = L["Overcap"],
 				enabled=false,
