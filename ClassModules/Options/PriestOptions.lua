@@ -1808,6 +1808,7 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
@@ -1815,7 +1816,6 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 	
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight2", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight2"], L["PriestAudioCheckboxSurgeOfLight2Tooltip"])
 
-	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
 			
 	yCoord = yCoord - 30
@@ -2625,6 +2625,7 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
@@ -2636,7 +2637,6 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "lightweaver", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaver"], L["PriestHolyAudioCheckboxLightweaverTooltip"])
 
-	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
 					
 	yCoord = yCoord - 30

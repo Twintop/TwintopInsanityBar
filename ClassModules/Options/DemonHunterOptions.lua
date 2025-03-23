@@ -1149,6 +1149,7 @@ local function HavocConstructAudioAndTrackingPanel(parent)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord,string.format(L["OvercapAudioCheckbox"], L["ResourceFury"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFury"]))
 end
@@ -1737,6 +1738,7 @@ local function VengeanceConstructAudioAndTrackingPanel(parent)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFury"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFury"]))
 end

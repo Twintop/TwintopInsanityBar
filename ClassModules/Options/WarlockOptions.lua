@@ -702,6 +702,7 @@ local function AfflictionConstructAudioAndTrackingPanel(parent)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "nightfall", spec, classId, specId, yCoord, L["WarlockAfflictionAudioCheckboxNightfall"], L["WarlockAfflictionAudioCheckboxNightfallTooltip"])
 	
