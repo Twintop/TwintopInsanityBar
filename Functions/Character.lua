@@ -416,6 +416,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	specCache.settings.displayBar = spec.displayBar
 	specCache.settings.textures = spec.textures
 	specCache.settings.thresholds = spec.thresholds
+	specCache.settings.audio = spec.audio
 end
 
 function TRB.Functions.Character:IsComboPointUser()

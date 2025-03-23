@@ -20,6 +20,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public textures table?
 ---@field public thresholds table?
 ---@field public precision TRB.Classes.Settings.Precision
+---@field public audio { string: TRB.Classes.Settings.Audio }
 
 ---@class TRB.Classes.Settings.Core : TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public dataRefreshRate number
@@ -27,7 +28,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public smoothBarValueUpdates boolean
 ---@field public news table
 ---@field public ttd table
----@field public audio table
 ---@field public strata table
 ---@field public timers table
 ---@field public thresholds table
@@ -95,3 +95,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public relativeToName string
 ---@field public relativeToFrame string
 ---@field public relativeToFrameName string
+
+---@class TRB.Classes.Settings.Audio
+---@field public name string
+---@field public enabled boolean
+---@field public sound string
+---@field public soundName string
