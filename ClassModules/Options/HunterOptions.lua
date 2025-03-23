@@ -1599,6 +1599,8 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 3
+	local specId = 1
 	local spec = TRB.Data.settings.hunter.beastMastery
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -1610,137 +1612,14 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 
 	controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 3, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.killShotAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterAudioCheckboxKillShot"])
-	f.tooltip = L["HunterAudioCheckboxKillShotTooltip"]
-	f:SetChecked(spec.audio.killShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.killShot.enabled = self:GetChecked()
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterAudioCheckboxKillShot"], L["HunterAudioCheckboxKillShotTooltip"])
 
-		if spec.audio.killShot.enabled then
-			PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.killShotAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_BeastMastery_killShot_Audio", parent)
-	controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.killShot.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.killShotAudio:SetValue(newValue, newName)
-		spec.audio.killShot.sound = newValue
-		spec.audio.killShot.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
-		CloseDropDownMenus()
-		PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]))
-	f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"])
-	f:SetChecked(spec.audio.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.overcap.enabled = self:GetChecked()
-
-		if spec.audio.overcap.enabled then
-			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_BeastMastery_overcapAudio", parent)
-	controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.overcap.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-		spec.audio.overcap.sound = newValue
-		spec.audio.overcap.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-		CloseDropDownMenus()
-		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
 
 	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
@@ -1804,8 +1683,6 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.generation.time = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 end
 
 local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
@@ -2530,6 +2407,8 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 3
+	local specId = 2
 	local spec = TRB.Data.settings.hunter.marksmanship
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -2541,75 +2420,12 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 
 	controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 3, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.aimedShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.aimedShotAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxAimedShot"])
-	f.tooltip = L["HunterMarksmanshipCheckboxAimedShotTooltip"]
-	f:SetChecked(spec.audio.aimedShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.aimedShot.enabled = self:GetChecked()
-
-		if spec.audio.aimedShot.enabled then
-			PlaySoundFile(spec.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.aimedShotAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_aimedShot_Audio", parent)
-	controls.dropDown.aimedShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.aimedShotAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, spec.audio.aimedShot.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.aimedShotAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.aimedShotAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.aimedShot.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.aimedShotAudio:SetValue(newValue, newName)
-		spec.audio.aimedShot.sound = newValue
-		spec.audio.aimedShot.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.aimedShotAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "aimedShot", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxAimedShot"], L["HunterMarksmanshipCheckboxAimedShotTooltip"])
 	
 	yCoord = yCoord - 60
 	controls.checkBoxes.aimedShotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_GCD", parent, "UIRadioButtonTemplate")
@@ -2661,265 +2477,13 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 	end)
 
 
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "loackAndLoad", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxLockAndLoad"], L["HunterMarksmanshipCheckboxLockAndLoadTooltip"])
 
-	yCoord = yCoord - 50
-	controls.checkBoxes.lockAndLoadAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.lockAndLoadAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxLockAndLoad"])
-	f.tooltip = L["HunterMarksmanshipCheckboxLockAndLoadTooltip"]
-	f:SetChecked(spec.audio.lockAndLoad.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.lockAndLoad.enabled = self:GetChecked()
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterAudioCheckboxKillShot"], L["HunterAudioCheckboxKillShotTooltip"])
 
-		if spec.audio.lockAndLoad.enabled then
-			PlaySoundFile(spec.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
 
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.lockAndLoadAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Audio", parent)
-	controls.dropDown.lockAndLoadAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.lockAndLoadAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, spec.audio.lockAndLoad.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.lockAndLoadAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.lockAndLoadAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.lockAndLoad.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.lockAndLoadAudio:SetValue(newValue, newName)
-		spec.audio.lockAndLoad.sound = newValue
-		spec.audio.lockAndLoad.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.lockAndLoadAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.killShotAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterAudioCheckboxKillShot"])
-	f.tooltip = L["HunterAudioCheckboxKillShotTooltip"]
-	f:SetChecked(spec.audio.killShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.killShot.enabled = self:GetChecked()
-
-		if spec.audio.killShot.enabled then
-			PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.killShotAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_killShot_Audio", parent)
-	controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.killShot.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.killShotAudio:SetValue(newValue, newName)
-		spec.audio.killShot.sound = newValue
-		spec.audio.killShot.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]))
-	f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"])
-	f:SetChecked(spec.audio.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.overcap.enabled = self:GetChecked()
-
-		if spec.audio.overcap.enabled then
-			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_overcapAudio", parent)
-	controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.overcap.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-		spec.audio.overcap.sound = newValue
-		spec.audio.overcap.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.secretsOfTheUnblinkingVigilAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigil_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.secretsOfTheUnblinkingVigilAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxUnblinkingVigil"])
-	f.tooltip = L["HunterMarksmanshipCheckboxUnblinkingVigilTooltip"]
-	f:SetChecked(spec.audio.secretsOfTheUnblinkingVigil.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.secretsOfTheUnblinkingVigil.enabled = self:GetChecked()
-
-		if spec.audio.secretsOfTheUnblinkingVigil.enabled then
-			PlaySoundFile(spec.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.secretsOfTheUnblinkingVigilAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigilAudio", parent)
-	controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.secretsOfTheUnblinkingVigilAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, spec.audio.secretsOfTheUnblinkingVigil.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.secretsOfTheUnblinkingVigilAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.secretsOfTheUnblinkingVigil.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.secretsOfTheUnblinkingVigilAudio:SetValue(newValue, newName)
-		spec.audio.secretsOfTheUnblinkingVigil.sound = newValue
-		spec.audio.secretsOfTheUnblinkingVigil.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.secretsOfTheUnblinkingVigilAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxUnblinkingVigil"], L["HunterMarksmanshipCheckboxUnblinkingVigilTooltip"])
 
 	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
@@ -2984,8 +2548,6 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.generation.time = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 end
 
 local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
@@ -3600,6 +3162,8 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 3
+	local specId = 3
 	local spec = TRB.Data.settings.hunter.survival
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -3611,137 +3175,14 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 
 	controls.buttons.exportButton_Hunter_Survival_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_Survival_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 3, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.killShotAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterAudioCheckboxKillShot"])
-	f.tooltip = L["HunterAudioCheckboxKillShotTooltip"]
-	f:SetChecked(spec.audio.killShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.killShot.enabled = self:GetChecked()
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterAudioCheckboxKillShot"], L["HunterAudioCheckboxKillShotTooltip"])
 
-		if spec.audio.killShot.enabled then
-			PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.killShotAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Survival_killShot_Audio", parent)
-	controls.dropDown.killShotAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.killShotAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, spec.audio.killShot.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.killShotAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.killShotAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.killShot.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.killShotAudio:SetValue(newValue, newName)
-		spec.audio.killShot.sound = newValue
-		spec.audio.killShot.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
-		CloseDropDownMenus()
-		PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]))
-	f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"])
-	f:SetChecked(spec.audio.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.overcap.enabled = self:GetChecked()
-
-		if spec.audio.overcap.enabled then
-			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Survival_overcapAudio", parent)
-	controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.overcap.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-		spec.audio.overcap.sound = newValue
-		spec.audio.overcap.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
 
 	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
@@ -3806,8 +3247,6 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.generation.time = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 end
 
 local function SurvivalConstructBarTextDisplayPanel(parent, cache)

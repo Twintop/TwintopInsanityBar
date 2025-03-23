@@ -1462,151 +1462,24 @@ local function DevastationConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 13
+	local specId = 1
 	local spec = TRB.Data.settings.evoker.devastation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.devastation
 	local yCoord = 5
-	local f = nil
 
 	controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurstStack1"], L["EvokerAudioCheckboxEssenceBurstStack1Tooltip"])
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.essenceBurst = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_essenceBurstCB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurst
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAudioCheckboxEssenceBurstStack1"])
-	f.tooltip = L["EvokerAudioCheckboxEssenceBurstStack1Tooltip"]
-	f:SetChecked(spec.audio.essenceBurst.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.essenceBurst.enabled = self:GetChecked()
-
-		if spec.audio.essenceBurst.enabled then
-			PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.essenceBurstAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Devastation_essenceBurstAudio", parent)
-	controls.dropDown.essenceBurstAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurstAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, spec.audio.essenceBurst.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurstAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurstAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.essenceBurst.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.essenceBurstAudio:SetValue(newValue, newName)
-		spec.audio.essenceBurst.sound = newValue
-		spec.audio.essenceBurst.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.essenceBurst2 = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_essenceBurst2CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurst2
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAudioCheckboxEssenceBurstStack2"])
-	f.tooltip = L["EvokerAudioCheckboxEssenceBurstStack2Tooltip"]
-	f:SetChecked(spec.audio.essenceBurst2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.essenceBurst2.enabled = self:GetChecked()
-
-		if spec.audio.essenceBurst2.enabled then
-			PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.essenceBurst2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Devastation_essenceBurstAudio", parent)
-	controls.dropDown.essenceBurst2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurst2Audio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, spec.audio.essenceBurst2.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurst2Audio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurst2Audio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.essenceBurst2.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.essenceBurst2Audio:SetValue(newValue, newName)
-		spec.audio.essenceBurst2.sound = newValue
-		spec.audio.essenceBurst2.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst2", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurstStack2"], L["EvokerAudioCheckboxEssenceBurstStack2Tooltip"])
 end
 
 local function DevastationConstructBarTextDisplayPanel(parent, cache)
@@ -2063,6 +1936,8 @@ local function PreservationConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 13
+	local specId = 2
 	local spec = TRB.Data.settings.evoker.preservation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -2070,208 +1945,18 @@ local function PreservationConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
 	controls.buttons.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Evoker_Preservation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.innervate
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerAudioCheckboxInnervate"])
-	f.tooltip = L["HealerAudioCheckboxInnervateTooltip"]
-	f:SetChecked(spec.audio.innervate.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.innervate.enabled = self:GetChecked()
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
-		if spec.audio.innervate.enabled then
-			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurstStack1"], L["EvokerAudioCheckboxEssenceBurstStack1Tooltip"])
 
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.innervateAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Preservation_Innervate_Audio", parent)
-	controls.dropDown.innervateAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.innervate.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.innervateAudio:SetValue(newValue, newName)
-		spec.audio.innervate.sound = newValue
-		spec.audio.innervate.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
-		CloseDropDownMenus()
-		---@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.essenceBurst = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_essenceBurstCB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurst
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAudioCheckboxEssenceBurstStack1"])
-	f.tooltip = L["EvokerAudioCheckboxEssenceBurstStack1Tooltip"]
-	f:SetChecked(spec.audio.essenceBurst.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.essenceBurst.enabled = self:GetChecked()
-
-		if spec.audio.essenceBurst.enabled then
-			PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.essenceBurstAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Preservation_essenceBurstAudio", parent)
-	controls.dropDown.essenceBurstAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurstAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, spec.audio.essenceBurst.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurstAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurstAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.essenceBurst.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.essenceBurstAudio:SetValue(newValue, newName)
-		spec.audio.essenceBurst.sound = newValue
-		spec.audio.essenceBurst.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.essenceBurst2 = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_essenceBurst2CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurst2
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAudioCheckboxEssenceBurstStack2"])
-	f.tooltip = L["EvokerAudioCheckboxEssenceBurstStack2Tooltip"]
-	f:SetChecked(spec.audio.essenceBurst2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.essenceBurst2.enabled = self:GetChecked()
-
-		if spec.audio.essenceBurst2.enabled then
-			PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.essenceBurst2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Preservation_essenceBurstAudio", parent)
-	controls.dropDown.essenceBurst2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurst2Audio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, spec.audio.essenceBurst2.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurst2Audio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurst2Audio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.essenceBurst2.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.essenceBurst2Audio:SetValue(newValue, newName)
-		spec.audio.essenceBurst2.sound = newValue
-		spec.audio.essenceBurst2.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst2", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurstStack2"], L["EvokerAudioCheckboxEssenceBurstStack2Tooltip"])
 	
 	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
@@ -2319,9 +2004,6 @@ local function PreservationConstructAudioAndTrackingPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.passiveGeneration.symbolOfHope = self:GetChecked()
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = controls
 end
 
 local function PreservationConstructBarTextDisplayPanel(parent, cache)
@@ -2724,153 +2406,24 @@ local function AugmentationConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 13
+	local specId = 3
 	local spec = TRB.Data.settings.evoker.augmentation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.augmentation
 	local yCoord = 5
-	local f = nil
-
-	local title = ""
 
 	controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurstStack1"], L["EvokerAudioCheckboxEssenceBurstStack1Tooltip"])
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.essenceBurst = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_essenceBurstCB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurst
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAudioCheckboxEssenceBurstStack1"])
-	f.tooltip = L["EvokerAudioCheckboxEssenceBurstStack1Tooltip"]
-	f:SetChecked(spec.audio.essenceBurst.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.essenceBurst.enabled = self:GetChecked()
-
-		if spec.audio.essenceBurst.enabled then
-			PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.essenceBurstAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Augmentation_essenceBurstAudio", parent)
-	controls.dropDown.essenceBurstAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurstAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, spec.audio.essenceBurst.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurstAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurstAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.essenceBurst.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.essenceBurstAudio:SetValue(newValue, newName)
-		spec.audio.essenceBurst.sound = newValue
-		spec.audio.essenceBurst.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.essenceBurst2 = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_essenceBurst2CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurst2
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAudioCheckboxEssenceBurstStack2"])
-	f.tooltip = L["EvokerAudioCheckboxEssenceBurstStack2Tooltip"]
-	f:SetChecked(spec.audio.essenceBurst2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.essenceBurst2.enabled = self:GetChecked()
-
-		if spec.audio.essenceBurst2.enabled then
-			PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.essenceBurst2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Augmentation_essenceBurstAudio", parent)
-	controls.dropDown.essenceBurst2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurst2Audio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, spec.audio.essenceBurst2.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurst2Audio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurst2Audio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.essenceBurst2.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.essenceBurst2Audio:SetValue(newValue, newName)
-		spec.audio.essenceBurst2.sound = newValue
-		spec.audio.essenceBurst2.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst2", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurstStack2"], L["EvokerAudioCheckboxEssenceBurstStack2Tooltip"])
 end
 
 local function AugmentationConstructBarTextDisplayPanel(parent, cache)

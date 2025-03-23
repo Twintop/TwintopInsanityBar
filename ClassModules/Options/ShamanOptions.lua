@@ -1438,147 +1438,24 @@ local function ElementalConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 7
+	local specId = 1
 	local spec = TRB.Data.settings.shaman.elemental
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.elemental
 	local yCoord = 5
-	local f = nil
-
-	local title = ""
 
 	controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.esReady = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_CB3_3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.esReady
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalAudioCheckboxEarthShock"])
-	f.tooltip = L["ShamanElementalAudioCheckboxEarthShockTooltip"]
-	f:SetChecked(spec.audio.esReady.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.esReady.enabled = self:GetChecked()
-	end)
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "esReady", spec, classId, specId, yCoord, L["ShamanElementalAudioCheckboxEarthShock"], L["ShamanElementalAudioCheckboxEarthShockTooltip"])
 
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.esReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Shaman_Elemental_esReadyAudio", parent)
-	controls.dropDown.esReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.esReadyAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, spec.audio.esReady.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.esReadyAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.esReadyAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.esReady.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.esReadyAudio:SetValue(newValue, newName)
-		spec.audio.esReady.sound = newValue
-		spec.audio.esReady.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceMaelstrom"]))
-	f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceMaelstrom"])
-	f:SetChecked(spec.audio.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.overcap.enabled = self:GetChecked()
-
-		if spec.audio.overcap.enabled then
-			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Shaman_Elemental_overcapAudio", parent)
-	controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.overcap.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-		spec.audio.overcap.sound = newValue
-		spec.audio.overcap.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-		CloseDropDownMenus()
-		---@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceMaelstrom"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceMaelstrom"]))
 end
 
 local function ElementalConstructBarTextDisplayPanel(parent, cache)
@@ -1983,23 +1860,20 @@ local function EnhancementConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 7
+	local specId = 2
 	local spec = TRB.Data.settings.shaman.enhancement
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.enhancement
 	local yCoord = 5
-	local f = nil
-
-	local title = ""
 
 	controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
 end
 
 local function EnhancementConstructBarTextDisplayPanel(parent, cache)
@@ -2433,6 +2307,8 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 7
+	local specId = 3
 	local spec = TRB.Data.settings.shaman.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -2440,78 +2316,14 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
 	controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.innervate
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerAudioCheckboxInnervate"])
-	f.tooltip = L["HealerAudioCheckboxInnervateTooltip"]
-	f:SetChecked(spec.audio.innervate.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.innervate.enabled = self:GetChecked()
-
-		if spec.audio.innervate.enabled then
-			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.innervateAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Shaman_Restoration_Innervate_Audio", parent)
-	controls.dropDown.innervateAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.innervate.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.innervateAudio:SetValue(newValue, newName)
-		spec.audio.innervate.sound = newValue
-		spec.audio.innervate.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
-		CloseDropDownMenus()
-		---@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 	
 	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
@@ -2559,9 +2371,6 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.passiveGeneration.symbolOfHope = self:GetChecked()
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
 end
 
 local function RestorationConstructBarTextDisplayPanel(parent, cache)

@@ -688,215 +688,26 @@ local function AfflictionConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 9
+	local specId = 1
 	local spec = TRB.Data.settings.warlock.affliction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.affliction
 	local yCoord = 5
-	local f = nil
-
-	local title = ""
 
 	controls.buttons.exportButton_Warlock_Affliction_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Warlock_Affliction_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 9, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.nightfall = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Nightfall_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.nightfall
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionAudioCheckboxNightfall"])
-	f.tooltip = L["WarlockAfflictionAudioCheckboxNightfallTooltip"]
-	f:SetChecked(spec.audio.nightfall.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.nightfall.enabled = self:GetChecked()
-
-		if spec.audio.nightfall.enabled then
-			PlaySoundFile(spec.audio.nightfall.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.nightfallAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Warlock_Affliction_Nightfall_Audio", parent)
-	controls.dropDown.nightfallAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.nightfallAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.nightfallAudio, spec.audio.nightfall.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.nightfallAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.nightfallAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.nightfall.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.nightfallAudio:SetValue(newValue, newName)
-		spec.audio.nightfall.sound = newValue
-		spec.audio.nightfall.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.nightfallAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.nightfall.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.tormentedCrescendo = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_TormentedCrescendoCB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.tormentedCrescendo
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionAudioCheckboxTormentedCrescendo1"])
-	f.tooltip = L["WarlockAfflictionAudioCheckboxTormentedCrescendo1Tooltip"]
-	f:SetChecked(spec.audio.tormentedCrescendo.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.tormentedCrescendo.enabled = self:GetChecked()
-
-		if spec.audio.tormentedCrescendo.enabled then
-			PlaySoundFile(spec.audio.tormentedCrescendo.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.tormentedCrescendoAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Warlock_Affliction_TormentedCrescendoAudio", parent)
-	controls.dropDown.tormentedCrescendoAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.tormentedCrescendoAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.tormentedCrescendoAudio, spec.audio.tormentedCrescendo.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.tormentedCrescendoAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.tormentedCrescendoAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.tormentedCrescendo.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.tormentedCrescendoAudio:SetValue(newValue, newName)
-		spec.audio.tormentedCrescendo.sound = newValue
-		spec.audio.tormentedCrescendo.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.tormentedCrescendoAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.tormentedCrescendo.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.tormentedCrescendo2 = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_TormentedCrescendo2CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.tormentedCrescendo2
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionAudioCheckboxTormentedCrescendo2"])
-	f.tooltip = L["WarlockAfflictionAudioCheckboxTormentedCrescendo2Tooltip"]
-	f:SetChecked(spec.audio.tormentedCrescendo2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.tormentedCrescendo2.enabled = self:GetChecked()
-
-		if spec.audio.tormentedCrescendo2.enabled then
-			PlaySoundFile(spec.audio.tormentedCrescendo2.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.tormentedCrescendo2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Warlock_Affliction_TormentedCrescendoAudio", parent)
-	controls.dropDown.tormentedCrescendo2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.tormentedCrescendo2Audio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.tormentedCrescendo2Audio, spec.audio.tormentedCrescendo2.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.tormentedCrescendo2Audio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.tormentedCrescendo2Audio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.tormentedCrescendo2.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.tormentedCrescendo2Audio:SetValue(newValue, newName)
-		spec.audio.tormentedCrescendo2.sound = newValue
-		spec.audio.tormentedCrescendo2.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.tormentedCrescendo2Audio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.tormentedCrescendo2.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "nightfall", spec, classId, specId, yCoord, L["WarlockAfflictionAudioCheckboxNightfall"], L["WarlockAfflictionAudioCheckboxNightfallTooltip"])
+	
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "tormentedCrescendo", spec, classId, specId, yCoord, L["WarlockAfflictionAudioCheckboxTormentedCrescendo1"], L["WarlockAfflictionAudioCheckboxTormentedCrescendo1Tooltip"])
+	
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "tormentedCrescendo2", spec, classId, specId, yCoord, L["WarlockAfflictionAudioCheckboxTormentedCrescendo2"], L["WarlockAfflictionAudioCheckboxTormentedCrescendo2Tooltip"])
 end
 
 

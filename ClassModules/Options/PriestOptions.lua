@@ -1791,215 +1791,29 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 5
+	local specId = 1
+	local spec = TRB.Data.settings.priest.discipline
+
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.discipline
 	local yCoord = 5
 	local f = nil
 
-	local spec = TRB.Data.settings.priest.discipline
-
 	local title = ""
 
 	controls.buttons.exportButton_Priest_Discipline_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Priest_Discipline_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDisciplineFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 5, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDisciplineFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.innervate
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerAudioCheckboxInnervate"])
-	f.tooltip = L["HealerAudioCheckboxInnervateTooltip"]
-	f:SetChecked(spec.audio.innervate.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.innervate.enabled = self:GetChecked()
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
-		if spec.audio.innervate.enabled then
-			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.innervateAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Discipline_Innervate_Audio", parent)
-	controls.dropDown.innervateAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.innervate.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.innervateAudio:SetValue(newValue, newName)
-		spec.audio.innervate.sound = newValue
-		spec.audio.innervate.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.surgeOfLight = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_SurgeOfLightCB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLight
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestAudioCheckboxSurgeOfLight1"])
-	f.tooltip = L["PriestAudioCheckboxSurgeOfLight1Tooltip"]
-	f:SetChecked(spec.audio.surgeOfLight.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.surgeOfLight.enabled = self:GetChecked()
-
-		if spec.audio.surgeOfLight.enabled then
-			PlaySoundFile(spec.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.surgeOfLightAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Discipline_SurgeOfLightAudio", parent)
-	controls.dropDown.surgeOfLightAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLightAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, spec.audio.surgeOfLight.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLightAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.surgeOfLightAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.surgeOfLight.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.surgeOfLightAudio:SetValue(newValue, newName)
-		spec.audio.surgeOfLight.sound = newValue
-		spec.audio.surgeOfLight.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.surgeOfLight2 = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_SurgeOfLight2CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLight2
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestAudioCheckboxSurgeOfLight2"])
-	f.tooltip = L["PriestAudioCheckboxSurgeOfLight2Tooltip"]
-	f:SetChecked(spec.audio.surgeOfLight2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.surgeOfLight2.enabled = self:GetChecked()
-
-		if spec.audio.surgeOfLight2.enabled then
-			PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.surgeOfLight2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Discipline_SurgeOfLightAudio", parent)
-	controls.dropDown.surgeOfLight2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLight2Audio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, spec.audio.surgeOfLight2.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLight2Audio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.surgeOfLight2Audio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.surgeOfLight2.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.surgeOfLight2Audio:SetValue(newValue, newName)
-		spec.audio.surgeOfLight2.sound = newValue
-		spec.audio.surgeOfLight2.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight1"], L["PriestAudioCheckboxSurgeOfLight1Tooltip"])
+	
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight2", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight2"], L["PriestAudioCheckboxSurgeOfLight2Tooltip"])
 
 	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
@@ -2138,9 +1952,6 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.shadowfiend.timeMax = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.discipline = controls
 end
 
 local function DisciplineConstructBarTextDisplayPanel(parent, cache)
@@ -2797,343 +2608,33 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 5
+	local specId = 2
+	local spec = TRB.Data.settings.priest.holy
+
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.holy
 	local yCoord = 5
 	local f = nil
 
-	local spec = TRB.Data.settings.priest.holy
-
 	local title = ""
 
 	controls.buttons.exportButton_Priest_Holy_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Priest_Holy_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHolyFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 5, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHolyFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.innervate
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerAudioCheckboxInnervate"])
-	f.tooltip = L["HealerAudioCheckboxInnervateTooltip"]
-	f:SetChecked(spec.audio.innervate.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.innervate.enabled = self:GetChecked()
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
-		if spec.audio.innervate.enabled then
-			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.innervateAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_Innervate_Audio", parent)
-	controls.dropDown.innervateAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.innervate.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.innervateAudio:SetValue(newValue, newName)
-		spec.audio.innervate.sound = newValue
-		spec.audio.innervate.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.surgeOfLight = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_SurgeOfLightCB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLight
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestAudioCheckboxSurgeOfLight1"])
-	f.tooltip = L["PriestAudioCheckboxSurgeOfLight1Tooltip"]
-	f:SetChecked(spec.audio.surgeOfLight.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.surgeOfLight.enabled = self:GetChecked()
-
-		if spec.audio.surgeOfLight.enabled then
-			PlaySoundFile(spec.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.surgeOfLightAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_SurgeOfLightAudio", parent)
-	controls.dropDown.surgeOfLightAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLightAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, spec.audio.surgeOfLight.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLightAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.surgeOfLightAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.surgeOfLight.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.surgeOfLightAudio:SetValue(newValue, newName)
-		spec.audio.surgeOfLight.sound = newValue
-		spec.audio.surgeOfLight.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLightAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.surgeOfLight2 = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_SurgeOfLight2CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLight2
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestAudioCheckboxSurgeOfLight2"])
-	f.tooltip = L["PriestAudioCheckboxSurgeOfLight2Tooltip"]
-	f:SetChecked(spec.audio.surgeOfLight2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.surgeOfLight2.enabled = self:GetChecked()
-
-		if spec.audio.surgeOfLight2.enabled then
-			PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.surgeOfLight2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_SurgeOfLightAudio", parent)
-	controls.dropDown.surgeOfLight2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.surgeOfLight2Audio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, spec.audio.surgeOfLight2.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.surgeOfLight2Audio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.surgeOfLight2Audio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.surgeOfLight2.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.surgeOfLight2Audio:SetValue(newValue, newName)
-		spec.audio.surgeOfLight2.sound = newValue
-		spec.audio.surgeOfLight2.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.surgeOfLight2Audio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight1"], L["PriestAudioCheckboxSurgeOfLight1Tooltip"])
 	
-	yCoord = yCoord - 60
-	controls.checkBoxes.resonantWordsAudioCB = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_resonantWords", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.resonantWordsAudioCB
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyAudioCheckboxResonantWords"])
-	f.tooltip = L["PriestHolyAudioCheckboxResonantWordsTooltip"]
-	f:SetChecked(spec.audio.resonantWords.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.resonantWords.enabled = self:GetChecked()
-
-		if spec.audio.resonantWords.enabled then
-			PlaySoundFile(spec.audio.resonantWords.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.resonantWordsAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_resonantWordsAudio", parent)
-	controls.dropDown.resonantWordsAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.resonantWordsAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.resonantWordsAudio, spec.audio.resonantWords.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.resonantWordsAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.resonantWordsAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.resonantWords.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.resonantWordsAudio:SetValue(newValue, newName)
-		spec.audio.resonantWords.sound = newValue
-		spec.audio.resonantWords.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.resonantWordsAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.resonantWords.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight2", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight2"], L["PriestAudioCheckboxSurgeOfLight2Tooltip"])
 	
-	yCoord = yCoord - 60
-	controls.checkBoxes.lightweaverAudioCB = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_lightweaver", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.lightweaverAudioCB
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyAudioCheckboxLightweaver"])
-	f.tooltip = L["PriestHolyAudioCheckboxLightweaverTooltip"]
-	f:SetChecked(spec.audio.lightweaver.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.lightweaver.enabled = self:GetChecked()
-
-		if spec.audio.lightweaver.enabled then
-			PlaySoundFile(spec.audio.lightweaver.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.lightweaverAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_lightweaverAudio", parent)
-	controls.dropDown.lightweaverAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.lightweaverAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.lightweaverAudio, spec.audio.lightweaver.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.lightweaverAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.lightweaverAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.lightweaver.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.lightweaverAudio:SetValue(newValue, newName)
-		spec.audio.lightweaver.sound = newValue
-		spec.audio.lightweaver.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.lightweaverAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.lightweaver.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "resonantWords", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxResonantWords"], L["PriestHolyAudioCheckboxResonantWordsTooltip"])
+	
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "lightweaver", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaver"], L["PriestHolyAudioCheckboxLightweaverTooltip"])
 
 	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
@@ -3270,9 +2771,6 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.shadowfiend.timeMax = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
 end
 
 local function HolyConstructBarTextDisplayPanel(parent, cache)
@@ -4008,7 +3506,7 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 
 	controls.buttons.exportButton_Priest_Shadow_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Priest_Shadow_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadowFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 5, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadowFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
@@ -4139,9 +3637,6 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.mindbender.timeMax = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 end
 
 local function ShadowConstructBarTextDisplayPanel(parent, cache)

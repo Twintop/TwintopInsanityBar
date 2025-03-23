@@ -1749,288 +1749,28 @@ local function BalanceConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 11
+	local specId = 1
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.balance
 	local yCoord = 5
-	local f = nil
-
-	local title = ""
 
 	controls.buttons.exportButton_Druid_Balance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Druid_Balance_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 11, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.ssReady = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_CB_Starsurge", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ssReady
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceAudioStarsurgeCheckbox"])
-	f.tooltip = L["DruidBalanceAudioStarsurgeCheckboxTooltip"]
----@diagnostic disable-next-line: undefined-field
-	f:SetChecked(spec.audio.ssReady.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.ssReady.enabled = self:GetChecked()
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "ssReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarsurgeCheckbox"], L["DruidBalanceAudioStarsurgeCheckboxTooltip"])
 
-		if spec.audio.ssReady.enabled then
-			PlaySoundFile(spec.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "sfReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarfallCheckbox"], L["DruidBalanceAudioStarfallCheckboxTooltip"])
 
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.ssReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Druid_Balance_ssReadyAudio", parent)
-	controls.dropDown.ssReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30+10)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.ssReadyAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, spec.audio.ssReady.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.ssReadyAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.ssReadyAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.ssReady.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.ssReadyAudio:SetValue(newValue, newName)
-		spec.audio.ssReady.sound = newValue
-		spec.audio.ssReady.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.ssReadyAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.sfReady = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_CB_Starfall_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sfReady
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceAudioStarfallCheckbox"])
-	f.tooltip = L["DruidBalanceAudioStarfallCheckboxTooltip"]
----@diagnostic disable-next-line: undefined-field
-	f:SetChecked(spec.audio.sfReady.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.sfReady.enabled = self:GetChecked()
-
-		if spec.audio.sfReady.enabled then
-			PlaySoundFile(spec.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.sfReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Druid_Balance_sfReadyAudio", parent)
-	controls.dropDown.sfReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30+10)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.sfReadyAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, spec.audio.sfReady.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.sfReadyAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.sfReadyAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.sfReady.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.sfReadyAudio:SetValue(newValue, newName)
-		spec.audio.sfReady.sound = newValue
-		spec.audio.sfReady.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.sfReadyAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.starweaversReady = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_CB_starweavers_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.starweaversReady
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceAudioStarweaverCheckbox"])
-	f.tooltip = L["DruidBalanceAudioStarweaverCheckboxTooltip"]
----@diagnostic disable-next-line: undefined-field
-	f:SetChecked(spec.audio.starweaversReady.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.starweaversReady.enabled = self:GetChecked()
-
-		if spec.audio.starweaversReady.enabled then
-			PlaySoundFile(spec.audio.starweaversReady.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.starweaversReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Druid_Balance_starweaversReadyAudio", parent)
-	controls.dropDown.starweaversReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30+10)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.starweaversReadyAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.starweaversReadyAudio, spec.audio.starweaversReady.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.starweaversReadyAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.starweaversReadyAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.starweaversReady.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.starweaversReadyAudio:SetValue(newValue, newName)
-		spec.audio.starweaversReady.sound = newValue
-		spec.audio.starweaversReady.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.starweaversReadyAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.starweaversReady.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_CB_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceAstralPower"]))
-	f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceAstralPower"])
----@diagnostic disable-next-line: undefined-field
-	f:SetChecked(spec.audio.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.overcap.enabled = self:GetChecked()
-
-		if spec.audio.overcap.enabled then
-			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Druid_Balance_overcapAudio", parent)
-	controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30+10)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.overcap.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-		spec.audio.overcap.sound = newValue
-		spec.audio.overcap.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "starweaversReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarweaverCheckbox"], L["DruidBalanceAudioStarweaverCheckboxTooltip"])
+	
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceAstralPower"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceAstralPower"]))
 end
 
 local function BalanceConstructBarTextDisplayPanel(parent, cache)
@@ -2766,6 +2506,8 @@ local function FeralConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 11
+	local specId = 2
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -2777,138 +2519,14 @@ local function FeralConstructAudioAndTrackingPanel(parent)
 
 	controls.buttons.exportButton_Druid_Feral_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Druid_Feral_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 11, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.apcAudio = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_apc_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.apcAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxApexPredatorsCravingProc"])
-	f.tooltip = L["DruidFeralCheckboxApexPredatorsCravingProcTooltip"]
-	f:SetChecked(spec.audio.apexPredatorsCraving.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.apexPredatorsCraving.enabled = self:GetChecked()
-
-		if spec.audio.apexPredatorsCraving.enabled then
-			PlaySoundFile(spec.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.apcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Druid_Feral_apexPredatorsCraving_Audio", parent)
-	controls.dropDown.apcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.apcAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.apcAudio, spec.audio.apexPredatorsCraving.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.apcAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.apcAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.apexPredatorsCraving.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.apcAudio:SetValue(newValue, newName)
-		spec.audio.apexPredatorsCraving.sound = newValue
-		spec.audio.apexPredatorsCraving.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.apcAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapAudio
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]))
-	f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"])
-	f:SetChecked(spec.audio.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.overcap.enabled = self:GetChecked()
-
-		if spec.audio.overcap.enabled then
-			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Druid_Feral_overcapAudio", parent)
-	controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.overcap.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-		spec.audio.overcap.sound = newValue
-		spec.audio.overcap.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "apexPredatorsCraving", spec, classId, specId, yCoord, L["DruidFeralCheckboxApexPredatorsCravingProc"], L["DruidFeralCheckboxApexPredatorsCravingProcTooltip"])
+	
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
 	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
@@ -2972,8 +2590,6 @@ local function FeralConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.generation.time = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
 end
 
 local function FeralConstructBarTextDisplayPanel(parent, cache)
@@ -3423,6 +3039,8 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 		return
 	end
 
+	local classId = 11
+	local specId = 4
 	local spec = TRB.Data.settings.druid.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -3432,75 +3050,13 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 
 	controls.buttons.exportButton_Druid_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Druid_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 11, 4, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 30
-	controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.innervate
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerAudioCheckboxInnervate"])
-	f.tooltip = L["HealerAudioCheckboxInnervateTooltip"]
-	f:SetChecked(spec.audio.innervate.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.innervate.enabled = self:GetChecked()
-
-		if spec.audio.innervate.enabled then
-			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.innervateAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Druid_Restoration_Innervate_Audio", parent)
-	controls.dropDown.innervateAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.innervateAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, spec.audio.innervate.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.innervateAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.innervateAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.innervate.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.innervateAudio:SetValue(newValue, newName)
-		spec.audio.innervate.sound = newValue
-		spec.audio.innervate.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.innervateAudio, newName)
-		CloseDropDownMenus()
-		---@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-	
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
+		
 	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
 			
@@ -3547,9 +3103,6 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.passiveGeneration.symbolOfHope = self:GetChecked()
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
 end
 
 local function RestorationConstructBarTextDisplayPanel(parent, cache)
