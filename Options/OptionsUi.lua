@@ -2976,7 +2976,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		if workingBarText ~= nil and workingBarText.position ~= nil then
 			workingBarText.position.relativeToFrame = newValue
 			
-			for k, v in pairs(relativeTo) do
+			for k, v in pairs(relativeToFrame) do
 				if v == newValue then
 					workingBarText.position.relativeToFrameName = k
 				end
@@ -3294,7 +3294,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
-		LibDD:UIDropDownMenu_SetText(barTextRelativeTo, workingBarText.position.relativeToName)
 		
 		useDefaultFontColor:SetChecked(workingBarText.useDefaultFontColor)
 		useDefaultFontFace:SetChecked(workingBarText.useDefaultFontFace)
