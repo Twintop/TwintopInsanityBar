@@ -2536,6 +2536,43 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 	return yCoord
 end
 
+
+local sounds = {}
+local soundsList = {}
+local soundPairs = {}
+local soundPairsByName = {}
+local function FillSoundCache()
+	if TRB.Functions.Table:Length(sounds) == 0 then
+		sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+		soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+
+		local x = 1
+		for k, v in pairs(soundsList) do
+			table.insert(soundPairs, { v, sounds[v] })
+			soundPairsByName[sounds[v]] = v
+			x = x + 1
+		end
+	end
+end
+
+local fonts = {}
+local fontsList = {}
+local fontPairs = {}
+local fontPairsByName = {}
+local function FillFontCache()
+	if TRB.Functions.Table:Length(fonts) == 0 then
+		fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
+		fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
+
+		local x = 1
+		for k, v in pairs(fontsList) do
+			table.insert(fontPairs, { v, fonts[v] })
+			fontPairsByName[fonts[v]] = v
+			x = x + 1
+		end
+	end
+end
+
 function TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, name, spec, classId, specId, yCoord, localization, localizationTooltip)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	
@@ -2556,24 +2593,6 @@ function TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, name, spec,
 
 	yCoord = yCoord - 60
 	return yCoord
-end
-
-local sounds = {}
-local soundsList = {}
-local soundPairs = {}
-local soundPairsByName = {}
-local function FillSoundCache()
-	if TRB.Functions.Table:Length(sounds) == 0 then
-		sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-
-		local x = 1
-		for k, v in pairs(soundsList) do
-			table.insert(soundPairs, { v, sounds[v] })
-			soundPairsByName[sounds[v]] = v
-			x = x + 1
-		end
-	end
 end
 
 function TRB.Functions.OptionsUi:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
@@ -2977,9 +2996,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextRelativeToFrame:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	
 	local barTextRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_barTextRelativeTo", barTextOptionsFrame, "WowStyle1DropdownTemplate")
+	barTextRelativeTo:SetWidth(oUi.sliderWidth)
 	barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["RelativePositionBarTextHeader"], oUi.xCoord2, yCoord)
 	barTextRelativeTo.label.font:SetFontObject(GameFontNormal)
-	barTextRelativeTo:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	
 	local relativeTo = {}
 	relativeTo[L["PositionTopLeft"]] = "TOPLEFT"
@@ -3037,57 +3056,44 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	yCoord = yCoord - 60
 
 	controls.colors.text = controls.colors.text or {}
+	
+	FillFontCache()
 
-	-- Create the dropdown, and configure its appearance
-	local font = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_font", barTextOptionsFrame)
-	font.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontFaceHeader"], oUi.xCoord, yCoord)
-	font.label.font:SetFontObject(GameFontNormal)
-	font:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(font, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(font, "")
-	LibDD:UIDropDownMenu_JustifyText(font, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(font, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-		local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = L["Fonts"] .. " " .. i+1
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
+	local barTextFontFace = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_fontFace", barTextOptionsFrame, "WowStyle1DropdownTemplate")
+	barTextFontFace:SetWidth(oUi.sliderWidth)
+	barTextFontFace.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontFaceHeader"], oUi.xCoord, yCoord)
+	barTextFontFace.label.font:SetFontObject(GameFontNormal)
+	
+	local function FontFaceIsSelected(value)
+		if workingBarText ~= nil then
+			return value == workingBarText.fontFace
 		else
-			local start = entries * menuList
-
-			for k, v in pairs(fontsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = fonts[v]
-					info.checked = false
-					info.func = self.SetValue
-					info.arg1 = fonts[v]
-					info.arg2 = v
-					info.fontObject = CreateFont(v)
-					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
+			return false
 		end
-	end)
-
-	function font:SetValue(newValue, newName)
-		workingBarText.fontFace = newValue
-		workingBarText.fontFaceName = newName
-		LibDD:UIDropDownMenu_SetText(font, newName)
-		LibDD:CloseDropDownMenus()
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
+	
+	local function FontFaceSetSelected(newValue)
+		if workingBarText ~= nil then
+			workingBarText.fontFace = newValue
+			workingBarText.fontFaceName = fontPairsByName[newValue]
+			barTextFontFace:SetDefaultText(workingBarText.fontFaceName)
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		end
+	end
+
+	local function FontFaceGenerator(dropdown, rootDescription)
+		for k, v in pairs(fontPairs) do
+			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v[2])
+			radio:AddInitializer(function(button, description, menu)
+				local font = CreateFont(v[2])
+				font:SetFont(v[2], 12, "OUTLINE")
+				button.fontString:SetFontObject(font)
+			end)
+		end
+		rootDescription:SetScrollMode(400)
+	end
+	barTextFontFace:SetupMenu(FontFaceGenerator)
+	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
@@ -3099,47 +3105,52 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
-	-- Create the dropdown, and configure its appearance
-	local barTextJustifyHorizontal = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextJustifyHorizontal", barTextOptionsFrame)
-	barTextJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontHorizontalAlignmentHeader"], oUi.xCoord2, yCoord)
-	barTextJustifyHorizontal.label.font:SetFontObject(GameFontNormal)
-	barTextJustifyHorizontal:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(barTextJustifyHorizontal, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, "")
-	LibDD:UIDropDownMenu_JustifyText(barTextJustifyHorizontal, "LEFT")
 
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(barTextJustifyHorizontal, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local relativeTo = {}
-		relativeTo[L["PositionLeft"]] = "LEFT"
-		relativeTo[L["PositionCenter"]] = "CENTER"
-		relativeTo[L["PositionRight"]] = "RIGHT"
-		local relativeToList = {
-			L["PositionLeft"],
-			L["PositionCenter"],
-			L["PositionRight"],
-		}
+	local barTextFontJustifyHorizontal = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_barTextFontJustifyHorizontal", barTextOptionsFrame, "WowStyle1DropdownTemplate")
+	barTextFontJustifyHorizontal:SetWidth(oUi.sliderWidth)
+	barTextFontJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["RelativePositionBarTextHeader"], oUi.xCoord2, yCoord)
+	barTextFontJustifyHorizontal.label.font:SetFontObject(GameFontNormal)
+	
+	local fontJustifyHorizontal = {}
+	fontJustifyHorizontal[L["PositionLeft"]] = "LEFT"
+	fontJustifyHorizontal[L["PositionCenter"]] = "CENTER"
+	fontJustifyHorizontal[L["PositionRight"]] = "RIGHT"
+	local fontJustifyHorizontalList = {
+		L["PositionLeft"],
+		L["PositionCenter"],
+		L["PositionRight"],
+	}
 
-		for k, v in pairs(relativeToList) do
-			info.text = v
-			info.value = relativeTo[v]
-			info.checked = false
-			info.func = self.SetValue
-			info.arg1 = relativeTo[v]
-			info.arg2 = v
-			LibDD:UIDropDownMenu_AddButton(info, level)
+	local function FontJustifyHorizontalIsSelected(value)
+		if workingBarText ~= nil then
+			return value == workingBarText.fontJustifyHorizontal
+		else
+			return false
 		end
-	end)
-
-	function barTextJustifyHorizontal:SetValue(newValue, newName)
-		workingBarText.fontJustifyHorizontal = newValue
-		workingBarText.fontJustifyHorizontalName = newName
-		LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, newName)
-		LibDD:CloseDropDownMenus()
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
+	
+	local function FontJustifyHorizontalSetSelected(newValue)
+		if workingBarText ~= nil then
+			workingBarText.fontJustifyHorizontal = newValue
+			
+			for k, v in pairs(fontJustifyHorizontal) do
+				if v == newValue then
+					workingBarText.fontJustifyHorizontalName = k
+				end
+			end
+			barTextFontJustifyHorizontal:SetDefaultText(workingBarText.fontJustifyHorizontalName)
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		end
+	end
+
+	local function FontJustifyHorizontalGenerator(dropdown, rootDescription)
+		for k, v in pairs(fontJustifyHorizontalList) do
+			rootDescription:CreateRadio(v, FontJustifyHorizontalIsSelected, FontJustifyHorizontalSetSelected, fontJustifyHorizontal[v])
+		end
+		rootDescription:SetScrollMode(400)
+	end
+	barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
+	barTextFontJustifyHorizontal:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	
 	yCoord = yCoord - 100
 	title = L["FontSize"]
@@ -3271,21 +3282,20 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		barTextName:SetText(workingBarText.name)
 		barTextEntryEnabled:SetChecked(workingBarText.enabled)
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
+		
+		barTextRelativeToFrame:SetupMenu(RelativeToFrameGenerator)
+		barTextRelativeTo:SetupMenu(RelativeToGenerator)
+		barTextFontFace:SetupMenu(FontFaceGenerator)
+		barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
 
-		LibDD:UIDropDownMenu_SetText(font, workingBarText.fontFaceName)
-		LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, workingBarText.fontJustifyHorizontalName)
 		fontSize:SetValue(workingBarText.fontSize)
 		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(workingBarText.color, true))
 		barText:SetText(workingBarText.text)
 
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
-		barTextRelativeToFrame:SetupMenu(RelativeToFrameGenerator)
-		--barTextRelativeToFrame:SetDefaultText(workingBarText.position.relativeToFrameName)
-		--LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, workingBarText.position.relativeToFrameName)
 		LibDD:UIDropDownMenu_SetText(barTextRelativeTo, workingBarText.position.relativeToName)
 		
-
 		useDefaultFontColor:SetChecked(workingBarText.useDefaultFontColor)
 		useDefaultFontFace:SetChecked(workingBarText.useDefaultFontFace)
 		useDefaultFontSize:SetChecked(workingBarText.useDefaultFontSize)
