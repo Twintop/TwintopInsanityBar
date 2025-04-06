@@ -1248,7 +1248,8 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		secondaryResourceString = L["ResourceComboPoints"]
 	end
 
-	local _, className, _ = GetClassInfo(classId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	local f = nil
 	
 	if includeComboPoints then
@@ -1288,7 +1289,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end)
 	end
 	
-	controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.textureLock
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	f:SetChecked(spec.textures.textureLock)
@@ -1549,7 +1550,8 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 end
 
 function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort)
-	local _, className, _ = GetClassInfo(classId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	local f = nil
 	local title = ""
 
@@ -1580,7 +1582,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 
 	yCoord = yCoord - 40
 
-	controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_AlwaysShow", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_AlwaysShow", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.alwaysShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarAlways"])
@@ -1597,7 +1599,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		TRB.Functions.Bar:HideResourceBar()
 	end)
 
-	controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_NotZeroShow", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_NotZeroShow", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.notZeroShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
@@ -1622,7 +1624,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		TRB.Functions.Bar:HideResourceBar()
 	end)
 
-	controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_CombatShow", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_CombatShow", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.combatShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarCombat"])
@@ -1639,7 +1641,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		TRB.Functions.Bar:HideResourceBar()
 	end)
 
-	controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_NeverShow", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_NeverShow", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.neverShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarNever"])
@@ -1659,7 +1661,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	local yCoord2 = yCoord
 
 	if includeFlashAlpha then
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["FlashBar"], flashAlphaNameShort))
@@ -1672,7 +1674,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		yCoord2 = yCoord2-20
 	end
 
-	controls.checkBoxes.dragonridingEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_DragonridingEnabled", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.dragonridingEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_DragonridingEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dragonridingEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-70)
 	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["ShowBarDragonriding"], flashAlphaNameShort))
@@ -1738,7 +1740,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	thresholdIconRelativeTo:SetupMenu(RelativeToGenerator)
 	thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
-	controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_ThresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdIconEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconShow"])
@@ -1753,7 +1755,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		end
 	end)
 
-	controls.checkBoxes.thresholdIconDesaturated = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconDesaturated", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.thresholdIconDesaturated = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_ThresholdIconDesaturated", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdIconDesaturated
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord-50)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconDesaturate"])
@@ -1880,7 +1882,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 end
 
 function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, classId, specId, yCoord)
-	local _, className, _ = GetClassInfo(classId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	local f = nil
 	local title = ""
 
@@ -1888,7 +1891,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PotionCooldownConfigurationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.potionCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_CB", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.potionCooldown = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_PotionCooldown_CB", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.potionCooldown
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PotionThresholdShow"])
@@ -1900,7 +1903,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 	end)
 
 	yCoord = yCoord - 40
-	controls.checkBoxes.potionCooldownModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_M_GCD", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.potionCooldownModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_PotionCooldown_M_GCD", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.potionCooldownModeGCDs
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PotionThresholdShowGCDs"])
@@ -1924,7 +1927,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 
 
 	yCoord = yCoord - 60
-	controls.checkBoxes.potionCooldownModeTime = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_M_TIME", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.potionCooldownModeTime = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_PotionCooldown_M_TIME", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.potionCooldownModeTime
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PotionThresholdShowTime"])
@@ -1952,7 +1955,8 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 end
 
 function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, classId, specId, yCoord)
-	local _, className, _ = GetClassInfo(classId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	local f = nil
 
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
@@ -1984,7 +1988,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
 	end)
 
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_ThresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdOverlapBorder
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdLinesOverlap"])
@@ -1999,7 +2003,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.labels.thresholdPotions = TRB.Functions.OptionsUi:BuildLabel(parent, L["AlgariManaPotion"], 5, yCoord, 300, 20)
 	yCoord = yCoord - 20
 
-	controls.checkBoxes.algariManaPotionRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_algariManaPotionRank3", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.algariManaPotionRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_algariManaPotionRank3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.algariManaPotionRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank3"])
@@ -2011,7 +2015,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.algariManaPotionRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_algariManaPotionRank2", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.algariManaPotionRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_algariManaPotionRank2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.algariManaPotionRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank2"])
@@ -2023,7 +2027,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	end)
 	yCoord = yCoord - 25
 
-	controls.checkBoxes.algariManaPotionRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_algariManaPotionRank1", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.algariManaPotionRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_algariManaPotionRank1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.algariManaPotionRank1ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank1"])
@@ -2038,7 +2042,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.labels.thresholdPotions = TRB.Functions.OptionsUi:BuildLabel(parent, L["CavedwellersDelight"], 5, yCoord, 300, 20)
 	yCoord = yCoord - 20
 
-	controls.checkBoxes.cavedwellersDelightRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cavedwellersDelightRank3", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.cavedwellersDelightRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_cavedwellersDelightRank3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.cavedwellersDelightRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank3"])
@@ -2050,7 +2054,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.cavedwellersDelightRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cavedwellersDelightRank2", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.cavedwellersDelightRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_cavedwellersDelightRank2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.cavedwellersDelightRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank2"])
@@ -2062,7 +2066,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	end)
 	yCoord = yCoord - 25
 
-	controls.checkBoxes.cavedwellersDelightRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cavedwellersDelightRank1", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.cavedwellersDelightRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_cavedwellersDelightRank1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.cavedwellersDelightRank1ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank1"])
@@ -2078,7 +2082,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["SlumberingSoulSerum"], 5, yCoord, 300, 20)
 	yCoord = yCoord - 20
 
-	controls.checkBoxes.slumberingSoulSerumRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_slumberingSoulSerumRank3", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.slumberingSoulSerumRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_slumberingSoulSerumRank3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.slumberingSoulSerumRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank3"])
@@ -2090,7 +2094,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.slumberingSoulSerumRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_slumberingSoulSerumRank2", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.slumberingSoulSerumRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_slumberingSoulSerumRank2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.slumberingSoulSerumRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank2"])
@@ -2102,7 +2106,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.slumberingSoulSerumRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_slumberingSoulSerumRank1", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.slumberingSoulSerumRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_slumberingSoulSerumRank1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.slumberingSoulSerumRank1ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank1"])
@@ -2120,7 +2124,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		if classId == 5 then
 			--NOTE: the order of these checkboxes is reversed!
 			yCoord = yCoord - 20
-			controls.checkBoxes.shadowfiendThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend_cooldown", parent, "ChatConfigCheckButtonTemplate")
+			controls.checkBoxes.shadowfiendThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_shadowfiend_cooldown", parent, "ChatConfigCheckButtonTemplate")
 			f = controls.checkBoxes.shadowfiendThresholdShowCooldown
 			f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
 			getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
@@ -2136,7 +2140,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
 			
-			controls.checkBoxes.shadowfiendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend", parent, "ChatConfigCheckButtonTemplate")
+			controls.checkBoxes.shadowfiendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_shadowfiend", parent, "ChatConfigCheckButtonTemplate")
 			f = controls.checkBoxes.shadowfiendThresholdShow
 			f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 			getglobal(f:GetName() .. 'Text'):SetText(L["Shadowfiend"])
@@ -2155,7 +2159,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			if specId == 2 then
 				--NOTE: the order of these checkboxes is reversed!
 				yCoord = yCoord - 25
-				controls.checkBoxes.symbolOfHopeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope_cooldown", parent, "ChatConfigCheckButtonTemplate")
+				controls.checkBoxes.symbolOfHopeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_symbolOfHope_cooldown", parent, "ChatConfigCheckButtonTemplate")
 				f = controls.checkBoxes.symbolOfHopeThresholdShowCooldown
 				f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
 				getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
@@ -2168,7 +2172,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 				
 				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
 				
-				controls.checkBoxes.symbolOfHopeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope", parent, "ChatConfigCheckButtonTemplate")
+				controls.checkBoxes.symbolOfHopeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_symbolOfHope", parent, "ChatConfigCheckButtonTemplate")
 				f = controls.checkBoxes.symbolOfHopeThresholdShow
 				f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 				getglobal(f:GetName() .. 'Text'):SetText(L["SymbolOfHope"])
@@ -2196,7 +2200,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 
 		if classId == 10 then
 			yCoord = yCoord - 25
-			controls.checkBoxes.manaTeaChargesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_manaTeaCharges", parent, "ChatConfigCheckButtonTemplate")
+			controls.checkBoxes.manaTeaChargesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_manaTeaCharges", parent, "ChatConfigCheckButtonTemplate")
 			f = controls.checkBoxes.manaTeaChargesThresholdShow
 			f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 			getglobal(f:GetName() .. 'Text'):SetText(L["ManaTea"])
@@ -2210,7 +2214,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 
 		--NOTE: the order of these checkboxes is reversed!
 		yCoord = yCoord - 25
-		controls.checkBoxes.cannibalizeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cannibalize_cooldown", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.cannibalizeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_cannibalize_cooldown", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cannibalizeThresholdShowCooldown
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
@@ -2223,7 +2227,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		
 		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.cannibalize.enabled)
 		
-		controls.checkBoxes.cannibalizeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cannibalize", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.cannibalizeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_cannibalize", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cannibalizeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CannibalizeIfForsaken"])
@@ -2258,7 +2262,8 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 end
 
 function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap, isHealer)
-	local _, className, _ = GetClassInfo(classId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	local f = nil
 
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarBorderColorsChangingHeader"], oUi.xCoord, yCoord)
@@ -2272,7 +2277,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 
 	if includeOvercap then
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["BorderColorOvercapToggle"])
@@ -2292,7 +2297,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 
 	if isHealer then
 		yCoord = yCoord - 30
-		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.innervateBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Innervate"])
@@ -2310,7 +2315,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.potionOfChilledClarityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfChilledClarityBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.potionOfChilledClarityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_potionOfChilledClarityBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.potionOfChilledClarityBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["PotionOfChilledClarity"])
@@ -2332,14 +2337,15 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 end
 
 function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, primaryResourceMax)
-	local _, className, _ = GetClassInfo(classId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	local f = nil
 	local title = ""
 
 	controls.overcappingConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["OvercappingConfigurationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
-	controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.overcapModeRelative
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapRelativeOffset"], primaryResourceString))
@@ -2364,7 +2370,7 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 
 
 	yCoord = yCoord - 60
-	controls.checkBoxes.overcapModeFixed = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Overcap_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes.overcapModeFixed = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.overcapModeFixed
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapFixedValue"], primaryResourceString))
@@ -2500,9 +2506,17 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 end
 
 function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, classId, specId, yCoord, dotCheckbox, dotTooltip, showUp, showPandemic, showDown)
-	showUp = showUp or true
-	showPandemic = showPandemic or true
-	showDown = showDown or true
+	if showUp == nil then
+		showUp = true
+	end
+
+	if showPandemic == nil then
+		showPandemic = true
+	end
+
+	if showDown == nil then
+		showDown = true
+	end
 	
 	local f = nil
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
