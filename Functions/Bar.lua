@@ -648,5 +648,6 @@ function TRB.Functions.Bar:Construct(settings)
 		TRB.Functions.Bar:UpdateSmoothBar()
 
 		TRB.Functions.BarText:CreateBarTextFrames()
+		TRB.Functions.Class:HideResourceBar()
 	end
 end

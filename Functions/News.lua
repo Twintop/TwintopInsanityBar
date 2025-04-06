@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.0.10-release (2025-04-07)
+## Hunter
+
+- [#433 - FIX](#433) Fix options breaking for Marksmanship (and Survival).
+
+---
+
 # 11.1.0.9-release (2025-04-07)
 ## General
 

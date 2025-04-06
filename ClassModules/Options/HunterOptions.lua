@@ -2475,9 +2475,9 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.audio.aimedShot.time = value
 	end)
+	yCoord = yCoord - 60
 
-
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "loackAndLoad", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxLockAndLoad"], L["HunterMarksmanshipCheckboxLockAndLoadTooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "lockAndLoad", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxLockAndLoad"], L["HunterMarksmanshipCheckboxLockAndLoadTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterAudioCheckboxKillShot"], L["HunterAudioCheckboxKillShotTooltip"])
 
@@ -2485,7 +2485,6 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "secretsOfTheUnblinkingVigil", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxUnblinkingVigil"], L["HunterMarksmanshipCheckboxUnblinkingVigilTooltip"])
 
-	yCoord = yCoord - 60
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
