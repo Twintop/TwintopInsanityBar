@@ -3,11 +3,105 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = {}
 local oUi = TRB.Data.constants.optionsUi
-local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+
 local L = TRB.Localization
 
 local function GetUseGlobalSettingsColor()
 	return 100/255, 225/255, 200/225
+end
+
+local sounds = {}
+local soundsList = {}
+local soundPairs = {}
+local soundPairsByName = {}
+local function FillSoundCache()
+	if TRB.Functions.Table:Length(sounds) == 0 then
+		sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+		soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+
+		local x = 1
+		for k, v in pairs(soundsList) do
+			table.insert(soundPairs, { v, sounds[v] })
+			soundPairsByName[sounds[v]] = v
+			x = x + 1
+		end
+	end
+end
+
+local fonts = {}
+local fontsList = {}
+local fontPairs = {}
+local fontPairsByName = {}
+local function FillFontCache()
+	if TRB.Functions.Table:Length(fonts) == 0 then
+		fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
+		fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
+
+		local x = 1
+		for k, v in pairs(fontsList) do
+			table.insert(fontPairs, { v, fonts[v] })
+			fontPairsByName[fonts[v]] = v
+			x = x + 1
+		end
+	end
+end
+
+local backgrounds = {}
+local backgroundsList = {}
+local backgroundPairs = {}
+local backgroundPairsByName = {}
+local function FillBackgroundCache()
+	if TRB.Functions.Table:Length(backgrounds) == 0 then
+		backgrounds = TRB.Details.addonData.libs.SharedMedia:HashTable("background")
+		backgroundsList = TRB.Details.addonData.libs.SharedMedia:List("background")
+
+		local x = 1
+		for k, v in pairs(backgroundsList) do
+			table.insert(backgroundPairs, { v, backgrounds[v] })
+			backgroundPairsByName[backgrounds[v]] = v
+			x = x + 1
+		end
+	end
+end
+
+local borders = {}
+local bordersList = {}
+local borderPairs = {}
+local borderPairsByName = {}
+local function FillBorderCache()
+	if TRB.Functions.Table:Length(borders) == 0 then
+		borders = TRB.Details.addonData.libs.SharedMedia:HashTable("border")
+		bordersList = TRB.Details.addonData.libs.SharedMedia:List("border")
+
+		local x = 1
+		for k, v in pairs(bordersList) do
+			table.insert(borderPairs, { v, borders[v] })
+			borderPairsByName[borders[v]] = v
+			x = x + 1
+		end
+	end
+end
+
+local statusbars = {}
+local statusbarsList = {}
+local statusbarPairs = {}
+local statusbarPairsByName = {}
+local function FillStatusbarCache()
+	if TRB.Functions.Table:Length(statusbars) == 0 then
+		statusbars = TRB.Details.addonData.libs.SharedMedia:HashTable("statusbar")
+		statusbarsList = TRB.Details.addonData.libs.SharedMedia:List("statusbar")
+
+		local x = 1
+		for k, v in pairs(statusbarsList) do
+			table.insert(statusbarPairs, { v, statusbars[v] })
+			statusbarPairsByName[statusbars[v]] = v
+			x = x + 1
+		end
+	end
+end
+
+local function DropdownSetupMenuWrapper(control)
+	control:SetupMenu(control.GeneratorFunction)
 end
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
@@ -576,50 +670,61 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	return e
 end
 
-function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText)
-	local _, className, _ = GetClassInfo(classId)
+function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText, setSelectedFunc)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	
-	-- Create the dropdown, and configure its appearance
-	dropDowns[varName] = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_"..varName.."_"..lsmType, parent)
+	local lsmPairs
+	local lsmPairsByName
+
+	if lsmType == "statusbar" then
+		FillStatusbarCache()
+		lsmPairs = statusbarPairs
+		lsmPairsByName = statusbarPairs
+	elseif lsmType == "background" then
+		FillBackgroundCache()
+		lsmPairs = backgroundPairs
+		lsmPairsByName = backgroundPairs
+	elseif lsmType == "border" then
+		FillBorderCache()
+		lsmPairs = borderPairs
+		lsmPairsByName = borderPairs
+	end
+
+	dropDowns[varName] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. varName .. "_" .. lsmType, parent, "WowStyle1DropdownTemplate")
+	dropDowns[varName]:SetWidth(oUi.sliderWidth)
 	dropDowns[varName].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
 	dropDowns[varName].label.font:SetFontObject(GameFontNormal)
-	dropDowns[varName]:SetPoint("TOPLEFT", xCoord, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(dropDowns[varName], oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(dropDowns[varName], section[varName.."Name"])
-	LibDD:UIDropDownMenu_JustifyText(dropDowns[varName], "LEFT")
+	dropDowns[varName].varName = varName
+	dropDowns[varName].lsmPairs = lsmPairs
+	dropDowns[varName].lsmPairsByName = lsmPairsByName
 
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(dropDowns[varName], function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local items = TRB.Details.addonData.libs.SharedMedia:HashTable(lsmType)
-		local itemsList = TRB.Details.addonData.libs.SharedMedia:List(lsmType)
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(items) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = dropdownInfoText .. " " .. i+1
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
+	local function IsSelected(value)
+		return value == section[varName]
+	end
 
-			for k, v in pairs(itemsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = items[v]
-					info.checked = items[v] == section[varName]
-					info.func = self.SetValue
-					info.arg1 = items[v]
-					info.arg2 = v
-					info.icon = items[v]
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
+	local function Generator(dropdown, rootDescription)
+		for k, v in pairs(lsmPairs) do
+			local radio = rootDescription:CreateRadio(v[1], IsSelected, setSelectedFunc, v[2])
+			radio:AddInitializer(function(button, description, menu)
+				local rightTexture = button:AttachTexture();
+				rightTexture:SetSize(18, 18);
+				rightTexture:SetPoint("RIGHT");
+				rightTexture:SetTexture(v[2]);
+				local fontString = button.fontString;
+				fontString:SetPoint("RIGHT", rightTexture, "LEFT");
+				-- Manual calculation required to accomodate aligned text.
+				local pad = 20;
+				local width = pad + fontString:GetUnboundedStringWidth() + rightTexture:GetWidth();
+				local height = 20;
+				return width, height;
+			end)
 		end
-	end)
+		rootDescription:SetScrollMode(400)
+	end
+	dropDowns[varName].GeneratorFunction = Generator
+	dropDowns[varName]:SetupMenu(Generator)
+	dropDowns[varName]:SetPoint("TOPLEFT", xCoord, yCoord-30)
 end
 
 function TRB.Functions.OptionsUi:ToggleCheckboxEnabled(checkbox, enable)
@@ -684,6 +789,7 @@ end
 
 function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 
 	local f = nil	
 	local title = ""
@@ -697,7 +803,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
-		controls.checkBoxes.useGlobalBarDimensions = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_barDimensions", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.useGlobalBarDimensions = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_barDimensions", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalBarDimensions
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
@@ -818,7 +924,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 	--NOTE: the order of these checkboxes is reversed!
 
-	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.lockPosition
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DragAndDropEnabled"])
@@ -836,7 +942,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
-	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.pinToPRD
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PinToPRDEnabled"])
@@ -870,6 +976,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	end
 
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 
 	local f = nil
 
@@ -884,7 +991,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
-		controls.checkBoxes.useGlobalComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_comboPoints", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.useGlobalComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_comboPoints", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalComboPoints
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
@@ -1011,59 +1118,57 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	end)
 
 	yCoord = yCoord - 40
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.comboPointsRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specName.."_comboPointsRelativeTo", parent)
-	controls.dropDown.comboPointsRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], secondaryResourceString, primaryResourceString), oUi.xCoord, yCoord)
-	controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, spec.comboPoints.relativeToName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.comboPointsRelativeTo, "LEFT")
 
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.comboPointsRelativeTo, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		-- TODO: Make these dropdown values localizable
-		local relativeTo = {}
-		relativeTo[L["PositionAboveLeft"]] = "TOPLEFT"
-		relativeTo[L["PositionAboveMiddle"]] = "TOP"
-		relativeTo[L["PositionAboveRight"]] = "TOPRIGHT"
-		relativeTo[L["PositionBelowLeft"]] = "BOTTOMLEFT"
-		relativeTo[L["PositionBelowMiddle"]] = "BOTTOM"
-		relativeTo[L["PositionBelowRight"]] = "BOTTOMRIGHT"
-		local relativeToList = {
-			L["PositionAboveLeft"],
-			L["PositionAboveMiddle"],
-			L["PositionAboveRight"],
-			L["PositionBelowLeft"],
-			L["PositionBelowMiddle"],
-			L["PositionBelowRight"]
-		}
+	local comboPointsRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_comboPointsRelativeTo", parent, "WowStyle1DropdownTemplate")
+	comboPointsRelativeTo:SetWidth(oUi.sliderWidth)
+	comboPointsRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], secondaryResourceString, primaryResourceString), oUi.xCoord, yCoord)
+	comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
+	
+	local relativeTo = {}
+	relativeTo[L["PositionAboveLeft"]] = "TOPLEFT"
+	relativeTo[L["PositionAboveMiddle"]] = "TOP"
+	relativeTo[L["PositionAboveRight"]] = "TOPRIGHT"
+	relativeTo[L["PositionBelowLeft"]] = "BOTTOMLEFT"
+	relativeTo[L["PositionBelowMiddle"]] = "BOTTOM"
+	relativeTo[L["PositionBelowRight"]] = "BOTTOMRIGHT"
+	local relativeToList = {
+		L["PositionAboveLeft"],
+		L["PositionAboveMiddle"],
+		L["PositionAboveRight"],
+		L["PositionBelowLeft"],
+		L["PositionBelowMiddle"],
+		L["PositionBelowRight"]
+	}
 
-		for k, v in pairs(relativeToList) do
-			info.text = v
-			info.value = relativeTo[v]
-			info.checked = relativeTo[v] == spec.comboPoints.relativeTo
-			info.func = self.SetValue
-			info.arg1 = relativeTo[v]
-			info.arg2 = v
-			LibDD:UIDropDownMenu_AddButton(info, level)
-		end
-	end)
-
-	function controls.dropDown.comboPointsRelativeTo:SetValue(newValue, newName)
+	local function RelativeToIsSelected(value)
+		return value == spec.comboPoints.relativeTo
+	end
+	
+	local function RelativeToSetSelected(newValue)
 		spec.comboPoints.relativeTo = newValue
-		spec.comboPoints.relativeToName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.comboPointsRelativeTo, newName)
-		LibDD:CloseDropDownMenus()
+		
+		for k, v in pairs(relativeTo) do
+			if v == newValue then
+				spec.comboPoints.relativeToName = k
+			end
+		end
+		comboPointsRelativeTo:SetDefaultText(spec.comboPoints.relativeToName)
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
 		end
 	end
 
-	controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
+	local function RelativeToGenerator(dropdown, rootDescription)
+		for k, v in pairs(relativeToList) do
+			rootDescription:CreateRadio(v, RelativeToIsSelected, RelativeToSetSelected, relativeTo[v])
+		end
+		rootDescription:SetScrollMode(400)
+	end
+	comboPointsRelativeTo:SetupMenu(RelativeToGenerator)
+	comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+		
+	controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.comboPointsFullWidth
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], secondaryResourceString))
@@ -1082,29 +1187,30 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls, textures, newValue, newName, variable, specId, includeComboPoints)
+function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, specId, includeComboPoints)
+	local newName = statusbarPairsByName[newValue]
 	if includeComboPoints == nil then
 		includeComboPoints = false
 	end
 
 	textures[variable.."Bar"] = newValue
 	textures[variable.."BarName"] = newName
-	LibDD:UIDropDownMenu_SetText(controls[variable.."Bar"], newName)
+	controls[variable.."Bar"]:SetupMenu(controls[variable.."Bar"].GeneratorFunction)
 	if textures.textureLock then
 		textures.resourceBar = newValue
 		textures.resourceBarName = newName
-		LibDD:UIDropDownMenu_SetText(controls.resourceBar, newName)
+		DropdownSetupMenuWrapper(controls.resourceBar)
 		textures.castingBar = newValue
 		textures.castingBarName = newName
-		LibDD:UIDropDownMenu_SetText(controls.castingBar, newName)
+		DropdownSetupMenuWrapper(controls.castingBar)
 		textures.passiveBar = newValue
 		textures.passiveBarName = newName
-		LibDD:UIDropDownMenu_SetText(controls.passiveBar, newName)
+		DropdownSetupMenuWrapper(controls.passiveBar)
 
 		if includeComboPoints then
 			textures.comboPointsBar = newValue
 			textures.comboPointsBarName = newName
-			LibDD:UIDropDownMenu_SetText(controls.comboPointsBar, newName)
+			DropdownSetupMenuWrapper(controls.comboPointsBar)
 		end
 	end
 
@@ -1131,8 +1237,6 @@ function TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls, textures, newV
 			end
 		end
 	end
-
-	LibDD:CloseDropDownMenus()
 end
 
 function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString)
@@ -1156,31 +1260,32 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	controls.dropDown.textures = {}
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"])
-	-- Implement the function to change the texture
-	function controls.dropDown.textures.resourceBar:SetValue(newValue, newName)
-		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "resource", specId, includeComboPoints)
+
+	local function StatusbarSetValue(variable, newValue)
+		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, specId, includeComboPoints)
 	end
 
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"])
-	-- Implement the function to change the texture
-	function controls.dropDown.textures.castingBar:SetValue(newValue, newName)
-		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "casting", specId, includeComboPoints)
-	end
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			StatusbarSetValue("resource", newValue)
+		end)
+
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			StatusbarSetValue("casting", newValue)
+		end)
 
 	yCoord = yCoord - 60
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", L["PassiveBarTexture"], L["StatusBarTextures"])
-	-- Implement the function to change the texture
-	function controls.dropDown.textures.passiveBar:SetValue(newValue, newName)
-		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "passive", specId, includeComboPoints)
-	end
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", L["PassiveBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			StatusbarSetValue("passive", newValue)
+		end)
 
 	if includeComboPoints then
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"])
-		-- Implement the function to change the texture
-		function controls.dropDown.textures.comboPointsBar:SetValue(newValue, newName)
-			TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "comboPoints", specId, includeComboPoints)
-		end
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
+			function(newValue)
+				StatusbarSetValue("comboPoints", newValue)
+			end)
 	end
 	
 	controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
@@ -1196,18 +1301,18 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		if spec.textures.textureLock then
 			spec.textures.passiveBar = spec.textures.resourceBar
 			spec.textures.passiveBarName = spec.textures.resourceBarName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.resourceBar, spec.textures.passiveBarName)
+			DropdownSetupMenuWrapper(controls.dropDown.textures.resourceBar)
 			spec.textures.castingBar = spec.textures.resourceBar
 			spec.textures.castingBarName = spec.textures.resourceBarName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.castingBar, spec.textures.castingBarName)
+			DropdownSetupMenuWrapper(controls.dropDown.textures.castingBar)
 
 			if includeComboPoints then
 				spec.textures.comboPointsBorder = spec.textures.border
 				spec.textures.comboPointsBorderName = spec.textures.borderName
-				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, spec.textures.comboPointsBorderName)
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
 				spec.textures.comboPointsBackground = spec.textures.background
 				spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
-				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, spec.textures.comboPointsBackgroundName)
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
 			end
 
 			if TRB.Data.character.specId == specId then
@@ -1246,194 +1351,189 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	end)
 
 	yCoord = yCoord - 60
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"])
-	-- Implement the function to change the texture
-	function controls.dropDown.textures.border:SetValue(newValue, newName)
-		spec.textures.border = newValue
-		spec.textures.borderName = newName
 
-		if TRB.Data.character.specId == specId then
-			if spec.bar.border < 1 then
-				TRB.Frames.barBorderFrame:SetBackdrop({ })
-			else
-				TRB.Frames.barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
-											tile = true,
-											tileSize=4,
-											edgeSize=spec.bar.border,
-											insets = {0, 0, 0, 0}
-											})
-			end
-			TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-			TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
-		end
-
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
-
-		if includeComboPoints and spec.textures.textureLock then
-			spec.textures.comboPointsBorder = newValue
-			spec.textures.comboPointsBorderName = newName
-
-			if TRB.Data.character.specId == specId then
-				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-				for x = 1, length do
-					if spec.comboPoints.border < 1 then
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
-					else
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
-													tile = true,
-													tileSize=4,
-													edgeSize=spec.comboPoints.border,
-													insets = {0, 0, 0, 0}
-													})
-					end
-					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.border, true))
-				end
-			end
-
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, newName)
-		end
-
-		LibDD:CloseDropDownMenus()
-	end
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"],
+		function(newValue)
+			local newName = borderPairsByName[newValue]
+			spec.textures.border = newValue
+			spec.textures.borderName = newName
 	
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"])
+			if TRB.Data.character.specId == specId then
+				if spec.bar.border < 1 then
+					TRB.Frames.barBorderFrame:SetBackdrop({ })
+				else
+					TRB.Frames.barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
+												tile = true,
+												tileSize=4,
+												edgeSize=spec.bar.border,
+												insets = {0, 0, 0, 0}
+												})
+				end
+				TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+				TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
+			end
+	
+			controls.dropDown.textures.border:SetupMenu(controls.dropDown.textures.border.GeneratorFunction)
+	
+			if includeComboPoints and spec.textures.textureLock then
+				spec.textures.comboPointsBorder = newValue
+				spec.textures.comboPointsBorderName = newName
+	
+				if TRB.Data.character.specId == specId then
+					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						if spec.comboPoints.border < 1 then
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
+						else
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
+														tile = true,
+														tileSize=4,
+														edgeSize=spec.comboPoints.border,
+														insets = {0, 0, 0, 0}
+														})
+						end
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.border, true))
+					end
+				end
+	
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+			end
+		end)
+	
+	
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"],
 	-- Implement the function to change the texture
-	function controls.dropDown.textures.background:SetValue(newValue, newName)
-		spec.textures.background = newValue
-		spec.textures.backgroundName = newName
-
-		if TRB.Data.character.specId == specId then
-			TRB.Frames.barContainerFrame:SetBackdrop({
-				bgFile = spec.textures.background,
-				tile = true,
-				tileSize = spec.bar.width,
-				edgeSize = 1,
-				insets = {0, 0, 0, 0}
-			})
-			TRB.Frames.barContainerFrame:SetBackdropColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.background, true))
-		end
-
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
-		
-		if includeComboPoints and spec.textures.textureLock then
-			spec.textures.comboPointsBackground = newValue
-			spec.textures.comboPointsBackgroundName = newName
+		function (newValue)
+			local newName = backgroundPairsByName[newValue]
+			spec.textures.background = newValue
+			spec.textures.backgroundName = newName
 
 			if TRB.Data.character.specId == specId then
-				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-				for x = 1, length do
-					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-						bgFile = spec.textures.comboPointsBackground,
-						tile = true,
-						tileSize = spec.comboPoints.width,
-						edgeSize = 1,
-						insets = {0, 0, 0, 0}
-					})
-					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
-				end
+				TRB.Frames.barContainerFrame:SetBackdrop({
+					bgFile = spec.textures.background,
+					tile = true,
+					tileSize = spec.bar.width,
+					edgeSize = 1,
+					insets = {0, 0, 0, 0}
+				})
+				TRB.Frames.barContainerFrame:SetBackdropColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.background, true))
 			end
 
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, newName)
-		end
-		LibDD:CloseDropDownMenus()
-	end
+			controls.dropDown.textures.background:SetupMenu(controls.dropDown.textures.background.GeneratorFunction)
+			
+			if includeComboPoints and spec.textures.textureLock then
+				spec.textures.comboPointsBackground = newValue
+				spec.textures.comboPointsBackgroundName = newName
+
+				if TRB.Data.character.specId == specId then
+					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
+							bgFile = spec.textures.comboPointsBackground,
+							tile = true,
+							tileSize = spec.comboPoints.width,
+							edgeSize = 1,
+							insets = {0, 0, 0, 0}
+						})
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
+					end
+				end
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+			end
+		end)
 
 	if includeComboPoints then
 		yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"])
-		-- Implement the function to change the texture
-		function controls.dropDown.textures.comboPointsBorder:SetValue(newValue, newName)
-			spec.textures.comboPointsBorder = newValue
-			spec.textures.comboPointsBorderName = newName
-
-			if TRB.Data.character.specId == specId then
-				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-				for x = 1, length do
-					if spec.comboPoints.border < 1 then
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
-					else
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
-													tile = true,
-													tileSize=4,
-													edgeSize=spec.comboPoints.border,
-													insets = {0, 0, 0, 0}
-													})
-					end
-					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.border, true))
-				end
-			end
-
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBorder, newName)
-
-			if spec.textures.textureLock then
-				spec.textures.border = newValue
-				spec.textures.borderName = newName
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"],
+			function (newValue)
+				local newName = borderPairsByName[newValue]
+				spec.textures.comboPointsBorder = newValue
+				spec.textures.comboPointsBorderName = newName
 
 				if TRB.Data.character.specId == specId then
-					if spec.bar.border < 1 then
-						TRB.Frames.barBorderFrame:SetBackdrop({ })
-					else
-						TRB.Frames.barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
-													tile = true,
-													tileSize=4,
-													edgeSize=spec.bar.border,
-													insets = {0, 0, 0, 0}
-													})
+					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						if spec.comboPoints.border < 1 then
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
+						else
+							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
+														tile = true,
+														tileSize=4,
+														edgeSize=spec.comboPoints.border,
+														insets = {0, 0, 0, 0}
+														})
+						end
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.border, true))
 					end
-					TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-					TRB.Frames.barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
 				end
 
-				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
-			end
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
 
-			LibDD:CloseDropDownMenus()
-		end
+				if spec.textures.textureLock then
+					spec.textures.border = newValue
+					spec.textures.borderName = newName
 
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"])
-		-- Implement the function to change the texture
-		function controls.dropDown.textures.comboPointsBackground:SetValue(newValue, newName)
-			spec.textures.comboPointsBackground = newValue
-			spec.textures.comboPointsBackgroundName = newName
+					if TRB.Data.character.specId == specId then
+						if spec.bar.border < 1 then
+							TRB.Frames.barBorderFrame:SetBackdrop({ })
+						else
+							TRB.Frames.barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
+														tile = true,
+														tileSize=4,
+														edgeSize=spec.bar.border,
+														insets = {0, 0, 0, 0}
+														})
+						end
+						TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+						TRB.Frames.barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
+					end
 
-			if TRB.Data.character.specId == specId then
-				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-				for x = 1, length do
-					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-						bgFile = spec.textures.comboPointsBackground,
-						tile = true,
-						tileSize = spec.comboPoints.width,
-						edgeSize = 1,
-						insets = {0, 0, 0, 0}
-					})
-					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
+					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
 				end
-			end
+			end)
 
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.comboPointsBackground, newName)
-			
-			if spec.textures.textureLock then
-				spec.textures.background = newValue
-				spec.textures.backgroundName = newName
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"],
+			function (newValue)
+				local newName = backgroundPairsByName[newValue]
+				spec.textures.comboPointsBackground = newValue
+				spec.textures.comboPointsBackgroundName = newName
 
 				if TRB.Data.character.specId == specId then
-					TRB.Frames.barContainerFrame:SetBackdrop({ 
-						bgFile = spec.textures.background,
-						tile = true,
-						tileSize = spec.bar.width,
-						edgeSize = 1,
-						insets = {0, 0, 0, 0}
-					})
-					TRB.Frames.barContainerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.background, true))
+					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
+					for x = 1, length do
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
+							bgFile = spec.textures.comboPointsBackground,
+							tile = true,
+							tileSize = spec.comboPoints.width,
+							edgeSize = 1,
+							insets = {0, 0, 0, 0}
+						})
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
+					end
 				end
 
-				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
-			end
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+				
+				if spec.textures.textureLock then
+					spec.textures.background = newValue
+					spec.textures.backgroundName = newName
 
-			LibDD:CloseDropDownMenus()
-		end
+					if TRB.Data.character.specId == specId then
+						TRB.Frames.barContainerFrame:SetBackdrop({ 
+							bgFile = spec.textures.background,
+							tile = true,
+							tileSize = spec.bar.width,
+							edgeSize = 1,
+							insets = {0, 0, 0, 0}
+						})
+						TRB.Frames.barContainerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.background, true))
+					end
+
+					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
+				end
+			end)
 
 		yCoord = yCoord - 60
 		f = controls.checkBoxes.textureLock
@@ -1588,56 +1688,55 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 end
 
 function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord)
-	local _, className, _ = GetClassInfo(classId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	local f = nil
 	local title = ""
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.thresholdIconRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconRelativeTo", parent)
-	controls.dropDown.thresholdIconRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdIconRelativePosition"], oUi.xCoord, yCoord)
-	controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, spec.thresholds.icons.relativeToName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.thresholdIconRelativeTo, "LEFT")
+	local thresholdIconRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconRelativeTo", parent, "WowStyle1DropdownTemplate")
+	thresholdIconRelativeTo:SetWidth(oUi.sliderWidth)
+	thresholdIconRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdIconRelativePosition"], oUi.xCoord, yCoord)
+	thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
 
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.thresholdIconRelativeTo, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local relativeTo = {}
-		relativeTo[L["PositionAbove"]] = "TOP"
-		relativeTo[L["PositionMiddle"]] = "CENTER"
-		relativeTo[L["PositionBelow"]] = "BOTTOM"
-		local relativeToList = {
-			L["PositionAbove"],
-			L["PositionMiddle"],
-			L["PositionBelow"]
-		}
+	local relativeTo = {}
+	relativeTo[L["PositionAbove"]] = "TOP"
+	relativeTo[L["PositionMiddle"]] = "CENTER"
+	relativeTo[L["PositionBelow"]] = "BOTTOM"
+	local relativeToList = {
+		L["PositionAbove"],
+		L["PositionMiddle"],
+		L["PositionBelow"]
+	}
 
-		for k, v in pairs(relativeToList) do
-			info.text = v
-			info.value = relativeTo[v]
-			info.checked = relativeTo[v] == spec.thresholds.icons.relativeTo
-			info.func = self.SetValue
-			info.arg1 = relativeTo[v]
-			info.arg2 = v
-			LibDD:UIDropDownMenu_AddButton(info, level)
-		end
-	end)
-
-	function controls.dropDown.thresholdIconRelativeTo:SetValue(newValue, newName)
+	local function RelativeToIsSelected(value)
+		return value == spec.thresholds.icons.relativeTo
+	end
+	
+	local function RelativeToSetSelected(newValue)
 		spec.thresholds.icons.relativeTo = newValue
-		spec.thresholds.icons.relativeToName = newName
 		
-		if TRB.Data.character.specId == specId then
+		for k, v in pairs(relativeTo) do
+			if v == newValue then
+				spec.thresholds.icons.relativeToName = k
+				break
+			end
+		end
+		thresholdIconRelativeTo:SetDefaultText(spec.thresholds.icons.relativeToName)
+
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then-- or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
-
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
-		LibDD:CloseDropDownMenus()
 	end
+
+	local function RelativeToGenerator(dropdown, rootDescription)
+		for k, v in pairs(relativeToList) do
+			rootDescription:CreateRadio(v, RelativeToIsSelected, RelativeToSetSelected, relativeTo[v])
+		end
+		rootDescription:SetScrollMode(400)
+	end
+	thresholdIconRelativeTo:SetupMenu(RelativeToGenerator)
+	thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdIconEnabled
@@ -2291,6 +2390,7 @@ end
 
 function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 
 	local f = nil
 	local title = ""
@@ -2304,7 +2404,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 
 	if specId ~= nil and classId ~= nil then
 		local lowerClassName = string.lower(className)
-		controls.checkBoxes.useGlobal = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_displayText", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.useGlobal = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_displayText", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobal
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
@@ -2319,56 +2419,36 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		yCoord = yCoord - 30
 	end
 
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.fontDefault = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specName.."_fontDefault", parent)
-	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultFontFace"], oUi.xCoord, yCoord)
-	controls.dropDown.fontDefault.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.fontDefault:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontDefault, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, spec.displayText.default.fontFaceName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontDefault, "LEFT")
+	FillFontCache()
 
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontDefault, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-		local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = L["Fonts"] .. " " .. i+1
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
+	local barTextFontFace = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontFaceDefault", parent, "WowStyle1DropdownTemplate")
+	barTextFontFace:SetWidth(oUi.sliderWidth)
+	barTextFontFace.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FontFaceHeader"], oUi.xCoord, yCoord)
+	barTextFontFace.label.font:SetFontObject(GameFontNormal)
 
-			for k, v in pairs(fontsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = fonts[v]
-					info.checked = fonts[v] == spec.displayText.default.fontFace
-					info.func = self.SetValue
-					info.arg1 = fonts[v]
-					info.arg2 = v
-					info.fontObject = CreateFont(v)
-					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	function controls.dropDown.fontDefault:SetValue(newValue, newName)
+	local function FontFaceIsSelected(value)
+		return value == spec.displayText.default.fontFace
+	end
+	
+	local function FontFaceSetSelected(newValue)
 		spec.displayText.default.fontFace = newValue
-		spec.displayText.default.fontFaceName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, newName)
-		LibDD:CloseDropDownMenus()
+		spec.displayText.default.fontFaceName = fontPairsByName[newValue]
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
+
+	local function FontFaceGenerator(dropdown, rootDescription)
+		for k, v in pairs(fontPairs) do
+			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v[2])
+			radio:AddInitializer(function(button, description, menu)
+				local font = CreateFont(v[2])
+				font:SetFont(v[2], 12, "OUTLINE")
+				button.fontString:SetFontObject(font)
+			end)
+		end
+		rootDescription:SetScrollMode(400)
+	end
+	barTextFontFace:SetupMenu(FontFaceGenerator)
+	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 30
 	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DefaultFontColor"], spec.displayText.default.color,
@@ -2394,6 +2474,7 @@ end
 
 function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 
 	local f = nil
 
@@ -2402,7 +2483,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 
 	yCoord = yCoord - 30
 	local lowerClassName = string.lower(className)
-	controls.checkBoxes.useGlobalTextColors = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_textColors", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.useGlobalTextColors = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_textColors", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.useGlobalTextColors
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
@@ -2425,6 +2506,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spe
 	
 	local f = nil
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 
 	yCoord = yCoord - 30
 	controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
@@ -2435,7 +2517,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spe
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 25
 		local lowerClassName = string.lower(className)
-		controls.checkBoxes.useGlobalDotColors = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_dotColors", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.useGlobalDotColors = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_dotColors", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalDotColors
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
@@ -2450,7 +2532,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spe
 	end
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_dotColor", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_dotColor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dotColor
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(dotCheckbox)
@@ -2494,6 +2576,7 @@ end
 
 function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 
 	local f = nil
 	local title = ""
@@ -2506,7 +2589,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 25
 		local lowerClassName = string.lower(className)
-		controls.checkBoxes.useGlobalPrecision = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specName.."_useGlobal_precision", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.useGlobalPrecision = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_precision", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalPrecision
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
@@ -2536,47 +2619,11 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 	return yCoord
 end
 
-
-local sounds = {}
-local soundsList = {}
-local soundPairs = {}
-local soundPairsByName = {}
-local function FillSoundCache()
-	if TRB.Functions.Table:Length(sounds) == 0 then
-		sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-
-		local x = 1
-		for k, v in pairs(soundsList) do
-			table.insert(soundPairs, { v, sounds[v] })
-			soundPairsByName[sounds[v]] = v
-			x = x + 1
-		end
-	end
-end
-
-local fonts = {}
-local fontsList = {}
-local fontPairs = {}
-local fontPairsByName = {}
-local function FillFontCache()
-	if TRB.Functions.Table:Length(fonts) == 0 then
-		fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-		fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-
-		local x = 1
-		for k, v in pairs(fontsList) do
-			table.insert(fontPairs, { v, fonts[v] })
-			fontPairsByName[fonts[v]] = v
-			x = x + 1
-		end
-	end
-end
-
 function TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, name, spec, classId, specId, yCoord, localization, localizationTooltip)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	
-	controls.checkBoxes[name] = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_" .. name .. "Checkbox", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes[name] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. name .. "Checkbox", parent, "ChatConfigCheckButtonTemplate")
 
 	local f = controls.checkBoxes[name]
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2598,10 +2645,11 @@ end
 function TRB.Functions.OptionsUi:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
 	FillSoundCache()
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 
 	controls.dropDown = controls.dropDown or {}
 
-	controls.dropDown[name .. "Audio"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_" .. name .. "Audio", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown[name .. "Audio"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. name .. "Audio", parent, "WowStyle1DropdownTemplate")
 	local dd = controls.dropDown[name .. "Audio"]
 	dd:SetWidth(oUi.sliderWidth)
 	dd:SetDefaultText(spec.audio[name].soundName)
@@ -2638,7 +2686,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local title = ""
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
-	local namePrefix = className .. "_" .. specName .. "_"
+	local namePrefix = className .. "_" .. specName .. "_barTextEditor"
 	
 	local columns = {
 		{
@@ -2710,7 +2758,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	
 	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, L["AddNewBarTextArea"], 450, yCoord, 175, 25)
 
-	local barTextOptionsFrame = CreateFrame("Frame", "TwintopResourceBar_"..classId.."_"..specId.."_BarTextOptionsFrame", parent, "BackdropTemplate")
+	local barTextOptionsFrame = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame", parent, "BackdropTemplate")
 	barTextOptionsFrame:SetPoint("TOPLEFT", btc, "BOTTOMLEFT", 0, 0)
 	barTextOptionsFrame:SetPoint("TOPRIGHT", btc, "BOTTOMRIGHT", 0, 0)
 	barTextOptionsFrame:SetHeight(btoHeight)
@@ -2725,7 +2773,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["Name"], oUi.xCoord, yCoord+25)
 	barTextName.label.font:SetFontObject(GameFontNormal)
 	
-	local barTextEntryEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_TextEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	local barTextEntryEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_TextEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	barTextEntryEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText(L["Enabled"])
 ---@diagnostic disable-next-line: inject-field
@@ -2751,7 +2799,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	end)
 
 	yCoord = yCoord - 40
-	local barTextRelativeToFrame = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_barTextRelativeToFrame", barTextOptionsFrame, "WowStyle1DropdownTemplate")
+	local barTextRelativeToFrame = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barTextRelativeToFrame", barTextOptionsFrame, "WowStyle1DropdownTemplate")
 	barTextRelativeToFrame:SetWidth(oUi.sliderWidth)
 	barTextRelativeToFrame.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["BoundToBar"], oUi.xCoord, yCoord)
 	barTextRelativeToFrame.label.font:SetFontObject(GameFontNormal)
@@ -2995,7 +3043,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextRelativeToFrame:SetupMenu(RelativeToFrameGenerator)
 	barTextRelativeToFrame:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	
-	local barTextRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_barTextRelativeTo", barTextOptionsFrame, "WowStyle1DropdownTemplate")
+	local barTextRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barTextRelativeTo", barTextOptionsFrame, "WowStyle1DropdownTemplate")
 	barTextRelativeTo:SetWidth(oUi.sliderWidth)
 	barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["RelativePositionBarTextHeader"], oUi.xCoord2, yCoord)
 	barTextRelativeTo.label.font:SetFontObject(GameFontNormal)
@@ -3059,7 +3107,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	
 	FillFontCache()
 
-	local barTextFontFace = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_fontFace", barTextOptionsFrame, "WowStyle1DropdownTemplate")
+	local barTextFontFace = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontFace", barTextOptionsFrame, "WowStyle1DropdownTemplate")
 	barTextFontFace:SetWidth(oUi.sliderWidth)
 	barTextFontFace.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontFaceHeader"], oUi.xCoord, yCoord)
 	barTextFontFace.label.font:SetFontObject(GameFontNormal)
@@ -3095,7 +3143,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextFontFace:SetupMenu(FontFaceGenerator)
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
-	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
 	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText(L["UseDefaultFontFace"])
 	---@diagnostic disable-next-line: inject-field
@@ -3106,7 +3154,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	end)
 
 
-	local barTextFontJustifyHorizontal = CreateFrame("DropdownButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_barTextFontJustifyHorizontal", barTextOptionsFrame, "WowStyle1DropdownTemplate")
+	local barTextFontJustifyHorizontal = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barTextFontJustifyHorizontal", barTextOptionsFrame, "WowStyle1DropdownTemplate")
 	barTextFontJustifyHorizontal:SetWidth(oUi.sliderWidth)
 	barTextFontJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["RelativePositionBarTextHeader"], oUi.xCoord2, yCoord)
 	barTextFontJustifyHorizontal.label.font:SetFontObject(GameFontNormal)
@@ -3162,7 +3210,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
-	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontSize:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-40)
 	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText(L["UseDefaultFontSize"])
 	---@diagnostic disable-next-line: inject-field
@@ -3181,7 +3229,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, workingBarText, controls.colors.barText, "color")
 	end)
 
-	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontColor:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText(L["UseDefaultFontColor"])
 	---@diagnostic disable-next-line: inject-field
@@ -3334,16 +3382,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Data.cache.symbols = {}
 		TRB.Data.cache.barTextTree = {}
 	end)
-
-	function barTextRelativeToFrame:SetValue(newValue, newName)
-		workingBarText.position.relativeToFrame = newValue
-		workingBarText.position.relativeToFrameName = newName
-		LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, newName)
-		LibDD:CloseDropDownMenus()
-		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
-		SetTableValues(displayText, barTextTable)
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
-	end
 
 	---Deletes a specified bar text row
 	---@param displayText TRB.Classes.Settings.DisplayText

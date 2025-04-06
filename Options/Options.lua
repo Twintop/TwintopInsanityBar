@@ -4,7 +4,7 @@ local L = TRB.Localization
 TRB.Options = {}
 
 local oUi = TRB.Data.constants.optionsUi
-local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+
 
 local f1 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Highlight_Small_Color")
 ---@diagnostic disable-next-line: need-check-nil
@@ -339,61 +339,46 @@ local function ConstructMiscellaneousPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FrameStrata"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
+	
+	local strataDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_frameStrata", parent, "WowStyle1DropdownTemplate")
+	strataDropdown:SetWidth(oUi.sliderWidth)
+	strataDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FrameStrataDescription"], oUi.xCoord, yCoord)
+	strataDropdown.label.font:SetFontObject(GameFontNormal)
+	
+	local strata = {}
+	strata[L["StrataBackground"]] = "BACKGROUND"
+	strata[L["StrataLow"]] = "LOW"
+	strata[L["StrataMedium"]] = "MEDIUM"
+	strata[L["StrataHigh"]] = "HIGH"
+	strata[L["StrataDialog"]] = "DIALOG"
+	strata[L["StrataFullscreen"]] = "FULLSCREEN"
+	strata[L["StrataFullscreenDialog"]] = "FULLSCREEN_DIALOG"
+	strata[L["StrataTooltip"]] = "TOOLTIP"
+	local strataList = {
+		L["StrataBackground"],
+		L["StrataLow"],
+		L["StrataMedium"],
+		L["StrataHigh"],
+		L["StrataDialog"],
+		L["StrataFullscreen"],
+		L["StrataFullscreenDialog"],
+		L["StrataTooltip"]
+	}
 
-	-- Create the dropdown, and configure its appearance
----@diagnostic disable-next-line: undefined-field
-	controls.dropDown.strata = LibDD:Create_UIDropDownMenu("TwintopResourceBar_FrameStrata", parent)
-	controls.dropDown.strata.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FrameStrataDescription"], oUi.xCoord, yCoord)
-	controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.strata:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
----@diagnostic disable-next-line: undefined-field
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.strata, oUi.dropdownWidth)
-	---@diagnostic disable-next-line: undefined-field
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, TRB.Data.settings.core.strata.name)
-	---@diagnostic disable-next-line: undefined-field
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.strata, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
----@diagnostic disable-next-line: undefined-field
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.strata, function(self, level, menuList)
-		local entries = 25
-		---@diagnostic disable-next-line: undefined-field
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local strata = {}
-		strata[L["StrataBackground"]] = "BACKGROUND"
-		strata[L["StrataLow"]] = "LOW"
-		strata[L["StrataMedium"]] = "MEDIUM"
-		strata[L["StrataHigh"]] = "HIGH"
-		strata[L["StrataDialog"]] = "DIALOG"
-		strata[L["StrataFullscreen"]] = "FULLSCREEN"
-		strata[L["StrataFullscreenDialog"]] = "FULLSCREEN_DIALOG"
-		strata[L["StrataTooltip"]] = "TOOLTIP"
-		local strataList = {
-			L["StrataBackground"],
-			L["StrataLow"],
-			L["StrataMedium"],
-			L["StrataHigh"],
-			L["StrataDialog"],
-			L["StrataFullscreen"],
-			L["StrataFullscreenDialog"],
-			L["StrataTooltip"]
-		}
-
-		for k, v in pairs(strataList) do
-			info.text = v
-			info.value = strata[v]
-			info.checked = strata[v] == TRB.Data.settings.core.strata.level
-			info.func = self.SetValue
-			info.arg1 = strata[v]
-			info.arg2 = v
-			---@diagnostic disable-next-line: undefined-field
-			LibDD:UIDropDownMenu_AddButton(info, level)
-		end
-	end)
-
-	function controls.dropDown.strata:SetValue(newValue, newName)
+	local function StrataIsSelected(value)
+		return value == TRB.Data.settings.core.strata.level
+	end
+	
+	local function StrataSetSelected(newValue)
 		TRB.Data.settings.core.strata.level = newValue
-		TRB.Data.settings.core.strata.name = newName
+		
+		for k, v in pairs(strata) do
+			if v == newValue then
+				TRB.Data.settings.core.strata.name = k
+			end
+		end
+		strataDropdown:SetDefaultText(TRB.Data.settings.core.strata.name)
+
 		TRB.Frames.barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -407,62 +392,52 @@ local function ConstructMiscellaneousPanel(parent)
 				textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 			end
 		end
-		---@diagnostic disable-next-line: undefined-field
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, newName)
-		CloseDropDownMenus()
 	end
 
+	local function StrataGenerator(dropdown, rootDescription)
+		for k, v in pairs(strataList) do
+			rootDescription:CreateRadio(v, StrataIsSelected, StrataSetSelected, strata[v])
+		end
+		rootDescription:SetScrollMode(400)
+	end
+	strataDropdown:SetupMenu(StrataGenerator)
+	strataDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioChannel"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 
-	-- Create the dropdown, and configure its appearance
----@diagnostic disable-next-line: undefined-field
-	controls.dropDown.audioChannel = LibDD:Create_UIDropDownMenu("TwintopResourceBar_FrameAudioChannel", parent)
-	controls.dropDown.audioChannel.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioChannelDescription"], oUi.xCoord, yCoord)
-	controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.audioChannel:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	---@diagnostic disable-next-line: undefined-field
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.audioChannel, oUi.dropdownWidth)
-	---@diagnostic disable-next-line: undefined-field
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.audioChannel, TRB.Data.settings.core.audio.channel.name)
-	---@diagnostic disable-next-line: undefined-field
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.audioChannel, "LEFT")
 
-	-- Create and bind the initialization function to the dropdown menu
----@diagnostic disable-next-line: undefined-field
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.audioChannel, function(self, level, menuList)
-		local entries = 25
-		---@diagnostic disable-next-line: undefined-field
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local channel = {}
-		channel[L["AudioChannelMaster"]] = L["AudioChannelMaster"]
-		channel[L["AudioChannelSFX"]] = L["AudioChannelSFX"]
-		channel[L["AudioChannelMusic"]] = L["AudioChannelMusic"]
-		channel[L["AudioChannelAmbience"]] = L["AudioChannelAmbience"]
-		channel[L["AudioChannelDialog"]] = L["AudioChannelDialog"]
+	local comboPointsAudioChannel = CreateFrame("DropdownButton", "TwintopResourceBar_frameAudioChannel", parent, "WowStyle1DropdownTemplate")
+	comboPointsAudioChannel:SetWidth(oUi.sliderWidth)
+	comboPointsAudioChannel.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioChannelDescription"], oUi.xCoord, yCoord)
+	comboPointsAudioChannel.label.font:SetFontObject(GameFontNormal)
+	
+	local channel = {}
+	channel[L["AudioChannelMaster"]] = L["AudioChannelMaster"]
+	channel[L["AudioChannelSFX"]] = L["AudioChannelSFX"]
+	channel[L["AudioChannelMusic"]] = L["AudioChannelMusic"]
+	channel[L["AudioChannelAmbience"]] = L["AudioChannelAmbience"]
+	channel[L["AudioChannelDialog"]] = L["AudioChannelDialog"]
 
-		for k, v in pairs(channel) do
-			info.text = v
-			info.value = channel[v]
-			info.checked = channel[v] == TRB.Data.settings.core.audio.channel.channel
-			info.func = self.SetValue
-			info.arg1 = channel[v]
-			info.arg2 = v
-			---@diagnostic disable-next-line: undefined-field
-			LibDD:UIDropDownMenu_AddButton(info, level)
-		end
-	end)
-
-	function controls.dropDown.audioChannel:SetValue(newValue, newName)
-		TRB.Data.settings.core.audio.channel.channel = newValue
-		TRB.Data.settings.core.audio.channel.name = newName
-		---@diagnostic disable-next-line: undefined-field
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.audioChannel, newName)
-		CloseDropDownMenus()
+	local function AudioChannelIsSelected(value)
+		return value == TRB.Data.settings.core.audio.channel.channel
 	end
+	
+	local function AudioChannelSetSelected(newValue)
+		TRB.Data.settings.core.audio.channel.channel = newValue
+		TRB.Data.settings.core.audio.channel.name = newValue
+	end
+
+	local function AudioChannelGenerator(dropdown, rootDescription)
+		for k, v in pairs(channel) do
+			rootDescription:CreateRadio(v, AudioChannelIsSelected, AudioChannelSetSelected, v)
+		end
+		rootDescription:SetScrollMode(400)
+	end
+	comboPointsAudioChannel:SetupMenu(AudioChannelGenerator)
+	comboPointsAudioChannel:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ExperimentalFeatures"], oUi.xCoord, yCoord)

@@ -4,7 +4,7 @@ if TRB.Data.character.classId ~= 13 then --Only do this if we're on a Evoker!
 end
 
 local L = TRB.Localization
-local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame

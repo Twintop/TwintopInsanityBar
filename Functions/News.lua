@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 11.1.0.9-release (2025-04-07)
+## General
+
+- [#395 - UPDATE](#395) Change dropdown menus to use the new `Billzard_Menu` instead of LibDropDownMenu.
+
+## Priest
+### Shadow
+
+- [#427 - NEW (Koroshy)](#427) Add an audio cue when you gain a Power Infusion buff.
+
+---
+
 # 11.1.0.8-release (2025-03-14)
 ## General
 
