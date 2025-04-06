@@ -2125,4 +2125,9 @@ if locale == "ptBR" or locale == "ptPT" then
     L["WarriorArmsBarTextVariable_ravagerRage"] = "Fúria de Ravager"
     L["WarriorFuryBarTextVariable_bladestormTicks"] = "Número de ticks restantes esperados em Bladestorm"
     L["WarriorFuryBarTextVariable_bladestormRage"] = "Fúria de Bladestorm"
+    L["CheckboxUseGlobalTooltip_BarDimensions"] = "Quando marcado, as configurações globais para posição e tamanho da barra serão usadas."
+    L["CheckboxUseGlobalTooltip_Textures"] = "Quando marcado, as configurações globais para texturas de barra serão usadas."
+    L["GlobalAudioCheckboxPowerInfusion"] = "Tocar sinal de áudio quando você ganhar Infusão de Poder"
+    L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Tocar um sinal de áudio quando você ganhar Infusão de Poder."
+    L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Tocar um sinal de áudio quando um proc de Deathspeaker ocorrer."
 end

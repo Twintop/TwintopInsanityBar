@@ -2125,4 +2125,9 @@ if locale == "zhCN" then
     L["WarriorArmsBarTextVariable_ravagerRage"] = "掠夺者怒气"
     L["WarriorFuryBarTextVariable_bladestormTicks"] = "剑刃风暴剩余的预期滴答数"
     L["WarriorFuryBarTextVariable_bladestormRage"] = "剑刃风暴怒气"
+    L["CheckboxUseGlobalTooltip_BarDimensions"] = "选中后，将使用条形位置和大小的全局设置。"
+    L["CheckboxUseGlobalTooltip_Textures"] = "选中后，将使用条形纹理的全局设置。"
+    L["GlobalAudioCheckboxPowerInfusion"] = "获得能量灌注时播放音频提示"
+    L["GlobalAudioCheckboxPowerInfusionTooltip"] = "获得能量灌注时播放音频提示。"
+    L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "发生死亡语者触发时播放音频提示。"
 end

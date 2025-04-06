@@ -2125,4 +2125,9 @@ if locale == "koKR" then
     L["WarriorArmsBarTextVariable_ravagerRage"] = "Ravager에서 분노"
     L["WarriorFuryBarTextVariable_bladestormTicks"] = "Bladestorm에서 남은 틱 수"
     L["WarriorFuryBarTextVariable_bladestormRage"] = "Bladestorm에서 분노"
+    L["CheckboxUseGlobalTooltip_BarDimensions"] = "체크하면 막대 위치와 크기에 대한 글로벌 설정이 사용됩니다."
+    L["CheckboxUseGlobalTooltip_Textures"] = "체크하면 막대 텍스처에 대한 글로벌 설정이 사용됩니다."
+    L["GlobalAudioCheckboxPowerInfusion"] = "파워 인퓨전을 얻을 때 오디오 신호를 재생합니다."
+    L["GlobalAudioCheckboxPowerInfusionTooltip"] = "파워 인퓨전을 얻을 때 오디오 신호를 재생합니다."
+    L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "데스스피커 프로세스가 발생할 때 오디오 신호를 재생합니다."
 end

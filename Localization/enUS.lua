@@ -2215,6 +2215,7 @@ L["WarriorFuryBarTextVariable_bladestormTicks"] = "Number of expected ticks rema
 L["WarriorFuryBarTextVariable_bladestormRage"] = "Rage from Bladestorm"
 
 L["CheckboxUseGlobalTooltip_BarDimensions"] = "When checked, the global settings for bar position and size will be used."
-L["GlobalAudioCheckboxPowerInfusion"] = "Play audio cue when a Power Infusion occurs"
-L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Play audio cue when a Power Infusion occurs"
-L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Play audio cue when a Deathspeaker proc occurs"
+L["CheckboxUseGlobalTooltip_Textures"] = "When checked, the global settings for bar textures will be used."
+L["GlobalAudioCheckboxPowerInfusion"] = "Play audio cue when you gain Power Infusion"
+L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Play an audio cue when you gain Power Infusion."
+L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Play an audio cue when a Deathspeaker proc occurs."

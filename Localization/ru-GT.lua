@@ -2125,4 +2125,9 @@ if locale == "ruRU" then
     L["WarriorArmsBarTextVariable_ravagerRage"] = "Ярость от Ravager"
     L["WarriorFuryBarTextVariable_bladestormTicks"] = "Количество ожидаемых тиков, оставшихся на Bladestorm"
     L["WarriorFuryBarTextVariable_bladestormRage"] = "Ярость от Bladestorm"
+    L["CheckboxUseGlobalTooltip_BarDimensions"] = "Если отмечено, будут использоваться глобальные настройки положения и размера панели."
+    L["CheckboxUseGlobalTooltip_Textures"] = "Если отмечено, будут использоваться глобальные настройки текстур панели."
+    L["GlobalAudioCheckboxPowerInfusion"] = "Воспроизвести звуковой сигнал при получении Power Infusion"
+    L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Воспроизвести звуковой сигнал при получении Power Infusion."
+    L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Воспроизвести звуковой сигнал при срабатывании Deathspeaker."
 end

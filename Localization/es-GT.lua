@@ -2125,4 +2125,9 @@ if locale == "esES" or locale == "esMX" then
     L["WarriorArmsBarTextVariable_ravagerRage"] = "Furia de Devastador"
     L["WarriorFuryBarTextVariable_bladestormTicks"] = "Número de ticks restantes esperados en Tormenta de cuchillas"
     L["WarriorFuryBarTextVariable_bladestormRage"] = "Furia de Tormenta de cuchillas"
+    L["CheckboxUseGlobalTooltip_BarDimensions"] = "Al marcar esta opción, se usarán los ajustes globales de posición y tamaño de la barra."
+    L["CheckboxUseGlobalTooltip_Textures"] = "Al marcar esta opción, se usarán los ajustes globales de texturas de la barra."
+    L["GlobalAudioCheckboxPowerInfusion"] = "Reproducir audio al obtener Infusión de Poder."
+    L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Reproducir audio al obtener Infusión de Poder."
+    L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Reproducir audio al activarse el Portavoz de la Muerte."
 end
