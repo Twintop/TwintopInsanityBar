@@ -49,9 +49,9 @@ local function ConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
 
 	yCoord = yCoord - 60
-	--[[
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, nil, nil, yCoord, true, L["ResourceComboPoints"])
 
+	--[[
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false)
 
@@ -496,8 +496,7 @@ local function ConstructGlobalOptionsPanel()
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabMiscellaneous"], 5, parent, 100, tabs[4])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabMiscellaneous"], 4, parent, 100, tabs[3])
 
 	yCoord = yCoord - 15
 
@@ -524,9 +523,7 @@ local function ConstructGlobalOptionsPanel()
 	ConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	ConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
 	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	--ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
-	--ShadowConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
-	ConstructMiscellaneousPanel(tabsheets[5].scrollFrame.scrollChild)
+	ConstructMiscellaneousPanel(tabsheets[4].scrollFrame.scrollChild)
 end
 
 local function ConstructImportExportPanel()

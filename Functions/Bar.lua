@@ -482,6 +482,10 @@ function TRB.Functions.Bar:UpdateSmoothBar()
 end
 
 function TRB.Functions.Bar:Construct(settings)
+	if settings == nil and TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
+		settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+	end
+
 	if settings ~= nil and settings.bar ~= nil then
 		local barContainerFrame = TRB.Frames.barContainerFrame
 		local resourceFrame = TRB.Frames.resourceFrame

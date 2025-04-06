@@ -13,7 +13,7 @@ local specGlobalDefaults = {
 	textColors = false,
     dotColors = false,
 	precision = false,
-	--textures = false,
+	textures = false,
 	--thresholds = false
 }
 

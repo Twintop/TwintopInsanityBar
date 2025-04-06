@@ -1187,7 +1187,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, specId, includeComboPoints)
+function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints)
 	local newName = statusbarPairsByName[newValue]
 	if includeComboPoints == nil then
 		includeComboPoints = false
@@ -1195,7 +1195,7 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 
 	textures[variable.."Bar"] = newValue
 	textures[variable.."BarName"] = newName
-	controls[variable.."Bar"]:SetupMenu(controls[variable.."Bar"].GeneratorFunction)
+	DropdownSetupMenuWrapper(controls[variable.."Bar"])
 	if textures.textureLock then
 		textures.resourceBar = newValue
 		textures.resourceBarName = newName
@@ -1213,30 +1213,9 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 			DropdownSetupMenuWrapper(controls.comboPointsBar)
 		end
 	end
-
-	if TRB.Data.character.specId == specId then
-		if includeComboPoints and variable == "comboPoints" then
-			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-			for x = 1, length do
-				TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(textures.comboPointsBar)
-			end
-		else
-			TRB.Frames[variable.."Frame"]:SetStatusBarTexture(textures[variable.."Bar"])
-		end
-
-		if textures.textureLock then
-			TRB.Frames.resourceFrame:SetStatusBarTexture(textures.resourceBar)
-			TRB.Frames.castingFrame:SetStatusBarTexture(textures.castingBar)
-			TRB.Frames.passiveFrame:SetStatusBarTexture(textures.passiveBar)
-			
-			if includeComboPoints and variable ~= "comboPoints" then
-				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-				for x = 1, length do
-					TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(textures.comboPointsBar)
-				end
-			end
-		end
-	end
+	
+	TRB.Functions.Character:ResetCaches()
+	TRB.Functions.Bar:Construct()
 end
 
 function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString)
@@ -1253,17 +1232,35 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	local f = nil
 	
 	if includeComboPoints then
-		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["BarTexturesHeader"], secondaryResourceString), oUi.xCoord, yCoord)
+		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["BarAndSecondardTexturesHeader"], secondaryResourceString), oUi.xCoord, yCoord)
 	else
 		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
 	end
-		
+	
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalTextures = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_textures", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalTextures
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_Textures"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textures)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].textures = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Bar:Construct()
+		end)
+	end
+	
 	controls.dropDown.textures = {}
 
 	yCoord = yCoord - 30
 
 	local function StatusbarSetValue(variable, newValue)
-		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, specId, includeComboPoints)
+		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints)
 	end
 
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"],
@@ -1302,12 +1299,15 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		if spec.textures.textureLock then
 			spec.textures.passiveBar = spec.textures.resourceBar
 			spec.textures.passiveBarName = spec.textures.resourceBarName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.resourceBar)
+			DropdownSetupMenuWrapper(controls.dropDown.textures.passiveBar)
 			spec.textures.castingBar = spec.textures.resourceBar
 			spec.textures.castingBarName = spec.textures.resourceBarName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.castingBar)
 
 			if includeComboPoints then
+				spec.textures.comboPointsBar = spec.textures.resourceBar
+				spec.textures.comboPointsBarName = spec.textures.resourceBarName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBar)
 				spec.textures.comboPointsBorder = spec.textures.border
 				spec.textures.comboPointsBorderName = spec.textures.borderName
 				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
@@ -1316,38 +1316,8 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
 			end
 
-			if TRB.Data.character.specId == specId then
-				TRB.Frames.resourceFrame:SetStatusBarTexture(spec.textures.resourceBar)
-				TRB.Frames.passiveFrame:SetStatusBarTexture(spec.textures.passiveBar)
-				TRB.Frames.castingFrame:SetStatusBarTexture(spec.textures.castingBar)
-
-				if includeComboPoints then
-					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-					for x = 1, length do
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
-						
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-							bgFile = spec.textures.comboPointsBackground,
-							tile = true,
-							tileSize = spec.comboPoints.width,
-							edgeSize = 1,
-							insets = {0, 0, 0, 0}
-						})
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
-						
-						if spec.comboPoints.border < 1 then
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
-						else
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
-														tile = true,
-														tileSize=4,
-														edgeSize=spec.comboPoints.border,
-														insets = {0, 0, 0, 0}
-														})
-						end
-					end
-				end
-			end
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Bar:Construct()
 		end
 	end)
 
@@ -1358,48 +1328,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			local newName = borderPairsByName[newValue]
 			spec.textures.border = newValue
 			spec.textures.borderName = newName
-	
-			if TRB.Data.character.specId == specId then
-				if spec.bar.border < 1 then
-					TRB.Frames.barBorderFrame:SetBackdrop({ })
-				else
-					TRB.Frames.barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
-												tile = true,
-												tileSize=4,
-												edgeSize=spec.bar.border,
-												insets = {0, 0, 0, 0}
-												})
-				end
-				TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
-			end
-	
-			controls.dropDown.textures.border:SetupMenu(controls.dropDown.textures.border.GeneratorFunction)
+			DropdownSetupMenuWrapper(controls.dropDown.textures.border)
 	
 			if includeComboPoints and spec.textures.textureLock then
 				spec.textures.comboPointsBorder = newValue
 				spec.textures.comboPointsBorderName = newName
-	
-				if TRB.Data.character.specId == specId then
-					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-					for x = 1, length do
-						if spec.comboPoints.border < 1 then
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
-						else
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
-														tile = true,
-														tileSize=4,
-														edgeSize=spec.comboPoints.border,
-														insets = {0, 0, 0, 0}
-														})
-						end
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.border, true))
-					end
-				end
-	
 				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
 			end
+
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Bar:Construct()
 		end)
 	
 	
@@ -1409,39 +1347,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			local newName = backgroundPairsByName[newValue]
 			spec.textures.background = newValue
 			spec.textures.backgroundName = newName
-
-			if TRB.Data.character.specId == specId then
-				TRB.Frames.barContainerFrame:SetBackdrop({
-					bgFile = spec.textures.background,
-					tile = true,
-					tileSize = spec.bar.width,
-					edgeSize = 1,
-					insets = {0, 0, 0, 0}
-				})
-				TRB.Frames.barContainerFrame:SetBackdropColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.background, true))
-			end
-
-			controls.dropDown.textures.background:SetupMenu(controls.dropDown.textures.background.GeneratorFunction)
+			DropdownSetupMenuWrapper(controls.dropDown.textures.background)
 			
 			if includeComboPoints and spec.textures.textureLock then
 				spec.textures.comboPointsBackground = newValue
 				spec.textures.comboPointsBackgroundName = newName
-
-				if TRB.Data.character.specId == specId then
-					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-					for x = 1, length do
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-							bgFile = spec.textures.comboPointsBackground,
-							tile = true,
-							tileSize = spec.comboPoints.width,
-							edgeSize = 1,
-							insets = {0, 0, 0, 0}
-						})
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
-					end
-				end
 				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
 			end
+			
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Bar:Construct()
 		end)
 
 	if includeComboPoints then
@@ -1451,48 +1366,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				local newName = borderPairsByName[newValue]
 				spec.textures.comboPointsBorder = newValue
 				spec.textures.comboPointsBorderName = newName
-
-				if TRB.Data.character.specId == specId then
-					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-					for x = 1, length do
-						if spec.comboPoints.border < 1 then
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
-						else
-							TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ edgeFile = spec.textures.comboPointsBorder,
-														tile = true,
-														tileSize=4,
-														edgeSize=spec.comboPoints.border,
-														insets = {0, 0, 0, 0}
-														})
-						end
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.border, true))
-					end
-				end
-
 				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
 
 				if spec.textures.textureLock then
 					spec.textures.border = newValue
 					spec.textures.borderName = newName
-
-					if TRB.Data.character.specId == specId then
-						if spec.bar.border < 1 then
-							TRB.Frames.barBorderFrame:SetBackdrop({ })
-						else
-							TRB.Frames.barBorderFrame:SetBackdrop({ edgeFile = spec.textures.border,
-														tile = true,
-														tileSize=4,
-														edgeSize=spec.bar.border,
-														insets = {0, 0, 0, 0}
-														})
-						end
-						TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-						TRB.Frames.barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
-					end
-
 					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
 				end
+				
+				TRB.Functions.Character:ResetCaches()
+				TRB.Functions.Bar:Construct()
 			end)
 
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"],
@@ -1500,40 +1383,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				local newName = backgroundPairsByName[newValue]
 				spec.textures.comboPointsBackground = newValue
 				spec.textures.comboPointsBackgroundName = newName
-
-				if TRB.Data.character.specId == specId then
-					local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-					for x = 1, length do
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
-							bgFile = spec.textures.comboPointsBackground,
-							tile = true,
-							tileSize = spec.comboPoints.width,
-							edgeSize = 1,
-							insets = {0, 0, 0, 0}
-						})
-						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
-					end
-				end
-
 				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
 				
 				if spec.textures.textureLock then
 					spec.textures.background = newValue
 					spec.textures.backgroundName = newName
-
-					if TRB.Data.character.specId == specId then
-						TRB.Frames.barContainerFrame:SetBackdrop({ 
-							bgFile = spec.textures.background,
-							tile = true,
-							tileSize = spec.bar.width,
-							edgeSize = 1,
-							insets = {0, 0, 0, 0}
-						})
-						TRB.Frames.barContainerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.background, true))
-					end
-
 					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
 				end
+				
+				TRB.Functions.Character:ResetCaches()
+				TRB.Functions.Bar:Construct()
 			end)
 
 		yCoord = yCoord - 60

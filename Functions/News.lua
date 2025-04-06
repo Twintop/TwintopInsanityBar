@@ -15,6 +15,7 @@ local content = [====[
 ## General
 
 - [#395 - UPDATE](#395) Change dropdown menus to use the new `Billzard_Menu` instead of LibDropDownMenu.
+- [#429 - NEW](#423) Add Global Bar Setting support for bar, border, and background textures for the main bar and combo point bars.
 
 ## Priest
 ### Shadow

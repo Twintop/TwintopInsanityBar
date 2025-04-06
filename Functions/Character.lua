@@ -412,9 +412,14 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.precision = spec.precision
 	end
 	
+	if s.textures then
+		specCache.settings.textures = core.textures
+	else
+		specCache.settings.textures = spec.textures
+	end
+
 	--NYI	
 	specCache.settings.displayBar = spec.displayBar
-	specCache.settings.textures = spec.textures
 	specCache.settings.thresholds = spec.thresholds
 	specCache.settings.audio = spec.audio
 end
