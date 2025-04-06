@@ -707,17 +707,26 @@ function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, c
 		for k, v in pairs(lsmPairs) do
 			local radio = rootDescription:CreateRadio(v[1], IsSelected, setSelectedFunc, v[2])
 			radio:AddInitializer(function(button, description, menu)
-				local rightTexture = button:AttachTexture();
-				rightTexture:SetSize(18, 18);
-				rightTexture:SetPoint("RIGHT");
-				rightTexture:SetTexture(v[2]);
-				local fontString = button.fontString;
-				fontString:SetPoint("RIGHT", rightTexture, "LEFT");
+				local rightTexture = button:AttachTexture()
+				rightTexture:SetSize(1, 18)
+				rightTexture:SetPoint("RIGHT")
+				--rightTexture:SetTexture(v[2])
+				local fontString = button.fontString
+				local fontFile, fontHeight, _ = fontString:GetFont()
+				fontString:SetFont(fontFile, fontHeight, "OUTLINE")
+				fontString:SetPoint("RIGHT", rightTexture, "LEFT")
+
+				local bgTexture = button:AttachTexture()
+				bgTexture:SetTexture(v[2])
+				bgTexture:SetPoint("LEFT", button.fontString, "LEFT")
+				bgTexture:SetPoint("RIGHT", rightTexture, "LEFT")
+				bgTexture:SetSize(button.fontString:GetUnboundedStringWidth(), 16)
+
 				-- Manual calculation required to accomodate aligned text.
-				local pad = 20;
-				local width = pad + fontString:GetUnboundedStringWidth() + rightTexture:GetWidth();
-				local height = 20;
-				return width, height;
+				local pad = 0
+				local width = pad + fontString:GetUnboundedStringWidth() + rightTexture:GetWidth()
+				local height = 20
+				return width, height
 			end)
 		end
 		rootDescription:SetScrollMode(400)
