@@ -21,8 +21,8 @@ local content = [====[
 # 11.1.0.9-release (2025-04-07)
 ## General
 
-- [#395 - UPDATE](#395) Change dropdown menus to use the new `Billzard_Menu` instead of LibDropDownMenu.
 - [#429 - NEW](#423) Add Global Bar Setting support for bar, border, and background textures for the main bar and combo point bars.
+- [#395 - UPDATE](#395) Change dropdown menus to use the new `Blizzard_Menu` instead of LibDropDownMenu.
 
 ## Priest
 ### Shadow
