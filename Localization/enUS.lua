@@ -2219,3 +2219,8 @@ L["CheckboxUseGlobalTooltip_Textures"] = "When checked, the global settings for 
 L["GlobalAudioCheckboxPowerInfusion"] = "Play audio cue when you gain Power Infusion"
 L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Play an audio cue when you gain Power Infusion."
 L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Play an audio cue when a Deathspeaker proc occurs."
+
+L["GlobalAudioPowerInfusion"] = "Power Infusion gained"
+L["HunterBeastMasteryAudioBeastCleaveDown"] = "Beast Cleave buff lost"
+L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Play audio cue when Beast Cleave buff is lost"
+L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Play an audio cue when you lose an active Beast Cleave buff. This sound will only be played once."

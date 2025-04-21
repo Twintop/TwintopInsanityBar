@@ -2130,4 +2130,8 @@ if locale == "ptBR" or locale == "ptPT" then
     L["GlobalAudioCheckboxPowerInfusion"] = "Tocar sinal de áudio quando você ganhar Infusão de Poder"
     L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Tocar um sinal de áudio quando você ganhar Infusão de Poder."
     L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Tocar um sinal de áudio quando um proc de Deathspeaker ocorrer."
+    L["GlobalAudioPowerInfusion"] = "Infusão de Poder obtida"
+    L["HunterBeastMasteryAudioBeastCleaveDown"] = "Bônus de Cutilada da Besta perdido"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Tocar um sinal sonoro quando o bônus de Cutilada da Besta for perdido"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Tocar um sinal sonoro quando você perder um bônus de Cutilada da Besta ativo. Este som será reproduzido apenas uma vez."
 end

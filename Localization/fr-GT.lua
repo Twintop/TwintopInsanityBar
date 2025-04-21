@@ -2132,4 +2132,8 @@ if locale == "frFR" then
     L["GlobalAudioCheckboxPowerInfusion"] = "Lancer un signal audio lorsque vous gagnez Infusion de Puissance"
     L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Lancer un signal audio lorsque vous gagnez Infusion de Puissance."
     L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Lancer un signal audio lorsqu'un déclenchement de Parleur de Mort se produit."
+    L["GlobalAudioPowerInfusion"] = "Infusion de puissance gagnée"
+    L["HunterBeastMasteryAudioBeastCleaveDown"] = "Amélioration de Fente de bête perdue"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Signal sonore lorsque l'amélioration de Fente de bête est perdue"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Signal sonore lorsque vous perdez une amélioration de Fente de bête active. Ce son ne sera joué qu'une seule fois."
 end

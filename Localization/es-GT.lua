@@ -2130,4 +2130,8 @@ if locale == "esES" or locale == "esMX" then
     L["GlobalAudioCheckboxPowerInfusion"] = "Reproducir audio al obtener Infusión de Poder."
     L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Reproducir audio al obtener Infusión de Poder."
     L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Reproducir audio al activarse el Portavoz de la Muerte."
+    L["GlobalAudioPowerInfusion"] = "Infusión de Poder obtenida"
+    L["HunterBeastMasteryAudioBeastCleaveDown"] = "Se ha perdido la mejora de Hendidura Bestial"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Se reproduce una señal de audio cuando se pierde la mejora de Hendidura Bestial"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Se reproduce una señal de audio cuando se pierde una mejora de Hendidura Bestial activa. Este sonido solo se reproducirá una vez."
 end

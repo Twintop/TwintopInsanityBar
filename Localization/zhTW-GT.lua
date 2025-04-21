@@ -2130,4 +2130,8 @@ if locale == "zhTW" then
     L["GlobalAudioCheckboxPowerInfusion"] = "當你獲得能量灌注時播放音頻提示"
     L["GlobalAudioCheckboxPowerInfusionTooltip"] = "當你獲得能量灌注時播放音頻提示。"
     L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "當死亡語者觸發時播放音訊提示。"
+    L["GlobalAudioPowerInfusion"] = "獲得能量灌注"
+    L["HunterBeastMasteryAudioBeastCleaveDown"] = "野獸劈砍增益效果消失"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "當野獸劈砍增益消失時播放音訊提示"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "當你失去有效的 Beast Cleave 增益時播放音訊提示。該聲音只會播放一次。"
 end

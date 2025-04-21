@@ -2130,4 +2130,8 @@ L["CannibalizeIfForsaken"] = "Kannibalisieren (wenn im Stich gelassen)"
     L["GlobalAudioCheckboxPowerInfusion"] = "Akustisches Signal abspielen, wenn du Kraftinfusion erhältst."
     L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Akustisches Signal abspielen, wenn du Kraftinfusion erhältst."
     L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Akustisches Signal abspielen, wenn ein Todessprecher-Proc auftritt."
+    L["GlobalAudioPowerInfusion"] = "Kraftinfusion erhalten"
+    L["HunterBeastMasteryAudioBeastCleaveDown"] = "Tierspalten-Buff verloren"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Audiosignal abspielen, wenn Tierspalten-Buff verloren geht"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Ein Audiosignal wird abgespielt, wenn ein aktiver Tierspalten-Buff verloren geht. Dieser Sound wird nur einmal abgespielt."
 end

@@ -2130,4 +2130,8 @@ if locale == "ruRU" then
     L["GlobalAudioCheckboxPowerInfusion"] = "Воспроизвести звуковой сигнал при получении Power Infusion"
     L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Воспроизвести звуковой сигнал при получении Power Infusion."
     L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Воспроизвести звуковой сигнал при срабатывании Deathspeaker."
+    L["GlobalAudioPowerInfusion"] = "Power Infusion получен"
+    L["HunterBeastMasteryAudioBeastCleaveDown"] = "Усиление Beast Cleave потеряно"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Воспроизвести звуковой сигнал, когда усиление Beast Cleave потеряно"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Воспроизвести звуковой сигнал, когда вы теряете активное усиление Beast Cleave. Этот звук будет воспроизведен только один раз."
 end

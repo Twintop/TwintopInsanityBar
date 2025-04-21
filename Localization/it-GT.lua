@@ -2130,4 +2130,8 @@ if locale == "itIT" then
     L["GlobalAudioCheckboxPowerInfusion"] = "Riproduci un segnale audio quando ottieni Power Infusion"
     L["GlobalAudioCheckboxPowerInfusionTooltip"] = "Riproduci un segnale audio quando ottieni Power Infusion."
     L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "Riproduci un segnale audio quando si verifica un'attivazione di Deathspeaker."
+    L["GlobalAudioPowerInfusion"] = "Infusione di Potere ottenuta"
+    L["HunterBeastMasteryAudioBeastCleaveDown"] = "Buffon Fendente Bestiale perso"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Riproduci un segnale acustico quando il buff Fendente Bestiale viene perso"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Riproduci un segnale acustico quando perdi un buff Fendente Bestiale attivo. Questo suono verrà riprodotto una sola volta."
 end

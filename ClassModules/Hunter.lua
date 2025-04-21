@@ -58,7 +58,7 @@ local function FillSpecializationCache()
 	specCache.beastMastery.snapshotData.attributes.resourceRegen = 0
 	specCache.beastMastery.snapshotData.audio = {
 		overcapCue = false,
-		playedKillShotCue = false
+		beastCleaveDownCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
@@ -2111,6 +2111,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
+	local coreSettings = TRB.Data.settings.core
+	local classSettings = TRB.Data.settings.hunter
 
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells|TRB.Classes.Hunter.MarksmanshipSpells|TRB.Classes.Hunter.SurvivalSpells]]
 
@@ -2119,6 +2121,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
+				local specSettings = classSettings.beastMastery
 				if entry.spellId == spells.barrage.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -2148,6 +2151,12 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.direBeastHawk.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
+					end
+				elseif entry.spellId == spells.beastCleave.id then
+					if entry.type == "SPELL_AURA_REMOVED" then
+						if specSettings.audio.beastCleaveDown.enabled then
+							PlaySoundFile(specSettings.audio.beastCleaveDown.sound, coreSettings.audio.channel.channel)
+						end
 					end
 				end
 			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship

@@ -1431,7 +1431,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 			powerInfusion={
-				name = "Power Infusion Audio",
+				name = L["GlobalAudioPowerInfusion"],
 				enabled = false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]

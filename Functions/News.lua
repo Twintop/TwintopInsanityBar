@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.1.5.0-release (2025-04-22)
+## Hunter
+### Beast Mastery
+
+- [#436 - NEW](#436) Add an optional audio cue that plays when the buff from Beast Cleave fades.
+
+---
+
 # 11.1.0.10-release (2025-04-07)
 ## Hunter
 

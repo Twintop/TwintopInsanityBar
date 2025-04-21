@@ -2130,4 +2130,8 @@ if locale == "koKR" then
     L["GlobalAudioCheckboxPowerInfusion"] = "파워 인퓨전을 얻을 때 오디오 신호를 재생합니다."
     L["GlobalAudioCheckboxPowerInfusionTooltip"] = "파워 인퓨전을 얻을 때 오디오 신호를 재생합니다."
     L["PriestShadowAudioCheckboxDeathspeakerTooltip"] = "데스스피커 프로세스가 발생할 때 오디오 신호를 재생합니다."
+    L["GlobalAudioPowerInfusion"] = "힘 주입 획득"
+    L["HunterBeastMasteryAudioBeastCleaveDown"] = "야수 가르기 버프가 사라짐"
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "야수 가르기 버프가 사라질 때 오디오 신호를 재생합니다."
+    L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "활성화된 야수 가르기 버프가 사라질 때 오디오 신호를 재생합니다. 이 효과는 한 번만 재생됩니다."
 end

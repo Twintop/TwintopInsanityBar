@@ -346,6 +346,12 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
+			},
+			beastCleaveDown={
+				name = L["HunterBeastMasteryAudioBeastCleaveDown"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
 		textures = {
@@ -1619,6 +1625,8 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterAudioCheckboxKillShot"], L["HunterAudioCheckboxKillShotTooltip"])
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "beastCleaveDown", spec, classId, specId, yCoord, L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"], L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
 
