@@ -58,7 +58,7 @@ local function FillSpecializationCache()
 	specCache.beastMastery.snapshotData.attributes.resourceRegen = 0
 	specCache.beastMastery.snapshotData.audio = {
 		overcapCue = false,
-		beastCleaveDownCue = false
+		playedKillShotCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
