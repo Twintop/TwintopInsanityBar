@@ -616,7 +616,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "algariManaPotionRank1",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.algariManaPotionRank2 = TRB.Classes.SpellThreshold:New({
 		id = 431418,
@@ -627,7 +628,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "algariManaPotionRank2",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.algariManaPotionRank3 = TRB.Classes.SpellThreshold:New({
 		id = 431418,
@@ -638,7 +640,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "algariManaPotionRank3",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.cavedwellersDelightRank1 = TRB.Classes.SpellThreshold:New({
 		id = 431419,
@@ -649,7 +652,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "cavedwellersDelightRank1",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.cavedwellersDelightRank2 = TRB.Classes.SpellThreshold:New({
 		id = 431419,
@@ -660,7 +664,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "cavedwellersDelightRank2",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.cavedwellersDelightRank3 = TRB.Classes.SpellThreshold:New({
 		id = 431419,
@@ -671,7 +676,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "cavedwellersDelightRank3",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.slumberingSoulSerumRank1 = TRB.Classes.SpellThreshold:New({
 		id = 431422,
@@ -682,7 +688,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "slumberingSoulSerumRank1",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.slumberingSoulSerumRank2 = TRB.Classes.SpellThreshold:New({
 		id = 431422,
@@ -693,7 +700,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "slumberingSoulSerumRank2",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.slumberingSoulSerumRank3 = TRB.Classes.SpellThreshold:New({
 		id = 431422,
@@ -704,7 +712,8 @@ function TRB.Classes.Healer.HealerSpells:New()
 		useSpellIcon = true,
 		settingKey = "slumberingSoulSerumRank3",
 		isPotion = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.potionOfChilledClarity = TRB.Classes.SpellBase:New({
 		id = 371052

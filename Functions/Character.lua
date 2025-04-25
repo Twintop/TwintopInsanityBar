@@ -80,6 +80,94 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
+---Handles SPELL_RANGE_CHECK_UPDATE events
+---@param self any
+---@param event string
+---@param spellIdentifier integer|string
+---@param isInRange boolean
+---@param checksRange boolean
+local function SpellRangeCheckUpdateEvent(self, event, spellIdentifier, isInRange, checksRange)
+	if type(spellIdentifier) == "number" then
+		if checksRange == true then
+			TRB.Data.cache.values.range[spellIdentifier] = isInRange
+			return
+		end
+	end
+
+	if TRB.Data.specCache[TRB.Data.barConstructedForSpec] ~= nil then
+		local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
+		for k, v in pairs(specCache.spellsData.spells) do
+			if v.id == spellIdentifier then
+				TRB.Functions.Character:UpdateIsSpellInRange(v)
+				return
+			end
+		end
+	end
+end
+
+local spellRangeCheckUpdateFrame = CreateFrame("Frame")
+spellRangeCheckUpdateFrame:SetScript("OnEvent", SpellRangeCheckUpdateEvent)
+
+---Enables all spells that need to have range checks performed
+function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
+	local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
+	
+	if specCache ~= nil and specCache.settings.thresholds.outOfRange then
+		for _, v in pairs(specCache.spellsData.spells) do
+			if v:Is("TRB.Classes.SpellThreshold") and v:IsValid() and v.rangeCheck == true then
+				C_Spell.EnableSpellRangeCheck(v.id, true)
+				TRB.Functions.Character:UpdateIsSpellInRange(v)
+			end
+		end
+	end
+
+	spellRangeCheckUpdateFrame:RegisterEvent("SPELL_RANGE_CHECK_UPDATE")
+end
+
+---Disables all spells that need to have range checks performed
+function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+	local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
+
+	spellRangeCheckUpdateFrame:UnregisterEvent("SPELL_RANGE_CHECK_UPDATE")
+	
+	-- Do two passes over this:
+	-- 1) spells that should be disabled based on the specCache
+	-- 2) any spells we might already have cached
+	if specCache ~= nil then
+		for _, v in pairs(specCache.spellsData.spells) do
+			if v:Is("TRB.Classes.SpellThreshold") and v:IsValid() and v.rangeCheck == true then
+				C_Spell.EnableSpellRangeCheck(v.id, false)
+			end
+		end
+	end
+
+	for k, _ in pairs(TRB.Data.cache.values.range) do
+		C_Spell.EnableSpellRangeCheck(k, false)
+	end
+
+	TRB.Data.cache.values.range = {}
+end
+
+---Updates the cache value for the spell check of if it is in range.
+---@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold
+function TRB.Functions.Character:UpdateIsSpellInRange(spell)
+	TRB.Data.cache.values.range[spell.id] = C_Spell.IsSpellInRange(spell.id, spell.targetUnit)
+end
+
+---Determines if the spell is within range to be used
+---@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold
+---@return boolean
+function TRB.Functions.Character:GetIsSpellInRange(spell)
+	if spell.rangeCheck ~= true then
+		return true
+	end
+	if TRB.Data.cache.values.range[spell.id] == nil then
+		TRB.Functions.Character:UpdateIsSpellInRange(spell)
+	end
+
+	return TRB.Data.cache.values.range[spell.id]
+end
+
 function TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, lowerCaseClass)
 	local className
 	if classId ~= nil then
@@ -296,6 +384,8 @@ function TRB.Functions.Character:ResetCaches()
 	TRB.Data.cache.values.bar = {}
 	TRB.Data.cache.values.resource = {}
 	TRB.Data.cache.values.threshold = {}
+	-- We don't do range check cache reset here since we need to track what we've enabled and clean it up when we change specs
+	--TRB.Data.cache.values.range = {}
 	TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, TRB.Data.talents)
 end
 
@@ -509,6 +599,7 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Details.addonData.registered = true
 		TRB.Functions.Aura:EnableUnitAura()
 		TRB.Functions.Character:EnableCharacterChange()
+		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 	else
@@ -520,6 +611,7 @@ function TRB.Functions.Character:EventRegistration()
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Functions.Aura:DisableUnitAura()
 		TRB.Functions.Character:DisableCharacterChange()
+		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Details.addonData.registered = false
 		barContainerFrame:Hide()
 	end

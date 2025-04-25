@@ -1237,6 +1237,8 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.outOfRange)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.outOfRange = self:GetChecked()
+		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)
 
 	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")

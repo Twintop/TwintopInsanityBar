@@ -52,6 +52,7 @@ end
 ---@field public icefury TRB.Classes.Shaman.OverloadSpell
 ---@field public earthShock TRB.Classes.SpellThreshold
 ---@field public earthquake TRB.Classes.SpellThreshold
+---@field public earthquakeTargeted TRB.Classes.SpellThreshold
 ---@field public elementalBlast TRB.Classes.SpellThreshold
 TRB.Classes.Shaman.ElementalSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Shaman.ElementalSpells.__index = TRB.Classes.Shaman.ElementalSpells

@@ -154,7 +154,8 @@ TRB.Data.cache.values = {
 	bar = {},
 	threshold = {},
 	resource = {},
-	frame = {}
+	frame = {},
+	range = {}
 }
 ---@type TRB.Classes.SpellThreshold[]
 TRB.Data.cache.thresholdSpells = {}

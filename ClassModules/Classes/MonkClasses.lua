@@ -109,6 +109,7 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 		settingKey = "manaTeaCharges",
 		primaryResourceType = Enum.PowerType.Mana,
 		isSnowflake = true,
+		rangeCheck = false
 	})
 	self.energizingBrew = TRB.Classes.SpellBase:New({
 		id = 422031,
@@ -153,7 +154,8 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 		settingKey = "cannibalize",
 		primaryResourceType = Enum.PowerType.Mana,
 		isSnowflake = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 
 	return self

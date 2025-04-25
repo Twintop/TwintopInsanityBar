@@ -1571,7 +1571,7 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
 		TargetsCleanup()
-		RefreshTargetTracking()		
+		RefreshTargetTracking()
 		self.sinceLastUpdate = 0
 	end
 end
@@ -1579,6 +1579,7 @@ end
 local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 
 	if TRB.Data.character.specId == 2 then

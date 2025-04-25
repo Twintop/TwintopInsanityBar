@@ -363,6 +363,8 @@ end
 ---@class TRB.Classes.SpellThreshold : TRB.Classes.SpellBase
 ---@field public settingKey string # Key used for lookups. Typically the same as the name in the `spells` dictionary.
 ---@field public isSnowflake boolean? # Is this threshold a special snowflake that needs to be handled manually?
+---@field public targetUnit string # The target that will be used when doing castable and range calculations
+---@field public rangeCheck boolean # Should this threshold perform range checks?
 TRB.Classes.SpellThreshold = setmetatable({}, {__index = TRB.Classes.SpellBase})
 TRB.Classes.SpellThreshold.__index = TRB.Classes.SpellThreshold
 
@@ -381,10 +383,20 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
 	
 	for key, value in pairs(spellAttributes) do
 		if  (key == "settingKey") or
-			(key == "isSnowflake"   and type(value) == "boolean") then
+			(key == "isSnowflake"   and type(value) == "boolean") or
+			(key == "targetUnit") or
+			(key == "rangeCheck"	and type(value) == "boolean") then
 			self[key] = value
 			self.attributes[key] = nil
 		end
+	end
+
+	if self.targetUnit == nil then
+		self.targetUnit = "target"
+	end
+
+	if self.rangeCheck == nil then
+		self.rangeCheck = true
 	end
 
 	return self

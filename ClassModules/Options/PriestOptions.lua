@@ -3205,6 +3205,8 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.outOfRange)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.outOfRange = self:GetChecked()
+		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)
 
 	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")

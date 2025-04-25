@@ -440,7 +440,8 @@ function TRB.Classes.Priest.HealerSpells:New()
 		baseline = false,
 		resourcePercent = 0.005,
 		duration = 15,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255,
@@ -460,7 +461,8 @@ function TRB.Classes.Priest.HealerSpells:New()
 		settingKey = "cannibalize",
 		primaryResourceType = Enum.PowerType.Mana,
 		isSnowflake = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 
 	return self
@@ -527,7 +529,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		isTalent = true,
 		duration = 12,
 		resourcePercent = 0.002,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 
 	-- Voidweaver
@@ -551,7 +554,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		duration = 15,
 		resourcePercent = 0.005,
 		resourcePercentMindbender = 0.002,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	
 	return self
@@ -648,7 +652,8 @@ function TRB.Classes.Priest.HolySpells:New()
 		ticks = 4,
 		tickId = 265144,
 		isTalent = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 	self.lightOfTheNaaru = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 196985,
