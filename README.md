@@ -8,7 +8,7 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 [![Issues](https://img.shields.io/github/issues-raw/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/issues)
 [![Issues](https://img.shields.io/github/issues-closed-raw/Twintop/TwintopInsanityBar?color=00CC00)](https://github.com/Twintop/TwintopInsanityBar/issues?q=is%3Aissue+is%3Aclosed)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Core?color=000000&label=Core)](https://github.com/Twintop/TwintopInsanityBar/labels/Core)
-#### Live
+#### Live (The War Within)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Death%20Knight?color=C41E3A&label=Death%20Knight)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Death%20Knight)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Demon%20Hunter?color=A330C9&label=Demon%20Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Demon%20Hunter)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Druid?color=FF7C0A&label=Druid)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Druid)
@@ -22,8 +22,7 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Shaman?color=0070DD&label=Shaman)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Shaman)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Warlock?color=8788EE&label=Warlock)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Warlock)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Warrior?color=C69B6D&label=Warrior)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Warrior)
-
-#### Classic
+#### Classic (Mists of Pandaria)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Classic-Priest?color=FFFFFF&label=Priest)](https://github.com/Twintop/TwintopInsanityBar/labels/Classic-Priest)
 
 Currently supported specs:
