@@ -2224,3 +2224,6 @@ L["GlobalAudioPowerInfusion"] = "Power Infusion gained"
 L["HunterBeastMasteryAudioBeastCleaveDown"] = "Beast Cleave buff lost"
 L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Play audio cue when Beast Cleave buff is lost"
 L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Play an audio cue when you lose an active Beast Cleave buff. This sound will only be played once."
+
+L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Time remaining on Tip of the Spear"
+L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Number of stacks of Tip of the Spear"
