@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.5.1-release (2025-04-26)
+## General
+
+- (FIX) Correct threshold out of range checks.
+
+---
+
 # 11.1.5.0-release (2025-04-22)
 ## Hunter
 ### Beast Mastery
