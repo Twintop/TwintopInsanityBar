@@ -27,6 +27,7 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 
 Currently supported specs:
 
+#### Live (The War Within)
 - Demon Hunter - Havoc, Vengeance
 - Druid - Balance, Feral, Restoration
 - Evoker - Devastation, Preservation, Augmentation
@@ -38,6 +39,9 @@ Currently supported specs:
 - Shaman - Elemental, Enhancement (Experimental/Minimal), Restoration
 - Warlock - Affliction
 - Warrior - Arms, Fury
+
+#### Classic (Mists of Pandaria)
+- None (yet!)
 
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
 
