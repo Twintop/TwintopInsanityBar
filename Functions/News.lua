@@ -20,6 +20,12 @@ local content = [====[
 ## Hunter
 ### Survival
 
+- [#440 - NEW (Korosky)](#440) Add support for tracking Tip of the Spear.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$totsStacks` - Number of stacks of Tip of the Spear
+<br/>&emsp;&ensp;&emsp;&ensp;- `$totsTime` - Time remaining on Tip of the Spear
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#tipOfTheSpear` or `#tots` - Tip of the Spear
 - (FIX) Show the correct cooldown status of Butchery on its threshold line.
 
 ## Warlock
@@ -105,7 +111,7 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- `$bladestormTicks` - Number of expected ticks remaining on Bladestorm
 <br/>&emsp;&ensp;&emsp;&ensp;- `$bladestormRage` - Rage from Bladestorm
 <br/>&emsp;&ensp;- New bar text icon:
-<br/>&emsp;&ensp;&emsp;&ensp;- `#bladestorm` - bladestorm
+<br/>&emsp;&ensp;&emsp;&ensp;- `#bladestorm` - Bladestorm
 
 ---
 

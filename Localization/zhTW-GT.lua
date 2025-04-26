@@ -2132,4 +2132,6 @@ if locale == "zhTW" then
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "野獸劈砍增益效果消失"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "當野獸劈砍增益消失時播放音訊提示"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "當你失去有效的 Beast Cleave 增益時播放音訊提示。該聲音只會播放一次。"
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "矛尖上的剩餘時間"
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "矛尖的堆疊數量"
 end

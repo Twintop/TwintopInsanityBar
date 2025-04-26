@@ -2132,4 +2132,6 @@ if locale == "itIT" then
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "Buffon Fendente Bestiale perso"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Riproduci un segnale acustico quando il buff Fendente Bestiale viene perso"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Riproduci un segnale acustico quando perdi un buff Fendente Bestiale attivo. Questo suono verrà riprodotto una sola volta."
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Tempo rimanente su Punta della Lancia"
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Numero di pile di Punta della Lancia"
 end

@@ -2132,4 +2132,6 @@ if locale == "esES" or locale == "esMX" then
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "Se ha perdido la mejora de Hendidura Bestial"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Se reproduce una señal de audio cuando se pierde la mejora de Hendidura Bestial"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Se reproduce una señal de audio cuando se pierde una mejora de Hendidura Bestial activa. Este sonido solo se reproducirá una vez."
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Tiempo restante en la Punta de la Lanza"
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Número de acumulaciones de la Punta de la Lanza"
 end

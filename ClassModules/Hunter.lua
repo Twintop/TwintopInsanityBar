@@ -436,9 +436,10 @@ local function FillSpellData_Survival()
 		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
 		{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
 		{ variable = "#termsOfEngagement", icon = spells.termsOfEngagement.icon, description = spells.termsOfEngagement.name, printInSettings = true },
+		{ variable = "#tipOfTheSpear", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = true },
+		{ variable = "#tots", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = false },
 		{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = spells.wildfireBomb.name, printInSettings = true },
 		{ variable = "#wingClip", icon = spells.wingClip.icon, description = spells.wingClip.name, printInSettings = true },
-		{ variable = "#totSpear", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = true },
 
 	}
 	specCache.survival.barTextVariables.values = {
@@ -498,10 +499,10 @@ local function FillSpellData_Survival()
 		{ variable = "$toeFocus", description = L["HunterSurvivalBarTextVariable_toeFocus"], printInSettings = true, color = false },
 		{ variable = "$toeTicks", description = L["HunterSurvivalBarTextVariable_toeTicks"], printInSettings = true, color = false },
 
-		{ variable = "$wildfireBombCharges", description = L["HunterSurvivalBarTextVariable_wildfireBombCharges"], printInSettings = true, color = false },
+		{ variable = "$totsTime", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"], printInSettings = true, color = false },
+		{ variable = "$totsStacks", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"], printInSettings = true, color = false },
 
-		{ variable = "$totSpearTime", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"], printInSettings = true, color = false },
-		{ variable = "$totSpearStacks", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"], printInSettings = true, color = false },
+		{ variable = "$wildfireBombCharges", description = L["HunterSurvivalBarTextVariable_wildfireBombCharges"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -1062,13 +1063,13 @@ local function RefreshLookupData_Survival()
 
 	local serpentStingTime
 
-	--$totSpearTime 
-	local _totSpearTime = snapshotData.snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
-	local totSpearTime = TRB.Functions.BarText:TimerPrecision(_totSpearTime)
+	--$totsTime 
+	local _totsTime = snapshotData.snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
+	local totsTime = TRB.Functions.BarText:TimerPrecision(_totsTime)
 	
-	--$totSpearStacks
-	local _totSpearStacks = snapshotData.snapshots[spells.tipOfTheSpear.id].buff.applications or 0
-	local totSpearStacks = string.format("%s", _totSpearStacks)
+	--$totsStacks
+	local _totsStacks = snapshotData.snapshots[spells.tipOfTheSpear.id].buff.applications or 0
+	local totsStacks = string.format("%s", _totsStacks)
 
 
 	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
@@ -1128,8 +1129,8 @@ local function RefreshLookupData_Survival()
 	lookup["$focusOvercap"] = overcap
 	lookup["$toeFocus"] = toeFocus
 	lookup["$toeTicks"] = toeTicks
-	lookup["$totSpearTime"] = totSpearTime
-	lookup["$totSpearStacks"] = totSpearStacks
+	lookup["$totsTime"] = totsTime
+	lookup["$totsStacks"] = totsStacks
 
 	TRB.Data.lookup = lookup
 
@@ -1161,8 +1162,8 @@ local function RefreshLookupData_Survival()
 	lookupLogic["$focusOvercap"] = overcap
 	lookupLogic["$toeFocus"] = _toeFocus
 	lookupLogic["$toeTicks"] = _toeTicks
-	lookupLogic["$totSpearTime"] = _totSpearTime
-	lookupLogic["$totSpearStacks"] = _totSpearStacks
+	lookupLogic["$totsTime"] = _totsTime
+	lookupLogic["$totsStacks"] = _totsStacks
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -2359,9 +2360,10 @@ local function SwitchSpec()
 		lookup["#scareBeast"] = spells.scareBeast.icon
 		lookup["#serpentSting"] = spells.serpentSting.icon
 		lookup["#termsOfEngagement"] = spells.termsOfEngagement.icon
+		lookup["#tipOfTheSpear"] = spells.tipOfTheSpear.icon
+		lookup["#tots"] = spells.tipOfTheSpear.icon
 		lookup["#wingClip"] = spells.wingClip.icon
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
-		lookup["#totSpear"] = spells.tipOfTheSpear.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2638,11 +2640,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.wildfireBomb.id].cooldown:IsUsable() then
 				valid = true
 			end
-		elseif var == "$totSpearTime" then
+		elseif var == "$totsTime" then
 			if snapshots[spells.tipOfTheSpear.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$totSpearStacks" then
+		elseif var == "$totsStacks" then
 			if snapshots[spells.tipOfTheSpear.id].buff.applications > 0 then
 				valid = true
 			end

@@ -2132,4 +2132,6 @@ L["CannibalizeIfForsaken"] = "Kannibalisieren (wenn im Stich gelassen)"
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "Tierspalten-Buff verloren"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Audiosignal abspielen, wenn Tierspalten-Buff verloren geht"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Ein Audiosignal wird abgespielt, wenn ein aktiver Tierspalten-Buff verloren geht. Dieser Sound wird nur einmal abgespielt."
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Verbleibende Zeit für „Speerspitze“"
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Anzahl der Stapel von „Speerspitze“"
 end

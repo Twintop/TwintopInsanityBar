@@ -2132,4 +2132,6 @@ if locale == "ruRU" then
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "Усиление Beast Cleave потеряно"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Воспроизвести звуковой сигнал, когда усиление Beast Cleave потеряно"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Воспроизвести звуковой сигнал, когда вы теряете активное усиление Beast Cleave. Этот звук будет воспроизведен только один раз."
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Оставшееся время на Tip of the Spear"
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Количество стеков Tip of the Spear"
 end

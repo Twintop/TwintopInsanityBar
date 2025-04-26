@@ -2132,4 +2132,6 @@ if locale == "ptBR" or locale == "ptPT" then
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "Bônus de Cutilada da Besta perdido"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Tocar um sinal sonoro quando o bônus de Cutilada da Besta for perdido"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Tocar um sinal sonoro quando você perder um bônus de Cutilada da Besta ativo. Este som será reproduzido apenas uma vez."
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Tempo restante na Ponta da Lança"
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Número de pilhas de Ponta da Lança"
 end

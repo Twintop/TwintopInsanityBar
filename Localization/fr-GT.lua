@@ -2134,4 +2134,6 @@ if locale == "frFR" then
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "Amélioration de Fente de bête perdue"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Signal sonore lorsque l'amélioration de Fente de bête est perdue"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Signal sonore lorsque vous perdez une amélioration de Fente de bête active. Ce son ne sera joué qu'une seule fois."
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Temps restant sur la Pointe de la Lance"
+    L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Nombre de cumuls de Pointe de la Lance"
 end
