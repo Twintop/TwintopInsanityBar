@@ -210,7 +210,10 @@ local function FillSpecializationCache()
 	specCache.survival.snapshotData.snapshots[spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(spells.wildfireBomb)
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.bombardier.id] = TRB.Classes.Snapshot:New(spells.bombardier, nil, "always")
+	---@type TRB.Classes.Snapshot
+	specCache.survival.snapshotData.snapshots[spells.tipOfTheSpear.id] = TRB.Classes.Snapshot:New(spells.tipOfTheSpear)
 	
+
 	specCache.survival.barTextVariables = {
 		icons = {},
 		values = {}
@@ -435,6 +438,8 @@ local function FillSpellData_Survival()
 		{ variable = "#termsOfEngagement", icon = spells.termsOfEngagement.icon, description = spells.termsOfEngagement.name, printInSettings = true },
 		{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = spells.wildfireBomb.name, printInSettings = true },
 		{ variable = "#wingClip", icon = spells.wingClip.icon, description = spells.wingClip.name, printInSettings = true },
+		{ variable = "#totSpear", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = true },
+
 	}
 	specCache.survival.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -494,6 +499,9 @@ local function FillSpellData_Survival()
 		{ variable = "$toeTicks", description = L["HunterSurvivalBarTextVariable_toeTicks"], printInSettings = true, color = false },
 
 		{ variable = "$wildfireBombCharges", description = L["HunterSurvivalBarTextVariable_wildfireBombCharges"], printInSettings = true, color = false },
+
+		{ variable = "$totSpearTime", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"], printInSettings = true, color = false },
+		{ variable = "$totSpearStacks", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -1054,6 +1062,15 @@ local function RefreshLookupData_Survival()
 
 	local serpentStingTime
 
+	--$totSpearTime 
+	local _totSpearTime = snapshotData.snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
+	local totSpearTime = TRB.Functions.BarText:TimerPrecision(_totSpearTime)
+	
+	--$totSpearStacks
+	local _totSpearStacks = snapshotData.snapshots[spells.tipOfTheSpear.id].buff.applications or 0
+	local totSpearStacks = string.format("%s", _totSpearStacks)
+
+
 	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
 			--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
@@ -1111,6 +1128,9 @@ local function RefreshLookupData_Survival()
 	lookup["$focusOvercap"] = overcap
 	lookup["$toeFocus"] = toeFocus
 	lookup["$toeTicks"] = toeTicks
+	lookup["$totSpearTime"] = totSpearTime
+	lookup["$totSpearStacks"] = totSpearStacks
+
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1141,6 +1161,8 @@ local function RefreshLookupData_Survival()
 	lookupLogic["$focusOvercap"] = overcap
 	lookupLogic["$toeFocus"] = _toeFocus
 	lookupLogic["$toeTicks"] = _toeTicks
+	lookupLogic["$totSpearTime"] = _totSpearTime
+	lookupLogic["$totSpearStacks"] = _totSpearStacks
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -2339,6 +2361,7 @@ local function SwitchSpec()
 		lookup["#termsOfEngagement"] = spells.termsOfEngagement.icon
 		lookup["#wingClip"] = spells.wingClip.icon
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
+		lookup["#totSpear"] = spells.tipOfTheSpear.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2613,6 +2636,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$wildfireBombCharges" then
 			if snapshots[spells.wildfireBomb.id].cooldown:IsUsable() then
+				valid = true
+			end
+		elseif var == "$totSpearTime" then
+			if snapshots[spells.tipOfTheSpear.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$totSpearStacks" then
+			if snapshots[spells.tipOfTheSpear.id].buff.applications > 0 then
 				valid = true
 			end
 		end
