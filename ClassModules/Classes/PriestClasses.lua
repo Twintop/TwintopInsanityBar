@@ -738,7 +738,6 @@ end
 ---@field public voidform TRB.Classes.SpellBase
 ---@field public darkAscension TRB.Classes.SpellBase
 ---@field public mindSpike TRB.Classes.SpellBase
----@field public surgeOfInsanity TRB.Classes.SpellBase
 ---@field public mindFlayInsanity TRB.Classes.SpellBase
 ---@field public mindSpikeInsanity TRB.Classes.SpellBase
 ---@field public deathspeaker TRB.Classes.SpellBase
@@ -910,10 +909,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.mindSpike = TRB.Classes.SpellBase:New({
 		id = 73510,
 		resource = 4,
-		isTalent = true
-	})
-	self.surgeOfInsanity = TRB.Classes.SpellBase:New({
-		id = 391399,
 		isTalent = true
 	})
 	self.mindFlayInsanity = TRB.Classes.SpellBase:New({

@@ -15,7 +15,9 @@ TRB.Classes.Warlock = TRB.Classes.Warlock or {}
 ---@field public phantomSingularity TRB.Classes.SpellBase
 ---@field public tormentedCrescendo TRB.Classes.SpellBase
 ---@field public nightfall TRB.Classes.SpellBase
----@field public shadowEmbrace TRB.Classes.SpellBase
+---@field public shadowEmbraceShadowBolt TRB.Classes.SpellBase
+---@field public shadowEmbraceDrainSoul TRB.Classes.SpellBase
+---@field public drainSoul TRB.Classes.SpellBase
 ---@field public wither TRB.Classes.SpellBase
 ---@field public succulentSoul TRB.Classes.SpellBase
 TRB.Classes.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -93,11 +95,22 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
     self.malignOmen = TRB.Classes.SpellBase:New({
         id = 458043
     })
-    self.shadowEmbrace = TRB.Classes.SpellBase:New({
+    self.shadowEmbraceShadowBolt = TRB.Classes.SpellBase:New({
+        id = 453206,
+        talentId = 32388,
+        isTalent = true,
+        maxStacks = 2
+    })
+    self.shadowEmbraceDrainSoul = TRB.Classes.SpellBase:New({
         id = 32390,
         talentId = 32388,
         isTalent = true,
         maxStacks = 4
+    })
+    self.drainSoul = TRB.Classes.SpellBase:New({
+        id = 198590,
+        talentId = 388667,
+        isTalent = true
     })
 
     -- Hellcaller    

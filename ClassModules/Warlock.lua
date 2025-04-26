@@ -97,7 +97,7 @@ local function FillSpellData_Affliction()
 		{ variable = "#malignOmen", icon = spells.malignOmen.icon, description = spells.malignOmen.name, printInSettings = true },
 		{ variable = "#nightfall", icon = spells.nightfall.icon, description = spells.nightfall.name, printInSettings = true },
 		{ variable = "#phantomSingularity", icon = spells.phantomSingularity.icon, description = spells.phantomSingularity.name, printInSettings = true },
-		{ variable = "#shadowEmbrace", icon = spells.shadowEmbrace.icon, description = spells.shadowEmbrace.name, printInSettings = true },
+		{ variable = "#shadowEmbrace", icon = spells.shadowEmbraceShadowBolt.icon, description = spells.shadowEmbraceShadowBolt.name, printInSettings = true },
 		{ variable = "#soulRot", icon = spells.soulRot.icon, description = spells.soulRot.name, printInSettings = true },
 		{ variable = "#succulentSoul", icon = spells.succulentSoul.icon, description = spells.succulentSoul.name, printInSettings = true },
 		{ variable = "#tormentedCrescendo", icon = spells.tormentedCrescendo.icon, description = spells.tormentedCrescendo.name, printInSettings = true },
@@ -371,21 +371,27 @@ local function RefreshLookupData_Affliction()
 	local phantomSingularityTime = TRB.Functions.BarText:TimerPrecision(_phantomSingularityTime)
 	
 	--$shadowEmbraceStacks $shadowEmbraceTime
-	local _shadowEmbraceStacks = snapshotData.targetData.trackedSpells[spells.shadowEmbrace.id].stacks or 0
+	local shadowEmbrace = spells.shadowEmbraceShadowBolt
+	if talents:IsTalentActive(spells.drainSoul) then
+		shadowEmbrace = spells.shadowEmbraceDrainSoul
+	end
+
+	local _shadowEmbraceStacks = snapshotData.targetData.trackedSpells[shadowEmbrace.id].stacks or 0
 	local shadowEmbraceStacks
-	local _shadowEmbraceMaxStacks = spells.shadowEmbrace.attributes.maxStacks
+	local _shadowEmbraceMaxStacks = shadowEmbrace.attributes.maxStacks
 	local shadowEmbraceMaxStacks = string.format("%s", _shadowEmbraceMaxStacks)
 	local _shadowEmbraceTime = 0
 	local shadowEmbraceTime
 	if target ~= nil then
-		_shadowEmbraceStacks = target.spells[spells.shadowEmbrace.id].stacks or 0
-		_shadowEmbraceTime = target.spells[spells.shadowEmbrace.id].remainingTime or 0
+		_shadowEmbraceStacks = target.spells[shadowEmbrace.id].stacks or 0
+		_shadowEmbraceTime = target.spells[shadowEmbrace.id].remainingTime or 0
 	end	
+	shadowEmbraceTime = TRB.Functions.BarText:TimerPrecision(_shadowEmbraceTime)
 	shadowEmbraceStacks = string.format("%s", _shadowEmbraceStacks)
 
 	--$nightfallTime
 	local _nightfallTime = snapshotData.snapshots[spells.nightfall.id].buff:GetRemainingTime(currentTime)
-	local nightfallTime =  TRB.Functions.BarText:TimerPrecision(_nightfallTime)
+	local nightfallTime = TRB.Functions.BarText:TimerPrecision(_nightfallTime)
 	
 	--$nightfallStacks
 	local _nightfallStacks = snapshotData.snapshots[spells.nightfall.id].buff.applications or 0
@@ -656,10 +662,15 @@ local function UpdateResourceBar()
 						PlaySoundFile(specSettings.audio.tormentedCrescendo2.sound, coreSettings.audio.channel.channel)
 					end
 				end
+				
+				local shadowEmbrace = spells.shadowEmbraceShadowBolt
+				if talents:IsTalentActive(spells.drainSoul) then
+					shadowEmbrace = spells.shadowEmbraceDrainSoul
+				end
 
-				if specSettings.colors.bar.shadowEmbraceNotMax.enabled and talents:IsTalentActive(spells.shadowEmbrace) and target ~= nil and
+				if specSettings.colors.bar.shadowEmbraceNotMax.enabled and talents:IsTalentActive(shadowEmbrace) and target ~= nil and
 					not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and
-					target.spells[spells.shadowEmbrace.id].stacks < spells.shadowEmbrace.attributes.maxStacks then
+					target.spells[shadowEmbrace.id].stacks < shadowEmbrace.attributes.maxStacks then
 					barColor = specSettings.colors.bar.shadowEmbraceNotMax.color
 				end
 
@@ -762,7 +773,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif entry.spellId == spells.shadowEmbrace.id then
+				elseif entry.spellId == spells.shadowEmbraceShadowBolt.id or entry.spellId == spells.shadowEmbraceDrainSoul then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
@@ -821,7 +832,8 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.vileTaint)
 		targetData:AddSpellTracking(spells.soulRot)
 		targetData:AddSpellTracking(spells.phantomSingularity)
-		targetData:AddSpellTracking(spells.shadowEmbrace)
+		targetData:AddSpellTracking(spells.shadowEmbraceShadowBolt)
+		targetData:AddSpellTracking(spells.shadowEmbraceDrainSoul)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ua"] = spells.unstableAffliction.icon
@@ -835,7 +847,7 @@ local function SwitchSpec()
 		lookup["#tormentedCrescendo"] = spells.tormentedCrescendo.icon
 		lookup["#succulentSoul"] = spells.succulentSoul.icon
 		lookup["#malignOmen"] = spells.malignOmen.icon
-		lookup["#shadowEmbrace"] = spells.shadowEmbrace.icon
+		lookup["#shadowEmbrace"] = spells.shadowEmbraceShadowBolt.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1157,21 +1169,29 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 			end
 		elseif var == "$shadowEmbraceStacks" then
+			local shadowEmbrace = spells.shadowEmbraceShadowBolt
+			if talents:IsTalentActive(spells.drainSoul) then
+				shadowEmbrace = spells.shadowEmbraceDrainSoul
+			end
 			if not UnitIsDeadOrGhost("target") and
 			UnitCanAttack("player", "target") and
 			target ~= nil and
-			target.spells[spells.shadowEmbrace.id] ~= nil and
-			target.spells[spells.shadowEmbrace.id].stacks > 0 then
+			target.spells[shadowEmbrace.id] ~= nil and
+			target.spells[shadowEmbrace.id].stacks > 0 then
 				valid = true
 			end
 		elseif var == "$shadowEmbraceMaxStacks" then
 			valid = true
 		elseif var == "$shadowEmbraceTime" then
+			local shadowEmbrace = spells.shadowEmbraceShadowBolt
+			if talents:IsTalentActive(spells.drainSoul) then
+				shadowEmbrace = spells.shadowEmbraceDrainSoul
+			end
 			if not UnitIsDeadOrGhost("target") and
 			UnitCanAttack("player", "target") and
 			target ~= nil and
-			target.spells[spells.shadowEmbrace.id] ~= nil and
-			target.spells[spells.shadowEmbrace.id].remainingTime > 0 then
+			target.spells[shadowEmbrace.id] ~= nil and
+			target.spells[shadowEmbrace.id].remainingTime > 0 then
 			valid = true
 			end
 		end

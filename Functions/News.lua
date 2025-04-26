@@ -17,6 +17,12 @@ local content = [====[
 - [#438 - NEW](#438) Update ability in range checks to use the new `SPELL_RANGE_CHECK_UPDATE` event.
 - (FIX) Correct threshold out of range checks.
 
+## Warlock
+### Affliction
+
+- [#439 - FIX](#438) Add support for Shadow Embrace tracking when Drain Soul is not talented.
+- (FIX) Ensure `$shadowEmbraceTime` bar text variable gets populated with a valid value.
+
 ---
 
 # 11.1.5.0-release (2025-04-22)
