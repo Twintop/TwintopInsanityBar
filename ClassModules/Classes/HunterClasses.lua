@@ -29,7 +29,8 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
         id = 982,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "revivePet",
-        baseline = true
+        baseline = true,
+		rangeCheck = false
     })
     self.wingClip = TRB.Classes.SpellThreshold:New({
         id = 195645,
@@ -52,7 +53,8 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
     self.scareBeast = TRB.Classes.SpellThreshold:New({
         id = 1513,
         primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "scareBeast"
+        settingKey = "scareBeast",
+        isTalent = true
     })
     self.explosiveShot = TRB.Classes.SpellThreshold:New({
         id = 212431,
@@ -112,7 +114,8 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         settingKey = "barrage",
         isTalent = true,
         hasCooldown = true,
-        cooldown = 20
+        cooldown = 20,
+		rangeCheck = false
     })
     self.cobraShot = TRB.Classes.SpellThreshold:New({
         id = 193455,

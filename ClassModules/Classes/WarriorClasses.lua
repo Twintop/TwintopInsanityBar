@@ -128,7 +128,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "thunderClap",
 		isTalent = true,
-		hasCooldown = true
+		hasCooldown = true,
+		rangeCheck = false
 	})
 
 	--Arms Talent abilities
@@ -159,7 +160,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		settingKey = "cleave",
 		isTalent = true,
 		hasCooldown = true,
-		isSnowflake = true
+		isSnowflake = true,
+		rangeCheck = false
 	})
 	self.ignorePain = TRB.Classes.SpellThreshold:New({
 		id = 190456,
@@ -167,7 +169,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		settingKey = "ignorePain",
 		isTalent = true,
 		hasCooldown = true,
-		duration = 11
+		duration = 11,
+		rangeCheck = false
 	})
 	self.suddenDeath = TRB.Classes.SpellBase:New({
 		id = 52437,
@@ -323,7 +326,8 @@ function TRB.Classes.Warrior.FurySpells:New()
 		settingKey = "thunderClap",
 		isTalent = true,
 		hasCooldown = true,
-		isSnowflake = true
+		isSnowflake = true,
+		rangeCheck = false
 	})
 
 	-- Fury Talent abilities

@@ -14,7 +14,7 @@ local content = [====[
 # 11.1.5.1-release (2025-04-26)
 ## General
 
-- [#438 - NEW](#438) Update ability in range checks to use the new `SPELL_RANGE_CHECK_UPDATE` event. This change will reduce bar CPU usage by roughly 0.02ms per frame the bar refreshes (20Hz) per threshold line rendered.
+- [#438 - NEW](#438) Update ability in range checks to use the new `SPELL_RANGE_CHECK_UPDATE` event.
 - (FIX) Correct threshold out of range checks.
 
 ---

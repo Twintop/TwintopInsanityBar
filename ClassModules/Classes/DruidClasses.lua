@@ -121,7 +121,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
         pandemic = true,
         baseDuration = 8,
         isSnowflake = true,
-        baseline = true
+        baseline = true,
+        rangeCheck = false
     })
 
     -- Balance Spec Talents
@@ -601,7 +602,8 @@ function TRB.Classes.Druid.FeralSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         settingKey = "frenziedRegeneration",
         hasCooldown = true,
-        isSnowflake = true -- Only usable in Catform with Empowered Shapeshifting
+        isSnowflake = true, -- Only usable in Catform with Empowered Shapeshifting
+		rangeCheck = false
     })
 
     return self

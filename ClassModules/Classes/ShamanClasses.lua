@@ -125,7 +125,8 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         primaryResourceType = Enum.PowerType.Maelstrom,
         settingKey = "earthquake",
         isTalent = true,
-        isSnowflake = true
+        isSnowflake = true,
+		rangeCheck = false
     })
     self.earthquakeTargeted = TRB.Classes.SpellThreshold:New({
         id = 462620,

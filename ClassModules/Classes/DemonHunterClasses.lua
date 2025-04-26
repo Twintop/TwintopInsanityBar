@@ -95,7 +95,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		demonForm = false,
 		isTalent = false,
 		baseline = true,
-		isSnowflake = true
+		isSnowflake = true,
+		rangeCheck = false
 	})
 	self.chaosStrike = TRB.Classes.SpellThreshold:New({
 		id = 162794,
@@ -125,7 +126,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		demonForm = true,
 		isTalent = false,
 		baseline = true,
-		isSnowflake = true
+		isSnowflake = true,
+		rangeCheck = false
 	})
 
 	-- Demon Hunter Talent Abilities
@@ -134,7 +136,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		primaryResourceType = Enum.PowerType.Fury,
 		settingKey = "chaosNova",
 		hasCooldown = true,
-		isTalent = true
+		isTalent = true,
+		rangeCheck = false
 	})
 
 	-- Havoc Talent Abilities
@@ -144,7 +147,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		duration = 2,
 		settingKey = "eyeBeam",
 		hasCooldown = true,
-		isTalent = true
+		isTalent = true,
+		rangeCheck = false
 	})
 	self.burningHatred = TRB.Classes.SpellBase:New({
 		id = 258922,
@@ -185,7 +189,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		cooldown = 20,
 		settingKey = "glaiveTempest",
 		hasCooldown = true,
-		isTalent = true
+		isTalent = true,
+		rangeCheck = false
 	})
 	self.unboundChaos = TRB.Classes.SpellBase:New({
 		id = 347462,
@@ -207,7 +212,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		cooldown = 90,
 		settingKey = "felBarrage",
 		hasCooldown = true,
-		isTalent = true
+		isTalent = true,
+		rangeCheck = false
 	})
 
 	-- Aldrachi Reaver
@@ -302,7 +308,8 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 		settingKey = "soulCleave",
 		isTalent = false,
 		baseline = true,
-		isSnowflake = true
+		isSnowflake = true,
+		rangeCheck = false
 	})
 
 	-- Demon Hunter Talent Abilities
@@ -311,7 +318,8 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 		primaryResourceType = Enum.PowerType.Fury,
 		settingKey = "chaosNova",
 		hasCooldown = true,
-		isTalent = true
+		isTalent = true,
+		rangeCheck = false
 	})
 
 	-- Vengeance Talent Abilities
@@ -320,7 +328,8 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 		primaryResourceType = Enum.PowerType.Fury,
 		settingKey = "felDevastation",
 		hasCooldown = true,
-		isTalent = true
+		isTalent = true,
+		rangeCheck = false
 	})
 	self.spiritBomb = TRB.Classes.SpellComboPointThreshold:New({
 		id = 247454,
@@ -328,7 +337,8 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 		settingKey = "spiritBomb",
 		comboPoints = true,
 		isTalent = true,
-		isSnowflake = true
+		isSnowflake = true,
+		rangeCheck = false
 	})
 	self.soulFurnace = TRB.Classes.SpellBase:New({
 		id = 391172,
