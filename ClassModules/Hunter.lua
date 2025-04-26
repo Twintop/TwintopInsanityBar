@@ -2187,6 +2187,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.wildfireBomb.id then
 					snapshots[entry.spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.butchery.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
+					end
 				end
 			end
 

@@ -17,6 +17,11 @@ local content = [====[
 - [#438 - NEW](#438) Update ability in range checks to use the new `SPELL_RANGE_CHECK_UPDATE` event.
 - (FIX) Correct threshold out of range checks.
 
+## Hunter
+### Survival
+
+- (FIX) Show the correct cooldown status of Butchery on its threshold line.
+
 ## Warlock
 ### Affliction
 

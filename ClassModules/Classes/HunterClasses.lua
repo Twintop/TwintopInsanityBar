@@ -425,7 +425,8 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         primaryResourceType = Enum.PowerType.Focus,
         isTalent = true,
         hasCooldown = true,
-        settingKey = "butchery"
+        settingKey = "butchery",
+        rangeCheck = false
     })
     self.mongooseBite = TRB.Classes.SpellThreshold:New({
         id = 259387,
