@@ -3237,7 +3237,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		useDefaultFontSize:SetChecked(workingBarText.useDefaultFontSize)
 		
 		barTextOptionsFrame:Show()
-		barTextOptionsFrame:Show()
 	end
 
 	SetTableValues(spec.displayText, barTextTable)
