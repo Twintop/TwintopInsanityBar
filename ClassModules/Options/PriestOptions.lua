@@ -1506,7 +1506,7 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSimpleSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -1519,7 +1519,7 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DisciplineLoadDefaultBarTextAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -1975,7 +1975,8 @@ local function DisciplineConstructBarTextDisplayPanel(parent, cache)
 end
 
 local function DisciplineConstructOptionsPanel(cache)
-	
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(5, 1)
+	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.discipline or {}
@@ -2028,12 +2029,12 @@ local function DisciplineConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Discipline_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Discipline_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Discipline_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Discipline_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Discipline_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -2041,7 +2042,7 @@ local function DisciplineConstructOptionsPanel(cache)
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Priest_Discipline_LayoutPanel" .. i, parent)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
 		tabsheets[i]:Hide()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
@@ -2102,7 +2103,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HolyLoadDefaultBarTextSimpleSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -2115,7 +2116,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HolyLoadDefaultBarTextAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -2794,7 +2795,8 @@ local function HolyConstructBarTextDisplayPanel(parent, cache)
 end
 
 local function HolyConstructOptionsPanel(cache)
-	
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(5, 2)
+	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.holy or {}
@@ -2848,12 +2850,12 @@ local function HolyConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Holy_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Holy_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Holy_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Holy_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Holy_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -2861,7 +2863,7 @@ local function HolyConstructOptionsPanel(cache)
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Priest_Holy_LayoutPanel" .. i, parent)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
 		tabsheets[i]:Hide()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
@@ -2921,7 +2923,7 @@ local function ShadowConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = ShadowLoadDefaultBarTextSimpleSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -2934,7 +2936,7 @@ local function ShadowConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = ShadowLoadDefaultBarTextAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -2947,7 +2949,7 @@ local function ShadowConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -3662,6 +3664,8 @@ local function ShadowConstructBarTextDisplayPanel(parent, cache)
 end
 
 local function ShadowConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(5, 3)
+	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.shadow or {}
@@ -3715,12 +3719,12 @@ local function ShadowConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Priest_Shadow_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -3728,7 +3732,7 @@ local function ShadowConstructOptionsPanel(cache)
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Priest_Shadow_LayoutPanel" .. i, parent)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
 		tabsheets[i]:Hide()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end

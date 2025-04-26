@@ -11,16 +11,17 @@ local content = [====[
 
 ---
 
-# 11.1.5.1-release (2025-04-26)
+# 11.1.5.1-release (2025-04-27)
 ## General
 
+- [#421 - UPDATE](#421) When restoring bar text defaults, the UI will no longer reload. Instead, the Bar Text tab for that specialization will refresh with the restored default bar text entries.
 - [#438 - NEW](#438) Update ability in range checks to use the new `SPELL_RANGE_CHECK_UPDATE` event.
 - (FIX) Correct threshold out of range checks.
 
 ## Hunter
 ### Survival
 
-- [#440 - NEW (Korosky)](#440) Add support for tracking Tip of the Spear.
+- [#440 - NEW (Koroshy)](#440) Add support for tracking Tip of the Spear.
 <br/>&emsp;&ensp;- New bar text variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `$totsStacks` - Number of stacks of Tip of the Spear
 <br/>&emsp;&ensp;&emsp;&ensp;- `$totsTime` - Time remaining on Tip of the Spear

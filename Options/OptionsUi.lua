@@ -612,6 +612,13 @@ function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width,
 	return tab
 end
 
+function TRB.Functions.OptionsUi:SwitchToBarTextTabByClassSpec(classId, specId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local tab = _G["TwintopResourceBar_Options_" .. namePrefix .. "_Tab4"]
+	TRB.Functions.OptionsUi:SwitchTab(tab, tab.id)
+end
+
 function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name)
 	local grandparent = parent:GetParent()
 	local variablesPanelParent = TRB.Functions.OptionsUi:CreateTabFrameContainer("TRB_" .. name .. "_BarTextVariables_Frame", grandparent, 300, 500)
@@ -2566,9 +2573,9 @@ end
 ---@param yCoord number
 function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, classId, specId, yCoord, cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName .. "_barTextEditor"
 	local title = ""
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
-	local namePrefix = className .. "_" .. specName .. "_barTextEditor"
 	
 	local columns = {
 		{
@@ -3230,6 +3237,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		useDefaultFontSize:SetChecked(workingBarText.useDefaultFontSize)
 		
 		barTextOptionsFrame:Show()
+		barTextOptionsFrame:Show()
 	end
 
 	SetTableValues(spec.displayText, barTextTable)
@@ -3278,7 +3286,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		workingBarText = {}
 		SetTableValues(displayText, btt)
 		TRB.Functions.BarText:CreateBarTextFrames(deleteClassId, deleteSpecId)
-		_G["TwintopResourceBar_"..deleteClassId.."_"..deleteSpecId.."_BarTextOptionsFrame"]:Hide()
+		_G["TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame"]:Hide()
 	end
 
 	StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
@@ -3331,6 +3339,25 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			end
 		end
 	})
+
+	local function ResetTableValues(barText)
+		spec.displayText.barText = barText
+		TRB.Data.specCache[specName].settings.displayText.barText = barText
+		SetTableValues(spec.displayText, barTextTable)
+		_G["TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame"]:Hide()
+		
+		if classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then			
+			TRB.Data.cache.barText = {}
+			TRB.Data.cache.symbols = {}
+			TRB.Data.cache.barTextTree = {}
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		end
+		TRB.Functions.OptionsUi:SwitchToBarTextTabByClassSpec(classId, specId)
+	end
+
+	controls.barTextFields = {}
+	controls.barTextFields.barTextTable = barTextTable
+	controls.barTextFields.ResetTableValues = ResetTableValues
 
 	yCoord = oldYCoord
 	local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)

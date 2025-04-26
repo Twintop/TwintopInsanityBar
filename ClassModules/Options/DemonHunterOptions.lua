@@ -699,7 +699,7 @@ local function HavocConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HavocLoadDefaultBarTextSimpleSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -712,7 +712,7 @@ local function HavocConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HavocLoadDefaultBarTextAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -1176,6 +1176,8 @@ local function HavocConstructBarTextDisplayPanel(parent, cache)
 end
 
 local function HavocConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(12, 1)
+	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.havoc or {}
@@ -1230,12 +1232,12 @@ local function HavocConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab2", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -1243,7 +1245,7 @@ local function HavocConstructOptionsPanel(cache)
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_DemonHunter_Havoc_LayoutPanel" .. i, parent)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
 		tabsheets[i]:Hide()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
@@ -1301,7 +1303,7 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = VengeanceLoadDefaultBarTextSimpleSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -1314,7 +1316,7 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = VengeanceLoadDefaultBarTextAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -1767,6 +1769,8 @@ local function VengeanceConstructBarTextDisplayPanel(parent, cache)
 end
 
 local function VengeanceConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(12, 2)
+	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.vengeance or {}
@@ -1821,12 +1825,12 @@ local function VengeanceConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab2", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -1834,7 +1838,7 @@ local function VengeanceConstructOptionsPanel(cache)
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_DemonHunter_Vengeance_LayoutPanel" .. i, parent)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
 		tabsheets[i]:Hide()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end

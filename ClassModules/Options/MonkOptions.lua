@@ -744,7 +744,7 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = MistweaverLoadDefaultBarTextSimpleSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -757,7 +757,7 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = MistweaverLoadDefaultBarTextAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -771,7 +771,7 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = MistweaverLoadDefaultBarTextNarrowAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -1125,7 +1125,8 @@ local function MistweaverConstructBarTextDisplayPanel(parent, cache)
 end
 
 local function MistweaverConstructOptionsPanel(cache)
-	
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(10, 2)
+	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.mistweaver or {}
@@ -1179,12 +1180,12 @@ local function MistweaverConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Mistweaver_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Mistweaver_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Mistweaver_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Mistweaver_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Mistweaver_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -1192,7 +1193,7 @@ local function MistweaverConstructOptionsPanel(cache)
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Monk_Mistweaver_LayoutPanel" .. i, parent)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
 		tabsheets[i]:Hide()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
@@ -1251,7 +1252,7 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = WindwalkerLoadDefaultBarTextSimpleSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -1264,7 +1265,7 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = WindwalkerLoadDefaultBarTextAdvancedSettings()
-			C_UI.Reload()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -1800,6 +1801,8 @@ local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
 end
 
 local function WindwalkerConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(10, 3)
+	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.windwalker or {}
@@ -1853,20 +1856,20 @@ local function WindwalkerConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Windwalker_Tab2", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Windwalker_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Windwalker_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Windwalker_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Monk_Windwalker_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do 
+	for i = 1, 5 do
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Monk_Windwalker_LayoutPanel" .. i, parent)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
 		tabsheets[i]:Hide()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end

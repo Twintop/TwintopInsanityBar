@@ -527,6 +527,8 @@ local function ConstructGlobalOptionsPanel()
 end
 
 local function ConstructImportExportPanel()
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames()
+	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.importExport or {}
@@ -550,7 +552,7 @@ local function ConstructImportExportPanel()
 
 	yCoord = yCoord - 30
 	---@diagnostic disable-next-line: inject-field
-	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
+	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel", parent, 652, 555)
 	parent.panel:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	parent.panel:Show()
 
