@@ -1124,8 +1124,6 @@ if locale == "deDE" then
     L["RogueOutlawThresholdAmbushTooltip"] = "Dadurch wird die vertikale Linie auf der Leiste angezeigt, die angibt, wie viel Energie für die Verwendung von „Hinterhalt“ erforderlich ist. Nur im Stealth-Modus sichtbar oder über Blindside, Sepsis oder Subterfuge verwendbar."
     L["RogueOutlawThresholdCheapShot"] = "Cheap Shot (Stealth)"
     L["RogueOutlawThresholdCheapShotTooltip"] = "Dadurch wird die vertikale Linie auf der Leiste angezeigt, die angibt, wie viel Energie für die Verwendung von „Cheap Shot“ erforderlich ist. Nur im Stealth-Modus sichtbar oder über Sepsis oder Subterfuge verwendbar."
-    L["RogueOutlawThresholdDreadblades"] = "Schreckensklingen"
-    L["RogueOutlawThresholdDreadbladesTooltip"] = "Dadurch wird die vertikale Linie auf der Leiste angezeigt, die angibt, wie viel Energie für die Verwendung von Dreadblades erforderlich ist. Wenn die Abklingzeit aktiv ist oder Sie keine Kombinationspunkte haben, wird es als „unbrauchbar“ angezeigt."
     L["RogueOutlawThresholdEchoingReprimand"] = "Widerhallender Verweis"
     L["RogueOutlawThresholdEchoingReprimandTooltip"] = "Dadurch wird die vertikale Linie auf dem Balken angezeigt, die angibt, wie viel Energie erforderlich ist, um „Echoing Reprimand“ zu verwenden."
     L["RogueOutlawThresholdGhostlyStrike"] = "Geisterschlag"

@@ -1124,8 +1124,6 @@ if locale == "esES" or locale == "esMX" then
     L["RogueOutlawThresholdAmbushTooltip"] = "Esto mostrará la línea vertical en la barra que indica cuánta energía se requiere para usar Ambush. Solo visible cuando estás en Sigilo o utilizable a través de Blindside, Sepsis o Subterfuge."
     L["RogueOutlawThresholdCheapShot"] = "Golpe bajo (sigilo)"
     L["RogueOutlawThresholdCheapShotTooltip"] = "Esto mostrará la línea vertical en la barra que indica cuánta energía se requiere para usar Cheap Shot. Solo visible cuando estás en Sigilo o utilizable a través de Sepsis o Subterfugio."
-    L["RogueOutlawThresholdDreadblades"] = "Hojas aterradoras"
-    L["RogueOutlawThresholdDreadbladesTooltip"] = "Esto mostrará la línea vertical en la barra que indica cuánta energía se requiere para usar Dreadblades. Si está en tiempo de reutilización o si no tienes ningún punto de combo, se coloreará como `inutilizable`."
     L["RogueOutlawThresholdEchoingReprimand"] = "Reprimenda que se hace eco"
     L["RogueOutlawThresholdEchoingReprimandTooltip"] = "Esto mostrará la línea vertical en la barra que indica cuánta energía se requiere para usar Echoing Reprind."
     L["RogueOutlawThresholdGhostlyStrike"] = "Golpe fantasmal"

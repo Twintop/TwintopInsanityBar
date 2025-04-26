@@ -74,7 +74,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "crimsonVial",
         hasCooldown = true,
         cooldown = 30,
-        baseline = true
+        baseline = true,
+        rangeCheck = false
     })
     self.distract = TRB.Classes.SpellThreshold:New({
         id = 1725,
@@ -83,7 +84,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "distract",
         hasCooldown = true,
         cooldown = 30,
-        baseline = true
+        baseline = true,
+        rangeCheck = false
     })
     self.kidneyShot = TRB.Classes.SpellComboPointThreshold:New({
         id = 408,
@@ -111,7 +113,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
             42 * 0.3,
             48 * 0.3
         },
-        baseline = true
+        baseline = true,
+        rangeCheck = false
     })
     self.feint = TRB.Classes.SpellThreshold:New({
         id = 1966,
@@ -121,7 +124,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         cooldown = 15,
         hasCharges = true,
         isTalent = false,
-        baseline = true
+        baseline = true,
+        rangeCheck = false
     })
 
     --Rogue Talent Abilities
@@ -240,7 +244,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         settingKey = "fanOfKnives",
-        baseline = true
+        baseline = true,
+        rangeCheck = false
     })
     self.garrote = TRB.Classes.SpellComboPointThreshold:New({
         id = 703,
@@ -306,7 +311,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
             16 * 0.3,
             18 * 0.3, -- Kyrian ability buff
         },
-        isTalent = true
+        isTalent = true,
+        rangeCheck = false
     })
     self.improvedGarrote = TRB.Classes.SpellBase:New({
         id = 381632,
@@ -355,7 +361,6 @@ end
 ---@field public escalatingBlade TRB.Classes.SpellBase
 ---@field public bladeFlurry TRB.Classes.SpellThreshold
 ---@field public rollTheBones TRB.Classes.SpellThreshold
----@field public dreadblades TRB.Classes.SpellThreshold
 ---@field public deathFromAbove TRB.Classes.SpellThreshold
 ---@field public ambush TRB.Classes.SpellComboPointThreshold
 ---@field public betweenTheEyes TRB.Classes.SpellComboPointThreshold
@@ -433,7 +438,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         cooldown = 30,
         restlessBlades = true,
         baseline = true,
-        isTalent = true
+        isTalent = true,
+        rangeCheck = false
     })
 
     -- Outlaw Spec Abilities
@@ -451,7 +457,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         settingKey = "rollTheBones",
         hasCooldown = true,
         cooldown = 45,
-        restlessBlades = true
+        restlessBlades = true,
+        rangeCheck = false
     })
 
     -- Roll the Bones
@@ -493,15 +500,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         resource = 25,
         duration = 5,
         cooldown = 45,
-        restlessBlades = true
-    })
-    self.dreadblades = TRB.Classes.SpellThreshold:New({
-        id = 343142,
-        primaryResourceType = Enum.PowerType.Energy,
-        settingKey = "dreadblades",
-        hasCooldown = true,
-        isTalent = true,
-        cooldown = 90,
         restlessBlades = true
     })
     self.keepItRolling = TRB.Classes.SpellBase:New({
@@ -632,7 +630,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPointsGenerated = 1,
         settingKey = "shurikenStorm",
         baseline = true,
-        isSnowflake = true
+        isSnowflake = true,
+        rangeCheck = false
     })
     self.shurikenToss = TRB.Classes.SpellComboPointThreshold:New({
         id = 114014,

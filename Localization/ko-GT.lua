@@ -1124,8 +1124,6 @@ if locale == "koKR" then
     L["RogueOutlawThresholdAmbushTooltip"] = "매복을 사용하는 데 필요한 에너지 양을 나타내는 수직선이 막대에 표시됩니다. 은신 상태일 때만 표시되거나 Blindside, Sepsis 또는 Subterfuge를 통해 사용할 수 있습니다."
     L["RogueOutlawThresholdCheapShot"] = "싸구려 사격(스텔스)"
     L["RogueOutlawThresholdCheapShotTooltip"] = "그러면 Cheap Shot을 사용하는 데 필요한 에너지 양을 나타내는 수직선이 막대에 표시됩니다. 은신 상태일 때만 표시되거나 패혈증 또는 속임수를 통해 사용할 수 있습니다."
-    L["RogueOutlawThresholdDreadblades"] = "공포칼날"
-    L["RogueOutlawThresholdDreadbladesTooltip"] = "그러면 Dreadblades를 사용하는 데 필요한 에너지 양을 나타내는 수직선이 막대에 표시됩니다. 쿨타임 중이거나 콤보 포인트가 없을 경우 '사용 불가'로 표시됩니다."
     L["RogueOutlawThresholdEchoingReprimand"] = "메아리치는 질책"
     L["RogueOutlawThresholdEchoingReprimandTooltip"] = "그러면 Echoing Reprimand를 사용하는 데 필요한 에너지 양을 나타내는 수직선이 막대에 표시됩니다."
     L["RogueOutlawThresholdGhostlyStrike"] = "유령의 일격"

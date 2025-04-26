@@ -1124,8 +1124,6 @@ if locale == "zhCN" then
     L["RogueOutlawThresholdAmbushTooltip"] = "这将在条上显示垂直线，表示使用伏击所需的能量。 仅在潜行状态下可见或可通过 Blindside、脓毒症或诡计使用。"
     L["RogueOutlawThresholdCheapShot"] = "廉价射击（隐形）"
     L["RogueOutlawThresholdCheapShotTooltip"] = "这将在条上显示垂直线，表示使用廉价射击需要多少能量。 仅在隐身状态下可见或可通过败血症或诡计使用。"
-    L["RogueOutlawThresholdDreadblades"] = "恐惧之刃"
-    L["RogueOutlawThresholdDreadbladesTooltip"] = "这将在条上显示垂直线，表示使用恐惧之刃需要多少能量。 如果处于冷却状态或您没有任何连击点，则会被着色为“不可用”。"
     L["RogueOutlawThresholdEchoingReprimand"] = "附和谴责"
     L["RogueOutlawThresholdEchoingReprimandTooltip"] = "这将在条上显示垂直线，表示使用回声谴责需要多少能量。"
     L["RogueOutlawThresholdGhostlyStrike"] = "幽灵打击"

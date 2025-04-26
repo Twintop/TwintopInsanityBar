@@ -114,7 +114,7 @@ function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	
 	if specCache ~= nil and specCache.settings.thresholds.outOfRange then
 		for _, v in pairs(specCache.spellsData.spells) do
-			if v:Is("TRB.Classes.SpellThreshold") and v:IsValid() and v.rangeCheck == true then
+			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
 				C_Spell.EnableSpellRangeCheck(v.id, true)
 				TRB.Functions.Character:UpdateIsSpellInRange(v)
 			end
@@ -135,7 +135,7 @@ function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	-- 2) any spells we might already have cached
 	if specCache ~= nil then
 		for _, v in pairs(specCache.spellsData.spells) do
-			if v:Is("TRB.Classes.SpellThreshold") and v:IsValid() and v.rangeCheck == true then
+			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
 				C_Spell.EnableSpellRangeCheck(v.id, false)
 			end
 		end

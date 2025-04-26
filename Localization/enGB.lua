@@ -168,7 +168,6 @@ if locale == "enGB" then
     L["RogueOutlawColorPickerRollTheBonesHold"] = "Border colour when you should not use Roll the Bones (keep current rolls)"
     L["RogueOutlawColorPickerRollTheBonesUse"] = "Border colour when you should use Roll the Bones (not up or should reroll)"
     L["RogueOutlawCheckboxAlwaysDefaultBackgroundTooltip"] = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' colour above for their background. Borders will still change colour depending on Supercharger settings."
-    L["RogueOutlawThresholdDreadbladesTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Dreadblades. If on cooldown or if you do not have any combo points, will be coloured as 'unusable'."
     L["RogueOutlawThresholdBetweenTheEyesTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Between the Eyes. If you do not have any combo points, will be coloured as 'unusable'."
     L["RogueOutlawThresholdDispatchTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Dispatch. If you do not have any combo points, will be coloured as 'unusable'."
     L["RogueOutlawThresholdKidneyShotTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via Sepsis or Subterfuge. If on cooldown or if you do not have any combo points, will be coloured as 'unusable'."

@@ -662,9 +662,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			ghostlyStrike = {
 				enabled = true,
 			},
-			dreadblades = {
-				enabled = true,
-			},
 			killingSpree = {
 				enabled = true,
 			},
@@ -2423,17 +2420,6 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.cheapShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.cheapShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.dreadbladesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dreadblades", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dreadbladesThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDreadblades"])
-	f.tooltip = L["RogueOutlawThresholdDreadbladesTooltip"]
-	f:SetChecked(spec.thresholds.dreadblades.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.dreadblades.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

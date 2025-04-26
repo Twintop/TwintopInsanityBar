@@ -155,8 +155,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.ghostlyStrike.id] = TRB.Classes.Snapshot:New(spells.ghostlyStrike)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.dreadblades.id] = TRB.Classes.Snapshot:New(spells.dreadblades)
-	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.opportunity.id] = TRB.Classes.Snapshot:New(spells.opportunity)
@@ -481,7 +479,6 @@ local function FillSpellData_Outlaw()
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
 		{ variable = "#dispatch", icon = spells.dispatch.icon, description = spells.dispatch.name, printInSettings = true },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#dreadblades", icon = spells.dreadblades.icon, description = spells.dreadblades.name, printInSettings = true },
 		{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
 		{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
@@ -2025,7 +2022,6 @@ local function UpdateSnapshot_Outlaw()
 	snapshots[spells.bladeRush.id].cooldown:Refresh()
 	snapshots[spells.bladeFlurry.id].cooldown:Refresh()
 	snapshots[spells.betweenTheEyes.id].cooldown:Refresh()
-	snapshots[spells.dreadblades.id].cooldown:Refresh()
 	snapshots[spells.ghostlyStrike.id].cooldown:Refresh()
 	snapshots[spells.rollTheBones.id].cooldown:Refresh()
 end
@@ -3024,10 +3020,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.dreadblades.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
 				elseif entry.spellId == spells.ghostlyStrike.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -3279,7 +3271,6 @@ local function SwitchSpec()
 		lookup["#deathFromAbove"] = spells.numbingPoison.icon
 		lookup["#dispatch"] = spells.dispatch.icon
 		lookup["#dismantle"] = spells.numbingPoison.icon
-		lookup["#dreadblades"] = spells.dreadblades.icon
 		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
 		lookup["#cp"] = spells.cripplingPoison.icon
 		lookup["#dismantle"] = spells.dismantle.icon
