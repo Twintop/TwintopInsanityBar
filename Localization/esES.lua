@@ -11,5 +11,5 @@ if locale == "esES" then
     L["Author"] = "Autor"
     L["Version"] = "Versión"
     L["Released"] = "Publicado"
-    L["SupportedSpecs"] = "Especialización apoyada (Dragonflight)"
+    L["SupportedSpecs"] = "Especialización apoyada (The War Within)"
 end

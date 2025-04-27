@@ -11,5 +11,5 @@ if locale == "itIT" then
     L["Author"] = "Autore"
     L["Version"] = "Versione"
     L["Released"] = "Rilascio"
-    L["SupportedSpecs"] = "Specializzazioni supportate (Dragonflight)"
+    L["SupportedSpecs"] = "Specializzazioni supportate (The War Within)"
 end

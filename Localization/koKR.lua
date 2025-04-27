@@ -11,5 +11,5 @@ if locale == "koKR" then
     L["Author"] = "작가"
     L["Version"] = "소프트웨어 버전"
     L["Released"] = "출시일"
-    L["SupportedSpecs"] = "지원되는 전문화 (Dragonflight)"
+    L["SupportedSpecs"] = "지원되는 전문화 (The War Within)"
 end

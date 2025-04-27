@@ -14,7 +14,7 @@ if locale == "koKR" then
     L["Author"] = "작가"
     L["Version"] = "버전"
     L["Released"] = "출시된"
-    L["SupportedSpecs"] = "지원되는 사양(Dragonflight)"
+    L["SupportedSpecs"] = "지원되는 사양(The War Within)"
     L["Experimental"] = "실험적"
     L["Minimal"] = "최소"
     L["ExperimentalMinimal"] = "실험적/최소적"
