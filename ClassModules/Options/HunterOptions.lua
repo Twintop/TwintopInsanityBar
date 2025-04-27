@@ -1239,7 +1239,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -1930,7 +1930,7 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 2, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -2778,7 +2778,7 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, false)
 
 	yCoord = yCoord - 30

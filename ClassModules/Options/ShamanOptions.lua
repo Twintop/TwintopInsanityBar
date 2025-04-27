@@ -1098,7 +1098,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -2108,7 +2108,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 3, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 3, yCoord, false)
 
 	yCoord = yCoord - 30

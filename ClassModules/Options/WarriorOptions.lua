@@ -823,7 +823,7 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 1, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -1408,7 +1408,7 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
 
 	yCoord = yCoord - 30
