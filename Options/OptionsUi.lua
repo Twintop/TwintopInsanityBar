@@ -717,11 +717,7 @@ function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, c
 				local rightTexture = button:AttachTexture()
 				rightTexture:SetSize(1, 18)
 				rightTexture:SetPoint("RIGHT")
-				--rightTexture:SetTexture(v[2])
 				local fontString = button.fontString
-				local fontFile, fontHeight, _ = fontString:GetFont()
-				fontString:SetFont(fontFile, fontHeight, "OUTLINE")
-				fontString:SetPoint("RIGHT", rightTexture, "LEFT")
 
 				local bgTexture = button:AttachTexture()
 				bgTexture:SetTexture(v[2])
