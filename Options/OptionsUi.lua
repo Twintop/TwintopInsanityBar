@@ -1738,11 +1738,11 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	end)
 
 	title = L["ThresholdLineWidth"]
-	controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
+	controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.properties.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.thresholds.width = value
+		spec.thresholds.properties.width = value
 
 		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
@@ -1865,9 +1865,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdLinesOverlap"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["ThresholdLinesOverlapTooltip"]
-	f:SetChecked(spec.thresholds.overlapBorder)
+	f:SetChecked(spec.thresholds.properties.overlapBorder)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.overlapBorder = self:GetChecked()
+		spec.thresholds.properties.overlapBorder = self:GetChecked()
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 

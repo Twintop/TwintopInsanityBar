@@ -102,11 +102,11 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	]]
 	local borderSubtraction = 0
 
-	if not settings.thresholds.overlapBorder then
+	if not settings.thresholds.properties.overlapBorder then
 		borderSubtraction = settings.bar.border * 2
 	end
 
-	threshold:SetWidth(settings.thresholds.width)
+	threshold:SetWidth(settings.thresholds.properties.width)
 	threshold:SetHeight(settings.bar.height - borderSubtraction)
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
@@ -204,7 +204,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
 		
 		-- Split these out to only call methods if we need to
-		if settings.thresholds.outOfRange then
+		if settings.thresholds.properties.outOfRange then
 			if TRB.Data.character.inCombat then
 				local strt = debugprofilestop()
 				if TRB.Functions.Character:GetIsSpellInRange(spell) ~= true then

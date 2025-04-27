@@ -49,9 +49,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				precisionThreshold = 5
 			},
 			thresholds = {
-				width = 2,
-				overlapBorder = true,
-				outOfRange = true,
+				properties = {
+					width = 2,
+					overlapBorder=true,
+					outOfRange=true
+				},
 				icons = {
 					showCooldown = true,
 					border = 2,
@@ -1490,6 +1492,19 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 									specValue.comboPoints.spec = nil
 								end
+							end
+
+							-- Adjust threshold object for global bar settings
+							if specValue.thresholds ~= nil
+							and specValue.thresholds.width ~= nil then
+								specValue.thresholds.properties = {
+									width = specValue.thresholds.width,
+									overlapBorder = specValue.thresholds.overlapBorder,
+									outOfRange = specValue.thresholds.outOfRange
+								}
+								specValue.thresholds.width = nil
+								specValue.thresholds.overlapBorder = nil
+								specValue.thresholds.outOfRange = nil
 							end
 						end
 					end
