@@ -2755,11 +2755,11 @@ local function UpdateResourceBar()
 
 				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
-				local potionThresholdColor = specSettings.colors.threshold.over
+				local potionThresholdColor = specSettings.colors.threshold.over.color
 				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 				if potion.onCooldown then
-					potionThresholdColor = specSettings.colors.threshold.unusable
+					potionThresholdColor = specSettings.colors.threshold.unusable.color
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					if specSettings.thresholds.potionCooldown.enabled then
 						if specSettings.thresholds.potionCooldown.mode == "gcd" then
@@ -2778,7 +2778,7 @@ local function UpdateResourceBar()
 					end
 					pairOffset = (thresholdId - 1) * 3
 					local showThreshold = true
-					local thresholdColor = specSettings.colors.threshold.over
+					local thresholdColor = specSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local resourceAmount = 0
 					local snapshot = snapshots[spell.id]
@@ -2823,7 +2823,7 @@ local function UpdateResourceBar()
 
 									resourceAmount = castingBarValue + shadowfiendMana
 									if snapshot.cooldown:IsUnusable() then
-										thresholdColor = specSettings.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									end
 			
@@ -2848,7 +2848,7 @@ local function UpdateResourceBar()
 						resourceAmount = castingBarValue + cannibalizeTotal
 						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
 							if snapshot.cooldown.onCooldown then
-								thresholdColor = specSettings.colors.threshold.unusable
+								thresholdColor = specSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 						else
@@ -3090,11 +3090,11 @@ local function UpdateResourceBar()
 				
 				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
-				local potionThresholdColor = specSettings.colors.threshold.over
+				local potionThresholdColor = specSettings.colors.threshold.over.color
 				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 				if potion.onCooldown then
-					potionThresholdColor = specSettings.colors.threshold.unusable
+					potionThresholdColor = specSettings.colors.threshold.unusable.color
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					if specSettings.thresholds.potionCooldown.enabled then
 						if specSettings.thresholds.potionCooldown.mode == "gcd" then
@@ -3113,7 +3113,7 @@ local function UpdateResourceBar()
 					end
 					pairOffset = (thresholdId - 1) * 3
 					local showThreshold = true
-					local thresholdColor = specSettings.colors.threshold.over
+					local thresholdColor = specSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
 					local resourceAmount = 0
@@ -3140,7 +3140,7 @@ local function UpdateResourceBar()
 
 							resourceAmount = castingBarValue + shadowfiendMana
 							if snapshot.cooldown:IsUnusable() then
-								thresholdColor = specSettings.colors.threshold.unusable
+								thresholdColor = specSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 	
@@ -3159,7 +3159,7 @@ local function UpdateResourceBar()
 
 							resourceAmount = castingBarValue + symbolOfHopeMana
 							if snapshot.cooldown:IsUnusable() then
-								thresholdColor = specSettings.colors.threshold.unusable
+								thresholdColor = specSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 	
@@ -3176,7 +3176,7 @@ local function UpdateResourceBar()
 						resourceAmount = castingBarValue + cannibalizeTotal
 						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
 							if snapshot.cooldown.onCooldown then
-								thresholdColor = specSettings.colors.threshold.unusable
+								thresholdColor = specSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 						else
@@ -3421,9 +3421,9 @@ local function UpdateResourceBar()
 					if (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], true, passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 						
-						if sfCache.color ~= specSettings.colors.threshold.mindbender then
-							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-							sfCache.color = specSettings.colors.threshold.mindbender
+						if sfCache.color ~= specSettings.colors.threshold.mindbender.color then
+							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender.color, true))
+							sfCache.color = specSettings.colors.threshold.mindbender.color
 						end
 
 						if sfCache.shown ~= true then
@@ -3447,7 +3447,7 @@ local function UpdateResourceBar()
 					pairOffset = (thresholdId - 1) * 3
 					local resourceAmount = spell:GetPrimaryResourceCost()
 					local showThreshold = true
-					local thresholdColor = specSettings.colors.threshold.over
+					local thresholdColor = specSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
 					
@@ -3458,11 +3458,11 @@ local function UpdateResourceBar()
 							elseif resourceAmount >= TRB.Data.character.maxResource then
 								showThreshold = false
 							elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
-								thresholdColor = specSettings.colors.threshold.over
+								thresholdColor = specSettings.colors.threshold.over.color
 							elseif currentResource >= resourceAmount then
-								thresholdColor = specSettings.colors.threshold.over
+								thresholdColor = specSettings.colors.threshold.over.color
 							else
-								thresholdColor = specSettings.colors.threshold.under
+								thresholdColor = specSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						elseif spell.settingKey == spells.devouringPlague2--[[@as TRB.Classes.SpellThreshold]].settingKey then
@@ -3472,14 +3472,14 @@ local function UpdateResourceBar()
 								showThreshold = false
 							elseif snapshots[spells.mindDevourer.id].buff.isActive and
 								currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
-								thresholdColor = specSettings.colors.threshold.over
+								thresholdColor = specSettings.colors.threshold.over.color
 							elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
 									spells.devouringPlague:GetPrimaryResourceCost() > currentResource  then
 								showThreshold = false
 							elseif currentResource >= resourceAmount then
-								thresholdColor = specSettings.colors.threshold.over
+								thresholdColor = specSettings.colors.threshold.over.color
 							else
-								thresholdColor = specSettings.colors.threshold.under
+								thresholdColor = specSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						elseif spell.settingKey == spells.devouringPlague3--[[@as TRB.Classes.SpellThreshold]].settingKey then
@@ -3489,14 +3489,14 @@ local function UpdateResourceBar()
 								showThreshold = false
 							elseif snapshots[spells.mindDevourer.id].buff.isActive and
 								currentResource >= spells.devouringPlague2:GetPrimaryResourceCost() then
-								thresholdColor = specSettings.colors.threshold.over
+								thresholdColor = specSettings.colors.threshold.over.color
 							elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
 								spells.devouringPlague2:GetPrimaryResourceCost() > currentResource then
 								showThreshold = false
 							elseif currentResource >= resourceAmount then
-								thresholdColor = specSettings.colors.threshold.over
+								thresholdColor = specSettings.colors.threshold.over.color
 							else
-								thresholdColor = specSettings.colors.threshold.under
+								thresholdColor = specSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						end
@@ -3509,19 +3509,19 @@ local function UpdateResourceBar()
 						showThreshold = false
 					elseif spell.hasCooldown then
 						if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
-							thresholdColor = specSettings.colors.threshold.unusable
+							thresholdColor = specSettings.colors.threshold.unusable.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 						elseif currentResource >= resourceAmount then
-							thresholdColor = specSettings.colors.threshold.over
+							thresholdColor = specSettings.colors.threshold.over.color
 						else
-							thresholdColor = specSettings.colors.threshold.under
+							thresholdColor = specSettings.colors.threshold.under.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
 					else -- This is an active/available/normal spell threshold
 						if currentResource >= resourceAmount then
-							thresholdColor = specSettings.colors.threshold.over
+							thresholdColor = specSettings.colors.threshold.over.color
 						else
-							thresholdColor = specSettings.colors.threshold.under
+							thresholdColor = specSettings.colors.threshold.under.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
 					end

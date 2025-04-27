@@ -1841,22 +1841,22 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	end
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, overText, spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, overText, spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-0)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerUnusable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerUnusable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
-	controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerPassive"], spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.mindbender
+	controls.colors.threshold.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerPassive"], spec.colors.threshold.passive.color, 300, 25, oUi.xCoord2, yCoord-60)
+	f = controls.colors.threshold.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "passive")
 	end)
 
 	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_ThresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")

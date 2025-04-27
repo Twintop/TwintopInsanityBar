@@ -308,10 +308,18 @@ local function ArmsLoadDefaultSettings(includeBarText)
 				showCasting=true
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				unusable="FFFF0000",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -641,10 +649,18 @@ local function FuryLoadDefaultSettings(includeBarText)
 				showCasting=true
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				unusable="FFFF0000",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -870,28 +886,28 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceRage"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceRage"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.threshold.under
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 	end)
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceRage"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceRage"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
 	f = controls.colors.threshold.outOfRange
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 	end)
 
 	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
@@ -1461,28 +1477,28 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceRage"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceRage"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.threshold.under
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 	end)
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceRage"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceRage"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
 	f = controls.colors.threshold.outOfRange
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 	end)
 
 	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
