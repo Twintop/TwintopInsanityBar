@@ -212,6 +212,8 @@ local function FillSpecializationCache()
 	specCache.survival.snapshotData.snapshots[spells.bombardier.id] = TRB.Classes.Snapshot:New(spells.bombardier, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.tipOfTheSpear.id] = TRB.Classes.Snapshot:New(spells.tipOfTheSpear)
+	---@type TRB.Classes.Snapshot
+	specCache.survival.snapshotData.snapshots[spells.grenadeJuggler.id] = TRB.Classes.Snapshot:New(spells.grenadeJuggler)
 	
 
 	specCache.survival.barTextVariables = {
@@ -438,6 +440,7 @@ local function FillSpellData_Survival()
 		{ variable = "#termsOfEngagement", icon = spells.termsOfEngagement.icon, description = spells.termsOfEngagement.name, printInSettings = true },
 		{ variable = "#tipOfTheSpear", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = true },
 		{ variable = "#tots", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = false },
+		{ variable = "#grenadeJuggler", icon = spells.grenadeJuggler.icon, description = spells.grenadeJuggler.name, printInSettings = true },
 		{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = spells.wildfireBomb.name, printInSettings = true },
 		{ variable = "#wingClip", icon = spells.wingClip.icon, description = spells.wingClip.name, printInSettings = true },
 
@@ -501,6 +504,7 @@ local function FillSpellData_Survival()
 
 		{ variable = "$totsTime", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"], printInSettings = true, color = false },
 		{ variable = "$totsStacks", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"], printInSettings = true, color = false },
+		{ variable = "$grenadeJugglerTime", description = L["HunterSurvivalBarTextVariable_grenadeJuggler"], printInSettings = true, color = false },
 
 		{ variable = "$wildfireBombCharges", description = L["HunterSurvivalBarTextVariable_wildfireBombCharges"], printInSettings = true, color = false },
 
@@ -1071,6 +1075,9 @@ local function RefreshLookupData_Survival()
 	local _totsStacks = snapshotData.snapshots[spells.tipOfTheSpear.id].buff.applications or 0
 	local totsStacks = string.format("%s", _totsStacks)
 
+	--$grenadeJugglerTime
+	local _grenadeJugglerTime = snapshotData.snapshots[spells.grenadeJuggler.id].buff:GetRemainingTime(currentTime)
+	local grenadeJugglerTime = TRB.Functions.BarText:TimerPrecision(_grenadeJugglerTime)
 
 	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
@@ -1130,6 +1137,7 @@ local function RefreshLookupData_Survival()
 	lookup["$toeFocus"] = toeFocus
 	lookup["$toeTicks"] = toeTicks
 	lookup["$totsTime"] = totsTime
+	lookup["$grenadeJugglerTime"] = grenadeJugglerTime
 	lookup["$totsStacks"] = totsStacks
 
 	TRB.Data.lookup = lookup
@@ -1164,6 +1172,7 @@ local function RefreshLookupData_Survival()
 	lookupLogic["$toeTicks"] = _toeTicks
 	lookupLogic["$totsTime"] = _totsTime
 	lookupLogic["$totsStacks"] = _totsStacks
+	lookupLogic["$grenadeJugglerTime"] = _grenadeJugglerTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1941,6 +1950,10 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
+				if specSettings.colors.bar.grenadeJuggler.enabled and snapshots[spells.grenadeJuggler.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.grenadeJuggler.color
+				end
+
 				local passiveValue = 0
 				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
@@ -2214,6 +2227,12 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
+				elseif entry.spellId == spells.grenadeJuggler.id then
+					if entry.type == "SPELL_AURA_APPLIED" then
+						if TRB.Data.settings.hunter.survival.audio.grenadeJuggler.enabled then
+							PlaySoundFile(TRB.Data.settings.hunter.survival.audio.grenadeJuggler.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					end
 				end
 			end
 
@@ -2362,6 +2381,7 @@ local function SwitchSpec()
 		lookup["#termsOfEngagement"] = spells.termsOfEngagement.icon
 		lookup["#tipOfTheSpear"] = spells.tipOfTheSpear.icon
 		lookup["#tots"] = spells.tipOfTheSpear.icon
+		lookup["#grenadeJuggler"] = spells.grenadeJuggler.icon
 		lookup["#wingClip"] = spells.wingClip.icon
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
 		TRB.Data.lookup = lookup
@@ -2646,6 +2666,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$totsStacks" then
 			if snapshots[spells.tipOfTheSpear.id].buff.applications > 0 then
+				valid = true
+			end
+		elseif var == "$grenadeJugglerTime" then
+			if snapshots[spells.grenadeJuggler.id].buff.isActive then
 				valid = true
 			end
 		end

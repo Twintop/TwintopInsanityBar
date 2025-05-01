@@ -455,6 +455,11 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         talentId = 260285,
         isTalent = true
     })
+    self.grenadeJuggler =  TRB.Classes.SpellBase:New({
+        id = 470488,
+        talentId = 459853,
+        isTalent = true
+    })
     self.explosiveShot.isSnowflake = true
 
     return self
