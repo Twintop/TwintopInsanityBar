@@ -1942,7 +1942,7 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
-				if specSettings.colors.bar.explosiveShot.enabled and snapshots[spells.explosiveShot.id].cooldown.onCooldown == false or snapshots[spells.grenadeJuggler.id].buff.isActive or snapshots[spells.bombardier.id].buff.isActive then
+				if specSettings.colors.bar.explosiveShot.enabled and snapshots[spells.explosiveShot.id].cooldown.onCooldown == false and TRB.Data.character.inCombat or snapshots[spells.grenadeJuggler.id].buff.isActive or snapshots[spells.bombardier.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.explosiveShot.color
 				end
 
