@@ -2225,10 +2225,6 @@ L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Play an audio cue 
 
 L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Time remaining on Tip of the Spear"
 L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Number of stacks of Tip of the Spear"
-L["HunterSurvivalBarTextVariable_grenadeJuggler"] = "Time remaining on Grenade Juggler"
-L["HunterSurvivalCheckboxGrenadeJuggler"] = "Change when Grenade Juggler is active"
-L["HunterSurvivalCheckboxGrenadeJugglerTooltip"] ="This will change the bar border color when getting a Grenade Juggler proc"
-L["HunterSurvivalColorPickerGrenadeJuggler"] = "Border when getting a Grenade Juggler Proc"
-L["HunterAudioGrenadeJugglerReady"] = "Grenade Juggler ready"
-L["HunterAudioCheckboxGrenadeJuggler"] = "Play audio cue when Grenade Juggler is active"
-L["HunterAudioCheckboxGrenadeJugglerTooltip"] = "Play an audio cue when Grenade Juggler buff is active."
+L["HunterSurvivalCheckboxExplosiveShot"] = "Change when Explosive Shot is off cooldown"
+L["HunterSurvivalCheckboxExplosiveShotTooltip"] ="This will change the bar border color when Explosive Shot is off cooldown"
+L["HunterSurvivalColorPickerExplosiveShot"] = "Border when Explosive Shot is off cooldown"

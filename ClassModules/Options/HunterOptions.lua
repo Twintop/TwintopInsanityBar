@@ -1051,7 +1051,7 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				overcapEnabled=true,
 				showPassive=true,
 				showCasting=true,
-				grenadeJuggler = {
+				explosiveShot = {
 					color = "FFFFD000",
 					enabled = true
 				}
@@ -2866,20 +2866,20 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, false)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.grenadeJuggler = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Border_Option_grenadeJugglerProc", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.grenadeJuggler
+	controls.checkBoxes.explosiveShot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Border_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.explosiveShot
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxGrenadeJuggler"] )
-	f.tooltip = L["HunterSurvivalCheckboxGrenadeJugglerTooltip"]
-	f:SetChecked(spec.colors.bar.grenadeJuggler.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxExplosiveShot"] )
+	f.tooltip = L["HunterSurvivalCheckboxExplosiveShotTooltip"]
+	f:SetChecked(spec.colors.bar.explosiveShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.grenadeJuggler.enabled = self:GetChecked()
+		spec.colors.bar.explosiveShot.enabled = self:GetChecked()
 	end)
 
-	controls.colors.grenadeJuggler = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerGrenadeJuggler"], spec.colors.bar.grenadeJuggler.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.grenadeJuggler = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerExplosiveShot"], spec.colors.bar.grenadeJuggler.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.grenadeJuggler
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "grenadeJuggler")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "explosiveShot")
 	end)
 
 
@@ -3228,8 +3228,6 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterAudioCheckboxKillShot"], L["HunterAudioCheckboxKillShotTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
-
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "grenadeJuggler", spec, classId, specId, yCoord, L["HunterAudioCheckboxGrenadeJuggler"], L["HunterAudioCheckboxGrenadeJugglerTooltip"])
 
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
