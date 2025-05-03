@@ -1119,12 +1119,6 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
 			},
-			grenadeJuggler={
-				name = L["HunterAudioGrenadeJugglerReady"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 		},
 		textures = {
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -2908,8 +2902,8 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.explosiveShot.enabled = self:GetChecked()
 	end)
 
-	controls.colors.grenadeJuggler = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerExplosiveShot"], spec.colors.bar.explosiveShot.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.grenadeJuggler
+	controls.colors.explosiveShot = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerExplosiveShot"], spec.colors.bar.explosiveShot.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.explosiveShot
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "explosiveShot")
 	end)
