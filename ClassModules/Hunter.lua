@@ -212,8 +212,6 @@ local function FillSpecializationCache()
 	specCache.survival.snapshotData.snapshots[spells.bombardier.id] = TRB.Classes.Snapshot:New(spells.bombardier, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.tipOfTheSpear.id] = TRB.Classes.Snapshot:New(spells.tipOfTheSpear)
-	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[spells.grenadeJuggler.id] = TRB.Classes.Snapshot:New(spells.grenadeJuggler)
 	
 
 	specCache.survival.barTextVariables = {
@@ -1942,7 +1940,7 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
-				if specSettings.colors.bar.explosiveShot.enabled and snapshots[spells.explosiveShot.id].cooldown.onCooldown == false and TRB.Data.character.inCombat or snapshots[spells.grenadeJuggler.id].buff.isActive or snapshots[spells.bombardier.id].buff.isActive then
+				if specSettings.colors.bar.explosiveShot.enabled and TRB.Data.character.inCombat and snapshots[spells.explosiveShot.id].cooldown.onCooldown == false then
 					barBorderColor = specSettings.colors.bar.explosiveShot.color
 				end
 
@@ -2218,6 +2216,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.butchery.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
+					end
+				elseif entry.spellId == spells.grenadeJuggler.id then
+					if entry.type == "SPELL_AURA_APPLIED" then
+						snapshots[spells.explosiveShot.id].cooldown:Refresh()
 					end
 				end
 			end

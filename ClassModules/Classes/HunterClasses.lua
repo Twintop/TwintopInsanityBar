@@ -352,6 +352,7 @@ end
 ---@field public coordinatedAssault TRB.Classes.SpellBase
 ---@field public bombardier TRB.Classes.SpellBase
 ---@field public steadyShot TRB.Classes.SpellBase
+---@field public grenadeJuggler TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public wildfireBomb TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
