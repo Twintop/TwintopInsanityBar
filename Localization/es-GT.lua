@@ -2134,4 +2134,7 @@ if locale == "esES" or locale == "esMX" then
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Se reproduce una señal de audio cuando se pierde una mejora de Hendidura Bestial activa. Este sonido solo se reproducirá una vez."
     L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Tiempo restante en la Punta de la Lanza"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Número de acumulaciones de la Punta de la Lanza"
+    L["HunterSurvivalCheckboxExplosiveShot"] = "Cambiar cuando Disparo Explosivo esté fuera de tiempo de reutilización"
+    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Esto cambiará el color del borde de la barra cuando Disparo Explosivo esté fuera de tiempo de reutilización."
+    L["HunterSurvivalColorPickerExplosiveShot"] = "Borde cuando Disparo Explosivo esté fuera de tiempo de reutilización"
 end

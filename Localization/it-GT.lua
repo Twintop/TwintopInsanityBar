@@ -2134,4 +2134,7 @@ if locale == "itIT" then
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Riproduci un segnale acustico quando perdi un buff Fendente Bestiale attivo. Questo suono verrà riprodotto una sola volta."
     L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Tempo rimanente su Punta della Lancia"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Numero di pile di Punta della Lancia"
+    L["HunterSurvivalCheckboxExplosiveShot"] = "Cambia quando Tiro Esplosivo non è in fase di recupero"
+    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Questo cambierà il colore del bordo della barra quando Tiro Esplosivo non è in fase di recupero."
+    L["HunterSurvivalColorPickerExplosiveShot"] = "Bordo quando Tiro Esplosivo non è in fase di recupero"
 end

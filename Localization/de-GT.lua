@@ -2134,4 +2134,7 @@ L["CannibalizeIfForsaken"] = "Kannibalisieren (wenn im Stich gelassen)"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Ein Audiosignal wird abgespielt, wenn ein aktiver Tierspalten-Buff verloren geht. Dieser Sound wird nur einmal abgespielt."
     L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Verbleibende Zeit für „Speerspitze“"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Anzahl der Stapel von „Speerspitze“"
+    L["HunterSurvivalCheckboxExplosiveShot"] = "Änderung, wenn „Explosivschuss“ nicht mehr abklingt"
+    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Dies ändert die Farbe des Balkenrahmens, wenn „Explosivschuss“ nicht mehr abklingt."
+    L["HunterSurvivalColorPickerExplosiveShot"] = "Rahmen, wenn „Explosivschuss“ nicht mehr abklingt"
 end

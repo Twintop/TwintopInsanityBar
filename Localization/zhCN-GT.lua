@@ -2134,4 +2134,7 @@ if locale == "zhCN" then
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "当你失去一个生效的野兽劈砍效果时播放提示音。此音效仅播放一次。"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "矛尖的剩余时间"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "矛尖的叠加层数"
+    L["HunterSurvivalCheckboxExplosiveShot"] = "爆炸射击冷却结束后的变化"
+    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "这将改变爆炸射击冷却结束后的进度条边框颜色。"
+    L["HunterSurvivalColorPickerExplosiveShot"] = "爆炸射击冷却结束后的边框"
 end

@@ -2134,4 +2134,7 @@ if locale == "koKR" then
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "활성화된 야수 가르기 버프가 사라질 때 오디오 신호를 재생합니다. 이 효과는 한 번만 재생됩니다."
     L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "창끝의 남은 시간"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "창끝의 스택 수"
+    L["HunterSurvivalCheckboxExplosiveShot"] = "폭발 사격 재사용 대기시간 종료 시 변경"
+    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "폭발 사격 재사용 대기시간 종료 시 막대 테두리 색상이 변경됩니다."
+    L["HunterSurvivalColorPickerExplosiveShot"] = "폭발 사격 재사용 대기시간 종료 시 테두리"
 end

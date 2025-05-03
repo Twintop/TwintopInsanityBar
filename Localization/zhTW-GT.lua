@@ -2134,4 +2134,7 @@ if locale == "zhTW" then
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "當你失去有效的 Beast Cleave 增益時播放音訊提示。該聲音只會播放一次。"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "矛尖上的剩餘時間"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "矛尖的堆疊數量"
+    L["HunterSurvivalCheckboxExplosiveShot"] = "爆炸射擊冷卻結束後的改變"
+    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "當爆炸射擊冷卻完畢時，這將改變條形邊框的顏色。"
+    L["HunterSurvivalColorPickerExplosiveShot"] = "爆炸射擊冷卻完畢時的邊界"
 end
