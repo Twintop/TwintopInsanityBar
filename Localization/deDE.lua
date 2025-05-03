@@ -14,7 +14,7 @@ if locale == "deDE" then
     L["Author"] = "Autor"
     L["Version"] = "Version"
     L["Released"] = "Veröffentlicht"
-    L["SupportedSpecs"] = "Unterstützte Spezialisierungen (Dragonflight)"
+    L["SupportedSpecs"] = "Unterstützte Spezialisierungen (The War Within)"
     L["Experimental"] = "Experimentell"
     L["Minimal"] = "Minimal"
     L["ExperimentalMinimal"] = "Experimentell/Minimal"

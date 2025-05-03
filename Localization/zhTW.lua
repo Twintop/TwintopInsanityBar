@@ -11,5 +11,5 @@ if locale == "zhTW" then
     L["Author"] = "作者"
     L["Version"] = "软件版本"
     L["Released"] = "发布日期"
-    L["SupportedSpecs"] = "支持的专业 (Dragonflight)"
+    L["SupportedSpecs"] = "支持的专业 (The War Within)"
 end

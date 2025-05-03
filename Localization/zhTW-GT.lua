@@ -14,7 +14,7 @@ if locale == "zhTW" then
     L["Author"] = "作者"
     L["Version"] = "版本"
     L["Released"] = "已發布"
-    L["SupportedSpecs"] = "支援的規格 (Dragonflight)"
+    L["SupportedSpecs"] = "支援的規格 (The War Within)"
     L["Experimental"] = "實驗性的"
     L["Minimal"] = "最小"
     L["ExperimentalMinimal"] = "實驗性/最小化"

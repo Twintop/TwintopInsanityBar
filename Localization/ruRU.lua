@@ -11,5 +11,5 @@ if locale == "ruRU" then
     L["Author"] = "Автор"
     L["Version"] = "Версия ПО"
     L["Released"] = "Дата выпуска"
-    L["SupportedSpecs"] = "Поддерживаемые специализации (Dragonflight)"
+    L["SupportedSpecs"] = "Поддерживаемые специализации (The War Within)"
 end

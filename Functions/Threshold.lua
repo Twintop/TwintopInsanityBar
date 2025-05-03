@@ -102,15 +102,15 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	]]
 	local borderSubtraction = 0
 
-	if not settings.thresholds.overlapBorder then
+	if not settings.thresholds.properties.overlapBorder then
 		borderSubtraction = settings.bar.border * 2
 	end
 
-	threshold:SetWidth(settings.thresholds.width)
+	threshold:SetWidth(settings.thresholds.properties.width)
 	threshold:SetHeight(settings.bar.height - borderSubtraction)
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
-	threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.under, true))
+	threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.over.color, true))
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
 	threshold.hasIcon = hasIcon
@@ -170,9 +170,14 @@ function TRB.Functions.Threshold:RedrawThresholdLines(settings)
 
 	entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
 	if entries > 0 then
+		local passiveColor = settings.colors.threshold.passive
+		if passiveColor == nil then
+			passiveColor = settings.colors.threshold.mindbender
+		end
+
 		for x = 1, entries do
 			TRB.Functions.Threshold:ResetThresholdLine(passiveFrame.thresholds[x], settings, false)
-			passiveFrame.thresholds[x].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.mindbender, true))
+			passiveFrame.thresholds[x].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(passiveColor.color, true))
 		end
 	end
 
@@ -204,12 +209,12 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
 		
 		-- Split these out to only call methods if we need to
-		if settings.thresholds.outOfRange then
+		if settings.thresholds.properties.outOfRange then
 			if TRB.Data.character.inCombat then
 				local strt = debugprofilestop()
 				if TRB.Functions.Character:GetIsSpellInRange(spell) ~= true then
 					outOfRange = true
-					thresholdColor = settings.colors.threshold.outOfRange
+					thresholdColor = settings.colors.threshold.outOfRange.color
 					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
 				end
 				local stp = debugprofilestop()
@@ -359,9 +364,9 @@ function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snap
 			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], true, frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 			---@diagnostic disable-next-line: undefined-field
 			
-			if cache.color ~= settings.colors.threshold.mindbender then
-				frame.thresholds[thresholdId].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.mindbender, true))
-				cache.color = settings.colors.threshold.mindbender
+			if cache.color ~= settings.colors.threshold.passive.color then
+				frame.thresholds[thresholdId].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.passive.color, true))
+				cache.color = settings.colors.threshold.passive.color
 			end
 
 			if cache.shown ~= true then

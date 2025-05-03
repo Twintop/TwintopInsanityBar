@@ -177,9 +177,11 @@ local function HolyLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -299,11 +301,19 @@ local function HolyLoadDefaultSettings(includeBarText)
 				final="FFFF0000",
 				sameColor=false
 			},
-			threshold={
-				unusable="FFFF0000",
-				over="FF00FF00",
-				mindbender="FF8080FF",
-				outOfRange="FF440000"
+			threshold = {
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={

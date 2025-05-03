@@ -176,9 +176,11 @@ local function HavocLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -283,11 +285,21 @@ local function HavocLoadDefaultSettings(includeBarText)
 				showCasting=true
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				unusable="FFFF0000",
-				special="FFFF00FF",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -493,9 +505,11 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -601,11 +615,21 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				unusable="FFFF0000",
-				special="FFFF00FF",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -767,7 +791,7 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 1, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 1, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -850,34 +874,34 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFury"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFury"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.threshold.under
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 	end)
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFury"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFury"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
-	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocThresholdSpecial"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocThresholdSpecial"], spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord-90)
 	f = controls.colors.threshold.special
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
 	end)
 
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
+	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-120)
 	f = controls.colors.threshold.outOfRange
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 	end)
 
 	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
@@ -885,9 +909,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.outOfRange)
+	f:SetChecked(spec.thresholds.properties.outOfRange)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.outOfRange = self:GetChecked()
+		spec.thresholds.properties.outOfRange = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)
@@ -897,9 +921,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
 	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.overlapBorder)
+	f:SetChecked(spec.thresholds.properties.overlapBorder)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.overlapBorder = self:GetChecked()
+		spec.thresholds.properties.overlapBorder = self:GetChecked()
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 
@@ -1488,34 +1512,34 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFury"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFury"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.threshold.under
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 	end)
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFury"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFury"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
-	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceThresholdSpecial"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceThresholdSpecial"], spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord-90)
 	f = controls.colors.threshold.special
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
 	end)
 
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
+	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-120)
 	f = controls.colors.threshold.outOfRange
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 	end)
 
 	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
@@ -1523,9 +1547,9 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.outOfRange)
+	f:SetChecked(spec.thresholds.properties.outOfRange)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.outOfRange = self:GetChecked()
+		spec.thresholds.properties.outOfRange = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)
@@ -1535,9 +1559,9 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
 	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.overlapBorder)
+	f:SetChecked(spec.thresholds.properties.overlapBorder)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.overlapBorder = self:GetChecked()
+		spec.thresholds.properties.overlapBorder = self:GetChecked()
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 

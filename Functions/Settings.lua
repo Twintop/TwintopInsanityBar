@@ -49,9 +49,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				precisionThreshold = 5
 			},
 			thresholds = {
-				width = 2,
-				overlapBorder = true,
-				outOfRange = true,
+				properties = {
+					width = 2,
+					overlapBorder=true,
+					outOfRange=true
+				},
 				icons = {
 					showCooldown = true,
 					border = 2,
@@ -136,6 +138,26 @@ function TRB.Functions.Settings:LoadDefaultSettings()
                         }
                     }
 				},
+				threshold = {
+					under = {
+						color = "FFFFFFFF"
+					},
+					over = {
+						color = "FF00FF00"
+					},
+					unusable = {
+						color = "FFFF0000"
+					},
+					passive = {
+						color = "FF8080FF"
+					},
+					special = {
+						color = "FFFF00FF"
+					},
+					outOfRange = {
+						color = "FF440000"
+					},
+				}
 			},
 			textures={
 				background = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -1490,6 +1512,60 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 									specValue.comboPoints.spec = nil
 								end
+							end
+
+							-- Adjust threshold object for global bar settings
+							if specValue.thresholds ~= nil
+							and specValue.thresholds.width ~= nil then
+								specValue.thresholds.properties = {
+									width = specValue.thresholds.width,
+									overlapBorder = specValue.thresholds.overlapBorder,
+									outOfRange = specValue.thresholds.outOfRange
+								}
+								specValue.thresholds.width = nil
+								specValue.thresholds.overlapBorder = nil
+								specValue.thresholds.outOfRange = nil
+							end
+
+							-- Special case rename for Elemental
+							if spec == "elemental" then
+								if specValue.colors ~= nil and
+								specValue.colors.threshold ~= nil and
+								type(specValue.colors.threshold.echoesOfGreatSundering) == "string" then
+									specValue.colors.threshold.special = specValue.colors.threshold.echoesOfGreatSundering
+									specValue.colors.threshold.echoesOfGreatSundering = nil
+								end
+							end
+
+							-- Change mindbender to passive for healers
+							if spec == "holy" or -- Priest or Paladin
+							spec == "restoration" or -- Druid or Shaman
+							spec == "mistweaver" or
+							spec == "preservation" or
+							spec == "discipline" then
+								if specValue.colors ~= nil and
+								specValue.colors.threshold ~= nil and
+								type(specValue.colors.threshold.mindbender) == "string"  then
+									specValue.colors.threshold.passive = specValue.colors.threshold.mindbender
+									specValue.colors.threshold.mindbender = nil
+								end
+							end
+
+							-- Clean up threshold colors
+							if specValue.colors ~= nil and
+							specValue.colors.threshold ~= nil then
+								local colorsThreshold = specValue.colors.threshold
+								local newColorsThreshold = {}
+								for colorName, colorValue in pairs(colorsThreshold) do
+									if colorValue ~= nil and type(colorValue) == "string" then
+										newColorsThreshold[colorName] = {
+											color = colorValue
+										}
+										print(class, spec, colorName)
+									end
+								end
+
+								specValue.colors.threshold = newColorsThreshold
 							end
 						end
 					end

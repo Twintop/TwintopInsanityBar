@@ -177,9 +177,11 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -286,10 +288,21 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				},
 			},
 			threshold={
-				unusable="FFFF0000",
-				over="FF00FF00",
-				special="FF8080FF",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={

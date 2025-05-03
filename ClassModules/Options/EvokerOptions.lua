@@ -338,9 +338,11 @@ local function DevastationLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -427,10 +429,18 @@ local function DevastationLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				unusable="FFFF0000",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -659,9 +669,11 @@ local function PreservationLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -785,11 +797,19 @@ local function PreservationLoadDefaultSettings(includeBarText)
 				final="FFFF0000",
 				sameColor=false
 			},
-			threshold={
-				unusable="FFFF0000",
-				over="FF00FF00",
-				mindbender="FF8080FF",
-				outOfRange="FF440000"
+			threshold = {
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -1025,9 +1045,11 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -1112,10 +1134,18 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				unusable="FFFF0000",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={

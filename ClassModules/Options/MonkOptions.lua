@@ -183,9 +183,11 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -305,11 +307,19 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				showPassive=true,
 				showCasting=true
 			},
-			threshold={
-				unusable="FFFF0000",
-				over="FF00FF00",
-				mindbender="FF8080FF",
-				outOfRange="FF440000"
+			threshold = {
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -515,9 +525,11 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -639,10 +651,18 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				unusable="FFFF0000",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -834,7 +854,7 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 2, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -1472,28 +1492,28 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceEnergy"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceEnergy"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.threshold.under
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 	end)
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceEnergy"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceEnergy"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
 	f = controls.colors.threshold.outOfRange
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 	end)
 
 	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
@@ -1501,9 +1521,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.outOfRange)
+	f:SetChecked(spec.thresholds.properties.outOfRange)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.outOfRange = self:GetChecked()
+		spec.thresholds.properties.outOfRange = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)
@@ -1513,9 +1533,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
 	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.overlapBorder)
+	f:SetChecked(spec.thresholds.properties.overlapBorder)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.overlapBorder = self:GetChecked()
+		spec.thresholds.properties.overlapBorder = self:GetChecked()
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 	

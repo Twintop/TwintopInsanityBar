@@ -11,6 +11,11 @@ local content = [====[
 
 ---
 
+# 11.1.5.2-release (2025-04-30)
+## General
+
+---
+
 # 11.1.5.1-release (2025-04-27)
 ## General
 

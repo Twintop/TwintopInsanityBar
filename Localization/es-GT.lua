@@ -14,7 +14,7 @@ if locale == "esES" or locale == "esMX" then
     L["Author"] = "Autor"
     L["Version"] = "Versión"
     L["Released"] = "Liberado"
-    L["SupportedSpecs"] = "Especificaciones admitidas (Dragonflight)"
+    L["SupportedSpecs"] = "Especificaciones admitidas (The War Within)"
     L["Experimental"] = "Experimental"
     L["Minimal"] = "Mínimo"
     L["ExperimentalMinimal"] = "Experimental/Mínimo"

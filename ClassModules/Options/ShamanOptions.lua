@@ -184,9 +184,11 @@ local function ElementalLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				border=2,
 				relativeTo = "TOP",
@@ -293,10 +295,18 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				showCasting=true
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				echoesOfGreatSundering="FFFF00FF",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				special = {
+					color = "FFFF00FF"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -509,9 +519,11 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -608,10 +620,18 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			threshold = {
-				under="FFFFFFFF",
-				over="FF00FF00",
-				unusable="FFFF0000",
-				outOfRange="FF440000"
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -819,9 +839,11 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -936,11 +958,19 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				showPassive=true,
 				showCasting=true
 			},
-			threshold={
-				unusable="FFFF0000",
-				over="FF00FF00",
-				mindbender="FF8080FF",
-				outOfRange="FF440000"
+			threshold = {
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				outOfRange = {
+					color = "FF440000"
+				}
 			}
 		},
 		displayText={
@@ -1098,7 +1128,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -1205,28 +1235,28 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceMaelstrom"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceMaelstrom"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.threshold.under
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 	end)
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceMaelstrom"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceMaelstrom"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.echoesOfGreatSundering = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalThresholdColorPickerEchoesOfGreatSundering"], spec.colors.threshold.echoesOfGreatSundering, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.echoesOfGreatSundering
+	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalThresholdColorPickerEchoesOfGreatSundering"], spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord-60)
+	f = controls.colors.threshold.special
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "echoesOfGreatSundering")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
 	end)
 
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
 	f = controls.colors.threshold.outOfRange
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 	end)
 
 	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
@@ -1234,9 +1264,9 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.outOfRange)
+	f:SetChecked(spec.thresholds.properties.outOfRange)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.outOfRange = self:GetChecked()
+		spec.thresholds.properties.outOfRange = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)
@@ -1246,9 +1276,9 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
 	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.overlapBorder)
+	f:SetChecked(spec.thresholds.properties.overlapBorder)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.overlapBorder = self:GetChecked()
+		spec.thresholds.properties.overlapBorder = self:GetChecked()
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 
@@ -2108,7 +2138,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 3, yCoord)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 3, yCoord, false)
 
 	yCoord = yCoord - 30

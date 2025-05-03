@@ -1341,11 +1341,11 @@ local function UpdateResourceBar()
 
 				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
-				local potionThresholdColor = specSettings.colors.threshold.over
+				local potionThresholdColor = specSettings.colors.threshold.over.color
 				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 				if potion.onCooldown then
-					potionThresholdColor = specSettings.colors.threshold.unusable
+					potionThresholdColor = specSettings.colors.threshold.unusable.color
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					if specSettings.thresholds.potionCooldown.enabled then
 						if specSettings.thresholds.potionCooldown.mode == "gcd" then
@@ -1364,7 +1364,7 @@ local function UpdateResourceBar()
 					end
 					pairOffset = (thresholdId - 1) * 3
 					local showThreshold = true
-					local thresholdColor = specSettings.colors.threshold.over
+					local thresholdColor = specSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
 					local resourceAmount = 0

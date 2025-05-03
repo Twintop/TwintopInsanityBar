@@ -717,11 +717,7 @@ function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, c
 				local rightTexture = button:AttachTexture()
 				rightTexture:SetSize(1, 18)
 				rightTexture:SetPoint("RIGHT")
-				--rightTexture:SetTexture(v[2])
 				local fontString = button.fontString
-				local fontFile, fontHeight, _ = fontString:GetFont()
-				fontString:SetFont(fontFile, fontHeight, "OUTLINE")
-				fontString:SetPoint("RIGHT", rightTexture, "LEFT")
 
 				local bgTexture = button:AttachTexture()
 				bgTexture:SetTexture(v[2])
@@ -1742,11 +1738,11 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	end)
 
 	title = L["ThresholdLineWidth"]
-	controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
+	controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.properties.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.thresholds.width = value
+		spec.thresholds.properties.width = value
 
 		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
@@ -1845,22 +1841,22 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	end
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, overText, spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, overText, spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-0)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerUnusable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerUnusable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
-	controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerPassive"], spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.mindbender
+	controls.colors.threshold.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerPassive"], spec.colors.threshold.passive.color, 300, 25, oUi.xCoord2, yCoord-60)
+	f = controls.colors.threshold.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "passive")
 	end)
 
 	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_ThresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
@@ -1869,9 +1865,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdLinesOverlap"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["ThresholdLinesOverlapTooltip"]
-	f:SetChecked(spec.thresholds.overlapBorder)
+	f:SetChecked(spec.thresholds.properties.overlapBorder)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.overlapBorder = self:GetChecked()
+		spec.thresholds.properties.overlapBorder = self:GetChecked()
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 

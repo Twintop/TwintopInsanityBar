@@ -9,7 +9,7 @@ if locale == "enGB" then
     L["Author"] = "Author"
     L["Version"] = "Version"
     L["Released"] = "Released"
-    L["SupportedSpecs"] = "Supported Specs (Dragonflight)"
+    L["SupportedSpecs"] = "Supported Specs (The War Within)"
     L["ExportMessagePostfixSpecializations"] = "specialisations"
     L["BarColorsChangingHeader"] = "Bar Colours + Changing"
     L["BarBorderColorsChangingHeader"] = "Bar Border Colours + Changing"
