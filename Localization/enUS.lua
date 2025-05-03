@@ -2225,3 +2225,6 @@ L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Play an audio cue 
 
 L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Time remaining on Tip of the Spear"
 L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Number of stacks of Tip of the Spear"
+L["HunterSurvivalCheckboxExplosiveShot"] = "Change when Explosive Shot is off cooldown"
+L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "This will change the bar border color when Explosive Shot is off cooldown."
+L["HunterSurvivalColorPickerExplosiveShot"] = "Border when Explosive Shot is off cooldown"

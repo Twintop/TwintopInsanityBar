@@ -1071,7 +1071,6 @@ local function RefreshLookupData_Survival()
 	local _totsStacks = snapshotData.snapshots[spells.tipOfTheSpear.id].buff.applications or 0
 	local totsStacks = string.format("%s", _totsStacks)
 
-
 	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		if target ~= nil and target.spells[spells.serpentSting.id].active then
 			--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
@@ -1941,6 +1940,10 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
+				if specSettings.colors.bar.explosiveShot.enabled and TRB.Data.character.inCombat and snapshots[spells.explosiveShot.id].cooldown.onCooldown == false then
+					barBorderColor = specSettings.colors.bar.explosiveShot.color
+				end
+
 				local passiveValue = 0
 				if specSettings.colors.bar.showPassive then
 					if specSettings.generation.enabled then
@@ -2213,6 +2216,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.butchery.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
+					end
+				elseif entry.spellId == spells.grenadeJuggler.id then
+					if entry.type == "SPELL_AURA_APPLIED" then
+						snapshots[spells.explosiveShot.id].cooldown:Refresh()
 					end
 				end
 			end

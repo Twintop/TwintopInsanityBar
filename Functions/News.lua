@@ -11,8 +11,11 @@ local content = [====[
 
 ---
 
-# 11.1.5.2-release (2025-04-30)
-## General
+# 11.1.5.2-release (2025-05-??)
+## Hunter
+### Survival
+
+- [#441 - NEW (Koroshy)](#440) Add optional border color change when Explosive Shot is usable.
 
 ---
 

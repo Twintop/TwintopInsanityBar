@@ -2134,4 +2134,7 @@ if locale == "ptBR" or locale == "ptPT" then
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Tocar um sinal sonoro quando você perder um bônus de Cutilada da Besta ativo. Este som será reproduzido apenas uma vez."
     L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Tempo restante na Ponta da Lança"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Número de pilhas de Ponta da Lança"
+    L["HunterSurvivalCheckboxExplosiveShot"] = "Alteração quando o Tiro Explosivo estiver fora do tempo de recarga"
+    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Isso mudará a cor da borda da barra quando o Tiro Explosivo estiver fora do tempo de recarga."
+    L["HunterSurvivalColorPickerExplosiveShot"] = "Borda quando o Tiro Explosivo estiver fora do tempo de recarga"
 end

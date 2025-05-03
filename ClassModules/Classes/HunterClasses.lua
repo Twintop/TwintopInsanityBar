@@ -352,6 +352,7 @@ end
 ---@field public coordinatedAssault TRB.Classes.SpellBase
 ---@field public bombardier TRB.Classes.SpellBase
 ---@field public steadyShot TRB.Classes.SpellBase
+---@field public grenadeJuggler TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public wildfireBomb TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
@@ -453,6 +454,11 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     self.tipOfTheSpear = TRB.Classes.SpellBase:New({
         id = 260286,
         talentId = 260285,
+        isTalent = true
+    })
+    self.grenadeJuggler =  TRB.Classes.SpellBase:New({
+        id = 470488,
+        talentId = 459853,
         isTalent = true
     })
     self.explosiveShot.isSnowflake = true

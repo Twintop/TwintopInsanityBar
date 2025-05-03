@@ -2136,4 +2136,7 @@ if locale == "frFR" then
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Signal sonore lorsque vous perdez une amélioration de Fente de bête active. Ce son ne sera joué qu'une seule fois."
     L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"] = "Temps restant sur la Pointe de la Lance"
     L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Nombre de cumuls de Pointe de la Lance"
+    L["HunterSurvivalCheckboxExplosiveShot"] = "Modifier lorsque Tir Explosif est hors recharge"
+    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Ceci modifiera la couleur de la bordure de la barre lorsque Tir Explosif est hors recharge."
+    L["HunterSurvivalColorPickerExplosiveShot"] = "Bordure lorsque Tir Explosif est hors recharge"
 end
