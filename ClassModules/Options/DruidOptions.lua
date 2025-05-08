@@ -1492,130 +1492,6 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], true, false)
 
 	yCoord = yCoord - 40
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceAstralPower"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
-
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceAstralPower"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.starfallPandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceThresholdStarfallPandemic"], spec.colors.threshold.starfallPandemic.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.starfallPandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "starfallPandemic")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-
-
-	controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starfallEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sfThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarfall"])
-	f.tooltip = L["DruidBalanceThresholdCheckboxStarfallTooltip"]
-	f:SetChecked(spec.thresholds.starfall.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starfall.enabled = self:GetChecked()
-
-		if spec.thresholds.starfall.enabled then
-			TRB.Frames.resourceFrame.thresholds[4]:Show()
-		else
-			TRB.Frames.resourceFrame.thresholds[4]:Hide()
-		end
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ssThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge"])
-	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurgeTooltip"]
-	f:SetChecked(spec.thresholds.starsurge.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starsurge.enabled = self:GetChecked()
-
-		if spec.thresholds.starsurge.enabled then
-			TRB.Frames.resourceFrame.thresholds[1]:Show()
-		else
-			TRB.Frames.resourceFrame.thresholds[1]:Hide()
-		end
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.ssThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurge2Enabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ssThreshold2Show
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge2x"])
-	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurge2xTooltip"]
-	f:SetChecked(spec.thresholds.starsurge2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starsurge2.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.ssThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurge3Enabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ssThreshold3Show
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge3x"])
-	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurge3xTooltip"]
-	f:SetChecked(spec.thresholds.starsurge3.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starsurge3.enabled = self:GetChecked()
-	end)
-	yCoord = yCoord - 20
-	controls.checkBoxes.ssThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeOnlyOver", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ssThresholdOnlyOverShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxOnlyCurrentNext"])
-	f.tooltip = L["DruidBalanceThresholdCheckboxOnlyCurrentNextTooltip"]
-	f:SetChecked(spec.thresholds.starsurgeThresholdOnlyOverShow)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starsurgeThresholdOnlyOverShow = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
-	yCoord = yCoord - 50
-
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 1, yCoord)
-
-	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceHeaderEndOfEclipseConfiguration"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
@@ -1672,6 +1548,106 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
+end
+
+local function BalanceConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.balance
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.balance
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Druid_Balance_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Druid_Balance_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 1, true, false, false, false, false)
+	end)
+
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
+
+	controls.colors.threshold = {}
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starfallEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sfThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarfall"])
+	f.tooltip = L["DruidBalanceThresholdCheckboxStarfallTooltip"]
+	f:SetChecked(spec.thresholds.starfall.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.starfall.enabled = self:GetChecked()
+
+		if spec.thresholds.starfall.enabled then
+			TRB.Frames.resourceFrame.thresholds[4]:Show()
+		else
+			TRB.Frames.resourceFrame.thresholds[4]:Hide()
+		end
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.ssThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ssThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge"])
+	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurgeTooltip"]
+	f:SetChecked(spec.thresholds.starsurge.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.starsurge.enabled = self:GetChecked()
+
+		if spec.thresholds.starsurge.enabled then
+			TRB.Frames.resourceFrame.thresholds[1]:Show()
+		else
+			TRB.Frames.resourceFrame.thresholds[1]:Hide()
+		end
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.ssThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurge2Enabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ssThreshold2Show
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge2x"])
+	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurge2xTooltip"]
+	f:SetChecked(spec.thresholds.starsurge2.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.starsurge2.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.ssThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurge3Enabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ssThreshold3Show
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge3x"])
+	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurge3xTooltip"]
+	f:SetChecked(spec.thresholds.starsurge3.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.starsurge3.enabled = self:GetChecked()
+	end)
+	yCoord = yCoord - 25
+	controls.checkBoxes.ssThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeOnlyOver", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ssThresholdOnlyOverShow
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxOnlyCurrentNext"])
+	f.tooltip = L["DruidBalanceThresholdCheckboxOnlyCurrentNextTooltip"]
+	f:SetChecked(spec.thresholds.starsurgeThresholdOnlyOverShow)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.starsurgeThresholdOnlyOverShow = self:GetChecked()
+	end)
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+		{
+			name = "starfallPandemic",
+			colorLocalization = L["DruidBalanceThresholdStarfallPandemic"]
+		}
+	}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], true, true, false, true, false, nil, custom)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 1, yCoord)
 end
 
 local function BalanceConstructFontAndTextPanel(parent)
@@ -1884,10 +1860,11 @@ local function BalanceConstructOptionsPanel(cache)
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
 	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabThresholds"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do 
+	for i = 1, 6 do
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -1912,6 +1889,7 @@ local function BalanceConstructOptionsPanel(cache)
 	BalanceConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 	BalanceConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
 	BalanceConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	BalanceConstructThresholdPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 
@@ -2176,69 +2154,36 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 160)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
+end
+
+local function FeralConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.feral
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.feral
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Druid_Feral_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Druid_Feral_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 2, true, false, false, false, false)
+	end)
+
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-	
+
 	controls.colors.threshold = {}
 
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceEnergy"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
+	yCoord = yCoord - 30
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceEnergy"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.unusable
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-
-	controls.checkBoxes.thresholdBleedColors = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdBleedColors", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdBleedColors
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-160)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxBleedColor"])
-	f.tooltip = L["DruidFeralThresholdCheckboxBleedColorTooltip"]
-	f:SetChecked(spec.thresholds.bleedColors)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.bleedColors = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-	
+	local yCoord2 = yCoord
+		
 	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryBuildersLabel"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 
@@ -2318,14 +2263,15 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thrash.enabled = self:GetChecked()
 	end)
 
-
 	yCoord = yCoord - 25
-	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
+
+
+	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
 
 	controls.checkBoxes.ferociousBiteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBite", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.ferociousBiteThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFerociousBite"])
 	f.tooltip = L["DruidFeralThresholdCheckboxFerociousBiteTooltip"]
 	f:SetChecked(spec.thresholds.ferociousBite.enabled)
@@ -2334,10 +2280,10 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.ravage.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.ferociousBiteMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBiteMinimum", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.ferociousBiteMinimumThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFerociousBiteMinimum"])
 	f.tooltip = L["DruidFeralThresholdCheckboxFerociousBiteMinimumTooltip"]
 	f:SetChecked(spec.thresholds.ferociousBiteMinimum.enabled)
@@ -2346,10 +2292,10 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.ravageMinimum.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.ferociousBiteMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBiteMaximum", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.ferociousBiteMaximumThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFerociousBiteMaximum"])
 	f.tooltip = L["DruidFeralThresholdCheckboxFerociousBiteMaximumTooltip"]
 	f:SetChecked(spec.thresholds.ferociousBiteMaximum.enabled)
@@ -2358,10 +2304,10 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.ravageMaximum.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.maimThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_maim", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.maimThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxMaim"])
 	f.tooltip = L["DruidFeralThresholdCheckboxMaimTooltip"]
 	f:SetChecked(spec.thresholds.maim.enabled)
@@ -2369,10 +2315,10 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.maim.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.primalWrathThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_primalWrath", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.primalWrathThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxPrimalWrath"])
 	f.tooltip = L["DruidFeralThresholdCheckboxPrimalWrathTooltip"]
 	f:SetChecked(spec.thresholds.primalWrath.enabled)
@@ -2380,10 +2326,10 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.primalWrath.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.ripThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_rip", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.ripThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxRip"])
 	f.tooltip = L["DruidFeralThresholdCheckboxRipTooltip"]
 	f:SetChecked(spec.thresholds.rip.enabled)
@@ -2391,8 +2337,6 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.rip.enabled = self:GetChecked()
 	end)
 
-
-	yCoord = yCoord - 25
 	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 
@@ -2404,15 +2348,23 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.frenziedRegeneration.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.frenziedRegeneration.enabled = self:GetChecked()
-	end)	
+	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], true, true, true, true, false, nil, nil)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.thresholdBleedColors = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdBleedColors", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdBleedColors
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxBleedColor"])
+	f.tooltip = L["DruidFeralThresholdCheckboxBleedColorTooltip"]
+	f:SetChecked(spec.thresholds.bleedColors)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.bleedColors = self:GetChecked()
+		TRB.Functions.Threshold:RedrawThresholdLines(spec)
+	end)
+
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 2, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 160)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
 end
 
 local function FeralConstructFontAndTextPanel(parent)
@@ -2706,10 +2658,11 @@ local function FeralConstructOptionsPanel(cache)
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
 	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabThresholds"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do
+	for i = 1, 6 do
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -2734,6 +2687,7 @@ local function FeralConstructOptionsPanel(cache)
 	FeralConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 	FeralConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
 	FeralConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	FeralConstructThresholdPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 --[[

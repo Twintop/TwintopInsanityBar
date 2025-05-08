@@ -3289,7 +3289,7 @@ local function ShadowConstructThresholdPanel(parent)
 		spec.thresholds.devouringPlague.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 20
+	yCoord = yCoord - 25
 	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThreshold2Show
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
@@ -3300,7 +3300,7 @@ local function ShadowConstructThresholdPanel(parent)
 		spec.thresholds.devouringPlague2.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 20
+	yCoord = yCoord - 25
 	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThreshold3Show
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
@@ -3311,7 +3311,7 @@ local function ShadowConstructThresholdPanel(parent)
 		spec.thresholds.devouringPlague3.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 20
+	yCoord = yCoord - 25
 	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlagueOnlyOver", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThresholdOnlyOverShow
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
