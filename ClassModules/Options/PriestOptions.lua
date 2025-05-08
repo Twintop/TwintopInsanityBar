@@ -246,8 +246,7 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -413,7 +412,8 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 					color = "FF8080FF"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -774,8 +774,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -962,7 +961,8 @@ local function HolyLoadDefaultSettings(includeBarText)
 					color = "FF8080FF"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -1282,8 +1282,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				border=2,
@@ -1420,7 +1419,8 @@ local function ShadowLoadDefaultSettings(includeBarText)
 					color = "FFFF11FF",
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -1710,7 +1710,6 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
 	end)
-	
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestDisciplinePowerWordColorsHeader"], oUi.xCoord, yCoord)
@@ -3152,14 +3151,14 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.mindFlayInsanityBorderChange
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Mind Flay: Insanity / Mind Spike: Insanity")
-	f.tooltip = "This will change the bar border color when you are able to cast Mind Flay: Insanity / Mind Spike: Insanity"
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxMindFlayInsanity"])
+	f.tooltip = L["PriestShadowCheckboxMindFlayInsanityTooltip"]
 	f:SetChecked(spec.colors.bar.mindFlayInsanityBorderChange)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.mindFlayInsanityBorderChange = self:GetChecked()
 	end)
 
-	controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can channel Mind Flay: Insanity or Mind Spike: Insanity", spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerMindFlayInsanity"], spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderMindFlayInsanity
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
@@ -3198,108 +3197,6 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "mindDevourer")
 	end)
-
-	yCoord = yCoord - 40
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceInsanity"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
-
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceInsanity"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowThresholdShadowfiend"], spec.colors.threshold.mindbender.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.mindbender
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.outOfRange)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.outOfRange = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-
-	controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague"])
-	f.tooltip = L["PriestShadowThresholdDevouringPlagueTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThreshold2Show
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague2x"])
-	f.tooltip = L["PriestShadowThresholdDevouringPlague2xTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague2.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThreshold3Show
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague3x"])
-	f.tooltip = L["PriestShadowThresholdDevouringPlague3xTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague3.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague3.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlagueOnlyOver", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThresholdOnlyOverShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdCheckboxOnlyCurrentNext"])
-	f.tooltip = L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlagueThresholdOnlyOverShow)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	yCoord = yCoord - 25
-	yCoord = yCoord - 50
-
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 3, yCoord)
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderEndOfVoidformConfiguration"], oUi.xCoord, yCoord)
@@ -3358,6 +3255,84 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
+end
+
+local function ShadowConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.shadow
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shadow
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Priest_Shadow_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Priest_Shadow_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadowFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 5, 3, true, false, false, false, false)
+	end)
+
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
+
+	controls.colors.threshold = {}
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague"])
+	f.tooltip = L["PriestShadowThresholdDevouringPlagueTooltip"]
+	f:SetChecked(spec.thresholds.devouringPlague.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.devouringPlague.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 20
+	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague2", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThreshold2Show
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague2x"])
+	f.tooltip = L["PriestShadowThresholdDevouringPlague2xTooltip"]
+	f:SetChecked(spec.thresholds.devouringPlague2.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.devouringPlague2.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 20
+	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague3", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThreshold3Show
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague3x"])
+	f.tooltip = L["PriestShadowThresholdDevouringPlague3xTooltip"]
+	f:SetChecked(spec.thresholds.devouringPlague3.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.devouringPlague3.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 20
+	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlagueOnlyOver", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThresholdOnlyOverShow
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdCheckboxOnlyCurrentNext"])
+	f.tooltip = L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"]
+	f:SetChecked(spec.thresholds.devouringPlagueThresholdOnlyOverShow)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
+	end)
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+		{
+			name = "mindbender",
+			colorLocalization = L["PriestShadowThresholdShadowfiend"]
+		}
+	}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], true, true, false, true, false, nil, custom)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 3, yCoord)
 end
 
 local function ShadowConstructFontAndTextPanel(parent)
@@ -3755,10 +3730,11 @@ local function ShadowConstructOptionsPanel(cache)
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
 	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabThresholds"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do
+	for i = 1, 6 do
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -3783,6 +3759,7 @@ local function ShadowConstructOptionsPanel(cache)
 	ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 	ShadowConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
 	ShadowConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	ShadowConstructThresholdPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 local function ConstructOptionsPanel(specCache)

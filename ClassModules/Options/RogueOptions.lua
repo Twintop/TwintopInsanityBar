@@ -182,8 +182,7 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -383,7 +382,8 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 					color = "FFFF00FF"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -604,8 +604,7 @@ local function OutlawLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -806,7 +805,8 @@ local function OutlawLoadDefaultSettings(includeBarText)
 					color = "FFFFFF00"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				},
 			}
 		},
@@ -1028,8 +1028,7 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -1237,7 +1236,8 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 					color = "FFFFFF00"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				},
 			}
 		},
@@ -1586,9 +1586,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.outOfRange)
+	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.outOfRange = self:GetChecked()
+		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)
@@ -2422,9 +2422,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-180)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.outOfRange)
+	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.outOfRange = self:GetChecked()
+		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)
@@ -3249,9 +3249,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.outOfRange)
+	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.outOfRange = self:GetChecked()
+		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)

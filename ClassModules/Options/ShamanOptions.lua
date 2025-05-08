@@ -186,8 +186,7 @@ local function ElementalLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				border=2,
@@ -305,7 +304,8 @@ local function ElementalLoadDefaultSettings(includeBarText)
 					color = "FFFF00FF"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -521,8 +521,7 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -630,7 +629,8 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -841,8 +841,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -967,9 +966,6 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				},
 				passive = {
 					color = "FF8080FF"
-				},
-				outOfRange = {
-					color = "FF440000"
 				}
 			}
 		},
@@ -1264,9 +1260,9 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.outOfRange)
+	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.outOfRange = self:GetChecked()
+		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)

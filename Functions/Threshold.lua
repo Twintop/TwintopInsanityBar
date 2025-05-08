@@ -209,16 +209,13 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
 		
 		-- Split these out to only call methods if we need to
-		if settings.thresholds.properties.outOfRange then
+		if settings.colors.threshold.outOfRange.enabled then
 			if TRB.Data.character.inCombat then
-				local strt = debugprofilestop()
 				if TRB.Functions.Character:GetIsSpellInRange(spell) ~= true then
 					outOfRange = true
 					thresholdColor = settings.colors.threshold.outOfRange.color
 					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
 				end
-				local stp = debugprofilestop()
-				--print(stp-strt)
 			end
 		end
 

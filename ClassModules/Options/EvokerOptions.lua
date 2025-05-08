@@ -340,8 +340,7 @@ local function DevastationLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -439,7 +438,8 @@ local function DevastationLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -671,8 +671,7 @@ local function PreservationLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -806,9 +805,6 @@ local function PreservationLoadDefaultSettings(includeBarText)
 				},
 				passive = {
 					color = "FF8080FF"
-				},
-				outOfRange = {
-					color = "FF440000"
 				}
 			}
 		},
@@ -1047,8 +1043,7 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -1144,7 +1139,8 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},

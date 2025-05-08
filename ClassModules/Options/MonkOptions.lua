@@ -185,8 +185,7 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -318,7 +317,8 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 					color = "FF8080FF"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -527,8 +527,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -661,7 +660,8 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},
@@ -1521,9 +1521,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
 	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.outOfRange)
+	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.outOfRange = self:GetChecked()
+		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	end)

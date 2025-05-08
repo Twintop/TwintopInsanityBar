@@ -51,8 +51,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			thresholds = {
 				properties = {
 					width = 2,
-					overlapBorder=true,
-					outOfRange=true
+					overlapBorder=true
 				},
 				icons = {
 					showCooldown = true,
@@ -155,7 +154,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 						color = "FFFF00FF"
 					},
 					outOfRange = {
-						color = "FF440000"
+						color = "FF440000",
+						enabled = true
 					},
 				}
 			},
@@ -1554,18 +1554,24 @@ function TRB.Functions.Settings:PortForwardSettings()
 							-- Clean up threshold colors
 							if specValue.colors ~= nil and
 							specValue.colors.threshold ~= nil then
-								local colorsThreshold = specValue.colors.threshold
-								local newColorsThreshold = {}
-								for colorName, colorValue in pairs(colorsThreshold) do
+								for colorName, colorValue in pairs(specValue.colors.threshold) do
 									if colorValue ~= nil and type(colorValue) == "string" then
-										newColorsThreshold[colorName] = {
+										print(colorName, colorValue)
+										specValue.colors.threshold[colorName] = {
 											color = colorValue
 										}
-										print(class, spec, colorName)
 									end
 								end
+							end
 
-								specValue.colors.threshold = newColorsThreshold
+							if specValue.thresholds ~= nil and
+							specValue.thresholds.properties ~= nil and
+							specValue.thresholds.properties.outOfRange ~= nil and
+							specValue.colors ~= nil and
+							specValue.colors.threshold ~= nil and
+							specValue.colors.threshold.outOfRange ~= nil then
+								specValue.colors.threshold.outOfRange.enabled = specValue.thresholds.properties.outOfRange
+								specValue.thresholds.properties.outOfRange = nil
 							end
 						end
 					end

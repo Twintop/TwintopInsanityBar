@@ -179,8 +179,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -287,7 +286,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 					enabled = true,
 				},
 			},
-			threshold={
+			threshold = {
 				under = {
 					color = "FFFFFFFF"
 				},
@@ -301,7 +300,8 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 					color = "FFFF00FF"
 				},
 				outOfRange = {
-					color = "FF440000"
+					color = "FF440000",
+					enabled = true
 				}
 			}
 		},

@@ -179,8 +179,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 		thresholds = {
 			properties = {
 				width = 2,
-				overlapBorder=true,
-				outOfRange=true
+				overlapBorder=true
 			},
 			icons = {
 				showCooldown=true,
@@ -310,9 +309,6 @@ local function HolyLoadDefaultSettings(includeBarText)
 				},
 				passive = {
 					color = "FF8080FF"
-				},
-				outOfRange = {
-					color = "FF440000"
 				}
 			}
 		},

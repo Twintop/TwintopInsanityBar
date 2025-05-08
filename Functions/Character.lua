@@ -112,7 +112,7 @@ spellRangeCheckUpdateFrame:SetScript("OnEvent", SpellRangeCheckUpdateEvent)
 function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
 	
-	if specCache ~= nil and specCache.settings.thresholds.properties.outOfRange then
+	if specCache ~= nil and specCache.settings.colors.threshold.outOfRange.enabled then
 		for _, v in pairs(specCache.spellsData.spells) do
 			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
 				C_Spell.EnableSpellRangeCheck(v.id, true)
@@ -364,7 +364,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 
 	TRB.Data.character = cache.character
 	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
-	TRB.Data.character.inCombat = UnitAffectingCombat("player")
+	TRB.Data.character.inCombat = InCombatLockdown()
 	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons

@@ -84,6 +84,8 @@ Classes\Talent.lua
 Classes\Settings.lua
 Classes\SpecCache.lua
 
+Classes\OptionsUi.lua
+
 Init.lua
 
 ClassModules\Classes\HealerClasses.lua

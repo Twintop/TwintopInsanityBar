@@ -405,6 +405,50 @@ function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsE
 	return f
 end
 
+---Builds standard TRB color picker with an optional enable/disable checkbox
+---@param parent frame
+---@param controls table
+---@param controlType string
+---@param colorTable table
+---@param namePrefix string
+---@param value TRB.Classes.OptionsUi.Color
+---@param yCoord number
+---@return number
+---@return table|BackdropTemplate|Button
+---@return CheckButton
+function TRB.Functions.OptionsUi:BuildColorPickerWithEnable(parent, yCoord, controls, controlType, colorTable, namePrefix, value)
+	local fCheckbox = nil
+	local fColor = nil
+
+	controls.colors[controlType] = controls.colors[controlType] or {}
+
+	yCoord = yCoord - 30
+	if value.hasEnabledCheckbox == true then
+		fCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_threshold" .. value.name, parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes["threshold" .. value.name] = fCheckbox
+		fCheckbox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(fCheckbox:GetName() .. 'Text'):SetText(value.enabledCheckboxLocalization)
+		fCheckbox.tooltip = value.enabledCheckboxTooltipLocalization
+		fCheckbox:SetChecked(colorTable[value.name].enabled)
+		fCheckbox:SetScript("OnClick", function(self, ...)
+			colorTable[value.name].enabled = self:GetChecked()
+		end)
+	end
+
+	controls.colors.threshold[value.name] = TRB.Functions.OptionsUi:BuildColorPicker(parent, value.colorLocalization, colorTable[value.name].color, 300, 25, oUi.xCoord2, yCoord)
+	fColor = controls.colors.threshold[value.name]
+
+	if value.colorScript ~= nil and type(value.colorScript) == "function" then
+		fColor:SetScript("OnMouseDown", value.colorScript(self, button))
+	else
+		fColor:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, controls.colors[controlType], value.name)
+		end)
+	end
+	
+	return yCoord, fColor, fCheckbox
+end
+
 function TRB.Functions.OptionsUi:BuildSectionHeader(parent, title, posX, posY)
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
@@ -1566,6 +1610,10 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	local f = nil
 	local title = ""
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
+	
+	yCoord = yCoord - 30
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinePositionHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 20
 
 	local thresholdIconRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconRelativeTo", parent, "WowStyle1DropdownTemplate")
 	thresholdIconRelativeTo:SetWidth(oUi.sliderWidth)
@@ -1747,6 +1795,112 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		if TRB.Data.character.specId == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end
+	end)
+
+	return yCoord
+end
+
+---comment
+---@param parent frame
+---@param controls table
+---@param spec table
+---@param classId integer?
+---@param specId integer?
+---@param yCoord number
+---@param localizationResource string
+---@param under boolean?
+---@param over boolean?
+---@param unusable boolean?
+---@param outOfRange boolean?
+---@param special boolean?
+---@param localizationSpecial string?
+---@param custom TRB.Classes.OptionsUi.Color[]?
+---@return number
+function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, classId, specId, yCoord, localizationResource, under, over, unusable, outOfRange, special, localizationSpecial, custom)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+	
+	yCoord = yCoord - 30
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
+
+	if under == true then
+		yCoord = yCoord - 30
+		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], localizationResource), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.threshold.under
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
+		end)
+	end
+
+	if over == true then
+		yCoord = yCoord - 30
+		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], localizationResource), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.threshold.over
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
+		end)
+	end
+
+	if unusable == true then
+		yCoord = yCoord - 30
+		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
+		f = controls.colors.threshold.unusable
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		end)
+	end
+
+	if special == true then
+		yCoord = yCoord - 30
+		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, localizationSpecial, spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.threshold.special
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
+		end)
+	end
+
+	if outOfRange == true then
+		yCoord = yCoord - 30
+		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOutOfRange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
+		f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
+		f:SetChecked(spec.colors.threshold.outOfRange.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.threshold.outOfRange.enabled = self:GetChecked()
+
+			if spec.colors.threshold.outOfRange.enabled then
+				TRB.Functions.Character:EnableSpellRangeCheckUpdate()
+			else
+				TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+			end
+		end)
+
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.threshold.outOfRange
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		end)
+	end
+
+	if custom ~= nil and #custom > 0 then
+		for _, value in pairs(custom) do
+			yCoord, _, _ = TRB.Functions.OptionsUi:BuildColorPickerWithEnable(parent, yCoord, controls, "threshold", spec.colors.threshold, namePrefix, value)
+		end
+	end
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdOverlapBorder
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
+	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
+	f:SetChecked(spec.thresholds.properties.overlapBorder)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.properties.overlapBorder = self:GetChecked()
+		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 
 	return yCoord
