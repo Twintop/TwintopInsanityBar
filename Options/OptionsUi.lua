@@ -2034,9 +2034,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank3"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank3"])
-	f:SetChecked(spec.thresholds.algariManaPotionRank3.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.algariManaPotionRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.algariManaPotionRank3.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.algariManaPotionRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2046,9 +2046,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank2"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank2"])
-	f:SetChecked(spec.thresholds.algariManaPotionRank2.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.algariManaPotionRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.algariManaPotionRank2.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.algariManaPotionRank2.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
@@ -2058,9 +2058,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank1"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank1"])
-	f:SetChecked(spec.thresholds.algariManaPotionRank1.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.algariManaPotionRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.algariManaPotionRank1.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.algariManaPotionRank1.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
@@ -2073,9 +2073,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank3"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank3"])
-	f:SetChecked(spec.thresholds.cavedwellersDelightRank3.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cavedwellersDelightRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cavedwellersDelightRank3.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cavedwellersDelightRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2085,9 +2085,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank2"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank2"])
-	f:SetChecked(spec.thresholds.cavedwellersDelightRank2.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cavedwellersDelightRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cavedwellersDelightRank2.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cavedwellersDelightRank2.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
@@ -2097,9 +2097,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank1"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank1"])
-	f:SetChecked(spec.thresholds.cavedwellersDelightRank1.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cavedwellersDelightRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cavedwellersDelightRank1.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cavedwellersDelightRank1.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
@@ -2113,9 +2113,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank3"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank3"])
-	f:SetChecked(spec.thresholds.slumberingSoulSerumRank3.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.slumberingSoulSerumRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.slumberingSoulSerumRank3.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.slumberingSoulSerumRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2125,9 +2125,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank2"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank2"])
-	f:SetChecked(spec.thresholds.slumberingSoulSerumRank2.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.slumberingSoulSerumRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.slumberingSoulSerumRank2.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.slumberingSoulSerumRank2.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2137,9 +2137,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank1"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank1"])
-	f:SetChecked(spec.thresholds.slumberingSoulSerumRank1.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.slumberingSoulSerumRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.slumberingSoulSerumRank1.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.slumberingSoulSerumRank1.enabled = self:GetChecked()
 	end)
 
 	if classId == 5 or classId == 10 then -- Priest or Monk
@@ -2155,15 +2155,18 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 			---@diagnostic disable-next-line: inject-field
 			f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["Shadowfiend"])
-			f:SetChecked(spec.thresholds.shadowfiend.cooldown)
+			f:SetChecked(spec.thresholds.thresholdDictionary.shadowfiend.cooldown)
 			f:SetScript("OnClick", function(self, ...)
-				spec.thresholds.shadowfiend.cooldown = self:GetChecked()
-				if spec.thresholds.mindbender ~= nil then
-					spec.thresholds.mindbender.cooldown = self:GetChecked()
+				spec.thresholds.thresholdDictionary.shadowfiend.cooldown = self:GetChecked()
+				if spec.thresholds.thresholdDictionary.mindbender ~= nil then
+					spec.thresholds.thresholdDictionary.mindbender.cooldown = self:GetChecked()
+				end
+				if spec.thresholds.thresholdDictionary.voidwraith ~= nil then
+					spec.thresholds.thresholdDictionary.voidwraith.cooldown = self:GetChecked()
 				end
 			end)
 			
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.thresholdDictionary.shadowfiend.enabled)
 			
 			controls.checkBoxes.shadowfiendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_shadowfiend", parent, "ChatConfigCheckButtonTemplate")
 			f = controls.checkBoxes.shadowfiendThresholdShow
@@ -2171,13 +2174,16 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			getglobal(f:GetName() .. 'Text'):SetText(L["Shadowfiend"])
 			---@diagnostic disable-next-line: inject-field
 			f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["Shadowfiend"])
-			f:SetChecked(spec.thresholds.shadowfiend.enabled)
+			f:SetChecked(spec.thresholds.thresholdDictionary.shadowfiend.enabled)
 			f:SetScript("OnClick", function(self, ...)
-				spec.thresholds.shadowfiend.enabled = self:GetChecked()
-				if spec.thresholds.mindbender ~= nil then
-					spec.thresholds.mindbender.enabled = self:GetChecked()
+				spec.thresholds.thresholdDictionary.shadowfiend.enabled = self:GetChecked()
+				if spec.thresholds.thresholdDictionary.mindbender ~= nil then
+					spec.thresholds.thresholdDictionary.mindbender.enabled = self:GetChecked()
 				end
-				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
+				if spec.thresholds.thresholdDictionary.voidwraith ~= nil then
+					spec.thresholds.thresholdDictionary.voidwraith.enabled = self:GetChecked()
+				end
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.thresholdDictionary.shadowfiend.enabled)
 			end)
 			yCoord = yCoord - 20
 
@@ -2190,12 +2196,12 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 				getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 				---@diagnostic disable-next-line: inject-field
 				f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["SymbolOfHope"])
-				f:SetChecked(spec.thresholds.symbolOfHope.cooldown)
+				f:SetChecked(spec.thresholds.thresholdDictionary.symbolOfHope.cooldown)
 				f:SetScript("OnClick", function(self, ...)
-					spec.thresholds.symbolOfHope.cooldown = self:GetChecked()
+					spec.thresholds.thresholdDictionary.symbolOfHope.cooldown = self:GetChecked()
 				end)
 				
-				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.thresholdDictionary.symbolOfHope.enabled)
 				
 				controls.checkBoxes.symbolOfHopeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_symbolOfHope", parent, "ChatConfigCheckButtonTemplate")
 				f = controls.checkBoxes.symbolOfHopeThresholdShow
@@ -2203,20 +2209,20 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 				getglobal(f:GetName() .. 'Text'):SetText(L["SymbolOfHope"])
 				---@diagnostic disable-next-line: inject-field
 				f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["SymbolOfHope"])
-				f:SetChecked(spec.thresholds.symbolOfHope.enabled)
+				f:SetChecked(spec.thresholds.thresholdDictionary.symbolOfHope.enabled)
 				f:SetScript("OnClick", function(self, ...)
-					spec.thresholds.symbolOfHope.enabled = self:GetChecked()
-					TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+					spec.thresholds.thresholdDictionary.symbolOfHope.enabled = self:GetChecked()
+					TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.thresholdDictionary.symbolOfHope.enabled)
 				end)
 
 				local title = L["ThresholdHealerSymbolOfHopeManaPercent"]
-				controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.thresholds.symbolOfHope.minimumManaPercent, 5, 5,
+				controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.thresholds.thresholdDictionary.symbolOfHope.minimumManaPercent, 5, 5,
 												oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord-20)
 				controls.symbolOfHopePercent:SetScript("OnValueChanged", function(self, value)
 					value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 					value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 					self.EditBox:SetText(value)
-					spec.thresholds.symbolOfHope.minimumManaPercent = value
+					spec.thresholds.thresholdDictionary.symbolOfHope.minimumManaPercent = value
 				end)
 
 				yCoord = yCoord - 20
@@ -2231,9 +2237,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			getglobal(f:GetName() .. 'Text'):SetText(L["ManaTea"])
 			---@diagnostic disable-next-line: inject-field
 			f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["ManaTea"])
-			f:SetChecked(spec.thresholds.manaTeaCharges.enabled)
+			f:SetChecked(spec.thresholds.thresholdDictionary.manaTeaCharges.enabled)
 			f:SetScript("OnClick", function(self, ...)
-				spec.thresholds.manaTeaCharges.enabled = self:GetChecked()
+				spec.thresholds.thresholdDictionary.manaTeaCharges.enabled = self:GetChecked()
 			end)
 		end
 
@@ -2245,12 +2251,12 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["CannibalizeIfForsaken"])
-		f:SetChecked(spec.thresholds.cannibalize.cooldown)
+		f:SetChecked(spec.thresholds.thresholdDictionary.cannibalize.cooldown)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.cannibalize.cooldown = self:GetChecked()
+			spec.thresholds.thresholdDictionary.cannibalize.cooldown = self:GetChecked()
 		end)
 		
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.cannibalize.enabled)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.thresholdDictionary.cannibalize.enabled)
 		
 		controls.checkBoxes.cannibalizeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_cannibalize", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cannibalizeThresholdShow
@@ -2258,10 +2264,10 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		getglobal(f:GetName() .. 'Text'):SetText(L["CannibalizeIfForsaken"])
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["CannibalizeIfForsaken"])
-		f:SetChecked(spec.thresholds.cannibalize.enabled)
+		f:SetChecked(spec.thresholds.thresholdDictionary.cannibalize.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.cannibalize.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.cannibalize.enabled)
+			spec.thresholds.thresholdDictionary.cannibalize.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.thresholdDictionary.cannibalize.enabled)
 		end)
 		yCoord = yCoord - 25
 	end

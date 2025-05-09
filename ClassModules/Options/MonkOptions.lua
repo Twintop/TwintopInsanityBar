@@ -199,39 +199,41 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			algariManaPotionRank1 = {
-				enabled = false,
-			},
-			algariManaPotionRank2 = {
-				enabled = false,
-			},
-			algariManaPotionRank3 = {
-				enabled = true,
-			},
-			cavedwellersDelightRank1 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank2 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank3 = {
-				enabled = true,
-			},
-			slumberingSoulSerumRank1 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank2 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank3 = {
-				enabled = true,
-			},
-			cannibalize = {
-				enabled = false,
-				cooldown = false
-			},
-			manaTeaCharges = {
-				enabled = true
+			thresholdDictionary = {
+				algariManaPotionRank1 = {
+					enabled = false,
+				},
+				algariManaPotionRank2 = {
+					enabled = false,
+				},
+				algariManaPotionRank3 = {
+					enabled = true,
+				},
+				cavedwellersDelightRank1 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank2 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank3 = {
+					enabled = true,
+				},
+				slumberingSoulSerumRank1 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank2 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank3 = {
+					enabled = true,
+				},
+				cannibalize = {
+					enabled = false,
+					cooldown = false
+				},
+				manaTeaCharges = {
+					enabled = true
+				},
 			},
 			potionCooldown = {
 				enabled=true,
@@ -541,27 +543,29 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			cracklingJadeLightning = {
-				enabled = false,
-			},
-			expelHarm = {
-				enabled = true,
-			},
-			tigerPalm = {
-				enabled = true,
-			},
-			vivify = {
-				enabled = false,
-			},
-			detox = {
-				enabled = false,
-			},
-			disable = {
-				enabled = false,
-			},
-			paralysis = {
-				enabled = false,
-			},
+			thresholdDictionary = {
+				cracklingJadeLightning = {
+					enabled = false,
+				},
+				expelHarm = {
+					enabled = true,
+				},
+				tigerPalm = {
+					enabled = true,
+				},
+				vivify = {
+					enabled = false,
+				},
+				detox = {
+					enabled = false,
+				},
+				disable = {
+					enabled = false,
+				},
+				paralysis = {
+					enabled = false,
+				},
+			}
 		},
 		generation = {
 			mode="gcd",
@@ -1546,9 +1550,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxExpelHarm"])
 	f.tooltip = L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"]
-	f:SetChecked(spec.thresholds.expelHarm.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.expelHarm.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.expelHarm.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.expelHarm.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1557,9 +1561,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxTigerPalm"])
 	f.tooltip = L["MonkWindwalkerThresholdCheckboxTigerPalmTooltip"]
-	f:SetChecked(spec.thresholds.tigerPalm.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.tigerPalm.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.tigerPalm.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.tigerPalm.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1571,9 +1575,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxCracklingJadeLightning"])
 	f.tooltip = L["MonkWindwalkerThresholdCheckboxCracklingJadeLightningTooltip"]
-	f:SetChecked(spec.thresholds.cracklingJadeLightning.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cracklingJadeLightning.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cracklingJadeLightning.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cracklingJadeLightning.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1582,9 +1586,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxDetox"])
 	f.tooltip = L["MonkWindwalkerThresholdCheckboxDetoxTooltip"]
-	f:SetChecked(spec.thresholds.detox.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.detox.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.detox.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.detox.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1593,9 +1597,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxDisable"])
 	f.tooltip = L["MonkWindwalkerThresholdCheckboxDisableTooltip"]
-	f:SetChecked(spec.thresholds.disable.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.disable.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.disable.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.disable.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1604,9 +1608,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxParalysis"])
 	f.tooltip = L["MonkWindwalkerThresholdCheckboxParalysisTooltip"]
-	f:SetChecked(spec.thresholds.paralysis.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.paralysis.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.paralysis.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.paralysis.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1615,9 +1619,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxVivify"])
 	f.tooltip = L["MonkWindwalkerThresholdCheckboxVivifyTooltip"]
-	f:SetChecked(spec.thresholds.vivify.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.vivify.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.vivify.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.vivify.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

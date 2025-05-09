@@ -204,19 +204,23 @@ local function BalanceLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			starsurgeThresholdOnlyOverShow = false,
-			starsurge = {
-				enabled = true
+			specProperties = {
+				starsurgeThresholdOnlyOverShow = false,
 			},
-			starsurge2 = {
-				enabled = true
-			},
-			starsurge3 = {
-				enabled = true
-			},
-			starfall = {
-				enabled = true
-			},
+			thresholdDictionary = {
+				starsurge = {
+					enabled = true
+				},
+				starsurge2 = {
+					enabled = true
+				},
+				starsurge3 = {
+					enabled = true
+				},
+				starfall = {
+					enabled = true
+				},
+			}
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -677,7 +681,6 @@ local function FeralLoadDefaultSettings(includeBarText)
 				width = 2,
 				overlapBorder=true
 			},
-			bleedColors=true,
 			icons = {
 				showCooldown=true,
 				border=2,
@@ -690,56 +693,61 @@ local function FeralLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			rake = {
-				enabled = true,
+			specProperties = {
+				bleedColors=true,
 			},
-			thrash = {
-				enabled = true,
-			},
-			swipe = {
-				enabled = false,
-			},
-			rip = {
-				enabled = true,
-			},
-			maim = {
-				enabled = false,
-			},
-			ferociousBite = {
-				enabled = true,
-			},
-			ferociousBiteMinimum = {
-				enabled = false,
-			},
-			ferociousBiteMaximum = {
-				enabled = true,
-			},
-			shred = {
-				enabled = true,
-			},
-			primalWrath = {
-				enabled = true,
-			},
-			moonfire = {
-				enabled = true,
-			},
-			brutalSlash = {
-				enabled = true,
-			},
-			feralFrenzy = {
-				enabled = true,
-			},
-			ravage = {
-				enabled = true,
-			},
-			ravageMinimum = {
-				enabled = false,
-			},
-			ravageMaximum = {
-				enabled = true,
-			},
-			frenziedRegeneration = {
-				enabled = false,
+			thresholdDictionary = {
+				rake = {
+					enabled = true,
+				},
+				thrash = {
+					enabled = true,
+				},
+				swipe = {
+					enabled = false,
+				},
+				rip = {
+					enabled = true,
+				},
+				maim = {
+					enabled = false,
+				},
+				ferociousBite = {
+					enabled = true,
+				},
+				ferociousBiteMinimum = {
+					enabled = false,
+				},
+				ferociousBiteMaximum = {
+					enabled = true,
+				},
+				shred = {
+					enabled = true,
+				},
+				primalWrath = {
+					enabled = true,
+				},
+				moonfire = {
+					enabled = true,
+				},
+				brutalSlash = {
+					enabled = true,
+				},
+				feralFrenzy = {
+					enabled = true,
+				},
+				ravage = {
+					enabled = true,
+				},
+				ravageMinimum = {
+					enabled = false,
+				},
+				ravageMaximum = {
+					enabled = true,
+				},
+				frenziedRegeneration = {
+					enabled = false,
+				}
 			}
 		},
 		generation = {
@@ -1093,32 +1101,34 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			algariManaPotionRank1 = {
-				enabled = false,
-			},
-			algariManaPotionRank2 = {
-				enabled = false,
-			},
-			algariManaPotionRank3 = {
-				enabled = true,
-			},
-			cavedwellersDelightRank1 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank2 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank3 = {
-				enabled = true,
-			},
-			slumberingSoulSerumRank1 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank2 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank3 = {
-				enabled = true,
+			thresholdDictionary = {
+				algariManaPotionRank1 = {
+					enabled = false,
+				},
+				algariManaPotionRank2 = {
+					enabled = false,
+				},
+				algariManaPotionRank3 = {
+					enabled = true,
+				},
+				cavedwellersDelightRank1 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank2 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank3 = {
+					enabled = true,
+				},
+				slumberingSoulSerumRank1 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank2 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank3 = {
+					enabled = true,
+				},
 			},
 			potionCooldown = {
 				enabled=true,
@@ -1577,11 +1587,11 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarfall"])
 	f.tooltip = L["DruidBalanceThresholdCheckboxStarfallTooltip"]
-	f:SetChecked(spec.thresholds.starfall.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.starfall.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starfall.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.starfall.enabled = self:GetChecked()
 
-		if spec.thresholds.starfall.enabled then
+		if spec.thresholds.thresholdDictionary.starfall.enabled then
 			TRB.Frames.resourceFrame.thresholds[4]:Show()
 		else
 			TRB.Frames.resourceFrame.thresholds[4]:Hide()
@@ -1594,11 +1604,11 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge"])
 	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurgeTooltip"]
-	f:SetChecked(spec.thresholds.starsurge.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.starsurge.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starsurge.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.starsurge.enabled = self:GetChecked()
 
-		if spec.thresholds.starsurge.enabled then
+		if spec.thresholds.thresholdDictionary.starsurge.enabled then
 			TRB.Frames.resourceFrame.thresholds[1]:Show()
 		else
 			TRB.Frames.resourceFrame.thresholds[1]:Hide()
@@ -1611,9 +1621,9 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge2x"])
 	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurge2xTooltip"]
-	f:SetChecked(spec.thresholds.starsurge2.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.starsurge2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starsurge2.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.starsurge2.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1622,9 +1632,9 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge3x"])
 	f.tooltip = L["DruidBalanceThresholdCheckboxStarsurge3xTooltip"]
-	f:SetChecked(spec.thresholds.starsurge3.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.starsurge3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starsurge3.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.starsurge3.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 	controls.checkBoxes.ssThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeOnlyOver", parent, "ChatConfigCheckButtonTemplate")
@@ -1632,9 +1642,9 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxOnlyCurrentNext"])
 	f.tooltip = L["DruidBalanceThresholdCheckboxOnlyCurrentNextTooltip"]
-	f:SetChecked(spec.thresholds.starsurgeThresholdOnlyOverShow)
+	f:SetChecked(spec.thresholds.specProperties.starsurgeThresholdOnlyOverShow)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.starsurgeThresholdOnlyOverShow = self:GetChecked()
+		spec.thresholds.specProperties.starsurgeThresholdOnlyOverShow = self:GetChecked()
 	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
@@ -2192,9 +2202,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxBrutalSlash"])
 	f.tooltip = L["DruidFeralThresholdCheckboxBrutalSlashTooltip"]
-	f:SetChecked(spec.thresholds.brutalSlash.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.brutalSlash.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.brutalSlash.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.brutalSlash.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2203,9 +2213,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFeralFrenzy"])
 	f.tooltip = L["DruidFeralThresholdCheckboxFeralFrenzyTooltip"]
-	f:SetChecked(spec.thresholds.feralFrenzy.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.feralFrenzy.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.feralFrenzy.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.feralFrenzy.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2214,9 +2224,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxMoonfire"])
 	f.tooltip = L["DruidFeralThresholdCheckboxMoonfireTooltip"]
-	f:SetChecked(spec.thresholds.moonfire.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.moonfire.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.moonfire.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.moonfire.enabled = self:GetChecked()
 	end)
 	
 	yCoord = yCoord - 25
@@ -2225,9 +2235,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxRake"])
 	f.tooltip = L["DruidFeralThresholdCheckboxRakeTooltip"]
-	f:SetChecked(spec.thresholds.rake.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.rake.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.rake.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.rake.enabled = self:GetChecked()
 	end)
 	
 	yCoord = yCoord - 25
@@ -2236,9 +2246,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxShred"])
 	f.tooltip = L["DruidFeralThresholdCheckboxShredTooltip"]
-	f:SetChecked(spec.thresholds.shred.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shred.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shred.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shred.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2247,9 +2257,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxSwipe"])
 	f.tooltip = L["DruidFeralThresholdCheckboxSwipeTooltip"]
-	f:SetChecked(spec.thresholds.swipe.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.swipe.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.swipe.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.swipe.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2258,9 +2268,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxThrash"])
 	f.tooltip = L["DruidFeralThresholdCheckboxThrashTooltip"]
-	f:SetChecked(spec.thresholds.thrash.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.thrash.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thrash.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.thrash.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2274,10 +2284,10 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFerociousBite"])
 	f.tooltip = L["DruidFeralThresholdCheckboxFerociousBiteTooltip"]
-	f:SetChecked(spec.thresholds.ferociousBite.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.ferociousBite.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.ferociousBite.enabled = self:GetChecked()
-		spec.thresholds.ravage.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ferociousBite.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ravage.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
@@ -2286,10 +2296,10 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFerociousBiteMinimum"])
 	f.tooltip = L["DruidFeralThresholdCheckboxFerociousBiteMinimumTooltip"]
-	f:SetChecked(spec.thresholds.ferociousBiteMinimum.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.ferociousBiteMinimum.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.ferociousBiteMinimum.enabled = self:GetChecked()
-		spec.thresholds.ravageMinimum.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ferociousBiteMinimum.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ravageMinimum.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
@@ -2298,10 +2308,10 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFerociousBiteMaximum"])
 	f.tooltip = L["DruidFeralThresholdCheckboxFerociousBiteMaximumTooltip"]
-	f:SetChecked(spec.thresholds.ferociousBiteMaximum.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.ferociousBiteMaximum.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.ferociousBiteMaximum.enabled = self:GetChecked()
-		spec.thresholds.ravageMaximum.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ferociousBiteMaximum.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ravageMaximum.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
@@ -2310,9 +2320,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxMaim"])
 	f.tooltip = L["DruidFeralThresholdCheckboxMaimTooltip"]
-	f:SetChecked(spec.thresholds.maim.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.maim.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.maim.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.maim.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
@@ -2321,9 +2331,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxPrimalWrath"])
 	f.tooltip = L["DruidFeralThresholdCheckboxPrimalWrathTooltip"]
-	f:SetChecked(spec.thresholds.primalWrath.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.primalWrath.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.primalWrath.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.primalWrath.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
@@ -2332,9 +2342,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxRip"])
 	f.tooltip = L["DruidFeralThresholdCheckboxRipTooltip"]
-	f:SetChecked(spec.thresholds.rip.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.rip.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.rip.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.rip.enabled = self:GetChecked()
 	end)
 
 	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
@@ -2345,9 +2355,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFrenziedRegeneration"])
 	f.tooltip = L["DruidFeralThresholdCheckboxFrenziedRegenerationTooltip"]
-	f:SetChecked(spec.thresholds.frenziedRegeneration.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.frenziedRegeneration.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.frenziedRegeneration.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.frenziedRegeneration.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], true, true, true, true, false, nil, nil)
@@ -2358,9 +2368,9 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxBleedColor"])
 	f.tooltip = L["DruidFeralThresholdCheckboxBleedColorTooltip"]
-	f:SetChecked(spec.thresholds.bleedColors)
+	f:SetChecked(spec.thresholds.specProperties.bleedColors)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.bleedColors = self:GetChecked()
+		spec.thresholds.specProperties.bleedColors = self:GetChecked()
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 

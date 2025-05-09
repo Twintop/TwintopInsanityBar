@@ -197,7 +197,7 @@ end
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	local cache = TRB.Data.cache.values.threshold[key]
-	if settings.thresholds[spell.settingKey].enabled and showThreshold then
+	if settings.thresholds.thresholdDictionary[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = false

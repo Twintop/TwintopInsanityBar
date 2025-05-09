@@ -2520,7 +2520,7 @@ local function UpdateResourceBar()
 								showThreshold = false
 							elseif resourceAmount >= TRB.Data.character.maxResource then
 								showThreshold = false
-							elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and aboveCounts < 2 then
+							elseif specSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow and aboveCounts < 2 then
 								showThreshold = false
 							elseif aboveCounts >= 2 then
 								thresholdColor = specSettings.colors.threshold.over.color
@@ -2551,7 +2551,7 @@ local function UpdateResourceBar()
 								showThreshold = false
 							elseif resourceAmount >= TRB.Data.character.maxResource then
 								showThreshold = false
-							elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and aboveCounts < 3 then
+							elseif specSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow and aboveCounts < 3 then
 								showThreshold = false
 							elseif aboveCounts >= 3 then
 								thresholdColor = specSettings.colors.threshold.over.color
@@ -2747,7 +2747,7 @@ local function UpdateResourceBar()
 
 					local overrideOk = true
 
-					if spell.attributes.hasSnapshot and specSettings.thresholds.bleedColors then
+					if spell.attributes.hasSnapshot and specSettings.thresholds.specProperties.bleedColors then
 						showThreshold = true
 						overrideOk = false
 
@@ -3146,7 +3146,7 @@ local function UpdateResourceBar()
 						if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
 							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
 							resourceAmount = castingBarValue + potionMana
-							if specSettings.thresholds[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
+							if specSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
 							else
 								showThreshold = false
 							end

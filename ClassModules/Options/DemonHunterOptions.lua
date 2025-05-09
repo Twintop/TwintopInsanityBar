@@ -192,36 +192,38 @@ local function HavocLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			annihilation = {
-				enabled = true,
-			},
-			bladeDance = {
-				enabled = true,
-			},
-			chaosNova = {
-				enabled = true,
-			},
-			chaosStrike = {
-				enabled = true,
-			},
-			deathSweep = {
-				enabled = true,
-			},
-			eyeBeam = {
-				enabled = true,
-			},
-			-- Talents
-			glaiveTempest = {
-				enabled = true,
-			},
-			felEruption = {
-				enabled = true,
-			},
-			throwGlaive = {
-				enabled = true,
-			},
-			felBarrage = {
-				enabled = true,
+			thresholdDictionary = {
+				annihilation = {
+					enabled = true,
+				},
+				bladeDance = {
+					enabled = true,
+				},
+				chaosNova = {
+					enabled = true,
+				},
+				chaosStrike = {
+					enabled = true,
+				},
+				deathSweep = {
+					enabled = true,
+				},
+				eyeBeam = {
+					enabled = true,
+				},
+				-- Talents
+				glaiveTempest = {
+					enabled = true,
+				},
+				felEruption = {
+					enabled = true,
+				},
+				throwGlaive = {
+					enabled = true,
+				},
+				felBarrage = {
+					enabled = true,
+				}
 			}
 		},
 		displayBar = {
@@ -521,19 +523,21 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			soulCleave = {
-				enabled = true,
-			},
-			chaosNova = {
-				enabled = true,
-			},
-			-- Talents
-			felDevastation = {
-				enabled = true,
-			},
-			spiritBomb = {
-				enabled = true,
-			},
+			thresholdDictionary = {
+				soulCleave = {
+					enabled = true,
+				},
+				chaosNova = {
+					enabled = true,
+				},
+				-- Talents
+				felDevastation = {
+					enabled = true,
+				},
+				spiritBomb = {
+					enabled = true,
+				},
+			}
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -932,10 +936,10 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweep"])
 	f.tooltip = L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweepTooltip"]
-	f:SetChecked(spec.thresholds.bladeDance.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.bladeDance.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.bladeDance.enabled = self:GetChecked()
-		spec.thresholds.deathSweep.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.bladeDance.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.deathSweep.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -944,9 +948,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxChaosNova"])
 	f.tooltip = L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"]
-	f:SetChecked(spec.thresholds.chaosNova.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.chaosNova.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.chaosNova.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.chaosNova.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -955,10 +959,10 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"])
 	f.tooltip = L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"]
-	f:SetChecked(spec.thresholds.chaosStrike.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.chaosStrike.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.chaosStrike.enabled = self:GetChecked()
-		spec.thresholds.annihilation.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.chaosStrike.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.annihilation.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -967,9 +971,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxEyeBeam"])
 	f.tooltip = L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"]
-	f:SetChecked(spec.thresholds.eyeBeam.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.eyeBeam.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.eyeBeam.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.eyeBeam.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -978,9 +982,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxFelBarrage"])
 	f.tooltip = L["DemonHunterHavocThresholdCheckboxFelBarrageTooltip"]
-	f:SetChecked(spec.thresholds.felBarrage.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.felBarrage.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.felBarrage.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.felBarrage.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -989,9 +993,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxFelEruption"])
 	f.tooltip = L["DemonHunterHavocThresholdCheckboxFelEruptionTooltip"]
-	f:SetChecked(spec.thresholds.felEruption.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.felEruption.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.felEruption.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.felEruption.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1000,9 +1004,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxGlaiveTempest"])
 	f.tooltip = L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"]
-	f:SetChecked(spec.thresholds.glaiveTempest.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.glaiveTempest.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.glaiveTempest.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.glaiveTempest.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1011,9 +1015,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxThrowGlaive"])
 	f.tooltip = L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"]
-	f:SetChecked(spec.thresholds.throwGlaive.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.throwGlaive.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.throwGlaive.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.throwGlaive.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30
@@ -1570,9 +1574,9 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxChaosNova"])
 	f.tooltip = L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"]
-	f:SetChecked(spec.thresholds.chaosNova.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.chaosNova.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.chaosNova.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.chaosNova.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1581,9 +1585,9 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxFelDevastation"])
 	f.tooltip = L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"]
-	f:SetChecked(spec.thresholds.felDevastation.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.felDevastation.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.felDevastation.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.felDevastation.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1592,9 +1596,9 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxSoulCleave"])
 	f.tooltip = L["DemonHunterVengeanceThresholdCheckboxSoulCleaveTooltip"]
-	f:SetChecked(spec.thresholds.soulCleave.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.soulCleave.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.soulCleave.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.soulCleave.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1603,9 +1607,9 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"])
 	f.tooltip = L["DemonHunterVengeanceThresholdCheckboxSpiritBombTooltip"]
-	f:SetChecked(spec.thresholds.spiritBomb.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.spiritBomb.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.spiritBomb.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.spiritBomb.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 100

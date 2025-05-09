@@ -6,10 +6,12 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.SpecializationGlobalEnabled
 ---@field public bar boolean
 ---@field public comboPoints boolean
+---@field public thresholds boolean
+---@field public precision boolean
 ---@field public displayText boolean
 ---@field public textColors boolean
 ---@field public dotColors boolean
----@field public precision boolean
+---@field public thresholdColors boolean
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Casses.Settings.Bar
@@ -18,7 +20,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public displayBar table?
 ---@field public displayText TRB.Classes.Settings.DisplayText
 ---@field public textures table?
----@field public thresholds table?
+---@field public thresholds TRB.Classes.Settings.Thresholds?
 ---@field public precision TRB.Classes.Settings.Precision
 ---@field public audio { string: TRB.Classes.Settings.Audio }
 
@@ -36,15 +38,72 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public enabled table
 ---@field public experimental table
 
+---@class TRB.Classes.Settings.Thresholds
+---@field public properties TRB.Classes.Settings.ThresholdProperties
+---@field public icons TRB.Classes.Settings.ThresholdIcons
+---@field public potionCooldown? TRB.Classes.Settings.GenericTrackingOverX
+---@field public specProperties table?
+---@field public thresholdDictionary { string: table }
+
+---@class TRB.Classes.Settings.ThresholdProperties
+---@field public width number
+---@field public overlapBorder boolean
+
+---@class TRB.Classes.Settings.ThresholdIcons
+---@field public showCooldown boolean
+---@field public border number
+---@field public relativeTo string
+---@field public relativeToName string
+---@field public enabled boolean
+---@field public desaturated boolean
+---@field public xPos number
+---@field public yPos number
+---@field public width number
+---@field public height number
+
 ---@class TRB.Classes.Settings.Precision
 ---@field public secondary integer
 ---@field public resource integer
 
+---@class TRB.Classes.Settings.ColorEntry
+---@field public color string
+
+---@class TRB.Classes.Settings.ColorEnabledEntry : TRB.Classes.Settings.ColorEntry
+---@field public enabled boolean
+
+---@class TRB.Classes.Settings.DotColors
+---@field public options table
+---@field public up TRB.Classes.Settings.ColorEntry
+---@field public down TRB.Classes.Settings.ColorEntry
+---@field public pandemic TRB.Classes.Settings.ColorEntry
+
+---@class TRB.Classes.Settings.SnapshotDotColors : TRB.Classes.Settings.DotColors
+---@field public better TRB.Classes.Settings.ColorEntry
+---@field public worse TRB.Classes.Settings.ColorEntry
+---@field public same TRB.Classes.Settings.ColorEntry
+
+---@class TRB.Classes.Settings.TextColors
+---@field public current TRB.Classes.Settings.ColorEnabledEntry
+---@field public casting TRB.Classes.Settings.ColorEnabledEntry
+---@field public spending TRB.Classes.Settings.ColorEnabledEntry
+---@field public passive TRB.Classes.Settings.ColorEnabledEntry
+---@field public overcap TRB.Classes.Settings.ColorEnabledEntry
+---@field public overThreshold TRB.Classes.Settings.ColorEnabledEntry
+---@field public dots TRB.Classes.Settings.DotColors|TRB.Classes.Settings.SnapshotDotColors
+
+---@class TRB.Classes.Settings.ThresholdColors
+---@field public under TRB.Classes.Settings.ColorEntry
+---@field public over TRB.Classes.Settings.ColorEntry
+---@field public unusable TRB.Classes.Settings.ColorEntry
+---@field public passive TRB.Classes.Settings.ColorEntry
+---@field public special TRB.Classes.Settings.ColorEntry
+---@field public outOfRange TRB.Classes.Settings.ColorEnabledEntry
+
 ---@class TRB.Classes.Settings.Colors
----@field public text table
+---@field public text TRB.Classes.Settings.TextColors
 ---@field public bar table
 ---@field public comboPoints table
----@field public threshold table
+---@field public threshold TRB.Classes.Settings.ThresholdColors|table
 
 ---@class TRB.Casses.Settings.Bar
 ---@field public width number
@@ -101,3 +160,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public enabled boolean
 ---@field public sound string
 ---@field public soundName string
+
+---@class TRB.Classes.Settings.GenericTrackingOverX
+---@field public enabled boolean
+---@field public mode string --Really should make this an enum of gcd/seconds (and swings for Shadowfiend?)
+---@field public gcdsMax number
+---@field public timeMax number

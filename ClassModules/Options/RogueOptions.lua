@@ -196,77 +196,79 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			-- Rogue
-			ambush = {
-				enabled = true,
-			},
-			cheapShot = {
-				enabled = false,
-			},
-			crimsonVial = {
-				enabled = true,
-			},
-			distract = {
-				enabled = false,
-			},
-			kidneyShot = {
-				enabled = false,
-			},
-			sliceAndDice = {
-				enabled = true,
-			},
-			feint = {
-				enabled = true,
-			},
-			-- Rogue Talents
-			shiv = {
-				enabled = false,
-			},
-			sap = {
-				enabled = false,
-			},
-			gouge = {
-				enabled = false,
-			},
-			echoingReprimand = {
-				enabled = true,
-			},
-			-- Assassination
-			envenom = {
-				enabled = true,
-			},
-			fanOfKnives = {
-				enabled = true,
-			},
-			garrote = {
-				enabled = true,
-			},
-			mutilate = {
-				enabled = true,
-			},
-			poisonedKnife = {
-				enabled = false,
-			},
-			rupture = {
-				enabled = true,
-			},
-			-- Assassination Talents
-			crimsonTempest = {
-				enabled = true,
-			},
-			serratedBoneSpike = {
-				enabled = true,
-			},
-			kingsbane = {
-				enabled = true,
-			},
-			-- PvP					
-			deathFromAbove = {
-				enabled = false,
-			},
-			dismantle = {
-				enabled = false,
-			},
+			thresholdDictionary = {
+				-- Rogue
+				ambush = {
+					enabled = true,
+				},
+				cheapShot = {
+					enabled = false,
+				},
+				crimsonVial = {
+					enabled = true,
+				},
+				distract = {
+					enabled = false,
+				},
+				kidneyShot = {
+					enabled = false,
+				},
+				sliceAndDice = {
+					enabled = true,
+				},
+				feint = {
+					enabled = true,
+				},
+				-- Rogue Talents
+				shiv = {
+					enabled = false,
+				},
+				sap = {
+					enabled = false,
+				},
+				gouge = {
+					enabled = false,
+				},
+				echoingReprimand = {
+					enabled = true,
+				},
+				-- Assassination
+				envenom = {
+					enabled = true,
+				},
+				fanOfKnives = {
+					enabled = true,
+				},
+				garrote = {
+					enabled = true,
+				},
+				mutilate = {
+					enabled = true,
+				},
+				poisonedKnife = {
+					enabled = false,
+				},
+				rupture = {
+					enabled = true,
+				},
+				-- Assassination Talents
+				crimsonTempest = {
+					enabled = true,
+				},
+				serratedBoneSpike = {
+					enabled = true,
+				},
+				kingsbane = {
+					enabled = true,
+				},
+				-- PvP					
+				deathFromAbove = {
+					enabled = false,
+				},
+				dismantle = {
+					enabled = false,
+				},
+			}
 		},
 		generation = {
 			mode="gcd",
@@ -618,76 +620,78 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			-- Rogue
-			ambush = {
-				enabled = true,
-			},
-			cheapShot = {
-				enabled = false,
-			},
-			crimsonVial = {
-				enabled = true,
-			},
-			distract = {
-				enabled = false,
-			},
-			kidneyShot = {
-				enabled = false,
-			},
-			sliceAndDice = {
-				enabled = true,
-			},
-			feint = {
-				enabled = true,
-			},
-			-- Rogue Talents
-			shiv = {
-				enabled = false,
-			},
-			sap = {
-				enabled = false,
-			},
-			gouge = {
-				enabled = false,
-			},
-			echoingReprimand = {
-				enabled = true,
-			},
-			-- Outlaw
-			betweenTheEyes = {
-				enabled = true,
-			},
-			dispatch = {
-				enabled = true,
-			},
-			pistolShot = {
-				enabled = true,
-			},
-			sinisterStrike = {
-				enabled = true,
-			},
-			bladeFlurry = {
-				enabled = true,
-			},
-			rollTheBones = {
-				enabled = true,
-			},
-			ghostlyStrike = {
-				enabled = true,
-			},
-			killingSpree = {
-				enabled = true,
-			},
-			-- PvP					
-			deathFromAbove = {
-				enabled = false,
-			},
-			dismantle = {
-				enabled = false,
-			},
-			--Trickster
-			coupDeGrace = {
-				enabled = true,
+			thresholdDictionary = {
+				-- Rogue
+				ambush = {
+					enabled = true,
+				},
+				cheapShot = {
+					enabled = false,
+				},
+				crimsonVial = {
+					enabled = true,
+				},
+				distract = {
+					enabled = false,
+				},
+				kidneyShot = {
+					enabled = false,
+				},
+				sliceAndDice = {
+					enabled = true,
+				},
+				feint = {
+					enabled = true,
+				},
+				-- Rogue Talents
+				shiv = {
+					enabled = false,
+				},
+				sap = {
+					enabled = false,
+				},
+				gouge = {
+					enabled = false,
+				},
+				echoingReprimand = {
+					enabled = true,
+				},
+				-- Outlaw
+				betweenTheEyes = {
+					enabled = true,
+				},
+				dispatch = {
+					enabled = true,
+				},
+				pistolShot = {
+					enabled = true,
+				},
+				sinisterStrike = {
+					enabled = true,
+				},
+				bladeFlurry = {
+					enabled = true,
+				},
+				rollTheBones = {
+					enabled = true,
+				},
+				ghostlyStrike = {
+					enabled = true,
+				},
+				killingSpree = {
+					enabled = true,
+				},
+				-- PvP					
+				deathFromAbove = {
+					enabled = false,
+				},
+				dismantle = {
+					enabled = false,
+				},
+				--Trickster
+				coupDeGrace = {
+					enabled = true,
+				}
 			}
 		},
 		generation = {
@@ -1042,83 +1046,85 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			-- Rogue
-			-- Technically a Rogue ability but missing from Assassination and Outlaw
-			eviscerate = {
-				enabled = true,
-			},
-			cheapShot = {
-				enabled = false,
-			},
-			crimsonVial = {
-				enabled = true,
-			},
-			distract = {
-				enabled = false,
-			},
-			kidneyShot = {
-				enabled = false,
-			},
-			sliceAndDice = {
-				enabled = true,
-			},
-			feint = {
-				enabled = true,
-			},
-			-- Rogue Talents
-			shiv = {
-				enabled = false,
-			},
-			sap = {
-				enabled = false,
-			},
-			gouge = {
-				enabled = false,
-			},
-			echoingReprimand = {
-				enabled = true,
-			},
-			-- Subtlety
-			backstab = {
-				enabled = true,
-			},
-			blackPowder = {
-				enabled = true,
-			},
-			rupture = {
-				enabled = true,
-			},
-			shadowstrike = {
-				enabled = true,
-			},
-			shurikenStorm = {
-				enabled = true,
-			},
-			shurikenToss = {
-				enabled = true,
-			},
-			gloomblade = {
-				enabled = true,
-			},
-			secretTechnique = {
-				enabled = true,
-			},
-			shurikenTornado = {
-				enabled = true,
-			},
-			goremawsBite = {
-				enabled = true,
-			},
-			-- PvP					
-			deathFromAbove = {
-				enabled = false,
-			},
-			dismantle = {
-				enabled = false,
-			},
-			--Trickster
-			coupDeGrace = {
-				enabled = true,
+			thresholdDictionary = {
+				-- Rogue
+				-- Technically a Rogue ability but missing from Assassination and Outlaw
+				eviscerate = {
+					enabled = true,
+				},
+				cheapShot = {
+					enabled = false,
+				},
+				crimsonVial = {
+					enabled = true,
+				},
+				distract = {
+					enabled = false,
+				},
+				kidneyShot = {
+					enabled = false,
+				},
+				sliceAndDice = {
+					enabled = true,
+				},
+				feint = {
+					enabled = true,
+				},
+				-- Rogue Talents
+				shiv = {
+					enabled = false,
+				},
+				sap = {
+					enabled = false,
+				},
+				gouge = {
+					enabled = false,
+				},
+				echoingReprimand = {
+					enabled = true,
+				},
+				-- Subtlety
+				backstab = {
+					enabled = true,
+				},
+				blackPowder = {
+					enabled = true,
+				},
+				rupture = {
+					enabled = true,
+				},
+				shadowstrike = {
+					enabled = true,
+				},
+				shurikenStorm = {
+					enabled = true,
+				},
+				shurikenToss = {
+					enabled = true,
+				},
+				gloomblade = {
+					enabled = true,
+				},
+				secretTechnique = {
+					enabled = true,
+				},
+				shurikenTornado = {
+					enabled = true,
+				},
+				goremawsBite = {
+					enabled = true,
+				},
+				-- PvP					
+				deathFromAbove = {
+					enabled = false,
+				},
+				dismantle = {
+					enabled = false,
+				},
+				--Trickster
+				coupDeGrace = {
+					enabled = true,
+				}
 			}
 		},
 		generation = {
@@ -1612,9 +1618,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdAmbush"])
 	f.tooltip = L["RogueAssassinationThresholdAmbushTooltip"]
-	f:SetChecked(spec.thresholds.ambush.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.ambush.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.ambush.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ambush.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1623,9 +1629,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCheapShot"])
 	f.tooltip = L["RogueAssassinationThresholdCheapShotTooltip"]
-	f:SetChecked(spec.thresholds.cheapShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cheapShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cheapShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cheapShot.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 	controls.checkBoxes.fanOfKnivesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_fanOfKnives", parent, "ChatConfigCheckButtonTemplate")
@@ -1633,9 +1639,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdFanOfKnives"])
 	f.tooltip = L["RogueAssassinationThresholdFanOfKnivesTooltip"]
-	f:SetChecked(spec.thresholds.fanOfKnives.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.fanOfKnives.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.fanOfKnives.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.fanOfKnives.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1644,9 +1650,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdGarrote"])
 	f.tooltip = L["RogueAssassinationThresholdGarroteTooltip"]
-	f:SetChecked(spec.thresholds.garrote.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.garrote.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.garrote.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.garrote.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1655,9 +1661,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdGouge"])
 	f.tooltip = L["RogueAssassinationThresholdGougeTooltip"]
-	f:SetChecked(spec.thresholds.gouge.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.gouge.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.gouge.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.gouge.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1666,9 +1672,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdKingsbane"])
 	f.tooltip = L["RogueAssassinationThresholdKingsbaneTooltip"]
-	f:SetChecked(spec.thresholds.kingsbane.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.kingsbane.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.kingsbane.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.kingsbane.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1677,9 +1683,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdMutilate"])
 	f.tooltip = L["RogueAssassinationThresholdMutilateTooltip"]
-	f:SetChecked(spec.thresholds.mutilate.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.mutilate.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.mutilate.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.mutilate.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1688,9 +1694,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdPoisonedKnife"])
 	f.tooltip = L["RogueAssassinationThresholdPoisonedKnifeTooltip"]
-	f:SetChecked(spec.thresholds.poisonedKnife.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.poisonedKnife.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.poisonedKnife.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.poisonedKnife.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1699,9 +1705,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdShiv"])
 	f.tooltip = L["RogueAssassinationThresholdShivTooltip"]
-	f:SetChecked(spec.thresholds.shiv.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shiv.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shiv.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shiv.enabled = self:GetChecked()
 	end)
 
 
@@ -1714,9 +1720,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonTempest"])
 	f.tooltip = L["RogueAssassinationThresholdCrimsonTempestTooltip"]
-	f:SetChecked(spec.thresholds.crimsonTempest.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonTempest.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.crimsonTempest.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.crimsonTempest.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1725,9 +1731,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdEnvenom"])
 	f.tooltip = L["RogueAssassinationThresholdEnvenomTooltip"]
-	f:SetChecked(spec.thresholds.envenom.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.envenom.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.envenom.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.envenom.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1736,9 +1742,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdKidneyShot"])
 	f.tooltip = L["RogueAssassinationThresholdKidneyShotTooltip"]
-	f:SetChecked(spec.thresholds.kidneyShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.kidneyShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1747,9 +1753,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSliceAndDice"])
 	f.tooltip = L["RogueAssassinationThresholdSliceAndDiceTooltip"]
-	f:SetChecked(spec.thresholds.sliceAndDice.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sliceAndDice.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1758,9 +1764,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdRupture"])
 	f.tooltip = L["RogueAssassinationThresholdRuptureTooltip"]
-	f:SetChecked(spec.thresholds.rupture.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.rupture.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.rupture.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.rupture.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25		
@@ -1772,9 +1778,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonVial"])
 	f.tooltip = L["RogueAssassinationThresholdCrimsonVialTooltip"]
-	f:SetChecked(spec.thresholds.crimsonVial.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.crimsonVial.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1783,9 +1789,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDistract"])
 	f.tooltip = L["RogueAssassinationThresholdDistractTooltip"]
-	f:SetChecked(spec.thresholds.distract.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.distract.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1794,9 +1800,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdFeint"])
 	f.tooltip = L["RogueAssassinationThresholdFeintTooltip"]
-	f:SetChecked(spec.thresholds.feint.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.feint.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1805,9 +1811,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSap"])
 	f.tooltip = L["RogueAssassinationThresholdSapTooltip"]
-	f:SetChecked(spec.thresholds.sap.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sap.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1819,9 +1825,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDeathFromAbove"])
 	f.tooltip = L["RogueAssassinationThresholdDeathFromAboveTooltip"]
-	f:SetChecked(spec.thresholds.deathFromAbove.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.deathFromAbove.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.deathFromAbove.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.deathFromAbove.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1830,9 +1836,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDismantle"])
 	f.tooltip = L["RogueAssassinationThresholdDismantleTooltip"]
-	f:SetChecked(spec.thresholds.dismantle.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.dismantle.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.dismantle.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.dismantle.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30
@@ -2448,9 +2454,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdAmbush"])
 	f.tooltip = L["RogueOutlawThresholdAmbushTooltip"]
-	f:SetChecked(spec.thresholds.ambush.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.ambush.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.ambush.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ambush.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2459,9 +2465,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdCheapShot"])
 	f.tooltip = L["RogueOutlawThresholdCheapShotTooltip"]
-	f:SetChecked(spec.thresholds.cheapShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cheapShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cheapShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cheapShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2470,9 +2476,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdGhostlyStrike"])
 	f.tooltip = L["RogueOutlawThresholdGhostlyStrikeTooltip"]
-	f:SetChecked(spec.thresholds.ghostlyStrike.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.ghostlyStrike.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.ghostlyStrike.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ghostlyStrike.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2481,9 +2487,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdGouge"])
 	f.tooltip = L["RogueOutlawThresholdGougeTooltip"]
-	f:SetChecked(spec.thresholds.gouge.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.gouge.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.gouge.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.gouge.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2492,9 +2498,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdPistolShot"])
 	f.tooltip = L["RogueOutlawThresholdPistolShotTooltip"]
-	f:SetChecked(spec.thresholds.pistolShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.pistolShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.pistolShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.pistolShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2503,9 +2509,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdShiv"])
 	f.tooltip = L["RogueOutlawThresholdShivTooltip"]
-	f:SetChecked(spec.thresholds.shiv.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shiv.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shiv.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shiv.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2514,9 +2520,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSinisterStrike"])
 	f.tooltip = L["RogueOutlawThresholdSinisterStrikeTooltip"]
-	f:SetChecked(spec.thresholds.sinisterStrike.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.sinisterStrike.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sinisterStrike.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.sinisterStrike.enabled = self:GetChecked()
 	end)
 
 
@@ -2529,9 +2535,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdBetweenTheEyes"])
 	f.tooltip = L["RogueOutlawThresholdBetweenTheEyesTooltip"]
-	f:SetChecked(spec.thresholds.betweenTheEyes.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.betweenTheEyes.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.betweenTheEyes.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.betweenTheEyes.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2540,10 +2546,10 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDispatch"])
 	f.tooltip = L["RogueOutlawThresholdDispatchTooltip"]
-	f:SetChecked(spec.thresholds.dispatch.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.dispatch.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.dispatch.enabled = self:GetChecked()
-		spec.thresholds.coupDeGrace.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.dispatch.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.coupDeGrace.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2552,9 +2558,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdKidneyShot"])
 	f.tooltip = L["RogueOutlawThresholdKidneyShotTooltip"]
-	f:SetChecked(spec.thresholds.kidneyShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.kidneyShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2563,9 +2569,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdKillingSpree"])
 	f.tooltip = L["RogueOutlawThresholdKillingSpreeTooltip"]
-	f:SetChecked(spec.thresholds.killingSpree.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.killingSpree.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.killingSpree.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.killingSpree.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2574,9 +2580,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSliceAndDice"])
 	f.tooltip = L["RogueOutlawThresholdSliceAndDiceTooltip"]
-	f:SetChecked(spec.thresholds.sliceAndDice.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sliceAndDice.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25		
@@ -2588,9 +2594,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdBladeFlurry"])
 	f.tooltip = L["RogueOutlawThresholdBladeFlurryTooltip"]
-	f:SetChecked(spec.thresholds.bladeFlurry.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.bladeFlurry.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.bladeFlurry.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.bladeFlurry.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2599,9 +2605,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdCrimsonVial"])
 	f.tooltip = L["RogueOutlawThresholdCrimsonVialTooltip"]
-	f:SetChecked(spec.thresholds.crimsonVial.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.crimsonVial.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2610,9 +2616,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDistract"])
 	f.tooltip = L["RogueOutlawThresholdDistractTooltip"]
-	f:SetChecked(spec.thresholds.distract.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.distract.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2621,9 +2627,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdFeint"])
 	f.tooltip = L["RogueOutlawThresholdFeintTooltip"]
-	f:SetChecked(spec.thresholds.feint.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.feint.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2632,9 +2638,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdRollTheBones"])
 	f.tooltip = L["RogueOutlawThresholdRollTheBonesTooltip"]
-	f:SetChecked(spec.thresholds.rollTheBones.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.rollTheBones.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.rollTheBones.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.rollTheBones.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2643,9 +2649,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSap"])
 	f.tooltip = L["RogueOutlawThresholdSapTooltip"]
-	f:SetChecked(spec.thresholds.sap.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sap.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 	controls.labels.pvpThreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
@@ -2656,9 +2662,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDeathFromAbove"])
 	f.tooltip = L["RogueOutlawThresholdDeathFromAboveTooltip"]
-	f:SetChecked(spec.thresholds.deathFromAbove.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.deathFromAbove.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.deathFromAbove.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.deathFromAbove.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2667,9 +2673,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDismantle"])
 	f.tooltip = L["RogueAssassinationThresholdDismantleTooltip"]
-	f:SetChecked(spec.thresholds.dismantle.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.dismantle.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.dismantle.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.dismantle.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30
@@ -3275,10 +3281,10 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdBackstab"])
 	f.tooltip = L["RogueSubtletyThresholdBackstabTooltip"]
-	f:SetChecked(spec.thresholds.backstab.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.backstab.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.backstab.enabled = self:GetChecked()
-		spec.thresholds.gloomblade.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.backstab.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.gloomblade.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3287,9 +3293,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdCheapShot"])
 	f.tooltip = L["RogueSubtletyThresholdCheapShotTooltip"]
-	f:SetChecked(spec.thresholds.cheapShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cheapShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cheapShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cheapShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3298,9 +3304,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdGoremawsBite"])
 	f.tooltip = L["RogueSubtletyThresholdGoremawsBiteTooltip"]
-	f:SetChecked(spec.thresholds.goremawsBite.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.goremawsBite.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.goremawsBite.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.goremawsBite.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3309,9 +3315,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdGouge"])
 	f.tooltip = L["RogueSubtletyThresholdGougeTooltip"]
-	f:SetChecked(spec.thresholds.gouge.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.gouge.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.gouge.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.gouge.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3320,9 +3326,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShadowStrike"])
 	f.tooltip = L["RogueSubtletyThresholdShadowStrikeTooltip"]
-	f:SetChecked(spec.thresholds.shadowstrike.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shadowstrike.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shadowstrike.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shadowstrike.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3331,9 +3337,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShiv"])
 	f.tooltip = L["RogueSubtletyThresholdShivTooltip"]
-	f:SetChecked(spec.thresholds.shiv.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shiv.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shiv.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shiv.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3342,9 +3348,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShurikenStorm"])
 	f.tooltip = L["RogueSubtletyThresholdShurikenStormTooltip"]
-	f:SetChecked(spec.thresholds.shurikenStorm.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shurikenStorm.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shurikenStorm.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shurikenStorm.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3353,9 +3359,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShurikenTornado"])
 	f.tooltip = L["RogueSubtletyThresholdShurikenTornadoTooltip"]
-	f:SetChecked(spec.thresholds.shurikenTornado.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shurikenTornado.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shurikenTornado.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shurikenTornado.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3364,9 +3370,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShurikenToss"])
 	f.tooltip = L["RogueSubtletyThresholdShurikenTossTooltip"]
-	f:SetChecked(spec.thresholds.shurikenToss.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shurikenToss.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shurikenToss.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shurikenToss.enabled = self:GetChecked()
 	end)
 
 
@@ -3379,9 +3385,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Black Powder")
 	f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Black Powder. If you do not have any combo points, will be colored as 'unusable'."
-	f:SetChecked(spec.thresholds.blackPowder.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.blackPowder.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.blackPowder.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.blackPowder.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3390,10 +3396,10 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Eviscerate")
 	f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Eviscerate. If you do not have any combo points, will be colored as 'unusable'."
-	f:SetChecked(spec.thresholds.eviscerate.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.eviscerate.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.eviscerate.enabled = self:GetChecked()
-		spec.thresholds.coupDeGrace.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.eviscerate.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.coupDeGrace.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3402,9 +3408,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdKidneyShot"])
 	f.tooltip = L["RogueSubtletyThresholdKidneyShotTooltip"]
-	f:SetChecked(spec.thresholds.kidneyShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.kidneyShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3413,9 +3419,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSliceAndDice"])
 	f.tooltip = L["RogueSubtletyThresholdSliceAndDiceTooltip"]
-	f:SetChecked(spec.thresholds.sliceAndDice.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sliceAndDice.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3424,9 +3430,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdRupture"])
 	f.tooltip = L["RogueSubtletyThresholdRuptureTooltip"]
-	f:SetChecked(spec.thresholds.rupture.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.rupture.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.rupture.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.rupture.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3435,9 +3441,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSecretTechnique"])
 	f.tooltip = L["RogueSubtletyThresholdSecretTechniqueTooltip"]
-	f:SetChecked(spec.thresholds.secretTechnique.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.secretTechnique.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.secretTechnique.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.secretTechnique.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3449,9 +3455,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdCrimsonVial"])
 	f.tooltip = L["RogueSubtletyThresholdCrimsonVialTooltip"]
-	f:SetChecked(spec.thresholds.crimsonVial.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.crimsonVial.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3460,9 +3466,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdDistract"])
 	f.tooltip = L["RogueSubtletyThresholdDistractTooltip"]
-	f:SetChecked(spec.thresholds.distract.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.distract.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3471,9 +3477,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdFeint"])
 	f.tooltip = L["RogueSubtletyThresholdFeintTooltip"]
-	f:SetChecked(spec.thresholds.feint.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.feint.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3482,9 +3488,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSap"])
 	f.tooltip = L["RogueSubtletyThresholdSapTooltip"]
-	f:SetChecked(spec.thresholds.sap.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.sap.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3496,9 +3502,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdDeathFromAbove"])
 	f.tooltip = L["RogueSubtletyThresholdDeathFromAboveTooltip"]
-	f:SetChecked(spec.thresholds.deathFromAbove.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.deathFromAbove.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.deathFromAbove.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.deathFromAbove.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3507,9 +3513,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdDismantle"])
 	f.tooltip = L["RogueSubtletyThresholdDismantleTooltip"]
-	f:SetChecked(spec.thresholds.dismantle.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.dismantle.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.dismantle.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.dismantle.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

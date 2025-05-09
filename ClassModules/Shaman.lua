@@ -1678,7 +1678,7 @@ local function UpdateResourceBar()
 						if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
 							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
 							resourceAmount = castingBarValue + potionMana
-							if specSettings.thresholds[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
+							if specSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
 							else
 								showThreshold = false
 							end

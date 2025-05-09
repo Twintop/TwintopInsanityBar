@@ -337,24 +337,6 @@ local function DevastationLoadDefaultSettings(includeBarText)
 			secondary = 2,
 			resource = 0
 		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-		},
 		generation = {
 			mode="gcd",
 			gcds=1,
@@ -685,32 +667,34 @@ local function PreservationLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			algariManaPotionRank1 = {
-				enabled = false,
-			},
-			algariManaPotionRank2 = {
-				enabled = false,
-			},
-			algariManaPotionRank3 = {
-				enabled = true,
-			},
-			cavedwellersDelightRank1 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank2 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank3 = {
-				enabled = true,
-			},
-			slumberingSoulSerumRank1 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank2 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank3 = {
-				enabled = true,
+			thresholdDictionary = {
+				algariManaPotionRank1 = {
+					enabled = false,
+				},
+				algariManaPotionRank2 = {
+					enabled = false,
+				},
+				algariManaPotionRank3 = {
+					enabled = true,
+				},
+				cavedwellersDelightRank1 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank2 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank3 = {
+					enabled = true,
+				},
+				slumberingSoulSerumRank1 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank2 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank3 = {
+					enabled = true,
+				},
 			},
 			potionCooldown = {
 				enabled=true,
@@ -1039,24 +1023,6 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 		precision = {
 			secondary = 2,
 			resource = 0
-		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
 		},
 		displayBar = {
 			alwaysShow=false,

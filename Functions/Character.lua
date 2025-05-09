@@ -456,9 +456,11 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	end
 
 	specCache.settings.colors = {
+---@diagnostic disable-next-line: missing-fields
 		text = {},
 		bar = spec.colors.bar,
-		threshold = spec.colors.threshold,
+---@diagnostic disable-next-line: missing-fields
+		threshold = {},
 		comboPoints = spec.colors.comboPoints
 	}
 
@@ -479,21 +481,33 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	end
 
 	if s.dotColors then
+		specCache.settings.colors.text.dots.up = spec.colors.text.dots.up
+		specCache.settings.colors.text.dots.down = spec.colors.text.dots.down
+		specCache.settings.colors.text.dots.pandemic = spec.colors.text.dots.pandemic
+		specCache.settings.colors.text.dots.options = spec.colors.text.dots.options
 		if className == "druid" and specName == "feral" then -- Kitty is a special snowflake
-			specCache.settings.colors.text.dots = {}
-			-- Use spec values
+			-- Use spec values			
 			specCache.settings.colors.text.dots.same = spec.colors.text.dots.same
 			specCache.settings.colors.text.dots.worse = spec.colors.text.dots.worse
 			specCache.settings.colors.text.dots.better = spec.colors.text.dots.better
-
-			-- Use available global values
-			specCache.settings.colors.text.dots.options = core.colors.text.dots.options
-			specCache.settings.colors.text.dots.down = core.colors.text.dots.down
-		else
-			specCache.settings.colors.text.dots = core.colors.text.dots
 		end
 	else
 		specCache.settings.colors.text.dots = spec.colors.text.dots
+	end
+
+	specCache.settings.colors.threshold = spec.colors.threshold
+	if s.thresholdColors then
+		specCache.settings.colors.threshold.over = core.colors.threshold.over
+		specCache.settings.colors.threshold.under = core.colors.threshold.under
+		specCache.settings.colors.threshold.unusable = core.colors.threshold.unusable
+		specCache.settings.colors.threshold.special = core.colors.threshold.special
+		specCache.settings.colors.threshold.outOfRange = core.colors.threshold.outOfRange
+	end
+	
+	specCache.settings.thresholds = spec.thresholds
+	if s.thresholds then
+		specCache.settings.thresholds.properties = core.settings.thresholds.properties
+		specCache.settings.thresholds.icons = core.settings.thresholds.icons
 	end
 
 	if s.precision then
@@ -510,7 +524,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 
 	--NYI	
 	specCache.settings.displayBar = spec.displayBar
-	specCache.settings.thresholds = spec.thresholds
 	specCache.settings.audio = spec.audio
 end
 

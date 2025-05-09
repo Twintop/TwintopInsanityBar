@@ -199,18 +199,20 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			earthShock = {
-				enabled = true,
-			},
-			earthquake = {
-				enabled = true,
-			},
-			earthquakeTargeted = {
-				enabled = true,
-			},
-			elementalBlast = {
-				enabled = true,
-			},
+			thresholdDictionary = {
+				earthShock = {
+					enabled = true,
+				},
+				earthquake = {
+					enabled = true,
+				},
+				earthquakeTargeted = {
+					enabled = true,
+				},
+				elementalBlast = {
+					enabled = true,
+				},
+			}
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -517,24 +519,6 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 		precision = {
 			secondary = 2,
 			resource = 0
-		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			}
 		},
 		generation = {
 			mode="gcd",
@@ -855,32 +839,34 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			algariManaPotionRank1 = {
-				enabled = false,
-			},
-			algariManaPotionRank2 = {
-				enabled = false,
-			},
-			algariManaPotionRank3 = {
-				enabled = true,
-			},
-			cavedwellersDelightRank1 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank2 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank3 = {
-				enabled = true,
-			},
-			slumberingSoulSerumRank1 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank2 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank3 = {
-				enabled = true,
+			thresholdDictionary = {
+				algariManaPotionRank1 = {
+					enabled = false,
+				},
+				algariManaPotionRank2 = {
+					enabled = false,
+				},
+				algariManaPotionRank3 = {
+					enabled = true,
+				},
+				cavedwellersDelightRank1 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank2 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank3 = {
+					enabled = true,
+				},
+				slumberingSoulSerumRank1 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank2 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank3 = {
+					enabled = true,
+				},
 			},
 			potionCooldown = {
 				enabled=true,
@@ -1283,10 +1269,10 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalThresholdEarthShock"])
 	f.tooltip = L["ShamanElementalThresholdEarthShockTooltip"]
-	f:SetChecked(spec.thresholds.earthShock.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.earthShock.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.earthShock.enabled = self:GetChecked()
-		spec.thresholds.elementalBlast.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.earthShock.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.elementalBlast.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1295,10 +1281,10 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalThresholdEarthquake"])
 	f.tooltip = L["ShamanElementalThresholdEarthquakeTooltip"]
-	f:SetChecked(spec.thresholds.earthquake.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.earthquake.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.earthquake.enabled = self:GetChecked()
-		spec.thresholds.earthquakeTargeted.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.earthquake.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.earthquakeTargeted.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

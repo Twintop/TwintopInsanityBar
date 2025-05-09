@@ -8,13 +8,14 @@ local specGlobalDefaults = {
 	--specEnable = false,
 	bar = false,
 	comboPoints = false,
+	thresholds = false,
 	--displayBar = false,
 	displayText = false,
 	textColors = false,
     dotColors = false,
+	thresholdColors = false,
 	precision = false,
-	textures = false,
-	--thresholds = false
+	textures = false
 }
 
 function TRB.Functions.Settings:LoadDefaultSettings()
@@ -612,7 +613,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.shaman ~= nil and
 		TwintopInsanityBarSettings.shaman.elemental ~= nil and
 		TwintopInsanityBarSettings.shaman.elemental.thresholds ~= nil and
-		TwintopInsanityBarSettings.shaman.elemental.thresholds.elementalBlast == nil then
+		TwintopInsanityBarSettings.shaman.elemental.thresholds.elementalBlast == nil and
+		TwintopInsanityBarSettings.shaman.elemental.thresholds.thresholdDictionary == nil then
 
 		TwintopInsanityBarSettings.shaman.elemental.thresholds.elementalBlast = {
 			enabled = TwintopInsanityBarSettings.shaman.elemental.thresholds.earthShock.enabled
@@ -1214,7 +1216,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.shaman ~= nil and
 		TwintopInsanityBarSettings.shaman.elemental ~= nil and
 		TwintopInsanityBarSettings.shaman.elemental.thresholds ~= nil and
-		TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquakeTargeted == nil then
+		TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquakeTargeted == nil and
+		TwintopInsanityBarSettings.shaman.elemental.thresholds.thresholdDictionary == nil then
 
 		TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquakeTargeted = {
 			enabled = TwintopInsanityBarSettings.shaman.elemental.thresholds.earthquake.enabled
@@ -1226,7 +1229,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 	TwintopInsanityBarSettings.priest ~= nil and
 	TwintopInsanityBarSettings.priest.discipline ~= nil and
 	TwintopInsanityBarSettings.priest.discipline.thresholds ~= nil and
-	TwintopInsanityBarSettings.priest.discipline.thresholds.mindbender == nil then
+	TwintopInsanityBarSettings.priest.discipline.thresholds.mindbender == nil and
+	TwintopInsanityBarSettings.priest.discipline.thresholds.thresholdDictionary == nil then
 		TwintopInsanityBarSettings.priest.discipline.thresholds.mindbender = {
 			enabled = TwintopInsanityBarSettings.priest.discipline.thresholds.shadowfiend
 		}
@@ -1237,7 +1241,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.priest ~= nil and
 		TwintopInsanityBarSettings.priest.discipline ~= nil and
 		TwintopInsanityBarSettings.priest.discipline.thresholds ~= nil and
-		TwintopInsanityBarSettings.priest.discipline.thresholds.voidwraith == nil then
+		TwintopInsanityBarSettings.priest.discipline.thresholds.voidwraith == nil and
+		TwintopInsanityBarSettings.priest.discipline.thresholds.thresholdDictionary == nil then
 
 		TwintopInsanityBarSettings.priest.discipline.thresholds.voidwraith = {
 			enabled = TwintopInsanityBarSettings.priest.discipline.thresholds.shadowfiend
@@ -1249,7 +1254,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.druid ~= nil and
 		TwintopInsanityBarSettings.druid.feral ~= nil and
 		TwintopInsanityBarSettings.druid.feral.thresholds ~= nil and
-		TwintopInsanityBarSettings.druid.feral.thresholds.ravage == nil then
+		TwintopInsanityBarSettings.druid.feral.thresholds.ravage == nil and
+		TwintopInsanityBarSettings.druid.feral.thresholds.thresholdDictionary == nil then
 
 		TwintopInsanityBarSettings.druid.feral.thresholds.ravage = {
 			enabled = TwintopInsanityBarSettings.druid.feral.thresholds.ferociousBite
@@ -1267,7 +1273,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.rogue ~= nil and
 		TwintopInsanityBarSettings.rogue.outlaw ~= nil and
 		TwintopInsanityBarSettings.rogue.outlaw.thresholds ~= nil and
-		TwintopInsanityBarSettings.rogue.outlaw.thresholds.coupDeGrace == nil then
+		TwintopInsanityBarSettings.rogue.outlaw.thresholds.coupDeGrace == nil and
+		TwintopInsanityBarSettings.rogue.outlaw.thresholds.thresholdDictionary == nil then
 
 		TwintopInsanityBarSettings.rogue.outlaw.thresholds.coupDeGrace = {
 			enabled = TwintopInsanityBarSettings.rogue.outlaw.thresholds.dispatch
@@ -1279,7 +1286,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.rogue ~= nil and
 		TwintopInsanityBarSettings.rogue.subtlety ~= nil and
 		TwintopInsanityBarSettings.rogue.subtlety.thresholds ~= nil and
-		TwintopInsanityBarSettings.rogue.subtlety.thresholds.coupDeGrace == nil then
+		TwintopInsanityBarSettings.rogue.subtlety.thresholds.coupDeGrace == nil and
+		TwintopInsanityBarSettings.rogue.subtlety.thresholds.thresholdDictionary == nil then
 
 		TwintopInsanityBarSettings.rogue.subtlety.thresholds.coupDeGrace = {
 			enabled = TwintopInsanityBarSettings.rogue.subtlety.thresholds.eviscerate
@@ -1564,6 +1572,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 								end
 							end
 
+							-- Move out of range enable/disable to be under colors
 							if specValue.thresholds ~= nil and
 							specValue.thresholds.properties ~= nil and
 							specValue.thresholds.properties.outOfRange ~= nil and
@@ -1572,6 +1581,39 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specValue.colors.threshold.outOfRange ~= nil then
 								specValue.colors.threshold.outOfRange.enabled = specValue.thresholds.properties.outOfRange
 								specValue.thresholds.properties.outOfRange = nil
+							end
+
+							if specValue.thresholds ~= nil and
+							specValue.thresholds.thresholdDictionary == nil then
+								specValue.thresholds.thresholdDictionary = {}
+								for thresholdName, value in pairs(specValue.thresholds) do
+									if value ~= nil and type(value) == "table" then
+										if thresholdName ~= "properties" and thresholdName ~= "icons" and thresholdName ~= "potionCooldown" and thresholdName ~= "specProperties" and thresholdName ~= "thresholdDictionary" then
+											specValue.thresholds.thresholdDictionary[thresholdName] = value
+											specValue.thresholds[thresholdName] = nil
+										end
+									else
+										specValue.thresholds.specProperties = specValue.thresholds.specProperties or {}
+										specValue.thresholds.specProperties[thresholdName] = value
+										specValue.thresholds[thresholdName] = nil
+									end
+								end
+							end
+
+							if spec == "shadow" and
+							specValue.threshold ~= nil and
+							specValue.threshold.devouringPlagueThresholdOnlyOverShow ~= nil then
+								spec.thresholds.specProperties = spec.thresholds.specProperties or {}
+								spec.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow = spec.thresholds.devouringPlagueThresholdOnlyOverShow
+								spec.thresholds.devouringPlagueThresholdOnlyOverShow = nil
+							end
+							
+							if spec == "balance" and
+							specValue.threshold ~= nil and
+							specValue.threshold.starsurgeThresholdOnlyOverShow ~= nil then
+								spec.thresholds.specProperties = spec.thresholds.specProperties or {}
+								spec.thresholds.specProperties.starsurgeThresholdOnlyOverShow = spec.thresholds.starsurgeThresholdOnlyOverShow
+								spec.thresholds.starsurgeThresholdOnlyOverShow = nil
 							end
 						end
 					end

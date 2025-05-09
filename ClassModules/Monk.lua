@@ -1156,14 +1156,14 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if talents:IsTalentActive(spells.manaTeaCharges) and snapshots[spells.manaTeaRegen.id].buff.isActive and specSettings.thresholds.manaTeaCharges.enabled and specSettings.colors.bar.showPassive then
+				if talents:IsTalentActive(spells.manaTeaCharges) and snapshots[spells.manaTeaRegen.id].buff.isActive and specSettings.thresholds.thresholdDictionary.manaTeaCharges.enabled and specSettings.colors.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.manaTeaCharges.id] --[[@as TRB.Classes.Monk.ManaTea]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.manaTeaCharges.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 				
 				thresholdCount = thresholdCount + 1
-				if TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.colors.bar.showPassive then
+				if TRB.Data.character.raceId == 5 and specSettings.thresholds.thresholdDictionary.cannibalize.enabled and specSettings.colors.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
@@ -1234,7 +1234,7 @@ local function UpdateResourceBar()
 						if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
 							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
 							resourceAmount = castingBarValue + potionMana
-							if specSettings.thresholds[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
+							if specSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
 							else
 								showThreshold = false
 							end
@@ -1245,7 +1245,7 @@ local function UpdateResourceBar()
 						snapshot = snapshots[spells.manaTeaCharges.id] --[[@as TRB.Classes.Monk.ManaTea]]
 						local manaTeaTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
 						resourceAmount = castingBarValue + manaTeaTotal
-						if not snapshots[spells.manaTeaRegen.id].buff.isActive and snapshot.buff.isActive and specSettings.thresholds.manaTeaCharges.enabled and resourceAmount < TRB.Data.character.maxResource then
+						if not snapshots[spells.manaTeaRegen.id].buff.isActive and snapshot.buff.isActive and specSettings.thresholds.thresholdDictionary.manaTeaCharges.enabled and resourceAmount < TRB.Data.character.maxResource then
 						else
 							showThreshold = false
 						end
@@ -1253,7 +1253,7 @@ local function UpdateResourceBar()
 						snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 						local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
 						resourceAmount = castingBarValue + cannibalizeTotal
-						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
+						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specSettings.thresholds.thresholdDictionary.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.thresholdDictionary.cannibalize.cooldown) then
 							if snapshot.cooldown.onCooldown then
 								thresholdColor = specSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable

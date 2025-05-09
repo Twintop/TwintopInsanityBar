@@ -196,38 +196,40 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			revivePet = {
-				enabled = false,
-			},
-			wingClip = {
-				enabled = false,
-			},
-			killCommand = {
-				enabled = true,
-			},
-			killShot = {
-				enabled = true,
-			},
-			scareBeast = {
-				enabled = false,
-			},
-			explosiveShot = {
-				enabled = true,
-			},
-			barrage = {
-				enabled = true,
-			},
-			cobraShot = {
-				enabled = true,
-			},
-			multiShot = {
-				enabled = true,
-			},
-			blackArrow = {
-				enabled = true,
-			},
-			direBeastHawk = {
-				enabled = true,
+			thresholdDictionary = {
+				revivePet = {
+					enabled = false,
+				},
+				wingClip = {
+					enabled = false,
+				},
+				killCommand = {
+					enabled = true,
+				},
+				killShot = {
+					enabled = true,
+				},
+				scareBeast = {
+					enabled = false,
+				},
+				explosiveShot = {
+					enabled = true,
+				},
+				barrage = {
+					enabled = true,
+				},
+				cobraShot = {
+					enabled = true,
+				},
+				multiShot = {
+					enabled = true,
+				},
+				blackArrow = {
+					enabled = true,
+				},
+				direBeastHawk = {
+					enabled = true,
+				}
 			}
 		},
 		generation = {
@@ -566,39 +568,41 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			arcaneShot = {
-				enabled = true,
-			},
-			revivePet = {
-				enabled = false,
-			},
-			wingClip = {
-				enabled = false,
-			},
-			killCommand = {
-				enabled = true,
-			},
-			killShot = {
-				enabled = true,
-			},
-			scareBeast = {
-				enabled = false,
-			},
-			explosiveShot = {
-				enabled = true,
-			},
-			aimedShot = {
-				enabled = true,
-			},
-			multiShot = {
-				enabled = true,
-			},
-			burstingShot = {
-				enabled = true,
-			},
-			blackArrow = {
-				enabled = true,
-			},
+			thresholdDictionary = {
+				arcaneShot = {
+					enabled = true,
+				},
+				revivePet = {
+					enabled = false,
+				},
+				wingClip = {
+					enabled = false,
+				},
+				killCommand = {
+					enabled = true,
+				},
+				killShot = {
+					enabled = true,
+				},
+				scareBeast = {
+					enabled = false,
+				},
+				explosiveShot = {
+					enabled = true,
+				},
+				aimedShot = {
+					enabled = true,
+				},
+				multiShot = {
+					enabled = true,
+				},
+				burstingShot = {
+					enabled = true,
+				},
+				blackArrow = {
+					enabled = true,
+				},
+			}
 		},
 		generation = {
 			mode="gcd",
@@ -955,38 +959,40 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			arcaneShot = {
-				enabled = false,
-			},
-			revivePet = {
-				enabled = false,
-			},
-			wingClip = {
-				enabled = false,
-			},
-			killShot = {
-				enabled = true,
-			},
-			scareBeast = {
-				enabled = false,
-			},
-			explosiveShot = {
-				enabled = true,
-			},
-			barrage = {
-				enabled = true,
-			},
-			raptorStrike = {
-				enabled = true,
-			},
-			butchery = {
-				enabled = true,
-			},
-			mongooseBite = {
-				enabled = true,
-			},
-			wildfireBomb = {
-				enabled = true,
+			thresholdDictionary = {
+				arcaneShot = {
+					enabled = false,
+				},
+				revivePet = {
+					enabled = false,
+				},
+				wingClip = {
+					enabled = false,
+				},
+				killShot = {
+					enabled = true,
+				},
+				scareBeast = {
+					enabled = false,
+				},
+				explosiveShot = {
+					enabled = true,
+				},
+				barrage = {
+					enabled = true,
+				},
+				raptorStrike = {
+					enabled = true,
+				},
+				butchery = {
+					enabled = true,
+				},
+				mongooseBite = {
+					enabled = true,
+				},
+				wildfireBomb = {
+					enabled = true,
+				}
 			}
 		},
 		generation = {
@@ -1427,9 +1433,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxBarrage"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxBarrageTooltip"]
-	f:SetChecked(spec.thresholds.barrage.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.barrage.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.barrage.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.barrage.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1438,9 +1444,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxBlackArrow"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxBlackArrowTooltip"]
-	f:SetChecked(spec.thresholds.blackArrow.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.blackArrow.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.blackArrow.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.blackArrow.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1449,9 +1455,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxCobraShot"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxCobraShotTooltip"]
-	f:SetChecked(spec.thresholds.cobraShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cobraShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cobraShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cobraShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1460,9 +1466,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxExplosiveShot"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxExplosiveShotTooltip"]
-	f:SetChecked(spec.thresholds.explosiveShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.explosiveShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.explosiveShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.explosiveShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1471,9 +1477,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxKillCommand"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxKillCommandTooltip"]
-	f:SetChecked(spec.thresholds.killCommand.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.killCommand.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.killCommand.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.killCommand.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1482,9 +1488,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxKillShot"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxKillShotTooltip"]
-	f:SetChecked(spec.thresholds.killShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.killShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.killShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.killShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1493,9 +1499,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxMultiShot"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxMultiShotTooltip"]
-	f:SetChecked(spec.thresholds.multiShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.multiShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.multiShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.multiShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1507,9 +1513,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
 	f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
-	f:SetChecked(spec.thresholds.revivePet.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.revivePet.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.revivePet.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.revivePet.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1518,9 +1524,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
 	f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
-	f:SetChecked(spec.thresholds.scareBeast.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.scareBeast.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.scareBeast.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.scareBeast.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1529,9 +1535,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
 	f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
-	f:SetChecked(spec.thresholds.wingClip.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.wingClip.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.wingClip.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.wingClip.enabled = self:GetChecked()
 	end)
 	
 	yCoord = yCoord - 25
@@ -1543,9 +1549,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxDireBeastHawk"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxDireBeastHawkTooltip"]
-	f:SetChecked(spec.thresholds.direBeastHawk.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.direBeastHawk.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.direBeastHawk.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.direBeastHawk.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 40
@@ -2128,9 +2134,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxAimedShot"])
 	f.tooltip = L["HunterMarksmanshipThresholdCheckboxAimedShotTooltip"]
-	f:SetChecked(spec.thresholds.aimedShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.aimedShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.aimedShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.aimedShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2139,9 +2145,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShot"])
 	f.tooltip = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShotTooltip"]
-	f:SetChecked(spec.thresholds.arcaneShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.arcaneShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.arcaneShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.arcaneShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2150,9 +2156,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBlackArrow"])
 	f.tooltip = L["HunterMarksmanshipThresholdCheckboxBlackArrowTooltip"]
-	f:SetChecked(spec.thresholds.blackArrow.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.blackArrow.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.blackArrow.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.blackArrow.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2161,9 +2167,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBurstingShot"])
 	f.tooltip = L["HunterMarksmanshipThresholdCheckboxBurstingShotTooltip"]
-	f:SetChecked(spec.thresholds.burstingShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.burstingShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.burstingShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.burstingShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2172,9 +2178,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxExplosiveShot"])
 	f.tooltip = L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"]
-	f:SetChecked(spec.thresholds.explosiveShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.explosiveShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.explosiveShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.explosiveShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2183,9 +2189,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillCommand"])
 	f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillCommandTooltip"]
-	f:SetChecked(spec.thresholds.killCommand.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.killCommand.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.killCommand.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.killCommand.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2194,9 +2200,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillShot"])
 	f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillShotTooltip"]
-	f:SetChecked(spec.thresholds.killShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.killShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.killShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.killShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2205,9 +2211,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxMultiShot"])
 	f.tooltip = L["HunterMarksmanshipThresholdCheckboxMultiShotTooltip"]
-	f:SetChecked(spec.thresholds.multiShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.multiShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.multiShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.multiShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2219,9 +2225,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
 	f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
-	f:SetChecked(spec.thresholds.revivePet.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.revivePet.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.revivePet.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.revivePet.enabled = self:GetChecked()
 	end)
 	
 	yCoord = yCoord - 25
@@ -2230,9 +2236,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
 	f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
-	f:SetChecked(spec.thresholds.scareBeast.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.scareBeast.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.scareBeast.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.scareBeast.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2241,9 +2247,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
 	f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
-	f:SetChecked(spec.thresholds.wingClip.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.wingClip.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.wingClip.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.wingClip.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30
@@ -2971,9 +2977,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxArcaneShot"])
 	f.tooltip = L["HunterSurvivalThresholdCheckboxArcaneShotTooltip"]
-	f:SetChecked(spec.thresholds.arcaneShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.arcaneShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.arcaneShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.arcaneShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2982,9 +2988,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxBarrage"])
 	f.tooltip = L["HunterSurvivalThresholdCheckboxBarrageTooltip"]
-	f:SetChecked(spec.thresholds.butchery.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.butchery.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.barrage.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.barrage.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2993,9 +2999,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxButchery"])
 	f.tooltip = L["HunterSurvivalThresholdCheckboxButcheryTooltip"]
-	f:SetChecked(spec.thresholds.butchery.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.butchery.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.butchery.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.butchery.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3004,9 +3010,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxExplosiveShot"])
 	f.tooltip = L["HunterSurvivalThresholdCheckboxExplosiveShotTooltip"]
-	f:SetChecked(spec.thresholds.explosiveShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.explosiveShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.explosiveShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.explosiveShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3015,9 +3021,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxKillShot"])
 	f.tooltip = L["HunterSurvivalThresholdCheckboxKillShotTooltip"]
-	f:SetChecked(spec.thresholds.killShot.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.killShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.killShot.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.killShot.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3026,10 +3032,10 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxRaptorStrikeMongooseBite"])
 	f.tooltip = L["HunterSurvivalThresholdCheckboxRaptorStrikeMongooseBiteTooltip"]
-	f:SetChecked(spec.thresholds.raptorStrike.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.raptorStrike.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.raptorStrike.enabled = self:GetChecked()
-		spec.thresholds.mongooseBite.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.raptorStrike.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.mongooseBite.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3038,9 +3044,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdWildfireBombCheckbox"])
 	f.tooltip = L["HunterSurvivalThresholdWildfireBombCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.wildfireBomb.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.wildfireBomb.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.wildfireBomb.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.wildfireBomb.enabled = self:GetChecked()
 	end)
 			
 	yCoord = yCoord - 25
@@ -3052,9 +3058,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
 	f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
-	f:SetChecked(spec.thresholds.revivePet.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.revivePet.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.revivePet.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.revivePet.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3063,9 +3069,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
 	f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
-	f:SetChecked(spec.thresholds.scareBeast.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.scareBeast.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.scareBeast.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.scareBeast.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3074,9 +3080,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
 	f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
-	f:SetChecked(spec.thresholds.wingClip.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.wingClip.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.wingClip.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.wingClip.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

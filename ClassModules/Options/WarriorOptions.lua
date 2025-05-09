@@ -200,44 +200,46 @@ local function ArmsLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			execute = {
-				enabled = true,
-			},
-			executeMinimum = {
-				enabled = true,
-			},
-			executeMaximum = {
-				enabled = true,
-			},
-			hamstring = {
-				enabled = false,
-			},
-			shieldBlock = {
-				enabled = false,
-			},
-			slam = {
-				enabled = true,
-			},
-			whirlwind = {
-				enabled = true,
-			},
-			impendingVictory = {
-				enabled = true,
-			},
-			thunderClap = {
-				enabled = true,
-			},
-			mortalStrike = {
-				enabled = true,
-			},
-			rend = {
-				enabled = true,
-			},
-			cleave = {
-				enabled = true,
-			},
-			ignorePain = {
-				enabled = true,
+			thresholdDictionary = {
+				execute = {
+					enabled = true,
+				},
+				executeMinimum = {
+					enabled = true,
+				},
+				executeMaximum = {
+					enabled = true,
+				},
+				hamstring = {
+					enabled = false,
+				},
+				shieldBlock = {
+					enabled = false,
+				},
+				slam = {
+					enabled = true,
+				},
+				whirlwind = {
+					enabled = true,
+				},
+				impendingVictory = {
+					enabled = true,
+				},
+				thunderClap = {
+					enabled = true,
+				},
+				mortalStrike = {
+					enabled = true,
+				},
+				rend = {
+					enabled = true,
+				},
+				cleave = {
+					enabled = true,
+				},
+				ignorePain = {
+					enabled = true,
+				}
 			}
 		},
 		displayBar = {
@@ -552,33 +554,35 @@ local function FuryLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			execute = {
-				enabled = true,
-			},
-			executeMinimum = {
-				enabled = true,
-			},
-			executeMaximum = {
-				enabled = true,
-			},
-			hamstring = {
-				enabled = false,
-			},
-			shieldBlock = {
-				enabled = false,
-			},
-			slam = {
-				enabled = false,
-			},
-			impendingVictory = {
-				enabled = true,
-			},
-			thunderClap = {
-				enabled = false,
-			},
-			rampage = {
-				enabled = true,
-			},
+			thresholdDictionary = {
+				execute = {
+					enabled = true,
+				},
+				executeMinimum = {
+					enabled = true,
+				},
+				executeMaximum = {
+					enabled = true,
+				},
+				hamstring = {
+					enabled = false,
+				},
+				shieldBlock = {
+					enabled = false,
+				},
+				slam = {
+					enabled = false,
+				},
+				impendingVictory = {
+					enabled = true,
+				},
+				thunderClap = {
+					enabled = false,
+				},
+				rampage = {
+					enabled = true,
+				},
+			}
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -938,10 +942,10 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdWhirlwindCleave"])
 	f.tooltip = L["WarriorArmsThresholdWhirlwindCleaveTooltip"]
-	f:SetChecked(spec.thresholds.cleave.enabled or spec.thresholds.whirlwind.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.cleave.enabled or spec.thresholds.thresholdDictionary.whirlwind.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.cleave.enabled = self:GetChecked()
-		spec.thresholds.whirlwind.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.cleave.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.whirlwind.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -950,9 +954,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecute"])
 	f.tooltip = L["WarriorArmsThresholdExecuteTooltip"]
-	f:SetChecked(spec.thresholds.execute.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.execute.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.execute.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.execute.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -961,9 +965,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecuteMinimum"])
 	f.tooltip = L["WarriorArmsThresholdExecuteMinimumTooltip"]
-	f:SetChecked(spec.thresholds.executeMinimum.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.executeMinimum.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.executeMinimum.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.executeMinimum.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -972,9 +976,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecuteMaximum"])
 	f.tooltip = L["WarriorArmsThresholdExecuteMaximumTooltip"]
-	f:SetChecked(spec.thresholds.executeMaximum.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.executeMaximum.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.executeMaximum.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.executeMaximum.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -983,9 +987,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdHamstring"])
 	f.tooltip = L["WarriorArmsThresholdHamstringTooltip"]
-	f:SetChecked(spec.thresholds.hamstring.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.hamstring.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.hamstring.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.hamstring.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -994,9 +998,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdIgnorePain"])
 	f.tooltip = L["WarriorArmsThresholdIgnorePainTooltip"]
-	f:SetChecked(spec.thresholds.ignorePain.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.ignorePain.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.ignorePain.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.ignorePain.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1005,9 +1009,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdImpendingVictory"])
 	f.tooltip = L["WarriorArmsThresholdImpendingVictoryTooltip"]
-	f:SetChecked(spec.thresholds.impendingVictory.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.impendingVictory.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.impendingVictory.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.impendingVictory.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1016,9 +1020,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdMortalStrike"])
 	f.tooltip = L["WarriorArmsThresholdMortalStrikeTooltip"]
-	f:SetChecked(spec.thresholds.mortalStrike.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.mortalStrike.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.mortalStrike.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.mortalStrike.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1027,9 +1031,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdRend"])
 	f.tooltip = L["WarriorArmsThresholdRendTooltip"]
-	f:SetChecked(spec.thresholds.rend.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.rend.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.rend.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.rend.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1038,9 +1042,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdShieldBlock"])
 	f.tooltip = L["WarriorArmsThresholdShieldBlockTooltip"]
-	f:SetChecked(spec.thresholds.shieldBlock.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shieldBlock.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shieldBlock.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shieldBlock.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1049,9 +1053,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdSlam"])
 	f.tooltip = L["WarriorArmsThresholdSlamTooltip"]
-	f:SetChecked(spec.thresholds.slam.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.slam.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.slam.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.slam.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1060,9 +1064,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdThunderClap"])
 	f.tooltip = L["WarriorArmsThresholdThunderClapTooltip"]
-	f:SetChecked(spec.thresholds.thunderClap.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.thunderClap.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thunderClap.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.thunderClap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 40
@@ -1529,9 +1533,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdExecute"])
 	f.tooltip = L["WarriorFuryThresholdExecuteTooltip"]
-	f:SetChecked(spec.thresholds.execute.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.execute.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.execute.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.execute.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1540,9 +1544,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdExecuteMinimum"])
 	f.tooltip = L["WarriorFuryThresholdExecuteMinimumTooltip"]
-	f:SetChecked(spec.thresholds.executeMinimum.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.executeMinimum.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.executeMinimum.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.executeMinimum.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1551,9 +1555,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdExecuteMaximum"])
 	f.tooltip = L["WarriorFuryThresholdExecuteMaximumTooltip"]
-	f:SetChecked(spec.thresholds.executeMaximum.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.executeMaximum.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.executeMaximum.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.executeMaximum.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1562,9 +1566,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdHamstring"])
 	f.tooltip = L["WarriorFuryThresholdHamstringTooltip"]
-	f:SetChecked(spec.thresholds.hamstring.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.hamstring.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.hamstring.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.hamstring.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1573,9 +1577,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdImpendingVictory"])
 	f.tooltip = L["WarriorFuryThresholdImpendingVictoryTooltip"]
-	f:SetChecked(spec.thresholds.impendingVictory.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.impendingVictory.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.impendingVictory.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.impendingVictory.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1584,9 +1588,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdRampage"])
 	f.tooltip = L["WarriorFuryThresholdRampageTooltip"]
-	f:SetChecked(spec.thresholds.rampage.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.rampage.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.rampage.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.rampage.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1595,9 +1599,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdShieldBlock"])
 	f.tooltip = L["WarriorFuryThresholdShieldBlockTooltip"]
-	f:SetChecked(spec.thresholds.shieldBlock.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.shieldBlock.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.shieldBlock.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shieldBlock.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1606,9 +1610,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdSlam"])
 	f.tooltip = L["WarriorFuryThresholdSlamTooltip"]
-	f:SetChecked(spec.thresholds.slam.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.slam.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.slam.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.slam.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1617,9 +1621,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdThunderClap"])
 	f.tooltip = L["WarriorFuryThresholdThunderClapTooltip"]
-	f:SetChecked(spec.thresholds.thunderClap.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.thunderClap.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thunderClap.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.thunderClap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 40

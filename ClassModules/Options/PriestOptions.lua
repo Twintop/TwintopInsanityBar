@@ -260,48 +260,50 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			algariManaPotionRank1 = {
-				enabled = false,
-			},
-			algariManaPotionRank2 = {
-				enabled = false,
-			},
-			algariManaPotionRank3 = {
-				enabled = true,
-			},
-			cavedwellersDelightRank1 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank2 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank3 = {
-				enabled = true,
-			},
-			slumberingSoulSerumRank1 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank2 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank3 = {
-				enabled = true,
-			},
-			shadowfiend = {
-				enabled = true,
-				cooldown = false
-			},
-			mindbender = {
-				enabled = true,
-				cooldown = false
-			},
-			voidwraith = {
-				enabled = true,
-				cooldown = false
-			},
-			cannibalize = {
-				enabled = false,
-				cooldown = false
+			thresholdDictionary = {
+				algariManaPotionRank1 = {
+					enabled = false,
+				},
+				algariManaPotionRank2 = {
+					enabled = false,
+				},
+				algariManaPotionRank3 = {
+					enabled = true,
+				},
+				cavedwellersDelightRank1 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank2 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank3 = {
+					enabled = true,
+				},
+				slumberingSoulSerumRank1 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank2 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank3 = {
+					enabled = true,
+				},
+				shadowfiend = {
+					enabled = true,
+					cooldown = false
+				},
+				mindbender = {
+					enabled = true,
+					cooldown = false
+				},
+				voidwraith = {
+					enabled = true,
+					cooldown = false
+				},
+				cannibalize = {
+					enabled = false,
+					cooldown = false
+				},
 			},
 			potionCooldown = {
 				enabled=true,
@@ -788,45 +790,47 @@ local function HolyLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			algariManaPotionRank1 = {
-				enabled = false,
-			},
-			algariManaPotionRank2 = {
-				enabled = false,
-			},
-			algariManaPotionRank3 = {
-				enabled = true,
-			},
-			cavedwellersDelightRank1 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank2 = {
-				enabled = false,
-			},
-			cavedwellersDelightRank3 = {
-				enabled = true,
-			},
-			slumberingSoulSerumRank1 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank2 = {
-				enabled = false,
-			},
-			slumberingSoulSerumRank3 = {
-				enabled = true,
-			},
-			shadowfiend = {
-				enabled = true,
-				cooldown = false
-			},
-			symbolOfHope = {
-				enabled = true,
-				cooldown = false,
-				minimumManaPercent = 25
-			},
-			cannibalize = {
-				enabled = false,
-				cooldown = false
+			thresholdDictionary = {
+				algariManaPotionRank1 = {
+					enabled = false,
+				},
+				algariManaPotionRank2 = {
+					enabled = false,
+				},
+				algariManaPotionRank3 = {
+					enabled = true,
+				},
+				cavedwellersDelightRank1 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank2 = {
+					enabled = false,
+				},
+				cavedwellersDelightRank3 = {
+					enabled = true,
+				},
+				slumberingSoulSerumRank1 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank2 = {
+					enabled = false,
+				},
+				slumberingSoulSerumRank3 = {
+					enabled = true,
+				},
+				shadowfiend = {
+					enabled = true,
+					cooldown = false
+				},
+				symbolOfHope = {
+					enabled = true,
+					cooldown = false,
+					minimumManaPercent = 25
+				},
+				cannibalize = {
+					enabled = false,
+					cooldown = false
+				},
 			},
 			potionCooldown = {
 				enabled=true,
@@ -1295,15 +1299,19 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			devouringPlagueThresholdOnlyOverShow = false,
-			devouringPlague = {
-				enabled = true,
+			specProperties = {
+				devouringPlagueThresholdOnlyOverShow = false,
 			},
-			devouringPlague2 = {
-				enabled = true,
-			},
-			devouringPlague3 = {
-				enabled = true,
+			thresholdDictionary = {
+				devouringPlague = {
+					enabled = true,
+				},
+				devouringPlague2 = {
+					enabled = true,
+				},
+				devouringPlague3 = {
+					enabled = true,
+				}
 			}
 		},
 		displayBar = {
@@ -3284,9 +3292,9 @@ local function ShadowConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague"])
 	f.tooltip = L["PriestShadowThresholdDevouringPlagueTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.devouringPlague.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.devouringPlague.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3295,9 +3303,9 @@ local function ShadowConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague2x"])
 	f.tooltip = L["PriestShadowThresholdDevouringPlague2xTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague2.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.devouringPlague2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague2.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.devouringPlague2.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3306,9 +3314,9 @@ local function ShadowConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague3x"])
 	f.tooltip = L["PriestShadowThresholdDevouringPlague3xTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlague3.enabled)
+	f:SetChecked(spec.thresholds.thresholdDictionary.devouringPlague3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlague3.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.devouringPlague3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3317,9 +3325,9 @@ local function ShadowConstructThresholdPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdCheckboxOnlyCurrentNext"])
 	f.tooltip = L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"]
-	f:SetChecked(spec.thresholds.devouringPlagueThresholdOnlyOverShow)
+	f:SetChecked(spec.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
+		spec.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
 	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
