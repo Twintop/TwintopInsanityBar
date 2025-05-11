@@ -2135,4 +2135,10 @@ if locale == "itIT" then
     L["HunterSurvivalCheckboxExplosiveShot"] = "Cambia quando Tiro Esplosivo non è in fase di recupero"
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Questo cambierà il colore del bordo della barra quando Tiro Esplosivo non è in fase di recupero."
     L["HunterSurvivalColorPickerExplosiveShot"] = "Bordo quando Tiro Esplosivo non è in fase di recupero"
+    L["TabThresholds"] = "Linee di soglia"
+    L["ThresholdLinePositionHeader"] = "Posizione e dimensione della linea di soglia e delle icone"
+    L["ThresholdLineColorsHeader"] = "Colori della linea di soglia"
+    L["ExportMessageExportThresholds"] = "Esporta linee di soglia"
+    L["ExportMessageThresholds"] = "Soglie"
+    L["ExportMessagePostfixThresholds"] = "(Linee di soglia)"
 end

@@ -12,6 +12,10 @@ local content = [====[
 ---
 
 # 11.1.5.2-release (2025-05-??)
+## General
+
+- [#431 - UPDATE](#431) Separate options related to Threshold Lines to their own tab per specialization in the Options menu. Adjust the layout of these settings to be more consistent and extendable.
+
 ## Hunter
 ### Survival
 

@@ -2135,4 +2135,10 @@ if locale == "koKR" then
     L["HunterSurvivalCheckboxExplosiveShot"] = "폭발 사격 재사용 대기시간 종료 시 변경"
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "폭발 사격 재사용 대기시간 종료 시 막대 테두리 색상이 변경됩니다."
     L["HunterSurvivalColorPickerExplosiveShot"] = "폭발 사격 재사용 대기시간 종료 시 테두리"
+    L["TabThresholds"] = "임계값 선"
+    L["ThresholdLinePositionHeader"] = "임계값 선 및 아이콘 위치 및 크기"
+    L["ThresholdLineColorsHeader"] = "임계값 선 색상"
+    L["ExportMessageExportThresholds"] = "임계값 선 내보내기"
+    L["ExportMessageThresholds"] = "임계값"
+    L["ExportMessagePostfixThresholds"] = "(임계값 선)"
 end

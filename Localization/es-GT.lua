@@ -2135,4 +2135,10 @@ if locale == "esES" or locale == "esMX" then
     L["HunterSurvivalCheckboxExplosiveShot"] = "Cambiar cuando Disparo Explosivo esté fuera de tiempo de reutilización"
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Esto cambiará el color del borde de la barra cuando Disparo Explosivo esté fuera de tiempo de reutilización."
     L["HunterSurvivalColorPickerExplosiveShot"] = "Borde cuando Disparo Explosivo esté fuera de tiempo de reutilización"
+    L["TabThresholds"] = "Líneas de umbral"
+    L["ThresholdLinePositionHeader"] = "Posición y tamaño de la línea de umbral y del icono"
+    L["ThresholdLineColorsHeader"] = "Colores de la línea de umbral"
+    L["ExportMessageExportThresholds"] = "Exportar líneas de umbral"
+    L["ExportMessageThresholds"] = "Umbrales"
+    L["ExportMessagePostfixThresholds"] = "(Líneas de umbral)"
 end

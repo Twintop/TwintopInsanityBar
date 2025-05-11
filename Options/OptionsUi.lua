@@ -2110,6 +2110,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	--controls.labels.thresholdItems = TRB.Functions.OptionsUi:BuildLabel(parent, L["Items"], oUi.xCoord2, yCoord2, 300, 20)
 
 	if classId == 5 or classId == 10 then -- Priest or Monk
+		yCoord = yCoord - 30
 		controls.labels.thresholdAbilities = TRB.Functions.OptionsUi:BuildLabel(parent, L["Abilities"], 5, yCoord, 300, 20)
 		
 		if classId == 5 then
@@ -2235,6 +2236,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			spec.thresholds.thresholdDictionary.cannibalize.enabled = self:GetChecked()
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.thresholdDictionary.cannibalize.enabled)
 		end)
+		yCoord = yCoord - 30
 	end
 	
 	local overText = L["ThresholdHealerOver"]

@@ -2137,4 +2137,10 @@ if locale == "frFR" then
     L["HunterSurvivalCheckboxExplosiveShot"] = "Modifier lorsque Tir Explosif est hors recharge"
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Ceci modifiera la couleur de la bordure de la barre lorsque Tir Explosif est hors recharge."
     L["HunterSurvivalColorPickerExplosiveShot"] = "Bordure lorsque Tir Explosif est hors recharge"
+    L["TabThresholds"] = "Lignes de seuil"
+    L["ThresholdLinePositionHeader"] = "Position et taille des lignes de seuil et des icônes"
+    L["ThresholdLineColorsHeader"] = "Couleurs des lignes de seuil"
+    L["ExportMessageExportThresholds"] = "Exporter les lignes de seuil"
+    L["ExportMessageThresholds"] = "Seuils"
+    L["ExportMessagePostfixThresholds"] = "(Lignes de seuil)"
 end

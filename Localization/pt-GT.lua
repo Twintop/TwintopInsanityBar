@@ -2135,4 +2135,10 @@ if locale == "ptBR" or locale == "ptPT" then
     L["HunterSurvivalCheckboxExplosiveShot"] = "Alteração quando o Tiro Explosivo estiver fora do tempo de recarga"
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Isso mudará a cor da borda da barra quando o Tiro Explosivo estiver fora do tempo de recarga."
     L["HunterSurvivalColorPickerExplosiveShot"] = "Borda quando o Tiro Explosivo estiver fora do tempo de recarga"
+    L["TabThresholds"] = "Linhas de Limiar"
+    L["ThresholdLinePositionHeader"] = "Posição e Tamanho da Linha de Limiar e do Ícone"
+    L["ThresholdLineColorsHeader"] = "Cores das Linhas de Limiar"
+    L["ExportMessageExportThresholds"] = "Exportar Linhas de Limiar"
+    L["ExportMessageThresholds"] = "Limiares"
+    L["ExportMessagePostfixThresholds"] = "(Linhas de Limiar)"
 end

@@ -2135,4 +2135,10 @@ if locale == "zhTW" then
     L["HunterSurvivalCheckboxExplosiveShot"] = "爆炸射擊冷卻結束後的改變"
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "當爆炸射擊冷卻完畢時，這將改變條形邊框的顏色。"
     L["HunterSurvivalColorPickerExplosiveShot"] = "爆炸射擊冷卻完畢時的邊界"
+    L["TabThresholds"] = "閾值線"
+    L["ThresholdLinePositionHeader"] = "閾值線和圖示的位置和大小"
+    L["ThresholdLineColorsHeader"] = "閾值線顏色"
+    L["ExportMessageExportThresholds"] = "出口閾值線"
+    L["ExportMessageThresholds"] = "閾值"
+    L["ExportMessagePostfixThresholds"] = "（閾值線）"
 end

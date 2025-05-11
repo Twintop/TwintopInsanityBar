@@ -2135,4 +2135,10 @@ if locale == "ruRU" then
     L["HunterSurvivalCheckboxExplosiveShot"] = "Изменение, когда Explosive Shot не восстанавливается"
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "Это изменит цвет границы панели, когда Explosive Shot не восстанавливается."
     L["HunterSurvivalColorPickerExplosiveShot"] = "Граница, когда Explosive Shot не восстанавливается"
+    L["TabThresholds"] = "Пороговые линии"
+    L["ThresholdLinePositionHeader"] = "Пороговая линия и положение значка и размер"
+    L["ThresholdLineColorsHeader"] = "Цвета пороговых линий"
+    L["ExportMessageExportThresholds"] = "Экспорт пороговых линий"
+    L["ExportMessageThresholds"] = "Пороги"
+    L["ExportMessagePostfixThresholds"] = "(Пороговые линии)"
 end

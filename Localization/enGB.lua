@@ -234,4 +234,5 @@ if locale == "enGB" then
     L["GlobalCheckboxThresholdOverTooltip"] = "This will change the Resource text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
     L["GlobalCheckboxThresholdOvercapTooltip"] = "This will change the Resource text colour when your current resource or a hardcast spell will result in overcapping maximum resources."
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "This will change the bar border colour when Explosive Shot is off cooldown."
+    L["ThresholdLineColorsHeader"] = "Threshold Line Colours"
 end
