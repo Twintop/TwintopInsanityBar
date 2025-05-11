@@ -166,8 +166,6 @@ L["PotionThresholdShowTimeSlider"] = "Potion Cooldown Time Remaining"
 --- Thresholds
 
 L["ThresholdLinesHeader"] = "Threshold Lines"
-L["ThresholdLinesOverlap"] = "Threshold lines overlap bar border?"
-L["ThresholdLinesOverlapTooltip"] = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 L["ThresholdShowWhileOnCooldown"] = "Show while on cooldown?"
 
 --- GenerateThresholdLinesForHealers
@@ -2228,3 +2226,10 @@ L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"] = "Number of stacks of Ti
 L["HunterSurvivalCheckboxExplosiveShot"] = "Change when Explosive Shot is off cooldown"
 L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "This will change the bar border color when Explosive Shot is off cooldown."
 L["HunterSurvivalColorPickerExplosiveShot"] = "Border when Explosive Shot is off cooldown"
+
+L["TabThresholds"] = "Threshold Lines"
+L["ThresholdLinePositionHeader"] = "Threshold Line and Icon Position and Size"
+L["ThresholdLineColorsHeader"] = "Threshold Line Colors"
+L["ExportMessageExportThresholds"] = "Export Threshold Lines"
+L["ExportMessageThresholds"] = "Thresholds"
+L["ExportMessagePostfixThresholds"] = "(Threshold Lines)"

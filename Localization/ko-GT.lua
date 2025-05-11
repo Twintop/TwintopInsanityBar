@@ -142,8 +142,6 @@ if locale == "koKR" then
     L["PotionThresholdShowTime"] = "물약 쿨다운에 남은 시간"
     L["PotionThresholdShowTimeSlider"] = "남은 물약 재사용 시간"
     L["ThresholdLinesHeader"] = "임계값 라인"
-    L["ThresholdLinesOverlap"] = "임계선이 막대 테두리와 겹치나요?"
-    L["ThresholdLinesOverlapTooltip"] = "선택하면 임계값 선이 막대의 전체 높이에 걸쳐 막대 테두리와 겹칩니다."
     L["ThresholdShowWhileOnCooldown"] = "쿨다운 중에 표시하시겠습니까?"
     L["ThresholdHealerOver"] = "물약과 아이템으로 마나 획득(사용 가능한 경우)"
     L["ThresholdHealerOver2"] = "물약, 아이템, 능력을 통해 마나 획득(사용 가능한 경우)"

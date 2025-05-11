@@ -142,8 +142,6 @@ if locale == "zhTW" then
     L["PotionThresholdShowTime"] = "藥水冷卻剩餘時間"
     L["PotionThresholdShowTimeSlider"] = "藥水剩餘冷卻時間"
     L["ThresholdLinesHeader"] = "閾值線"
-    L["ThresholdLinesOverlap"] = "閾值線與條形邊框重疊？"
-    L["ThresholdLinesOverlapTooltip"] = "選取後，閾值線將跨越條形的整個高度並與條形邊框重疊。"
     L["ThresholdShowWhileOnCooldown"] = "冷卻時顯示？"
     L["ThresholdHealerOver"] = "從藥水和物品中獲得法力（可用時）"
     L["ThresholdHealerOver2"] = "從藥水、物品和能力中獲得法力（如果可用）"

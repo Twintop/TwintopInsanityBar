@@ -142,8 +142,6 @@ if locale == "ptBR" or locale == "ptPT" then
     L["PotionThresholdShowTime"] = "Tempo restante para o tempo de espera da Poção"
     L["PotionThresholdShowTimeSlider"] = "Tempo restante de espera da poção"
     L["ThresholdLinesHeader"] = "Linhas de limite"
-    L["ThresholdLinesOverlap"] = "As linhas de limite se sobrepõem à borda da barra?"
-    L["ThresholdLinesOverlapTooltip"] = "Quando marcada, as linhas de limite abrangerão toda a altura da barra e se sobreporão à borda da barra."
     L["ThresholdShowWhileOnCooldown"] = "Mostrar durante o tempo de espera?"
     L["ThresholdHealerOver"] = "Ganho de mana de poções e itens (quando utilizáveis)"
     L["ThresholdHealerOver2"] = "Ganho de mana de poções, itens e habilidades (quando utilizáveis)"

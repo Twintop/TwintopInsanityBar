@@ -142,8 +142,6 @@ if locale == "itIT" then
     L["PotionThresholdShowTime"] = "Tempo rimasto al tempo di recupero della Pozione"
     L["PotionThresholdShowTimeSlider"] = "Tempo rimanente di recupero della pozione"
     L["ThresholdLinesHeader"] = "Linee di soglia"
-    L["ThresholdLinesOverlap"] = "Le linee di soglia si sovrappongono al bordo della barra?"
-    L["ThresholdLinesOverlapTooltip"] = "Se selezionate, le linee di soglia copriranno l'intera altezza della barra e si sovrapporranno al bordo della barra."
     L["ThresholdShowWhileOnCooldown"] = "Mostrare durante il raffreddamento?"
     L["ThresholdHealerOver"] = "Guadagno di mana da pozioni e oggetti (se utilizzabili)"
     L["ThresholdHealerOver2"] = "Guadagno di mana da pozioni, oggetti e abilità (se utilizzabili)"

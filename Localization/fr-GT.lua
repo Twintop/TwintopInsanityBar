@@ -142,8 +142,6 @@ if locale == "frFR" then
     L["PotionThresholdShowTime"] = "Temps restant pour le temps de recharge des potions"
     L["PotionThresholdShowTimeSlider"] = "Temps de recharge restant pour la potion"
     L["ThresholdLinesHeader"] = "Lignes de seuil"
-    L["ThresholdLinesOverlap"] = "Les lignes de seuil chevauchent la bordure de la barre ?"
-    L["ThresholdLinesOverlapTooltip"] = "Lorsque cette case est cochée, les lignes de seuil s'étendront sur toute la hauteur de la barre et chevaucheront la bordure de la barre."
     L["ThresholdShowWhileOnCooldown"] = "Afficher pendant le temps de recharge ?"
     L["ThresholdHealerOver"] = "Gain de mana grâce aux potions et aux objets (lorsqu'ils sont utilisables)"
     L["ThresholdHealerOver2"] = "Gain de mana grâce aux potions, objets et capacités (lorsqu'ils sont utilisables)"

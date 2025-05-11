@@ -142,8 +142,6 @@ if locale == "ruRU" then
     L["PotionThresholdShowTime"] = "Оставшееся время восстановления зелья"
     L["PotionThresholdShowTimeSlider"] = "Оставшееся время восстановления зелья"
     L["ThresholdLinesHeader"] = "Пороговые линии"
-    L["ThresholdLinesOverlap"] = "Пороговые линии перекрывают границу панели?"
-    L["ThresholdLinesOverlapTooltip"] = "Если этот флажок установлен, пороговые линии будут охватывать всю высоту столбца и перекрывать границу столбца."
     L["ThresholdShowWhileOnCooldown"] = "Показывать во время восстановления?"
     L["ThresholdHealerOver"] = "Прирост маны от зелий и предметов (при их использовании)"
     L["ThresholdHealerOver2"] = "Получение маны от зелий, предметов и способностей (при их использовании)"

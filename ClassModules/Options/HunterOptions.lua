@@ -1276,7 +1276,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 
 	controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 1, true, false, false, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord)
@@ -1366,65 +1366,33 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 120)
+end
+
+local function BeastMasteryConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.beastMastery
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.beastMastery
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Hunter_BeastMastery_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_BeastMastery_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 3, 1, false, true, false, false, false, false)
+	end)
+
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 	controls.colors.threshold = {}
 
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFocus"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFocus"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.unusable
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
-	end)
-
-	--[[
-	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "(T28) Cobra Shot's damage is buffed", spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.special
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
-	end)]]
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-			
 	controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 	
@@ -1504,13 +1472,13 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.multiShot.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
-	controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
+
+	controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
 
 	controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.revivePetThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
 	f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.revivePet.enabled)
@@ -1518,10 +1486,10 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.revivePet.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.scareBeastThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
 	f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.scareBeast.enabled)
@@ -1529,10 +1497,10 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.scareBeast.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.wingClipThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_wingClip", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.wingClipThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
 	f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.wingClip.enabled)
@@ -1540,13 +1508,13 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.wingClip.enabled = self:GetChecked()
 	end)
 	
-	yCoord = yCoord - 25
-	controls.labels.pvpthreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
+	yCoord2 = yCoord2 - 25
+	controls.labels.pvpthreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
 
 	controls.checkBoxes.direBeastHawkThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_direBeastHawk", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.direBeastHawkThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxDireBeastHawk"])
 	f.tooltip = L["HunterBeastMasteryThresholdCheckboxDireBeastHawkTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.direBeastHawk.enabled)
@@ -1554,14 +1522,11 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.direBeastHawk.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 40
+	yCoord = math.min(yCoord, yCoord2)
+	
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, true, true, true, false, nil, nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 1, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 120)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 end
 
 local function BeastMasteryConstructFontAndTextPanel(parent)
@@ -1580,7 +1545,7 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 
 	controls.buttons.exportButton_Hunter_BeastMastery_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_BeastMastery_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 1, false, false, true, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 1, yCoord)
@@ -1750,7 +1715,7 @@ local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 	controls.buttons.exportButton_Hunter_BeastMastery_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_BeastMastery_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 1, false, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 30
@@ -1805,7 +1770,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 
 	controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 	controls.buttons.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 1, true, true, true, true, true, false)
 	end)
 
 	yCoord = yCoord - 52
@@ -1815,14 +1780,15 @@ local function BeastMasteryConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do 
+	for i = 1, 6 do 
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -1843,10 +1809,11 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 
 	BeastMasteryConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	BeastMasteryConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
-	BeastMasteryConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	BeastMasteryConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
-	BeastMasteryConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	BeastMasteryConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	BeastMasteryConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	BeastMasteryConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	BeastMasteryConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	BeastMasteryConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 --[[
@@ -1967,7 +1934,7 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 
 	controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 2, true, false, false, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
@@ -2072,188 +2039,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderSteadyFocus")
 	end)
-
-	yCoord = yCoord - 40
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFocus"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
-
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFocus"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.unusable
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-			
-	controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.aimedShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxAimedShot"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxAimedShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.aimedShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.aimedShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.arcaneShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShot"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.arcaneShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.arcaneShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.blackArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_blackArrow", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.blackArrowThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBlackArrow"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxBlackArrowTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.blackArrow.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.blackArrow.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.burstingShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_burstingShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.burstingShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBurstingShot"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxBurstingShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.burstingShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.burstingShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.explosiveShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxExplosiveShot"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.explosiveShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.explosiveShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.killCommandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killCommand", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.killCommandThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillCommand"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillCommandTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.killCommand.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.killCommand.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.killShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillShot"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.killShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.killShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.multiShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_multiShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.multiShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxMultiShot"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxMultiShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.multiShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.multiShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.revivePetThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
-	f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.revivePet.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.revivePet.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.scareBeastThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
-	f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.scareBeast.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.scareBeast.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.wingClipThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wingClip", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.wingClipThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
-	f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.wingClip.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.wingClip.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterMarksmanshipHeaderEndOfTrueshotConfiguration"], oUi.xCoord, yCoord)
@@ -2364,6 +2149,163 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 end
 
+local function MarksmanshipConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.marksmanship
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.marksmanship
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Hunter_Marksmanship_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Marksmanship_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 3, 2, false, true, false, false, false, false)
+	end)
+
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
+
+	controls.colors.threshold = {}
+
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord
+
+	controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
+	yCoord = yCoord - 20
+
+	controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.aimedShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxAimedShot"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxAimedShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.aimedShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.aimedShot.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.arcaneShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShot"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.arcaneShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.arcaneShot.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.blackArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_blackArrow", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.blackArrowThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBlackArrow"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxBlackArrowTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.blackArrow.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.blackArrow.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.burstingShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_burstingShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.burstingShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBurstingShot"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxBurstingShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.burstingShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.burstingShot.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.explosiveShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxExplosiveShot"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.explosiveShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.explosiveShot.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.killCommandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killCommand", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.killCommandThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillCommand"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillCommandTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.killCommand.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.killCommand.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.killShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillShot"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.killShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.killShot.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.multiShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_multiShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.multiShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxMultiShot"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxMultiShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.multiShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.multiShot.enabled = self:GetChecked()
+	end)
+
+
+	controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
+
+	controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.revivePetThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
+	f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.revivePet.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.revivePet.enabled = self:GetChecked()
+	end)
+	
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.scareBeastThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
+	f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.scareBeast.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.scareBeast.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.wingClipThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wingClip", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.wingClipThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
+	f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.wingClip.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.wingClip.enabled = self:GetChecked()
+	end)
+
+	yCoord = math.min(yCoord, yCoord2)
+	
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, true, true, true, false, nil, nil)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
+end
+
 local function MarksmanshipConstructFontAndTextPanel(parent)
 	if parent == nil then
 		return
@@ -2380,7 +2322,7 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 
 	controls.buttons.exportButton_Hunter_Marksmanship_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_Marksmanship_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 2, false, false, true, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 2, yCoord)
@@ -2617,7 +2559,7 @@ local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 	controls.buttons.exportButton_Hunter_Marksmanship_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_Marksmanship_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 2, false, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 30
@@ -2672,7 +2614,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 
 	controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 	controls.buttons.exportButton_Hunter_Marksmanship_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 2, true, true, true, true, true, false)
 	end)
 
 	yCoord = yCoord - 52
@@ -2682,14 +2624,15 @@ local function MarksmanshipConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do 
+	for i = 1, 6 do 
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -2710,10 +2653,11 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 
 	MarksmanshipConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	MarksmanshipConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
-	MarksmanshipConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	MarksmanshipConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
-	MarksmanshipConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	MarksmanshipConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	MarksmanshipConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	MarksmanshipConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	MarksmanshipConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	MarksmanshipConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 --[[
@@ -2815,7 +2759,7 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 
 	controls.buttons.exportButton_Hunter_Survival_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_Survival_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 3, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 3, true, false, false, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord)
@@ -2914,61 +2858,87 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "explosiveShot")
 	end)
 
+	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvivalHeaderEndOfCoordinatedAssaultConfiguration"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
+	controls.checkBoxes.endOfCoordinatedAssaultModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_GCD", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfCoordinatedAssaultModeGCDs
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxCoordinatedAssaultGcds"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.endOfCoordinatedAssault.mode == "gcd" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs:SetChecked(true)
+		controls.checkBoxes.endOfCoordinatedAssaultModeTime:SetChecked(false)
+		spec.endOfCoordinatedAssault.mode = "gcd"
+	end)
+
+	title = L["HunterSurvivalCoordinatedAssaultGcds"]
+	controls.endOfCoordinatedAssaultGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfCoordinatedAssault.gcdsMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfCoordinatedAssaultGCDs:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.endOfCoordinatedAssault.gcdsMax = value
+	end)
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.endOfCoordinatedAssaultModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_TIME", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfCoordinatedAssaultModeTime
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxCoordinatedAssaultTime"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.endOfCoordinatedAssault.mode == "time" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs:SetChecked(false)
+		controls.checkBoxes.endOfCoordinatedAssaultModeTime:SetChecked(true)
+		spec.endOfCoordinatedAssault.mode = "time"
+	end)
+
+	title = L["HunterSurvivalCoordinatedAssaultTime"]
+	controls.endOfCoordinatedAssaultTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfCoordinatedAssault.timeMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfCoordinatedAssaultTime:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.endOfCoordinatedAssault.timeMax = value
+	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 120)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
+end
+
+local function SurvivalConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.survival
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.survival
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Hunter_BeastMastery_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_BeastMastery_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 3, 3, false, true, false, false, false, false)
+	end)
+
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 	controls.colors.threshold = {}
 
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFocus"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFocus"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.unusable
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-
-			
 	controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 
@@ -3048,14 +3018,13 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.wildfireBomb.enabled = self:GetChecked()
 	end)
-			
-	yCoord = yCoord - 25
-	controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
+
+	controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
 
 	controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.revivePetThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
 	f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.revivePet.enabled)
@@ -3063,10 +3032,10 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.revivePet.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.scareBeastThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
 	f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.scareBeast.enabled)
@@ -3074,10 +3043,10 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.scareBeast.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.wingClipThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_wingClip", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.wingClipThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
 	f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.wingClip.enabled)
@@ -3085,65 +3054,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.wingClip.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, true, true, true, false, nil, nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
-
-	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvivalHeaderEndOfCoordinatedAssaultConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfCoordinatedAssaultModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfCoordinatedAssaultModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxCoordinatedAssaultGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfCoordinatedAssault.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfCoordinatedAssaultModeTime:SetChecked(false)
-		spec.endOfCoordinatedAssault.mode = "gcd"
-	end)
-
-	title = L["HunterSurvivalCoordinatedAssaultGcds"]
-	controls.endOfCoordinatedAssaultGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfCoordinatedAssault.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfCoordinatedAssaultGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfCoordinatedAssault.gcdsMax = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfCoordinatedAssaultModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfCoordinatedAssaultModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxCoordinatedAssaultTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfCoordinatedAssault.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfCoordinatedAssaultModeTime:SetChecked(true)
-		spec.endOfCoordinatedAssault.mode = "time"
-	end)
-
-	title = L["HunterSurvivalCoordinatedAssaultTime"]
-	controls.endOfCoordinatedAssaultTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfCoordinatedAssault.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfCoordinatedAssaultTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfCoordinatedAssault.timeMax = value
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 120)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 end
 
 local function SurvivalConstructFontAndTextPanel(parent)
@@ -3162,7 +3075,7 @@ local function SurvivalConstructFontAndTextPanel(parent)
 
 	controls.buttons.exportButton_Hunter_Survival_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_Survival_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 3, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 3, false, false, true, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 3, yCoord)
@@ -3338,7 +3251,7 @@ local function SurvivalConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 	controls.buttons.exportButton_Hunter_Survival_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Hunter_Survival_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 3, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 3, false, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 30
@@ -3393,7 +3306,7 @@ local function SurvivalConstructOptionsPanel(cache)
 
 	controls.buttons.exportButton_Hunter_Survival_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 	controls.buttons.exportButton_Hunter_Survival_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 3, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 3, true, true, true, true, true, false)
 	end)
 
 	yCoord = yCoord - 52
@@ -3403,14 +3316,15 @@ local function SurvivalConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do 
+	for i = 1, 6 do 
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -3431,10 +3345,11 @@ local function SurvivalConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 
 	SurvivalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	SurvivalConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
-	SurvivalConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	SurvivalConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
-	SurvivalConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	SurvivalConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	SurvivalConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	SurvivalConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	SurvivalConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	SurvivalConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 

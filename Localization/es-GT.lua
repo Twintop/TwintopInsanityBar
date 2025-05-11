@@ -142,8 +142,6 @@ if locale == "esES" or locale == "esMX" then
     L["PotionThresholdShowTime"] = "Tiempo restante en el tiempo de reutilización de pociones"
     L["PotionThresholdShowTimeSlider"] = "Tiempo de recuperación de poción restante"
     L["ThresholdLinesHeader"] = "Líneas de umbral"
-    L["ThresholdLinesOverlap"] = "¿Las líneas de umbral se superponen al borde de la barra?"
-    L["ThresholdLinesOverlapTooltip"] = "Cuando está marcada, las líneas de umbral abarcarán toda la altura de la barra y se superpondrán al borde de la barra."
     L["ThresholdShowWhileOnCooldown"] = "¿Mostrar mientras está en tiempo de reutilización?"
     L["ThresholdHealerOver"] = "Ganancia de maná de pociones y objetos (cuando se puedan usar)"
     L["ThresholdHealerOver2"] = "Ganancia de maná de pociones, objetos y habilidades (cuando se puedan usar)"

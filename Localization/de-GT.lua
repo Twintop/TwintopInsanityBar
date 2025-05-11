@@ -142,8 +142,6 @@ if locale == "deDE" then
     L["PotionThresholdShowTime"] = "Verbleibende Zeit für die Abklingzeit des Tranks"
     L["PotionThresholdShowTimeSlider"] = "Verbleibende Abklingzeit des Tranks"
     L["ThresholdLinesHeader"] = "Schwellenlinien"
-    L["ThresholdLinesOverlap"] = "Schwellenlinien überlappen den Balkenrand?"
-    L["ThresholdLinesOverlapTooltip"] = "Wenn diese Option aktiviert ist, erstrecken sich die Schwellenlinien über die gesamte Höhe des Balkens und überlappen den Balkenrand."
     L["ThresholdShowWhileOnCooldown"] = "Während der Abklingzeit anzeigen?"
     L["ThresholdHealerOver"] = "Managewinn durch Tränke und Gegenstände (sofern verwendbar)"
     L["ThresholdHealerOver2"] = "Managewinn durch Tränke, Gegenstände und Fähigkeiten (sofern verwendbar)"

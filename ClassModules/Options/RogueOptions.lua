@@ -1402,7 +1402,7 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 
 	controls.buttons.exportButton_Rogue_Assassination_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Assassination_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 1, true, false, false, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 1, yCoord)
@@ -1551,65 +1551,35 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 170)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
+end
+
+local function AssassinationConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.assassination
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.assassination
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Rogue_Assassination_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Rogue_Assassination_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 4, 1, false, true, false, false, false, false)
+	end)
 
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 	controls.colors.threshold = {}
 
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceEnergy"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceEnergy"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.unusable
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
-	end)
-
-	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueAssassinationColorPickerThresholdSpecial"], spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.special
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-120)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
-	
 	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryBuildersLabel"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 
@@ -1709,113 +1679,7 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.shiv.enabled = self:GetChecked()
 	end)
-
-
-	yCoord = yCoord - 25
-	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.crimsonTempestThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonTempest"])
-	f.tooltip = L["RogueAssassinationThresholdCrimsonTempestTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonTempest.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.crimsonTempest.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.envenomThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdEnvenom"])
-	f.tooltip = L["RogueAssassinationThresholdEnvenomTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.envenom.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.envenom.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.kidneyShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdKidneyShot"])
-	f.tooltip = L["RogueAssassinationThresholdKidneyShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sliceAndDiceThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSliceAndDice"])
-	f.tooltip = L["RogueAssassinationThresholdSliceAndDiceTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ruptureThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdRupture"])
-	f.tooltip = L["RogueAssassinationThresholdRuptureTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.rupture.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.rupture.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25		
-	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.crimsonVialThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonVial"])
-	f.tooltip = L["RogueAssassinationThresholdCrimsonVialTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.distractThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDistract"])
-	f.tooltip = L["RogueAssassinationThresholdDistractTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.feintThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdFeint"])
-	f.tooltip = L["RogueAssassinationThresholdFeintTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sapThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSap"])
-	f.tooltip = L["RogueAssassinationThresholdSapTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
-	end)
-
+	
 	yCoord = yCoord - 25
 	controls.labels.pvpThreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
@@ -1841,14 +1705,116 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.dismantle.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 30
+	
+	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
+
+	controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.crimsonTempestThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonTempest"])
+	f.tooltip = L["RogueAssassinationThresholdCrimsonTempestTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonTempest.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.crimsonTempest.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.envenomThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdEnvenom"])
+	f.tooltip = L["RogueAssassinationThresholdEnvenomTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.envenom.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.envenom.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.kidneyShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdKidneyShot"])
+	f.tooltip = L["RogueAssassinationThresholdKidneyShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sliceAndDiceThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSliceAndDice"])
+	f.tooltip = L["RogueAssassinationThresholdSliceAndDiceTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ruptureThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdRupture"])
+	f.tooltip = L["RogueAssassinationThresholdRuptureTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.rupture.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.rupture.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
+
+	controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.crimsonVialThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonVial"])
+	f.tooltip = L["RogueAssassinationThresholdCrimsonVialTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.distractThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDistract"])
+	f.tooltip = L["RogueAssassinationThresholdDistractTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.feintThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdFeint"])
+	f.tooltip = L["RogueAssassinationThresholdFeintTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sapThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSap"])
+	f.tooltip = L["RogueAssassinationThresholdSapTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
+	end)
+
+	yCoord = math.min(yCoord, yCoord2)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], true, true, true, true, true, L["RogueAssassinationColorPickerThresholdSpecial"], nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 1, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 170)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 end
 
 local function AssassinationConstructFontAndTextPanel(parent)
@@ -1867,7 +1833,7 @@ local function AssassinationConstructFontAndTextPanel(parent)
 
 	controls.buttons.exportButton_Rogue_Assassination_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Assassination_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 1, false, false, true, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 4, 1, yCoord)
@@ -2036,7 +2002,7 @@ local function AssassinationConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 	controls.buttons.exportButton_Rogue_Assassination_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Assassination_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 4, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 4, 1, false, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 30
@@ -2091,7 +2057,7 @@ local function AssassinationConstructOptionsPanel(cache)
 
 	controls.buttons.exportButton_Rogue_Assassination_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 	controls.buttons.exportButton_Rogue_Assassination_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 1, true, true, true, true, true, false)
 	end)
 
 	yCoord = yCoord - 52
@@ -2101,14 +2067,15 @@ local function AssassinationConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do 
+	for i = 1, 6 do 
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -2129,10 +2096,11 @@ local function AssassinationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 
 	AssassinationConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	AssassinationConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
-	AssassinationConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	AssassinationConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
-	AssassinationConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	AssassinationConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	AssassinationConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	AssassinationConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	AssassinationConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	AssassinationConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 
@@ -2234,7 +2202,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 
 	controls.buttons.exportButton_Rogue_Outlaw_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Outlaw_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 2, true, false, false, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 2, yCoord)
@@ -2379,73 +2347,37 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 
-
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 170)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
+end
+
+local function OutlawConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.outlaw
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.outlaw
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Rogue_Outlaw_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Rogue_Outlaw_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 4, 2, false, true, false, false, false, false)
+	end)
 
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 	controls.colors.threshold = {}
 
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceEnergy"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
-
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceEnergy"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.unusable
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
-	end)
-
-	controls.colors.threshold.restlessBlades = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueAssassinationColorPickerThresholdRestlessBlades"], spec.colors.threshold.restlessBlades.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.restlessBlades
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "restlessBlades")
-	end)
-
-	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueAssassinationColorPickerThresholdSpecial"], spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord-120)
-	f = controls.colors.threshold.special
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-150)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-180)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-200)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
+	yCoord = yCoord - 30
 	
+	local yCoord2 = yCoord
+
 	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryBuildersLabel"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 
@@ -2525,134 +2457,6 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.sinisterStrike.enabled = self:GetChecked()
 	end)
 
-
-	yCoord = yCoord - 25
-	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.betweenTheEyesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_betweenTheEyes", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.betweenTheEyesThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdBetweenTheEyes"])
-	f.tooltip = L["RogueOutlawThresholdBetweenTheEyesTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.betweenTheEyes.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.betweenTheEyes.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.dispatchThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dispatch", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dispatchThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDispatch"])
-	f.tooltip = L["RogueOutlawThresholdDispatchTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.dispatch.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.dispatch.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.coupDeGrace.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.kidneyShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdKidneyShot"])
-	f.tooltip = L["RogueOutlawThresholdKidneyShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.killingSpreeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_killingSpree", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.killingSpreeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdKillingSpree"])
-	f.tooltip = L["RogueOutlawThresholdKillingSpreeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.killingSpree.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.killingSpree.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sliceAndDiceThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSliceAndDice"])
-	f.tooltip = L["RogueOutlawThresholdSliceAndDiceTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25		
-	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.bladeFlurryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_bladeFlurry", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.bladeFlurryThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdBladeFlurry"])
-	f.tooltip = L["RogueOutlawThresholdBladeFlurryTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.bladeFlurry.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.bladeFlurry.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.crimsonVialThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdCrimsonVial"])
-	f.tooltip = L["RogueOutlawThresholdCrimsonVialTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.distractThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDistract"])
-	f.tooltip = L["RogueOutlawThresholdDistractTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.feintThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdFeint"])
-	f.tooltip = L["RogueOutlawThresholdFeintTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.rollTheBonesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_rollTheBones", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.rollTheBonesThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdRollTheBones"])
-	f.tooltip = L["RogueOutlawThresholdRollTheBonesTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.rollTheBones.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.rollTheBones.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sapThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSap"])
-	f.tooltip = L["RogueOutlawThresholdSapTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
-	end)
 	yCoord = yCoord - 25
 	controls.labels.pvpThreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
@@ -2678,13 +2482,149 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.dismantle.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 30
+	yCoord = yCoord - 25
+
+	
+	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
+
+	controls.checkBoxes.betweenTheEyesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_betweenTheEyes", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.betweenTheEyesThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdBetweenTheEyes"])
+	f.tooltip = L["RogueOutlawThresholdBetweenTheEyesTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.betweenTheEyes.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.betweenTheEyes.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.dispatchThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dispatch", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dispatchThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDispatch"])
+	f.tooltip = L["RogueOutlawThresholdDispatchTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.dispatch.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.dispatch.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.coupDeGrace.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.kidneyShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdKidneyShot"])
+	f.tooltip = L["RogueOutlawThresholdKidneyShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.killingSpreeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_killingSpree", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.killingSpreeThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdKillingSpree"])
+	f.tooltip = L["RogueOutlawThresholdKillingSpreeTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.killingSpree.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.killingSpree.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sliceAndDiceThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSliceAndDice"])
+	f.tooltip = L["RogueOutlawThresholdSliceAndDiceTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
+
+	controls.checkBoxes.bladeFlurryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_bladeFlurry", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.bladeFlurryThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdBladeFlurry"])
+	f.tooltip = L["RogueOutlawThresholdBladeFlurryTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.bladeFlurry.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.bladeFlurry.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.crimsonVialThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdCrimsonVial"])
+	f.tooltip = L["RogueOutlawThresholdCrimsonVialTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.distractThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDistract"])
+	f.tooltip = L["RogueOutlawThresholdDistractTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.feintThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdFeint"])
+	f.tooltip = L["RogueOutlawThresholdFeintTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.rollTheBonesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_rollTheBones", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.rollTheBonesThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdRollTheBones"])
+	f.tooltip = L["RogueOutlawThresholdRollTheBonesTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.rollTheBones.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.rollTheBones.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sapThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSap"])
+	f.tooltip = L["RogueOutlawThresholdSapTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
+	end)
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+		{
+			name = "restlessBlades",
+			colorLocalization = L["RogueOutlawColorPickerThresholdRestlessBlades"]
+		}
+	}
+
+	yCoord = math.min(yCoord, yCoord2)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, true, true, true, true, L["RogueAssassinationColorPickerThresholdSpecial"], custom)
+
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 2, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 170)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 end
 
 local function OutlawConstructFontAndTextPanel(parent)
@@ -2703,7 +2643,7 @@ local function OutlawConstructFontAndTextPanel(parent)
 
 	controls.buttons.exportButton_Rogue_Outlaw_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Outlaw_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 2, false, false, true, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 4, 2, yCoord)
@@ -2872,7 +2812,7 @@ local function OutlawConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 	controls.buttons.exportButton_Rogue_Outlaw_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Outlaw_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 4, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 4, 2, false, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 30
@@ -2927,7 +2867,7 @@ local function OutlawConstructOptionsPanel(cache)
 
 	controls.buttons.exportButton_Rogue_Outlaw_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 	controls.buttons.exportButton_Rogue_Outlaw_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 2, true, true, true, true, true, false)
 	end)
 
 	yCoord = yCoord - 52
@@ -2937,14 +2877,15 @@ local function OutlawConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do 
+	for i = 1, 6 do 
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -2965,10 +2906,11 @@ local function OutlawConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 
 	OutlawConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	OutlawConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
-	OutlawConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	OutlawConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
-	OutlawConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	OutlawConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	OutlawConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	OutlawConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	OutlawConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	OutlawConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 --[[
@@ -3069,7 +3011,7 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 
 	controls.buttons.exportButton_Rogue_Subtlety_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Subtlety_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 1, true, false, false, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 3, yCoord)
@@ -3214,65 +3156,36 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 170)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = controls
+end
+
+local function SubtletyConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.subtlety
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.subtlety
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Rogue_Subtlety_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Rogue_Subtlety_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 4, 3, false, true, false, false, false, false)
+	end)
 
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 	controls.colors.threshold = {}
 
-	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceEnergy"]), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.under
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-	end)
-
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceEnergy"]), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.threshold.over
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-	end)
-
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.threshold.unusable
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
-	end)
-
-	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerThresholdSpecial"], spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord-90)
-	f = controls.colors.threshold.special
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
-	end)
-
-	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord-120)
-	f = controls.colors.threshold.outOfRange
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-	end)
-
-	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOutOfRange
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	f:SetChecked(spec.colors.threshold.outOfRange.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
+	yCoord = yCoord - 30
 	
+	local yCoord2 = yCoord
+
 	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryBuildersLabel"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
 
@@ -3375,124 +3288,6 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 		spec.thresholds.thresholdDictionary.shurikenToss.enabled = self:GetChecked()
 	end)
 
-
-	yCoord = yCoord - 25
-	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.blackPowderThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_blackPowder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.blackPowderThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Black Powder")
-	f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Black Powder. If you do not have any combo points, will be colored as 'unusable'."
-	f:SetChecked(spec.thresholds.thresholdDictionary.blackPowder.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.blackPowder.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.eviscerateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_eviscerate", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.eviscerateThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Eviscerate")
-	f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Eviscerate. If you do not have any combo points, will be colored as 'unusable'."
-	f:SetChecked(spec.thresholds.thresholdDictionary.eviscerate.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.eviscerate.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.coupDeGrace.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.kidneyShotThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdKidneyShot"])
-	f.tooltip = L["RogueSubtletyThresholdKidneyShotTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sliceAndDiceThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSliceAndDice"])
-	f.tooltip = L["RogueSubtletyThresholdSliceAndDiceTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ruptureThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdRupture"])
-	f.tooltip = L["RogueSubtletyThresholdRuptureTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.rupture.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.rupture.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.secretTechniqueThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_secretTechnique", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.secretTechniqueThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSecretTechnique"])
-	f.tooltip = L["RogueSubtletyThresholdSecretTechniqueTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.secretTechnique.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.secretTechnique.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-
-	controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.crimsonVialThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdCrimsonVial"])
-	f.tooltip = L["RogueSubtletyThresholdCrimsonVialTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.distractThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdDistract"])
-	f.tooltip = L["RogueSubtletyThresholdDistractTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.feintThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdFeint"])
-	f.tooltip = L["RogueSubtletyThresholdFeintTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sapThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSap"])
-	f.tooltip = L["RogueSubtletyThresholdSapTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
-	end)
-
 	yCoord = yCoord - 25
 	controls.labels.pvpThreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
@@ -3517,15 +3312,128 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.dismantle.enabled = self:GetChecked()
 	end)
+	
+	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
 
-	yCoord = yCoord - 30
+	controls.checkBoxes.blackPowderThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_blackPowder", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.blackPowderThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdBlackPowder"])
+	f.tooltip = L["RogueSubtletyThresholdBlackPowderTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.blackPowder.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.blackPowder.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.eviscerateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_eviscerate", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.eviscerateThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdEviscerate"])
+	f.tooltip = L["RogueSubtletyThresholdEviscerateTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.eviscerate.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.eviscerate.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.coupDeGrace.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.kidneyShotThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdKidneyShot"])
+	f.tooltip = L["RogueSubtletyThresholdKidneyShotTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.kidneyShot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.kidneyShot.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sliceAndDiceThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSliceAndDice"])
+	f.tooltip = L["RogueSubtletyThresholdSliceAndDiceTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ruptureThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdRupture"])
+	f.tooltip = L["RogueSubtletyThresholdRuptureTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.rupture.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.rupture.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.secretTechniqueThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_secretTechnique", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.secretTechniqueThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSecretTechnique"])
+	f.tooltip = L["RogueSubtletyThresholdSecretTechniqueTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.secretTechnique.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.secretTechnique.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
+
+	controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.crimsonVialThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdCrimsonVial"])
+	f.tooltip = L["RogueSubtletyThresholdCrimsonVialTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonVial.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.crimsonVial.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.distractThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdDistract"])
+	f.tooltip = L["RogueSubtletyThresholdDistractTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.distract.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.distract.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.feintThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdFeint"])
+	f.tooltip = L["RogueSubtletyThresholdFeintTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.feint.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.feint.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sapThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSap"])
+	f.tooltip = L["RogueSubtletyThresholdSapTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.sap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.sap.enabled = self:GetChecked()
+	end)
+
+	yCoord = math.min(yCoord, yCoord2)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, true, true, true, true, L["RogueSubtletyColorPickerThresholdSpecial"], nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 3, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 170)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = controls
 end
 
 local function SubtletyConstructFontAndTextPanel(parent)
@@ -3544,7 +3452,7 @@ local function SubtletyConstructFontAndTextPanel(parent)
 
 	controls.buttons.exportButton_Rogue_Subtlety_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Subtlety_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 3, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 3, false, false, true, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 4, 3, yCoord)
@@ -3711,7 +3619,7 @@ local function SubtletyConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 	controls.buttons.exportButton_Rogue_Subtlety_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Rogue_Subtlety_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 4, 3, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 4, 3, false, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 30
@@ -3766,7 +3674,7 @@ local function SubtletyConstructOptionsPanel(cache)
 
 	controls.buttons.exportButton_Rogue_Subtlety_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 	controls.buttons.exportButton_Rogue_Subtlety_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 3, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 3, true, true, true, true, true, false)
 	end)
 
 	yCoord = yCoord - 52
@@ -3776,14 +3684,15 @@ local function SubtletyConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 5 do 
+	for i = 1, 6 do 
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
@@ -3804,10 +3713,11 @@ local function SubtletyConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = controls
 
 	SubtletyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	SubtletyConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
-	SubtletyConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	SubtletyConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
-	SubtletyConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	SubtletyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	SubtletyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	SubtletyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	SubtletyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	SubtletyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 local function ConstructOptionsPanel(specCache)
