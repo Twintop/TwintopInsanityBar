@@ -1609,7 +1609,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specValue.colors.threshold ~= nil then
 								for colorName, colorValue in pairs(specValue.colors.threshold) do
 									if colorValue ~= nil and type(colorValue) == "string" then
-										print(colorName, colorValue)
 										specValue.colors.threshold[colorName] = {
 											color = colorValue
 										}
