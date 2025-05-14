@@ -2141,4 +2141,12 @@ if locale == "esES" or locale == "esMX" then
     L["ExportMessageExportThresholds"] = "Exportar líneas de umbral"
     L["ExportMessageThresholds"] = "Umbrales"
     L["ExportMessagePostfixThresholds"] = "(Líneas de umbral)"
+    L["ThresholdLinesForHealersHeader"] = "Líneas de Umbral para Sanadores"
+    L["ThresholdLineColorsForHealersHeader"] = "Colores de Línea de Umbral para Sanadores"
+    L["ThresholdLineColorsForDpsAndTanksHeader"] = "Colores de Línea de Umbral para DPS y Tanques"
+    L["ThresholdGenericSpecial"] = "Bonificación especial, activación o estado"
+    L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "Al marcar esta opción, se usarán los ajustes globales para el tamaño, la posición y el ancho de la línea del icono de umbral."
+    L["CheckboxUseGlobalTooltip_ThresholdPotions"] = "Al marcar esta opción, se usarán los ajustes globales para las pociones de umbral para sanadores."
+    L["CheckboxUseGlobalTooltip_ThresholdColors"] = "Al marcar esta opción, se usarán los ajustes globales para los colores del umbral. El ajuste global utilizado varía según el rol de especialización."
+    L["CheckboxUseGlobalTooltip_ThresholdHealers"] = "Al marcar esta opción, se usarán los ajustes globales para los umbrales habilitados para sanadores."
 end

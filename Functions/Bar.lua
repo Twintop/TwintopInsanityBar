@@ -139,7 +139,7 @@ function TRB.Functions.Bar:SetHeight(settings)
 	TRB.Frames.resourceFrame:SetHeight(value - (settings.bar.border * 2))
 	TRB.Frames.castingFrame:SetHeight(value - (settings.bar.border * 2))
 	TRB.Frames.passiveFrame:SetHeight(value - (settings.bar.border * 2))
-	TRB.Functions.Threshold:RedrawThresholdLines(settings)
+	TRB.Functions.Threshold:RedrawThresholdLines()
 end
 
 function TRB.Functions.Bar:SetWidth(settings)
@@ -441,7 +441,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		end
 	end
 
-	TRB.Functions.Threshold:RedrawThresholdLines(settings)
+	TRB.Functions.Threshold:RedrawThresholdLines()
 	TRB.Functions.Bar:SetMinMax(settings)
 end
 

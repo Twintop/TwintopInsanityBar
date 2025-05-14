@@ -1320,7 +1320,7 @@ local function ElementalConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, true, false, true, true, L["ShamanElementalThresholdColorPickerEchoesOfGreatSundering"], nil)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord, true)
 end
 
 local function ElementalConstructFontAndTextPanel(parent)

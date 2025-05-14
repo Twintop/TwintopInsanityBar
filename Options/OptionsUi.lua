@@ -1600,11 +1600,10 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		spec.displayBar.dragonriding = self:GetChecked()
 	end)
 
-
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord)
+function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord, isHealer)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
@@ -1613,8 +1612,27 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	
 	yCoord = yCoord - 30
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinePositionHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 20
 
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalThresholdIcons = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_thresholdIcons", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalThresholdIcons
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdIcons"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdIcons)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].thresholdIcons = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName, isHealer)
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	end
+	
+	yCoord = yCoord - 20
 	local thresholdIconRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconRelativeTo", parent, "WowStyle1DropdownTemplate")
 	thresholdIconRelativeTo:SetWidth(oUi.sliderWidth)
 	thresholdIconRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdIconRelativePosition"], oUi.xCoord, yCoord)
@@ -1645,8 +1663,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		end
 		thresholdIconRelativeTo:SetDefaultText(spec.thresholds.icons.relativeToName)
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then-- or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end
 
@@ -1669,8 +1687,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.enabled = self:GetChecked()
 		
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
 
@@ -1684,8 +1702,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.desaturated = self:GetChecked()
 		
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
 
@@ -1708,8 +1726,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 		
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
 
@@ -1731,8 +1749,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 		
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
 
@@ -1745,8 +1763,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.xPos = value
 		
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
 
@@ -1757,8 +1775,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.yPos = value
 		
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
 
@@ -1780,8 +1798,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
 		controls.thresholdIconWidth.MinLabel:SetText(tostring(minsliderWidth))
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
 
@@ -1792,9 +1810,21 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.properties.width = value
 
-		if TRB.Data.character.specId == specId then
-			TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
+	end)
+	
+	yCoord = yCoord - 40
+	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdOverlapBorder
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
+	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
+	f:SetChecked(spec.thresholds.properties.overlapBorder)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.properties.overlapBorder = self:GetChecked()
+		TRB.Functions.Threshold:RedrawThresholdLines()
 	end)
 
 	return yCoord
@@ -1821,8 +1851,33 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 	local namePrefix = className .. "_" .. specName
 	local f = nil
 	
-	yCoord = yCoord - 30
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.threshold = controls.colors.threshold or {}
+
+	if classId == nill then
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsForDpsAndTanksHeader"], oUi.xCoord, yCoord)
+	else
+		yCoord = yCoord - 30
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
+	end
+	
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalThresholdColors = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_thresholdColors", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalThresholdColors
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdColors"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdColors)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].thresholdColors = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	end
 
 	if under == true then
 		yCoord = yCoord - 30
@@ -1851,15 +1906,6 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 		end)
 	end
 
-	if special == true then
-		yCoord = yCoord - 30
-		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, localizationSpecial, spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.threshold.special
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
-		end)
-	end
-
 	if outOfRange == true then
 		yCoord = yCoord - 30
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
@@ -1871,10 +1917,12 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.threshold.outOfRange.enabled = self:GetChecked()
 
-			if spec.colors.threshold.outOfRange.enabled then
-				TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-			else
-				TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
+				if spec.colors.threshold.outOfRange.enabled then
+					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
+				else
+					TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+				end
 			end
 		end)
 
@@ -1885,23 +1933,20 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 		end)
 	end
 
+	if special == true then
+		yCoord = yCoord - 30
+		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, localizationSpecial, spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.threshold.special
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
+		end)
+	end
+
 	if custom ~= nil and #custom > 0 then
 		for _, value in pairs(custom) do
 			yCoord, _, _ = TRB.Functions.OptionsUi:BuildColorPickerWithEnable(parent, yCoord, controls, "threshold", spec.colors.threshold, namePrefix, value)
 		end
 	end
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
-	end)
 
 	return yCoord
 end
@@ -1914,6 +1959,25 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 
 	yCoord = yCoord - 30
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PotionCooldownConfigurationHeader"], oUi.xCoord, yCoord)
+	
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalThresholdPotions = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_thresholdPotions", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalThresholdPotions
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdPotions"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdPotions)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].thresholdPotions = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName, true)
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	end
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.potionCooldown = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_PotionCooldown_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1983,10 +2047,37 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
+	local thresholdDictionary = spec.thresholds.thresholdDictionary
+	local thresholdColor = spec.colors.threshold
 
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
+	if classId == nil and specId == nil then
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesForHealersHeader"], oUi.xCoord, yCoord)
+		thresholdDictionary = spec.thresholds.thresholdDictionaryHealers
+		thresholdColor = spec.colors.thresholdHealers
+	else
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
+	end
+	
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalThresholdHealers = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_thresholdHealers", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalThresholdHealers
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdHealers"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdHealers)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].thresholdHealers = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName, true)
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	end
 
-	controls.colors.threshold = {}
+	controls.colors.threshold = controls.colors.threshold or {}
 
 	yCoord = yCoord - 30
 	
@@ -2001,9 +2092,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank3"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank3"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.algariManaPotionRank3.enabled)
+	f:SetChecked(thresholdDictionary.algariManaPotionRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.algariManaPotionRank3.enabled = self:GetChecked()
+		thresholdDictionary.algariManaPotionRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2013,9 +2104,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank2"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank2"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.algariManaPotionRank2.enabled)
+	f:SetChecked(thresholdDictionary.algariManaPotionRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.algariManaPotionRank2.enabled = self:GetChecked()
+		thresholdDictionary.algariManaPotionRank2.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
@@ -2025,9 +2116,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["AlgariManaPotionRank1"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AlgariManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["AlgariManaPotionRank1"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.algariManaPotionRank1.enabled)
+	f:SetChecked(thresholdDictionary.algariManaPotionRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.algariManaPotionRank1.enabled = self:GetChecked()
+		thresholdDictionary.algariManaPotionRank1.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
@@ -2040,9 +2131,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank3"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank3"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.cavedwellersDelightRank3.enabled)
+	f:SetChecked(thresholdDictionary.cavedwellersDelightRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.cavedwellersDelightRank3.enabled = self:GetChecked()
+		thresholdDictionary.cavedwellersDelightRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2052,9 +2143,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank2"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank2"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.cavedwellersDelightRank2.enabled)
+	f:SetChecked(thresholdDictionary.cavedwellersDelightRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.cavedwellersDelightRank2.enabled = self:GetChecked()
+		thresholdDictionary.cavedwellersDelightRank2.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
@@ -2064,9 +2155,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["CavedwellersDelightRank1"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["CavedwellersDelight"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["CavedwellersDelightRank1"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.cavedwellersDelightRank1.enabled)
+	f:SetChecked(thresholdDictionary.cavedwellersDelightRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.cavedwellersDelightRank1.enabled = self:GetChecked()
+		thresholdDictionary.cavedwellersDelightRank1.enabled = self:GetChecked()
 	end)
 
 	controls.labels.slumberingSoulSerum = TRB.Functions.OptionsUi:BuildLabel(parent, L["SlumberingSoulSerum"], oUi.xCoord2, yCoord2, 300, 20)
@@ -2078,9 +2169,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank3"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank3"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.slumberingSoulSerumRank3.enabled)
+	f:SetChecked(thresholdDictionary.slumberingSoulSerumRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.slumberingSoulSerumRank3.enabled = self:GetChecked()
+		thresholdDictionary.slumberingSoulSerumRank3.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
@@ -2090,9 +2181,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank2"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank2"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.slumberingSoulSerumRank2.enabled)
+	f:SetChecked(thresholdDictionary.slumberingSoulSerumRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.slumberingSoulSerumRank2.enabled = self:GetChecked()
+		thresholdDictionary.slumberingSoulSerumRank2.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
@@ -2102,9 +2193,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["SlumberingSoulSerumRank1"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["SlumberingSoulSerum"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["SlumberingSoulSerumRank1"])
-	f:SetChecked(spec.thresholds.thresholdDictionary.slumberingSoulSerumRank1.enabled)
+	f:SetChecked(thresholdDictionary.slumberingSoulSerumRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.slumberingSoulSerumRank1.enabled = self:GetChecked()
+		thresholdDictionary.slumberingSoulSerumRank1.enabled = self:GetChecked()
 	end)
 
 	--controls.labels.thresholdItems = TRB.Functions.OptionsUi:BuildLabel(parent, L["Items"], oUi.xCoord2, yCoord2, 300, 20)
@@ -2122,18 +2213,18 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 			---@diagnostic disable-next-line: inject-field
 			f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["Shadowfiend"])
-			f:SetChecked(spec.thresholds.thresholdDictionary.shadowfiend.cooldown)
+			f:SetChecked(thresholdDictionary.shadowfiend.cooldown)
 			f:SetScript("OnClick", function(self, ...)
-				spec.thresholds.thresholdDictionary.shadowfiend.cooldown = self:GetChecked()
-				if spec.thresholds.thresholdDictionary.mindbender ~= nil then
-					spec.thresholds.thresholdDictionary.mindbender.cooldown = self:GetChecked()
+				thresholdDictionary.shadowfiend.cooldown = self:GetChecked()
+				if thresholdDictionary.mindbender ~= nil then
+					thresholdDictionary.mindbender.cooldown = self:GetChecked()
 				end
-				if spec.thresholds.thresholdDictionary.voidwraith ~= nil then
-					spec.thresholds.thresholdDictionary.voidwraith.cooldown = self:GetChecked()
+				if thresholdDictionary.voidwraith ~= nil then
+					thresholdDictionary.voidwraith.cooldown = self:GetChecked()
 				end
 			end)
 			
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.thresholdDictionary.shadowfiend.enabled)
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, thresholdDictionary.shadowfiend.enabled)
 			
 			controls.checkBoxes.shadowfiendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_shadowfiend", parent, "ChatConfigCheckButtonTemplate")
 			f = controls.checkBoxes.shadowfiendThresholdShow
@@ -2141,16 +2232,16 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			getglobal(f:GetName() .. 'Text'):SetText(L["Shadowfiend"])
 			---@diagnostic disable-next-line: inject-field
 			f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["Shadowfiend"])
-			f:SetChecked(spec.thresholds.thresholdDictionary.shadowfiend.enabled)
+			f:SetChecked(thresholdDictionary.shadowfiend.enabled)
 			f:SetScript("OnClick", function(self, ...)
-				spec.thresholds.thresholdDictionary.shadowfiend.enabled = self:GetChecked()
-				if spec.thresholds.thresholdDictionary.mindbender ~= nil then
-					spec.thresholds.thresholdDictionary.mindbender.enabled = self:GetChecked()
+				thresholdDictionary.shadowfiend.enabled = self:GetChecked()
+				if thresholdDictionary.mindbender ~= nil then
+					thresholdDictionary.mindbender.enabled = self:GetChecked()
 				end
-				if spec.thresholds.thresholdDictionary.voidwraith ~= nil then
-					spec.thresholds.thresholdDictionary.voidwraith.enabled = self:GetChecked()
+				if thresholdDictionary.voidwraith ~= nil then
+					thresholdDictionary.voidwraith.enabled = self:GetChecked()
 				end
-				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.thresholdDictionary.shadowfiend.enabled)
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, thresholdDictionary.shadowfiend.enabled)
 			end)
 			yCoord = yCoord - 20
 
@@ -2163,12 +2254,12 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 				getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 				---@diagnostic disable-next-line: inject-field
 				f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["SymbolOfHope"])
-				f:SetChecked(spec.thresholds.thresholdDictionary.symbolOfHope.cooldown)
+				f:SetChecked(thresholdDictionary.symbolOfHope.cooldown)
 				f:SetScript("OnClick", function(self, ...)
-					spec.thresholds.thresholdDictionary.symbolOfHope.cooldown = self:GetChecked()
+					thresholdDictionary.symbolOfHope.cooldown = self:GetChecked()
 				end)
 				
-				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.thresholdDictionary.symbolOfHope.enabled)
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, thresholdDictionary.symbolOfHope.enabled)
 				
 				controls.checkBoxes.symbolOfHopeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_symbolOfHope", parent, "ChatConfigCheckButtonTemplate")
 				f = controls.checkBoxes.symbolOfHopeThresholdShow
@@ -2176,20 +2267,20 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 				getglobal(f:GetName() .. 'Text'):SetText(L["SymbolOfHope"])
 				---@diagnostic disable-next-line: inject-field
 				f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["SymbolOfHope"])
-				f:SetChecked(spec.thresholds.thresholdDictionary.symbolOfHope.enabled)
+				f:SetChecked(thresholdDictionary.symbolOfHope.enabled)
 				f:SetScript("OnClick", function(self, ...)
-					spec.thresholds.thresholdDictionary.symbolOfHope.enabled = self:GetChecked()
-					TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.thresholdDictionary.symbolOfHope.enabled)
+					thresholdDictionary.symbolOfHope.enabled = self:GetChecked()
+					TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, thresholdDictionary.symbolOfHope.enabled)
 				end)
 
 				local title = L["ThresholdHealerSymbolOfHopeManaPercent"]
-				controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.thresholds.thresholdDictionary.symbolOfHope.minimumManaPercent, 5, 5,
+				controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, thresholdDictionary.symbolOfHope.minimumManaPercent, 5, 5,
 												oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord-20)
 				controls.symbolOfHopePercent:SetScript("OnValueChanged", function(self, value)
 					value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 					value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 					self.EditBox:SetText(value)
-					spec.thresholds.thresholdDictionary.symbolOfHope.minimumManaPercent = value
+					thresholdDictionary.symbolOfHope.minimumManaPercent = value
 				end)
 
 				yCoord = yCoord - 20
@@ -2204,9 +2295,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			getglobal(f:GetName() .. 'Text'):SetText(L["ManaTea"])
 			---@diagnostic disable-next-line: inject-field
 			f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["ManaTea"])
-			f:SetChecked(spec.thresholds.thresholdDictionary.manaTeaCharges.enabled)
+			f:SetChecked(thresholdDictionary.manaTeaCharges.enabled)
 			f:SetScript("OnClick", function(self, ...)
-				spec.thresholds.thresholdDictionary.manaTeaCharges.enabled = self:GetChecked()
+				thresholdDictionary.manaTeaCharges.enabled = self:GetChecked()
 			end)
 		end
 
@@ -2218,12 +2309,12 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["CannibalizeIfForsaken"])
-		f:SetChecked(spec.thresholds.thresholdDictionary.cannibalize.cooldown)
+		f:SetChecked(thresholdDictionary["cannibalize"].cooldown)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.thresholdDictionary.cannibalize.cooldown = self:GetChecked()
+			thresholdDictionary["cannibalize"].cooldown = self:GetChecked()
 		end)
 		
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.thresholdDictionary.cannibalize.enabled)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, thresholdDictionary["cannibalize"].enabled)
 		
 		controls.checkBoxes.cannibalizeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_cannibalize", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cannibalizeThresholdShow
@@ -2231,52 +2322,66 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		getglobal(f:GetName() .. 'Text'):SetText(L["CannibalizeIfForsaken"])
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["CannibalizeIfForsaken"])
-		f:SetChecked(spec.thresholds.thresholdDictionary.cannibalize.enabled)
+		f:SetChecked(thresholdDictionary["cannibalize"].enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.thresholdDictionary.cannibalize.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.thresholdDictionary.cannibalize.enabled)
+			thresholdDictionary["cannibalize"].enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, thresholdDictionary["cannibalize"].enabled)
 		end)
 		yCoord = yCoord - 30
 	end
 	
 	local overText = L["ThresholdHealerOver"]
-
 	if classId == 5 then
 		overText = L["ThresholdHealerOver2"]
 	end
 
 	yCoord = yCoord - 30
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
+
+	controls.colors.thresholdHealer = controls.colors.thresholdHealer or {}
+
+	if classId == nil then
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsForHealersHeader"], oUi.xCoord, yCoord)
+	else
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
+	end
+	
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalThresholdColors = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_thresholdColors", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalThresholdColors
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdColors"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdColors)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].thresholdColors = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName, true)
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	end
 
 	yCoord = yCoord - 30
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, overText, spec.colors.threshold.over.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.threshold.over
+	controls.colors.thresholdHealer.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, overText, thresholdColor.over.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.thresholdHealer.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, thresholdColor, controls.colors.thresholdHealer, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.threshold.unusable
+	controls.colors.thresholdHealer.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], thresholdColor.unusable.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.thresholdHealer.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, thresholdColor, controls.colors.thresholdHealer, "unusable")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.threshold.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerPassive"], spec.colors.threshold.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.threshold.passive
+	controls.colors.thresholdHealer.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerPassive"], thresholdColor.passive.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.thresholdHealer.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "passive")
-	end)
-
-	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdOverlapBorder
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
-	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
-	f:SetChecked(spec.thresholds.properties.overlapBorder)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.properties.overlapBorder = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, thresholdColor, controls.colors.thresholdHealer, "passive")
 	end)
 
 	return yCoord

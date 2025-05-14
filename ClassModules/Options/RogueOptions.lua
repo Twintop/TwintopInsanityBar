@@ -2622,7 +2622,7 @@ local function OutlawConstructThresholdPanel(parent)
 
 	yCoord = math.min(yCoord, yCoord2)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, true, true, true, true, L["RogueAssassinationColorPickerThresholdSpecial"], custom)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, true, true, true, true, L["RogueOutlawColorPickerThresholdSpecial"], custom)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 2, yCoord)
 end

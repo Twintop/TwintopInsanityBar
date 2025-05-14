@@ -391,7 +391,7 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Discipline()
-	TRB.Functions.Character:FillSpecializationCacheSettings("priest", "discipline")
+	TRB.Functions.Character:FillSpecializationCacheSettings("priest", "discipline", true)
 end
 
 local function FillSpellData_Discipline()
@@ -552,7 +552,7 @@ local function FillSpellData_Discipline()
 end
 
 local function Setup_Holy()
-	TRB.Functions.Character:FillSpecializationCacheSettings("priest", "holy")
+	TRB.Functions.Character:FillSpecializationCacheSettings("priest", "holy", true)
 end
 
 local function FillSpellData_Holy()
@@ -2708,19 +2708,19 @@ local function UpdateResourceBar()
 					castingBarValue = currentResource
 				end
 
-				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
+				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specCacheSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
 				TRB.Data.cache.values.threshold[spells.shadowfiend.id] = TRB.Data.cache.values.threshold[spells.shadowfiend.id] or {}
-				if (talents:IsTalentActive(spells.shadowfiend) or talents:IsTalentActive(spells.mindbender) or talents:IsTalentActive(spells.voidwraith)) and specSettings.thresholds.thresholdDictionary.shadowfiend.enabled and specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
+				if (talents:IsTalentActive(spells.shadowfiend) or talents:IsTalentActive(spells.mindbender) or talents:IsTalentActive(spells.voidwraith)) and specCacheSettings.thresholds.thresholdDictionary["shadowfiend"].enabled and specSettings.colors.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
 				else
 					TRB.Functions.Threshold:Hide(spells.shadowfiend.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 
 				thresholdCount = thresholdCount + 1
 				TRB.Data.cache.values.threshold[spells.cannibalize.id] = TRB.Data.cache.values.threshold[spells.cannibalize.id] or {}
-				if TRB.Data.character.raceId == 5 and specSettings.thresholds.thresholdDictionary.cannibalize.enabled and specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+				if TRB.Data.character.raceId == 5 and specCacheSettings.thresholds.thresholdDictionary["cannibalize"].enabled and specSettings.colors.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
@@ -2761,12 +2761,12 @@ local function UpdateResourceBar()
 				if potion.onCooldown then
 					potionThresholdColor = specCacheSettings.colors.threshold.unusable.color
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-					if specSettings.thresholds.potionCooldown.enabled then
-						if specSettings.thresholds.potionCooldown.mode == "gcd" then
+					if specCacheSettings.thresholds.potionCooldown.enabled then
+						if specCacheSettings.thresholds.potionCooldown.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
-						elseif specSettings.thresholds.potionCooldown.mode == "time" then
-							potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
+							potionCooldownThreshold = gcd * specCacheSettings.thresholds.potionCooldown.gcdsMax
+						elseif specCacheSettings.thresholds.potionCooldown.mode == "time" then
+							potionCooldownThreshold = specCacheSettings.thresholds.potionCooldown.timeMax
 						end
 					end
 				end
@@ -2790,7 +2790,7 @@ local function UpdateResourceBar()
 						if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
 							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
 							resourceAmount = castingBarValue + potionMana
-							if specSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
+							if specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
 							else
 								showThreshold = false
 							end
@@ -2805,7 +2805,7 @@ local function UpdateResourceBar()
 							if  (spell.id == spells.shadowfiend.id and not mbActive and not vwActive) or
 								(spell.id == spells.mindbender.id and mbActive and not vwActive) or
 								(spell.id == spells.voidwraith.id and vwActive) then
-								if specSettings.thresholds.thresholdDictionary.shadowfiend.enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds.thresholdDictionary.shadowfiend.cooldown) then
+								if specCacheSettings.thresholds.thresholdDictionary["shadowfiend"].enabled and (not snapshot.cooldown:IsUnusable() or specCacheSettings.thresholds.thresholdDictionary["shadowfiend"].cooldown) then
 									local _, swingsRemaining, _, _, _ = snapshot:GetMaximumValues()
 									local shadowfiendMana
 
@@ -2846,7 +2846,7 @@ local function UpdateResourceBar()
 						snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 						local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
 						resourceAmount = castingBarValue + cannibalizeTotal
-						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specSettings.thresholds.thresholdDictionary.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.thresholdDictionary.cannibalize.cooldown) then
+						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specCacheSettings.thresholds.thresholdDictionary["cannibalize"].enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specCacheSettings.thresholds.thresholdDictionary["cannibalize"].cooldown) then
 							if snapshot.cooldown.onCooldown then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -2858,8 +2858,8 @@ local function UpdateResourceBar()
 						resourceAmount = spell:GetPrimaryResourceCost()
 					end
 
-					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -3045,17 +3045,17 @@ local function UpdateResourceBar()
 					castingBarValue = currentResource
 				end
 
-				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
+				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specCacheSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if talents:IsTalentActive(spells.shadowfiend) and specSettings.thresholds.thresholdDictionary.shadowfiend.enabled and specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
+				if talents:IsTalentActive(spells.shadowfiend) and specCacheSettings.thresholds.thresholdDictionary["shadowfiend"].enabled and specSettings.colors.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
 				else
 					TRB.Functions.Threshold:Hide(spells.shadowfiend.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 
 				thresholdCount = thresholdCount + 1
-				if TRB.Data.character.raceId == 5 and specSettings.thresholds.thresholdDictionary.cannibalize.enabled and specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+				if TRB.Data.character.raceId == 5 and specCacheSettings.thresholds.thresholdDictionary["cannibalize"].enabled and specSettings.colors.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
@@ -3096,12 +3096,12 @@ local function UpdateResourceBar()
 				if potion.onCooldown then
 					potionThresholdColor = specCacheSettings.colors.threshold.unusable.color
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-					if specSettings.thresholds.potionCooldown.enabled then
-						if specSettings.thresholds.potionCooldown.mode == "gcd" then
+					if specCacheSettings.thresholds.potionCooldown.enabled then
+						if specCacheSettings.thresholds.potionCooldown.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
-						elseif specSettings.thresholds.potionCooldown.mode == "time" then
-							potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
+							potionCooldownThreshold = gcd * specCacheSettings.thresholds.potionCooldown.gcdsMax
+						elseif specCacheSettings.thresholds.potionCooldown.mode == "time" then
+							potionCooldownThreshold = specCacheSettings.thresholds.potionCooldown.timeMax
 						end
 					end
 				end
@@ -3125,7 +3125,7 @@ local function UpdateResourceBar()
 						if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
 							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
 							resourceAmount = castingBarValue + potionMana
-							if specSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
+							if specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
 							else
 								showThreshold = false
 							end
@@ -3134,7 +3134,7 @@ local function UpdateResourceBar()
 						end
 					elseif spell.id == spells.shadowfiend.id then
 						snapshot = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
-						if talents:IsTalentActive(spell) and not snapshot.buff.isActive and specSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds.thresholdDictionary[spell.settingKey].cooldown) then
+						if talents:IsTalentActive(spell) and not snapshot.buff.isActive and specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].cooldown) then
 							local _, swingsRemaining, _, _, _ = snapshot:GetMaximumValues()
 							local shadowfiendMana = swingsRemaining * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 
@@ -3154,7 +3154,7 @@ local function UpdateResourceBar()
 					elseif spell.id == spells.symbolOfHope.id and talents:IsTalentActive(spell) then
 						snapshot = snapshots[spells.symbolOfHope.id]
 						local currentManaPercent = (currentResource / TRB.Data.character.maxResource) * 100
-						if not snapshot.buff.isActive and currentManaPercent <= specSettings.thresholds.thresholdDictionary[spell.settingKey].minimumManaPercent and specSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds.thresholdDictionary[spell.settingKey].cooldown) then
+						if not snapshot.buff.isActive and currentManaPercent <= specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].minimumManaPercent and specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].cooldown) then
 							local symbolOfHopeMana = symbolOfHope:CalculateTime(spells.symbolOfHope.ticks+1, (spells.symbolOfHope.duration / (1 + ((snapshotData.attributes.haste or 0) / 100))) / spells.symbolOfHope.ticks, 0, true)
 
 							resourceAmount = castingBarValue + symbolOfHopeMana
@@ -3174,7 +3174,7 @@ local function UpdateResourceBar()
 						snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 						local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
 						resourceAmount = castingBarValue + cannibalizeTotal
-						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specSettings.thresholds.thresholdDictionary.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.thresholdDictionary.cannibalize.cooldown) then
+						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specCacheSettings.thresholds.thresholdDictionary["cannibalize"].enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specCacheSettings.thresholds.thresholdDictionary["cannibalize"].cooldown) then
 							if snapshot.cooldown.onCooldown then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -3186,8 +3186,8 @@ local function UpdateResourceBar()
 						resourceAmount = spell:GetPrimaryResourceCost()
 					end
 
-					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 				end
 
 				local barColor = nil
@@ -3419,10 +3419,10 @@ local function UpdateResourceBar()
 					TRB.Data.cache.values.threshold["shadowfiend"] = TRB.Data.cache.values.threshold["shadowfiend"] or {}
 					local sfCache = TRB.Data.cache.values.threshold["shadowfiend"]
 					if (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], true, passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], true, passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 						
 						if sfCache.color ~= specCacheSettings.colors.threshold.mindbender.color then
-							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender.color, true))
+							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specCacheSettings.colors.threshold.mindbender.color, true))
 							sfCache.color = specCacheSettings.colors.threshold.mindbender.color
 						end
 
@@ -3473,7 +3473,7 @@ local function UpdateResourceBar()
 							elseif snapshots[spells.mindDevourer.id].buff.isActive and
 								currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
-							elseif specSettings.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow and
+							elseif specCacheSettings.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow and
 									spells.devouringPlague:GetPrimaryResourceCost() > currentResource  then
 								showThreshold = false
 							elseif currentResource >= resourceAmount then
@@ -3490,7 +3490,7 @@ local function UpdateResourceBar()
 							elseif snapshots[spells.mindDevourer.id].buff.isActive and
 								currentResource >= spells.devouringPlague2:GetPrimaryResourceCost() then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
-							elseif specSettings.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow and
+							elseif specCacheSettings.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow and
 								spells.devouringPlague2:GetPrimaryResourceCost() > currentResource then
 								showThreshold = false
 							elseif currentResource >= resourceAmount then
@@ -3526,8 +3526,8 @@ local function UpdateResourceBar()
 						end
 					end
 
-					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 				end
 
 				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or snapshots[spells.mindDevourer.id].buff.isActive then

@@ -2370,7 +2370,7 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.specProperties.bleedColors)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.specProperties.bleedColors = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines(spec)
+		TRB.Functions.Threshold:RedrawThresholdLines()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 2, yCoord)
@@ -2989,7 +2989,7 @@ local function RestorationConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 11, 4, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 4, yCoord)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 4, yCoord, true)
 
 	yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 11, 4, yCoord)
 end

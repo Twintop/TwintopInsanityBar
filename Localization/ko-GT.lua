@@ -2141,4 +2141,12 @@ if locale == "koKR" then
     L["ExportMessageExportThresholds"] = "임계값 선 내보내기"
     L["ExportMessageThresholds"] = "임계값"
     L["ExportMessagePostfixThresholds"] = "(임계값 선)"
+    L["ThresholdLinesForHealersHeader"] = "힐러용 한계선"
+    L["ThresholdLineColorsForHealersHeader"] = "힐러용 한계선 색상"
+    L["ThresholdLineColorsForDpsAndTanksHeader"] = "딜러 및 탱커용 한계선 색상"
+    L["ThresholdGenericSpecial"] = "특별 보너스, 발동 또는 상태"
+    L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "선택 시, 한계선 아이콘 크기 및 위치와 한계선 너비에 대한 전역 설정이 적용됩니다."
+    L["CheckboxUseGlobalTooltip_ThresholdPotions"] = "선택 시, 힐러용 한계선 물약에 대한 전역 설정이 적용됩니다."
+    L["CheckboxUseGlobalTooltip_ThresholdColors"] = "선택 시, 한계선 색상에 대한 전역 설정이 적용됩니다. 적용되는 전역 설정은 전문화 역할에 따라 다릅니다."
+    L["CheckboxUseGlobalTooltip_ThresholdHealers"] = "선택 시, 힐러용 한계선에 대한 전역 설정이 적용됩니다."
 end

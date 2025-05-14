@@ -235,4 +235,7 @@ if locale == "enGB" then
     L["GlobalCheckboxThresholdOvercapTooltip"] = "This will change the Resource text colour when your current resource or a hardcast spell will result in overcapping maximum resources."
     L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "This will change the bar border colour when Explosive Shot is off cooldown."
     L["ThresholdLineColorsHeader"] = "Threshold Line Colours"
+    L["ThresholdLineColorsForHealersHeader"] = "Threshold Line Colours for Healers"
+    L["ThresholdLineColorsForDpsAndTanksHeader"] = "Threshold Line Colours for DPS and Tanks"
+    L["CheckboxUseGlobalTooltip_ThresholdColors"] = "When checked, the global settings for threshold colours will be used. The global setting used varies by specialisation role."
 end

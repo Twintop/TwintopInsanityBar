@@ -2143,4 +2143,12 @@ if locale == "frFR" then
     L["ExportMessageExportThresholds"] = "Exporter les lignes de seuil"
     L["ExportMessageThresholds"] = "Seuils"
     L["ExportMessagePostfixThresholds"] = "(Lignes de seuil)"
+    L["ThresholdLinesForHealersHeader"] = "Lignes de seuil pour les soigneurs"
+    L["ThresholdLineColorsForHealersHeader"] = "Couleurs des lignes de seuil pour les soigneurs"
+    L["ThresholdLineColorsForDpsAndTanksHeader"] = "Couleurs des lignes de seuil pour les DPS et les tanks"
+    L["ThresholdGenericSpecial"] = "Bonus spécial, effet de déclenchement ou statut"
+    L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "Si cette case est cochée, les paramètres globaux de taille et de position de l'icône de seuil, ainsi que la largeur de la ligne de seuil, seront utilisés."
+    L["CheckboxUseGlobalTooltip_ThresholdPotions"] = "Si cette case est cochée, les paramètres globaux des potions de seuil pour les soigneurs seront utilisés."
+    L["CheckboxUseGlobalTooltip_ThresholdColors"] = "Si cette case est cochée, les paramètres globaux des couleurs de seuil seront utilisés. Le paramètre global utilisé varie selon le rôle de spécialisation."
+    L["CheckboxUseGlobalTooltip_ThresholdHealers"] = "Si cette case est cochée, les paramètres globaux des seuils activés pour les soigneurs seront utilisés."
 end

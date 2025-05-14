@@ -60,6 +60,26 @@ local function ConstructBarColorsAndBehaviorPanel(parent)
 	]]
 end
 
+local function ConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.core
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+	
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], true, true, true, true, true, L["ThresholdGenericSpecial"], nil)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, nil, nil, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, nil, nil, yCoord)
+
+	yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, nil, nil, yCoord)
+end
 
 local function ConstructFontAndTextPanel(parent)
 	if parent == nil then
@@ -494,9 +514,10 @@ local function ConstructGlobalOptionsPanel()
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabMiscellaneous"], 4, parent, 100, tabs[3])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab2", L["TabThresholds"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabMiscellaneous"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -521,7 +542,8 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
 
 	ConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	ConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
+	ConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	ConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
 	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 	ConstructMiscellaneousPanel(tabsheets[4].scrollFrame.scrollChild)
 end
@@ -840,12 +862,12 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 10.51)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.79)
+	local localeText2 = string.format(percentFormat, 10.47)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.89)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.80)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.76)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)

@@ -425,7 +425,8 @@ end
 ---| '"affliction"' # Affliction (Warlock)
 ---| '"arms"' # Arms (Warrior)
 ---| '"fury"' # Fury (Warrior)
-function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
+---@param isHealer boolean
+function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName, isHealer)
 	local specCache = TRB.Data.specCache[specName] --[[@as TRB.Classes.SpecCache]]
 	local core = TRB.Data.settings.core --[[@as TRB.Classes.Settings.Core]]
 	local s = core.global[className][specName] --[[@as TRB.Classes.Settings.SpecializationGlobalEnabled]]
@@ -495,19 +496,54 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.text.dots = spec.colors.text.dots
 	end
 
-	specCache.settings.colors.threshold = spec.colors.threshold
+---@diagnostic disable-next-line: missing-fields
+	specCache.settings.colors.threshold = {}
+	for key, _ in pairs(spec.colors.threshold) do
+		specCache.settings.colors.threshold[key] = spec.colors.threshold[key]
+	end
+
 	if s.thresholdColors then
-		specCache.settings.colors.threshold.over = core.colors.threshold.over
-		specCache.settings.colors.threshold.under = core.colors.threshold.under
-		specCache.settings.colors.threshold.unusable = core.colors.threshold.unusable
-		specCache.settings.colors.threshold.special = core.colors.threshold.special
-		specCache.settings.colors.threshold.outOfRange = core.colors.threshold.outOfRange
+		if isHealer then
+			specCache.settings.colors.threshold.over = core.colors.thresholdHealers.over
+			specCache.settings.colors.threshold.unusable = core.colors.thresholdHealers.unusable
+			specCache.settings.colors.threshold.passive = core.colors.thresholdHealers.passive
+		else
+			specCache.settings.colors.threshold.over = core.colors.threshold.over
+			specCache.settings.colors.threshold.under = core.colors.threshold.under
+			specCache.settings.colors.threshold.unusable = core.colors.threshold.unusable
+			specCache.settings.colors.threshold.special = core.colors.threshold.special
+			specCache.settings.colors.threshold.outOfRange = core.colors.threshold.outOfRange
+		end
 	end
 	
-	specCache.settings.thresholds = spec.thresholds
-	if s.thresholds then
-		specCache.settings.thresholds.properties = core.settings.thresholds.properties
-		specCache.settings.thresholds.icons = core.settings.thresholds.icons
+---@diagnostic disable-next-line: missing-fields
+	specCache.settings.thresholds = {
+		specProperties = spec.thresholds.specProperties,
+		thresholdDictionary = {}
+	}
+	if s.thresholdIcons then
+		specCache.settings.thresholds.properties = core.thresholds.properties
+		specCache.settings.thresholds.icons = core.thresholds.icons
+	else
+		specCache.settings.thresholds.properties = spec.thresholds.properties
+		specCache.settings.thresholds.icons = spec.thresholds.icons
+	end
+
+	for key, _ in pairs(spec.thresholds.thresholdDictionary) do
+		specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
+	end
+	if isHealer then
+		if s.thresholdPotions then
+			specCache.settings.thresholds.potionCooldown = core.thresholds.potionCooldown
+		else
+			specCache.settings.thresholds.potionCooldown = spec.thresholds.potionCooldown
+		end
+
+		if s.thresholdHealers then
+			for key, _ in pairs(core.thresholds.thresholdDictionaryHealers) do
+				specCache.settings.thresholds.thresholdDictionary[key] = core.thresholds.thresholdDictionaryHealers[key]
+			end
+		end
 	end
 
 	if s.precision then

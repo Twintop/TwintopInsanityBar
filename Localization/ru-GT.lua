@@ -2141,4 +2141,12 @@ if locale == "ruRU" then
     L["ExportMessageExportThresholds"] = "Экспорт пороговых линий"
     L["ExportMessageThresholds"] = "Пороги"
     L["ExportMessagePostfixThresholds"] = "(Пороговые линии)"
+    L["ThresholdLinesForHealersHeader"] = "Пороговые линии для целителей"
+    L["ThresholdLineColorsForHealersHeader"] = "Цвета пороговых линий для целителей"
+    L["ThresholdLineColorsForDpsAndTanksHeader"] = "Цвета пороговых линий для DPS и танков"
+    L["ThresholdGenericSpecial"] = "Специальный бонус, срабатывание или статус"
+    L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "Если отмечено, будут использоваться глобальные настройки размера и положения значка порога и ширины линии порога."
+    L["CheckboxUseGlobalTooltip_ThresholdPotions"] = "Если отмечено, будут использоваться глобальные настройки пороговых зелий для целителей."
+    L["CheckboxUseGlobalTooltip_ThresholdColors"] = "Если отмечено, будут использоваться глобальные настройки пороговых цветов. Используемая глобальная настройка зависит от роли специализации."
+    L["CheckboxUseGlobalTooltip_ThresholdHealers"] = "Если отмечено, будут использоваться глобальные настройки порогов, включенных для целителей."
 end

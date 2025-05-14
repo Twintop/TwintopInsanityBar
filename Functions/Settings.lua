@@ -8,7 +8,9 @@ local specGlobalDefaults = {
 	--specEnable = false,
 	bar = false,
 	comboPoints = false,
-	thresholds = false,
+	thresholdIcons = false,
+	thresholdHealers = false,
+	thresholdPotions = false,
 	--displayBar = false,
 	displayText = false,
 	textColors = false,
@@ -65,7 +67,42 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					yPos = -12,
 					width = 24,
 					height = 24
-				}
+				},
+				thresholdDictionaryHealers = {
+					algariManaPotionRank1 = {
+						enabled = false,
+					},
+					algariManaPotionRank2 = {
+						enabled = false,
+					},
+					algariManaPotionRank3 = {
+						enabled = true,
+					},
+					cavedwellersDelightRank1 = {
+						enabled = false,
+					},
+					cavedwellersDelightRank2 = {
+						enabled = false,
+					},
+					cavedwellersDelightRank3 = {
+						enabled = true,
+					},
+					slumberingSoulSerumRank1 = {
+						enabled = false,
+					},
+					slumberingSoulSerumRank2 = {
+						enabled = false,
+					},
+					slumberingSoulSerumRank3 = {
+						enabled = true,
+					},
+				},
+				potionCooldown = {
+					enabled=true,
+					mode="time",
+					gcdsMax=40,
+					timeMax=60
+				},
 			},
 			displayBar = {
 				alwaysShow = false,
@@ -148,9 +185,6 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					unusable = {
 						color = "FFFF0000"
 					},
-					passive = {
-						color = "FF8080FF"
-					},
 					special = {
 						color = "FFFF00FF"
 					},
@@ -158,6 +192,17 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 						color = "FF440000",
 						enabled = true
 					},
+				},
+				thresholdHealers = {
+					over = {
+						color = "FF00FF00"
+					},
+					unusable = {
+						color = "FFFF0000"
+					},
+					passive = {
+						color = "FF8080FF"
+					}
 				}
 			},
 			textures={

@@ -243,7 +243,7 @@ local function Setup_Devastation()
 end
 
 local function Setup_Preservation()
-	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "preservation")
+	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "preservation", true)
 end
 
 local function Setup_Augmentation()
@@ -1305,10 +1305,10 @@ local function UpdateResourceBar()
 					castingBarValue = currentResource
 				end
 
-				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
+				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specCacheSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
 				if specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.emeraldCommunion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.emeraldCommunion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame,thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.emeraldCommunion.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
@@ -1341,18 +1341,18 @@ local function UpdateResourceBar()
 
 				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
-				local potionThresholdColor = specSettings.colors.threshold.over.color
+				local potionThresholdColor = specCacheSettings.colors.threshold.over.color
 				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 				if potion.onCooldown then
-					potionThresholdColor = specSettings.colors.threshold.unusable.color
+					potionThresholdColor = specCacheSettings.colors.threshold.unusable.color
 					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-					if specSettings.thresholds.potionCooldown.enabled then
-						if specSettings.thresholds.potionCooldown.mode == "gcd" then
+					if specCacheSettings.thresholds.potionCooldown.enabled then
+						if specCacheSettings.thresholds.potionCooldown.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
-						elseif specSettings.thresholds.potionCooldown.mode == "time" then
-							potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
+							potionCooldownThreshold = gcd * specCacheSettings.thresholds.potionCooldown.gcdsMax
+						elseif specCacheSettings.thresholds.potionCooldown.mode == "time" then
+							potionCooldownThreshold = specCacheSettings.thresholds.potionCooldown.timeMax
 						end
 					end
 				end
@@ -1364,7 +1364,7 @@ local function UpdateResourceBar()
 					end
 					pairOffset = (thresholdId - 1) * 3
 					local showThreshold = true
-					local thresholdColor = specSettings.colors.threshold.over.color
+					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
 					local resourceAmount = 0
@@ -1376,7 +1376,7 @@ local function UpdateResourceBar()
 						if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
 							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
 							resourceAmount = castingBarValue + potionMana
-							if specSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
+							if specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
 							else
 								showThreshold = false
 							end
@@ -1387,8 +1387,8 @@ local function UpdateResourceBar()
 						resourceAmount = spell:GetPrimaryResourceCost()
 					end
 
-					TRB.Functions.Threshold:RepositionThreshold(specSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 				end
 
 				local barColor = specSettings.colors.bar.base

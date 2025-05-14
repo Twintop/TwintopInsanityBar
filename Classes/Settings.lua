@@ -6,7 +6,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.SpecializationGlobalEnabled
 ---@field public bar boolean
 ---@field public comboPoints boolean
----@field public thresholds boolean
+---@field public thresholdIcons boolean
+---@field public thresholdHealers boolean
+---@field public thresholdPotions boolean
 ---@field public precision boolean
 ---@field public displayText boolean
 ---@field public textColors boolean

@@ -2141,4 +2141,12 @@ if locale == "zhCN" then
     L["ExportMessageExportThresholds"] = "导出阈值线"
     L["ExportMessageThresholds"] = "阈值"
     L["ExportMessagePostfixThresholds"] = "（阈值线）"
+    L["ThresholdLinesForHealersHeader"] = "治疗者阈值线"
+    L["ThresholdLineColorsForHealersHeader"] = "治疗者阈值线颜色"
+    L["ThresholdLineColorsForDpsAndTanksHeader"] = "DPS 和坦克阈值线颜色"
+    L["ThresholdGenericSpecial"] = "特殊加成、触发或状态"
+    L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "选中后，将使用阈值图标大小、位置和阈值线宽度的全局设置。"
+    L["CheckboxUseGlobalTooltip_ThresholdPotions"] = "选中后，将使用治疗者阈值药水的全局设置。"
+    L["CheckboxUseGlobalTooltip_ThresholdColors"] = "选中后，将使用阈值颜色的全局设置。所使用的全局设置因专精角色而异。"
+    L["CheckboxUseGlobalTooltip_ThresholdHealers"] = "选中后，将使用为治疗者启用的阈值的全局设置。"
 end

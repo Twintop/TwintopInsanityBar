@@ -157,7 +157,12 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	end
 end
 
-function TRB.Functions.Threshold:RedrawThresholdLines(settings)
+function TRB.Functions.Threshold:RedrawThresholdLines()
+	if TRB.Data.barConstructedForSpec == nil or TRB.Data.barConstructedForSpec == "" then
+		return
+	end
+
+	local settings = TRB.Data.specCache[TRB.Data.barConstructedForSpec].settings
 	local resourceFrame = TRB.Frames.resourceFrame
 	local passiveFrame = TRB.Frames.passiveFrame
 
@@ -169,7 +174,7 @@ function TRB.Functions.Threshold:RedrawThresholdLines(settings)
 	end
 
 	entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
-	if entries > 0 then
+	if entries > 0 and (settings.colors.threshold.passive ~= nil or settings.colors.threshold.mindbender ~= nil) then
 		local passiveColor = settings.colors.threshold.passive
 		if passiveColor == nil then
 			passiveColor = settings.colors.threshold.mindbender

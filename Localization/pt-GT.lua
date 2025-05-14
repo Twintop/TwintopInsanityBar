@@ -2141,4 +2141,12 @@ if locale == "ptBR" or locale == "ptPT" then
     L["ExportMessageExportThresholds"] = "Exportar Linhas de Limiar"
     L["ExportMessageThresholds"] = "Limiares"
     L["ExportMessagePostfixThresholds"] = "(Linhas de Limiar)"
+    L["ThresholdLinesForHealersHeader"] = "Linhas de Limite para Curandeiros"
+    L["ThresholdLineColorsForHealersHeader"] = "Cores das Linhas de Limite para Curandeiros"
+    L["ThresholdLineColorsForDpsAndTanksHeader"] = "Cores das Linhas de Limite para DPS e Tanques"
+    L["ThresholdGenericSpecial"] = "Bônus especial, proc ou status"
+    L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "Quando marcada, as configurações globais para tamanho e posição do ícone de limite e largura da linha de limite serão usadas."
+    L["CheckboxUseGlobalTooltip_ThresholdPotions"] = "Quando marcada, as configurações globais para poções de limite para curandeiros serão usadas."
+    L["CheckboxUseGlobalTooltip_ThresholdColors"] = "Quando marcada, as configurações globais para cores de limite serão usadas. A configuração global usada varia de acordo com a função de especialização."
+    L["CheckboxUseGlobalTooltip_ThresholdHealers"] = "Quando marcada, as configurações globais para limites habilitados para curandeiros serão usadas."
 end

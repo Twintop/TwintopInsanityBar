@@ -2141,4 +2141,12 @@ if locale == "itIT" then
     L["ExportMessageExportThresholds"] = "Esporta linee di soglia"
     L["ExportMessageThresholds"] = "Soglie"
     L["ExportMessagePostfixThresholds"] = "(Linee di soglia)"
+    L["ThresholdLinesForHealersHeader"] = "Linee di soglia per i guaritori"
+    L["ThresholdLineColorsForHealersHeader"] = "Colori delle linee di soglia per i guaritori"
+    L["ThresholdLineColorsForDpsAndTanksHeader"] = "Colori delle linee di soglia per DPS e Tank"
+    L["ThresholdGenericSpecial"] = "Bonus speciali, proc o status"
+    L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "Se selezionata, verranno utilizzate le impostazioni globali per la dimensione e la posizione dell'icona di soglia e la larghezza della linea di soglia."
+    L["CheckboxUseGlobalTooltip_ThresholdPotions"] = "Se selezionata, verranno utilizzate le impostazioni globali per le pozioni di soglia per i guaritori."
+    L["CheckboxUseGlobalTooltip_ThresholdColors"] = "Se selezionata, verranno utilizzate le impostazioni globali per i colori di soglia. L'impostazione globale utilizzata varia in base al ruolo di specializzazione."
+    L["CheckboxUseGlobalTooltip_ThresholdHealers"] = "Se selezionata, verranno utilizzate le impostazioni globali per le soglie abilitate per i guaritori."
 end
