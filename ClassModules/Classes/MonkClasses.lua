@@ -67,7 +67,6 @@ end
 ---@field public energizingBrew TRB.Classes.SpellBase
 ---@field public sheilunsGift TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
----@field public heartOfTheJadeSerpentStacks TRB.Classes.SpellBase
 ---@field public manaTeaCharges TRB.Classes.SpellThreshold
 ---@field public cannibalize TRB.Classes.SpellThreshold
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
@@ -135,12 +134,6 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 		talentId = 443294,
 		isTalent = true,
 	})
-	self.heartOfTheJadeSerpentStacks = TRB.Classes.SpellBase:New({
-		id = 443506,
-		talentId = 443294,
-		isTalent = true,
-		maxStacks = 20
-	})
 
 	-- Racials
 	self.cannibalize = TRB.Classes.SpellThreshold:New({
@@ -169,8 +162,6 @@ end
 ---@field public danceOfChiJi TRB.Classes.SpellBase
 ---@field public combatWisdom TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
----@field public heartOfTheJadeSerpentReady TRB.Classes.SpellBase
----@field public heartOfTheJadeSerpentStacks TRB.Classes.SpellBase
 ---@field public flurryCharge TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
@@ -313,17 +304,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		id = 443421,
 		talentId = 443294,
 		isTalent = true
-	})
-	self.heartOfTheJadeSerpentReady = TRB.Classes.SpellBase:New({
-		id = 456368,
-		talentId = 443294,
-		isTalent = true
-	})
-	self.heartOfTheJadeSerpentStacks = TRB.Classes.SpellBase:New({
-		id = 443424,
-		talentId = 443294,
-		isTalent = true,
-		maxStacks = 45
 	})
 
 	-- Shado-Pan

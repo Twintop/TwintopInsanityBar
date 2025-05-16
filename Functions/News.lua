@@ -27,6 +27,15 @@ local content = [====[
 
 - [#441 - NEW (Koroshy)](#440) Add optional border color change when Explosive Shot is usable.
 
+## Monk
+### Mistweaver
+
+- [#444 - UPDATE](#444) Adjust Heart of the Jade Serpent's implementation to match changes made originally in 11.1.0. It will now cause the "ready" border color change when Sheilun's Gift is castable and both are talented. Remove outdated bar text variables. 
+
+### Windwalker
+
+- [#444 - UPDATE](#444) Adjust Heart of the Jade Serpent's implementation to match changes made originally in 11.1.0. It will now cause the "ready" border color change when Strike of the Windlord is castable and both are talented. Remove outdated bar text variables. 
+
 ---
 
 # 11.1.5.1-release (2025-04-27)

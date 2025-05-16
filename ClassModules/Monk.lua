@@ -148,8 +148,6 @@ local function FillSpecializationCache()
 	specCache.mistweaver.snapshotData.snapshots[spells.sheilunsGift.id] = TRB.Classes.Snapshot:New(spells.sheilunsGift)
 	---@type TRB.Classes.Snapshot
 	specCache.mistweaver.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
-	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, "always")
 
 	specCache.mistweaver.barTextVariables = {
 		icons = {},
@@ -204,10 +202,6 @@ local function FillSpecializationCache()
 	specCache.windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
-	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentReady.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentReady, nil, "always")
-	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpentStacks.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpentStacks, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.flurryCharge.id] = TRB.Classes.Snapshot:New(spells.flurryCharge)
 
@@ -309,9 +303,6 @@ local function FillSpellData_Mistweaver()
 		
 		{ variable = "$sgStacks", description = L["MonkMistweaverBarTextVariable_sgStacks"], printInSettings = true, color = false },
 		
-		{ variable = "$hotjsStacks", description = L["MonkMistweaverBarTextVariable_hotjsStacks"], printInSettings = true, color = false },
-		{ variable = "$hotjsMaxStacks", description = L["MonkMistweaverBarTextVariable_hotjsMaxStacks"], printInSettings = true, color = false },
-		{ variable = "$hotjsRemainingStacks", description = L["MonkMistweaverBarTextVariable_hotjsRemainingStacks"], printInSettings = true, color = false },
 		{ variable = "$hotjsTime", description = L["MonkMistweaverBarTextVariable_hotjsTime"], printInSettings = true, color = false },
 
 		{ variable = "$bowMana", description = L["MonkMistweaverBarTextVariable_bowMana"], printInSettings = true, color = false },
@@ -448,10 +439,6 @@ local function FillSpellData_Windwalker()
 		{ variable = "$motcMinTime", description = L["MonkWindwalkerBarTextVariable_motcMinTime"], printInSettings = true, color = false },
 		{ variable = "$motcMaxTime", description = L["MonkWindwalkerBarTextVariable_motcMaxTime"], printInSettings = true, color = false },
 
-		{ variable = "$hotjsStacks", description = L["MonkWindwalkerBarTextVariable_hotjsStacks"], printInSettings = true, color = false },
-		{ variable = "$hotjsMaxStacks", description = L["MonkWindwalkerBarTextVariable_hotjsMaxStacks"], printInSettings = true, color = false },
-		{ variable = "$hotjsRemainingStacks", description = L["MonkWindwalkerBarTextVariable_hotjsRemainingStacks"], printInSettings = true, color = false },
-		{ variable = "$hotjsReady", description = L["MonkWindwalkerBarTextVariable_hotjsReady"], printInSettings = true, color = false },
 		{ variable = "$hotjsTime", description = L["MonkWindwalkerBarTextVariable_hotjsTime"], printInSettings = true, color = false },
 
 		{ variable = "$flurryChargeStacks", description = L["MonkWindwalkerBarTextVariable_flurryChargeStacks"], printInSettings = true, color = false },
@@ -632,20 +619,6 @@ local function RefreshLookupData_Mistweaver()
 
 	--$sgStacks
 	local _sgStacks = snapshots[spells.sheilunsGift.id].cooldown.castCount
-
-	--$hotjsStacks
-	local _hotjsStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
-	
-	--$hotjsMaxStacks
-	local _hotjsMaxStacks = spells.heartOfTheJadeSerpentStacks.attributes.maxStacks
-
-	if talents:IsTalentActive(spells.shaohaosLessons) then
-		_hotjsMaxStacks = _hotjsMaxStacks + spells.shaohaosLessons.attributes.maxStacksMod
-	end
-
-	--$hotjsRemainingStacks
-	local _hotjsRemainingStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks
-
 	
 	--$hotjsTime
 	local _hotjsTime = snapshots[spells.heartOfTheJadeSerpent.id].buff.remaining
@@ -706,9 +679,6 @@ local function RefreshLookupData_Mistweaver()
 	lookup["$potionCooldown"] = potionCooldown
 	lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 	lookup["$sgStacks"] = _sgStacks
-	lookup["$hotjsStacks"] = _hotjsStacks
-	lookup["$hotjsMaxStacks"] = _hotjsMaxStacks
-	lookup["$hotjsRemainingStacks"] = _hotjsRemainingStacks
 	lookup["$hotjsTime"] = hotjsTime
 	TRB.Data.lookup = lookup
 
@@ -749,9 +719,6 @@ local function RefreshLookupData_Mistweaver()
 	lookupLogic["$potionCooldown"] = potionCooldown
 	lookupLogic["$potionCooldownSeconds"] = potionCooldown
 	lookupLogic["$sgStacks"] = _sgStacks
-	lookupLogic["$hotjsStacks"] = _hotjsStacks
-	lookupLogic["$hotjsMaxStacks"] = _hotjsMaxStacks
-	lookupLogic["$hotjsRemainingStacks"] = _hotjsRemainingStacks
 	lookupLogic["$hotjsTime"] = _hotjsTime
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -838,18 +805,6 @@ local function RefreshLookupData_Windwalker()
 	local _danceOfChiJiTime = snapshots[spells.danceOfChiJi.id].buff:GetRemainingTime(currentTime)
 	local danceOfChiJiTime = TRB.Functions.BarText:TimerPrecision(_danceOfChiJiTime)
 
-	--$hotjsStacks
-	local _hotjsStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
-	
-	--$hotjsMaxStacks
-	local _hotjsMaxStacks = spells.heartOfTheJadeSerpentStacks.attributes.maxStacks
-
-	--$hotjsRemainingStacks
-	local _hotjsRemainingStacks = snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks
-
-	--$hotjsReady
-	local _hotjsReady = snapshots[spells.heartOfTheJadeSerpentReady.id].buff.isActive
-	
 	--$hotjsTime
 	local _hotjsTime = snapshots[spells.heartOfTheJadeSerpent.id].buff.remaining
 	local hotjsTime = TRB.Functions.BarText:TimerPrecision(_hotjsTime)
@@ -895,10 +850,6 @@ local function RefreshLookupData_Windwalker()
 	lookup["$resourceOvercap"] = overcap
 	lookup["$energyOvercap"] = overcap
 	lookup["$danceOfChiJiTime"] = danceOfChiJiTime
-	lookup["$hotjsStacks"] = _hotjsStacks
-	lookup["$hotjsMaxStacks"] = _hotjsMaxStacks
-	lookup["$hotjsRemainingStacks"] = _hotjsRemainingStacks
-	lookup["$hotjsReady"] = ""
 	lookup["$hotjsTime"] = hotjsTime
 	lookup["$flurryChargeStacks"] = _flurryChargeStacks
 	TRB.Data.lookup = lookup
@@ -934,10 +885,6 @@ local function RefreshLookupData_Windwalker()
 	lookupLogic["$resourceOvercap"] = overcap
 	lookupLogic["$energyOvercap"] = overcap
 	lookupLogic["$danceOfChiJiTime"] = _danceOfChiJiTime
-	lookupLogic["$hotjsStacks"] = _hotjsStacks
-	lookupLogic["$hotjsMaxStacks"] = _hotjsMaxStacks
-	lookupLogic["$hotjsRemainingStacks"] = _hotjsRemainingStacks
-	lookupLogic["$hotjsReady"] = _hotjsReady
 	lookupLogic["$hotjsTime"] = _hotjsTime
 	lookupLogic["$flurryChargeStacks"] = _flurryChargeStacks
 	TRB.Data.lookupLogic = lookupLogic
@@ -1041,12 +988,6 @@ local function UpdateSnapshot_Mistweaver()
 	snapshots[spells.sheilunsGift.id].cooldown:Refresh()
 	snapshots[spells.heartOfTheJadeSerpent.id].buff:GetRemainingTime(currentTime)
 
-	local hotjsMaxStacks = spells.heartOfTheJadeSerpentStacks.attributes.maxStacks
-	if talents:IsTalentActive(spells.shaohaosLessons) then
-		hotjsMaxStacks = hotjsMaxStacks + spells.shaohaosLessons.attributes.maxStacksMod
-	end
-	snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks = hotjsMaxStacks - snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
-
 	local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 	innervate:Update()
 
@@ -1095,9 +1036,6 @@ local function UpdateSnapshot_Windwalker()
 	snapshots[spells.strikeOfTheWindlord.id].buff:GetRemainingTime(currentTime)
 
 	snapshots[spells.heartOfTheJadeSerpent.id].buff:GetRemainingTime(currentTime)
-
-	local hotjsMaxStacks = spells.heartOfTheJadeSerpentStacks.attributes.maxStacks
-	snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks = hotjsMaxStacks - snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications
 end
 
 local function UpdateResourceBar()
@@ -1129,7 +1067,7 @@ local function UpdateResourceBar()
 
 				if specSettings.colors.bar.sheilunsGiftMax.enabled and snapshots[spells.sheilunsGift.id].cooldown.castCount == spells.sheilunsGift.attributes.maxCastCount then
 					barBorderColor = specSettings.colors.bar.sheilunsGiftMax.color
-				elseif specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and snapshots[spells.heartOfTheJadeSerpentStacks.id].attributes.remainingStacks <= snapshots[spells.sheilunsGift.id].cooldown.castCount then
+				elseif specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents.IsTalentActive(spells.heartOfTheJadeSerpent) and talents.IsTalentActive(spells.sheilunsGift) and snapshots[spells.sheilunsGift.id].cooldown:IsUsable() then
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
 				elseif potionOfChilledClarity.buff.isActive and specSettings.colors.bar.potionOfChilledClarityBorderChange then
 					barBorderColor = specSettings.colors.bar.potionOfChilledClarity
@@ -1411,7 +1349,7 @@ local function UpdateResourceBar()
 
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and snapshots[spells.heartOfTheJadeSerpentReady.id].buff.isActive then
+				if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents.IsTalentActive(spells.heartOfTheJadeSerpent) and talents.IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable() then
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
 				elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
@@ -2038,10 +1976,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.danceOfChiJi.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$hotjsReady" then
-			if snapshots[spells.heartOfTheJadeSerpentReady.id].buff.isActive then
-				valid = true
-			end
 		elseif var == "$flurryChargeStacks" then
 			if snapshots[spells.flurryCharge.id].buff.isActive then
 				valid = true
@@ -2090,17 +2024,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 
 	-- Mistweaver or Windwalker / Conduit of the Celestials shared abilities
 	if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-		if var == "$hotjsStacks" then
-			if snapshots[spells.heartOfTheJadeSerpentStacks.id].buff.applications > 0 then
-				valid = true
-			end
-		elseif var == "$hotjsMaxStacks" then
-			valid = true
-		elseif var == "$hotjsRemainingStacks" then
-			if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
-				valid = true
-			end
-		elseif var == "$hotjsTime" then
+		if var == "$hotjsTime" then
 			if snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 				valid = true
 			end
