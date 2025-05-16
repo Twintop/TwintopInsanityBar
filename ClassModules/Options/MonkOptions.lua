@@ -929,23 +929,6 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], false, true)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.sheilunsGiftMax = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_sheilunsGiftMax", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sheilunsGiftMax
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkMistweaverCheckboxSheilunsGiftMax"])
-	f.tooltip = L["MonkMistweaverCheckboxSheilunsGiftMaxTooltip"]
-	f:SetChecked(spec.colors.bar.sheilunsGiftMax.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.sheilunsGiftMax.enabled = self:GetChecked()
-	end)
-
-	controls.colors.sheilunsGiftMax = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerSheilunsGiftMax"], spec.colors.bar.sheilunsGiftMax.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.sheilunsGiftMax
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "sheilunsGiftMax")
-	end)
-
-	yCoord = yCoord - 30
 	controls.checkBoxes.manaTeaBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Border_Option_manaTeaBorderChange", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.manaTeaBorderChange
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -962,6 +945,23 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "manaTea")
 	end)
 
+	yCoord = yCoord - 30
+	controls.checkBoxes.sheilunsGiftMax = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_sheilunsGiftMax", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sheilunsGiftMax
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkMistweaverCheckboxSheilunsGiftMax"])
+	f.tooltip = L["MonkMistweaverCheckboxSheilunsGiftMaxTooltip"]
+	f:SetChecked(spec.colors.bar.sheilunsGiftMax.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.sheilunsGiftMax.enabled = self:GetChecked()
+	end)
+
+	controls.colors.sheilunsGiftMax = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerSheilunsGiftMax"], spec.colors.bar.sheilunsGiftMax.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.sheilunsGiftMax
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "sheilunsGiftMax")
+	end)
+	
 	yCoord = yCoord - 30
 	controls.checkBoxes.heartOfTheJadeSerpentReady = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_heartOfTheJadeSerpentReady", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.heartOfTheJadeSerpentReady

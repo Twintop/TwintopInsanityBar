@@ -1032,6 +1032,7 @@ local function UpdateSnapshot_Windwalker()
 	snapshots[spells.detox.id].cooldown:Refresh()
 	snapshots[spells.expelHarm.id].cooldown:Refresh()
 	snapshots[spells.paralysis.id].cooldown:Refresh()
+	snapshots[spells.strikeOfTheWindlord.id].cooldown:Refresh()
 
 	snapshots[spells.strikeOfTheWindlord.id].buff:GetRemainingTime(currentTime)
 
@@ -1067,7 +1068,7 @@ local function UpdateResourceBar()
 
 				if specSettings.colors.bar.sheilunsGiftMax.enabled and snapshots[spells.sheilunsGift.id].cooldown.castCount == spells.sheilunsGift.attributes.maxCastCount then
 					barBorderColor = specSettings.colors.bar.sheilunsGiftMax.color
-				elseif specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents.IsTalentActive(spells.heartOfTheJadeSerpent) and talents.IsTalentActive(spells.sheilunsGift) and snapshots[spells.sheilunsGift.id].cooldown:IsUsable() then
+				elseif specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and talents:IsTalentActive(spells.sheilunsGift) and snapshots[spells.sheilunsGift.id].cooldown:IsUsable() and snapshots[spells.sheilunsGift.id].cooldown.castCount > 0 and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
 				elseif potionOfChilledClarity.buff.isActive and specSettings.colors.bar.potionOfChilledClarityBorderChange then
 					barBorderColor = specSettings.colors.bar.potionOfChilledClarity
@@ -1349,7 +1350,7 @@ local function UpdateResourceBar()
 
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents.IsTalentActive(spells.heartOfTheJadeSerpent) and talents.IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable() then
+				if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable() and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
 				elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
@@ -1463,6 +1464,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
+				elseif entry.spellId == spells.sheilunsGift.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
+					end
 				end
 			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
 				if entry.spellId == spells.danceOfChiJi.id then
@@ -1489,6 +1494,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						if talents:IsTalentActive(spells.paralysisRank2) then
 							snapshots[entry.spellId].cooldown.duration = snapshots[entry.spellId].cooldown.duration + spells.paralysisRank2.attributes.cooldownMod
 						end
+					end
+				elseif entry.spellId == spells.strikeOfTheWindlord.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 			end
