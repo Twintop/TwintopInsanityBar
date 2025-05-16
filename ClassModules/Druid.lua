@@ -3767,6 +3767,7 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 
 		TRB.Data.character.items.twwSeason1SetBonusCount = twwSeason1SetBonusCount
+		TRB.Data.snapshotData.snapshots[TRB.Data.spellsData.spells.moonkinForm.id].buff:Initialize(nil, true)
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		TRB.Data.character.specName = "feral"

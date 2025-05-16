@@ -14,7 +14,13 @@ local content = [====[
 # 11.1.5.2-release (2025-05-??)
 ## General
 
-- [#431 - UPDATE](#431) Separate options related to Threshold Lines to their own tab per specialization in the Options menu. Adjust the layout of these settings to be more consistent and extendable.
+- [#431 - UPDATE](#431) Separate options related to Threshold Lines to their own tab per specialization in the Options menu. Adjust the layout of these settings to be more consistent and extendable. Update import/export to handle thresholds as their own category.
+- [#431 - NEW](#431) Add Global Bar Setting support for threshold line icon and positioning, color (separate for DPS and tanks; healers), and potions for healers.
+
+## Druid
+### Balance
+
+- [#442 - FIX](#442) Ensure Moonkin Form's state is properly detected on login.
 
 ## Hunter
 ### Survival
