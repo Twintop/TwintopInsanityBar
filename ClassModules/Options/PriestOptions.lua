@@ -1384,7 +1384,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 					}
 				}
 			},
-			bar={
+			bar = {
 				border="FF431863",
 				borderOvercap="FFFF0000",
 				borderMindFlayInsanity="FF00FF00",
@@ -1414,7 +1414,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				overcapEnabled=true,
 				mindFlayInsanityBorderChange=true,
 				showPassive=true,
-				showCasting=true
+				showCasting=true,
 			},
 			threshold = {
 				under = {
@@ -1429,6 +1429,13 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				outOfRange = {
 					color = "FF440000",
 					enabled = true
+				}
+			},
+			endCap = {
+				resource = {
+					color = "FFFFFFFF",
+					enabled = true,
+					width = 10
 				}
 			}
 		},

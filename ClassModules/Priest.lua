@@ -1048,6 +1048,7 @@ local function ConstructResourceBar(settings)
 			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.passiveFrame.thresholds[x], settings, false)
 		end
 		TRB.Frames.resource2ContainerFrame:Hide()
+		TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, settings, "resource")
 	end
 
 	TRB.Functions.Class:CheckCharacter()

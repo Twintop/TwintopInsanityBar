@@ -86,10 +86,11 @@ TRB.Data.constants = {
 		barPassive = 80,
 		barCasting = 90,
 		barResource = 100,
-		barBorder = 101,
+		barBorder = 201,
+		endCap = 110,
 		cpContainer = 0,
-		cpResource = 110,
-		cpBorder = 111,
+		cpResource = 300,
+		cpBorder = 301,
 		thresholdBase = 1000,
 		thresholdOutOfRange = 1200,
 		thresholdBleedSame = 1400,
@@ -207,6 +208,8 @@ TRB.Frames.barBorderFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Re
 TRB.Frames.passiveFrame.thresholds = {}
 ---@diagnostic disable-next-line: inject-field
 TRB.Frames.resourceFrame.thresholds = {}
+---@diagnostic disable-next-line: inject-field
+TRB.Frames.resourceFrame.endCap = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 
 TRB.Frames.textFrames = {}
 

@@ -106,6 +106,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public bar table
 ---@field public comboPoints table
 ---@field public threshold TRB.Classes.Settings.ThresholdColors|table
+---@field public endCap table
 
 ---@class TRB.Casses.Settings.Bar
 ---@field public width number

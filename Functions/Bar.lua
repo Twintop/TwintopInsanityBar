@@ -240,6 +240,15 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 		TRB.Data.cache.values.bar[key].value = value
 		TRB.Data.cache.values.bar[key].maxResource = maxResource
 	end
+
+	if bar.endCap ~= nil then
+		if value < settings.colors.endCap[key].width then
+			local newWidth = math.min(value, settings.colors.endCap[key].width)
+			bar.endCap:SetWidth(newWidth)
+		end
+		TRB.Functions.Threshold:RepositionThreshold(settings, "endCap" .. key, bar.endCap, true, bar, value, maxResource, false)
+		print("yes", key, bar)
+	end
 end
 
 ---Sets the value for a primary resource bar

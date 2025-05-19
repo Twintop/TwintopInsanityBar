@@ -26,7 +26,11 @@ local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
 	end
 end
 
-function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource)
+function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
+	if growRight == nil then
+		growRight = true
+	end
+	
 	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
 		return
 	end
@@ -43,7 +47,11 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		local _, max = parentFrame:GetMinMaxValues()
 		local factor = (max - (settings.bar.border * 2)) / maxResource
 
-		thresholdLine:SetPoint("LEFT", parentFrame,	"LEFT",	math.floor(value * factor), 0)
+		if growRight then
+			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
+		else
+			thresholdLine:SetPoint("RIGHT", parentFrame, "LEFT", math.ceil(value * factor), 0)
+		end
 		TRB.Data.cache.values.threshold[key].value = value
 		TRB.Data.cache.values.threshold[key].maxResource = maxResource
 	end
@@ -154,6 +162,29 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		else
 			threshold.icon:Hide()
 		end
+	end
+end
+
+---comment
+---@param frame Frame
+---@param settings any
+---@param key any
+function TRB.Functions.Threshold:ResetEndCap(frame, settings, key)
+	local threshold = frame.endCap or CreateFrame("Frame", nil, frame)
+	local borderSubtraction = settings.bar.border * 2
+
+	threshold:SetWidth(settings.colors.endCap[key].width)--settings.thresholds.properties.width)
+	threshold:SetHeight(settings.bar.height - borderSubtraction)
+	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
+	threshold.texture:SetAllPoints(threshold)
+	threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.endCap[key].color, true))
+	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.endCap)
+	if settings.colors.endCap[key].enabled then
+		threshold:Show()
+		print("Show", key)
+	else
+		threshold:Hide()
+		print("Hide", key)
 	end
 end
 
