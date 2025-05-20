@@ -545,7 +545,7 @@ local function ConstructGlobalOptionsPanel()
 	ConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	ConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
 	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	ConstructMiscellaneousPanel(tabsheets[4].scrollFrame.scrollChild)
+	ConstructMiscellaneousPanel(tabsheets[5].scrollFrame.scrollChild)
 end
 
 local function ConstructImportExportRow(parent, yCoord, controls, classId, specId, labelLocalization, classOrSpecLocalization, includeThreshold, includeButtons)
