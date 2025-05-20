@@ -181,10 +181,8 @@ function TRB.Functions.Threshold:ResetEndCap(frame, settings, key)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.endCap)
 	if settings.colors.endCap[key].enabled then
 		threshold:Show()
-		print("Show", key)
 	else
 		threshold:Hide()
-		print("Hide", key)
 	end
 end
 

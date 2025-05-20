@@ -582,7 +582,6 @@ function TRB.Functions.IO:Import(input)
 					if entryCount > 0 then
 						newBarText[className.."_"..specName] = spec.displayText.barText
 						spec.displayText.barText = {}
-						TRB.Functions.Table:Print(newBarText[className.."_"..specName])
 					end
 				end
 			end
@@ -597,7 +596,6 @@ function TRB.Functions.IO:Import(input)
 						local entryCount = TRB.Functions.Table:Length(newBarText[className.."_"..specName])
 						if entryCount > 0 then
 							spec.displayText.barText = newBarText[className.."_"..specName]
-							TRB.Functions.Table:Print(spec.displayText.barText)
 						end
 					end
 				end
