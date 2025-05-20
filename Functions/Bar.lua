@@ -239,7 +239,7 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 			bar:SetValue(math.min(scaledValue, max))
 		end
 
-		if bar.endCap ~= nil then
+		--[[if bar.endCap ~= nil then
 			local ecWidth = settings.colors.endCap[key].width
 			if scaledValue < ecWidth then
 				ecWidth = scaledValue
@@ -249,7 +249,7 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 				bar.endCap:SetWidth(ecWidth)
 			end
 			TRB.Functions.Threshold:RepositionThreshold(settings, "endCap" .. key, bar.endCap, true, bar, value, maxResource, false)
-		end
+		end]]
 
 		TRB.Data.cache.values.bar[key].value = value
 		TRB.Data.cache.values.bar[key].maxResource = maxResource

@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.5.3-release (2025-05-20)
+## General
+
+- (FIX) Fix Lua errors caused by still WIP features.
+
+---
+
 # 11.1.5.2-release (2025-05-20)
 ## General
 
