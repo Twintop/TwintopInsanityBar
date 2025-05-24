@@ -7,7 +7,15 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
-*Localization of the addon is underway! If you're interested in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
+*Localization of the addon is still underway! If you have any interest in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
+
+---
+
+# 11.1.5.4-release (2025-05-??)
+## General
+
+- (FIX) Apply LibSharedMedia value checks to global bar settings.
+- (FIX) Correct messaging around invalid LibSharedMedia values.
 
 ---
 
