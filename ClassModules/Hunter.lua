@@ -2463,9 +2463,10 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 				-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 				C_Timer.After(0, function()
 					C_Timer.After(1, function()
-						TRB.Data.settings.hunter.beastMastery = TRB.Functions.LibSharedMedia:ValidateLsmValues("Beast Mastery Hunter", TRB.Data.settings.hunter.beastMastery)
-						TRB.Data.settings.hunter.marksmanship = TRB.Functions.LibSharedMedia:ValidateLsmValues("Marksmanship Hunter", TRB.Data.settings.hunter.marksmanship)
-						TRB.Data.settings.hunter.survival = TRB.Functions.LibSharedMedia:ValidateLsmValues("Survival Hunter", TRB.Data.settings.hunter.survival)
+						TRB.Data.settings.core = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["GlobalOptions"], TRB.Data.settings.core)
+						TRB.Data.settings.hunter.beastMastery = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["HunterBeastMasteryFull"], TRB.Data.settings.hunter.beastMastery)
+						TRB.Data.settings.hunter.marksmanship = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["HunterMarksmanshipFull"], TRB.Data.settings.hunter.marksmanship)
+						TRB.Data.settings.hunter.survival = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["HunterSurvivalFull"], TRB.Data.settings.hunter.survival)
 						
 						FillSpellData_BeastMastery()
 						FillSpellData_Marksmanship()

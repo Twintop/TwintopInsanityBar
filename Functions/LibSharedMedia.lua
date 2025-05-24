@@ -33,13 +33,13 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BACKGROUND, settings.textures.backgroundName) then
 			settings.textures.background = TRB.Details.addonData.libs.SharedMedia.MediaTable.background[settings.textures.backgroundName]
 		else
-			print(L["LSMInvalidBarBackgroundTexture"], specName, settings.textures.backgroundName)
+			print(string.format(L["LSMInvalidBarBackgroundTexture"], specName, settings.textures.backgroundName))
 			settings.textures.background = TRB.Data.constants.defaultSettings.textures.background
 			settings.textures.backgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
 		end
 
 		if not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BORDER, settings.textures.borderName) and settings.textures.borderName ~= "1 Pixel" then
-			print(L["LSMInvalidBarBorderTexture"], specName, settings.textures.borderName)
+			print(string.format(L["LSMInvalidBarBorderTexture"], specName, settings.textures.borderName))
 			settings.textures.border = TRB.Data.constants.defaultSettings.textures.border
 			settings.textures.borderName = TRB.Data.constants.defaultSettings.textures.borderName
 		else
@@ -49,7 +49,7 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.STATUSBAR, settings.textures.resourceBarName) then
 			settings.textures.resourceBar = TRB.Details.addonData.libs.SharedMedia.MediaTable.statusbar[settings.textures.resourceBarName]
 		else
-			print(L["LSMInvalidBarResourceTexture"], specName, settings.textures.resourceBarName)
+			print(string.format(L["LSMInvalidBarResourceTexture"], specName, settings.textures.resourceBarName))
 			settings.textures.resourceBar = TRB.Data.constants.defaultSettings.textures.resourceBar
 			settings.textures.resourceBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
 		end
@@ -57,7 +57,7 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.STATUSBAR, settings.textures.passiveBarName) then
 			settings.textures.passiveBar = TRB.Details.addonData.libs.SharedMedia.MediaTable.statusbar[settings.textures.passiveBarName]
 		else
-			print(L["LSMInvalidBarPassiveTexture"], specName, settings.textures.passiveBarName)
+			print(string.format(L["LSMInvalidBarPassiveTexture"], specName, settings.textures.passiveBarName))
 			settings.textures.passiveBar = TRB.Data.constants.defaultSettings.textures.resourceBar
 			settings.textures.passiveBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
 		end
@@ -65,7 +65,7 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.STATUSBAR, settings.textures.castingBarName) then
 			settings.textures.castingBar = TRB.Details.addonData.libs.SharedMedia.MediaTable.statusbar[settings.textures.castingBarName]
 		else
-			print(L["LSMInvalidBarCastingTexture"], specName, settings.textures.castingBarName)
+			print(string.format(L["LSMInvalidBarCastingTexture"], specName, settings.textures.castingBarName))
 			settings.textures.castingBar = TRB.Data.constants.defaultSettings.textures.resourceBar
 			settings.textures.castingBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
 		end
@@ -75,13 +75,13 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BACKGROUND, settings.textures.comboPointsBackgroundName) then
 				settings.textures.comboPointsBackground = TRB.Details.addonData.libs.SharedMedia.MediaTable.background[settings.textures.comboPointsBackgroundName]
 			else
-				print(L["LSMInvalidComboPointBackgroundTexture"], specName, settings.textures.comboPointsBackgroundName)
+				print(string.format(L["LSMInvalidComboPointBackgroundTexture"], specName, settings.textures.comboPointsBackgroundName))
 				settings.textures.comboPointsBackground = TRB.Data.constants.defaultSettings.textures.background
 				settings.textures.comboPointsBackgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
 			end
 
 			if not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BORDER, settings.textures.comboPointsBorderName) and settings.textures.comboPointsBorderName ~= "1 Pixel" then
-				print(L["LSMInvalidComboPointBorderTexture"], specName, settings.textures.comboPointsBorderName)
+				print(string.format(L["LSMInvalidComboPointBorderTexture"], specName, settings.textures.comboPointsBorderName))
 				settings.textures.comboPointsBorder = TRB.Data.constants.defaultSettings.textures.border
 				settings.textures.comboPointsBorderName = TRB.Data.constants.defaultSettings.textures.borderName
 			else
@@ -91,7 +91,7 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.STATUSBAR, settings.textures.comboPointsBarName) then
 				settings.textures.comboPointsBar = TRB.Details.addonData.libs.SharedMedia.MediaTable.statusbar[settings.textures.comboPointsBarName]
 			else
-				print(L["LSMInvalidComboPointResourceTexture"], specName, settings.textures.comboPointsBarName)
+				print(string.format(L["LSMInvalidComboPointResourceTexture"], specName, settings.textures.comboPointsBarName))
 				settings.textures.comboPointsBar = TRB.Data.constants.defaultSettings.textures.resourceBar
 				settings.textures.comboPointsBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
 			end
@@ -100,7 +100,7 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 
 	if settings.audio ~= nil then
 		for k, v in pairs(settings.audio) do
-			if v.soundName == nil or not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.SOUND, v.soundName) then
+			if k ~= "channel" and v.soundName == nil or not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.SOUND, v.soundName) then
 				if type(v.name) == "table" or type(v.soundName) == "table" then
 					print(string.format(L["LSMInvalidSound"], specName))
 				elseif v.name ~= nil and v.soundName ~= nil then
