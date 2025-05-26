@@ -2347,7 +2347,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
 		targetData:AddSpellTracking(spells.serpentSting)
-
+		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.survival.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)

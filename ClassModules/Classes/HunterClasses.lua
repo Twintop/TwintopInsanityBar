@@ -359,6 +359,7 @@ end
 ---@field public butchery TRB.Classes.SpellThreshold
 ---@field public mongooseBite TRB.Classes.SpellThreshold
 ---@field public tipOfTheSpear TRB.Classes.SpellBase
+
 TRB.Classes.Hunter.SurvivalSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
 TRB.Classes.Hunter.SurvivalSpells.__index = TRB.Classes.Hunter.SurvivalSpells
 
@@ -461,6 +462,9 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         talentId = 459853,
         isTalent = true
     })
+    self.serpentSting.id = 259491
+    self.serpentSting.talentId = 268501
+    self.serpentSting.baseDuration = 12
     self.explosiveShot.isSnowflake = true
 
     return self
