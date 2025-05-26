@@ -58,6 +58,9 @@ local function ConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
 	]]
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
 local function ConstructThresholdPanel(parent)

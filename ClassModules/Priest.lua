@@ -1048,7 +1048,6 @@ local function ConstructResourceBar(settings)
 			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.passiveFrame.thresholds[x], settings, false)
 		end
 		TRB.Frames.resource2ContainerFrame:Hide()
-		--TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, settings, "resource")
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -3423,7 +3422,7 @@ local function UpdateResourceBar()
 						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], true, passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 						
 						if sfCache.color ~= specCacheSettings.colors.threshold.mindbender.color then
-							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specCacheSettings.colors.threshold.mindbender.color, true))
+							TRB.Functions.Color:SetThresholdColor(TRB.Frames.passiveFrame.thresholds[1], specCacheSettings.colors.threshold.mindbender.color, true, 5, 3)
 							sfCache.color = specCacheSettings.colors.threshold.mindbender.color
 						end
 

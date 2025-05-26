@@ -330,7 +330,7 @@ function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 	return r, g, b, a
 end
 
-function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frame, specId)
+function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key].color, true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
@@ -346,14 +346,19 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 				elseif frameType == "bar" then
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key].color)
 				elseif frameType == "threshold" then
-					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key].color, true, specId)
+					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key].color, true, classId, specId)
+				elseif frameType == "endCap" then
+					if classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
+						local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+						TRB.Functions.Threshold:ResetEndCap(frame, TRB.Data.specCache[specName].settings, key)
+					end
 				end
 			end
 		end)
 	end
 end
 
-function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorControlsTable, key, frameType, frame, specId)
+function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key], true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
@@ -369,7 +374,7 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorC
 				elseif frameType == "bar" then
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key])
 				elseif frameType == "threshold" then
-					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key], true, specId)
+					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key], true, classId, specId)
 				end
 			end
 		end)
@@ -2396,6 +2401,78 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	f = controls.colors.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
+	end)
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, classId, specId, yCoord)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarEndcapHeader"], oUi.xCoord, yCoord)
+
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalEndCap = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_endCap", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalEndCap
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_EndCap"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].endCap)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].endCap = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			
+			if classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
+				TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, TRB.Data.specCache[specName].settings, "base")
+			end
+		end)
+	end
+
+	yCoord = yCoord - 30
+	controls.colors.endCap = {}
+	controls.colors.endCap.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EndCap"], spec.colors.endCap.base.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.endCap.base
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.endCap, controls.colors.endCap, "base", "endCap", TRB.Frames.resourceFrame, classId, specId)
+	end)
+
+	controls.checkBoxes.endCapBaseEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Option_endCapBaseEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.endCapBaseEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEndCapEnabled"])
+	f.tooltip = L["CheckboxEndCapEnabledTooltip"]
+	f:SetChecked(spec.colors.endCap.base.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.endCap.base.enabled = self:GetChecked()
+
+		if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
+			local specNameInner = specName
+			if classId == nil then
+				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
+			end
+			TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, TRB.Data.specCache[specNameInner].settings, "base")
+		end
+	end)
+
+	yCoord = yCoord - 50
+	local title = L["EndCapWidth"]
+	controls.endCapWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 50, spec.colors.endCap.base.width, 1, 0,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.endCapWidth:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.colors.endCap.base.width = value
+
+		if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
+			local specNameInner = specName
+			if classId == nil then
+				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
+			end
+			TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, TRB.Data.specCache[specNameInner].settings, "base")
+		end
 	end)
 
 	return yCoord

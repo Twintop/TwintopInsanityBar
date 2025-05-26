@@ -239,8 +239,13 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 			bar:SetValue(math.min(scaledValue, max))
 		end
 
-		if bar.endCap ~= nil and settings.colors.endCap ~= nil and settings.colors.endCap[key] ~= nil then
-			local ecWidth = settings.colors.endCap[key].width
+		local endCapKey = key
+		if key == "resource" then
+			endCapKey = "base"
+		end
+
+		if bar.endCap ~= nil and settings.colors.endCap ~= nil and settings.colors.endCap[endCapKey] ~= nil then
+			local ecWidth = settings.colors.endCap[endCapKey].width
 			if scaledValue < ecWidth then
 				ecWidth = scaledValue
 			end
@@ -248,7 +253,7 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 			if TRB.Data.cache.values.bar[key].endCapWidth ~= ecWidth then
 				bar.endCap:SetWidth(ecWidth)
 			end
-			TRB.Functions.Threshold:RepositionThreshold(settings, "endCap" .. key, bar.endCap, true, bar, value, maxResource, false)
+			TRB.Functions.Threshold:RepositionThreshold(settings, "endCap" .. endCapKey, bar.endCap, true, bar, value, maxResource, false)
 		end
 
 		TRB.Data.cache.values.bar[key].value = value
@@ -589,6 +594,8 @@ function TRB.Functions.Bar:Construct(settings)
 		resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.base, true))
 		resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		resourceFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barResource)
+
+		TRB.Functions.Threshold:ResetEndCap(resourceFrame, settings, "base")
 
 		castingFrame:Show()
 		castingFrame:SetMinMaxValues(0, settings.bar.width)
