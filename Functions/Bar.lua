@@ -467,6 +467,7 @@ end
 function TRB.Functions.Bar:UpdateSmoothBar()
 	if TRB.Data.settings.core.smoothBarValueUpdates then
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame)
+		TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.endCap)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.passiveFrame)
 		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
@@ -483,6 +484,7 @@ function TRB.Functions.Bar:UpdateSmoothBar()
 		end
 	else
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.resourceFrame)
+		TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.resourceFrame.endCap)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.castingFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.passiveFrame)
 		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then

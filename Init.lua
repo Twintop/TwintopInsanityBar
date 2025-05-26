@@ -39,6 +39,7 @@ end
 addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
 
 addonData.libs.LibSmoothStatusBar = LibStub:GetLibrary("LibSmoothStatusBar-1.0")
+addonData.libs.LibSmoothMove = LibStub:GetLibrary("LibSmoothMove-1.0")
 
 addonData.libs.LibAdvFlight = LibStub:GetLibrary("LibAdvFlight-1.0")
 
