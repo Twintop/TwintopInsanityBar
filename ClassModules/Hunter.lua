@@ -1057,8 +1057,7 @@ local function RefreshLookupData_Survival()
 	local serpentStingCount = tostring(_serpentStingCount)
 	local _serpentStingTime = 0
 	
-	if target ~= nil and talents:IsTalentActive(spells.vipersVenom) then
-		spells.serpentSting = spells.vipersVenom
+	if target ~= nil then
 		_serpentStingTime = target.spells[spells.serpentSting.id].remainingTime or 0
 	end
 
@@ -2348,7 +2347,6 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
 		targetData:AddSpellTracking(spells.serpentSting)
-		targetData:AddSpellTracking(spells.vipersVenom)
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.survival.settings)
