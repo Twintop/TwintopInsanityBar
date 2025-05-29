@@ -317,7 +317,9 @@ local function HolyLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},

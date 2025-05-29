@@ -307,7 +307,9 @@ local function HavocLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -646,7 +648,9 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},

@@ -173,7 +173,7 @@ function TRB.Functions.Threshold:ResetEndCap(frame, settings, key)
 	local threshold = frame.endCap or CreateFrame("Frame", nil, frame)
 	local borderSubtraction = settings.bar.border * 2
 
-	threshold:SetWidth(settings.colors.endCap[key].width)--settings.thresholds.properties.width)
+	threshold:SetWidth(settings.colors.endCap[key].width)
 	threshold:SetHeight(settings.bar.height - borderSubtraction)
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
@@ -185,7 +185,6 @@ function TRB.Functions.Threshold:ResetEndCap(frame, settings, key)
 		threshold:Hide()
 	end
 end
-
 function TRB.Functions.Threshold:RedrawThresholdLines()
 	if TRB.Data.barConstructedForSpec == nil or TRB.Data.barConstructedForSpec == "" then
 		return
@@ -201,6 +200,8 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 			TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
 		end
 	end
+	TRB.Functions.Threshold:ResetEndCap(resourceFrame, settings, "base")
+
 
 	entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
 	if entries > 0 and (settings.colors.threshold.passive ~= nil or settings.colors.threshold.mindbender ~= nil) then

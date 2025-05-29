@@ -392,7 +392,9 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -824,7 +826,9 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -1264,7 +1268,9 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -3100,7 +3106,7 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, false)
 
 	yCoord = yCoord - 30
-	controls.colors.borderShadowcraft = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowcraft"], spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.borderShadowcraft = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowcraft"], spec.colors.bar.borderShadowcraft, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderShadowcraft
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderShadowcraft")

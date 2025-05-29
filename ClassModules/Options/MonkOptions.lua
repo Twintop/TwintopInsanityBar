@@ -327,7 +327,9 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -679,7 +681,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},

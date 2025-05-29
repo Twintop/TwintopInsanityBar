@@ -314,7 +314,9 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -628,7 +630,9 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -972,7 +976,9 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				base = {
 					color = "FFFFFFFF",
 					enabled = false,
-					width = 2
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
 				}
 			}
 		},

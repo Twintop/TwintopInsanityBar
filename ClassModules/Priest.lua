@@ -2865,6 +2865,13 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
+					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
+					else
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
+					end
+				end
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
@@ -3239,6 +3246,13 @@ local function UpdateResourceBar()
 				end
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
+					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
+					else
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
+					end
+				end
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
@@ -3620,6 +3634,13 @@ local function UpdateResourceBar()
 				end
 				
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
+					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
+					else
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
+					end
+				end
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)

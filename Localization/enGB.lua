@@ -238,4 +238,9 @@ if locale == "enGB" then
     L["ThresholdLineColorsForHealersHeader"] = "Threshold Line Colours for Healers"
     L["ThresholdLineColorsForDpsAndTanksHeader"] = "Threshold Line Colours for DPS and Tanks"
     L["CheckboxUseGlobalTooltip_ThresholdColors"] = "When checked, the global settings for threshold colours will be used. The global setting used varies by specialisation role."
+    L["BarEndcapHeader"] = "Bar End Cap Colour, Changing, and Size"
+    L["CheckboxEndCapUseBorderColor"] = "Use current border colour"
+    L["CheckboxEndCapUseBorderColorTooltip"] = "This will override the end cap's colour with whatever the current bar border colour is."
+    L["CheckboxEndCapUseBorderColorExceptDefault"] = "Only non-default border colours"
+    L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"] = "This will only override the end cap's colour if the border colour is anything other than the base colour."
 end

@@ -15,10 +15,10 @@ local abs = math.abs
 
 local function AnimationTick()
 	for frame, value in pairs(lib.smoothing) do
-		local newX = value.currentOffsetX + ((value.offsetX - value.currentOffsetX) / 3)
-		local newY = value.currentOffsetY + ((value.offsetY - value.currentOffsetY) / 3)
+		local newX = value.currentOffsetX + ((value.offsetX - value.currentOffsetX) / frame.decayRate)
+		local newY = value.currentOffsetY + ((value.offsetY - value.currentOffsetY) / frame.decayRate)
 
-		if abs(newX - value.currentOffsetX) < 2 and abs(newY - value.currentOffsetY) < 2 then
+		if abs(newX - value.currentOffsetX) < (2 * frame.scale) and abs(newY - value.currentOffsetY) < (2 * frame.scale) then
 			frame:SetPoint_(value.point, value.relativeTo, value.relativePoint, value.offsetX, value.offsetY)
 			lib.smoothing[frame] = nil
 		else
@@ -62,11 +62,13 @@ if upgrade then
 	end
 end
 
-function lib:SmoothMove(frame)
+function lib:SmoothMove(frame, decayRate, scale)
 	if not frame.SetPoint_ then
 		frame.SetPoint_ = frame.SetPoint;
 		frame.SetPoint = SmoothSetPoint;
 	end
+	frame.decayRate = decayRate or 3
+	frame.scale = scale or 1
 end
 
 function lib:Reset(frame)

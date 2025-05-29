@@ -42,9 +42,8 @@ Functions:
     bar - StatusBar frame - The StatusBar to be restored
 ]]
 
-
-local MAJOR = "LibSmoothStatusBar-1.0"
-local MINOR = 1
+local MAJOR = "LibSmoothStatusBar-TRB-1.0"
+local MINOR = 2
 
 local lib, upgrade = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
@@ -59,11 +58,8 @@ local abs = math.abs
 local function AnimationTick()
 	for bar, value in pairs(lib.smoothing) do
 		local cur = bar:GetValue()
-		local new = cur + ((value - cur) / 3)
-		if new ~= new then
-			new = value
-		end
-		if cur == value or abs(new - value) < 2 then
+		local new = cur + ((value - cur) / bar.decayRate)
+		if cur == value or abs(new - value) < (2 * bar.scale) then
 			bar:SetValue_(value)
 			lib.smoothing[bar] = nil
 		else
@@ -93,11 +89,13 @@ if upgrade then
 	end
 end
 
-function lib:SmoothBar(bar)
+function lib:SmoothBar(bar, decayRate, scale)
 	if not bar.SetValue_ then
 		bar.SetValue_ = bar.SetValue;
 		bar.SetValue = SmoothSetValue;
 	end
+	bar.decayRate = decayRate or 3
+	bar.scale = scale or 1
 end
 
 function lib:ResetBar(bar)

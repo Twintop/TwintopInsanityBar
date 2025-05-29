@@ -466,10 +466,21 @@ end
 
 function TRB.Functions.Bar:UpdateSmoothBar()
 	if TRB.Data.settings.core.smoothBarValueUpdates then
-		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame)
-		TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.endCap)
-		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame)
-		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.passiveFrame)
+		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame, 3, 0.2)
+		TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.endCap, 3, 0.1)
+		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame, 3, 0.2)
+		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.passiveFrame, 3, 0.2)
+
+		if TRB.Frames.resourceFrame.thresholds ~= nil and #TRB.Frames.resourceFrame.thresholds > 0 then
+			for x = 1, #TRB.Frames.resourceFrame.thresholds do
+				TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.thresholds[x], 3, 0.2)
+			end
+		end		
+		if TRB.Frames.passiveFrame.thresholds ~= nil and #TRB.Frames.passiveFrame.thresholds > 0 then
+			for x = 1, #TRB.Frames.passiveFrame.thresholds do
+				TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.passiveFrame.thresholds[x], 3, 0.2)
+			end
+		end
 		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
@@ -479,7 +490,7 @@ function TRB.Functions.Bar:UpdateSmoothBar()
 			end
 
 			for x = 1, length do
-				TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resource2Frames[x].resourceFrame)
+				TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resource2Frames[x].resourceFrame, 3, 0.2)
 			end
 		end
 	else
@@ -487,6 +498,16 @@ function TRB.Functions.Bar:UpdateSmoothBar()
 		TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.resourceFrame.endCap)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.castingFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.passiveFrame)
+		if TRB.Frames.resourceFrame.thresholds ~= nil and #TRB.Frames.resourceFrame.thresholds > 0 then
+			for x = 1, #TRB.Frames.resourceFrame.thresholds do
+				TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.resourceFrame.thresholds[x])
+			end
+		end		
+		if TRB.Frames.passiveFrame.thresholds ~= nil and #TRB.Frames.passiveFrame.thresholds > 0 then
+			for x = 1, #TRB.Frames.passiveFrame.thresholds do
+				TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.passiveFrame.thresholds[x])
+			end
+		end
 		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2

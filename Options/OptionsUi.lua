@@ -1691,6 +1691,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f:SetChecked(spec.thresholds.icons.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.enabled = self:GetChecked()
+
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
 		
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
@@ -1711,6 +1713,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
+	
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
 
 	yCoord = yCoord - 100
 	title = L["ThresholdIconWidth"]
@@ -2449,6 +2453,9 @@ function TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, c
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.endCap.base.enabled = self:GetChecked()
 
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.endCapBaseUseBorderColor, spec.colors.endCap.base.enabled)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.endCapBaseUseBorderColorExceptDefault, spec.colors.endCap.base.enabled and spec.colors.endCap.base.useBorderColor)
+
 		if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
 			local specNameInner = specName
 			if classId == nil then
@@ -2458,10 +2465,55 @@ function TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, c
 		end
 	end)
 
-	yCoord = yCoord - 50
+	yCoord = yCoord - 20
+	controls.checkBoxes.endCapBaseUseBorderColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Option_endCapBaseUseBorderColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.endCapBaseUseBorderColor
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColor"])
+	f.tooltip = L["CheckboxEndCapUseBorderColorTooltip"]
+	f:SetChecked(spec.colors.endCap.base.useBorderColor)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.endCap.base.useBorderColor = self:GetChecked()
+
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.endCapBaseUseBorderColorExceptDefault, spec.colors.endCap.base.useBorderColor)
+
+		if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
+			local specNameInner = specName
+			if classId == nil then
+				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
+			end
+			TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, TRB.Data.specCache[specNameInner].settings, "base")
+		end
+	end)
+
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.endCapBaseUseBorderColor, spec.colors.endCap.base.enabled)
+
+	yCoord = yCoord - 20
+	controls.checkBoxes.endCapBaseUseBorderColorExceptDefault = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Option_endCapBaseUseBorderColorExceptDefault", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.endCapBaseUseBorderColorExceptDefault
+	f:SetPoint("TOPLEFT", oUi.xCoord+40, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColorExceptDefault"])
+	f.tooltip = L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"]
+	f:SetChecked(spec.colors.endCap.base.useBorderColorExceptDefault)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.endCap.base.useBorderColorExceptDefault = self:GetChecked()
+
+		if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
+			local specNameInner = specName
+			if classId == nil then
+				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
+			end
+			TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, TRB.Data.specCache[specNameInner].settings, "base")
+		end
+	end)
+	
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.endCapBaseUseBorderColorExceptDefault, spec.colors.endCap.base.enabled and spec.colors.endCap.base.useBorderColor)
+
+	yCoord = yCoord - 20
+
 	local title = L["EndCapWidth"]
 	controls.endCapWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 50, spec.colors.endCap.base.width, 1, 0,
-								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.endCapWidth:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.colors.endCap.base.width = value
@@ -2472,6 +2524,9 @@ function TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, c
 				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
 			end
 			TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, TRB.Data.specCache[specNameInner].settings, "base")
+			
+			-- Reset the cache for the bar value so it redraws the end cap width
+			TRB.Data.cache.values.bar["resource"].value = nil
 		end
 	end)
 

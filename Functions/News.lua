@@ -11,11 +11,26 @@ local content = [====[
 
 ---
 
-# 11.1.5.4-release (2025-05-??)
+# 11.1.5.4-release (2025-05-30)
 ## General
 
+- [#443 - NEW](#443) Add a bar End Cap as a new UI element. This sits at the end of your current resource and provides a bit of visual buffer to make it easier to see what your current resource is at.
+<br/>&emsp;&ensp;- Configurable width and color.
+<br/>&emsp;&ensp;- Optional color change to have it match your current bar border color. Extra option to only match the border color when it is not the baseline color.
+<br/>&emsp;&ensp;- Global bar settings available.
 - (FIX) Apply LibSharedMedia value checks to global bar settings.
 - (FIX) Correct messaging around invalid LibSharedMedia values.
+- (UPDATE) Modify smooth bar and smooth frame implementations to be more granular. This should smooth out the resources even more for some specializations with constant passive resource regeneration (Energy, Focus).
+
+## Hunter
+### Survival
+
+-[#445 - FIX (Koroshy)](#445) Correct logic around Serpent Sting tracking.
+
+## Rogue
+### Subtlety
+
+- (FIX) Correct an issue with the options UI color swatch for Shadowcraft border color change.
 
 ---
 
