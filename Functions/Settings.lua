@@ -203,6 +203,15 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					passive = {
 						color = "FF8080FF"
 					}
+				},
+				endCap = {
+					base = {
+						color = "FFFFFFFF",
+						enabled = false,
+						width = 2,
+						useBorderColor = false,
+						useBorderColorExceptDefault = false
+					}
 				}
 			},
 			textures={

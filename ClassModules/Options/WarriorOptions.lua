@@ -322,6 +322,15 @@ local function ArmsLoadDefaultSettings(includeBarText)
 					color = "FF440000",
 					enabled = true
 				}
+			},
+			endCap = {
+				base = {
+					color = "FFFFFFFF",
+					enabled = false,
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
+				}
 			}
 		},
 		displayText={
@@ -665,6 +674,15 @@ local function FuryLoadDefaultSettings(includeBarText)
 					color = "FF440000",
 					enabled = true
 				}
+			},
+			endCap = {
+				base = {
+					color = "FFFFFFFF",
+					enabled = false,
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
+				}
 			}
 		},
 		displayText={
@@ -870,15 +888,18 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 1, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, false)
@@ -1435,15 +1456,18 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 1, 2, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, false)

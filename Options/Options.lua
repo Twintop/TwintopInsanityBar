@@ -58,6 +58,9 @@ local function ConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
 	]]
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
 local function ConstructThresholdPanel(parent)
@@ -862,12 +865,12 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 10.51)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.93)
+	local localeText2 = string.format(percentFormat, 10.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 11.11)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.80)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.74)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.42)

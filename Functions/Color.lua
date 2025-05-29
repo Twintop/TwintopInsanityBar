@@ -178,10 +178,10 @@ function TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, key, rgbaStr
 	TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 end
 
-function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, specId)
-	if specId ~= nil and specId == TRB.Data.character.specId then
+function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, classId, specId)
+	if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
 		frame.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
-		if frame.icon ~= nil then
+		if frame.icon ~= nil and frame.hasIcon == true then
 			frame.icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
 		end
 	end

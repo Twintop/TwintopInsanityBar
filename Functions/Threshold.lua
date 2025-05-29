@@ -118,7 +118,6 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	threshold:SetHeight(settings.bar.height - borderSubtraction)
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
-	threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.over.color, true))
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
 	threshold.hasIcon = hasIcon
@@ -163,21 +162,22 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 			threshold.icon:Hide()
 		end
 	end
+	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.threshold.over.color, true)
 end
 
----comment
----@param frame Frame
+---Resets end caps threshold to match expected values based on current settings
+---@param frame frame
 ---@param settings any
 ---@param key any
 function TRB.Functions.Threshold:ResetEndCap(frame, settings, key)
 	local threshold = frame.endCap or CreateFrame("Frame", nil, frame)
 	local borderSubtraction = settings.bar.border * 2
 
-	threshold:SetWidth(settings.colors.endCap[key].width)--settings.thresholds.properties.width)
+	threshold:SetWidth(settings.colors.endCap[key].width)
 	threshold:SetHeight(settings.bar.height - borderSubtraction)
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
-	threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.endCap[key].color, true))
+	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.endCap[key].color, true)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.endCap)
 	if settings.colors.endCap[key].enabled then
 		threshold:Show()
@@ -185,7 +185,6 @@ function TRB.Functions.Threshold:ResetEndCap(frame, settings, key)
 		threshold:Hide()
 	end
 end
-
 function TRB.Functions.Threshold:RedrawThresholdLines()
 	if TRB.Data.barConstructedForSpec == nil or TRB.Data.barConstructedForSpec == "" then
 		return
@@ -201,6 +200,8 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 			TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
 		end
 	end
+	TRB.Functions.Threshold:ResetEndCap(resourceFrame, settings, "base")
+
 
 	entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
 	if entries > 0 and (settings.colors.threshold.passive ~= nil or settings.colors.threshold.mindbender ~= nil) then
@@ -211,7 +212,7 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 
 		for x = 1, entries do
 			TRB.Functions.Threshold:ResetThresholdLine(passiveFrame.thresholds[x], settings, false)
-			passiveFrame.thresholds[x].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(passiveColor.color, true))
+			TRB.Functions.Color:SetThresholdColor(passiveFrame.thresholds[x], passiveColor.color, true)
 		end
 	end
 
@@ -276,8 +277,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		end
 
 		if cache.color ~= thresholdColor then
-			threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(thresholdColor, true))
-			threshold.icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(thresholdColor, true))
+			TRB.Functions.Color:SetThresholdColor(threshold, thresholdColor, true)
 			cache.color = thresholdColor
 		end
 
@@ -396,7 +396,7 @@ function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snap
 			---@diagnostic disable-next-line: undefined-field
 			
 			if cache.color ~= settings.colors.threshold.passive.color then
-				frame.thresholds[thresholdId].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.passive.color, true))
+				TRB.Functions.Color:SetThresholdColor(frame.thresholds[thresholdId], settings.colors.threshold.passive.color, true)
 				cache.color = settings.colors.threshold.passive.color
 			end
 

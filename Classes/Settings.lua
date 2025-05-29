@@ -27,6 +27,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public audio { string: TRB.Classes.Settings.Audio }
 
 ---@class TRB.Classes.Settings.Core : TRB.Classes.Settings.SpecializationSettingsBase
+---@field public colors TRB.Classes.Settings.ColorsCore
 ---@field public dataRefreshRate number
 ---@field public reactionTime number
 ---@field public smoothBarValueUpdates boolean
@@ -101,12 +102,25 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public special TRB.Classes.Settings.ColorEntry
 ---@field public outOfRange TRB.Classes.Settings.ColorEnabledEntry
 
+---@class TRB.Classes.Settings.ThresholdHealerColors
+---@field public over TRB.Classes.Settings.ColorEntry
+---@field public unusable TRB.Classes.Settings.ColorEntry
+---@field public passive TRB.Classes.Settings.ColorEntry
+
+---@class TRB.Classes.Settings.EndCapColorEntry : TRB.Classes.Settings.ColorEnabledEntry
+---@field public width integer
+---@field public useBorderColor boolean
+---@field public useBorderColorExceptDefault boolean
+
 ---@class TRB.Classes.Settings.Colors
 ---@field public text TRB.Classes.Settings.TextColors
 ---@field public bar table
 ---@field public comboPoints table
----@field public threshold TRB.Classes.Settings.ThresholdColors|table
----@field public endCap table
+---@field public threshold TRB.Classes.Settings.ThresholdColors|{ [string]: TRB.Classes.Settings.ColorEntry }
+---@field public endCap { [string]: TRB.Classes.Settings.EndCapColorEntry }
+
+---@class TRB.Classes.Settings.ColorsCore : TRB.Classes.Settings.Colors
+---@field public thresholdHealer TRB.Classes.Settings.ThresholdHealerColors
 
 ---@class TRB.Casses.Settings.Bar
 ---@field public width number

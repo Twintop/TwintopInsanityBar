@@ -302,6 +302,15 @@ local function HavocLoadDefaultSettings(includeBarText)
 					color = "FF440000",
 					enabled = true
 				}
+			},
+			endCap = {
+				base = {
+					color = "FFFFFFFF",
+					enabled = false,
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
+				}
 			}
 		},
 		displayText={
@@ -634,6 +643,15 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 					color = "FF440000",
 					enabled = true
 				}
+			},
+			endCap = {
+				base = {
+					color = "FFFFFFFF",
+					enabled = false,
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
+				}
 			}
 		},
 		displayText={
@@ -842,7 +860,7 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame)
 	end)
 
 	yCoord = yCoord - 30
@@ -859,15 +877,18 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 12, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, false)
@@ -1415,15 +1436,18 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 12, 2, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, false)

@@ -1048,7 +1048,6 @@ local function ConstructResourceBar(settings)
 			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.passiveFrame.thresholds[x], settings, false)
 		end
 		TRB.Frames.resource2ContainerFrame:Hide()
-		--TRB.Functions.Threshold:ResetEndCap(TRB.Frames.resourceFrame, settings, "resource")
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -2866,6 +2865,13 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
+					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
+					else
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
+					end
+				end
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
@@ -3240,6 +3246,13 @@ local function UpdateResourceBar()
 				end
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
+					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
+					else
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
+					end
+				end
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
@@ -3423,7 +3436,7 @@ local function UpdateResourceBar()
 						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], true, passiveFrame, (castingBarValue + (shadowfiend.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 						
 						if sfCache.color ~= specCacheSettings.colors.threshold.mindbender.color then
-							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specCacheSettings.colors.threshold.mindbender.color, true))
+							TRB.Functions.Color:SetThresholdColor(TRB.Frames.passiveFrame.thresholds[1], specCacheSettings.colors.threshold.mindbender.color, true, 5, 3)
 							sfCache.color = specCacheSettings.colors.threshold.mindbender.color
 						end
 
@@ -3621,6 +3634,13 @@ local function UpdateResourceBar()
 				end
 				
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
+					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
+					else
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
+					end
+				end
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
