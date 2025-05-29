@@ -25,7 +25,7 @@ local content = [====[
 ## Hunter
 ### Survival
 
--[#445 - FIX (Koroshy)](#445) Correct logic around Serpent Sting tracking.
+- [#445 - FIX (Koroshy)](#445) Correct logic around Serpent Sting tracking.
 
 ## Rogue
 ### Subtlety
