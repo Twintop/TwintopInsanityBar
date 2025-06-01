@@ -364,6 +364,7 @@ end
 ---@field public bladeRush TRB.Classes.SpellBase
 ---@field public keepItRolling TRB.Classes.SpellBase
 ---@field public escalatingBlade TRB.Classes.SpellBase
+---@field public floatLikeAButterfly TRB.Classes.SpellBase
 ---@field public bladeFlurry TRB.Classes.SpellThreshold
 ---@field public rollTheBones TRB.Classes.SpellThreshold
 ---@field public deathFromAbove TRB.Classes.SpellThreshold
@@ -451,7 +452,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     self.adrenalineRush.attributes.restlessBlades = true
     self.adrenalineRush.isTalent = true
 
-    --TODO: Actually implement Restless Blades cooldown remaining color changes. Maybe. Or just remove it.
     self.restlessBlades = TRB.Classes.SpellBase:New({
         id = 79096,
         isTalent = true
@@ -524,6 +524,12 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         cooldown = 90,
         restlessBlades = true
     })
+    self.floatLikeAButterfly = TRB.Classes.SpellBase:New({
+        id = 354897,
+        isTalent = true
+    })
+    self.feint.attributes.restlessBlades = true
+    self.feint.attributes.floatLikeAButterfly = true
 
     -- Trickster
     self.coupDeGrace = TRB.Classes.SpellComboPointThreshold:New({

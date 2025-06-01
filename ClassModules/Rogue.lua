@@ -2553,11 +2553,25 @@ local function UpdateResourceBar()
 						end
 					end
 
-					if	spell:Is("TRB.Classes.SpellComboPointThreshold") and
-						spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and
-						snapshotData.attributes.resource2 == 0 then
+					if spell:Is("TRB.Classes.SpellComboPointThreshold") and
+						spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and snapshotData.attributes.resource2 == 0
+						then
 						thresholdColor = specCacheSettings.colors.threshold.unusable.color
 						frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+					end
+					
+					if specCacheSettings.colors.threshold["restlessBlades"].enabled and spell.attributes.restlessBlades and
+						(spell.attributes.floatLikeAButterfly == nil or (spell.attributes.floatLikeAButterfly and talents:IsTalentActive(spells.floatLikeAButterfly))) and
+						snapshot ~= nil and snapshot.cooldown.remainingTotal > 0 and snapshot.cooldown.remaining <= snapshotData.attributes.resource2
+						then
+						thresholdColor = specCacheSettings.colors.threshold["restlessBlades"].color
+						frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+					end
+
+					if spell.id == spells.feint.id then
+						print(specCacheSettings.colors.threshold["restlessBlades"].enabled, spell.attributes.restlessBlades,
+						spell.attributes.floatLikeAButterfly == nil, talents:IsTalentActive(spells.floatLikeAButterfly),
+						snapshot ~= nil, snapshot.cooldown.remainingTotal, snapshot.cooldown.remaining, snapshotData.attributes.resource2)
 					end
 
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, resourceFrame, resourceAmount, TRB.Data.character.maxResource)

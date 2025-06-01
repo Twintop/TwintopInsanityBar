@@ -510,6 +510,8 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 		self.startTime = nil
 		self.duration = 0
 		self.remainingTotal = 0
+	else
+		self.remainingTotal = self.remaining
 	end
 
 	if totalTime then

@@ -30,6 +30,7 @@ local content = [====[
 ### Outlaw
 
 - [#410 - NEW](#410) Add a new threshold line color for Sinister Strike when the Echoing Reprimand buff is active.
+- [#446 - NEW](#446) Add a new threshold line color for Restless Blades. This will change an ability's threshold line color when using a finisher will cause that ability to come off cooldown.
 - [#447 - UPDATE](#447) Allow the "Special" threshold line color change for Skull and Crossbones, Ruthless, and Opportunity to be disabled.
 
 ### Subtlety
