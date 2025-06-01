@@ -185,7 +185,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 						color = "FFFF0000"
 					},
 					special = {
-						color = "FFFF00FF"
+						color = "FFFF00FF",
+						enabled = true
 					},
 					outOfRange = {
 						color = "FF440000",

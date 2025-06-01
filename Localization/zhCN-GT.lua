@@ -385,7 +385,6 @@ if locale == "zhCN" then
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "给所有人使用最高的灵魂碎片颜色？"
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "勾选后，所有灵魂碎片都会使用最高的灵魂碎片颜色。 例如，如果您最多有 5 个灵魂碎片，而当前有 4 个，则所有灵魂碎片将使用倒数第二个颜色，而不仅仅是倒数第二个。"
     L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "未填充的灵魂碎片背景"
-    L["DemonHunterVengeanceThresholdSpecial"] = "灵魂碎片效果提升"
     L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "混沌新星"
     L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "这将在条上显示垂直线，表示使用混沌新星需要多少怒气。"
     L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "邪能毁灭"

@@ -73,8 +73,19 @@ local function ConstructThresholdPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+		{
+			name = "special",
+			hasEnabledCheckbox = true,
+			colorLocalization = L["ThresholdGenericSpecial"],
+			enabledCheckboxLocalization = L["ThresholdGenericSpecialEnabled"],
+			enabledCheckboxTooltipLocalization = L["ThresholdGenericSpecialEnabledTooltip"]
+		}
+	}
 	
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], true, true, true, true, true, L["ThresholdGenericSpecial"], nil)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], true, true, true, true, custom)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, nil, nil, yCoord)
 

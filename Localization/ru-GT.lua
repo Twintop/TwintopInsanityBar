@@ -385,7 +385,6 @@ if locale == "ruRU" then
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "Использовать для всех самый высокий цвет фрагмента души?"
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "Если этот флажок установлен, цвет самого высокого фрагмента души будет использоваться для всех фрагментов души. Например, если у вас максимум 5 фрагментов души, а на данный момент их 4, предпоследний цвет будет использоваться для всех фрагментов души, а не только для предпоследнего."
     L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "Незаполненный фон фрагмента души"
-    L["DemonHunterVengeanceThresholdSpecial"] = "Эффект фрагментов души усилился"
     L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "Нова Хаоса"
     L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "На шкале появится вертикальная линия, обозначающая, сколько ярости требуется для использования Кольца Хаоса."
     L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "Опустошение Скверны"

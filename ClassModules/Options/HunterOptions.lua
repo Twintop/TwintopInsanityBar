@@ -328,9 +328,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 				unusable = {
 					color = "FFFF0000"
 				},
-				special = {
-					color = "FFFF00FF"
-				},
 				outOfRange = {
 					color = "FF440000",
 					enabled = true
@@ -1554,7 +1551,7 @@ local function BeastMasteryConstructThresholdPanel(parent)
 
 	yCoord = math.min(yCoord, yCoord2)
 	
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, true, true, true, false, nil, nil)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 1, yCoord)
 end
@@ -2334,7 +2331,7 @@ local function MarksmanshipConstructThresholdPanel(parent)
 
 	yCoord = math.min(yCoord, yCoord2)
 	
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, true, true, true, false, nil, nil)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
 end
@@ -3090,7 +3087,7 @@ local function SurvivalConstructThresholdPanel(parent)
 		spec.thresholds.thresholdDictionary.wingClip.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, true, true, true, false, nil, nil)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
 end

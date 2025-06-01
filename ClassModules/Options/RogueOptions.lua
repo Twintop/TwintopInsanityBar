@@ -381,7 +381,8 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				special = {
-					color = "FFFF00FF"
+					color = "FFFF00FF",
+					enabled = true
 				},
 				echoingReprimand = {
 					color = "FF68CCEF",
@@ -816,10 +817,12 @@ local function OutlawLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				special = {
-					color = "FFFF00FF"
+					color = "FFFF00FF",
+					enabled = true
 				},
 				restlessBlades = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					enabled = true
 				},
 				echoingReprimand = {
 					color = "FF68CCEF",
@@ -1262,7 +1265,8 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				special = {
-					color = "FFFF00FF"
+					color = "FFFF00FF",
+					enabled = true
 				},
 				echoingReprimand = {
 					color = "FF68CCEF",
@@ -1852,6 +1856,13 @@ local function AssassinationConstructThresholdPanel(parent)
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
 		{
+			name = "special",
+			hasEnabledCheckbox = true,
+			colorLocalization = L["RogueAssassinationColorPickerThresholdSpecial"],
+			enabledCheckboxLocalization = L["RogueAssassinationColorPickerThresholdSpecialEnabled"],
+			enabledCheckboxTooltipLocalization = L["RogueAssassinationColorPickerThresholdSpecialEnabledTooltip"]
+		},
+		{
 			name = "echoingReprimand",
 			colorLocalization = L["RogueAssassinationColorPickerThresholdEchoingReprimand"],
 			hasEnabledCheckbox = true,
@@ -1862,7 +1873,7 @@ local function AssassinationConstructThresholdPanel(parent)
 
 	yCoord = math.min(yCoord, yCoord2)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], true, true, true, true, true, L["RogueAssassinationColorPickerThresholdSpecial"], custom)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], true, true, true, true, custom)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 1, yCoord)
 end
@@ -2668,8 +2679,18 @@ local function OutlawConstructThresholdPanel(parent)
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
 		{
+			name = "special",
+			hasEnabledCheckbox = true,
+			colorLocalization = L["RogueOutlawColorPickerThresholdSpecial"],
+			enabledCheckboxLocalization = L["RogueOutlawColorPickerThresholdSpecialEnabled"],
+			enabledCheckboxTooltipLocalization = L["RogueOutlawColorPickerThresholdSpecialEnabledTooltip"]
+		},
+		{
 			name = "restlessBlades",
-			colorLocalization = L["RogueOutlawColorPickerThresholdRestlessBlades"]
+			hasEnabledCheckbox = true,
+			colorLocalization = L["RogueOutlawColorPickerThresholdRestlessBlades"],
+			enabledCheckboxLocalization = L["RogueOutlawColorPickerThresholdRestlessBladesEnabled"],
+			enabledCheckboxTooltipLocalization = L["RogueOutlawColorPickerThresholdRestlessBladesEnabledTooltip"]
 		},
 		{
 			name = "echoingReprimand",
@@ -2682,7 +2703,7 @@ local function OutlawConstructThresholdPanel(parent)
 
 	yCoord = math.min(yCoord, yCoord2)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, true, true, true, true, L["RogueOutlawColorPickerThresholdSpecial"], custom)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, true, true, true, custom)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 2, yCoord)
 end
@@ -3495,6 +3516,13 @@ local function SubtletyConstructThresholdPanel(parent)
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
 		{
+			name = "special",
+			colorLocalization = L["RogueSubtletyColorPickerThresholdSpecial"],
+			hasEnabledCheckbox = true,
+			enabledCheckboxLocalization = L["RogueSubtletyColorPickerThresholdSpecialEnabled"],
+			enabledCheckboxTooltipLocalization = L["RogueSubtletyColorPickerThresholdSpecialEnabledTooltip"]
+		},
+		{
 			name = "echoingReprimand",
 			colorLocalization = L["RogueSubtletyColorPickerThresholdEchoingReprimand"],
 			hasEnabledCheckbox = true,
@@ -3505,7 +3533,7 @@ local function SubtletyConstructThresholdPanel(parent)
 
 	yCoord = math.min(yCoord, yCoord2)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, true, true, true, true, L["RogueSubtletyColorPickerThresholdSpecial"], custom)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, true, true, true, custom)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 3, yCoord)
 end

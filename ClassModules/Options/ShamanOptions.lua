@@ -303,7 +303,8 @@ local function ElementalLoadDefaultSettings(includeBarText)
 					color = "FF00FF00"
 				},
 				special = {
-					color = "FFFF00FF"
+					color = "FFFF00FF",
+					enabled = true
 				},
 				outOfRange = {
 					color = "FF440000",
@@ -1348,7 +1349,17 @@ local function ElementalConstructThresholdPanel(parent)
 		spec.thresholds.thresholdDictionary.earthquakeTargeted.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, true, false, true, true, L["ShamanElementalThresholdColorPickerEchoesOfGreatSundering"], nil)
+	local custom = {
+		{
+			name = "special",
+			hasEnabledCheckbox = true,
+			colorLocalization = L["ShamanElementalThresholdColorPickerEchoesOfGreatSundering"],
+			enabledCheckboxLocalization = L["ShamanElementalThresholdColorPickerEchoesOfGreatSunderingEnabled"],
+			enabledCheckboxTooltipLocalization = L["ShamanElementalThresholdColorPickerEchoesOfGreatSunderingEnabledTooltip"]
+		}
+	}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, true, false, true, custom)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord, true)
 end

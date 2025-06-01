@@ -385,7 +385,6 @@ if locale == "deDE" then
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "Höchste Seelenfragmentfarbe für alle verwenden?"
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "Wenn diese Option aktiviert ist, wird die Farbe des höchsten Seelenfragments für alle Seelenfragmente verwendet. Wenn Sie beispielsweise maximal 5 Seelenfragmente haben und derzeit 4, wird die vorletzte Farbe für alle Seelenfragmente verwendet und nicht nur für die vorletzte."
     L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "Ungefüllter Seelenfragment-Hintergrund"
-    L["DemonHunterVengeanceThresholdSpecial"] = "Der Effekt von Seelenfragmenten erhöht sich"
     L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "Chaos Nova"
     L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "Dadurch wird die vertikale Linie auf der Leiste angezeigt, die angibt, wie viel Wut erforderlich ist, um Chaos Nova zu verwenden."
     L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "Teufelsverwüstung"

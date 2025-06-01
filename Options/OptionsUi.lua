@@ -1851,11 +1851,9 @@ end
 ---@param over boolean?
 ---@param unusable boolean?
 ---@param outOfRange boolean?
----@param special boolean?
----@param localizationSpecial string?
 ---@param custom TRB.Classes.OptionsUi.Color[]?
 ---@return number
-function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, classId, specId, yCoord, localizationResource, under, over, unusable, outOfRange, special, localizationSpecial, custom)
+function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, classId, specId, yCoord, localizationResource, under, over, unusable, outOfRange, custom)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
@@ -1939,15 +1937,6 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-		end)
-	end
-
-	if special == true then
-		yCoord = yCoord - 30
-		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, localizationSpecial, spec.colors.threshold.special.color, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.threshold.special
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
 		end)
 	end
 

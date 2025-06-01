@@ -385,7 +385,6 @@ if locale == "koKR" then
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "모두에게 가장 높은 영혼 조각 색상을 사용하시겠습니까?"
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "체크하면 모든 영혼 조각에 가장 높은 영혼 조각의 색상이 사용됩니다. 예를 들어 최대 5개의 영혼 조각이 있고 현재 4개가 있는 경우 마지막에서 두 번째가 아닌 모든 영혼 조각에 두 번째 색상이 사용됩니다."
     L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "채워지지 않은 영혼 조각 배경"
-    L["DemonHunterVengeanceThresholdSpecial"] = "영혼 조각 효과 업"
     L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "카오스 노바"
     L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "이렇게 하면 Chaos Nova를 사용하는 데 필요한 Fury의 양을 나타내는 수직선이 막대에 표시됩니다."
     L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "지옥 황폐화"

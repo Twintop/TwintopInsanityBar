@@ -1033,7 +1033,7 @@ local function UpdateResourceBar()
 						showThreshold = false
 					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.chaosStrike.id or spell.id == spells.annihilation.id then
-							if snapshots[spells.chaosTheory.id].buff.isActive or snapshots[spells.rendingStrike.id].buff.isActive or snapshots[spells.warbladesHunger.id].buff.isActive then
+							if specCacheSettings.colors.threshold.special.enabled and (snapshots[spells.chaosTheory.id].buff.isActive or snapshots[spells.rendingStrike.id].buff.isActive or snapshots[spells.warbladesHunger.id].buff.isActive) then
 								thresholdColor = specCacheSettings.colors.threshold.special.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 							elseif currentResource >= resourceAmount then
@@ -1046,7 +1046,7 @@ local function UpdateResourceBar()
 							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif snapshots[spells.glaiveFlurry.id].buff.isActive then
+							elseif specCacheSettings.colors.threshold.special.enabled and snapshots[spells.glaiveFlurry.id].buff.isActive then
 								thresholdColor = specCacheSettings.colors.threshold.special.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 							elseif currentResource >= resourceAmount then
@@ -1218,7 +1218,7 @@ local function UpdateResourceBar()
 						showThreshold = false
 					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.soulCleave.id or spell.id == spells.spiritBomb.id then
-							if snapshots[spells.soulFurnace.id].buff.isActive then
+							if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.soulFurnace.id].buff.isActive then
 								thresholdColor = specCacheSettings.colors.threshold.special.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 							elseif currentResource >= resourceAmount then

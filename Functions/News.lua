@@ -12,18 +12,35 @@ local content = [====[
 ---
 
 # 11.1.5.5-release (2025-06-0?)
+## Demon Hunter
+### Havoc
+
+- [#447 - UPDATE](#447) Allow the "Special" threshold line color change for Chaos Theory, Glaive Flurry, and Rending Strike to be disabled.
+
+### Vengeance
+
+- [#447 - UPDATE](#447) Allow the "Special" threshold line color change for Soul Furnace to be disabled.
+
 ## Rogue
 ### Assassination
 
 - [#410 - NEW](#410) Add a new threshold line color for Mutilate when the Echoing Reprimand buff is active.
+- [#447 - UPDATE](#447) Allow the "Special" threshold line color change for Garrote to be disabled.
 
 ### Outlaw
 
 - [#410 - NEW](#410) Add a new threshold line color for Sinister Strike when the Echoing Reprimand buff is active.
+- [#447 - UPDATE](#447) Allow the "Special" threshold line color change for Skull and Crossbones, Ruthless, and Opportunity to be disabled.
 
 ### Subtlety
 
 - [#410 - NEW](#410) Add a new threshold line color for Gloomblade when the Echoing Reprimand buff is active.
+- [#447 - UPDATE](#447) Allow the "Special" threshold line color change for Finality, Silent Storm, and Coup de Grace to be disabled.
+
+## Shaman
+### Elemental
+
+- [#447 - UPDATE](#447) Allow the "Special" threshold line color change for Echoes of Great Sundering to be disabled.
 
 ---
 

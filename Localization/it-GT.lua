@@ -385,7 +385,6 @@ if locale == "itIT" then
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "Usare il colore più alto del frammento dell'anima per tutti?"
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "Se selezionato, il colore del frammento dell'anima più alto verrà utilizzato per tutti i frammenti dell'anima. Ad esempio, se hai un massimo di 5 frammenti dell'anima e attualmente ne hai 4, per tutti i frammenti dell'anima verrà utilizzato il penultimo colore anziché solo il penultimo."
     L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "Sfondo del frammento di anima non riempito"
-    L["DemonHunterVengeanceThresholdSpecial"] = "L'effetto dei Frammenti dell'anima aumenta"
     L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "Caos Nova"
     L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "Questo mostrerà la linea verticale sulla barra che indica quanta Furia è necessaria per usare Chaos Nova."
     L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "Vildevastazione"

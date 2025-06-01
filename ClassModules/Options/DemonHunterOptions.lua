@@ -296,7 +296,8 @@ local function HavocLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				special = {
-					color = "FFFF00FF"
+					color = "FFFF00FF",
+					enabled = true
 				},
 				outOfRange = {
 					color = "FF440000",
@@ -637,7 +638,8 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 					color = "FFFF0000"
 				},
 				special = {
-					color = "FFFF00FF"
+					color = "FFFF00FF",
+					enabled = true
 				},
 				outOfRange = {
 					color = "FF440000",
@@ -1062,7 +1064,18 @@ local function HavocConstructThresholdPanel(parent)
 		spec.thresholds.thresholdDictionary.throwGlaive.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, true, true, true, true, L["DemonHunterHavocThresholdSpecial"], nil)
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+		{
+			name = "special",
+			hasEnabledCheckbox = true,
+			colorLocalization = L["DemonHunterHavocThresholdSpecial"],
+			enabledCheckboxLocalization = L["DemonHunterHavocThresholdSpecialEnabled"],
+			enabledCheckboxTooltipLocalization = L["DemonHunterHavocThresholdSpecialEnabledTooltip"]
+		}
+	}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, true, true, true, custom)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 1, yCoord)
 end
@@ -1623,7 +1636,18 @@ local function VengeanceConstructThresholdPanel(parent)
 		spec.thresholds.thresholdDictionary.spiritBomb.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, true, true, true, true, L["DemonHunterVengeanceThresholdSpecial"], nil)
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+		{
+			name = "special",
+			hasEnabledCheckbox = true,
+			colorLocalization = L["DemonHunterVengeanceThresholdSpecial"],
+			enabledCheckboxLocalization = L["DemonHunterVengeanceThresholdSpecialEnabled"],
+			enabledCheckboxTooltipLocalization = L["DemonHunterVengeanceThresholdSpecialEnabledTooltip"]
+		}
+	}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, true, true, true, custom)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 2, yCoord)
 end

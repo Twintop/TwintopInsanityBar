@@ -385,7 +385,6 @@ if locale == "esES" or locale == "esMX" then
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "¿Usar el color más alto de Fragmento de Alma para todos?"
     L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "Cuando está marcado, el color más alto del Fragmento de Alma se usará para todos los Fragmentos de Alma. Por ejemplo, si tienes un máximo de 5 fragmentos de alma y actualmente tienes 4, el penúltimo color se usará para todos los fragmentos de alma en lugar de solo el penúltimo."
     L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "Fondo de fragmento de alma sin llenar"
-    L["DemonHunterVengeanceThresholdSpecial"] = "Los fragmentos de alma aumentan su efecto"
     L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "Nova del Caos"
     L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "Esto mostrará la línea vertical en la barra que indica cuánta Furia se requiere para usar Chaos Nova."
     L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "Devastación vil"

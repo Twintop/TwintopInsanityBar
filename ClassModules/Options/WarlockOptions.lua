@@ -278,9 +278,6 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				unusable = {
 					color = "FFFF0000"
 				},
-				special = {
-					color = "FFFF00FF"
-				},
 				outOfRange = {
 					color = "FF440000",
 					enabled = true

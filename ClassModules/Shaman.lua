@@ -1394,7 +1394,7 @@ local function UpdateResourceBar()
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							else
-								if snapshots[spells.echoesOfGreatSundering.id].buff.isActive then
+								if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.echoesOfGreatSundering.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold.special.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 								elseif currentResource >= resourceAmount then
