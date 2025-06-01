@@ -21,7 +21,6 @@ local specGlobalDefaults = {
 }
 
 function TRB.Functions.Settings:LoadDefaultSettings()
-	
 	local settings = {
 		core = {
 			dataRefreshRate = 5.0,

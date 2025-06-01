@@ -11,6 +11,22 @@ local content = [====[
 
 ---
 
+# 11.1.5.5-release (2025-06-0?)
+## Rogue
+### Assassination
+
+- [#410 - NEW](#410) Add a new threshold line color for Mutilate when the Echoing Reprimand buff is active.
+
+### Outlaw
+
+- [#410 - NEW](#410) Add a new threshold line color for Sinister Strike when the Echoing Reprimand buff is active.
+
+### Subtlety
+
+- [#410 - NEW](#410) Add a new threshold line color for Gloomblade when the Echoing Reprimand buff is active.
+
+---
+
 # 11.1.5.4-release (2025-05-30)
 ## General
 

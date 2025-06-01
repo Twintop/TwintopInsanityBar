@@ -2244,3 +2244,13 @@ L["CheckboxEndCapUseBorderColorTooltip"] = "This will override the end cap's col
 L["CheckboxEndCapUseBorderColorExceptDefault"] = "Only non-default border colors"
 L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"] = "This will only override the end cap's color if the border color is anything other than the base color."
 L["EndCapWidth"] = "End Cap Width"
+
+L["RogueAssassinationColorPickerThresholdEchoingReprimand"] = "Next Mutilate is buffed by Echoing Reprimand"
+L["RogueAssassinationColorPickerThresholdEchoingReprimandEnabled"] = "Change Mutilate threshold line color?"
+L["RogueAssassinationColorPickerThresholdEchoingReprimandEnabledTooltip"] = "When checked, the threshold line color of Mutilate will be changed when the next use will have its damage buffed by Echoing Reprimand."
+L["RogueOutlawColorPickerThresholdEchoingReprimand"] = "Next Sinister Strike is buffed by Echoing Reprimand"
+L["RogueOutlawColorPickerThresholdEchoingReprimandEnabled"] = "Change Sinister Strike threshold line color?"
+L["RogueOutlawColorPickerThresholdEchoingReprimandEnabledTooltip"] = "When checked, the threshold line color of Sinister Strike will be changed when the next use will have its damage buffed by Echoing Reprimand."
+L["RogueSubtletyColorPickerThresholdEchoingReprimand"] = "Next Gloomblade is buffed by Echoing Reprimand"
+L["RogueSubtletyColorPickerThresholdEchoingReprimandEnabled"] = "Change Gloomblade threshold line color?"
+L["RogueSubtletyColorPickerThresholdEchoingReprimandEnabledTooltip"] = "When checked, the threshold line color of Gloomblade will be changed when the next use will have its damage buffed by Echoing Reprimand."

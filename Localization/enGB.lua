@@ -243,4 +243,10 @@ if locale == "enGB" then
     L["CheckboxEndCapUseBorderColorTooltip"] = "This will override the end cap's colour with whatever the current bar border colour is."
     L["CheckboxEndCapUseBorderColorExceptDefault"] = "Only non-default border colours"
     L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"] = "This will only override the end cap's colour if the border colour is anything other than the base colour."
+    L["RogueAssassinationColorPickerThresholdEchoingReprimandEnabled"] = "Change Mutilate threshold line colour?"
+    L["RogueAssassinationColorPickerThresholdEchoingReprimandEnabledTooltip"] = "When checked, the threshold line colour of Mutilate will be changed when the next use will have its damage buffed by Echoing Reprimand."
+    L["RogueOutlawColorPickerThresholdEchoingReprimandEnabled"] = "Change Sinister Strike threshold line colour?"
+    L["RogueOutlawColorPickerThresholdEchoingReprimandEnabledTooltip"] = "When checked, the threshold line colour of Sinister Strike will be changed when the next use will have its damage buffed by Echoing Reprimand."
+    L["RogueSubtletyColorPickerThresholdEchoingReprimandEnabled"] = "Change Gloomblade threshold line colour?"
+    L["RogueSubtletyColorPickerThresholdEchoingReprimandEnabledTooltip"] = "When checked, the threshold line colour of Gloomblade will be changed when the next use will have its damage buffed by Echoing Reprimand."
 end

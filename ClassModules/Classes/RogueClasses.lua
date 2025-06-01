@@ -15,6 +15,7 @@ TRB.Classes.Rogue = TRB.Classes.Rogue or {}
 ---@field public subterfuge TRB.Classes.SpellBase
 ---@field public adrenalineRush TRB.Classes.SpellBase
 ---@field public supercharger TRB.Classes.SpellBase
+---@field public echoingReprimand TRB.Classes.SpellBase
 ---@field public crimsonVial TRB.Classes.SpellThreshold
 ---@field public distract TRB.Classes.SpellThreshold
 ---@field public feint TRB.Classes.SpellThreshold
@@ -181,6 +182,9 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         hasCooldown = true,
         isPvp = true
     })
+    self.echoingReprimand = TRB.Classes.SpellBase:New({
+        id = 470671
+    })
 
     return self
 end
@@ -264,7 +268,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         settingKey = "mutilate",
-        baseline = true
+        baseline = true,
+        isSnowflake = true
     })
     self.poisonedKnife = TRB.Classes.SpellComboPointThreshold:New({
         id = 185565,

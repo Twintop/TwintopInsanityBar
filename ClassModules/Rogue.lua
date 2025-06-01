@@ -93,6 +93,8 @@ local function FillSpecializationCache()
 	specCache.assassination.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
+	---@type TRB.Classes.Snapshot
+	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
 	specCache.assassination.barTextVariables = {
 		icons = {},
@@ -207,6 +209,8 @@ local function FillSpecializationCache()
 	specCache.outlaw.snapshotData.snapshots[spells.trueBearing.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.trueBearing.id]
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, "always")
+	---@type TRB.Classes.Snapshot
+	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
 	specCache.outlaw.barTextVariables = {
 		icons = {},
@@ -295,6 +299,8 @@ local function FillSpecializationCache()
 	specCache.subtlety.snapshotData.snapshots[spells.finalityRupture.id] = TRB.Classes.Snapshot:New(spells.finalityRupture, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, "always")
+	---@type TRB.Classes.Snapshot
+	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
 	specCache.subtlety.barTextVariables = {
 		icons = {},
@@ -2183,6 +2189,16 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
+							elseif spell.id == spells.mutilate.id then
+								if specCacheSettings.colors.threshold["echoingReprimand"].enabled and snapshots[spells.echoingReprimand.id].buff.isActive then
+									thresholdColor = specCacheSettings.colors.threshold["echoingReprimand"].color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+								elseif currentResource >= resourceAmount then
+									thresholdColor = specCacheSettings.colors.threshold.over.color
+								else
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
 							end
 						elseif resourceAmount == 0 then
 							showThreshold = false
@@ -2422,7 +2438,10 @@ local function UpdateResourceBar()
 					else
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.sinisterStrike.id then
-								if currentResource >= resourceAmount then
+								if specCacheSettings.colors.threshold["echoingReprimand"].enabled and snapshots[spells.echoingReprimand.id].buff.isActive then
+									thresholdColor = specCacheSettings.colors.threshold["echoingReprimand"].color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+								elseif currentResource >= resourceAmount then
 									if snapshots[spells.skullAndCrossbones.id].buff.isActive then
 										thresholdColor = specCacheSettings.colors.threshold.special.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -2749,7 +2768,10 @@ local function UpdateResourceBar()
 								if not talents:IsTalentActive(spells.gloomblade) then
 									showThreshold = false
 								else
-									if currentResource >= resourceAmount then
+									if specCacheSettings.colors.threshold["echoingReprimand"].enabled and snapshots[spells.echoingReprimand.id].buff.isActive then
+										thresholdColor = specCacheSettings.colors.threshold["echoingReprimand"].color
+										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									elseif currentResource >= resourceAmount then
 										thresholdColor = specCacheSettings.colors.threshold.over.color
 									else
 										thresholdColor = specCacheSettings.colors.threshold.under.color

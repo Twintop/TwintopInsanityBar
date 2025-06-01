@@ -116,7 +116,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public text TRB.Classes.Settings.TextColors
 ---@field public bar table
 ---@field public comboPoints table
----@field public threshold TRB.Classes.Settings.ThresholdColors|{ [string]: TRB.Classes.Settings.ColorEntry }
+---@field public threshold TRB.Classes.Settings.ThresholdColors|{ [string]: TRB.Classes.Settings.ColorEnabledEntry }
 ---@field public endCap { [string]: TRB.Classes.Settings.EndCapColorEntry }
 
 ---@class TRB.Classes.Settings.ColorsCore : TRB.Classes.Settings.Colors
