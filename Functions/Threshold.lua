@@ -27,12 +27,12 @@ local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
 end
 
 function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
-	if growRight == nil then
-		growRight = true
-	end
-	
 	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
 		return
+	end
+
+	if growRight == nil then
+		growRight = true
 	end
 
 	if maxResource == nil or maxResource == 0 then
@@ -219,6 +219,15 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 	TRB.Data.cache.values.threshold = {}
 end
 
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@return boolean
+function TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings)
+	return (
+		not settings.colors.threshold.outOfRange.show or
+		(settings.colors.threshold.outOfRange.show and settings.colors.threshold.outOfRange.enabled)
+	)
+end
+
 ---Adjusts the display level, color, and cooldown status of a threshold and its icon.
 ---@param spell TRB.Classes.SpellThreshold
 ---@param key string
@@ -228,31 +237,38 @@ end
 ---@param pairOffset integer
 ---@param thresholdColor string
 ---@param snapshot TRB.Classes.Snapshot
----@param settings table
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@return boolean
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	local cache = TRB.Data.cache.values.threshold[key]
 	if settings.thresholds.thresholdDictionary[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
-		local outOfRange = false
+		local outOfRange = not TRB.Functions.Character:GetIsSpellInRange(spell)
+
+		-- Split these out to only call methods if we need to
+		if TRB.Data.character.inCombat and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) then
+			if settings.colors.threshold.outOfRange.show then
+				if outOfRange and settings.colors.threshold.outOfRange.enabled then
+					thresholdColor = settings.colors.threshold.outOfRange.color
+					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
+				end
+			else
+				if outOfRange then
+					TRB.Functions.Threshold:Hide(key, threshold)
+					return false
+				end
+			end
+		else
+			outOfRange = false
+		end
 
 		if threshold.texture == nil or threshold.icon == nil then
 			TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
 		end
 
 		TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
-		
-		-- Split these out to only call methods if we need to
-		if settings.colors.threshold.outOfRange.enabled then
-			if TRB.Data.character.inCombat then
-				if TRB.Functions.Character:GetIsSpellInRange(spell) ~= true then
-					outOfRange = true
-					thresholdColor = settings.colors.threshold.outOfRange.color
-					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
-				end
-			end
-		end
 
 		local thresholdUsable = false
 
@@ -306,7 +322,13 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		end
 	else
 		TRB.Functions.Threshold:Hide(key, threshold)
+		
+		if key == "raptorStrike" then
+			print("nope")
+		end
+		return false
 	end
+	return true
 end
 
 function TRB.Functions.Threshold:Hide(key, threshold)

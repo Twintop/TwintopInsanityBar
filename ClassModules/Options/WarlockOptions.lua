@@ -280,7 +280,8 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				}
 			},
 			endCap = {

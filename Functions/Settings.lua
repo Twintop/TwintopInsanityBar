@@ -190,7 +190,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					},
 					outOfRange = {
 						color = "FF440000",
-						enabled = true
+						enabled = true,
+						show = true
 					},
 				},
 				thresholdHealers = {

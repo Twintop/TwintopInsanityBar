@@ -308,7 +308,8 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				}
 			},
 			endCap = {
@@ -624,7 +625,8 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				}
 			},
 			endCap = {

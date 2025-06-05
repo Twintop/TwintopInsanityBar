@@ -96,7 +96,7 @@ local function SpellRangeCheckUpdateEvent(self, event, spellIdentifier, isInRang
 
 	if TRB.Data.specCache[TRB.Data.barConstructedForSpec] ~= nil then
 		local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
-		for k, v in pairs(specCache.spellsData.spells) do
+		for _, v in pairs(specCache.spellsData.spells) do
 			if v.id == spellIdentifier then
 				TRB.Functions.Character:UpdateIsSpellInRange(v)
 				return
@@ -112,7 +112,7 @@ spellRangeCheckUpdateFrame:SetScript("OnEvent", SpellRangeCheckUpdateEvent)
 function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
 	
-	if specCache ~= nil and specCache.settings.colors.threshold.outOfRange.enabled then
+	if specCache ~= nil and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(specCache.settings) then
 		for _, v in pairs(specCache.spellsData.spells) do
 			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
 				C_Spell.EnableSpellRangeCheck(v.id, true)

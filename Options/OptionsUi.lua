@@ -1917,21 +1917,41 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 		yCoord = yCoord - 30
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-		f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-		f:SetChecked(spec.colors.threshold.outOfRange.enabled)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord+10)
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeShowCheckbox"])
+		f.tooltip = L["ThresholdOutOfRangeCheckboxShowTooltip"]
+		f:SetChecked(spec.colors.threshold.outOfRange.show)
 		f:SetScript("OnClick", function(self, ...)
-			spec.colors.threshold.outOfRange.enabled = self:GetChecked()
+			spec.colors.threshold.outOfRange.show = self:GetChecked()
 
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
-				if spec.colors.threshold.outOfRange.enabled then
+				if not spec.colors.threshold.outOfRange.show or (spec.colors.threshold.outOfRange.show and spec.colors.threshold.outOfRange.enabled) then
 					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 				else
 					TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 				end
 			end
 		end)
+
+		controls.checkBoxes.thresholdOutOfRangeColorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOutOfRangeColorEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOutOfRangeColorEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord-10)
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
+		f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
+		f:SetChecked(spec.colors.threshold.outOfRange.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.threshold.outOfRange.enabled = self:GetChecked()
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
+				if not spec.colors.threshold.outOfRange.show or (spec.colors.threshold.outOfRange.show and spec.colors.threshold.outOfRange.enabled) then
+					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
+				else
+					TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+				end
+			end
+		end)
+		
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
 
 		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.outOfRange

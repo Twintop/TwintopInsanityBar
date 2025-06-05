@@ -415,7 +415,8 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				}
 			},
 			endCap = {
@@ -975,7 +976,8 @@ local function HolyLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				}
 			},
 			endCap = {
@@ -1446,7 +1448,8 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				}
 			},
 			endCap = {

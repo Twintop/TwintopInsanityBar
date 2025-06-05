@@ -312,7 +312,8 @@ local function BalanceLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				},
 				starfallPandemic = {
 					color = "FF8B0000"
@@ -874,7 +875,8 @@ local function FeralLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				}
 			},
 			endCap = {

@@ -390,7 +390,8 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				}
 			},
 			endCap = {
@@ -830,7 +831,8 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				},
 			},
 			endCap = {
@@ -1274,7 +1276,8 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				},
 				outOfRange = {
 					color = "FF440000",
-					enabled = true
+					enabled = true,
+					show = true
 				},
 			},
 			endCap = {

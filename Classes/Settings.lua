@@ -74,6 +74,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ColorEnabledEntry : TRB.Classes.Settings.ColorEntry
 ---@field public enabled boolean
 
+---@class TRB.Classes.Settings.ColorShowEntry : TRB.Classes.Settings.ColorEnabledEntry
+
 ---@class TRB.Classes.Settings.DotColors
 ---@field public options table
 ---@field public up TRB.Classes.Settings.ColorEntry
@@ -100,7 +102,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public unusable TRB.Classes.Settings.ColorEntry
 ---@field public passive TRB.Classes.Settings.ColorEntry
 ---@field public special TRB.Classes.Settings.ColorEntry
----@field public outOfRange TRB.Classes.Settings.ColorEnabledEntry
+---@field public outOfRange TRB.Classes.Settings.ColorShowEntry
 
 ---@class TRB.Classes.Settings.ThresholdHealerColors
 ---@field public over TRB.Classes.Settings.ColorEntry
