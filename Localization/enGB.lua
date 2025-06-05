@@ -24,7 +24,6 @@ if locale == "enGB" then
     L["PositionAboveMiddle"] = "Above - Centre"
     L["PositionBelowMiddle"] = "Below - Centre"
     L["PositionCenter"] = "Centre"
-    L["ThresholdOutOfRangeCheckbox"] = "Change threshold line colour when out of range?"
     L["ThresholdOutOfRangeCheckboxTooltip"] = "When checked, while in combat threshold lines will change colour when you are unable to use the ability due to being out of range of your current target."
     L["BarDisplayTextCustomizationHeader"] = "Bar Display Text Customisation"
     L["ExportSpecialization"] = "Export Specialisation"
@@ -265,4 +264,5 @@ if locale == "enGB" then
     L["RogueOutlawColorPickerThresholdRestlessBladesEnabledTooltip"] = "When checked, the threshold line colour of an ability will be changed when that ability will come off cooldown from the next use of a finisher."
     L["ThresholdGenericSpecialEnabled"] = "Enable special ability threshold line colour?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "When checked, the threshold line colour of abilities that are being altered in an important way will be changed."
+    L["ThresholdOutOfRangeCheckbox"] = "Change colour when out of range?"
 end

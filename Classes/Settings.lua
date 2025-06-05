@@ -99,7 +99,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ThresholdColors
 ---@field public under TRB.Classes.Settings.ColorEntry
 ---@field public over TRB.Classes.Settings.ColorEntry
----@field public unusable TRB.Classes.Settings.ColorEntry
+---@field public unusable TRB.Classes.Settings.ColorShowEntry
 ---@field public passive TRB.Classes.Settings.ColorEntry
 ---@field public special TRB.Classes.Settings.ColorEntry
 ---@field public outOfRange TRB.Classes.Settings.ColorShowEntry

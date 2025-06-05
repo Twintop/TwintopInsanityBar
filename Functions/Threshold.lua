@@ -228,6 +228,15 @@ function TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings)
 	)
 end
 
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@return boolean
+function TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings)
+	return (
+		not settings.colors.threshold.unusable.show or
+		(settings.colors.threshold.unusable.show and settings.colors.threshold.unusable.enabled)
+	)
+end
+
 ---Adjusts the display level, color, and cooldown status of a threshold and its icon.
 ---@param spell TRB.Classes.SpellThreshold
 ---@param key string
@@ -247,7 +256,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		local frameLevel = currentFrameLevel
 		local outOfRange = not spell:GetIsSpellInRange()
 
-		-- Split these out to only call methods if we need to
+		-- Check is we're out of range
 		if TRB.Data.character.inCombat and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) then
 			if settings.colors.threshold.outOfRange.show then
 				if outOfRange and settings.colors.threshold.outOfRange.enabled then
@@ -262,6 +271,14 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			end
 		else
 			outOfRange = false
+		end
+		
+		-- Check if the threshold is unusable
+		if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
+			if not TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings) then
+				TRB.Functions.Threshold:Hide(key, threshold)
+				return false
+			end
 		end
 
 		if threshold.texture == nil or threshold.icon == nil then
