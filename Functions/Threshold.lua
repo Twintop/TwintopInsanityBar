@@ -273,13 +273,13 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			outOfRange = false
 		end
 		
-		-- Check if the threshold is unusable
-		if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
+		-- Check if the threshold is unusable 
+		--[[if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
 			if not TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings) then
 				TRB.Functions.Threshold:Hide(key, threshold)
 				return false
 			end
-		end
+		end]]
 
 		if threshold.texture == nil or threshold.icon == nil then
 			TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)

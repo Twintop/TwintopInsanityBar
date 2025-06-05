@@ -2269,5 +2269,4 @@ L["RogueOutlawColorPickerThresholdRestlessBladesEnabledTooltip"] = "When checked
 L["RogueSubtletyColorPickerThresholdSpecial"] = "Finality, Silent Storm, or Coup de Grace buff up for ability"
 L["ThresholdGenericSpecialEnabled"] = "Enable special ability threshold line color?"
 L["ThresholdGenericSpecialEnabledTooltip"] = "When checked, the threshold line color of abilities that are being altered in an important way will be changed."
-
 L["ThresholdOutOfRangeCheckbox"] = "Change color when out of range?"
