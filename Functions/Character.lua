@@ -148,25 +148,6 @@ function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.cache.values.range = {}
 end
 
----Updates the cache value for the spell check of if it is in range.
----@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold
-function TRB.Functions.Character:UpdateIsSpellInRange(spell)
-	TRB.Data.cache.values.range[spell.id] = C_Spell.IsSpellInRange(spell.id, spell.targetUnit)
-end
-
----Determines if the spell is within range to be used
----@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold
----@return boolean
-function TRB.Functions.Character:GetIsSpellInRange(spell)
-	if spell.rangeCheck ~= true then
-		return true
-	end
-	if TRB.Data.cache.values.range[spell.id] == nil then
-		TRB.Functions.Character:UpdateIsSpellInRange(spell)
-	end
-
-	return TRB.Data.cache.values.range[spell.id]
-end
 
 function TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, lowerCaseClass)
 	local className
