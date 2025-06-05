@@ -98,7 +98,7 @@ local function SpellRangeCheckUpdateEvent(self, event, spellIdentifier, isInRang
 		local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
 		for _, v in pairs(specCache.spellsData.spells) do
 			if v.id == spellIdentifier then
-				TRB.Functions.Character:UpdateIsSpellInRange(v)
+				v:UpdateIsSpellInRange()
 				return
 			end
 		end
@@ -116,7 +116,7 @@ function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		for _, v in pairs(specCache.spellsData.spells) do
 			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
 				C_Spell.EnableSpellRangeCheck(v.id, true)
-				TRB.Functions.Character:UpdateIsSpellInRange(v)
+				v:UpdateIsSpellInRange()
 			end
 		end
 	end

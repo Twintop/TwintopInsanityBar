@@ -87,6 +87,8 @@ end
 ---@field public isHasted boolean? # Does this spell's cooldown, tick rate, etc. benefit from haste?
 ---@field public isBuff boolean? # Is this spell a buff?
 ---@field public isPvp boolean? # Is this a PvP only spell?
+---@field public rangeCheck boolean? # Should this spell perform range checks?
+---@field public targetUnit string? # The target that will be used when doing castable and range calculations
 ---@field public tocMinVersion number? # Minimum TOC version of WoW before attempting to use/load this spell.
 ---@field public attributes { [string]: any } # Spell specific values that will need to be looked up during gameplay.
 ---@field protected classTypes trbSpellType[] # List of types that this class implements. Used for checking if a specific class implements some derived class, e.g. SpellThreshold 
@@ -112,40 +114,42 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 	---@type { [string]: any }
 	local attributes = {}
 	for key, value in pairs(spellAttributes) do
-		if  (key == "id"							   and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "spellId"						  and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "buffId"						   and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "debuffId"						 and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "energizeId"					   and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "talentId"						 and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "castId"						   and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "tickId"						   and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "itemId"						   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+		if  (key == "id"								and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "spellId"						  	and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "buffId"						   	and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "debuffId"						 	and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "energizeId"					   	and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "talentId"						 	and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "castId"						   	and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "tickId"						   	and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "itemId"						   	and type(value) == "number" and tonumber(value, 10) ~= nil) or
 			(key == "iconName") or
-			(key == "useSpellIcon"					 and type(value) == "boolean") or
+			(key == "useSpellIcon"					 	and type(value) == "boolean") or
 			(key == "texture") or
-			(key == "baseline"						 and type(value) == "boolean") or
-			(key == "isTalent"						 and type(value) == "boolean") or
+			(key == "baseline"						 	and type(value) == "boolean") or
+			(key == "isTalent"						 	and type(value) == "boolean") or
 			(key == "primaryResourceType") or
-			(key == "primaryResourceTypeMod"		   and type(value) == "number") or
+			(key == "primaryResourceTypeMod"		   	and type(value) == "number") or
 			(key == "primaryResourceTypeProperty") or
-			(key == "primaryResourceTypePropertyValue" and type(value) == "number") or
-			(key == "resource"						 and type(value) == "number") or
-			(key == "duration"						 and type(value) == "number") or
-			(key == "baseDuration"					 and type(value) == "number") or
-			(key == "pandemic"						 and type(value) == "boolean") or
-			(key == "pandemicTime"					 and type(value) == "number") or
-			(key == "hasCooldown"					  and type(value) == "boolean") or
-			(key == "hasCharges"					   and type(value) == "boolean") or
-			(key == "hasCastCount"					 and type(value) == "boolean") or
-			(key == "hasTicks"						 and type(value) == "boolean") or
-			(key == "ticks"							and type(value) == "number" and tonumber(value, 10) ~= nil) or
-			(key == "tickRate"						 and type(value) == "number") or
-			(key == "resourcePerTick"				  and type(value) == "number") or
-			(key == "isHasted"						 and type(value) == "boolean") or
-			(key == "isBuff"						   and type(value) == "boolean") or
-			(key == "isPvp"							and type(value) == "boolean") or
-			(key == "tocMinVersion"					and type(value) == "number") then
+			(key == "primaryResourceTypePropertyValue" 	and type(value) == "number") or
+			(key == "resource"						 	and type(value) == "number") or
+			(key == "duration"						 	and type(value) == "number") or
+			(key == "baseDuration"					 	and type(value) == "number") or
+			(key == "pandemic"						 	and type(value) == "boolean") or
+			(key == "pandemicTime"					 	and type(value) == "number") or
+			(key == "hasCooldown"					 	and type(value) == "boolean") or
+			(key == "hasCharges"					 	and type(value) == "boolean") or
+			(key == "hasCastCount"					 	and type(value) == "boolean") or
+			(key == "hasTicks"						 	and type(value) == "boolean") or
+			(key == "ticks"								and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "tickRate"							and type(value) == "number") or
+			(key == "resourcePerTick"					and type(value) == "number") or
+			(key == "isHasted"							and type(value) == "boolean") or
+			(key == "isBuff"							and type(value) == "boolean") or
+			(key == "isPvp"								and type(value) == "boolean") or
+			(key == "targetUnit") or
+			(key == "rangeCheck"						and type(value) == "boolean") or
+			(key == "tocMinVersion"						and type(value) == "number") then
 			self[key] = value
 		elseif key == "name" or key == "icon" then
 			print(string.format("TRB: Unexpected property `%s` provided with value `%s`.", key, value))
@@ -347,6 +351,26 @@ function TRB.Classes.SpellBase:IsValid()
 	return true
 end
 
+---Updates the cache value for the spell check of if it is in range.
+function TRB.Classes.SpellBase:UpdateIsSpellInRange()
+	if self.rangeCheck == true then
+		TRB.Data.cache.values.range[self.id] = C_Spell.IsSpellInRange(self.id, self.targetUnit or "target")
+	end
+end
+
+---Determines if the spell is within range to be used
+---@return boolean
+function TRB.Classes.SpellBase:GetIsSpellInRange()
+	if self.rangeCheck ~= true then
+		return true
+	end
+	if TRB.Data.cache.values.range[self.id] == nil then
+		self:UpdateIsSpellInRange()
+	end
+
+	return TRB.Data.cache.values.range[self.id]
+end
+
 
 
 ---Determines if the threshold spell is in a valid state.
@@ -383,9 +407,7 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
 	
 	for key, value in pairs(spellAttributes) do
 		if  (key == "settingKey") or
-			(key == "isSnowflake"   and type(value) == "boolean") or
-			(key == "targetUnit") or
-			(key == "rangeCheck"	and type(value) == "boolean") then
+			(key == "isSnowflake"   and type(value) == "boolean") then
 			self[key] = value
 			self.attributes[key] = nil
 		end
@@ -472,9 +494,7 @@ function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
 	
 	for key, value in pairs(spellAttributes) do
 		if  (key == "settingKey") or
-			(key == "isSnowflake"   and type(value) == "boolean") or
-			(key == "targetUnit") or
-			(key == "rangeCheck"	and type(value) == "boolean") then
+			(key == "isSnowflake"   and type(value) == "boolean") then
 			self[key] = value
 			self.attributes[key] = nil
 		end

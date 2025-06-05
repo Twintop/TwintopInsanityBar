@@ -245,7 +245,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 	if settings.thresholds.thresholdDictionary[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
-		local outOfRange = not TRB.Functions.Character:GetIsSpellInRange(spell)
+		local outOfRange = not spell:GetIsSpellInRange()
 
 		-- Split these out to only call methods if we need to
 		if TRB.Data.character.inCombat and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) then

@@ -12,6 +12,11 @@ local content = [====[
 ---
 
 # 11.1.5.5-release (2025-06-0?)
+## General
+
+- [#279 - NEW](#279) Add an option to hide threshold lines when out of range. This option is in addition to the existing option to change the color of threshold lines when its associated spell is out of range.
+- [#448 - UPDATE](#448) Change how/where spell range checks are performed.
+
 ## Demon Hunter
 ### Havoc
 
