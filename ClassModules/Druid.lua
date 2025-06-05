@@ -3747,7 +3747,11 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			end
 
 			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
-				SwitchSpec()
+				C_Timer.After(0, function()
+					C_Timer.After(0.1, function()
+						SwitchSpec()
+					end)
+				end)
 			end
 		end
 	end
