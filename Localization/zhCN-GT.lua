@@ -2178,4 +2178,6 @@ if locale == "zhCN" then
     L["ThresholdGenericSpecialEnabled"] = "启用特殊技能阈值线颜色？"
     L["ThresholdGenericSpecialEnabledTooltip"] = "勾选后，正在发生重大改变的技能的阈值线颜色将会改变。"
     L["ThresholdOutOfRangeCheckbox"] = "超出范围时改变颜色？"
+    L["ThresholdOutOfRangeShowCheckbox"] = "显示超出范围的阈值线？"
+    L["ThresholdOutOfRangeShowCheckboxTooltip"] = "选中后，当技能超出范围时将显示阈值线。"
 end

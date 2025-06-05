@@ -2178,4 +2178,6 @@ if locale == "koKR" then
     L["ThresholdGenericSpecialEnabled"] = "특수 능력 한계선 색상을 활성화하시겠습니까?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "이 옵션을 선택하면 중요한 방식으로 변경되는 능력의 한계선 색상이 변경됩니다."
     L["ThresholdOutOfRangeCheckbox"] = "범위를 벗어나면 색상을 변경하시겠습니까?"
+    L["ThresholdOutOfRangeShowCheckbox"] = "범위 초과 한계선 표시 여부"
+    L["ThresholdOutOfRangeShowCheckboxTooltip"] = "이 옵션을 선택하면, 능력이 범위를 벗어날 때 한계선이 표시됩니다."
 end

@@ -2178,4 +2178,6 @@ if locale == "zhTW" then
     L["ThresholdGenericSpecialEnabled"] = "啟用特殊技能閾值線顏色？"
     L["ThresholdGenericSpecialEnabledTooltip"] = "勾選後，正在發生重大改變的技能的閾值線顏色將會改變。"
     L["ThresholdOutOfRangeCheckbox"] = "超出範圍時改變顏色？"
+    L["ThresholdOutOfRangeShowCheckbox"] = "顯示超出範圍的閾值線？"
+    L["ThresholdOutOfRangeShowCheckboxTooltip"] = "選取後，當技能超出範圍時將顯示閾值線。"
 end

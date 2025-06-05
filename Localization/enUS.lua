@@ -2270,3 +2270,5 @@ L["RogueSubtletyColorPickerThresholdSpecial"] = "Finality, Silent Storm, or Coup
 L["ThresholdGenericSpecialEnabled"] = "Enable special ability threshold line color?"
 L["ThresholdGenericSpecialEnabledTooltip"] = "When checked, the threshold line color of abilities that are being altered in an important way will be changed."
 L["ThresholdOutOfRangeCheckbox"] = "Change color when out of range?"
+L["ThresholdOutOfRangeShowCheckbox"] = "Show out of range threshold lines?"
+L["ThresholdOutOfRangeShowCheckboxTooltip"] = "When checked, the threshold lines will be shown when the ability is out of range."

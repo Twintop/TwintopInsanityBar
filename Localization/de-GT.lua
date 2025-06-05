@@ -2178,4 +2178,6 @@ L["CannibalizeIfForsaken"] = "Kannibalisieren (wenn im Stich gelassen)"
     L["ThresholdGenericSpecialEnabled"] = "Farbe der Schwellenwertlinie für Spezialfähigkeiten aktivieren?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "Wenn aktiviert, wird die Farbe der Schwellenwertlinie von Fähigkeiten, die erheblich verändert werden, geändert."
     L["ThresholdOutOfRangeCheckbox"] = "Farbe ändern, wenn außerhalb der Reichweite?"
+    L["ThresholdOutOfRangeShowCheckbox"] = "Grenzwertlinien außerhalb der Reichweite anzeigen?"
+    L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Wenn diese Option aktiviert ist, werden die Grenzwertlinien angezeigt, wenn die Fähigkeit außerhalb der Reichweite liegt."
 end

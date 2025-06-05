@@ -2178,4 +2178,6 @@ if locale == "ruRU" then
     L["ThresholdGenericSpecialEnabled"] = "Включить цвет пороговой линии особой способности?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "Если отмечено, цвет пороговой линии способностей, которые изменяются важным образом, будет изменен."
     L["ThresholdOutOfRangeCheckbox"] = "Изменить цвет, когда вне диапазона?"
+    L["ThresholdOutOfRangeShowCheckbox"] = "Показывать линии порога вне диапазона?"
+    L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Если этот флажок установлен, линии порога будут отображаться, когда способность находится вне диапазона."
 end

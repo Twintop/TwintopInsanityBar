@@ -2178,4 +2178,6 @@ if locale == "esES" or locale == "esMX" then
     L["ThresholdGenericSpecialEnabled"] = "¿Habilitar el color del umbral de una habilidad especial?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "Al marcar, se cambia el color del umbral de las habilidades que se modifican de forma importante."
     L["ThresholdOutOfRangeCheckbox"] = "¿Cambiar de color al estar fuera de alcance?"
+    L["ThresholdOutOfRangeShowCheckbox"] = "¿Mostrar líneas de umbral fuera de rango?"
+    L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Al marcar esta opción, se mostrarán las líneas de umbral cuando la habilidad esté fuera de rango."
 end

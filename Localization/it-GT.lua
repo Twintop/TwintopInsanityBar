@@ -2178,4 +2178,6 @@ if locale == "itIT" then
     L["ThresholdGenericSpecialEnabled"] = "Abilitare il colore della linea di soglia per abilità speciali?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "Se selezionato, il colore della linea di soglia delle abilità che vengono modificate in modo significativo verrà modificato."
     L["ThresholdOutOfRangeCheckbox"] = "Cambia colore quando fuori portata?"
+    L["ThresholdOutOfRangeShowCheckbox"] = "Mostrare le linee di soglia fuori portata?"
+    L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Se selezionata, le linee di soglia verranno visualizzate quando l'abilità è fuori portata."
 end

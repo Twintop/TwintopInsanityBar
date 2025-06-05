@@ -2178,4 +2178,6 @@ if locale == "ptBR" or locale == "ptPT" then
     L["ThresholdGenericSpecialEnabled"] = "Habilitar cor da linha de limite de habilidade especial?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "Quando marcada, a cor da linha de limite de habilidades que estão sendo alteradas de forma significativa será alterada."
     L["ThresholdOutOfRangeCheckbox"] = "Alterar cor quando estiver fora do alcance?"
+    L["ThresholdOutOfRangeShowCheckbox"] = "Mostrar linhas de limite fora do alcance?"
+    L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Quando marcada, as linhas de limite serão exibidas quando a habilidade estiver fora do alcance."
 end
