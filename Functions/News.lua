@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.5.6-release (2025-06-06)
+## General
+
+- (FIX) Remove stray debug prints.
+
+---
+
 # 11.1.5.5-release (2025-06-05)
 ## General
 

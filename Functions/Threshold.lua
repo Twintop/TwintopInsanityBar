@@ -339,10 +339,6 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		end
 	else
 		TRB.Functions.Threshold:Hide(key, threshold)
-		
-		if key == "raptorStrike" then
-			print("nope")
-		end
 		return false
 	end
 	return true
