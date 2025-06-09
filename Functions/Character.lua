@@ -34,12 +34,36 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
+local function UpdateResourceValues()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
+	if TRB.Data.resource2 ~= nil then
+		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
+			local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)
+			if resourceBuff ~= nil then
+				snapshotData.attributes.resource2 = resourceBuff.applications or 0
+			else
+				snapshotData.attributes.resource2 = 0
+			end			
+		elseif TRB.Data.resource2 == "CUSTOM" then
+			-- Do nothing
+		else
+			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
+		end
+	end
+end
+
 ---Handles some change with the character's status
 ---@param self any
 ---@param event string
 ---@param ... unknown
 local function CharacterChange(self, event, ...)
-	if event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST" then
+	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
+		local unitTarget, powerType = ...
+		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
+			UpdateResourceValues()
+		end
+	elseif event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST" then
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
 				TRB.Data.character.onTaxi = UnitOnTaxi("player")
@@ -63,6 +87,8 @@ local characterChangeFrame = CreateFrame("Frame")
 characterChangeFrame:SetScript("OnEvent", CharacterChange)
 
 function TRB.Functions.Character:EnableCharacterChange()
+	characterChangeFrame:RegisterEvent("UNIT_POWER_UPDATE")
+	characterChangeFrame:RegisterEvent("UNIT_POWER_FREQUENT")
 	characterChangeFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_GAINED")
 	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_LOST")
@@ -72,6 +98,8 @@ function TRB.Functions.Character:EnableCharacterChange()
 end
 
 function TRB.Functions.Character:DisableCharacterChange()
+	characterChangeFrame:UnregisterEvent("UNIT_POWER_UPDATE")
+	characterChangeFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	characterChangeFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_GAINED")
 	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_LOST")
@@ -297,21 +325,26 @@ function TRB.Functions.Character:UpdateSnapshot()
 		target:UpdateAllSpellTracking(currentTime)
 	end
 
-	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
+	if 1 == 0 then
+		local startTime = debugprofilestop()
+		snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
 
-	if TRB.Data.resource2 ~= nil then
-		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
-			local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)
-			if resourceBuff ~= nil then
-				snapshotData.attributes.resource2 = resourceBuff.applications or 0
+		if TRB.Data.resource2 ~= nil then
+			if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
+				local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)
+				if resourceBuff ~= nil then
+					snapshotData.attributes.resource2 = resourceBuff.applications or 0
+				else
+					snapshotData.attributes.resource2 = 0
+				end			
+			elseif TRB.Data.resource2 == "CUSTOM" then
+				-- Do nothing
 			else
-				snapshotData.attributes.resource2 = 0
-			end			
-		elseif TRB.Data.resource2 == "CUSTOM" then
-			-- Do nothing
-		else
-			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
+				snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
+			end
 		end
+		local endTime = debugprofilestop()
+		print(endTime-startTime)
 	end
 end
 
@@ -628,6 +661,30 @@ function TRB.Functions.Character:EventRegistration()
 	local combatFrame = TRB.Frames.combatFrame
 
 	if TRB.Data.specSupported then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if TRB.Data.resource ~= nil then
+			_, TRB.Data.resourceToken = UnitPowerType("player")
+		end
+		if TRB.Data.resource2 ~= nil then
+			snapshotData.attributes.resource2 = 0
+			if TRB.Data.resource2 ~= "SPELL" and TRB.Data.resource2 ~= "CUSTOM" then
+				if TRB.Data.resource2 == 4 then
+					TRB.Data.resource2Token = "COMBO_POINTS"
+				elseif TRB.Data.resource2 == 5 then
+					TRB.Data.resource2Token = "RUNES"
+				elseif TRB.Data.resource2 == 7 then
+					TRB.Data.resource2Token = "SOUL_SHARDS"
+				elseif TRB.Data.resource2 == 9 then
+					TRB.Data.resource2Token = "HOLY_POWER"
+				elseif TRB.Data.resource2 == 12 then
+					TRB.Data.resource2Token = "CHI"
+				elseif TRB.Data.resource2 == 19 then
+					TRB.Data.resource2Token = "ESSENCE"
+				end
+			end
+		end
+		UpdateResourceValues()
 		TRB.Functions.Class:CheckCharacter()
 		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
