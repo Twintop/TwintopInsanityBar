@@ -748,11 +748,21 @@ local function GetReturnText(inputText)
 	return string.format("%s%s", inputText.color, inputText.text)
 end
 
+---Checks if any primary stat ratings are nil
+---@return boolean
+local function ArePrimaryRatingsNil()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	if snapshotData.attributes.primaryRefresh ~= false or snapshotData.attributes.strength == nil or snapshotData.attributes.strength == nil or snapshotData.attributes.agility == nil or snapshotData.attributes.stamina == nil or snapshotData.attributes.intellect == nil then
+		return true
+	end
+	return false
+end
+
 ---Checks if any secondary stat ratings are nil
 ---@return boolean
 local function AreSecondaryRatingsNil()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	if snapshotData.attributes.attributeRefresh ~= false or snapshotData.attributes.critRating == nil or snapshotData.attributes.masteryRating == nil or snapshotData.attributes.hasteRating == nil or snapshotData.attributes.versatilityOffensive == nil or snapshotData.attributes.versatilityDefensive == nil or snapshotData.attributes.versatilityRating == nil then
+	if snapshotData.attributes.secondaryRefresh ~= false or snapshotData.attributes.critRating == nil or snapshotData.attributes.masteryRating == nil or snapshotData.attributes.hasteRating == nil or snapshotData.attributes.versatilityOffensive == nil or snapshotData.attributes.versatilityDefensive == nil or snapshotData.attributes.versatilityRating == nil then
 		return true
 	end
 	return false
@@ -769,11 +779,52 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 
+	local checkPrimaryStats = true
 	local checkSecondaryStats = true
-	if AreSecondaryRatingsNil() then
-		TRB.Functions.Character:UpdateStatsSnapshot()
+	local primary = ArePrimaryRatingsNil()
+	local secondary = AreSecondaryRatingsNil()
+	if primary then
+		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
+	elseif snapshotData.attributes.cacheRefresh == false then
+		checkPrimaryStats = false
+	end
+	
+	if secondary then
+		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	elseif snapshotData.attributes.cacheRefresh == false then
 		checkSecondaryStats = false
+	end
+
+	if checkPrimaryStats or lookup["$int"] == nil then
+		--$int
+		local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.precision.secondary, "floor", true))
+		--$agi
+		local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.agility, settings.precision.secondary, "floor", true))
+		--$str
+		local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.strength, settings.precision.secondary, "floor", true))
+		--$stam
+		local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.stamina, settings.precision.secondary, "floor", true))
+
+		
+		lookup["$int"] = int
+		lookup["$intellect"] = int
+		lookup["$str"] = str
+		lookup["$strength"] = str
+		lookup["$agi"] = agi
+		lookup["$agility"] = agi
+		lookup["$stam"] = stam
+		lookup["$stamina"] = stam
+	
+		lookupLogic["$int"] = snapshotData.attributes.intellect
+		lookupLogic["$intellect"] = snapshotData.attributes.intellect
+		lookupLogic["$str"] = snapshotData.attributes.strength
+		lookupLogic["$strength"] = snapshotData.attributes.strength
+		lookupLogic["$agi"] = snapshotData.attributes.agility
+		lookupLogic["$agility"] = snapshotData.attributes.agility
+		lookupLogic["$stam"] = snapshotData.attributes.stamina
+		lookupLogic["$stamina"] = snapshotData.attributes.stamina
+
+		snapshotData.attributes.cacheRefresh = false
 	end
 
 	if checkSecondaryStats or lookup["$haste"] == nil then
@@ -816,16 +867,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 			_gcd = 0.75
 		end
 		local gcd = string.format("%.2f", _gcd)
-		
-		--$int
-		local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.precision.secondary, "floor", true))
-		--$agi
-		local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.agility, settings.precision.secondary, "floor", true))
-		--$str
-		local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.strength, settings.precision.secondary, "floor", true))
-		--$stam
-		local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.stamina, settings.precision.secondary, "floor", true))
-		
+
 		lookup["$haste"] = hastePercent
 		lookup["$hastePercent"] = hastePercent
 		lookup["$crit"] = critPercent
@@ -846,22 +888,8 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		lookup["$masteryRating"] = masteryRating
 		lookup["$versRating"] = versRating
 		lookup["$versatilityRating"] = versRating
-		
-		lookup["$int"] = int
-		lookup["$intellect"] = int
-		lookup["$str"] = str
-		lookup["$strength"] = str
-		lookup["$agi"] = agi
-		lookup["$agility"] = agi
-		lookup["$stam"] = stam
-		lookup["$stamina"] = stam
 
 		lookup["$gcd"] = gcd
-
-		lookup["||n"] = string.format("\n")
-		lookup["||c"] = string.format("%s", "|c")
-		lookup["||r"] = string.format("%s", "|r")
-		lookup["%%"] = "%"
 
 		lookupLogic["$haste"] = snapshotData.attributes.haste
 		lookupLogic["$hastePercent"] = snapshotData.attributes.haste
@@ -884,19 +912,15 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		lookupLogic["$versRating"] = snapshotData.attributes.versatilityRating
 		lookupLogic["$versatilityRating"] = snapshotData.attributes.versatilityRating
 	
-		lookupLogic["$int"] = snapshotData.attributes.intellect
-		lookupLogic["$intellect"] = snapshotData.attributes.intellect
-		lookupLogic["$str"] = snapshotData.attributes.strength
-		lookupLogic["$strength"] = snapshotData.attributes.strength
-		lookupLogic["$agi"] = snapshotData.attributes.agility
-		lookupLogic["$agility"] = snapshotData.attributes.agility
-		lookupLogic["$stam"] = snapshotData.attributes.stamina
-		lookupLogic["$stamina"] = snapshotData.attributes.stamina
-	
 		lookupLogic["$gcd"] = _gcd
 
 		snapshotData.attributes.cacheRefresh = false
 	end
+
+	lookup["||n"] = string.format("\n")
+	lookup["||c"] = string.format("%s", "|c")
+	lookup["||r"] = string.format("%s", "|r")
+	lookup["%%"] = "%"
 
 	--$ttd
 	local _ttd = 0

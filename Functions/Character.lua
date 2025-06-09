@@ -63,6 +63,12 @@ local function CharacterChange(self, event, ...)
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			UpdateResourceValues()
 		end
+	elseif event == "UNIT_STATS" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		snapshotData.attributes.primaryRefresh = true
+	elseif event == "COMBAT_RATING_UPDATE" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		snapshotData.attributes.secondaryRefresh = true
 	elseif event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST" then
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
@@ -79,7 +85,8 @@ local function CharacterChange(self, event, ...)
 		TRB.Functions.Character:CheckCharacter()
 	else
 		TRB.Functions.Class:CheckCharacter()
-		TRB.Functions.Character:UpdateStatsSnapshot()
+		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
+		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	end
 end
 
@@ -89,6 +96,8 @@ characterChangeFrame:SetScript("OnEvent", CharacterChange)
 function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+	characterChangeFrame:RegisterEvent("UNIT_STATS")
+	characterChangeFrame:RegisterEvent("COMBAT_RATING_UPDATE")
 	characterChangeFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_GAINED")
 	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_LOST")
@@ -100,6 +109,8 @@ end
 function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+	characterChangeFrame:UnregisterEvent("UNIT_STATS")
+	characterChangeFrame:UnregisterEvent("COMBAT_RATING_UPDATE")
 	characterChangeFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_GAINED")
 	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_LOST")
@@ -311,6 +322,35 @@ function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 end
 
+function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	snapshotData.attributes.strength, _, _, _ = UnitStat("player", 1)
+	snapshotData.attributes.agility, _, _, _ = UnitStat("player", 2)
+	snapshotData.attributes.stamina, _, _, _ = UnitStat("player", 3)
+	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
+
+	snapshotData.attributes.cacheRefresh = true
+	snapshotData.attributes.primaryRefresh = false
+end
+
+function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+	snapshotData.attributes.haste = UnitSpellHaste("player")
+	snapshotData.attributes.crit = GetCritChance()
+	snapshotData.attributes.mastery = GetMasteryEffect()
+	snapshotData.attributes.versatilityOffensive = GetCombatRatingBonus(29)
+	snapshotData.attributes.versatilityDefensive = GetCombatRatingBonus(31)
+
+	snapshotData.attributes.hasteRating = GetCombatRating(20)
+	snapshotData.attributes.critRating = GetCombatRating(11)
+	snapshotData.attributes.masteryRating = GetCombatRating(26)
+	snapshotData.attributes.versatilityRating = GetCombatRating(29)
+
+	snapshotData.attributes.cacheRefresh = true
+	snapshotData.attributes.secondaryRefresh = false
+end
+
 function TRB.Functions.Character:UpdateSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
@@ -324,51 +364,6 @@ function TRB.Functions.Character:UpdateSnapshot()
 	if target ~= nil then
 		target:UpdateAllSpellTracking(currentTime)
 	end
-
-	if 1 == 0 then
-		local startTime = debugprofilestop()
-		snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
-
-		if TRB.Data.resource2 ~= nil then
-			if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
-				local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)
-				if resourceBuff ~= nil then
-					snapshotData.attributes.resource2 = resourceBuff.applications or 0
-				else
-					snapshotData.attributes.resource2 = 0
-				end			
-			elseif TRB.Data.resource2 == "CUSTOM" then
-				-- Do nothing
-			else
-				snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
-			end
-		end
-		local endTime = debugprofilestop()
-		print(endTime-startTime)
-	end
-end
-
-function TRB.Functions.Character:UpdateStatsSnapshot()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-
-	snapshotData.attributes.haste = UnitSpellHaste("player")
-	snapshotData.attributes.crit = GetCritChance()
-	snapshotData.attributes.mastery = GetMasteryEffect()
-	snapshotData.attributes.versatilityOffensive = GetCombatRatingBonus(29)
-	snapshotData.attributes.versatilityDefensive = GetCombatRatingBonus(31)
-
-	snapshotData.attributes.hasteRating = GetCombatRating(20)
-	snapshotData.attributes.critRating = GetCombatRating(11)
-	snapshotData.attributes.masteryRating = GetCombatRating(26)
-	snapshotData.attributes.versatilityRating = GetCombatRating(29)
-	
-	snapshotData.attributes.strength, _, _, _ = UnitStat("player", 1)
-	snapshotData.attributes.agility, _, _, _ = UnitStat("player", 2)
-	snapshotData.attributes.stamina, _, _, _ = UnitStat("player", 3)
-	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
-
-	snapshotData.attributes.cacheRefresh = true
-	snapshotData.attributes.attributeRefresh = false
 end
 
 ---Loads data from the specialization cache in to the main TRB.Data table

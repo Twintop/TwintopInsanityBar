@@ -15,6 +15,7 @@ local content = [====[
 ## General
 
 - [#451 - NEW](#451) Significantly reduce how often the current resource values need to be refresh from the API.
+- [#452 - NEW](#452) Significantly reduce how often primary and secondary stat values need to be refresh from the API.
 
 ---
 
