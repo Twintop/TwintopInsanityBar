@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.5.8-release (2025-06-11)
+## General
+
+- [#451 - ROLLBACK](#451) Revert some changes to how resource values get refreshed.
+
+---
+
 # 11.1.5.7-release (2025-06-10)
 ## General
 

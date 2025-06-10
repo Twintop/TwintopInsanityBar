@@ -364,6 +364,26 @@ function TRB.Functions.Character:UpdateSnapshot()
 	if target ~= nil then
 		target:UpdateAllSpellTracking(currentTime)
 	end
+
+	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
+	if TRB.Data.resource2 ~= nil then
+		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
+			local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)
+			if resourceBuff ~= nil then
+				snapshotData.attributes.resource2 = resourceBuff.applications or 0
+			else
+				snapshotData.attributes.resource2 = 0
+			end			
+		elseif TRB.Data.resource2 == "CUSTOM" then
+			-- Do nothing
+		else
+			snapshotData.attributes.resource2 = 0
+		end			
+	elseif TRB.Data.resource2 == "CUSTOM" then
+		-- Do nothing
+	else
+		snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
+	end
 end
 
 ---Loads data from the specialization cache in to the main TRB.Data table
