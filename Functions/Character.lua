@@ -532,34 +532,43 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.endCap.base = spec.colors.endCap.base
 	end
 
----@diagnostic disable-next-line: missing-fields
-	specCache.settings.thresholds = {
-		specProperties = spec.thresholds.specProperties,
-		thresholdDictionary = {}
-	}
-	if s.thresholdIcons then
-		specCache.settings.thresholds.properties = core.thresholds.properties
-		specCache.settings.thresholds.icons = core.thresholds.icons
-	else
-		specCache.settings.thresholds.properties = spec.thresholds.properties
-		specCache.settings.thresholds.icons = spec.thresholds.icons
-	end
-
-	for key, _ in pairs(spec.thresholds.thresholdDictionary) do
-		specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
-	end
-	if isHealer then
-		if s.thresholdPotions then
-			specCache.settings.thresholds.potionCooldown = core.thresholds.potionCooldown
+	if spec.thresholds ~= nil then
+	---@diagnostic disable-next-line: missing-fields
+		specCache.settings.thresholds = {
+			specProperties = spec.thresholds.specProperties,
+			thresholdDictionary = {}
+		}
+		if s.thresholdIcons then
+			specCache.settings.thresholds.properties = core.thresholds.properties
+			specCache.settings.thresholds.icons = core.thresholds.icons
 		else
-			specCache.settings.thresholds.potionCooldown = spec.thresholds.potionCooldown
+			specCache.settings.thresholds.properties = spec.thresholds.properties
+			specCache.settings.thresholds.icons = spec.thresholds.icons
 		end
 
-		if s.thresholdHealers then
-			for key, _ in pairs(core.thresholds.thresholdDictionaryHealers) do
-				specCache.settings.thresholds.thresholdDictionary[key] = core.thresholds.thresholdDictionaryHealers[key]
+		for key, _ in pairs(spec.thresholds.thresholdDictionary) do
+			specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
+		end
+		if isHealer then
+			if s.thresholdPotions then
+				specCache.settings.thresholds.potionCooldown = core.thresholds.potionCooldown
+			else
+				specCache.settings.thresholds.potionCooldown = spec.thresholds.potionCooldown
+			end
+
+			if s.thresholdHealers then
+				for key, _ in pairs(core.thresholds.thresholdDictionaryHealers) do
+					specCache.settings.thresholds.thresholdDictionary[key] = core.thresholds.thresholdDictionaryHealers[key]
+				end
 			end
 		end
+	else
+		specCache.settings.thresholds = {
+			specProperties = {},
+			properties = core.thresholds.properties,
+			icons = core.thresholds.icons,
+			thresholdDictionary = {}
+		}
 	end
 
 	if s.precision then

@@ -11,11 +11,12 @@ local content = [====[
 
 ---
 
-# 11.1.7.0-release (2025-06-17)
+# 11.1.5.7-release (2025-06-10)
 ## General
 
 - [#451 - NEW](#451) Significantly reduce how often the current resource values need to be refresh from the API.
 - [#452 - NEW](#452) Significantly reduce how often primary and secondary stat values need to be refresh from the API.
+- (FIX) Fix the bar not loading correctly on some specializations when it is a newly played class or settings for that class have been reset.
 
 ---
 
