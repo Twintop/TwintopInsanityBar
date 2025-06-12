@@ -49,7 +49,6 @@ local function UpdateResourceValues()
 			-- Do nothing
 		else
 			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
-			print(TRB.Data.resource2, snapshotData.attributes.resource2)
 		end
 	end
 end
@@ -61,11 +60,8 @@ end
 local function CharacterChange(self, event, ...)
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
 		local unitTarget, powerType = ...
-		if unitTarget == "player" then
-			--print(event, unitTarget, powerType)
-		end
+
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
-			print(powerType)
 			UpdateResourceValues()
 		end
 	elseif event == "UNIT_STATS" then

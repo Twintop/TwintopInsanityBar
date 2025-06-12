@@ -11,10 +11,10 @@ local content = [====[
 
 ---
 
-# 11.1.5.9-release (2025-06-12)
+# 11.1.5.10-release (2025-06-12)
 ## General
 
-- [#451 - FIX](#451) Fix some isses with combo points not rendering correctly.
+- [#451 - FIX](#451) Fix some issues with combo points not rendering correctly.
 
 ---
 
