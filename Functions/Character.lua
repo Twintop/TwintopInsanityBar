@@ -60,7 +60,6 @@ end
 local function CharacterChange(self, event, ...)
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
 		local unitTarget, powerType = ...
-
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			UpdateResourceValues()
 		end
@@ -365,8 +364,6 @@ function TRB.Functions.Character:UpdateSnapshot()
 	if target ~= nil then
 		target:UpdateAllSpellTracking(currentTime)
 	end
-
-	UpdateResourceValues()
 end
 
 ---Loads data from the specialization cache in to the main TRB.Data table

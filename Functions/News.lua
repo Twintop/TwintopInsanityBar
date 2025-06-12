@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.7.0-release (2025-06-17)
+## General
+
+- [#451 - UPDATE](#451) Restore original functionality, with fixes, to significantly reduce how often the current resource values need to be refresh from the API.
+
+---
+
 # 11.1.5.10-release (2025-06-12)
 ## General
 

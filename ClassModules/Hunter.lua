@@ -2540,12 +2540,18 @@ function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.hunter.beastMastery == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 		TRB.Data.specSupported = true
+		TRB.Data.resource = Enum.PowerType.Focus
+		TRB.Data.resourceFactor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.hunter.marksmanship == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 		TRB.Data.specSupported = true
+		TRB.Data.resource = Enum.PowerType.Focus
+		TRB.Data.resourceFactor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.hunter.survival == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
 		TRB.Data.specSupported = true
+		TRB.Data.resource = Enum.PowerType.Focus
+		TRB.Data.resourceFactor = 1
 	else
 		TRB.Data.specSupported = false
 	end
