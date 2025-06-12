@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.1.5.9-release (2025-06-12)
+## General
+
+- [#451 - FIX](#451) Fix some isses with combo points not rendering correctly.
+
+---
+
 # 11.1.5.8-release (2025-06-11)
 ## General
 

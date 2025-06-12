@@ -49,6 +49,7 @@ local function UpdateResourceValues()
 			-- Do nothing
 		else
 			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
+			print(TRB.Data.resource2, snapshotData.attributes.resource2)
 		end
 	end
 end
@@ -60,7 +61,11 @@ end
 local function CharacterChange(self, event, ...)
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
 		local unitTarget, powerType = ...
+		if unitTarget == "player" then
+			--print(event, unitTarget, powerType)
+		end
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
+			print(powerType)
 			UpdateResourceValues()
 		end
 	elseif event == "UNIT_STATS" then
@@ -365,25 +370,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 		target:UpdateAllSpellTracking(currentTime)
 	end
 
-	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
-	if TRB.Data.resource2 ~= nil then
-		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
-			local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)
-			if resourceBuff ~= nil then
-				snapshotData.attributes.resource2 = resourceBuff.applications or 0
-			else
-				snapshotData.attributes.resource2 = 0
-			end			
-		elseif TRB.Data.resource2 == "CUSTOM" then
-			-- Do nothing
-		else
-			snapshotData.attributes.resource2 = 0
-		end			
-	elseif TRB.Data.resource2 == "CUSTOM" then
-		-- Do nothing
-	else
-		snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
-	end
+	UpdateResourceValues()
 end
 
 ---Loads data from the specialization cache in to the main TRB.Data table
