@@ -69,3 +69,10 @@ function TRB.Functions.Table:Merge(original, incoming)
 	end
 	return original
 end
+
+function TRB.Functions.Table:AddToDictionaryOfListsById(dictionary, id, element)
+	if id ~= nil then
+		dictionary[id] = dictionary[id] or {}
+		table.insert(dictionary[id], element)
+	end
+end

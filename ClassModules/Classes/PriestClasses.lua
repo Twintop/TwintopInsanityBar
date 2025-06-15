@@ -500,6 +500,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		id = 194384,
 		isTalent = true,
 		isBuff = true,
+		isFriend = true,
+		isSelfInitializeAllowed = true,
 		duration = 15
 	})
 	self.evangelism = TRB.Classes.SpellBase:New({

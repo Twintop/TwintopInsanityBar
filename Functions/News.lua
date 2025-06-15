@@ -15,6 +15,7 @@ local content = [====[
 ## General
 
 - [#451 - UPDATE](#451) Restore original functionality, with fixes, to significantly reduce how often the current resource values need to be refresh from the API.
+- [#453 - NEW](#453) Reduce the amount of redundant data refreshes for buff and debuff tracking.
 
 ---
 

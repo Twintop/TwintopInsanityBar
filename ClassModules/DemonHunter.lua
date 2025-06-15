@@ -1703,23 +1703,6 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
-function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
-	if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-		return false
-	end
-
-	if guid ~= nil and guid ~= "" then
-		---@type TRB.Classes.TargetData
-		local targetData = TRB.Data.snapshotData.targetData
-		if not targetData:CheckTargetExists(guid) then
-			targetData:InitializeTarget(guid)
-		end
-		targetData.targets[guid].lastUpdate = GetTime()
-		return true
-	end
-	return false
-end
-
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 	if valid then

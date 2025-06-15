@@ -34,6 +34,28 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
+function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed, isFriend)
+	if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+		return false
+	end
+
+	if guid ~= nil and guid ~= "" then
+		local currentTime = GetTime()
+		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
+		local targets = targetData.targets
+		
+		if not targetData:CheckTargetExists(guid) then
+			targetData:InitializeTarget(guid, isFriend)
+		end
+		if isFriend then
+			targets[guid].isFriend = true
+		end
+		targets[guid].lastUpdate = currentTime
+		return true
+	end
+	return false
+end
+
 local function UpdateResourceValues()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)

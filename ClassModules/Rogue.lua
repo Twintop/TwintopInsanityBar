@@ -1950,7 +1950,6 @@ local function CastingSpell()
 end
 
 local function UpdateRollTheBones()
-	TRB.Functions.Character:UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 	---@type TRB.Classes.Snapshot
 	local rollTheBones = TRB.Data.snapshotData.snapshots[spells.rollTheBones.id]
@@ -3509,11 +3508,7 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			end
 
 			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
-				C_Timer.After(0, function()
-					C_Timer.After(0.1, function()
-						SwitchSpec()
-					end)
-				end)
+				SwitchSpec()
 			end
 		end
 	end
@@ -3587,25 +3582,6 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false
 	end
-end
-
-function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
-	if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-		return false
-	end
-	
-	local currentTime = GetTime()
-	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-	local targets = targetData.targets
-
-	if guid ~= nil and guid ~= "" then
-		if not targetData:CheckTargetExists(guid) then
-			targetData:InitializeTarget(guid)
-		end
-		targets[guid].lastUpdate = currentTime
-		return true
-	end
-	return false
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)

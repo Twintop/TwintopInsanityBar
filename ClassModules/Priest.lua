@@ -4438,29 +4438,6 @@ function TRB.Functions.Class:HideResourceBar(force)
 		snapshotData.attributes.isTracking = false
 	end
 end
-
-function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed, isFriend)
-	if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-		return false
-	end
-
-	if guid ~= nil and guid ~= "" then
-		local currentTime = GetTime()
-		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-		local targets = targetData.targets
-		
-		if not targetData:CheckTargetExists(guid) then
-			targetData:InitializeTarget(guid, isFriend)
-		end
-		if isFriend then
-			targets[guid].isFriend = true
-		end
-		targets[guid].lastUpdate = currentTime
-		return true
-	end
-	return false
-end
-
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 	if valid then

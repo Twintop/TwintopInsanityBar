@@ -12,6 +12,7 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.SpellsData
 ---@field public spells TRB.Classes.SpecializationSpellsBase # Dictionary of spells
+---@field public spellsById table<integer, TRB.Classes.SpellBase[]> # Dictionary of list of spells by id.
 --@field public fillManaCost boolean # Should the mana cost of spells also be filled when `FillSpellData()` is called?
 TRB.Classes.SpellsData = {}
 TRB.Classes.SpellsData.__index = TRB.Classes.SpellsData
@@ -24,6 +25,7 @@ function TRB.Classes.SpellsData:New()
 	
 	---@type TRB.Classes.SpecializationSpellsBase
 	self.spells = TRB.Classes.SpecializationSpellsBase:New()
+	self.spellsById = {}
 
 	return self
 end
@@ -34,6 +36,14 @@ function TRB.Classes.SpellsData:FillSpellData()
 		---@type TRB.Classes.SpellBase
 		local spell = v
 		spell:FillSpellData()
+
+		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.id, spell)
+		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.buffId, spell)
+		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.debuffId, spell)
+		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.energizeId, spell)
+		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.talentId, spell)
+		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.castId, spell)
+		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.tickId, spell)
 	end
 end
 
@@ -86,6 +96,8 @@ end
 ---@field public resourcePerTick number? # How many resources are generated per tick.
 ---@field public isHasted boolean? # Does this spell's cooldown, tick rate, etc. benefit from haste?
 ---@field public isBuff boolean? # Is this spell a buff?
+---@field public isFriend boolean? # Is this an effect that happens to friendly targets?
+---@field public isSelfInitializeAllowed boolean? # Can this effect be initialized on the player? Almost always false unless we're tracking a friendly buff (like Atonement)
 ---@field public isPvp boolean? # Is this a PvP only spell?
 ---@field public rangeCheck boolean? # Should this spell perform range checks?
 ---@field public targetUnit string? # The target that will be used when doing castable and range calculations
@@ -146,6 +158,8 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 			(key == "resourcePerTick"					and type(value) == "number") or
 			(key == "isHasted"							and type(value) == "boolean") or
 			(key == "isBuff"							and type(value) == "boolean") or
+			(key == "isFriend"							and type(value) == "boolean") or
+			(key == "isSelfInitializeAllowed"			and type(value) == "boolean") or
 			(key == "isPvp"								and type(value) == "boolean") or
 			(key == "targetUnit") or
 			(key == "rangeCheck"						and type(value) == "boolean") or

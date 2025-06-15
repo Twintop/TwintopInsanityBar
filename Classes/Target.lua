@@ -79,7 +79,7 @@ function TRB.Classes.TargetData:UpdateTrackedSpells(currentTime)
     local counts = {}
     for guid, _ in pairs(self.targets) do
         local target = self.targets[guid]
-        if not target.isFriend and (target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10) and target.guid ~= self.currentTargetGuid then
+        if not target.isFriend and (target.lastUpdate == nil or (currentTime - target.lastUpdate) > 30) and target.guid ~= self.currentTargetGuid then
             for spellId, _ in pairs(target.spells) do
                 target.spells[spellId]:Reset()
             end
@@ -113,16 +113,37 @@ end
 ---@param guid string # GUID of the target we are updating
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.TargetData:HandleCombatLogDebuff(spellId, type, guid)
-    if self.trackedSpells[spellId] == nil then
+    if self.trackedSpells[spellId] == nil or self.targets[guid] == nil then
         return false
     end
 
+    local currentTime = GetTime()
+    self.targets[guid].lastUpdate = currentTime
+    if (type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH") then
+        if self.targets[guid].spells[spellId].lastCheckTimestampApplied == currentTime then
+            return false
+        end
+        self.targets[guid].spells[spellId].lastCheckTimestampApplied = currentTime
+    end
+
+    if type == "SPELL_AURA_REMOVED" then
+        if self.targets[guid].spells[spellId].lastCheckTimestampApplied == currentTime or self.targets[guid].spells[spellId].lastCheckTimestampRemoved == currentTime then
+            return false
+        end        
+        self.targets[guid].spells[spellId].lastCheckTimestampRemoved = currentTime
+    end
+
+    local preExisting = self.targets[guid].spells[spellId].active
     local triggerUpdate = self.targets[guid]:HandleCombatLogDebuff(spellId, type)
-    if type == "SPELL_AURA_APPLIED" then
-        self.count[spellId] = self.count[spellId] + 1
+    if triggerUpdate and type == "SPELL_AURA_APPLIED" then
+        if not preExisting then
+            self.count[spellId] = self.count[spellId] + 1
+        end
         triggerUpdate = true
-    elseif type == "SPELL_AURA_REMOVED" then
-        self.count[spellId] = self.count[spellId] - 1
+    elseif triggerUpdate and type == "SPELL_AURA_REMOVED" then
+        if preExisting then
+            self.count[spellId] = self.count[spellId] - 1
+        end
         triggerUpdate = true
     elseif type == "SPELL_AURA_APPLIED_DOSE" then
         triggerUpdate = true
@@ -140,16 +161,37 @@ end
 ---@param guid any # GUID of the target we are updating
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.TargetData:HandleCombatLogBuff(spellId, type, guid)
-    if self.trackedSpells[spellId] == nil then
+    if self.trackedSpells[spellId] == nil or self.targets[guid] == nil then
         return false
     end
 
+    local currentTime = GetTime()
+    self.targets[guid].lastUpdate = currentTime
+    if (type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH") then
+        if self.targets[guid].spells[spellId].lastCheckTimestampApplied == currentTime then
+            return false
+        end
+        self.targets[guid].spells[spellId].lastCheckTimestampApplied = currentTime
+    end
+
+    if type == "SPELL_AURA_REMOVED" then
+        if self.targets[guid].spells[spellId].lastCheckTimestampApplied == currentTime or self.targets[guid].spells[spellId].lastCheckTimestampRemoved == currentTime then
+            return false
+        end
+        self.targets[guid].spells[spellId].lastCheckTimestampRemoved = currentTime
+    end
+
+    local preExisting = self.targets[guid].spells[spellId].active
     local triggerUpdate = self.targets[guid]:HandleCombatLogBuff(spellId, type)
-    if type == "SPELL_AURA_APPLIED" then
-        self.count[spellId] = self.count[spellId] + 1
+    if triggerUpdate and type == "SPELL_AURA_APPLIED" then
+        if not preExisting then
+            self.count[spellId] = self.count[spellId] + 1
+        end
         triggerUpdate = true
-    elseif type == "SPELL_AURA_REMOVED" then
-        self.count[spellId] = self.count[spellId] - 1
+    elseif triggerUpdate and type == "SPELL_AURA_REMOVED" then
+        if preExisting then
+            self.count[spellId] = self.count[spellId] - 1
+        end
         triggerUpdate = true
     end
     return triggerUpdate
@@ -326,7 +368,7 @@ end
 
 ---@class TRB.Classes.TargetSpell
 ---@field public id integer
----@field public spell table
+---@field public spell TRB.Classes.SpellBase
 ---@field public active boolean
 ---@field public remainingTime number
 ---@field public endTime number?
@@ -338,12 +380,14 @@ end
 ---@field public stacks integer
 ---@field public autoUpdate boolean
 ---@field public auraInstanceId? integer
+---@field public lastCheckTimestampApplied number?
+---@field public lastCheckTimestampRemoved number?
 ---@field private target TRB.Classes.Target
 TRB.Classes.TargetSpell = {}
 TRB.Classes.TargetSpell.__index = TRB.Classes.TargetSpell
 
 ---Adds a new spell to be tracked against a target
----@param spell table # Spell we are tracking
+---@param spell TRB.Classes.SpellBase # Spell we are tracking
 ---@param target TRB.Classes.Target # Target this spell is tracked against
 ---@param isDot boolean? # Is this a DoT?
 ---@param hasCounter boolean? # Does this have a counter component to it?
@@ -388,7 +432,7 @@ function TRB.Classes.TargetSpell:New(spell, target, isDot, hasCounter, hasSnapsh
     return self
 end
 
----Sets the aura related date for the target spell
+---Sets the aura related data for the target spell
 ---@param self TRB.Classes.TargetSpell
 ---@param unitToken string
 ---@param isBuff boolean # True = Buff, False = Debuff
@@ -480,7 +524,7 @@ function TRB.Classes.TargetSpell:HandleCombatLogBuffOrDebuff(type)
     return triggerUpdate
 end
 
----Reset's the spell's snapshots
+---Resets the spell's snapshots
 function TRB.Classes.TargetSpell:Reset()
     if self.auraInstanceId ~= nil then
         TRB.Functions.Aura:RemoveTargetAuraInstanceId(self.auraInstanceId)

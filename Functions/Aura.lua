@@ -9,52 +9,85 @@ TRB.Functions.Aura = {}
 ---@param unit UnitToken
 ---@param info UnitAuraUpdateInfo
 local function AuraUpdateEvent(self, event, unit, info)
+	---@type TRB.Classes.SnapshotData
+	local snapshotData = TRB.Data.snapshotData
 	if info.isFullUpdate then
 		--Only do a full refresh of buffs for now
-		TRB.Data.snapshotData:RefreshAllBuffs()
+		snapshotData:RefreshAllBuffs()
 		TRB.Data.cache.values.resource = {}
 		return
 	end
 
+	---@type TRB.Classes.SpecCache
+	local specCache = TRB.Data.specCache[TRB.Data.character.specName]
+	local targetData = snapshotData.targetData
+	local unitGuid = nil
+	local isUnitFriend = nil
+
 	if info.addedAuras then
 		if unit == "player" then
 			for _, v in pairs(info.addedAuras) do
-				local snapshot = TRB.Data.snapshotData.snapshots[v.spellId] --[[@as TRB.Classes.Snapshot]]
+				local snapshot = snapshotData.snapshots[v.spellId]
 
 				if snapshot ~= nil then
 					snapshot.buff:RefreshWithAuraData(v)
 				end
+
+				if v.isFromPlayerOrPlayerPet and targetData.trackedSpells[v.spellId] ~= nil and
+					specCache.spellsData.spellsById[v.spellId] ~= nil and specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed then
+					if TRB.Functions.Class:InitializeTarget(TRB.Data.character.guid, specCache.spellsData.spellsById[v.spellId][1].isFriend, specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed) then
+						targetData:HandleCombatLogBuff(v.spellId, "SPELL_AURA_APPLIED", TRB.Data.character.guid)
+					end
+				end
 			end
 			TRB.Data.cache.values.resource = {}
-		--[[else
-			for _, v in pairs(info.updatedAuraInstanceIDs) do
-				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v]
-
-				if target ~= nil then
-					local targetSpell = target.auraInstanceIds[v]
-					targetSpell:Update()
+		else
+			for _, v in pairs(info.addedAuras) do
+				if v.isFromPlayerOrPlayerPet and targetData.trackedSpells[v.spellId] ~= nil then
+					unitGuid = unitGuid or UnitGUID(unit)
+					isUnitFriend = isUnitFriend or UnitIsFriend("player", unit)
+					if TRB.Functions.Class:InitializeTarget(unitGuid, specCache.spellsData.spellsById[v.spellId][1].isFriend, specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed) then
+						if specCache.spellsData.spellsById[v.spellId][1].isBuff then
+							targetData:HandleCombatLogBuff(v.spellId, "SPELL_AURA_APPLIED", unitGuid)
+						else
+							targetData:HandleCombatLogDebuff(v.spellId, "SPELL_AURA_APPLIED", unitGuid)
+						end
+					end
 				end
-			end]]
+			end
 		end
 	end
 
 	if info.updatedAuraInstanceIDs then
 		if unit == "player" then
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
-				local snapshot = TRB.Data.snapshotData.auraInstanceIds[v] --[[@as TRB.Classes.SnapshotBuff]]
+				local snapshot = snapshotData.auraInstanceIds[v]
 
 				if snapshot ~= nil then
 					snapshot:Refresh()
+				end
+
+				local target = targetData.auraInstanceIds[v]
+
+				if target ~= nil then
+					local targetSpell = target.auraInstanceIds[v]
+				
+					targetData:HandleCombatLogBuff(targetSpell.id, "SPELL_AURA_REFRESH", unitGuid)
 				end
 			end
 			TRB.Data.cache.values.resource = {}
 		else
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
-				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v] --[[@as TRB.Classes.Target]]
+				local target = targetData.auraInstanceIds[v]
 
 				if target ~= nil then
 					local targetSpell = target.auraInstanceIds[v]
-					targetSpell:Update()
+					unitGuid = unitGuid or UnitGUID(unit)
+					if targetSpell.spell.isBuff then
+						targetData:HandleCombatLogBuff(targetSpell.id, "SPELL_AURA_REFRESH", unitGuid)
+					else
+						targetData:HandleCombatLogDebuff(targetSpell.id, "SPELL_AURA_REFRESH", unitGuid)
+					end
 				end
 			end
 		end
@@ -63,21 +96,26 @@ local function AuraUpdateEvent(self, event, unit, info)
 	if info.removedAuraInstanceIDs then
 		if unit == "player" then
 			for _, v in pairs(info.removedAuraInstanceIDs) do
-				local snapshot = TRB.Data.snapshotData.auraInstanceIds[v] --[[@as TRB.Classes.SnapshotBuff]]
-
+				local snapshot = snapshotData.auraInstanceIds[v]
 				if snapshot ~= nil then
 					snapshot:Refresh()
 				end
 				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
 			end
+
 			TRB.Data.cache.values.resource = {}
 		else
 			for _, v in pairs(info.removedAuraInstanceIDs) do
-				local target = TRB.Data.snapshotData.targetData.auraInstanceIds[v]
+				local target = targetData.auraInstanceIds[v]
 
 				if target ~= nil then
-					target.auraInstanceIds[v] = nil
-					TRB.Functions.Aura:RemoveTargetAuraInstanceId(v)
+					local targetSpell = target.auraInstanceIds[v]
+					unitGuid = unitGuid or UnitGUID(unit)
+					if targetSpell.spell.isBuff then
+						targetData:HandleCombatLogBuff(targetSpell.id, "SPELL_AURA_REMOVED", unitGuid)
+					else
+						targetData:HandleCombatLogDebuff(targetSpell.id, "SPELL_AURA_REMOVED", unitGuid)
+					end
 				end
 			end
 		end
