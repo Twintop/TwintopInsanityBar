@@ -3,7 +3,7 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.SpellCast = {}
 
----Handles UNIT_AURA events
+---Handles UNIT_SPELLCAST_* events
 ---@param self any
 ---@param event trbSpellCastType
 ---@param unit UnitToken
@@ -22,7 +22,7 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId)
 			TRB.Functions.Character:ResetCastingSnapshotData()
 		end
 		return
-	elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
+	elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
 		TRB.Functions.Class:SpellCast(event, spellId)
 		return
 	end
@@ -34,6 +34,7 @@ spellCastFrame:SetScript("OnEvent", SpellCastEvent)
 function TRB.Functions.SpellCast:EnableSpellCast()
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
+	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
@@ -43,6 +44,7 @@ end
 function TRB.Functions.SpellCast:DisableSpellCast()
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_START")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_STOP")
+	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_DELAYED")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")

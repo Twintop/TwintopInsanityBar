@@ -630,6 +630,18 @@ function TRB.Classes.SnapshotCasting:Reset()
 	self.gcdLockLastUpdate = nil
 end
 
+function TRB.Classes.SnapshotCasting:SnapshotManaSpell()
+	local _, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
+	local spellInfo = C_Spell.GetSpellInfo(currentSpellId)
+	local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
+
+	self.startTime = currentSpellStartTime / 1000
+	self.endTime = currentSpellEndTime / 1000
+	self.resourceRaw = manaCost
+	self.spellId = spellInfo.spellID
+	self.icon = string.format("|T%s:0|t", spellInfo.iconID)
+end
+
 function TRB.Classes.SnapshotCasting:GetCurrentGCDLockRemaining()
 	local currentTime = GetTime()
 	if currentTime == self.gcdLockLastUpdate then

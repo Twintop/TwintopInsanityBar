@@ -243,7 +243,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
 
-	if self.sinceLastUpdate >= 0 then-- 0.05 then -- in seconds
+	if self.sinceLastUpdate >= 0.05 then -- in seconds
 		---@type TRB.Classes.TargetData
 		local targetData = TRB.Data.snapshotData.targetData
 

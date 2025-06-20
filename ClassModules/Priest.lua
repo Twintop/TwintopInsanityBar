@@ -2248,7 +2248,44 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local affectingCombat = TRB.Data.character.inCombat
 
 	if TRB.Data.character.specId == 1 then
+		casting:SnapshotManaSpell()
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+			casting:SnapshotManaSpell()
+		else
+			TRB.Functions.Character:ResetCastingSnapshotData()
+		end
+		UpdateCastingResourceFinal_Discipline()
 	elseif TRB.Data.character.specId == 2 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+
+			if spellId == spells.heal.id then
+				snapshotData.casting.spellKey = "heal"
+			elseif spellId == spells.flashHeal.id then
+				snapshotData.casting.spellKey = "flashHeal"
+			elseif spellId == spells.prayerOfHealing.id then
+				snapshotData.casting.spellKey = "prayerOfHealing"
+			elseif spellId == spells.smite.id then
+				snapshotData.casting.spellKey = "smite"
+			elseif talents:IsTalentActive(spells.voiceOfHarmony) then
+				if spellId == spells.holyFire.id then --Voice of Harmony
+					snapshotData.casting.spellKey = "holyFire"
+				end
+			end
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+			if spellId == spells.symbolOfHope.id then
+				snapshotData.casting.spellId = spells.symbolOfHope.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.resourceRaw = 0
+				snapshotData.casting.icon = spells.symbolOfHope.icon
+			else
+				casting:SnapshotManaSpell()
+			end
+		end
+		UpdateCastingResourceFinal_Holy()
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		if event == "UNIT_SPELLCAST_START" then
@@ -2315,7 +2352,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			else
 				TRB.Functions.Character:ResetCastingSnapshotData()
 			end
-			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if spellId == spells.mindFlay.id then
 				casting.spellId = spells.mindFlay.id
@@ -2335,8 +2371,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			else
 				TRB.Functions.Character:ResetCastingSnapshotData()
 			end
-			UpdateCastingResourceFinal_Shadow()
 		end
+		UpdateCastingResourceFinal_Shadow()
 	end
 end
 
@@ -2805,7 +2841,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting  then
+				if TRB.Data.character.inCombat and specSettings.colors.bar.showCasting  then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -3149,7 +3185,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting  then
+				if TRB.Data.character.inCombat and specSettings.colors.bar.showCasting  then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -3314,8 +3350,9 @@ local function UpdateResourceBar()
 
 						local castTimeRemains = snapshotData.casting.endTime - currentTime
 						local holyWordCooldownRemaining = snapshots[spells[maybeHolyWordSpell.holyWordKey].id].cooldown:GetRemainingTime(currentTime)
+						local calcHolyWordCooldown = CalculateHolyWordCooldown(maybeHolyWordSpell.holyWordReduction, spells[snapshotData.casting.spellKey].id)
 
-						if (holyWordCooldownRemaining - CalculateHolyWordCooldown(maybeHolyWordSpell.holyWordReduction, spells[snapshotData.casting.spellKey].id) - castTimeRemains) <= 0 then
+						if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
 							holyWordCooldownCompletes = true
 							holyWordCooldownCompletesKey = maybeHolyWordSpell.holyWordKey
 							if specSettings.bar[maybeHolyWordSpell.holyWordKey .. "Enabled"] then
