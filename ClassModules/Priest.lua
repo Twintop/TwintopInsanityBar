@@ -2263,24 +2263,24 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			casting:SnapshotManaSpell()
 
 			if spellId == spells.heal.id then
-				snapshotData.casting.spellKey = "heal"
+				casting.spellKey = "heal"
 			elseif spellId == spells.flashHeal.id then
-				snapshotData.casting.spellKey = "flashHeal"
+				casting.spellKey = "flashHeal"
 			elseif spellId == spells.prayerOfHealing.id then
-				snapshotData.casting.spellKey = "prayerOfHealing"
+				casting.spellKey = "prayerOfHealing"
 			elseif spellId == spells.smite.id then
-				snapshotData.casting.spellKey = "smite"
+				casting.spellKey = "smite"
 			elseif talents:IsTalentActive(spells.voiceOfHarmony) then
 				if spellId == spells.holyFire.id then --Voice of Harmony
-					snapshotData.casting.spellKey = "holyFire"
+					casting.spellKey = "holyFire"
 				end
 			end
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if spellId == spells.symbolOfHope.id then
-				snapshotData.casting.spellId = spells.symbolOfHope.id
-				snapshotData.casting.startTime = currentTime
-				snapshotData.casting.resourceRaw = 0
-				snapshotData.casting.icon = spells.symbolOfHope.icon
+				casting.spellId = spells.symbolOfHope.id
+				casting.startTime = currentTime
+				casting.resourceRaw = 0
+				casting.icon = spells.symbolOfHope.icon
 			else
 				casting:SnapshotManaSpell()
 			end
@@ -3355,7 +3355,7 @@ local function UpdateResourceBar()
 						if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
 							holyWordCooldownCompletes = true
 							holyWordCooldownCompletesKey = maybeHolyWordSpell.holyWordKey
-							if specSettings.bar[maybeHolyWordSpell.holyWordKey .. "Enabled"] then
+							if specSettings.colors.bar[maybeHolyWordSpell.holyWordKey .. "Enabled"] then
 								barColor = specSettings.colors.bar[maybeHolyWordSpell.holyWordKey]
 							end
 						end

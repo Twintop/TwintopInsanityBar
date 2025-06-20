@@ -11,6 +11,17 @@ local content = [====[
 
 ---
 
+# 11.1.7.1-release (2025-06-22)
+## General
+
+
+## Priest
+### Holy
+
+- (FIX) Ensure the mana bar changes colors when a cast will bring its associated Holy Word off of cooldown, when enabled.
+
+---
+
 # 11.1.7.0-release (2025-06-17)
 ## General
 
