@@ -2237,6 +2237,109 @@ local function UpdateCastingResourceFinal_Shadow()
 	TRB.Data.snapshotData.casting.resourceFinal = CalculateResourceGain(TRB.Data.snapshotData.casting.resourceRaw)
 end
 
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
+	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local casting = snapshotData.casting
+	local currentTime = GetTime()
+	local affectingCombat = TRB.Data.character.inCombat
+
+	if TRB.Data.character.specId == 1 then
+	elseif TRB.Data.character.specId == 2 then
+	elseif TRB.Data.character.specId == 3 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+		if event == "UNIT_SPELLCAST_START" then
+			if spellId == spells.mindBlast.id then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.mindBlast.resource
+				casting.spellId = spells.mindBlast.id
+				casting.icon = spells.mindBlast.icon
+			elseif spellId == spells.mindSpike.id then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.mindSpike.resource
+				casting.spellId = spells.mindSpike.id
+				casting.icon = spells.mindSpike.icon
+			elseif spellId == spells.mindSpikeInsanity.castId then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.mindSpikeInsanity.resource
+				casting.spellId = spells.mindSpikeInsanity.castId
+				casting.icon = spells.mindSpikeInsanity.icon
+			elseif spellId == spells.darkAscension.id then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.darkAscension.resource
+				casting.spellId = spells.darkAscension.id
+				casting.icon = spells.darkAscension.icon
+
+				if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
+					casting.resourceRaw = casting.resourceRaw + spells.voidBolt.resource
+				end
+			elseif spellId == spells.voidEruption.id then
+				if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
+					casting.startTime = currentTime
+					casting.resourceRaw = spells.voidBolt.resource
+					casting.spellId = spells.darkAscension.id
+					casting.icon = spells.darkAscension.icon
+				end
+			elseif spellId == spells.vampiricTouch.id then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.vampiricTouch.resource
+				casting.spellId = spells.vampiricTouch.id
+				casting.icon = spells.vampiricTouch.icon
+			elseif spellId == spells.mindgames.id then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.mindgames.resource
+				casting.spellId = spells.mindgames.id
+				casting.icon = spells.mindgames.icon
+			elseif spellId == spells.halo.id then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.halo.resource
+				casting.spellId = spells.halo.id
+				casting.icon = spells.halo.icon
+			elseif spellId == spells.massDispel.id and talents:IsTalentActive(spells.hallucinations) and affectingCombat then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.hallucinations.resource
+				casting.spellId = spells.massDispel.id
+				casting.icon = spells.massDispel.icon
+			elseif spellId == spells.voidBlast.id then
+				casting.startTime = currentTime
+				if talents:IsTalentActive(spells.voidInfusion) then
+					casting.resourceRaw = spells.voidBlast.resource * spells.voidInfusion.attributes.resourceMod
+				else
+					casting.resourceRaw = spells.voidBlast.resource
+				end
+				casting.spellId = spells.voidBlast.id
+				casting.icon = spells.voidBlast.icon
+			else
+				TRB.Functions.Character:ResetCastingSnapshotData()
+			end
+			UpdateCastingResourceFinal_Shadow()
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+			if spellId == spells.mindFlay.id then
+				casting.spellId = spells.mindFlay.id
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.mindFlay.resource
+				casting.icon = spells.mindFlay.icon
+			elseif spellId == spells.mindFlayInsanity.castId then
+				casting.spellId = spells.mindFlayInsanity.castId
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.mindFlayInsanity.resource
+				casting.icon = spells.mindFlayInsanity.icon
+			elseif spellId == spells.voidTorrent.id then
+				casting.spellId = spells.voidTorrent.id
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.voidTorrent.resource
+				casting.icon = spells.voidTorrent.icon
+			else
+				TRB.Functions.Character:ResetCastingSnapshotData()
+			end
+			UpdateCastingResourceFinal_Shadow()
+		end
+	end
+end
+
 local function CastingSpell()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -3418,7 +3521,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.deathspeaker.color
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting  then
+				if snapshotData.casting.spellId ~= nil and specSettings.colors.bar.showCasting  then
 					castingBarValue = snapshotData.casting.resourceFinal + currentResource
 				else
 					castingBarValue = currentResource

@@ -112,6 +112,7 @@ Functions\IO.lua
 Functions\LibSharedMedia.lua
 Functions\Number.lua
 Functions\Settings.lua
+Functions\SpellCast.lua
 Functions\String.lua
 Functions\Table.lua
 Functions\Talent.lua
