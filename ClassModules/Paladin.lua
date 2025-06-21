@@ -574,47 +574,24 @@ local function UpdateCastingResourceFinal_Holy()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 end
 
-local function CastingSpell()
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
+	local casting = snapshotData.casting
 
-	if currentSpellName == nil and currentChannelName == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 then
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			else
-				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
-
-				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
-
-					snapshotData.casting.startTime = currentSpellStartTime / 1000
-					snapshotData.casting.endTime = currentSpellEndTime / 1000
-					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.spellId = spellInfo.spellID
-					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
-
-					UpdateCastingResourceFinal_Holy()
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-			end
-			return true
+	if TRB.Data.character.specId == 1 then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Holy()
 		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
 	end
 end
 
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
-	local currentTime = GetTime()
+	--local currentTime = GetTime()
 end
 
 local function UpdateSnapshot_Holy()
@@ -719,7 +696,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting  then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

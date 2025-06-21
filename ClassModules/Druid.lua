@@ -2064,6 +2064,7 @@ end
 local function FillSnapshotDataCasting_Balance(spell)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local casting = snapshotData.casting
 	local currentTime = GetTime()
 
 	local resource = spell.resource
@@ -2076,11 +2077,11 @@ local function FillSnapshotDataCasting_Balance(spell)
 		resource = resource + (spells.theEternalMoon.attributes.moonResourceMod * spell.attributes.theEternalMoon)
 	end
 
-	snapshotData.casting.startTime = currentTime
-	snapshotData.casting.resourceRaw = spell.resource
-	snapshotData.casting.resourceFinal = spell.resource
-	snapshotData.casting.spellId = spell.id
-	snapshotData.casting.icon = spell.icon
+	casting.startTime = currentTime
+	casting.resourceRaw = spell.resource
+	casting.resourceFinal = spell.resource
+	casting.spellId = spell.id
+	casting.icon = spell.icon
 end
 
 --TODO: Remove?
@@ -2094,102 +2095,63 @@ local function UpdateCastingResourceFinal_Restoration()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 end
 
-local function CastingSpell()
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
+	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
+	local casting = snapshotData.casting
 
-	if currentSpellName == nil and currentChannelName == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 then
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-				--See druid implementation for handling channeled spells
-			else
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
-				if currentSpellId == spells.wrath.id then
-					FillSnapshotDataCasting_Balance(spells.wrath)
+	if TRB.Data.character.specId == 1 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+		if spellId == spells.wrath.id then
+			FillSnapshotDataCasting_Balance(spells.wrath)
 
-					if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModWrath
-					end
-					if talents:IsTalentActive(spells.wildSurges) then
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
-					end
-					if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.attributes.modifier.wrath)
-					end
-				elseif currentSpellId == spells.starfire.id then
-					FillSnapshotDataCasting_Balance(spells.starfire)
-
-					if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModStarfire
-					end
-					if talents:IsTalentActive(spells.wildSurges) then
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
-					end
-					if talents:IsTalentActive(spells.moonGuardian) then
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.moonGuardian.attributes.resourceMod
-					end
-					--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
-					--snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
-					--Warrior of Elune logic would go here if it didn't make it instant cast!
-				elseif currentSpellId == spells.sunfire.id then
-					FillSnapshotDataCasting_Balance(spells.sunfire)
-				elseif currentSpellId == spells.moonfire.id then
-					FillSnapshotDataCasting_Balance(spells.moonfire)
-				elseif currentSpellId == spells.stellarFlare.id then
-					FillSnapshotDataCasting_Balance(spells.stellarFlare)
-				elseif currentSpellId == spells.newMoon.id then
-					FillSnapshotDataCasting_Balance(spells.newMoon)
-				elseif currentSpellId == spells.halfMoon.id then
-					FillSnapshotDataCasting_Balance(spells.halfMoon)
-				elseif currentSpellId == spells.fullMoon.id then
-					FillSnapshotDataCasting_Balance(spells.fullMoon)
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
+			if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
+				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModWrath
 			end
-			return true
-		elseif TRB.Data.character.specId == 2 then
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-				--See druid implementation for handling channeled spells
-			else
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
+			if talents:IsTalentActive(spells.wildSurges) then
+				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
 			end
-		elseif TRB.Data.character.specId == 4 then
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			else
-				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
-
-				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
-
-					snapshotData.casting.startTime = currentSpellStartTime / 1000
-					snapshotData.casting.endTime = currentSpellEndTime / 1000
-					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.spellId = spellInfo.spellID
-					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
-
-					UpdateCastingResourceFinal_Restoration()
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
+			if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
+				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.attributes.modifier.wrath)
 			end
-			return true
+		elseif spellId == spells.starfire.id then
+			FillSnapshotDataCasting_Balance(spells.starfire)
+
+			if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
+				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModStarfire
+			end
+			if talents:IsTalentActive(spells.wildSurges) then
+				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
+			end
+			if talents:IsTalentActive(spells.moonGuardian) then
+				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.moonGuardian.attributes.resourceMod
+			end
+			--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
+			--snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
+			--Warrior of Elune logic would go here if it didn't make it instant cast!
+		elseif spellId == spells.sunfire.id then
+			FillSnapshotDataCasting_Balance(spells.sunfire)
+		elseif spellId == spells.moonfire.id then
+			FillSnapshotDataCasting_Balance(spells.moonfire)
+		elseif spellId == spells.stellarFlare.id then
+			FillSnapshotDataCasting_Balance(spells.stellarFlare)
+		elseif spellId == spells.newMoon.id then
+			FillSnapshotDataCasting_Balance(spells.newMoon)
+		elseif spellId == spells.halfMoon.id then
+			FillSnapshotDataCasting_Balance(spells.halfMoon)
+		elseif spellId == spells.fullMoon.id then
+			FillSnapshotDataCasting_Balance(spells.fullMoon)
 		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
+	elseif TRB.Data.character.specId == 2 then
+	elseif TRB.Data.character.specId == 4 then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Restoration()
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+		end
 	end
 end
 
@@ -2397,7 +2359,7 @@ local function UpdateResourceBar()
 				local flashBar = false
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
+				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and affectingCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2408,7 +2370,7 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -2708,7 +2670,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -3088,7 +3050,7 @@ local function UpdateResourceBar()
 					end
 				end
 			
-				if CastingSpell() and specSettings.colors.bar.showCasting  then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

@@ -2251,12 +2251,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		casting:SnapshotManaSpell()
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
-		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-			casting:SnapshotManaSpell()
-		else
-			TRB.Functions.Character:ResetCastingSnapshotData()
+			UpdateCastingResourceFinal_Discipline()
 		end
-		UpdateCastingResourceFinal_Discipline()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
@@ -2275,17 +2271,15 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					casting.spellKey = "holyFire"
 				end
 			end
+			UpdateCastingResourceFinal_Holy()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if spellId == spells.symbolOfHope.id then
 				casting.spellId = spells.symbolOfHope.id
 				casting.startTime = currentTime
 				casting.resourceRaw = 0
 				casting.icon = spells.symbolOfHope.icon
-			else
-				casting:SnapshotManaSpell()
 			end
 		end
-		UpdateCastingResourceFinal_Holy()
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		if event == "UNIT_SPELLCAST_START" then
@@ -2349,9 +2343,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 				casting.spellId = spells.voidBlast.id
 				casting.icon = spells.voidBlast.icon
-			else
-				TRB.Functions.Character:ResetCastingSnapshotData()
 			end
+			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if spellId == spells.mindFlay.id then
 				casting.spellId = spells.mindFlay.id
@@ -2368,187 +2361,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.voidTorrent.resource
 				casting.icon = spells.voidTorrent.icon
-			else
-				TRB.Functions.Character:ResetCastingSnapshotData()
 			end
-		end
-		UpdateCastingResourceFinal_Shadow()
-	end
-end
-
-local function CastingSpell()
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local currentTime = GetTime()
-	local affectingCombat = TRB.Data.character.inCombat
-	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
-
-	if currentSpellName == nil and currentChannelName == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 then
-			local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			else
-				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
-
-				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
-
-					snapshotData.casting.startTime = currentSpellStartTime / 1000
-					snapshotData.casting.endTime = currentSpellEndTime / 1000
-					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.spellId = spellInfo.spellID
-					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
-
-					UpdateCastingResourceFinal_Discipline()
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-			end
-			return true
-		elseif TRB.Data.character.specId == 2 then
-			local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
-			if currentSpellName == nil then
-				if currentChannelId == spells.symbolOfHope.id then
-					snapshotData.casting.spellId = spells.symbolOfHope.id
-					snapshotData.casting.startTime = currentChannelStartTime / 1000
-					snapshotData.casting.endTime = currentChannelEndTime / 1000
-					snapshotData.casting.resourceRaw = 0
-					snapshotData.casting.icon = spells.symbolOfHope.icon
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-			else
-				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
-
-				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
-
-					snapshotData.casting.startTime = currentSpellStartTime / 1000
-					snapshotData.casting.endTime = currentSpellEndTime / 1000
-					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.spellId = spellInfo.spellID
-					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
-
-					UpdateCastingResourceFinal_Holy()
-					if currentSpellId == spells.heal.id then
-						snapshotData.casting.spellKey = "heal"
-					elseif currentSpellId == spells.flashHeal.id then
-						snapshotData.casting.spellKey = "flashHeal"
-					elseif currentSpellId == spells.prayerOfHealing.id then
-						snapshotData.casting.spellKey = "prayerOfHealing"
-					elseif currentSpellId == spells.smite.id then
-						snapshotData.casting.spellKey = "smite"
-					elseif talents:IsTalentActive(spells.voiceOfHarmony) then
-						if currentSpellId == spells.holyFire.id then --Voice of Harmony
-							snapshotData.casting.spellKey = "holyFire"
-						end
-					end
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-			end
-			return true
-		elseif TRB.Data.character.specId == 3 then
-			local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
-			if currentSpellName == nil then
-				if currentChannelId == spells.mindFlay.id then
-					snapshotData.casting.spellId = spells.mindFlay.id
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.mindFlay.resource
-					snapshotData.casting.icon = spells.mindFlay.icon
-				elseif currentChannelId == spells.mindFlayInsanity.castId then
-					snapshotData.casting.spellId = spells.mindFlayInsanity.castId
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.mindFlayInsanity.resource
-					snapshotData.casting.icon = spells.mindFlayInsanity.icon
-				elseif currentChannelId == spells.voidTorrent.id then
-					snapshotData.casting.spellId = spells.voidTorrent.id
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.voidTorrent.resource
-					snapshotData.casting.icon = spells.voidTorrent.icon
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-				UpdateCastingResourceFinal_Shadow()
-			else
-				if currentSpellId == spells.mindBlast.id then
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.mindBlast.resource
-					snapshotData.casting.spellId = spells.mindBlast.id
-					snapshotData.casting.icon = spells.mindBlast.icon
-				elseif currentSpellId == spells.mindSpike.id then
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.mindSpike.resource
-					snapshotData.casting.spellId = spells.mindSpike.id
-					snapshotData.casting.icon = spells.mindSpike.icon
-				elseif currentSpellId == spells.mindSpikeInsanity.castId then
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.mindSpikeInsanity.resource
-					snapshotData.casting.spellId = spells.mindSpikeInsanity.castId
-					snapshotData.casting.icon = spells.mindSpikeInsanity.icon
-				elseif currentSpellId == spells.darkAscension.id then
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.darkAscension.resource
-					snapshotData.casting.spellId = spells.darkAscension.id
-					snapshotData.casting.icon = spells.darkAscension.icon
-
-					if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
-						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.voidBolt.resource
-					end
-				elseif currentSpellId == spells.voidEruption.id then
-					if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
-						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.voidBolt.resource
-						snapshotData.casting.spellId = spells.darkAscension.id
-						snapshotData.casting.icon = spells.darkAscension.icon
-					end
-				elseif currentSpellId == spells.vampiricTouch.id then
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.vampiricTouch.resource
-					snapshotData.casting.spellId = spells.vampiricTouch.id
-					snapshotData.casting.icon = spells.vampiricTouch.icon
-				elseif currentSpellId == spells.mindgames.id then
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.mindgames.resource
-					snapshotData.casting.spellId = spells.mindgames.id
-					snapshotData.casting.icon = spells.mindgames.icon
-				elseif currentSpellId == spells.halo.id then
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.halo.resource
-					snapshotData.casting.spellId = spells.halo.id
-					snapshotData.casting.icon = spells.halo.icon
-				elseif currentSpellId == spells.massDispel.id and talents:IsTalentActive(spells.hallucinations) and affectingCombat then
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.hallucinations.resource
-					snapshotData.casting.spellId = spells.massDispel.id
-					snapshotData.casting.icon = spells.massDispel.icon
-				elseif currentSpellId == spells.voidBlast.id then
-					snapshotData.casting.startTime = currentTime
-					if talents:IsTalentActive(spells.voidInfusion) then
-						snapshotData.casting.resourceRaw = spells.voidBlast.resource * spells.voidInfusion.attributes.resourceMod
-					else
-						snapshotData.casting.resourceRaw = spells.voidBlast.resource
-					end
-					snapshotData.casting.spellId = spells.voidBlast.id
-					snapshotData.casting.icon = spells.voidBlast.icon
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-				UpdateCastingResourceFinal_Shadow()
-			end
-			
-			return true
+			UpdateCastingResourceFinal_Shadow()
 		end
 	end
 end
@@ -2841,7 +2655,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if TRB.Data.character.inCombat and specSettings.colors.bar.showCasting  then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -3185,7 +2999,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if TRB.Data.character.inCombat and specSettings.colors.bar.showCasting  then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

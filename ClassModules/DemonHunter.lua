@@ -810,45 +810,34 @@ local function RefreshLookupData_Vengeance()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
-local function CastingSpell()
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
+	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local casting = snapshotData.casting
 	local currentTime = GetTime()
-	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 
-	if currentSpellName == nil and currentChannelName == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
-			if currentSpellName == nil then
-				if currentChannelId == spells.eyeBeam.id and talents:IsTalentActive(spells.blindFury) then
-					TRB.Data.snapshotData.casting.spellId = spells.eyeBeam.id
-					--TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
-					TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
-					TRB.Data.snapshotData.casting.icon = spells.eyeBeam.icon
-					local remainingTime = TRB.Data.snapshotData.casting.endTime - currentTime
-					--TODO: use SnapshotBuff:UpdateTicks() instead?
-					local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
-					local resource = ticks * spells.blindFury.resource
-					TRB.Data.snapshotData.casting.resourceRaw = resource
-					TRB.Data.snapshotData.casting.resourceFinal = resource
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-					--See Priest implementation for handling channeled spells
-				end
-				return true
-			else
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
+	if TRB.Data.character.specId == 1 then
+		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+		if event == "UNIT_SPELLCAST_CHANNEL_START" then
+			if casting.spellId ~= spells.eyeBeam.id and spellId == spells.eyeBeam.id and talents:IsTalentActive(spells.blindFury) then
+				local _, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _ = UnitChannelInfo("player")
+
+				casting.spellId = spells.eyeBeam.id
+				casting.startTime = currentChannelStartTime / 1000
+				casting.endTime = currentChannelEndTime / 1000
+				casting.icon = spells.eyeBeam.icon
+				local remainingTime = casting.endTime - currentTime
+				--TODO: use SnapshotBuff:UpdateTicks() instead?
+				local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
+				local resource = ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank
+				casting.resourceRaw = math.max(resource, 0)
+				casting.resourceFinal = casting.resourceRaw
 			end
-		elseif TRB.Data.character.specId == 2 then
-			TRB.Functions.Character:ResetCastingSnapshotData()
-			return false
 		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
+	elseif TRB.Data.character.specId == 2 then
 	end
 end
 
@@ -925,6 +914,15 @@ local function UpdateSnapshot_Havoc()
 	snapshotData.snapshots[spells.glaiveTempest.id].cooldown:Refresh()
 	snapshotData.snapshots[spells.throwGlaive.id].cooldown:Refresh()
 	snapshotData.snapshots[spells.felBarrage.id].cooldown:Refresh()
+
+	if snapshotData.casting.spellId == spells.eyeBeam.id and talents:IsTalentActive(spells.blindFury) then
+		local casting = snapshotData.casting
+		local remainingTime = casting.endTime - currentTime
+		local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
+		local resource = ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank
+		casting.resourceRaw = math.max(resource, 0)
+		casting.resourceFinal = casting.resourceRaw
+	end
 end
 
 local function UpdateSnapshot_Vengeance()
@@ -978,7 +976,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1168,7 +1166,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

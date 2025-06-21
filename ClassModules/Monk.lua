@@ -905,70 +905,41 @@ local function UpdateCastingResourceFinal_Mistweaver()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 end
 
-local function CastingSpell()
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
+	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local casting = snapshotData.casting
 	local currentTime = GetTime()
-	--local affectingCombat = TRB.Data.character.inCombat
-	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 
-	if currentSpellName == nil and currentChannelName == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
-			if currentSpellName == nil then
-				if currentChannelId == spells.soothingMist.id then
-					local manaCost = -spells.soothingMist:GetPrimaryResourceCost(true)
+	if TRB.Data.character.specId == 2 then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Mistweaver()
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+			local spells = spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
+			if spellId == spells.soothingMist.id then
+				local manaCost = -spells.soothingMist:GetPrimaryResourceCost(true)
 
-					snapshotData.casting.spellId = spells.soothingMist.id
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.icon = spells.soothingMist.icon
-
-					UpdateCastingResourceFinal_Mistweaver()
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-				end
-				return false
-			else
-				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
-
-				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
-
-					snapshotData.casting.startTime = currentSpellStartTime / 1000
-					snapshotData.casting.endTime = currentSpellEndTime / 1000
-					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.spellId = spellInfo.spellID
-					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
-
-					UpdateCastingResourceFinal_Mistweaver()
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
+				snapshotData.casting.spellId = spells.soothingMist.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.resourceRaw = manaCost
+				snapshotData.casting.icon = spells.soothingMist.icon
 			end
-			return true
-		elseif TRB.Data.character.specId == 3 then
-			if currentSpellName == nil then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-				if currentChannelId == spells.cracklingJadeLightning.id then
-					snapshotData.casting.spellId = spells.cracklingJadeLightning.id
-					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = -spells.cracklingJadeLightning:GetPrimaryResourceCost()
-					snapshotData.casting.icon = spells.cracklingJadeLightning.icon
-					UpdateCastingResourceFinal()
-				end
-				return true
-			else
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			end
+			
+			UpdateCastingResourceFinal_Mistweaver()
 		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
+	elseif TRB.Data.character.specId == 3 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+		if spellId == spells.cracklingJadeLightning.id then
+			snapshotData.casting.spellId = spells.cracklingJadeLightning.id
+			snapshotData.casting.startTime = currentTime
+			snapshotData.casting.resourceRaw = -spells.cracklingJadeLightning:GetPrimaryResourceCost()
+			snapshotData.casting.icon = spells.cracklingJadeLightning.icon
+			UpdateCastingResourceFinal()
+		end
 	end
 end
 
@@ -1087,7 +1058,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting  then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1258,7 +1229,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

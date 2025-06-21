@@ -1915,38 +1915,10 @@ local function RefreshLookupData_Subtlety()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
-local function FillSnapshotDataCasting(spell)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local currentTime = GetTime()
-	snapshotData.casting.startTime = currentTime
-	snapshotData.casting.resourceRaw = spell:GetPrimaryResourceCost()
-	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
-	snapshotData.casting.spellId = spell.id
-	snapshotData.casting.icon = spell.icon
-end
-
-local function CastingSpell()
-	local currentSpell = UnitCastingInfo("player")
-	local currentChannel = UnitChannelInfo("player")
-
-	if currentSpell == nil and currentChannel == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-			if currentSpell == nil then
-				local spellName = select(1, currentChannel)
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				--See Priest implementation for handling channeled spells
-			else
-				local spellName = select(1, currentSpell)
-				return false
-			end
-		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	end
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
 end
 
 local function UpdateRollTheBones()
@@ -2085,7 +2057,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -2365,7 +2337,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -2687,7 +2659,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

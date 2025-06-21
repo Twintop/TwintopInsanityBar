@@ -689,36 +689,10 @@ local function RefreshLookupData_Fury()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
-local function CastingSpell()
-	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
-
-	if currentSpellName == nil and currentChannelName == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 then
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-				--See Priest implementation for handling channeled spells
-			else
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			end
-		elseif TRB.Data.character.specId == 2 then
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-				--See Priest implementation for handling channeled spells
-			else
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			end
-		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	end
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
 end
 
 local function UpdateSnapshot()
@@ -795,7 +769,7 @@ local function UpdateResourceBar()
 					passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -979,7 +953,7 @@ local function UpdateResourceBar()
 					passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource + snapshots[spells.bladestorm.id].buff.resource
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

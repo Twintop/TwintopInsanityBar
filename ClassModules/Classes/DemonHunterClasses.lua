@@ -177,9 +177,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 	})
 	self.blindFury = TRB.Classes.SpellBase:New({
 		id = 203550,
-		durationModifier = 1.5,
 		tickRate = 0.1,
-		resource = 4,
+		resource = 2,
 		isHasted = true,
 		isTalent = true
 	})

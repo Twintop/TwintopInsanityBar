@@ -1139,106 +1139,66 @@ local function UpdateCastingResourceFinal_Restoration()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 end
 
-local function CastingSpell()
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
+	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
+	local casting = snapshotData.casting
+	local currentTime = GetTime()
 	local affectingCombat = TRB.Data.character.inCombat
-	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 
-	if currentSpellName == nil and currentChannelName == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-				--See Priest implementation for handling channeled spells
-			else
-				if currentSpellId == spells.lightningBolt.id then
-					FillSnapshotDataCasting(spells.lightningBolt)
+	if TRB.Data.character.specId == 1 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+		if event == "UNIT_SPELLCAST_START" then
+			if spellId == spells.lightningBolt.id then
+				FillSnapshotDataCasting(spells.lightningBolt)
 
-					if snapshots[spells.surgeOfPower.id].buff.isActive then
-						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + ((spells.lightningBolt.overload) * 2)
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + ((spells.lightningBolt.overload) * 2)
-					end
-					
-					if snapshots[spells.powerOfTheMaelstrom.id].buff.isActive then
-						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.lightningBolt.overload
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.lightningBolt.overload
-					end
-				elseif currentSpellId == spells.lavaBurst.id then
-					FillSnapshotDataCasting(spells.lavaBurst)
-				elseif currentSpellId == spells.elementalBlast.id then
-					FillSnapshotDataCasting(spells.elementalBlast)
-				elseif currentSpellId == spells.icefury.id then
-					FillSnapshotDataCasting(spells.icefury)
-				elseif currentSpellId == spells.chainLightning.id then
-					local spell = nil
-					
-					spell = spells.chainLightning
-					FillSnapshotDataCasting(spell)
-					
-					local currentTime = GetTime()
-
-					if snapshots[spells.chainLightning.id].attributes.hitTime == nil then
-						snapshots[spells.chainLightning.id].attributes.targetsHit = 1
-						snapshots[spells.chainLightning.id].attributes.hitTime = currentTime
-						snapshots[spells.chainLightning.id].attributes.hasStruckTargets = false
-					elseif currentTime > (snapshots[spells.chainLightning.id].attributes.hitTime + (TRB.Functions.Character:GetCurrentGCDTime(true) * 4) + TRB.Data.character.latency) then
-						snapshots[spells.chainLightning.id].attributes.targetsHit = 1
-					end
-
-					if snapshots[spells.powerOfTheMaelstrom.id].buff.isActive and currentSpellId == spells.chainLightning.id then
-						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.chainLightning.overload
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.chainLightning.overload
-					end
-
-					snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw * snapshots[spells.chainLightning.id].attributes.targetsHit
-					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * snapshots[spells.chainLightning.id].attributes.targetsHit
-				elseif currentSpellId == spells.hex.id and talents:IsTalentActive(spells.inundate) and affectingCombat then
-					FillSnapshotDataCasting(spells.hex)
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
+				if snapshots[spells.surgeOfPower.id].buff.isActive then
+					casting.resourceRaw = casting.resourceRaw + ((spells.lightningBolt.overload) * 2)
+					casting.resourceFinal = casting.resourceFinal + ((spells.lightningBolt.overload) * 2)
 				end
-			end
-			return true
-		elseif TRB.Data.character.specId == 2 then
-			--[[if currentSpellName == nil then
-				return true
-			else]]
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			--end
-		elseif TRB.Data.character.specId == 3 then
-			if currentSpellName == nil then
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			else
-				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
-
-				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
-
-					snapshotData.casting.startTime = currentSpellStartTime / 1000
-					snapshotData.casting.endTime = currentSpellEndTime / 1000
-					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.spellId = spellInfo.spellID
-					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
-
-					UpdateCastingResourceFinal_Restoration()
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
+				
+				if snapshots[spells.powerOfTheMaelstrom.id].buff.isActive then
+					casting.resourceRaw = casting.resourceRaw + spells.lightningBolt.overload
+					casting.resourceFinal = casting.resourceFinal + spells.lightningBolt.overload
 				end
+			elseif spellId == spells.lavaBurst.id then
+				FillSnapshotDataCasting(spells.lavaBurst)
+			elseif spellId == spells.elementalBlast.id then
+				FillSnapshotDataCasting(spells.elementalBlast)
+			elseif spellId == spells.icefury.id then
+				FillSnapshotDataCasting(spells.icefury)
+			elseif spellId == spells.chainLightning.id then
+				FillSnapshotDataCasting(spells.chainLightning)
+
+				if snapshots[spells.chainLightning.id].attributes.hitTime == nil then
+					snapshots[spells.chainLightning.id].attributes.targetsHit = 1
+					snapshots[spells.chainLightning.id].attributes.hitTime = currentTime
+					snapshots[spells.chainLightning.id].attributes.hasStruckTargets = false
+				elseif currentTime > (snapshots[spells.chainLightning.id].attributes.hitTime + (TRB.Functions.Character:GetCurrentGCDTime(true) * 4) + TRB.Data.character.latency) then
+					snapshots[spells.chainLightning.id].attributes.targetsHit = 1
+				end
+
+				if snapshots[spells.powerOfTheMaelstrom.id].buff.isActive and spellId == spells.chainLightning.id then
+					snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.chainLightning.overload
+					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.chainLightning.overload
+				end
+
+				snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw * snapshots[spells.chainLightning.id].attributes.targetsHit
+				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * snapshots[spells.chainLightning.id].attributes.targetsHit
+			elseif spellId == spells.hex.id and talents:IsTalentActive(spells.inundate) and affectingCombat then
+				FillSnapshotDataCasting(spells.hex)
 			end
-			return true
 		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
+	elseif TRB.Data.character.specId == 2 then
+	elseif TRB.Data.character.specId == 3 then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Restoration()
+		end
 	end
 end
 
@@ -1343,7 +1303,7 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.primalFracture.color
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1620,7 +1580,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting  then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

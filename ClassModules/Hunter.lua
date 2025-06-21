@@ -1183,95 +1183,63 @@ local function FillSnapshotDataCasting(spell)
 	casting.icon = spell.icon
 end
 
---TODO Refactor this to match other modules
-local function CastingSpell()
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
+	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
-	local currentSpell = UnitCastingInfo("player")
-	local currentChannel = UnitChannelInfo("player")
+	local currentTime = GetTime()
 
-	if currentSpell == nil and currentChannel == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 then
-			if currentSpell == nil then
-				local spellName = select(1, currentChannel)
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-				--See Priest implementation for handling channeled spells
-			else
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
-				local spellName = select(1, currentSpell)
-				if spellName == spells.scareBeast.name then
-					FillSnapshotDataCasting(spells.scareBeast)
-				elseif spellName == spells.revivePet.name then
-					FillSnapshotDataCasting(spells.revivePet)
-				else
-					return false
-				end
-			end
-		elseif TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
-			if currentSpell == nil then				
-				local spellName = select(1, currentChannel)
-				if spellName == spells.rapidFire.name then
-					local currentTime = GetTime()
-					casting.spellId = spells.rapidFire.id
-					casting.icon = spells.rapidFire.icon
-					casting.startTime = select(4, UnitChannelInfo("player")) / 1000
-					casting.endTime = select(5, UnitChannelInfo("player")) / 1000
-
-					local duration = casting.endTime - casting.startTime
-					local remainingTime = casting.endTime - currentTime
-					local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.attributes.shots - 1)))
-
-					casting.resourceRaw = ticksRemaining * spells.rapidFire.resource
-					casting.resourceFinal = CalculateAbilityResourceValue(casting.resourceRaw)
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-			else
-				local spellName = select(1, currentSpell)
-				if spellName == spells.aimedShot.name then
-					FillSnapshotDataCasting(spells.aimedShot)
-				elseif spellName == spells.steadyShot.name then
-					FillSnapshotDataCasting(spells.steadyShot)
-				elseif spellName == spells.scareBeast.name then
-					FillSnapshotDataCasting(spells.scareBeast)
-				elseif spellName == spells.revivePet.name then
-					FillSnapshotDataCasting(spells.revivePet)
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-				UpdateCastingResourceFinal()
-			end
-			return true
-		elseif TRB.Data.character.specId == 3 then
-			if currentSpell == nil then
-				local spellName = select(1, currentChannel)
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-				--See Priest implementation for handling channeled spells
-			else
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
-				local spellName = select(1, currentSpell)
-				if spellName == spells.scareBeast.name then
-					FillSnapshotDataCasting(spells.scareBeast)
-				elseif spellName == spells.revivePet.name then
-					FillSnapshotDataCasting(spells.revivePet)
-				elseif spellName == spells.steadyShot.name then
-					FillSnapshotDataCasting(spells.steadyShot)
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
+	if TRB.Data.character.specId == 1 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+		if event == "UNIT_SPELLCAST_START" then
+			if spellId == spells.scareBeast.id then
+				FillSnapshotDataCasting(spells.scareBeast)
+			elseif spellId == spells.revivePet.id then
+				FillSnapshotDataCasting(spells.revivePet)
 			end
 		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
+	elseif TRB.Data.character.specId == 2 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+		if event == "UNIT_SPELLCAST_START" then
+			if spellId == spells.aimedShot.id then
+				FillSnapshotDataCasting(spells.aimedShot)
+			elseif spellId == spells.steadyShot.id then
+				FillSnapshotDataCasting(spells.steadyShot)
+			elseif spellId == spells.scareBeast.id then
+				FillSnapshotDataCasting(spells.scareBeast)
+			elseif spellId == spells.revivePet.id then
+				FillSnapshotDataCasting(spells.revivePet)
+			end
+			UpdateCastingResourceFinal()
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+			if spellId == spells.rapidFire.id then
+				local _, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _ = UnitChannelInfo("player")
+				casting.spellId = spells.rapidFire.id
+				casting.icon = spells.rapidFire.icon
+				casting.startTime = currentChannelStartTime / 1000
+				casting.endTime = currentChannelEndTime / 1000
+				local duration = casting.endTime - casting.startTime
+				local remainingTime = casting.endTime - currentTime
+				local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.attributes.shots - 1)))
+				casting.resourceRaw = math.max(ticksRemaining * spells.rapidFire.resource, 0)
+				casting.resourceFinal = CalculateAbilityResourceValue(casting.resourceRaw)
+			end
+		end
+	elseif TRB.Data.character.specId == 3 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+		if event == "UNIT_SPELLCAST_START" then
+			if spellId == spells.steadyShot.id then
+				FillSnapshotDataCasting(spells.steadyShot)
+			elseif spellId == spells.scareBeast.id then
+				FillSnapshotDataCasting(spells.scareBeast)
+			elseif spellId == spells.revivePet.id then
+				FillSnapshotDataCasting(spells.revivePet)
+			end
+			UpdateCastingResourceFinal()
+		end
 	end
 end
 
@@ -1360,14 +1328,24 @@ local function UpdateSnapshot_Marksmanship()
 	local currentTime = GetTime()
 	
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
-	---@type table<integer, TRB.Classes.Snapshot>
-	local snapshots = TRB.Data.snapshotData.snapshots
+	---@type TRB.Classes.SnapshotData
+	local snapshotData = TRB.Data.snapshotData
+	local snapshots = snapshotData.snapshots
 
 	snapshots[spells.aimedShot.id].cooldown:Refresh()
 	snapshots[spells.burstingShot.id].cooldown:Refresh()
 	snapshots[spells.explosiveShot.id].cooldown:Refresh()
 
 	snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
+
+	if snapshotData.casting.spellId == spells.rapidFire.id then
+		local casting = snapshotData.casting
+		local duration = casting.endTime - casting.startTime
+		local remainingTime = casting.endTime - currentTime
+		local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.attributes.shots - 1)))
+		casting.resourceRaw = math.max(ticksRemaining * spells.rapidFire.resource, 0)
+		casting.resourceFinal = CalculateAbilityResourceValue(casting.resourceRaw)
+	end
 end
 
 local function UpdateSnapshot_Survival()
@@ -1423,7 +1401,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1719,7 +1697,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
@@ -1971,7 +1949,7 @@ local function UpdateResourceBar()
 					passiveValue = passiveValue + snapshots[spells.termsOfEngagement.id].buff.resource
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

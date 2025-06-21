@@ -1019,65 +1019,32 @@ local function UpdateCastingResourceFinal_Preservation()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 end
 
-local function CastingSpell()
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
+	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
-	local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
-	local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 
-	if currentSpellName == nil and currentChannelName == nil then
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
-	else
-		if TRB.Data.character.specId == 1 then
-			--[[if currentSpellName == nil then
-				return true
-			else]]
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			--end
-		elseif TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
-			if currentSpellName == nil then
-				if currentChannelId == spells.emeraldCommunion.id then
-					casting.spellId = spells.emeraldCommunion.id
-					casting.startTime = currentChannelStartTime / 1000
-					casting.endTime = currentChannelEndTime / 1000
-					casting.resourceRaw = 0
-					casting.icon = spells.emeraldCommunion.icon
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
-			else
-				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
-
-				if spellInfo ~= nil and spellInfo.spellID then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
-
-					snapshotData.casting.startTime = currentSpellStartTime / 1000
-					snapshotData.casting.endTime = currentSpellEndTime / 1000
-					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.spellId = spellInfo.spellID
-					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
-
-					UpdateCastingResourceFinal_Preservation()
-				else
-					TRB.Functions.Character:ResetCastingSnapshotData()
-					return false
-				end
+	if TRB.Data.character.specId == 1 then
+	elseif TRB.Data.character.specId == 2 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_EMPOWER_START" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Preservation()
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+			if spellId == spells.emeraldCommunion.id then
+				local _, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _ = UnitChannelInfo("player")
+				casting.spellId = spells.emeraldCommunion.id
+				casting.startTime = currentChannelStartTime / 1000
+				casting.endTime = currentChannelEndTime / 1000
+				casting.resourceRaw = 0
+				casting.icon = spells.emeraldCommunion.icon
+				UpdateCastingResourceFinal_Preservation()
 			end
-			return true
-		elseif TRB.Data.character.specId == 3 then
-			--[[if currentSpellName == nil then
-				return true
-			else]]
-				TRB.Functions.Character:ResetCastingSnapshotData()
-				return false
-			--end
 		end
-		TRB.Functions.Character:ResetCastingSnapshotData()
-		return false
+	elseif TRB.Data.character.specId == 3 then
 	end
 end
 
@@ -1306,7 +1273,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if CastingSpell() and specSettings.colors.bar.showCasting  then
+				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource

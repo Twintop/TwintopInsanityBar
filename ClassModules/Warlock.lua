@@ -593,6 +593,12 @@ local function RefreshLookupData_Affliction()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+---Handles UNIT_SPELLCAST_ events for the class
+---@param event trbSpellCastType
+---@param spellId integer
+function TRB.Functions.Class:SpellCast(event, spellId)
+end
+
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 end
