@@ -11,9 +11,11 @@ local content = [====[
 
 ---
 
-# 11.1.7.1-release (2025-06-22)
+# 11.1.7.1-release (2025-06-26)
 ## General
 
+- [#454 - NEW](#454) Significantly improve performance by tracking spell casts and channeled abilities via events rather than polling.
+- (FIX) Prevent the wrong specialization's UX from being loaded when role is automatically changed via entering/exiting instances.
 
 ## Priest
 ### Holy

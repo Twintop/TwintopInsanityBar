@@ -4224,7 +4224,11 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	TRB.Data.character.specId = GetSpecialization()
+	local specId = GetSpecialization()
+	if specId ~= TRB.Data.character.specId then
+		SwitchSpec()
+	end
+
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "priest"
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
