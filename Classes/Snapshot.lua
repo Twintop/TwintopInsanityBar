@@ -139,9 +139,15 @@ function TRB.Classes.SnapshotBuff:New(parent, simpleBuff, onlyRefreshOnRequest)
 		self.tickRate = self.parent.spell.tickRate
 	end
 
-	self:Reset()
-	self.customPropertiesDefinitions = {}
+	if self.parent.spell.customPropertyDefinitions ~= nil then
+		self.customPropertiesDefinitions = self.parent.spell.customPropertyDefinitions
+	else
+		self.customPropertiesDefinitions = {}
+	end
+	
 	self.customProperties = {}
+	self:Reset()
+
 
 	return self
 end

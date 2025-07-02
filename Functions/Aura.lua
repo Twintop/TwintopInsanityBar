@@ -35,6 +35,10 @@ local function AuraUpdateEvent(self, event, unit, info)
 
 				if v.isFromPlayerOrPlayerPet and targetData.trackedSpells[v.spellId] ~= nil and
 					specCache.spellsData.spellsById[v.spellId] ~= nil and specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed then
+
+					if v.spellId == 190456 then
+						print(TRB.Functions.Table:Print(v))
+					end
 					if TRB.Functions.Class:InitializeTarget(TRB.Data.character.guid, specCache.spellsData.spellsById[v.spellId][1].isFriend, specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed) then
 						targetData:HandleCombatLogBuff(v.spellId, "SPELL_AURA_APPLIED", TRB.Data.character.guid)
 					end

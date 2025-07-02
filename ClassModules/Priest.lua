@@ -4821,6 +4821,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if target and target.spells[spells.resonantEnergy.debuffId].active then
 				valid = true
 			end
+		elseif var == "$mindBlastCharges" then
+			if snapshots[spells.mindBlast.id].cooldown.charges > 0 then
+				valid = true
+			end
+		elseif var == "$mindBlastMaxCharges" then
+			if snapshots[spells.mindBlast.id].cooldown.charges > 0  then
+				valid = true
+			end
 		else
 			valid = false
 		end

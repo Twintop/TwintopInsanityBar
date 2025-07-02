@@ -368,19 +368,15 @@ local function FillSpellData_Protection()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		
-		--{ variable = "#charge", icon = spells.charge.icon, description = spells.charge.name, printInSettings = true },
-		--{ variable = "#cleave", icon = spells.cleave.icon, description = spells.cleave.name, printInSettings = true },
 		{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = spells.deepWounds.name, printInSettings = true },
-		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },			
+		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
+		{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = spells.ignorePain.name, printInSettings = true },
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
-		--{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = spells.mortalStrike.name, printInSettings = true },
 		{ variable = "#ravager", icon = spells.ravager.icon, description = spells.ravager.name, printInSettings = true },
 		{ variable = "#rend", icon = spells.rend.icon, description = spells.rend.name, printInSettings = true },
-		{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = spells.ignorePain.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
-		--{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
-		--{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true },
-		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true }
+		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
+		{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true }
 	}
 	specCache.protection.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -414,30 +410,37 @@ local function FillSpellData_Protection()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$rage", description = L["WarriorArmsBarTextVariable_rage"], printInSettings = true, color = false },
+		{ variable = "$rage", description = L["WarriorProtectionBarTextVariable_rage"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$rageMax", description = L["WarriorArmsBarTextVariable_rageMax"], printInSettings = true, color = false },
+		{ variable = "$rageMax", description = L["WarriorProtectionBarTextVariable_rageMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		{ variable = "$passive", description = L["WarriorArmsBarTextVariable_passive"], printInSettings = true, color = false },
+		{ variable = "$passive", description = L["WarriorProtectionBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$ragePlusCasting", description = "", printInSettings = false, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
-		{ variable = "$ragePlusPassive", description = L["WarriorArmsBarTextVariable_ragePlusPassive"], printInSettings = true, color = false },
+		{ variable = "$ragePlusPassive", description = L["WarriorProtectionBarTextVariable_ragePlusPassive"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$rageTotal", description = L["WarriorArmsBarTextVariable_rageTotal"], printInSettings = true, color = false },   
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },   
+		{ variable = "$rageTotal", description = L["WarriorProtectionBarTextVariable_rageTotal"], printInSettings = true, color = false },
+		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 
-		{ variable = "$rend", description = L["WarriorArmsBarTextVariable_rend"], printInSettings = true, color = false },
+		{ variable = "$ignorePainAbsorb", description = L["WarriorProtectionBarTextVariable_ignorePainAbsorb"], printInSettings = true, color = false },
+		{ variable = "$ignorePainTime", description = L["WarriorProtectionBarTextVariable_ignorePainTime"], printInSettings = true, color = false },
 
-		{ variable = "$deepWoundsCount", description = L["WarriorArmsBarTextVariable_deepWoundsCount"], printInSettings = true, color = false },
-		{ variable = "$deepWoundsTime", description = L["WarriorArmsBarTextVariable_deepWoundsTime"], printInSettings = true, color = false },
-		{ variable = "$rendCount", description = L["WarriorArmsBarTextVariable_rendCount"], printInSettings = true, color = false },
-		{ variable = "$rendTime", description = L["WarriorArmsBarTextVariable_rendTime"], printInSettings = true, color = false },
+		{ variable = "$shieldBlockTime", description = L["WarriorProtectionBarTextVariable_shieldBlockTime"], printInSettings = true, color = false },
+		{ variable = "$shieldBlockCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockCharges"], printInSettings = true, color = false },
+		{ variable = "$shieldBlockMaxCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockMaxCharges"], printInSettings = true, color = false },
 
-		{ variable = "$suddenDeathTime", description = L["WarriorArmsBarTextVariable_suddenDeathTime"], printInSettings = true, color = false },
+		{ variable = "$rend", description = L["WarriorProtectionBarTextVariable_rend"], printInSettings = true, color = false },
+
+		{ variable = "$deepWoundsCount", description = L["WarriorProtectionBarTextVariable_deepWoundsCount"], printInSettings = true, color = false },
+		{ variable = "$deepWoundsTime", description = L["WarriorProtectionBarTextVariable_deepWoundsTime"], printInSettings = true, color = false },
+		{ variable = "$rendCount", description = L["WarriorProtectionBarTextVariable_rendCount"], printInSettings = true, color = false },
+		{ variable = "$rendTime", description = L["WarriorProtectionBarTextVariable_rendTime"], printInSettings = true, color = false },
+
+		{ variable = "$suddenDeathTime", description = L["WarriorProtectionBarTextVariable_suddenDeathTime"], printInSettings = true, color = false },
 		
-		{ variable = "$ravagerTicks", description = L["WarriorArmsBarTextVariable_ravagerTicks"], printInSettings = true, color = false },
-		{ variable = "$ravagerRage", description = L["WarriorArmsBarTextVariable_ravagerRage"], printInSettings = true, color = false },
+		{ variable = "$ravagerTicks", description = L["WarriorProtectionBarTextVariable_ravagerTicks"], printInSettings = true, color = false },
+		{ variable = "$ravagerRage", description = L["WarriorProtectionBarTextVariable_ravagerRage"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -901,6 +904,24 @@ local function RefreshLookupData_Protection()
 	local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
 	local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_ragePlusPassive, resourcePrecision, "floor"))
 
+	--$ignorePainAbsorb
+	local _ignorePainAbsorb = snapshots[spells.ignorePain.id].buff.customProperties["absorb"] or 0
+	local ignorePainAbsorb = TRB.Functions.String:ConvertToShortNumberNotation(_ignorePainAbsorb, 1, "floor", true)
+
+	--$ignorePainTime
+	local _ignorePainTime = snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
+	local ignorePainTime = TRB.Functions.BarText:TimerPrecision(_ignorePainTime)
+
+	--$shieldBlockTime
+	local _shieldBlockTime = snapshots[spells.shieldBlock.buffId].buff:GetRemainingTime(currentTime)
+	local shieldBlockTime = TRB.Functions.BarText:TimerPrecision(_shieldBlockTime)
+	
+	--$shieldBlockCharges
+	local shieldBlockCharges = snapshots[spells.shieldBlock.id].cooldown.charges or 0
+	
+	--$shieldBlockMaxCharges
+	local shieldBlockMaxCharges = snapshots[spells.shieldBlock.id].cooldown.maxCharges or 0
+
 	--$rendCount and $rendTime
 	local _rendCount = targetData.count[spells.rend.debuffId] or 0
 	local rendCount = string.format("%s", _rendCount)
@@ -974,6 +995,11 @@ local function RefreshLookupData_Protection()
 	Global_TwintopResourceBar.ravager.ticks = _ravagerTicks
 
 	local lookup = TRB.Data.lookup or {}
+	lookup["$ignorePainAbsorb"] = ignorePainAbsorb
+	lookup["$ignorePainTime"] = ignorePainTime
+	lookup["$shieldBlockTime"] = shieldBlockTime
+	lookup["$shieldBlockCharges"] = shieldBlockCharges
+	lookup["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
 	lookup["$rend"] = ""
 	lookup["$rendCount"] = rendCount
 	lookup["$rendTime"] = rendTime
@@ -1000,6 +1026,11 @@ local function RefreshLookupData_Protection()
 	TRB.Data.lookup = lookup
 	
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	lookupLogic["$ignorePainAbsorb"] = _ignorePainAbsorb
+	lookupLogic["$ignorePainTime"] = _ignorePainTime
+	lookupLogic["$shieldBlockTime"] = _shieldBlockTime
+	lookupLogic["$shieldBlockCharges"] = shieldBlockCharges
+	lookupLogic["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
 	lookupLogic["$rend"] = talents:IsTalentActive(spells.rend)
 	lookupLogic["$rendCount"] = _rendCount
 	lookupLogic["$rendTime"] = _rendTime
@@ -1949,13 +1980,13 @@ local function SwitchSpec()
 		--lookup["#charge"] = spells.charge.icon
 		lookup["#deepWounds"] = spells.deepWounds.icon
 		lookup["#execute"] = spells.execute.icon
-		lookup["#impendingVictory"] = spells.impendingVictory.icon
-		lookup["#rend"] = spells.rend.icon
 		lookup["#ignorePain"] = spells.ignorePain.icon
+		lookup["#impendingVictory"] = spells.impendingVictory.icon
+		lookup["#ravager"] = spells.ravager.icon
+		lookup["#rend"] = spells.rend.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
 		lookup["#suddenDeath"] = spells.suddenDeath.icon
-		--lookup["#whirlwind"] = spells.whirlwind.icon
 		TRB.Data.lookup = lookup
 		
 		if TRB.Data.barConstructedForSpec ~= "protection" then
@@ -2186,7 +2217,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	if TRB.Data.character.specId == 1 then --Arms
-	if var == "$rend" then
+		if var == "$rend" then
 			if talents:IsTalentActive(spells.rend) then
 				valid = true
 			end
@@ -2266,6 +2297,31 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then --Protection
+		if var == "$rend" then
+			if talents:IsTalentActive(spells.rend) then
+				valid = true
+			end
+		elseif var == "$ignorePainAbsorb" then
+			if snapshots[spells.ignorePain.id].buff.customProperties["absorb"] > 0 then
+				valid = true
+			end
+		elseif var == "$ignorePainTime" then
+			if snapshots[spells.ignorePain.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$shieldBlockTime" then
+			if snapshots[spells.shieldBlock.buffId].buff.isActive then
+				valid = true
+			end
+		elseif var == "$shieldBlockCharges" then
+			if snapshots[spells.shieldBlock.id].cooldown.charges > 0 then
+				valid = true
+			end
+		elseif var == "$shieldBlockMaxCharges" then
+			if snapshots[spells.shieldBlock.id].cooldown.charges > 0  then
+				valid = true
+			end
+		end
 	end
 
 	if valid == true then

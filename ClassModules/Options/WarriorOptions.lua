@@ -31,7 +31,7 @@ local function ArmsLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionLeft"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -54,7 +54,7 @@ local function ArmsLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionMiddle"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -77,7 +77,7 @@ local function ArmsLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionRight"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -109,7 +109,7 @@ local function ArmsLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionLeft"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][          ]{$ttd}[TTD: $ttd][ ]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -132,7 +132,7 @@ local function ArmsLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionMiddle"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$suddenDeathTime}[#suddenDeath $suddenDeathTime #suddenDeath]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -155,7 +155,7 @@ local function ArmsLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionRight"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$casting}[#casting$casting+]{$passive}[$passive+]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -395,7 +395,7 @@ local function FuryLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionLeft"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -418,7 +418,7 @@ local function FuryLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionMiddle"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$enrageTime}[$enrageTime sec]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -441,7 +441,7 @@ local function FuryLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionRight"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$casting}[$casting + ]{$passive}[$passive + ]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -473,7 +473,7 @@ local function FuryLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionLeft"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="$haste% ($gcd)||n{$ttd}[TTD: $ttd][ ]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -496,7 +496,7 @@ local function FuryLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionMiddle"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$enrageTime}[#enrage $enrageTime #enrage][ ]||n{$whirlwindStacks}[#whirlwind $whirlwindTime ($whirlwindStacks) #whirlwind]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -519,7 +519,7 @@ local function FuryLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionRight"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$ravagerRage}[#ravager$ravagerRage+]{$casting}[#casting$casting+]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -738,6 +738,60 @@ end
 	Protection Defaults
 ]]
 
+local function ProtectionLoadExtraBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$ignorePainTime}[$ignorePainTime - $ignorePainAbsorb]",
+			fontFaceName = "Friz Quadrata TT",
+			fontSize = 14,
+			name = "Ignore Pain",
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["IgnorePain"],
+				yPos = 0,
+				relativeToFrame = "IgnorePain",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			color = "ffffffff",
+			enabled = true,
+		},
+		{
+			useDefaultFontColor = false,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$shieldBlockTime}[$shieldBlockTime -] $shieldBlockCharges/$shieldBlockMaxCharges",
+			fontFaceName = "Friz Quadrata TT",
+			fontSize = 14,
+			name = "Shield Block",
+			position = {
+				relativeToName = L["ShieldBlock"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName =  L["ShieldBlock"],
+				yPos = 0,
+				relativeToFrame = "ShieldBlock",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			color = "ffffffff",
+			enabled = true,
+		},
+	}
+
+	return textSettings
+end
+
 local function ProtectionLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
@@ -747,7 +801,7 @@ local function ProtectionLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionLeft"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -770,7 +824,7 @@ local function ProtectionLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionMiddle"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -793,7 +847,7 @@ local function ProtectionLoadDefaultBarTextSimpleSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionRight"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -812,6 +866,11 @@ local function ProtectionLoadDefaultBarTextSimpleSettings()
 		}
 	}
 
+	local extraTextSettings = ProtectionLoadExtraBarTextSettings()
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
 	return textSettings
 end
 TRB.Options.Warrior.ProtectionLoadDefaultBarTextSimpleSettings = ProtectionLoadDefaultBarTextSimpleSettings
@@ -825,8 +884,8 @@ local function ProtectionLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionLeft"],
-			guid=TRB.Functions.String:Guid(),
-			text="{$ttd}[TTD: $ttd][ ]",
+			guid = TRB.Functions.String:Guid(),
+			text="#deepWounds $deepWoundsCount||n{$rend}[#rend $rendCount   ][          ]{$ttd}[TTD: $ttd][ ]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -848,8 +907,8 @@ local function ProtectionLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionMiddle"],
-			guid=TRB.Functions.String:Guid(),
-			text="",
+			guid = TRB.Functions.String:Guid(),
+			text="{$suddenDeathTime}[#suddenDeath $suddenDeathTime #suddenDeath]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -871,7 +930,7 @@ local function ProtectionLoadDefaultBarTextAdvancedSettings()
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionRight"],
-			guid=TRB.Functions.String:Guid(),
+			guid = TRB.Functions.String:Guid(),
 			text="{$casting}[#casting$casting+]{$passive}[$passive+]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
@@ -890,6 +949,11 @@ local function ProtectionLoadDefaultBarTextAdvancedSettings()
 		}
 	}
 
+	local extraTextSettings = ProtectionLoadExtraBarTextSettings()
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
 	return textSettings
 end
 
@@ -907,12 +971,12 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 			icons = {
 				showCooldown=true,
 				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
+				relativeTo = "BOTTOM",
+				relativeToName = L["PositionBelow"],
 				enabled=true,
 				desaturated=true,
 				xPos=0,
-				yPos=-12,
+				yPos=12,
 				width=24,
 				height=24
 			},
@@ -1030,7 +1094,7 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 				showCasting=true
 			},
 			comboPoints = {
-				border="FF660088",
+				border="FFC21807",
 				background="66000000",
 				base="FFC942FD",
 				penultimate="FFFF9900",
@@ -2403,10 +2467,10 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRage"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.comboPoints.base
+	controls.colors.comboPoints.ignorePain = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionDefensiveIgnorePain"], spec.colors.comboPoints.ignorePain.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.ignorePain
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "ignorePain")
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerDefensiveBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
@@ -2415,8 +2479,20 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
-	--[[
 	yCoord = yCoord - 30
+	controls.colors.comboPoints.shieldBlock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionDefensiveShieldBlock"], spec.colors.comboPoints.shieldBlock.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.shieldBlock
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "shieldBlock")
+	end)
+
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerUnfilledDefensiveBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+	end)
+
+	--[[
 	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerDefensivePenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2440,12 +2516,6 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
 	]]
-
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerUnfilledDefensiveBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
-	end)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], 130)

@@ -11,7 +11,11 @@ local content = [====[
 
 ---
 
-# 11.1.7.2-release (2025-07-02)
+# 11.1.7.2-release (2025-07-03)
+## General
+
+- (NEW) Include `m1` as a default texture for status bars.
+
 ## Druid
 ### Feral
 
@@ -20,7 +24,7 @@ local content = [====[
 ## Warrior
 ### Protection
 
-
+- [#450 - EXPERIMENTAL](#450) Add Protection Warrior support, tracking Rage, Ignore Pain, and Shield Block. This is still very much an experimental feature and work in progress.
 
 ---
 

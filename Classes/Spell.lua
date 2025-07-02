@@ -100,6 +100,7 @@ end
 ---@field public isSelfInitializeAllowed boolean? # Can this effect be initialized on the player? Almost always false unless we're tracking a friendly buff (like Atonement)
 ---@field public isPvp boolean? # Is this a PvP only spell?
 ---@field public rangeCheck boolean? # Should this spell perform range checks?
+---@field public customPropertyDefinitions TRB.Classes.BuffCustomProperty[]? # Custom properties that will be tracked by the buff/debuff.
 ---@field public targetUnit string? # The target that will be used when doing castable and range calculations
 ---@field public tocMinVersion number? # Minimum TOC version of WoW before attempting to use/load this spell.
 ---@field public attributes { [string]: any } # Spell specific values that will need to be looked up during gameplay.
@@ -163,6 +164,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 			(key == "isPvp"								and type(value) == "boolean") or
 			(key == "targetUnit") or
 			(key == "rangeCheck"						and type(value) == "boolean") or
+			(key == "customPropertyDefinitions"			and type(value) == "table") or
 			(key == "tocMinVersion"						and type(value) == "number") then
 			self[key] = value
 		elseif key == "name" or key == "icon" then

@@ -383,7 +383,6 @@ function TRB.Classes.Warrior.FurySpells:New()
 	return self
 end
 
-
 ---@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
 ---@field public deepWounds TRB.Classes.SpellBase
 ---@field public ignorePain TRB.Classes.SpellThreshold
@@ -468,10 +467,15 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		isTalent = true,
 		hasCooldown = true,
 		duration = 11,
-		rangeCheck = false
+		rangeCheck = false,
+		---@type TRB.Classes.BuffCustomProperty[]
+		customPropertyDefinitions = {
+			TRB.Classes.BuffCustomProperty:New(1, "number", "absorb", 1)
+		}
 	})
 	self.rend = TRB.Classes.SpellThreshold:New({
-		id = 394062,
+		id = 388539,
+		talentId = 394062,
 		debuffId = 388539,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "rend",
