@@ -2182,4 +2182,5 @@ if locale == "frFR" then
     L["ThresholdOutOfRangeCheckbox"] = "Changer de couleur lorsque la compétence est hors de portée."
     L["ThresholdOutOfRangeShowCheckbox"] = "Afficher les seuils hors de portée ?"
     L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Si cette option est cochée, les seuils s'afficheront lorsque la capacité est hors de portée."
+    L["LSMStatusBarM1"] = "TRB: m1"
 end

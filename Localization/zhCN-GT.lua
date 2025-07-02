@@ -2180,4 +2180,5 @@ if locale == "zhCN" then
     L["ThresholdOutOfRangeCheckbox"] = "超出范围时改变颜色？"
     L["ThresholdOutOfRangeShowCheckbox"] = "显示超出范围的阈值线？"
     L["ThresholdOutOfRangeShowCheckboxTooltip"] = "选中后，当技能超出范围时将显示阈值线。"
+    L["LSMStatusBarM1"] = "TRB: m1"
 end

@@ -2180,4 +2180,5 @@ if locale == "esES" or locale == "esMX" then
     L["ThresholdOutOfRangeCheckbox"] = "¿Cambiar de color al estar fuera de alcance?"
     L["ThresholdOutOfRangeShowCheckbox"] = "¿Mostrar líneas de umbral fuera de rango?"
     L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Al marcar esta opción, se mostrarán las líneas de umbral cuando la habilidad esté fuera de rango."
+    L["LSMStatusBarM1"] = "TRB: m1"
 end

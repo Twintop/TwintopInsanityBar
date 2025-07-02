@@ -2180,4 +2180,5 @@ L["CannibalizeIfForsaken"] = "Kannibalisieren (wenn im Stich gelassen)"
     L["ThresholdOutOfRangeCheckbox"] = "Farbe ändern, wenn außerhalb der Reichweite?"
     L["ThresholdOutOfRangeShowCheckbox"] = "Grenzwertlinien außerhalb der Reichweite anzeigen?"
     L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Wenn diese Option aktiviert ist, werden die Grenzwertlinien angezeigt, wenn die Fähigkeit außerhalb der Reichweite liegt."
+    L["LSMStatusBarM1"] = "TRB: m1"
 end

@@ -2272,3 +2272,4 @@ L["ThresholdGenericSpecialEnabledTooltip"] = "When checked, the threshold line c
 L["ThresholdOutOfRangeCheckbox"] = "Change color when out of range?"
 L["ThresholdOutOfRangeShowCheckbox"] = "Show out of range threshold lines?"
 L["ThresholdOutOfRangeShowCheckboxTooltip"] = "When checked, the threshold lines will be shown when the ability is out of range."
+L["LSMStatusBarM1"] = "TRB: m1"

@@ -2180,4 +2180,5 @@ if locale == "itIT" then
     L["ThresholdOutOfRangeCheckbox"] = "Cambia colore quando fuori portata?"
     L["ThresholdOutOfRangeShowCheckbox"] = "Mostrare le linee di soglia fuori portata?"
     L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Se selezionata, le linee di soglia verranno visualizzate quando l'abilità è fuori portata."
+    L["LSMStatusBarM1"] = "TRB: m1"
 end

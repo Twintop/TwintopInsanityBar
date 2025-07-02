@@ -2180,4 +2180,5 @@ if locale == "ruRU" then
     L["ThresholdOutOfRangeCheckbox"] = "Изменить цвет, когда вне диапазона?"
     L["ThresholdOutOfRangeShowCheckbox"] = "Показывать линии порога вне диапазона?"
     L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Если этот флажок установлен, линии порога будут отображаться, когда способность находится вне диапазона."
+    L["LSMStatusBarM1"] = "TRB: m1"
 end

@@ -2180,4 +2180,5 @@ if locale == "ptBR" or locale == "ptPT" then
     L["ThresholdOutOfRangeCheckbox"] = "Alterar cor quando estiver fora do alcance?"
     L["ThresholdOutOfRangeShowCheckbox"] = "Mostrar linhas de limite fora do alcance?"
     L["ThresholdOutOfRangeShowCheckboxTooltip"] = "Quando marcada, as linhas de limite serão exibidas quando a habilidade estiver fora do alcance."
+    L["LSMStatusBarM1"] = "TRB: m1"
 end
