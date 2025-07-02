@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.1.7.3-release (2025-07-03)
+## Warrior
+### Protection
+
+- [#455 - EXPERIMENTAL](#455) Update default text and threshold line settings.
+
+---
+
 # 11.1.7.2-release (2025-07-03)
 ## General
 
@@ -24,7 +32,7 @@ local content = [====[
 ## Warrior
 ### Protection
 
-- [#450 - EXPERIMENTAL](#450) Add Protection Warrior support, tracking Rage, Ignore Pain, and Shield Block. This is still very much an experimental feature and work in progress.
+- [#455 - EXPERIMENTAL](#455) Add Protection Warrior support, tracking Rage, Ignore Pain, and Shield Block. This is still very much an experimental feature and work in progress.
 
 ---
 
