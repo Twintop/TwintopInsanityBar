@@ -23,6 +23,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Arms
 			elseif specId == 2 then -- Fury
 				configuration.endOfEnrage = settings.endOfEnrage
+			elseif specId == 3 then -- Protection
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end		
 		elseif classId == 2 then -- Paladin
 			if specId == 1 then -- Holy
@@ -122,6 +125,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
 			elseif specId == 2 then -- Fury
+			elseif specId == 3 then -- Protection
 			end
 		elseif classId == 2 then -- Paladins
 			if specId == 1 then -- Holy
@@ -178,6 +182,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
 			elseif specId == 2 then -- Fury
+			elseif specId == 3 then -- Protection
 			end
 		elseif classId == 2 then -- Paladin
 			if specId == 2 then -- Holy
@@ -288,7 +293,13 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.fury) > 0 then -- Fury
 				configuration.warrior.fury = ExportConfigurationSections(1, 2, settings.warrior.fury, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end		
+			end
+
+			if TRB.Data.settings.core.experimental.specs.warrior.protection then
+				if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.protection) > 0 then -- Protection
+					configuration.warrior.protection = ExportConfigurationSections(1, 3, settings.warrior.protection, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end
 		elseif classId == 2 and settings.paladin ~= nil then -- Paladin
 			configuration.paladin = {}
 			
@@ -347,7 +358,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.enhancement) > 0 then -- Enhancement
 					configuration.shaman.enhancement = ExportConfigurationSections(7, 2, settings.shaman.enhancement, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
-			end		
+			end
 
 			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.restoration) > 0 then -- Restoration
 				configuration.shaman.restoration = ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
@@ -415,7 +426,11 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Fury
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		
+		if TRB.Data.settings.core.experimental.specs.warrior.protection then
+			-- Protection
+			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
+
 		-- Paladin
 		-- Holy
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
@@ -531,7 +546,8 @@ function TRB.Functions.IO:Import(input)
 	if not (configuration.core ~= nil or
 		(configuration.warrior ~= nil and
 			(configuration.warrior.arms ~= nil or
-			configuration.warrior.fury ~= nil)) or
+			configuration.warrior.fury ~= nil or
+			(TRB.Data.settings.core.experimental.specs.warrior.protection and configuration.warrior.protection ~= nil))) or
 		(configuration.paladin ~= nil and
 			(configuration.paladin.holy ~= nil)) or
 		(configuration.rogue ~= nil and

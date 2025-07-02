@@ -3131,7 +3131,16 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		L["Screen"]
 	}
 	
-	if (classId == 2) then -- Paladin
+	if (classId == 1 and specId == 3) then -- Protection Warrior
+		relativeToFrame[L["IgnorePain"]] = "IgnorePain"
+		relativeToFrame[L["ShieldBlock"]] = "ShieldBlock"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["IgnorePain"],
+			L["ShieldBlock"],
+			L["Screen"],
+		}
+	elseif(classId == 2) then -- Paladin
 		relativeToFrame[L["HolyPower1"]] = "ComboPoint_1"
 		relativeToFrame[L["HolyPower2"]] = "ComboPoint_2"
 		relativeToFrame[L["HolyPower3"]] = "ComboPoint_3"

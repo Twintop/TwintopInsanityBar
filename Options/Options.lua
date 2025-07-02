@@ -477,6 +477,19 @@ local function ConstructMiscellaneousPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ExperimentalFeatures"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.experimentalWarriorProtection = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Warrior_Protection", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.experimentalWarriorProtection
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
+	getglobal(f:GetName() .. 'Text'):SetText(L["ExperimentalProtectionWarrior"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["ExperimentalProtectionWarriorTooltip"]
+	f:SetChecked(TRB.Data.settings.core.experimental.specs.warrior.protection)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.experimental.specs.warrior.protection = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
 	controls.checkBoxes.experimentalShamanEnhancement = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Enhancement", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalShamanEnhancement
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)

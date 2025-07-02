@@ -32,6 +32,8 @@ addonData.libs.SharedMedia:Register("sound", L["LSMSoundWilhelmScream"], "Interf
 addonData.libs.SharedMedia:Register("sound", L["LSMSoundBoxingArenaGong"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg")
 addonData.libs.SharedMedia:Register("sound", L["LSMSoundAirHorn"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg")
 
+addonData.libs.SharedMedia:Register("statusbar", "m1", "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\m1.tga")
+
 if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then -- No localization on this as it is usually provided by WeakAuras
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
 end
@@ -225,7 +227,17 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 -- For the following specs, we need to have a secondary bar/bars created
 -- We're going to make these as StatusBars so we can use them for Death Knight runes in the future
-if TRB.Data.character.classId == 2 or TRB.Data.character.classId == 4 or TRB.Data.character.classId == 5 or TRB.Data.character.classId == 7 or TRB.Data.character.classId == 9 or TRB.Data.character.classId == 10 or TRB.Data.character.classId == 11 or TRB.Data.character.classId == 12 or TRB.Data.character.classId == 13 then
+if 	TRB.Data.character.classId == 1 or -- Protection Warrior
+	TRB.Data.character.classId == 2 or -- Paladin
+	TRB.Data.character.classId == 4 or -- Rogue
+	TRB.Data.character.classId == 5 or -- Discipline or Holy Priest
+	TRB.Data.character.classId == 7 or -- Enhancement Shaman
+	TRB.Data.character.classId == 9 or -- Affliction Warlock
+	TRB.Data.character.classId == 10 or -- Windwalker Monk
+	TRB.Data.character.classId == 11 or -- Feral Druid
+	TRB.Data.character.classId == 12 or -- Vengeance Demon Hunter
+	TRB.Data.character.classId == 13 -- Evoker
+	then
 	TRB.Frames.resource2Frames = {}
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	

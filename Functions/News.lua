@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.1.7.2-release (2025-07-01)
+## Warrior
+### Protection
+
+
+
+---
+
 # 11.1.7.1-release (2025-06-26)
 ## General
 

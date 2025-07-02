@@ -293,7 +293,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				},
 				warrior = {
 					arms = specGlobalDefaults,
-					fury = specGlobalDefaults
+					fury = specGlobalDefaults,
+					protection = specGlobalDefaults
 				}
 			},
 			enabled = {
@@ -343,13 +344,17 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				},
 				warrior = {
 					arms = true,
-					fury = true
+					fury = true,
+					protection = true
 				}
 			},
 			experimental = {
 				specs = {
 					shaman = {
 						enhancement = false
+					},
+					warrior = {
+						protection = false
 					}
 				}
 			}
