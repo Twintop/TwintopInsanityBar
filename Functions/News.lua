@@ -11,7 +11,12 @@ local content = [====[
 
 ---
 
-# 11.1.7.2-release (2025-07-01)
+# 11.1.7.2-release (2025-07-02)
+## Druid
+### Feral
+
+- [#456 - FIX](#456) Fix Energy not being updated properly.
+
 ## Warrior
 ### Protection
 

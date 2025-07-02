@@ -3785,6 +3785,7 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
+	local primaryResourceToken
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
 		TRB.Data.specSupported = true
@@ -3792,6 +3793,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 10
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
+		primaryResourceToken = "LUNAR_POWER"
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.feral)
 		TRB.Data.specSupported = true
@@ -3799,6 +3801,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.ComboPoints
 		TRB.Data.resource2Factor = 1
+		primaryResourceToken = "ENERGY"
 	elseif TRB.Data.character.specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.restoration)
 		TRB.Data.specSupported = true
@@ -3806,11 +3809,13 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
+		primaryResourceToken = "MANA"
 	else
 		TRB.Data.specSupported = false
 	end
 
 	TRB.Functions.Character:EventRegistration()
+	TRB.Data.resourceToken = primaryResourceToken
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
