@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+11.1.7.4-release (2025-07-11)
+## General
+
+- (FIX) Adjust how debuffs are tracked.
+
+## Warrior
+### Protection
+
+- [#455 - EXPERIMENTAL](#455) Remove some debug prints.
+
+---
+
 # 11.1.7.3-release (2025-07-03)
 ## Warrior
 ### Protection

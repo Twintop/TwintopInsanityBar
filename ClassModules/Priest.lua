@@ -3855,8 +3855,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end
 
 		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-			targetData:Remove(entry.destinationGuid)
-			RefreshTargetTracking()
+			if targetData:Remove(entry.destinationGuid) then
+				RefreshTargetTracking()
+			end
 		end
 	end
 end)
