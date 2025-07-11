@@ -744,7 +744,7 @@ end
 ---@field public shadowCrash TRB.Classes.SpellBase
 ---@field public voidCrash TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
----@field public mindMelt TRB.Classes.SpellBase
+---@field public shatteredPsyche TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellBase
 ---@field public devouredDespair TRB.Classes.SpellBase
 ---@field public mindDevourer TRB.Classes.SpellBase
@@ -795,7 +795,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	-- Shadow Baseline Abilities
 	self.mindFlay = TRB.Classes.SpellBase:New({
 		id = 15407,
-		resource = 2,
+		resource = 3,
 		isTalent = false,
 		baseline = true
 	})
@@ -909,7 +909,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 391401,
 		buffId = 391401,
 		castId = 391403,
-		resource = 3
+		resource = 2
 	})
 	self.voidTorrent = TRB.Classes.SpellBase:New({
 		id = 263165,
@@ -930,7 +930,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 375981,
 		isTalent = true
 	})
-	self.mindMelt = TRB.Classes.SpellBase:New({
+	self.shatteredPsyche = TRB.Classes.SpellBase:New({
 		id = 391092,
 		isTalent = true
 	})

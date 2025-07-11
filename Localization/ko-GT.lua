@@ -1633,8 +1633,6 @@ if locale == "koKR" then
     L["PriestShadowBarTextVariable_siTime"] = "어둠의 통찰 버프 남은 시간"
     L["PriestShadowBarTextVariable_mindBlastCharges"] = "현재 마인드 블래스트 충전 횟수"
     L["PriestShadowBarTextVariable_mindBlastMaxCharges"] = "마인드 블래스트 최대 충전 횟수"
-    L["PriestShadowBarTextVariable_mmTime"] = "정신 용해 버프 남은 시간"
-    L["PriestShadowBarTextVariable_mmStacks"] = "Mind Melt 스택에 남은 시간"
     L["PriestShadowBarTextVariable_vfTime"] = "공허의 형상 남은 시간"
     L["PriestShadowBarTextVariable_ysTime"] = "요그사론 버프 남은 시간"
     L["PriestShadowBarTextVariable_ysStacks"] = "요그사론 스택 수"

@@ -1633,8 +1633,6 @@ if locale == "zhTW" then
     L["PriestShadowBarTextVariable_siTime"] = "暗影洞察 buff 的剩餘時間"
     L["PriestShadowBarTextVariable_mindBlastCharges"] = "目前的心靈衝擊費用數量"
     L["PriestShadowBarTextVariable_mindBlastMaxCharges"] = "心靈震爆充能最大次數"
-    L["PriestShadowBarTextVariable_mmTime"] = "心靈融化增益的剩餘時間"
-    L["PriestShadowBarTextVariable_mmStacks"] = "Mind Melt 堆疊上的剩餘時間"
     L["PriestShadowBarTextVariable_vfTime"] = "虛空形態剩餘持續時間"
     L["PriestShadowBarTextVariable_ysTime"] = "尤格薩隆增益剩餘時間"
     L["PriestShadowBarTextVariable_ysStacks"] = "尤格薩隆層數"

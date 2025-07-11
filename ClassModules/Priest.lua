@@ -370,7 +370,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.twistOfFate.id] = TRB.Classes.Snapshot:New(spells.twistOfFate)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.mindMelt.id] = TRB.Classes.Snapshot:New(spells.mindMelt)
+	specCache.shadow.snapshotData.snapshots[spells.shatteredPsyche.id] = TRB.Classes.Snapshot:New(spells.shatteredPsyche)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.shadowyInsight.id] = TRB.Classes.Snapshot:New(spells.shadowyInsight)
 	---@type TRB.Classes.Snapshot
@@ -780,9 +780,6 @@ local function FillSpellData_Shadow()
 
 		{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
 		{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
-		
-		{ variable = "#mm", icon = spells.mindMelt.icon, description = spells.mindMelt.name, printInSettings = true },
-		{ variable = "#mindMelt", icon = spells.mindMelt.icon, description = spells.mindMelt.name, printInSettings = false },
 																
 		{ variable = "#sa", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = true },
 		{ variable = "#shadowyApparition", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = false },
@@ -797,6 +794,11 @@ local function FillSpellData_Shadow()
 																						
 		{ variable = "#si", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = true },
 		{ variable = "#shadowyInsight", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = false },
+		
+		{ variable = "#sp", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = true },
+		{ variable = "#shatteredPsyche", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = false },
+		{ variable = "#mm", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = false },
+		{ variable = "#mindMelt", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = false },
 		
 		{ variable = "#tfb", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = true },
 		{ variable = "#thingFromBeyond", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = false },
@@ -904,8 +906,10 @@ local function FillSpellData_Shadow()
 		{ variable = "$mindBlastCharges", description = L["PriestShadowBarTextVariable_mindBlastCharges"], printInSettings = true, color = false },
 		{ variable = "$mindBlastMaxCharges", description = L["PriestShadowBarTextVariable_mindBlastMaxCharges"], printInSettings = true, color = false },
 
-		{ variable = "$mmTime", description = L["PriestShadowBarTextVariable_mmTime"], printInSettings = true, color = false },
-		{ variable = "$mmStacks", description = L["PriestShadowBarTextVariable_mmStacks"], printInSettings = true, color = false },
+		{ variable = "$spTime", description = L["PriestShadowBarTextVariable_spTime"], printInSettings = true, color = false },
+		{ variable = "$mmTime", description = L["PriestShadowBarTextVariable_spTime"], printInSettings = false, color = false },
+		{ variable = "$spStacks", description = L["PriestShadowBarTextVariable_spStacks"], printInSettings = true, color = false },
+		{ variable = "$mmStacks", description = L["PriestShadowBarTextVariable_spStacks"], printInSettings = false, color = false },
 
 		{ variable = "$vfTime", description = L["PriestShadowBarTextVariable_vfTime"], printInSettings = true, color = false },
 
@@ -2002,11 +2006,11 @@ local function RefreshLookupData_Shadow()
 	local _siTime = snapshots[spells.shadowyInsight.id].buff:GetRemainingTime(currentTime)
 	local siTime = TRB.Functions.BarText:TimerPrecision(_siTime)
 	
-	--$mmTime
-	local _mmTime = snapshots[spells.mindMelt.id].buff:GetRemainingTime(currentTime)
-	local mmTime = TRB.Functions.BarText:TimerPrecision(_mmTime)
-	--$mmStacks
-	local mmStacks = snapshots[spells.mindMelt.id].buff.applications or 0
+	--$spTime
+	local _spTime = snapshots[spells.shatteredPsyche.id].buff:GetRemainingTime(currentTime)
+	local spTime = TRB.Functions.BarText:TimerPrecision(_spTime)
+	--$spStacks
+	local spStacks = snapshots[spells.shatteredPsyche.id].buff.applications or 0
 	
 	--$ysTime
 	local _ysTime = snapshots[spells.idolOfYoggSaron.id].buff:GetRemainingTime(currentTime)
@@ -2087,8 +2091,10 @@ local function RefreshLookupData_Shadow()
 	lookup["$mfiStacks"] = mfiStacks
 	lookup["$tofTime"] = tofTime
 	lookup["$vfTime"] = voidformTime
-	lookup["$mmTime"] = mmTime
-	lookup["$mmStacks"] = mmStacks
+	lookup["$spTime"] = spTime
+	lookup["$mmTime"] = spTime
+	lookup["$spStacks"] = spStacks
+	lookup["$mmStacks"] = spStacks
 	lookup["$ysTime"] = ysTime
 	lookup["$ysStacks"] = ysStacks
 	lookup["$ysRemainingStacks"] = ysRemainingStacks
@@ -2147,8 +2153,10 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$mfiStacks"] = _mfiStacks
 	lookupLogic["$tofTime"] = _tofTime
 	lookupLogic["$vfTime"] = _voidformTime
-	lookupLogic["$mmTime"] = _mmTime
-	lookupLogic["$mmStacks"] = mmStacks
+	lookupLogic["$spTime"] = _spTime
+	lookupLogic["$mmTime"] = _spTime
+	lookupLogic["$spStacks"] = spStacks
+	lookupLogic["$mmStacks"] = spStacks
 	lookupLogic["$ysTime"] = _ysTime
 	lookupLogic["$ysStacks"] = ysStacks
 	lookupLogic["$ysRemainingStacks"] = ysRemainingStacks
@@ -4026,8 +4034,10 @@ local function SwitchSpec()
 		lookup["#twistOfFate"] = spells.twistOfFate.icon
 		lookup["#si"] = spells.shadowyInsight.icon
 		lookup["#shadowyInsight"] = spells.shadowyInsight.icon
-		lookup["#mm"] = spells.mindMelt.icon
-		lookup["#mindMelt"] = spells.mindMelt.icon
+		lookup["#mm"] = spells.shatteredPsyche.icon
+		lookup["#mindMelt"] = spells.shatteredPsyche.icon
+		lookup["#sp"] = spells.shatteredPsyche.icon
+		lookup["#shatteredPsyche"] = spells.shatteredPsyche.icon
 		lookup["#ys"] = spells.idolOfYoggSaron.icon
 		lookup["#idolOfYoggSaron"] = spells.idolOfYoggSaron.icon
 		lookup["#tfb"] = spells.thingFromBeyond.icon
@@ -4744,12 +4754,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.shadowyInsight.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$mmTime" then
-			if snapshots[spells.mindMelt.id].buff.isActive then
+		elseif var == "$mmTime" or "$spTime" then
+			if snapshots[spells.shatteredPsyche.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$mmStacks" then
-			if snapshots[spells.mindMelt.id].buff.isActive then
+		elseif var == "$mmStacks" or "$spStacks" then
+			if snapshots[spells.shatteredPsyche.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$ysTime" then

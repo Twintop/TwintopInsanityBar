@@ -1633,8 +1633,6 @@ if locale == "ruRU" then
     L["PriestShadowBarTextVariable_siTime"] = "Оставшееся время действия баффа Shadowy Insight"
     L["PriestShadowBarTextVariable_mindBlastCharges"] = "Текущее количество зарядов Mind Blast"
     L["PriestShadowBarTextVariable_mindBlastMaxCharges"] = "Максимальное количество зарядов «Взрыва разума»"
-    L["PriestShadowBarTextVariable_mmTime"] = "Оставшееся время действия баффа «Расплавление разума»"
-    L["PriestShadowBarTextVariable_mmStacks"] = "Оставшееся время действия стаков Mind Melt"
     L["PriestShadowBarTextVariable_vfTime"] = "Оставшаяся продолжительность формы Бездны"
     L["PriestShadowBarTextVariable_ysTime"] = "Оставшееся время действия баффа Йогг Сарона"
     L["PriestShadowBarTextVariable_ysStacks"] = "Количество стаков Йогг Сарона"

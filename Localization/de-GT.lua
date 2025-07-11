@@ -1633,8 +1633,6 @@ if locale == "deDE" then
     L["PriestShadowBarTextVariable_siTime"] = "Verbleibende Zeit für den Buff „Schattenhafte Einsicht“."
     L["PriestShadowBarTextVariable_mindBlastCharges"] = "Aktuelle Anzahl der Mind Blast-Ladungen"
     L["PriestShadowBarTextVariable_mindBlastMaxCharges"] = "Maximale Anzahl an Mind Blast-Ladungen"
-    L["PriestShadowBarTextVariable_mmTime"] = "Verbleibende Zeit für den Mind Melt-Buff"
-    L["PriestShadowBarTextVariable_mmStacks"] = "Verbleibende Zeit auf Stapeln von „Mind Melt“."
     L["PriestShadowBarTextVariable_vfTime"] = "Verbleibende Dauer von Voidform"
     L["PriestShadowBarTextVariable_ysTime"] = "Verbleibende Zeit für den Yogg Saron-Buff"
     L["PriestShadowBarTextVariable_ysStacks"] = "Anzahl der Yogg Saron-Stapel"

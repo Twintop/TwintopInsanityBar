@@ -1633,8 +1633,6 @@ if locale == "frFR" then
     L["PriestShadowBarTextVariable_siTime"] = "Temps restant sur le buff Shadowy Insight"
     L["PriestShadowBarTextVariable_mindBlastCharges"] = "Nombre actuel de charges Mind Blast"
     L["PriestShadowBarTextVariable_mindBlastMaxCharges"] = "Nombre maximum de charges Mind Blast"
-    L["PriestShadowBarTextVariable_mmTime"] = "Temps restant sur le buff Mind Melt"
-    L["PriestShadowBarTextVariable_mmStacks"] = "Temps restant sur les piles Mind Melt"
     L["PriestShadowBarTextVariable_vfTime"] = "Durée restante de Voidform"
     L["PriestShadowBarTextVariable_ysTime"] = "Temps restant sur le buff Yogg Saron"
     L["PriestShadowBarTextVariable_ysStacks"] = "Nombre de piles de Yogg Saron"
