@@ -1408,10 +1408,10 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				border="FF431863",
 				borderOvercap="FFFF0000",
 				borderMindFlayInsanity="FF00FF00",
-				deathspeaker = {
+				--[[deathspeaker = {
 					color = "FFFF9900",
 					enabled = true
-				},
+				},]]
 				background="66000000",
 				base="FF763BAF",
 				devouringPlagueUsable="FF5C2F89",
@@ -1492,12 +1492,12 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
-			deathspeaker={
+			--[[deathspeaker={
 				name = L["PriestShadowAudioDeathspeaker"],
 				enabled = false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
-			},
+			},]]
 			powerInfusion={
 				name = L["GlobalAudioPowerInfusion"],
 				enabled = false,
@@ -3244,6 +3244,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
 	end)
 	
+	--[[
 	yCoord = yCoord - 30
 	controls.checkBoxes.deathspeakerBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_deathspeakerBorderChange", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.deathspeakerBorderChange
@@ -3260,6 +3261,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathspeaker")
 	end)
+	]]
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.mindDevourer = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindDevourerProc", parent, "ChatConfigCheckButtonTemplate")
@@ -3604,7 +3606,7 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 	
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceInsanity"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceInsanity"]))
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "deathspeaker", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxDeathspeaker"], L["PriestShadowAudioCheckboxDeathspeakerTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "deathspeaker", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxDeathspeaker"], L["PriestShadowAudioCheckboxDeathspeakerTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "powerInfusion", spec, classId, specId, yCoord, L["GlobalAudioCheckboxPowerInfusion"], L["GlobalAudioCheckboxPowerInfusionTooltip"])
 

@@ -368,10 +368,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.mindFlayInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.mindSpikeInsanity.id] = TRB.Classes.Snapshot:New(spells.mindSpikeInsanity)
-	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.deathspeaker.id] = TRB.Classes.Snapshot:New(spells.deathspeaker)
-	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.twistOfFate.id] = TRB.Classes.Snapshot:New(spells.twistOfFate)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.mindMelt.id] = TRB.Classes.Snapshot:New(spells.mindMelt)
@@ -794,10 +790,6 @@ local function FillSpellData_Shadow()
 		{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
 		{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
 
-		{ variable = "#swd", icon = spells.deathspeaker.icon, description = spells.deathspeaker.name, printInSettings = true },
-		{ variable = "#shadowWordDeath", icon = spells.deathspeaker.icon, description = spells.deathspeaker.name, printInSettings = false },
-		{ variable = "#deathspeaker", icon = spells.deathspeaker.icon, description = spells.deathspeaker.name, printInSettings = false },
-
 		{ variable = "#sf", icon = string.format(L["PriestShadowIcon_sf"], spells.shadowfiend.icon, spells.mindbender.icon, spells.voidwraith.icon), description = spells.shadowfiend.name .. " / " .. spells.mindbender.name .. " / " .. spells.voidwraith.name, printInSettings = true },
 		{ variable = "#mindbender", icon = spells.mindbender.icon, description = spells.mindbender.name, printInSettings = false },
 		{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = spells.shadowfiend.name, printInSettings = false },
@@ -906,8 +898,6 @@ local function FillSpellData_Shadow()
 
 		{ variable = "$mfiTime", description = L["PriestShadowBarTextVariable_mfiTime"], printInSettings = true, color = false },
 		{ variable = "$mfiStacks", description = L["PriestShadowBarTextVariable_mfiStacks"], printInSettings = true, color = false },
-		
-		{ variable = "$deathspeakerTime", description = L["PriestShadowBarTextVariable_deathspeakerTime"], printInSettings = true, color = false },
 		
 		{ variable = "$siTime", description = L["PriestShadowBarTextVariable_siTime"], printInSettings = true, color = false },
 		
@@ -1993,17 +1983,10 @@ local function RefreshLookupData_Shadow()
 	if snapshots[spells.mindFlayInsanity.id].buff.isActive then
 		_mfiTime = snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
 		_mfiStacks = snapshots[spells.mindFlayInsanity.id].buff.applications or 0
-	elseif snapshots[spells.mindSpikeInsanity.id].buff.isActive then
-		_mfiTime = snapshots[spells.mindSpikeInsanity.id].buff:GetRemainingTime(currentTime)
-		_mfiStacks = snapshots[spells.mindSpikeInsanity.id].buff.applications or 0
 	end
 	
 	local mfiTime = TRB.Functions.BarText:TimerPrecision(_mfiTime)
 	local mfiStacks = string.format("%.0f", _mfiStacks)
-
-	--$deathspeakerTime
-	local _deathspeakerTime = snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
-	local deathspeakerTime = TRB.Functions.BarText:TimerPrecision(_deathspeakerTime)
 
 	--$tofTime
 	local _tofTime = snapshots[spells.twistOfFate.id].buff:GetRemainingTime(currentTime)
@@ -2102,7 +2085,6 @@ local function RefreshLookupData_Shadow()
 	lookup["$mdTime"] = mdTime
 	lookup["$mfiTime"] = mfiTime
 	lookup["$mfiStacks"] = mfiStacks
-	lookup["$deathspeakerTime"] = deathspeakerTime
 	lookup["$tofTime"] = tofTime
 	lookup["$vfTime"] = voidformTime
 	lookup["$mmTime"] = mmTime
@@ -2163,7 +2145,6 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$mdTime"] = _mdTime
 	lookupLogic["$mfiTime"] = _mfiTime
 	lookupLogic["$mfiStacks"] = _mfiStacks
-	lookupLogic["$deathspeakerTime"] = _deathspeakerTime
 	lookupLogic["$tofTime"] = _tofTime
 	lookupLogic["$vfTime"] = _voidformTime
 	lookupLogic["$mmTime"] = _mmTime
@@ -2288,16 +2269,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = spells.mindBlast.resource
 				casting.spellId = spells.mindBlast.id
 				casting.icon = spells.mindBlast.icon
-			elseif spellId == spells.mindSpike.id then
-				casting.startTime = currentTime
-				casting.resourceRaw = spells.mindSpike.resource
-				casting.spellId = spells.mindSpike.id
-				casting.icon = spells.mindSpike.icon
-			elseif spellId == spells.mindSpikeInsanity.castId then
-				casting.startTime = currentTime
-				casting.resourceRaw = spells.mindSpikeInsanity.resource
-				casting.spellId = spells.mindSpikeInsanity.castId
-				casting.icon = spells.mindSpikeInsanity.icon
 			elseif spellId == spells.darkAscension.id then
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.darkAscension.resource
@@ -2569,8 +2540,6 @@ local function UpdateSnapshot_Shadow()
 	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.mindSpikeInsanity.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 
@@ -3366,10 +3335,8 @@ local function UpdateResourceBar()
 
 				if specSettings.colors.bar.mindDevourer.enabled and snapshots[spells.mindDevourer.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.mindDevourer.color
-				elseif specSettings.colors.bar.mindFlayInsanityBorderChange and (snapshots[spells.mindFlayInsanity.id].buff.isActive or snapshots[spells.mindSpikeInsanity.id].buff.isActive) then
+				elseif specSettings.colors.bar.mindFlayInsanityBorderChange and snapshots[spells.mindFlayInsanity.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
-				elseif specSettings.colors.bar.deathspeaker.enabled and snapshots[spells.deathspeaker.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.deathspeaker.color
 				end
 
 				if snapshotData.casting.spellId ~= nil and specSettings.colors.bar.showCasting  then
@@ -3749,12 +3716,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] - 1
 					end
 				elseif entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.shadowCrash.id or entry.spellId == spells.voidCrash.id) then
-				elseif entry.spellId == spells.deathspeaker.id then
-					if entry.type == "SPELL_AURA_APPLIED" then
-						if TRB.Data.settings.priest.shadow.audio.deathspeaker.enabled then
-							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					end
 				elseif entry.spellId == spells.powerInfusion.id then
 					if entry.type == "SPELL_AURA_APPLIED" then
 						if TRB.Data.settings.priest.shadow.audio.powerInfusion.enabled then
@@ -4076,10 +4037,7 @@ local function SwitchSpec()
 		lookup["#cthun"] = spells.idolOfCthun.icon
 		lookup["#idolOfCthun"] = spells.idolOfCthun.icon
 		lookup["#loi"] = spells.idolOfCthun.icon
-		lookup["#swd"] = spells.deathspeaker.icon
 		lookup["#halo"] = spells.halo.icon
-		lookup["#shadowWordDeath"] = spells.deathspeaker.icon
-		lookup["#deathspeaker"] = spells.deathspeaker.icon
 		lookup["#entropicRift"] = spells.entropicRift.icon
 
 		if specCache.shadow.talents:IsTalentActive(spells.voidwraith) then
@@ -4771,15 +4729,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$mfiTime" then
-			if snapshots[spells.mindFlayInsanity.id].buff.isActive or snapshots[spells.mindSpikeInsanity.id].buff.isActive then
+			if snapshots[spells.mindFlayInsanity.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$mfiStacks" then
-			if snapshots[spells.mindFlayInsanity.id].buff.isActive or snapshots[spells.mindSpikeInsanity.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$deathspeakerTime" then
-			if snapshots[spells.deathspeaker.id].buff.isActive then
+			if snapshots[spells.mindFlayInsanity.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$tofTime" then
