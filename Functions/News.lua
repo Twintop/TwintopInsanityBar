@@ -11,7 +11,25 @@ local content = [====[
 
 ---
 
-11.1.7.4-release (2025-07-11)
+# 11.2.0.0-beta01 (2025-07-12)
+## Hunter
+### Beast Mastery
+
+- [#457 - NEW](#457) Make the following adjustments to match changes in the 11.2.0 PTR:
+<br/>&emsp;&ensp;- **Removed**: Barrage
+
+## Priest
+### Shadow
+
+- [#457 - NEW](#457) Make the following adjustments to match changes in the 11.2.0 PTR:
+<br/>&emsp;&ensp;- **Added**: Horrific Visions (Idol of N'Zoth), Subservient Shadows
+<br/>&emsp;&ensp;- **Updated**: Mind Melt -> Shattered Psyche
+<br/>&emsp;&ensp;- **Updated Insanity values**: Mind Flay, Mind Flay: Insanity
+<br/>&emsp;&ensp;- **Removed**: Deathspeaker, Mind Spike, Mind Spike: Insanity, Devoured Despair
+
+---
+
+# 11.1.7.4-release (2025-07-11)
 ## General
 
 - (FIX) Adjust how debuffs are tracked.
