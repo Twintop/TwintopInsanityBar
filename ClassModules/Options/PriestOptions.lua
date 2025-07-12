@@ -3668,7 +3668,7 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 	end)
 
 	title = L["PriestShadowShadowfiendGcds"]
-	controls.mindbenderGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.mindbender.gcdsMax, 1, 0,
+	controls.mindbenderGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 24, spec.mindbender.gcdsMax, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
@@ -3693,7 +3693,7 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 	end)
 
 	title = L["PriestShadowShadowfiendSwings"]
-	controls.mindbenderSwings = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.mindbender.swingsMax, 1, 0,
+	controls.mindbenderSwings = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 20, spec.mindbender.swingsMax, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
@@ -3717,7 +3717,7 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 	end)
 
 	title = L["PriestShadowShadowfiendTime"]
-	controls.mindbenderTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.mindbender.timeMax, 0.25, 2,
+	controls.mindbenderTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 18, spec.mindbender.timeMax, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)

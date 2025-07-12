@@ -134,7 +134,7 @@ function TRB.Classes.Priest.ShadowfiendEntry:GetShadowfiendValues()
 end
 
 function TRB.Classes.Priest.ShadowfiendEntry:Update()
-	local haveTotem, name, startTime, duration, _ = GetTotemInfo(self.totemId)
+	local haveTotem, name, startTime, duration, _, _, spellId = GetTotemInfo(self.totemId)
 
 	if haveTotem then
 		if name == self.shadowfiend.name then
@@ -176,7 +176,7 @@ function TRB.Classes.Priest.ShadowfiendEntry:Update()
 
 	self.startTime = startTime
 	self.duration = duration
-	self.remaining = currentTime - startTime + duration
+	self.remaining = (startTime + duration) - currentTime
 
 	local timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = self:GetShadowfiendValues()
 	self.remainingTime = timeRemaining
@@ -755,6 +755,7 @@ end
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
 ---@field public horrificVisions TRB.Classes.SpellBase
+---@field public subservientShadows TRB.Classes.SpellBase
 ---@field public resonantEnergy TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
 ---@field public voidBlast TRB.Classes.SpellBase
@@ -933,6 +934,11 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.shatteredPsyche = TRB.Classes.SpellBase:New({
 		id = 391092,
 		isTalent = true
+	})
+	self.subservientShadows = TRB.Classes.SpellBase:New({
+		id = 1228516,
+		isTalent = true,
+		modPercent = 1.2
 	})
 	self.mindbender = TRB.Classes.SpellBase:New({
 		id = 200174,

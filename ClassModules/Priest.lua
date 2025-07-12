@@ -2385,9 +2385,15 @@ local function UpdateExternalCallToTheVoidValues()
 
 	-- TODO: Add separate counts for Tendril vs Lasher?
 	if TRB.Functions.Table:Length(idolOfCthun.attributes.activeList) > 0 then
+		local subservientShadowsModifier = 1
+		if talents:IsTalentActive(spells.subservientShadows) then
+			subservientShadowsModifier = spells.subservientShadows.attributes.resourceMod
+		end
+
 		for vtGuid, v in pairs(idolOfCthun.attributes.activeList) do
-			if idolOfCthun.attributes.activeList[vtGuid] ~= nil and idolOfCthun.attributes.activeList[vtGuid].startTime ~= nil then
-				local endTime = idolOfCthun.attributes.activeList[vtGuid].startTime + spells.lashOfInsanity_Tendril.duration
+			if idolOfCthun.attributes.activeList[vtGuid] ~= nil and idolOfCthun.attributes.activeList[vtGuid].startTime ~= nil then			
+				
+				local endTime = idolOfCthun.attributes.activeList[vtGuid].startTime + (spells.lashOfInsanity_Tendril.duration * subservientShadowsModifier)
 				local timeRemaining = endTime - currentTime
 
 				if timeRemaining < 0 then
