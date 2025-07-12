@@ -215,9 +215,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 				explosiveShot = {
 					enabled = true,
 				},
-				barrage = {
-					enabled = true,
-				},
 				cobraShot = {
 					enabled = true,
 				},
@@ -995,9 +992,6 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				explosiveShot = {
 					enabled = true,
 				},
-				barrage = {
-					enabled = true,
-				},
 				raptorStrike = {
 					enabled = true,
 				},
@@ -1425,17 +1419,6 @@ local function BeastMasteryConstructThresholdPanel(parent)
 
 	controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
 	yCoord = yCoord - 20
-	
-	controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.barrageThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxBarrage"])
-	f.tooltip = L["HunterBeastMasteryThresholdCheckboxBarrageTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.barrage.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.barrage.enabled = self:GetChecked()
-	end)
-
 	yCoord = yCoord - 25
 	controls.checkBoxes.blackArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_blackArrow", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.blackArrowThresholdShow
@@ -2986,17 +2969,6 @@ local function SurvivalConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.arcaneShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.arcaneShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.barrageThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxBarrage"])
-	f.tooltip = L["HunterSurvivalThresholdCheckboxBarrageTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.butchery.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.barrage.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
