@@ -746,7 +746,6 @@ end
 ---@field public shadowyInsight TRB.Classes.SpellBase
 ---@field public shatteredPsyche TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellBase
----@field public devouredDespair TRB.Classes.SpellBase
 ---@field public mindDevourer TRB.Classes.SpellBase
 ---@field public idolOfCthun TRB.Classes.SpellBase
 ---@field public idolOfCthun_Tendril TRB.Classes.SpellBase
@@ -755,6 +754,7 @@ end
 ---@field public lashOfInsanity_Lasher TRB.Classes.SpellBase
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
+---@field public horrificVisions TRB.Classes.SpellBase
 ---@field public resonantEnergy TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
 ---@field public voidBlast TRB.Classes.SpellBase
@@ -941,13 +941,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resource = 2,
 		isTalent = true
 	})
-	self.devouredDespair = TRB.Classes.SpellBase:New({ -- Idol of Y'Shaarj proc
-		id = 373317,
-		resource = 5,
-		resourcePerTick = 5,
-		tickRate = 1,
-		hasTicks = true
-	})
 	self.mindDevourer = TRB.Classes.SpellBase:New({
 		id = 373204,
 		talentId = 373202,
@@ -988,6 +981,24 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 373277,
 		isTalent = true,
 		duration = 20
+	})
+	self.horrificVisions = TRB.Classes.SpellBase:New({
+		id = 1243069,
+		debuffId = 1243069,
+		duration = 30,
+		maxStacks = 99,
+		stackResourceTriggers = {
+			[50] = {
+				resource = 1,
+				duration = 3,
+				ticks = 4
+			},
+			[100] = {
+				resource = 1,
+				duration = 3,
+				ticks = 12
+			}
+		}
 	})
 
 	-- Archon

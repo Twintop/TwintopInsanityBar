@@ -2266,3 +2266,6 @@ L["PriestShadowBarTextVariable_mfiTime"] = "Time remaining on Mind Flay: Insanit
 L["PriestShadowBarTextVariable_mfiStacks"] = "Number of stacks of Mind Flay: Insanity buff"
 L["PriestShadowBarTextVariable_spTime"] = "Time remaining on Shattered Psyche buff"
 L["PriestShadowBarTextVariable_spStacks"] = "Number of stacks of Shattered Psyche buff"
+L["PriestShadowBarTextVariable_hvInsanity"] = "Insanity from Horrific Visions"
+L["PriestShadowBarTextVariable_hvTicks"] = "Number of ticks left on Horrific Visions"
+L["PriestShadowBarTextVariable_hvStacks"] = "Number of stacks of Horrific Visions on your current target"
