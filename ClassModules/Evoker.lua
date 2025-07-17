@@ -1663,7 +1663,7 @@ local function SwitchSpec()
 	elseif TRB.Data.character.specId == 2 then
 		specCache.preservation.talents:GetTalents()
 		FillSpellData_Preservation()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)		
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
