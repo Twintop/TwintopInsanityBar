@@ -19,6 +19,13 @@ local content = [====[
 
 ---
 
+# 11.1.7.5-release (2025-07-17)
+## General
+
+- (FIX) Prevent lua errors from preventing the bar from loading for healing specializations under specific conditions.
+
+---
+
 # 11.2.0.0-beta01 (2025-07-12)
 ## Hunter
 ### Beast Mastery

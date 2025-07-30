@@ -222,6 +222,11 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@return boolean
 function TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings)
+	-- Some specs don't have this setting because range checks don't apply, e.g. healers
+	if settings.colors.threshold.outOfRange == nil then
+		return false
+	end
+
 	return (
 		not settings.colors.threshold.outOfRange.show or
 		(settings.colors.threshold.outOfRange.show and settings.colors.threshold.outOfRange.enabled)
