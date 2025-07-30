@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.2.0.0-beta02 (2025-07-30)
+## Priest
+### Shadow
+
+- [#457 - NEW](#457) Fix Subservient Shadows lua error.
+
+---
+
 # 11.2.0.0-beta01 (2025-07-12)
 ## Hunter
 ### Beast Mastery

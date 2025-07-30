@@ -2387,7 +2387,7 @@ local function UpdateExternalCallToTheVoidValues()
 	if TRB.Functions.Table:Length(idolOfCthun.attributes.activeList) > 0 then
 		local subservientShadowsModifier = 1
 		if talents:IsTalentActive(spells.subservientShadows) then
-			subservientShadowsModifier = spells.subservientShadows.attributes.resourceMod
+			subservientShadowsModifier = spells.subservientShadows.attributes.modPercent
 		end
 
 		for vtGuid, v in pairs(idolOfCthun.attributes.activeList) do
