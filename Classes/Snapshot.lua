@@ -88,7 +88,7 @@ end
 ---@field public currentlySimple boolean? # Is the buff currently running in simple mode?
 ---@field public sometimesSimple boolean? # Should the buff tracking run in simple mode sometimes? Example: Sustained Potency + Voidform + stun
 ---@field public hasTicks boolean
----@field private resourcePerTick number
+---@field public resourcePerTick number
 ---@field private tickRate number
 ---@field public ticks number
 ---@field public resource number

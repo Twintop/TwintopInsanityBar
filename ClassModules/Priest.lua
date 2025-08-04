@@ -330,7 +330,8 @@ local function FillSpecializationCache()
 		effects = {
 		},
 		items = {
-			twwSeason2SetBonusCount = 0
+			twwSeason2SetBonusCount = 0,
+			twwSeason3SetBonusCount = 0
 		}
 	}
 
@@ -381,6 +382,12 @@ local function FillSpecializationCache()
 	}, false, true)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.horrificVisions.id] = TRB.Classes.Snapshot:New(spells.horrificVisions)
+	---@type TRB.Classes.Snapshot
+	specCache.shadow.snapshotData.snapshots[spells.voidVolley.id] = TRB.Classes.Snapshot:New(spells.voidVolley)
+	---@type TRB.Classes.Snapshot
+	specCache.shadow.snapshotData.snapshots[spells.powerSurge.id] = TRB.Classes.Snapshot:New(spells.powerSurge)
+	---@type TRB.Classes.Snapshot
+	specCache.shadow.snapshotData.snapshots[spells.ascension.id] = TRB.Classes.Snapshot:New(spells.ascension)
 end
 
 local function Setup_Discipline()
@@ -813,6 +820,9 @@ local function FillSpellData_Shadow()
 																															
 		{ variable = "#voit", icon = spells.voidTorrent.icon, description = spells.voidTorrent.name, printInSettings = true },
 		{ variable = "#voidTorrent", icon = spells.voidTorrent.icon, description = spells.voidTorrent.name, printInSettings = false },
+																															
+		{ variable = "#vv", icon = spells.voidVolley.icon, description = spells.voidVolley.name, printInSettings = true },
+		{ variable = "#voidVolley", icon = spells.voidVolley.icon, description = spells.voidVolley.name, printInSettings = false },
 
 		{ variable = "#vt", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = true },
 		{ variable = "#vampiricTouch", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = false },
@@ -888,6 +898,8 @@ local function FillSpellData_Shadow()
 		{ variable = "$hvTicks", description = L["PriestShadowBarTextVariable_hvTicks"], printInSettings = true, color = false },
 		{ variable = "$hvStacks", description = L["PriestShadowBarTextVariable_hvStacks"], printInSettings = true, color = false },
 
+		{ variable = "$psInsanity", description = L["PriestShadowBarTextVariable_psInsanity"], printInSettings = true, color = false },
+
 		{ variable = "$asInsanity", description = L["PriestShadowBarTextVariable_asInsanity"], printInSettings = true, color = false },
 		{ variable = "$asCount", description = L["PriestShadowBarTextVariable_asCount"], printInSettings = true, color = false },
 
@@ -926,6 +938,8 @@ local function FillSpellData_Shadow()
 		{ variable = "$reStacks", description = L["PriestShadowBarTextVariable_reStacks"], printInSettings = true, color = false },
 
 		{ variable = "$entropicRiftTime", description = L["PriestShadowBarTextVariable_entropicRiftTime"], printInSettings = true },
+
+		{ variable = "$voidVolleyTime", description = L["PriestShadowBarTextVariable_voidVolleyTime"], printInSettings = true },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -1902,16 +1916,19 @@ local function RefreshLookupData_Shadow()
 	local hvInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_hvInsanity, resourcePrecision, "ceil"))
 	--$hvTicks
 	local _hvTicks = snapshots[spells.horrificVisions.id].buff.ticks or 0
-	local hvTicks = string.format("%.0f", _hvTicks)
+	local hvTicks = string.format("%.0f", _hvTicks)	
 	--$hvStacks
 	local _hvStacks = 0
 	if target ~= nil then
 		_hvStacks = target.spells[spells.horrificVisions.id].stacks or 0
 	end
 	local hvStacks = string.format("%.0f", _hvStacks)
+	--$psInsanity
+	local _psInsanity = snapshots[spells.powerSurge.id].buff.resource + spells.powerSurge.attributes.resource
+	local psInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_psInsanity, resourcePrecision, "ceil"))
 
 	--$passive
-	local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity + _hvInsanity
+	local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity + _hvInsanity + _psInsanity
 	local passiveInsanity = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
 	--$insanityTotal
 	local _insanityTotal = math.min(_passiveInsanity + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
@@ -2054,6 +2071,10 @@ local function RefreshLookupData_Shadow()
 	local _entropicRiftTime = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 	local entropicRiftTime = TRB.Functions.BarText:TimerPrecision(_entropicRiftTime)
 
+	--$voidVolleyTime
+	local _voidVolleyTime = snapshots[spells.voidVolley.id].buff:GetRemainingTime(currentTime)
+	local voidVolleyTime = TRB.Functions.BarText:TimerPrecision(_voidVolleyTime)
+
 	--$cttvEquipped
 	local cttvEquipped = TRB.Functions.Class:IsValidVariableForSpec("$cttvEquipped")
 
@@ -2065,6 +2086,7 @@ local function RefreshLookupData_Shadow()
 	Global_TwintopResourceBar.resource.mindbender = _mbInsanity or 0
 	Global_TwintopResourceBar.resource.ecttv = snapshots[spells.idolOfCthun.id].attributes.resourceFinal or 0
 	Global_TwintopResourceBar.resource.horrificVisions = _hvInsanity or 0
+	Global_TwintopResourceBar.resource.powerSurge = _psInsanity or 0
 	
 	Global_TwintopResourceBar.auspiciousSpirits = Global_TwintopResourceBar.auspiciousSpirits or {}
 	Global_TwintopResourceBar.auspiciousSpirits.count = targetData.count[spells.auspiciousSpirits.id] or 0
@@ -2159,6 +2181,8 @@ local function RefreshLookupData_Shadow()
 	lookup["$asCount"] = asCount
 	lookup["$asInsanity"] = asInsanity
 	lookup["$entropicRiftTime"] = entropicRiftTime
+	lookup["$voidVolleyTime"] = voidVolleyTime
+	lookup["$psInsanity"] = psInsanity
 	lookup["$overcap"] = ""
 	lookup["$insanityOvercap"] = ""
 	lookup["$resourceOvercap"] = ""
@@ -2224,6 +2248,8 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$asCount"] = _asCount
 	lookupLogic["$asInsanity"] = _asInsanity
 	lookupLogic["$entropicRiftTime"] = _entropicRiftTime
+	lookupLogic["$voidVolleyTime"] = _voidVolleyTime
+	lookupLogic["$psInsanity"] = _psInsanity
 end
 
 --TODO: Remove?
@@ -2511,6 +2537,41 @@ local function UpdateAtonement()
 	atonement.attributes.maxRemainingTime = maxRemainingTime or 0
 end
 
+local function UpdatePowerSurge()
+	local currentTime = GetTime()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
+	local ascension = spells.ascension
+	local powerSurge = spells.powerSurge
+	local ascensionBuff = snapshots[ascension.id].buff
+	local powerSurgeBuff = snapshots[powerSurge.id].buff
+	
+	if powerSurgeBuff.isActive then
+		powerSurgeBuff:UpdateTicks(currentTime)
+	end
+
+	if ascensionBuff.isActive then
+		ascensionBuff:UpdateTicks(currentTime)
+		local powerSurgeTicksRemaining = TRB.Functions.Number:RoundTo((powerSurgeBuff.remaining / ascension.duration), 0, "floor", true)
+		if powerSurgeBuff.isActive then
+			powerSurgeTicksRemaining = powerSurgeTicksRemaining + 1
+		end
+
+		powerSurge.attributes.ticks = math.ceil((ascensionBuff.ticks or 0) + (powerSurgeTicksRemaining * (ascension.duration / ascension.tickRate)))
+		powerSurge.attributes.resource = ascensionBuff.ticks * ascensionBuff.resourcePerTick
+		powerSurge.attributes.endTime = ascensionBuff.endTime + (powerSurgeTicksRemaining * ascension.duration)
+		powerSurge.attributes.remaining = powerSurge.attributes.endTime - currentTime
+
+		return
+	end
+	
+	powerSurge.attributes.ticks = powerSurgeBuff.ticks or 0
+	powerSurge.attributes.resource = powerSurgeBuff.resource or 0
+	powerSurge.attributes.endTime = powerSurgeBuff.endTime
+	powerSurge.attributes.remaining = powerSurgeBuff.remaining
+end
+
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
@@ -2616,6 +2677,7 @@ local function UpdateSnapshot_Shadow()
 	UpdateSnapshot()
 	UpdateExternalCallToTheVoidValues()
 	UpdateHorrificVisionsValues()
+	UpdatePowerSurge()
 	UpdateSnapshot_Voidweaver()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -3414,6 +3476,8 @@ local function UpdateResourceBar()
 
 				if specSettings.colors.bar.mindDevourer.enabled and snapshots[spells.mindDevourer.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.mindDevourer.color
+				elseif specSettings.colors.bar.voidVolley.enabled and snapshots[spells.voidVolley.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.voidVolley.color
 				elseif specSettings.colors.bar.mindFlayInsanityBorderChange and snapshots[spells.mindFlayInsanity.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
 				end
@@ -4099,6 +4163,8 @@ local function SwitchSpec()
 		lookup["#voidBolt"] = spells.voidBolt.icon
 		lookup["#voit"] = spells.voidTorrent.icon
 		lookup["#voidTorrent"] = spells.voidTorrent.icon
+		lookup["#vv"] = spells.voidVolley.icon
+		lookup["#voidVolley"] = spells.voidVolley.icon
 		lookup["#vt"] = spells.vampiricTouch.icon
 		lookup["#vampiricTouch"] = spells.vampiricTouch.icon
 		lookup["#swp"] = spells.shadowWordPain.icon
@@ -4368,6 +4434,7 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 		
 		local twwSeason2SetBonus = spells.twwSeason2SetBonus
+		local twwSeason3SetBonus = spells.twwSeason3SetBonus
 
 		local headItemLink = GetInventoryItemLink("player", 1)
 		local shoulderItemLink = GetInventoryItemLink("player", 3)
@@ -4376,23 +4443,39 @@ function TRB.Functions.Class:CheckCharacter()
 		local legItemLink = GetInventoryItemLink("player", 7)
 
 		local twwSeason2SetBonusCount = 0
-		if TRB.Functions.Item:DoesItemLinkMatchId(headItemLink, twwSeason2SetBonus.attributes.headId) then
+		local twwSeason3SetBonusCount = 0
+		if TRB.Functions.Item:DoesItemLinkMatchId(headItemLink, twwSeason3SetBonus.attributes.headId) then
+			twwSeason3SetBonusCount = twwSeason3SetBonusCount + 1
+		elseif TRB.Functions.Item:DoesItemLinkMatchId(headItemLink, twwSeason2SetBonus.attributes.headId) then
 			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
 		end
-		if TRB.Functions.Item:DoesItemLinkMatchId(shoulderItemLink, twwSeason2SetBonus.attributes.shoulderId) then
+
+		if TRB.Functions.Item:DoesItemLinkMatchId(shoulderItemLink, twwSeason3SetBonus.attributes.shoulderId) then
+			twwSeason3SetBonusCount = twwSeason3SetBonusCount + 1
+		elseif TRB.Functions.Item:DoesItemLinkMatchId(shoulderItemLink, twwSeason2SetBonus.attributes.shoulderId) then
 			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
 		end
-		if TRB.Functions.Item:DoesItemLinkMatchId(chestItemLink, twwSeason2SetBonus.attributes.chestId) then
+
+		if TRB.Functions.Item:DoesItemLinkMatchId(chestItemLink, twwSeason3SetBonus.attributes.chestId) then
+			twwSeason3SetBonusCount = twwSeason3SetBonusCount + 1
+		elseif TRB.Functions.Item:DoesItemLinkMatchId(chestItemLink, twwSeason2SetBonus.attributes.chestId) then
 			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
 		end
-		if TRB.Functions.Item:DoesItemLinkMatchId(handItemLink, twwSeason2SetBonus.attributes.handId) then
+
+		if TRB.Functions.Item:DoesItemLinkMatchId(handItemLink, twwSeason3SetBonus.attributes.handId) then
+			twwSeason3SetBonusCount = twwSeason3SetBonusCount + 1
+		elseif TRB.Functions.Item:DoesItemLinkMatchId(handItemLink, twwSeason2SetBonus.attributes.handId) then
 			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
 		end
-		if TRB.Functions.Item:DoesItemLinkMatchId(legItemLink, twwSeason2SetBonus.attributes.legId) then
+
+		if TRB.Functions.Item:DoesItemLinkMatchId(legItemLink, twwSeason3SetBonus.attributes.legId) then
+			twwSeason3SetBonusCount = twwSeason3SetBonusCount + 1
+		elseif TRB.Functions.Item:DoesItemLinkMatchId(legItemLink, twwSeason2SetBonus.attributes.legId) then
 			twwSeason2SetBonusCount = twwSeason2SetBonusCount + 1
 		end
 
 		TRB.Data.character.items.twwSeason2SetBonusCount = twwSeason2SetBonusCount
+		TRB.Data.character.items.twwSeason3SetBonusCount = twwSeason3SetBonusCount
 	end
 end
 
@@ -4849,11 +4932,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.shadowyInsight.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$mmTime" or "$spTime" then
+		elseif var == "$mmTime" or var == "$spTime" then
 			if snapshots[spells.shatteredPsyche.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$mmStacks" or "$spStacks" then
+		elseif var == "$mmStacks" or var == "$spStacks" then
 			if snapshots[spells.shatteredPsyche.id].buff.isActive then
 				valid = true
 			end
@@ -4887,6 +4970,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$mindBlastMaxCharges" then
 			if snapshots[spells.mindBlast.id].cooldown.charges > 0  then
+				valid = true
+			end
+		elseif var == "$voidVolleyTime" then
+			if snapshots[spells.voidVolley.id].buff.isActive  then
+				valid = true
+			end
+		elseif var == "$psInsanity" then
+			if snapshots[spells.powerSurge.id].buff.isActive or snapshots[spells.ascension.id].buff.isActive then
 				valid = true
 			end
 		else

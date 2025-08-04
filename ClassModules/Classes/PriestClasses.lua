@@ -731,6 +731,7 @@ end
 ---@field public massDispel TRB.Classes.SpellBase
 ---@field public twistOfFate TRB.Classes.SpellBase
 ---@field public halo TRB.Classes.SpellBase
+---@field public powerSurge TRB.Classes.SpellBase
 ---@field public mindgames TRB.Classes.SpellBase
 ---@field public shadowyApparition TRB.Classes.SpellBase
 ---@field public auspiciousSpirits TRB.Classes.SpellBase
@@ -741,6 +742,7 @@ end
 ---@field public darkAscension TRB.Classes.SpellBase
 ---@field public mindFlayInsanity TRB.Classes.SpellBase
 ---@field public voidTorrent TRB.Classes.SpellBase
+---@field public voidVolley TRB.Classes.SpellBase
 ---@field public shadowCrash TRB.Classes.SpellBase
 ---@field public voidCrash TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
@@ -763,6 +765,7 @@ end
 ---@field public depthOfShadows TRB.Classes.SpellBase
 ---@field public voidwraith TRB.Classes.SpellBase
 ---@field public twwSeason2SetBonus TRB.Classes.SpellBase
+---@field public ascension TRB.Classes.SpellBase -- TWW Season 3 Archon 2P
 ---@field public devouringPlague TRB.Classes.SpellThreshold
 ---@field public devouringPlague2 TRB.Classes.SpellThreshold
 ---@field public devouringPlague3 TRB.Classes.SpellThreshold
@@ -837,6 +840,14 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 120644,
 		isTalent = true,
 		resource = 10
+	})
+	self.powerSurge = TRB.Classes.SpellBase:New({
+		id = 453113,
+		talentId = 453109,
+		isTalent = true,
+		resourcePerTick = 10,
+		tickRate = 5,
+		hasTicks = true
 	})
 	self.powerInfusion = TRB.Classes.SpellBase:New({
 		id = 10060,
@@ -915,6 +926,12 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.voidTorrent = TRB.Classes.SpellBase:New({
 		id = 263165,
 		resource = 6,
+		isTalent = true
+	})
+	self.voidVolley = TRB.Classes.SpellBase:New({
+		id = 1242171,
+		talentId = 1240401,
+		resource = 10,
 		isTalent = true
 	})
 	self.shadowCrash = TRB.Classes.SpellBase:New({
@@ -1063,6 +1080,20 @@ function TRB.Classes.Priest.ShadowSpells:New()
         handId = 229335,
         legId = 229333
     })
+    self.twwSeason3SetBonus = TRB.Classes.SpellBase:New({
+        headId = 237709,
+        shoulderId = 237707,
+        chestId = 237715,
+        handId = 237710,
+        legId = 237708
+    })
+	self.ascension = TRB.Classes.SpellBase:New({
+		id = 1239336,
+		resourcePerTick = 2,
+		tickRate = 1,
+		duration = 5,
+		hasTicks = true
+	})
 
 	return self
 end
