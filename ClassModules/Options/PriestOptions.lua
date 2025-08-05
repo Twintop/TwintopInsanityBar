@@ -1412,6 +1412,10 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				base="FF763BAF",
 				devouringPlagueUsable="FF5C2F89",
 				devouringPlagueUsableCasting="FFFFFFFF",
+				critMindBlast={
+					color = "FFC2A3E0",
+					enabled = true
+				},
 				instantMindBlast={
 					color = "FFC2A3E0",
 					enabled = true
@@ -1432,7 +1436,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				showPassive=true,
 				showCasting=true,
 				voidVolley = {
-					color = "FFC2A3E0",
+					color = "FF8A004C",
 					enabled = true
 				},
 			},
@@ -3253,6 +3257,23 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.voidVolley
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "voidVolley")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.critMindBlastBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_critMindBlastBorderChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.critMindBlastBorderChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxCritMindBlast"])
+	f.tooltip = L["PriestShadowCheckboxCritMindBlastTooltip"]
+	f:SetChecked(spec.colors.bar.critMindBlast.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.critMindBlast.enabled = self:GetChecked()
+	end)
+
+	controls.colors.critMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerCritMindBlast"], spec.colors.bar.critMindBlast.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.critMindBlast
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "critMindBlast")
 	end)
 
 	yCoord = yCoord - 30

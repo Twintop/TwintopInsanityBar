@@ -950,7 +950,11 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	})
 	self.shatteredPsyche = TRB.Classes.SpellBase:New({
 		id = 391092,
-		isTalent = true
+		isTalent = true,
+		---@type TRB.Classes.BuffCustomProperty[]
+		customPropertyDefinitions = {
+			TRB.Classes.BuffCustomProperty:New(1, "integer", "crit", 1)
+		}
 	})
 	self.subservientShadows = TRB.Classes.SpellBase:New({
 		id = 1228516,

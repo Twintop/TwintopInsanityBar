@@ -926,6 +926,7 @@ local function FillSpellData_Shadow()
 		{ variable = "$mmTime", description = L["PriestShadowBarTextVariable_spTime"], printInSettings = false, color = false },
 		{ variable = "$spStacks", description = L["PriestShadowBarTextVariable_spStacks"], printInSettings = true, color = false },
 		{ variable = "$mmStacks", description = L["PriestShadowBarTextVariable_spStacks"], printInSettings = false, color = false },
+		{ variable = "$spCrit", description = L["PriestShadowBarTextVariable_spCrit"], printInSettings = true, color = false },
 
 		{ variable = "$vfTime", description = L["PriestShadowBarTextVariable_vfTime"], printInSettings = true, color = false },
 
@@ -2045,7 +2046,9 @@ local function RefreshLookupData_Shadow()
 	local spTime = TRB.Functions.BarText:TimerPrecision(_spTime)
 	--$spStacks
 	local spStacks = snapshots[spells.shatteredPsyche.id].buff.applications or 0
-	
+	--$spCrit
+	local spCrit = snapshots[spells.shatteredPsyche.id].buff.customProperties["crit"] or 0
+
 	--$ysTime
 	local _ysTime = snapshots[spells.idolOfYoggSaron.id].buff:GetRemainingTime(currentTime)
 	local ysTime = TRB.Functions.BarText:TimerPrecision(_ysTime)
@@ -2137,6 +2140,7 @@ local function RefreshLookupData_Shadow()
 	lookup["$mmTime"] = spTime
 	lookup["$spStacks"] = spStacks
 	lookup["$mmStacks"] = spStacks
+	lookup["$spCrit"] = spCrit
 	lookup["$ysTime"] = ysTime
 	lookup["$ysStacks"] = ysStacks
 	lookup["$ysRemainingStacks"] = ysRemainingStacks
@@ -2204,6 +2208,7 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$mmTime"] = _spTime
 	lookupLogic["$spStacks"] = spStacks
 	lookupLogic["$mmStacks"] = spStacks
+	lookupLogic["$spCrit"] = spCrit
 	lookupLogic["$ysTime"] = _ysTime
 	lookupLogic["$ysStacks"] = ysStacks
 	lookupLogic["$ysRemainingStacks"] = ysRemainingStacks
@@ -3476,6 +3481,8 @@ local function UpdateResourceBar()
 
 				if specSettings.colors.bar.mindDevourer.enabled and snapshots[spells.mindDevourer.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.mindDevourer.color
+				elseif specSettings.colors.bar.critMindBlast.enabled and snapshots[spells.shatteredPsyche.id].buff.isActive and (snapshotData.attributes.crit + (snapshots[spells.shatteredPsyche.id].buff.customProperties["crit"] or 0)) >= 100 then
+					barBorderColor = specSettings.colors.bar.critMindBlast.color
 				elseif specSettings.colors.bar.voidVolley.enabled and snapshots[spells.voidVolley.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.voidVolley.color
 				elseif specSettings.colors.bar.mindFlayInsanityBorderChange and snapshots[spells.mindFlayInsanity.id].buff.isActive then
