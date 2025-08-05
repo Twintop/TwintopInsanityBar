@@ -131,8 +131,7 @@ if locale == "enGB" then
     L["PriestShadowCheckboxVoidformEndTooltip"] = "Changes the bar colour when Voidform / Dark Ascension is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["PriestShadowCheckboxInstantMindBlast"] = "Instant Mind Blast colour change enabled"
     L["PriestShadowCheckboxInstantMindBlastTooltip"] = "This will change the bar colour when Mind Blast is able to be cast instantly due to a Shadowy Insight proc."
-    L["PriestShadowCheckboxMindFlayInsanityTooltip"] = "This will change the bar border colour when you are able to cast Mind Flay: Insanity / Mind Spike: Insanity"
-    L["PriestShadowCheckboxDeathspeakerTooltip"] = "This will change the bar border colour when you are able to cast Shadow Word: Death with the Deathspeaker proc effect active."
+    L["PriestShadowCheckboxMindFlayInsanityTooltip"] = "This will change the bar border colour when you are able to cast Mind Flay: Insanity"
     L["PriestShadowCheckboxMindDevourerTooltip"] = "This will change the bar border colour when you are able to cast Devouring Plague for 0 Insanity cost via a Mind Devourer proc."
     L["PriestShadowTextColorsHeader"] = "Insanity Text Colours"
     L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text colour when you are able to cast Devouring Plague"
@@ -288,4 +287,7 @@ if locale == "enGB" then
     L["ThresholdGenericSpecialEnabled"] = "Enable special ability threshold line colour?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "When checked, the threshold line colour of abilities that are being altered in an important way will be changed."
     L["ThresholdOutOfRangeCheckbox"] = "Change colour when out of range?"
+    L["PriestShadowCheckboxMindFlayInsanityTooltip"] = "This will change the bar border colour when you are able to cast Mind Flay: Insanity"
+    L["PriestShadowCheckboxVoidVolleyTooltip"] = "This will change the bar border colour when you are able to case Void Volley."
+    L["PriestShadowCheckboxCritMindBlastTooltip"] = "This will change the bar border colour when your next Mind Blast has a 100% chance to critically strike."
 end

@@ -65,8 +65,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.barrage.id] = TRB.Classes.Snapshot:New(spells.barrage)
-	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.explosiveShot.id] = TRB.Classes.Snapshot:New(spells.explosiveShot)
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.beastialWrath.id] = TRB.Classes.Snapshot:New(spells.beastialWrath)
@@ -244,7 +242,6 @@ local function FillSpellData_BeastMastery()
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
 		{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = spells.barbedShot.name, printInSettings = true },
-		{ variable = "#barrage", icon = spells.barrage.icon, description = spells.barrage.name, printInSettings = true },
 		{ variable = "#beastCleave", icon = spells.beastCleave.icon, description = spells.beastCleave.name, printInSettings = true },
 		{ variable = "#beastialWrath", icon = spells.beastialWrath.icon, description = spells.beastialWrath.name, printInSettings = true },
 		{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = spells.cobraShot.name, printInSettings = true },
@@ -1315,7 +1312,6 @@ local function UpdateSnapshot_BeastMastery()
 	local snapshots = TRB.Data.snapshotData.snapshots
 
 	snapshots[spells.beastialWrath.id].cooldown:Refresh()
-	snapshots[spells.barrage.id].cooldown:Refresh()
 	snapshots[spells.killCommand.id].cooldown:Refresh()
 	
 	snapshots[spells.frenzy.id].buff:Refresh(nil, false, "pet")
@@ -2147,11 +2143,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
 				local specSettings = classSettings.beastMastery
-				if entry.spellId == spells.barrage.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.barbedShot.id then
+				if entry.spellId == spells.barbedShot.id then
 					snapshots[entry.spellId].cooldown:Initialize()
 				elseif entry.spellId == spells.barbedShot.attributes.buffIdList[1] or entry.spellId == spells.barbedShot.attributes.buffIdList[2] or entry.spellId == spells.barbedShot.attributes.buffIdList[3] or entry.spellId == spells.barbedShot.attributes.buffIdList[4] or entry.spellId == spells.barbedShot.attributes.buffIdList[5] then
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
@@ -2277,7 +2269,6 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#barbedShot"] = spells.barbedShot.icon
-		lookup["#barrage"] = spells.barrage.icon
 		lookup["#beastCleave"] = spells.beastCleave.icon
 		lookup["#beastialWrath"] = spells.beastialWrath.icon
 		lookup["#cobraShot"] = spells.cobraShot.icon

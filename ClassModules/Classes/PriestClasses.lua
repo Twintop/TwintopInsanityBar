@@ -134,7 +134,7 @@ function TRB.Classes.Priest.ShadowfiendEntry:GetShadowfiendValues()
 end
 
 function TRB.Classes.Priest.ShadowfiendEntry:Update()
-	local haveTotem, name, startTime, duration, _ = GetTotemInfo(self.totemId)
+	local haveTotem, name, startTime, duration, _, _, spellId = GetTotemInfo(self.totemId)
 
 	if haveTotem then
 		if name == self.shadowfiend.name then
@@ -176,7 +176,7 @@ function TRB.Classes.Priest.ShadowfiendEntry:Update()
 
 	self.startTime = startTime
 	self.duration = duration
-	self.remaining = currentTime - startTime + duration
+	self.remaining = (startTime + duration) - currentTime
 
 	local timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = self:GetShadowfiendValues()
 	self.remainingTime = timeRemaining
@@ -731,6 +731,7 @@ end
 ---@field public massDispel TRB.Classes.SpellBase
 ---@field public twistOfFate TRB.Classes.SpellBase
 ---@field public halo TRB.Classes.SpellBase
+---@field public powerSurge TRB.Classes.SpellBase
 ---@field public mindgames TRB.Classes.SpellBase
 ---@field public shadowyApparition TRB.Classes.SpellBase
 ---@field public auspiciousSpirits TRB.Classes.SpellBase
@@ -739,17 +740,14 @@ end
 ---@field public voidEruption TRB.Classes.SpellBase
 ---@field public voidform TRB.Classes.SpellBase
 ---@field public darkAscension TRB.Classes.SpellBase
----@field public mindSpike TRB.Classes.SpellBase
 ---@field public mindFlayInsanity TRB.Classes.SpellBase
----@field public mindSpikeInsanity TRB.Classes.SpellBase
----@field public deathspeaker TRB.Classes.SpellBase
 ---@field public voidTorrent TRB.Classes.SpellBase
+---@field public voidVolley TRB.Classes.SpellBase
 ---@field public shadowCrash TRB.Classes.SpellBase
 ---@field public voidCrash TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
----@field public mindMelt TRB.Classes.SpellBase
+---@field public shatteredPsyche TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellBase
----@field public devouredDespair TRB.Classes.SpellBase
 ---@field public mindDevourer TRB.Classes.SpellBase
 ---@field public idolOfCthun TRB.Classes.SpellBase
 ---@field public idolOfCthun_Tendril TRB.Classes.SpellBase
@@ -758,6 +756,8 @@ end
 ---@field public lashOfInsanity_Lasher TRB.Classes.SpellBase
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
+---@field public horrificVisions TRB.Classes.SpellBase
+---@field public subservientShadows TRB.Classes.SpellBase
 ---@field public resonantEnergy TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
 ---@field public voidBlast TRB.Classes.SpellBase
@@ -765,6 +765,7 @@ end
 ---@field public depthOfShadows TRB.Classes.SpellBase
 ---@field public voidwraith TRB.Classes.SpellBase
 ---@field public twwSeason2SetBonus TRB.Classes.SpellBase
+---@field public ascension TRB.Classes.SpellBase -- TWW Season 3 Archon 2P
 ---@field public devouringPlague TRB.Classes.SpellThreshold
 ---@field public devouringPlague2 TRB.Classes.SpellThreshold
 ---@field public devouringPlague3 TRB.Classes.SpellThreshold
@@ -798,7 +799,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	-- Shadow Baseline Abilities
 	self.mindFlay = TRB.Classes.SpellBase:New({
 		id = 15407,
-		resource = 2,
+		resource = 3,
 		isTalent = false,
 		baseline = true
 	})
@@ -839,6 +840,14 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 120644,
 		isTalent = true,
 		resource = 10
+	})
+	self.powerSurge = TRB.Classes.SpellBase:New({
+		id = 453113,
+		talentId = 453109,
+		isTalent = true,
+		resourcePerTick = 10,
+		tickRate = 5,
+		hasTicks = true
 	})
 	self.powerInfusion = TRB.Classes.SpellBase:New({
 		id = 10060,
@@ -908,31 +917,21 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resource = 30,
 		isTalent = true
 	})
-	self.mindSpike = TRB.Classes.SpellBase:New({
-		id = 73510,
-		resource = 4,
-		isTalent = true
-	})
 	self.mindFlayInsanity = TRB.Classes.SpellBase:New({
 		id = 391401,
 		buffId = 391401,
 		castId = 391403,
-		resource = 3
-	})
-	self.mindSpikeInsanity = TRB.Classes.SpellBase:New({
-		id = 407468,
-		buffId = 407468,
-		castId = 407466,
-		resource = 12
-	})
-	self.deathspeaker = TRB.Classes.SpellBase:New({
-		id = 392511,
-		talentId = 392507,
-		isTalent = true
+		resource = 2
 	})
 	self.voidTorrent = TRB.Classes.SpellBase:New({
 		id = 263165,
 		resource = 6,
+		isTalent = true
+	})
+	self.voidVolley = TRB.Classes.SpellBase:New({
+		id = 1242171,
+		talentId = 1240401,
+		resource = 10,
 		isTalent = true
 	})
 	self.shadowCrash = TRB.Classes.SpellBase:New({
@@ -949,9 +948,18 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 375981,
 		isTalent = true
 	})
-	self.mindMelt = TRB.Classes.SpellBase:New({
+	self.shatteredPsyche = TRB.Classes.SpellBase:New({
 		id = 391092,
-		isTalent = true
+		isTalent = true,
+		---@type TRB.Classes.BuffCustomProperty[]
+		customPropertyDefinitions = {
+			TRB.Classes.BuffCustomProperty:New(1, "integer", "crit", 1)
+		}
+	})
+	self.subservientShadows = TRB.Classes.SpellBase:New({
+		id = 1228516,
+		isTalent = true,
+		modPercent = 1.2
 	})
 	self.mindbender = TRB.Classes.SpellBase:New({
 		id = 200174,
@@ -959,13 +967,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		energizeId = 200010,
 		resource = 2,
 		isTalent = true
-	})
-	self.devouredDespair = TRB.Classes.SpellBase:New({ -- Idol of Y'Shaarj proc
-		id = 373317,
-		resource = 5,
-		resourcePerTick = 5,
-		tickRate = 1,
-		hasTicks = true
 	})
 	self.mindDevourer = TRB.Classes.SpellBase:New({
 		id = 373204,
@@ -1007,6 +1008,24 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 373277,
 		isTalent = true,
 		duration = 20
+	})
+	self.horrificVisions = TRB.Classes.SpellBase:New({
+		id = 1243069,
+		debuffId = 1243069,
+		duration = 30,
+		maxStacks = 99,
+		stackResourceTriggers = {
+			[50] = {
+				resource = 1,
+				duration = 3,
+				ticks = 4
+			},
+			[100] = {
+				resource = 1,
+				duration = 3,
+				ticks = 12
+			}
+		}
 	})
 
 	-- Archon
@@ -1065,6 +1084,20 @@ function TRB.Classes.Priest.ShadowSpells:New()
         handId = 229335,
         legId = 229333
     })
+    self.twwSeason3SetBonus = TRB.Classes.SpellBase:New({
+        headId = 237709,
+        shoulderId = 237707,
+        chestId = 237715,
+        handId = 237710,
+        legId = 237708
+    })
+	self.ascension = TRB.Classes.SpellBase:New({
+		id = 1239336,
+		resourcePerTick = 2,
+		tickRate = 1,
+		duration = 5,
+		hasTicks = true
+	})
 
 	return self
 end

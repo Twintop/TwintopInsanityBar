@@ -11,10 +11,36 @@ local content = [====[
 
 ---
 
+# 11.2.0.0-beta02 (2025-07-30)
+## Priest
+### Shadow
+
+- [#457 - NEW](#457) Fix Subservient Shadows lua error.
+
+---
+
 # 11.1.7.5-release (2025-07-17)
 ## General
 
 - (FIX) Prevent lua errors from preventing the bar from loading for healing specializations under specific conditions.
+
+---
+
+# 11.2.0.0-beta01 (2025-07-12)
+## Hunter
+### Beast Mastery
+
+- [#457 - NEW](#457) Make the following adjustments to match changes in the 11.2.0 PTR:
+<br/>&emsp;&ensp;- **Removed**: Barrage
+
+## Priest
+### Shadow
+
+- [#457 - NEW](#457) Make the following adjustments to match changes in the 11.2.0 PTR:
+<br/>&emsp;&ensp;- **Added**: Horrific Visions (Idol of N'Zoth), Subservient Shadows
+<br/>&emsp;&ensp;- **Updated**: Mind Melt -> Shattered Psyche
+<br/>&emsp;&ensp;- **Updated Insanity values**: Mind Flay, Mind Flay: Insanity
+<br/>&emsp;&ensp;- **Removed**: Deathspeaker, Mind Spike, Mind Spike: Insanity, Devoured Despair
 
 ---
 
