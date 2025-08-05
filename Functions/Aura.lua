@@ -43,8 +43,10 @@ local function AuraUpdateEvent(self, event, unit, info)
 			end
 			TRB.Data.cache.values.resource = {}
 		else
-			for _, v in pairs(info.addedAuras) do
-				if (sourceUnit == "player" or sourceUnit == "pet") and targetData.trackedSpells[v.spellId] ~= nil then
+			-- This code works but has a fundamental flaw: UNIT_AURA only gives updates for the player, pet, and visible nameplates.
+			-- For adding auras, e.g. SPELL_AURA_APPLIED, we need to use COMBAT_LOG_EVENT_UNFILTERED in the class module instead.
+			--[[for _, v in pairs(info.addedAuras) do
+				if (v.sourceUnit == "player" or v.sourceUnit == "pet") and targetData.trackedSpells[v.spellId] ~= nil then
 					unitGuid = unitGuid or UnitGUID(unit)
 					isUnitFriend = isUnitFriend or UnitIsFriend("player", unit)
 					if TRB.Functions.Class:InitializeTarget(unitGuid, specCache.spellsData.spellsById[v.spellId][1].isFriend, specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed) then
@@ -55,7 +57,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 						end
 					end
 				end
-			end
+			end]]
 		end
 	end
 

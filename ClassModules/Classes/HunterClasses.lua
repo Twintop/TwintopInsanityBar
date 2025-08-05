@@ -88,7 +88,6 @@ end
 ---@field public bloodFrenzy TRB.Classes.SpellBase
 ---@field public huntersPrey TRB.Classes.SpellBase
 ---@field public deathblow TRB.Classes.SpellBase
----@field public barrage TRB.Classes.SpellThreshold
 ---@field public cobraShot TRB.Classes.SpellThreshold
 ---@field public killCommand TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
@@ -107,16 +106,7 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
 
     -- Beast Mastery Spec Baseline Abilities
 
-    -- Beast Mastery Spec Talents	
-    self.barrage = TRB.Classes.SpellThreshold:New({
-        id = 120360,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "barrage",
-        isTalent = true,
-        hasCooldown = true,
-        cooldown = 20,
-		rangeCheck = false
-    })
+    -- Beast Mastery Spec Talents
     self.cobraShot = TRB.Classes.SpellThreshold:New({
         id = 193455,
         primaryResourceType = Enum.PowerType.Focus,

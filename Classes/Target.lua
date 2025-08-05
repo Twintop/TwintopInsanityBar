@@ -252,6 +252,7 @@ end
 ---@field public auraInstanceIds table<integer, TRB.Classes.TargetSpell>
 ---@field public isFriend boolean
 ---@field public unitToken UnitToken?
+---@field public persistedData table # Data that should be persisted across buff/debuff applications and removals
 ---@field private lastRefreshGetTime number
 TRB.Classes.Target = {}
 TRB.Classes.Target.__index = TRB.Classes.Target
@@ -271,6 +272,7 @@ function TRB.Classes.Target:New(guid, isFriend)
     self.isFriend = isFriend or false
     self.unitToken = nil
     self.lastRefreshGetTime = 0
+    self.persistedData = {}
     return self
 end
 

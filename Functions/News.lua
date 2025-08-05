@@ -11,6 +11,46 @@ local content = [====[
 
 ---
 
+# 11.2.0.0-release (2025-08-05)
+## Hunter
+### Beast Mastery
+
+- [#457 - UPDATE](#457) Barbed Shot now replaces Steady Shot for threshold lines.
+- [#457 - UPDATE](#457) Remove Barrage.
+
+## Priest
+### Shadow
+
+- [#457 - NEW](#457) Added support for Subservient Shadows. This value is reflected in the respective Passive Insanity gain bar and bar text.
+- [#457 - NEW](#457) Added support for Horrific Visions (Idol of N'Zoth). Incoming Insanity at 50 and 100 stacks will be shown as part of the Passive Insanity gain bar.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hvInsanity` - Amount of Insanity from Horrific Visions
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hvTicks` - Number of ticks remaining on Horrific Visions Insanity gain
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hvStacks` - Number of stacks of Horrific Visions
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#hv` or `#horrificVisions` - Horrific Visions
+- [#457 - NEW](#457) Added support for Void Volley.
+<br/>&emsp;&ensp;- There is a new optional border color change when you can cast Void Volley.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$voidVolleyTime` - Time remaining on Void Volley buff
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#vv` or `#voidVolley` - Void Volley
+- [#457 - NEW](#457) Mind Melt is now Shattered Psyche. Previous bar text variables will continue to work, but new ones are available.
+<br/>&emsp;&ensp;- There is a new optional border color change when you have enough stacks of Shattered Psyche to have a 100% critical strike chance with your next Mind Blast.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$spTime` - Time remaining on Shattered Psyche buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$spStacks` - Number of stacks of Shattered Psyche
+<br/>&emsp;&ensp;&emsp;&ensp;- `$spCrit` - Amount of critical strike chance Mind Blast gains from Shattered Psyche
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#sp` or `#shatteredPsyche` - Shattered Psyche
+- [#457 - NEW](#457) Added support for Passive Insanity generation by Power Surge. Additionally, add support for the TWW S3 2-piece set bonus, Ascension, which also generates Passive Insanity.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$psInsanity` - Passive incoming Insanity from Power Surge and Ascension (TWW S3 2-piece set bonus)
+- [#457 - UPDATE](#457) Update Insanity values of Mind Flay and Mind Flay: Insanity.
+- [#457 - UPDATE](#457) Remove Mind Spike, Deathspeaker, and Devoured Despair.
+
+---
+
 # 11.1.7.5-release (2025-07-17)
 ## General
 

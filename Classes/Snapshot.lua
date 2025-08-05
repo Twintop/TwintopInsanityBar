@@ -82,13 +82,13 @@ end
 ---@field public remaining number
 ---@field public endTimeLeeway number
 ---@field public applications integer
----@field public customPropertiesDefinitions TRB.Classes.BuffCustomProperty[]
+---@field public customPropertyDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
 ---@field public alwaysSimple boolean?
 ---@field public currentlySimple boolean? # Is the buff currently running in simple mode?
 ---@field public sometimesSimple boolean? # Should the buff tracking run in simple mode sometimes? Example: Sustained Potency + Voidform + stun
 ---@field public hasTicks boolean
----@field private resourcePerTick number
+---@field public resourcePerTick number
 ---@field private tickRate number
 ---@field public ticks number
 ---@field public resource number
@@ -140,9 +140,9 @@ function TRB.Classes.SnapshotBuff:New(parent, simpleBuff, onlyRefreshOnRequest)
 	end
 
 	if self.parent.spell.customPropertyDefinitions ~= nil then
-		self.customPropertiesDefinitions = self.parent.spell.customPropertyDefinitions
+		self.customPropertyDefinitions = self.parent.spell.customPropertyDefinitions
 	else
-		self.customPropertiesDefinitions = {}
+		self.customPropertyDefinitions = {}
 	end
 	
 	self.customProperties = {}
@@ -155,7 +155,7 @@ end
 ---Sets the list of custom properties to be parsed out of a UnitAura() call when SnapshotBuff:Refresh() is called
 ---@param customProperties TRB.Classes.BuffCustomProperty[]
 function TRB.Classes.SnapshotBuff:SetCustomProperties(customProperties)
-	self.customPropertiesDefinitions = customProperties
+	self.customPropertyDefinitions = customProperties
 	self:Reset()
 end
 
@@ -178,8 +178,8 @@ function TRB.Classes.SnapshotBuff:Reset()
 	self.lastRefreshGetTime = 0
 	self.previousRemaining = 0
 
-	if self.customPropertiesDefinitions ~= nil then
-		for _, prop in ipairs(self.customPropertiesDefinitions) do
+	if self.customPropertyDefinitions ~= nil then
+		for _, prop in ipairs(self.customPropertyDefinitions) do
 			if prop.dataType == "number" then
 				self.customProperties[prop.name] = 0
 			elseif prop.dataType == "integer" then
@@ -299,8 +299,8 @@ local function ParseBuffData(buff, aura)
 		buff.duration = aura.duration
 		buff.endTime = aura.expirationTime
 
-		if buff.customPropertiesDefinitions ~= nil then
-			for _, prop in ipairs(buff.customPropertiesDefinitions) do
+		if buff.customPropertyDefinitions ~= nil then
+			for _, prop in ipairs(buff.customPropertyDefinitions) do
 				buff.customProperties[prop.name] = aura.points[prop.index]
 				if buff.customProperties[prop.name] ~= nil then
 					if prop.dataType == "number" then
