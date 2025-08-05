@@ -287,4 +287,7 @@ if locale == "enGB" then
     L["ThresholdGenericSpecialEnabled"] = "Enable special ability threshold line colour?"
     L["ThresholdGenericSpecialEnabledTooltip"] = "When checked, the threshold line colour of abilities that are being altered in an important way will be changed."
     L["ThresholdOutOfRangeCheckbox"] = "Change colour when out of range?"
+    L["PriestShadowCheckboxMindFlayInsanityTooltip"] = "This will change the bar border colour when you are able to cast Mind Flay: Insanity"
+    L["PriestShadowCheckboxVoidVolleyTooltip"] = "This will change the bar border colour when you are able to case Void Volley."
+    L["PriestShadowCheckboxCritMindBlastTooltip"] = "This will change the bar border colour when your next Mind Blast has a 100% chance to critically strike."
 end

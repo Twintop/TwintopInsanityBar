@@ -1897,6 +1897,8 @@ local function RefreshLookupData_Shadow()
 	--$mbTime
 	local _mbTime = shadowfiend.remainingTime
 	local mbTime = TRB.Functions.BarText:TimerPrecision(_mbTime)
+	--$mbCount
+	local mbCount = shadowfiend:TotalActive()
 	--$loiInsanity
 	local _loiInsanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal
 	local loiInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_loiInsanity, resourcePrecision, "floor"))
@@ -2105,14 +2107,14 @@ local function RefreshLookupData_Shadow()
 	Global_TwintopResourceBar.shadowfiend.gcds = shadowfiend.remainingGcds or 0
 	Global_TwintopResourceBar.shadowfiend.swings = shadowfiend.remainingSwings or 0
 	Global_TwintopResourceBar.shadowfiend.time = shadowfiend.remainingTime or 0
-	Global_TwintopResourceBar.shadowfiend.count = shadowfiend:TotalActive()
+	Global_TwintopResourceBar.shadowfiend.count = mbCount
 
 	Global_TwintopResourceBar.mindbender = Global_TwintopResourceBar.mindbender or {}
 	Global_TwintopResourceBar.mindbender.insanity = _mbInsanity or 0
 	Global_TwintopResourceBar.mindbender.gcds = shadowfiend.remainingGcds or 0
 	Global_TwintopResourceBar.mindbender.swings = shadowfiend.remainingSwings or 0
 	Global_TwintopResourceBar.mindbender.time = shadowfiend.remainingTime or 0
-	Global_TwintopResourceBar.mindbender.count = shadowfiend:TotalActive()
+	Global_TwintopResourceBar.mindbender.count = mbCount
 
 	Global_TwintopResourceBar.eternalCallToTheVoid = Global_TwintopResourceBar.eternalCallToTheVoid or {}
 	Global_TwintopResourceBar.eternalCallToTheVoid.insanity = _loiInsanity
@@ -2173,8 +2175,8 @@ local function RefreshLookupData_Shadow()
 	lookup["$mbSwings"] = mbSwings
 	lookup["$sfTime"] = mbTime
 	lookup["$mbTime"] = mbTime
-	lookup["$sfCount"] = shadowfiend:TotalActive()
-	lookup["$mbCount"] = shadowfiend:TotalActive()
+	lookup["$sfCount"] = mbCount
+	lookup["$mbCount"] = mbCount
 	lookup["$loiInsanity"] = loiInsanity
 	lookup["$loiTicks"] = loiTicks
 	lookup["$hvInsanity"] = hvInsanity
@@ -2241,8 +2243,8 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$mbSwings"] = _mbSwings
 	lookupLogic["$sfTime"] = _mbTime
 	lookupLogic["$mbTime"] = _mbTime
-	lookupLogic["$sfCount"] = shadowfiend:TotalActive()
-	lookupLogic["$mbCount"] = shadowfiend:TotalActive()
+	lookupLogic["$sfCount"] = mbCount
+	lookupLogic["$mbCount"] = mbCount
 	lookupLogic["$loiInsanity"] = _loiInsanity
 	lookupLogic["$loiTicks"] = _loiTicks
 	lookupLogic["$hvInsanity"] = _hvInsanity
