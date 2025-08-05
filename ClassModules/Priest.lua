@@ -2311,8 +2311,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
 					casting.startTime = currentTime
 					casting.resourceRaw = spells.voidBolt.resource
-					casting.spellId = spells.darkAscension.id
-					casting.icon = spells.darkAscension.icon
+					casting.spellId = spells.voidEruption.id
+					casting.icon = spells.voidEruption.icon
 				end
 			elseif spellId == spells.vampiricTouch.id then
 				casting.startTime = currentTime
