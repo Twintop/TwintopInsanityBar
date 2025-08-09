@@ -3810,7 +3810,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
 				if entry.spellId == spells.atonement.id then
-					if entry.type == "SPELL_AURA_APPLIED" and TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
 						targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.powerWordRadiance.id then
@@ -3848,11 +3848,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				end
 			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 				if entry.spellId == spells.vampiricTouch.id then
-					if entry.type == "SPELL_AURA_APPLIED" and TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.devouringPlague.id then
-					if entry.type == "SPELL_AURA_APPLIED" and TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and entry.spellId == spells.auspiciousSpirits.attributes.idSpawn and entry.type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
@@ -3890,11 +3890,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].startTime = currentTime
 					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].tickTime = currentTime
 				elseif entry.spellId == spells.resonantEnergy.debuffId then
-					if entry.type == "SPELL_AURA_APPLIED" and TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				elseif entry.spellId == spells.horrificVisions.id then
-					if entry.type == "SPELL_AURA_APPLIED" and TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
@@ -3931,7 +3931,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 			-- Spec agnostic
 			if entry.spellId == spells.shadowWordPain.id then
-				if entry.type == "SPELL_AURA_APPLIED" and TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 					targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
 			elseif 	entry.type == "SPELL_SUMMON" and
@@ -3990,7 +3990,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization() or 0
@@ -4246,6 +4245,10 @@ resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
+		return
+	end
+
 	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
 		_, _, TRB.Data.character.classId = UnitClass("player")
 	end

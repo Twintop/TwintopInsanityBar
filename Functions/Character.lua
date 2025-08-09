@@ -86,8 +86,10 @@ local function CharacterChange(self, event, ...)
 			UpdateResourceValues()
 		end
 	elseif event == "UNIT_STATS" then
-		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		snapshotData.attributes.primaryRefresh = true
+		if unitTarget == "player" then
+			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+			snapshotData.attributes.primaryRefresh = true
+		end
 	elseif event == "COMBAT_RATING_UPDATE" then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		snapshotData.attributes.secondaryRefresh = true
@@ -379,8 +381,12 @@ function TRB.Functions.Character:UpdateSnapshot()
 	local target = targetData.targets[targetData.currentTargetGuid]
 	
 	if target == nil and targetData.currentTargetGuid ~= nil then
-		targetData:InitializeTarget(targetData.currentTargetGuid, UnitIsFriend("target", "player"))
-		target = targetData.targets[targetData.currentTargetGuid]
+		local isDead = UnitIsDeadOrGhost("target")
+
+		if not isDead then
+			targetData:InitializeTarget(targetData.currentTargetGuid, UnitIsFriend("target", "player"))
+			target = targetData.targets[targetData.currentTargetGuid]
+		end
 	end
 	
 	if target ~= nil then
@@ -714,7 +720,6 @@ function TRB.Functions.Character:EventRegistration()
 		end
 		UpdateResourceValues()
 		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -728,7 +733,6 @@ function TRB.Functions.Character:EventRegistration()
 	else
 		targetsTimerFrame:SetScript("OnUpdate", nil)
 		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")

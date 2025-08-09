@@ -274,7 +274,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 
 			if isDead and targetData.targets[targetData.currentTargetGuid] ~= nil then
 				targetData:Remove(guid)
-			elseif guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
+			elseif not isDead and guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
 				targetData:InitializeTarget(guid)
 				local target = targetData.targets[targetData.currentTargetGuid]
 				if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then

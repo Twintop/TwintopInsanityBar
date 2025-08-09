@@ -129,7 +129,7 @@ function TRB.Classes.TargetData:HandleCombatLogDebuff(spellId, type, guid)
     if type == "SPELL_AURA_REMOVED" then
         if self.targets[guid].spells[spellId].lastCheckTimestampApplied == currentTime or self.targets[guid].spells[spellId].lastCheckTimestampRemoved == currentTime then
             return false
-        end        
+        end
         self.targets[guid].spells[spellId].lastCheckTimestampRemoved = currentTime
     end
 
@@ -151,6 +151,8 @@ function TRB.Classes.TargetData:HandleCombatLogDebuff(spellId, type, guid)
         triggerUpdate = true
     elseif type == "SPELL_AURA_REFRESH" then
         triggerUpdate = true
+    else
+        --triggerUpdate = true
     end
     return triggerUpdate
 end
@@ -462,7 +464,7 @@ local function SetAuraData(self, unitToken, isBuff)
         self.stacks = aura.applications
         self.auraInstanceId = aura.auraInstanceID
     else
-        self:Reset()
+        --self:Reset()
     end
 end
 
@@ -522,6 +524,8 @@ function TRB.Classes.TargetSpell:HandleCombatLogBuffOrDebuff(type)
         if self.isDot and self.autoUpdate then
             self:Reset()
         end
+        triggerUpdate = true
+    else
         triggerUpdate = true
     --elseif type == "SPELL_PERIODIC_DAMAGE" then
     end
