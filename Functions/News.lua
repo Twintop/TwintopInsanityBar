@@ -11,7 +11,14 @@ local content = [====[
 
 ---
 
-# 11.2.0.0-release (2025-08-11)
+# 11.2.0.2-release (2025-08-11)
+## General
+
+- [#222 - FIX](#222) Apply the same fix for target resetting to other classes.
+
+---
+
+# 11.2.0.1-release (2025-08-11)
 ## General
 
 - [#222 - FIX](#222) Prevent target snapshot data from being reset when any unit within range changes their talents, specialization, or has a large stats update.

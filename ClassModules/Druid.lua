@@ -3614,6 +3614,9 @@ resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
+		return
+	end
 	if TRB.Data.character.classId == nil or TRB.Data.character.classId == 0 then
 		_, _, TRB.Data.character.classId = UnitClass("player")
 	end
