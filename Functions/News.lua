@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.2.0.0-release (2025-08-11)
+## General
+
+- [#222 - FIX](#222) Prevent target snapshot data from being reset when any unit within range changes their talents, specialization, or has a large stats update.
+- (FIX) Prevent extra event registration for resource events outside of where they are intended to be processed.
+
+---
+
 # 11.2.0.0-release (2025-08-05)
 ## Hunter
 ### Beast Mastery
