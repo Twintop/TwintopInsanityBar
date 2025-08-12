@@ -18,6 +18,10 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.arms = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.fury = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.protection = {}
 
+local ARMS_MAX_RAGE = 130
+local FURY_MAX_RAGE = 130
+local PROTECTION_MAX_RAGE = 130
+
 --[[
 	Arms Defaults
 ]]
@@ -241,6 +245,10 @@ local function ArmsLoadDefaultSettings(includeBarText)
 					enabled = true,
 				}
 			}
+		},
+		maxResource = {
+			value = ARMS_MAX_RAGE,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -593,6 +601,10 @@ local function FuryLoadDefaultSettings(includeBarText)
 					enabled = true,
 				},
 			}
+		},
+		maxResource = {
+			value = FURY_MAX_RAGE,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1016,6 +1028,10 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 				}
 			}
 		},
+		maxResource = {
+			value = PROTECTION_MAX_RAGE,
+			enabled = true
+		},
 		displayBar = {
 			alwaysShow=false,
 			notZeroShow=true,
@@ -1362,7 +1378,7 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], 130)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], ARMS_MAX_RAGE)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
 end
@@ -1930,7 +1946,7 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], 130)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], FURY_MAX_RAGE)
 end
 
 local function FuryConstructThresholdPanel(parent)
@@ -2518,7 +2534,7 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	]]
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], 130)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], PROTECTION_MAX_RAGE)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.protection = controls
 end

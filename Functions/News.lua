@@ -11,6 +11,36 @@ local content = [====[
 
 ---
 
+# 11.2.0.3-release (2025-08-14)
+## General
+
+## Druid
+### Balance
+
+- (UPDATE) Update Overcap settings to allow for a maximum of 140 Astral Power.
+
+## Hunter
+
+- (UPDATE) Update Overcap settings to allow for a maximum of 100 Focus.
+
+## Rogue
+### Assassination
+
+- (UPDATE) Update Overcap settings to allow for a maximum of 300 Energy.
+
+### Outlaw
+- (UPDATE) Update Overcap settings to allow for a maximum of 300 Energy.
+
+### Subtlety
+- (UPDATE) Update Overcap settings to allow for a maximum of 300 Energy.
+
+## Shaman
+### Elemental
+
+- (UPDATE) Update Overcap settings to allow for a maximum of 175 Maelstrom.
+
+---
+
 # 11.2.0.2-release (2025-08-11)
 ## General
 

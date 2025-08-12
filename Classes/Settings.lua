@@ -25,6 +25,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public thresholds TRB.Classes.Settings.Thresholds?
 ---@field public precision TRB.Classes.Settings.Precision
 ---@field public audio { string: TRB.Classes.Settings.Audio }
+---@field public maxResource table?
 
 ---@class TRB.Classes.Settings.Core : TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public colors TRB.Classes.Settings.ColorsCore

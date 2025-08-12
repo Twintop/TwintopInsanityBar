@@ -19,6 +19,8 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = {}
 
+local WINDWALKER_MAX_ENERGY = 150
+
 
 -- Mistweaver
 local function MistweaverLoadDefaultBarTextSimpleSettings()
@@ -582,6 +584,10 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			gcds=1,
 			time=1.5,
 			enabled=true
+		},
+		maxResource = {
+			value = WINDWALKER_MAX_ENERGY,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1534,7 +1540,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 150)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
 end

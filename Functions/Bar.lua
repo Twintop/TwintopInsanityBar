@@ -268,7 +268,11 @@ end
 ---@param value number
 function TRB.Functions.Bar:SetPrimaryValue(settings, key, bar, value)
 	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
-		TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)
+		if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
+			TRB.Functions.Bar:SetValue(settings, key, bar, value, math.min(settings.maxResource.value, TRB.Data.character.maxResource))
+		else
+			TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)
+		end
 	end
 end
 

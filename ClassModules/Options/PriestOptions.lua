@@ -17,6 +17,7 @@ TRB.Options.Priest.Discipline = {}
 TRB.Options.Priest.Holy = {}
 TRB.Options.Priest.Shadow = {}
 
+local SHADOW_MAX_INSANITY = 150
 
 local function DisciplineLoadExtraBarTextSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
@@ -1333,6 +1334,10 @@ local function ShadowLoadDefaultSettings(includeBarText)
 					enabled = true,
 				}
 			}
+		},
+		maxResource = {
+			value = SHADOW_MAX_INSANITY,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -3346,7 +3351,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], 150)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], SHADOW_MAX_INSANITY)
 end
 
 local function ShadowConstructThresholdPanel(parent)

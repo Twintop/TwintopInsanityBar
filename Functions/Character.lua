@@ -615,6 +615,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	--NYI	
 	specCache.settings.displayBar = spec.displayBar
 	specCache.settings.audio = spec.audio
+	specCache.settings.maxResource = spec.maxResource
 end
 
 function TRB.Functions.Character:IsComboPointUser()

@@ -22,6 +22,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.feral = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = {}
 
+local BALANCE_MAX_ASTRAL_POWER = 140
+local FERAL_MAX_ENERGY = 160
+
 --[[ 
 	Balance Defaults
 ]]
@@ -221,6 +224,10 @@ local function BalanceLoadDefaultSettings(includeBarText)
 					enabled = true
 				},
 			}
+		},
+		maxResource = {
+			value = BALANCE_MAX_ASTRAL_POWER,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -770,6 +777,10 @@ local function FeralLoadDefaultSettings(includeBarText)
 			mode="relative",
 			relative=0,
 			fixed=100
+		},
+		maxResource = {
+			value = FERAL_MAX_ENERGY,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1586,7 +1597,7 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], 100)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], BALANCE_MAX_ASTRAL_POWER)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
@@ -2199,7 +2210,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 160)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], FERAL_MAX_ENERGY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
 end

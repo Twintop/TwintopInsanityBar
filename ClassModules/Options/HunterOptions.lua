@@ -18,6 +18,10 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.survival = {}
 
+local BEAST_MASTERY_MAX_FOCUS = 100
+local MARKSMANSHIP_MAX_FOCUS = 100
+local SURVIVAL_MAX_FOCUS = 100
+
 local function BeastMasteryLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
@@ -234,6 +238,10 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 			gcds=1,
 			time=1.5,
 			enabled=true
+		},
+		maxResource = {
+			value = BEAST_MASTERY_MAX_FOCUS,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -613,6 +621,10 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 			gcds=1,
 			time=1.5,
 			enabled=true
+		},
+		maxResource = {
+			value = MARKSMANSHIP_MAX_FOCUS,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1012,6 +1024,10 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 			time=1.5,
 			enabled=true
 		},
+		maxResource = {
+			value = SURVIVAL_MAX_FOCUS,
+			enabled = true
+		},
 		displayBar = {
 			alwaysShow=false,
 			notZeroShow=true,
@@ -1390,7 +1406,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 120)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], BEAST_MASTERY_MAX_FOCUS)
 end
 
 local function BeastMasteryConstructThresholdPanel(parent)
@@ -2160,7 +2176,7 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 120)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], MARKSMANSHIP_MAX_FOCUS)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 end
@@ -2929,7 +2945,7 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 120)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], SURVIVAL_MAX_FOCUS)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 end

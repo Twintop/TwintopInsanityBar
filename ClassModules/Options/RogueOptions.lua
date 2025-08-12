@@ -18,6 +18,10 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = {}
 
+local ASSASSINATION_MAX_ENERGY = 300
+local OUTLAW_MAX_ENERGY = 250
+local SUBTLETY_MAX_ENERGY = 200
+
 local function AssassinationLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
@@ -275,6 +279,10 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			gcds=1,
 			time=1.5,
 			enabled=true
+		},
+		maxResource = {
+			value = ASSASSINATION_MAX_ENERGY,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -714,6 +722,10 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			gcds=1,
 			time=1.5,
 			enabled=true
+		},
+		maxResource = {
+			value = OUTLAW_MAX_ENERGY,
+			enabled = true
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1164,6 +1176,10 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			time=1.5,
 			enabled=true
 		},
+		maxResource = {
+			value = SUBTLETY_MAX_ENERGY,
+			enabled = true
+		},
 		displayBar = {
 			alwaysShow=false,
 			notZeroShow=true,
@@ -1597,7 +1613,7 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 170)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], ASSASSINATION_MAX_ENERGY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 end
@@ -2415,7 +2431,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 170)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], OUTLAW_MAX_ENERGY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 end
@@ -3243,7 +3259,7 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 170)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], SUBTLETY_MAX_ENERGY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = controls
 end
