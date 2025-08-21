@@ -2272,3 +2272,8 @@ L["PriestShadowColorPickerCritMindBlast"] = "Border when Mind Blast has 100% cri
 L["PriestShadowBarTextVariable_voidVolleyTime"] = "Time remaining on Void Volley buff"
 L["PriestShadowBarTextVariable_psInsanity"] = "Insanity from Power Surge and Ascension (TWW S3 2 piece set bonus)"
 L["PriestShadowBarTextVariable_spCrit"] = "Mind Blast's increased critical strike chance from Shattered Psyche buff"
+
+L["MaxResourceHeader"] = "Maximum Bar Value"
+L["MaxResourceValue"] = "Maximum %s Value"
+L["MaxResourceEnabled"] = "Enable maximum resource value override"
+L["MaxResourceEnabledTooltip"] = "When checked, the maximum value of the resource bar will be limited to the value set."

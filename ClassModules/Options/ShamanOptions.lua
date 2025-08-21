@@ -218,7 +218,7 @@ local function ElementalLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = ELEMENTAL_MAX_MAELSTROM,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1307,8 +1307,8 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], ELEMENTAL_MAX_MAELSTROM)
 
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], 1, ELEMENTAL_MAX_MAELSTROM)
 end
 
 local function ElementalConstructThresholdPanel(parent)

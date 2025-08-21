@@ -2697,6 +2697,39 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		spec.overcap.fixed = value
 	end)
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, primaryResourceMin, primaryResourceMax)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+	local title = ""
+
+	controls.maxResourceConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MaxResourceHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+	title = string.format(L["MaxResourceValue"], primaryResourceString)
+	controls.checkBoxes.maxResourceEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_maxResourceEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.maxResourceEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MaxResourceEnabled"])
+	f.tooltip = L["MaxResourceEnabledTooltip"]
+	f:SetChecked(spec.maxResource.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.maxResource.enabled = self:GetChecked()
+	end)
+	
+	controls.maxResourceValue = TRB.Functions.OptionsUi:BuildSlider(parent, title, primaryResourceMin, primaryResourceMax, spec.maxResource.value, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.maxResourceValue:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		spec.maxResource.value = value
+	end)
+
+	return yCoord
 end
 
 function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, classId, specId, yCoord)

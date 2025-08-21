@@ -232,7 +232,7 @@ local function HavocLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = HAVOC_MAX_FURY,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -560,7 +560,7 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = VENGEANCE_MAX_FURY,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -963,6 +963,9 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], HAVOC_MAX_FURY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], 1, HAVOC_MAX_FURY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
 end
@@ -1581,6 +1584,9 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], VENGEANCE_MAX_FURY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], 1, VENGEANCE_MAX_FURY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
 end

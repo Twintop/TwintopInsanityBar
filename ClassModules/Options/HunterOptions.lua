@@ -241,7 +241,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = BEAST_MASTERY_MAX_FOCUS,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -624,7 +624,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = MARKSMANSHIP_MAX_FOCUS,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1026,7 +1026,7 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = SURVIVAL_MAX_FOCUS,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1407,6 +1407,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], BEAST_MASTERY_MAX_FOCUS)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
 end
 
 local function BeastMasteryConstructThresholdPanel(parent)
@@ -2178,6 +2181,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], MARKSMANSHIP_MAX_FOCUS)
 
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 1, MARKSMANSHIP_MAX_FOCUS)
+
 	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 end
 
@@ -2946,6 +2952,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], SURVIVAL_MAX_FOCUS)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 1, SURVIVAL_MAX_FOCUS)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 end

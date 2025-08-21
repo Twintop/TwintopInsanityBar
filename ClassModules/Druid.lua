@@ -2376,6 +2376,11 @@ local function UpdateResourceBar()
 					castingBarValue = currentResource
 				end
 
+				local maxPrimaryBarResource = TRB.Data.character.maxResource
+				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
+					maxPrimaryBarResource = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResource)
+				end
+
 				local passiveValue = 0
 				if specSettings.colors.bar.showPassive then
 					passiveValue = snapshots[spells.furyOfElune.id].buff.resource + snapshots[spells.sunderedFirmament.id].buff.resource
@@ -2579,9 +2584,13 @@ local function UpdateResourceBar()
 						snapshotCooldown = snapshots[spell.id].cooldown
 					end
 					]]
+					
+					if resourceAmount >= maxPrimaryBarResource then
+						showThreshold = false
+					end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
 				end
 				
 				if specSettings.colors.bar.flashSsEnabled and currentResource >= spells.starsurge:GetPrimaryResourceCost() then
@@ -2658,6 +2667,11 @@ local function UpdateResourceBar()
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
+
+				local maxPrimaryBarResource = TRB.Data.character.maxResource
+				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
+					maxPrimaryBarResource = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResource)
+				end
 
 				local passiveValue = 0
 				if specSettings.colors.bar.showPassive then
@@ -2897,9 +2911,13 @@ local function UpdateResourceBar()
 						thresholdColor = specCacheSettings.colors.threshold.unusable.color
 						frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					end
+					
+					if resourceAmount >= maxPrimaryBarResource then
+						showThreshold = false
+					end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
 				end
 
 				local barColor = specSettings.colors.bar.base

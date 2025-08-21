@@ -1337,7 +1337,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = SHADOW_MAX_INSANITY,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -3352,6 +3352,9 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], SHADOW_MAX_INSANITY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], 1, SHADOW_MAX_INSANITY)
 end
 
 local function ShadowConstructThresholdPanel(parent)

@@ -587,7 +587,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = WINDWALKER_MAX_ENERGY,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1541,6 +1541,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
 end

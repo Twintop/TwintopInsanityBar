@@ -248,7 +248,7 @@ local function ArmsLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = ARMS_MAX_RAGE,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -604,7 +604,7 @@ local function FuryLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = FURY_MAX_RAGE,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1030,7 +1030,7 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 		},
 		maxResource = {
 			value = PROTECTION_MAX_RAGE,
-			enabled = true
+			enabled = false
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -1380,7 +1380,8 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], ARMS_MAX_RAGE)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], 1, ARMS_MAX_RAGE)
 end
 
 local function ArmsConstructThresholdPanel(parent)
@@ -1947,6 +1948,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], FURY_MAX_RAGE)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], 1, FURY_MAX_RAGE)
 end
 
 local function FuryConstructThresholdPanel(parent)
@@ -2536,7 +2540,8 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], PROTECTION_MAX_RAGE)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.protection = controls
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], 1, PROTECTION_MAX_RAGE)
 end
 
 local function ProtectionConstructThresholdPanel(parent)

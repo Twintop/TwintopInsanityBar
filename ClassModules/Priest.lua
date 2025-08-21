@@ -3466,6 +3466,11 @@ local function UpdateResourceBar()
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
+				local maxPrimaryBarResource = TRB.Data.character.maxResource
+				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
+					maxPrimaryBarResource = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResource)
+				end
+
 				local passiveValue = 0
 				local barBorderColor = specSettings.colors.bar.border
 				local barColor = specSettings.colors.bar.base
@@ -3507,7 +3512,7 @@ local function UpdateResourceBar()
 					TRB.Data.cache.values.threshold["shadowfiend"] = TRB.Data.cache.values.threshold["shadowfiend"] or {}
 					local sfCache = TRB.Data.cache.values.threshold["shadowfiend"]
 					if shadowfiend.resourceFinal > 0 and (castingBarValue + shadowfiend.resourceFinal) < TRB.Data.character.maxResource then
-						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], true, passiveFrame, (castingBarValue + shadowfiend.resourceFinal), TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, "shadowfiend", TRB.Frames.passiveFrame.thresholds[1], true, passiveFrame, (castingBarValue + shadowfiend.resourceFinal), maxPrimaryBarResource)
 						
 						if sfCache.color ~= specCacheSettings.colors.threshold.mindbender.color then
 							TRB.Functions.Color:SetThresholdColor(TRB.Frames.passiveFrame.thresholds[1], specCacheSettings.colors.threshold.mindbender.color, true, 5, 3)
@@ -3613,9 +3618,13 @@ local function UpdateResourceBar()
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
 					end
+					
+					if resourceAmount >= maxPrimaryBarResource then
+						showThreshold = false
+					end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
 				end
 
 				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or snapshots[spells.mindDevourer.id].buff.isActive then
