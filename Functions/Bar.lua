@@ -244,7 +244,7 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 			endCapKey = "base"
 		end
 
-		if bar.endCap ~= nil and settings.colors.endCap ~= nil and settings.colors.endCap[endCapKey] ~= nil then
+		if bar.endCap ~= nil and settings.colors.endCap ~= nil and settings.colors.endCap[endCapKey] ~= nil and settings.colors.endCap[endCapKey].enabled then
 			local ecWidth = settings.colors.endCap[endCapKey].width
 			if scaledValue < ecWidth then
 				ecWidth = scaledValue
@@ -468,8 +468,13 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	TRB.Functions.Bar:SetMinMax(settings)
 end
 
-function TRB.Functions.Bar:UpdateSmoothBar()
-	if TRB.Data.settings.core.smoothBarValueUpdates then
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+function TRB.Functions.Bar:UpdateSmoothBar(settings)
+	if settings == nil and TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
+		settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+	end
+
+	if TRB.Data.settings.core.smoothBarValueUpdates and not settings.bar.pinToPersonalResourceDisplay then
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame, 3, 0.2)
 		TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.endCap, 3, 0.1)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame, 3, 0.2)
@@ -693,7 +698,7 @@ function TRB.Functions.Bar:Construct(settings)
 
 		TRB.Functions.Bar:SetMinMax(settings)
 
-		TRB.Functions.Bar:UpdateSmoothBar()
+		TRB.Functions.Bar:UpdateSmoothBar(settings)
 
 		TRB.Functions.BarText:CreateBarTextFrames()
 		TRB.Functions.Class:HideResourceBar()

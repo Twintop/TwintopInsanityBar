@@ -11,8 +11,13 @@ local content = [====[
 
 ---
 
-# 11.2.0.3-release (2025-08-14)
+# 11.2.0.3-release (2025-08-24)
 ## General
+
+- [#459 - NEW](#459) Add a new option to limit the maximum resource value shown on the bar. This can be useful for specializations with many threshold lines and very high resource values, such as Assassination Rogue. This setting is available for all non-healing specializations.
+- [#458 - FIX](#458) Ensure that the correct resource bar value is shown after changing talents that change the maximum resource available.
+- (FIX) Prevent Lua errors when the bar is pinned to the Personal Resource Display and Smooth Animations is enabled. When the bar is pinned, Smooth Animations are always disabled.
+- (FIX) Don't update the location of endcaps when they are disabled.
 
 ## Druid
 ### Balance
@@ -29,15 +34,22 @@ local content = [====[
 - (UPDATE) Update Overcap settings to allow for a maximum of 300 Energy.
 
 ### Outlaw
-- (UPDATE) Update Overcap settings to allow for a maximum of 300 Energy.
+
+- (UPDATE) Update Overcap settings to allow for a maximum of 250 Energy.
 
 ### Subtlety
-- (UPDATE) Update Overcap settings to allow for a maximum of 300 Energy.
+
+- (UPDATE) Update Overcap settings to allow for a maximum of 200 Energy.
 
 ## Shaman
 ### Elemental
 
 - (UPDATE) Update Overcap settings to allow for a maximum of 175 Maelstrom.
+
+## Warrior
+### Protection
+
+- [#455 - EXPERIMENTAL](#455) Add localization strings for existing Protection Warrior options.
 
 ---
 

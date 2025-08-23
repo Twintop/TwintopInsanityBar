@@ -290,4 +290,8 @@ if locale == "enGB" then
     L["PriestShadowCheckboxMindFlayInsanityTooltip"] = "This will change the bar border colour when you are able to cast Mind Flay: Insanity"
     L["PriestShadowCheckboxVoidVolleyTooltip"] = "This will change the bar border colour when you are able to case Void Volley."
     L["PriestShadowCheckboxCritMindBlastTooltip"] = "This will change the bar border colour when your next Mind Blast has a 100% chance to critically strike."
+    L["WarriorProtectionHeaderDefensiveColors"] = "Defensive Bar Colours"
+    L["WarriorProtectionTextColorsHeader"] = "Rage Text Colours"
+    L["WarriorProtectionCheckboxThresholdOverTooltip"] = "This will change the Rage text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+    L["WarriorProtectionCheckboxThresholdOvercapTooltip"] = "This will change the Rage text colour when your current hardcast spell will result in overcapping maximum Rage."
 end
