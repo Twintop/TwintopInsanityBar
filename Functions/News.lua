@@ -14,7 +14,7 @@ local content = [====[
 # 11.2.0.5-release (2025-08-24)
 ## Priest
 
-- (FIX) Update Shadowfiend, Mindbender, Voidwraith, Entropic Rift, and Lightwell tracking to use spell IDs instead of names. This should resolve issues with these abilities occasionally producing Lua errors or not being tracked properly when using certain cosmetic glyphs.
+- (FIX) Update Shadowfiend, Mindbender, Voidwraith, Entropic Rift, and Lightwell totem tracking to use spell IDs instead of names. This should resolve issues with these abilities occasionally producing Lua errors or not being tracked properly when using certain cosmetic glyphs.
 
 ---
 
