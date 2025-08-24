@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.2.0.4-release (2025-08-24)
+## General
+
+- (FIX) Include some missing changes intended for the last release.
+
+---
+
 # 11.2.0.3-release (2025-08-24)
 ## General
 
