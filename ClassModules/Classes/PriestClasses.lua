@@ -134,36 +134,21 @@ function TRB.Classes.Priest.ShadowfiendEntry:GetShadowfiendValues()
 end
 
 function TRB.Classes.Priest.ShadowfiendEntry:Update()
-	local haveTotem, name, startTime, duration, _, _, spellId = GetTotemInfo(self.totemId)
+	local haveTotem, _, startTime, duration, _, _, spellId = GetTotemInfo(self.totemId)
 
 	if haveTotem then
-		if name == self.shadowfiend.name then
+		if spellId == self.shadowfiend.id then
 			self.type = "Shadowfiend"
 			self.activeSpell = self.shadowfiend
-		elseif name == self.voidwraith.name then
+		elseif self.voidwraith ~= nil and spellId == self.voidwraith.id then
 			self.type = "Voidwraith"
 			self.activeSpell = self.voidwraith
-		elseif name == self.mindbender.name then
+		elseif self.mindbender ~= nil and spellId == self.mindbender.id then
 			self.type = "Mindbender"
 			self.activeSpell = self.mindbender
-		else -- Sha Beast?
-			if self.spellId == self.shadowfiend.id then
-				self.type = "Shadowfiend"
-				self.activeSpell = self.shadowfiend
-			elseif self.mindbender ~= nil and self.spellId == self.mindbender.id then
-				self.type = "Mindbender"
-				self.activeSpell = self.mindbender
-			elseif self.voidwraith ~= nil and self.spellId == self.voidwraith.id then
-				self.type = "Voidwraith"
-				self.activeSpell = self.voidwraith
-			else
-				self:Reset()
-				return
-			end
-		end
-
-		if TRB.Data.character.specId == 1 and self.type == "Voidwraith" and self.mindbender ~= nil and self.talents:IsTalentActive(self.mindbender) then
-			self.type = "Voidbender"
+		else
+			self:Reset()
+			return
 		end
 	else
 		if self.guid ~= nil then

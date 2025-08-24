@@ -2634,8 +2634,8 @@ local function UpdateSnapshot_Voidweaver()
 	local entropicRift = snapshots[spells.entropicRift.id]
 	
 	if entropicRift.attributes.totemId ~= nil then
-		local haveTotem, name, startTime, duration, _ = GetTotemInfo(entropicRift.attributes.totemId)
-		if haveTotem then
+		local haveTotem, name, startTime, duration, _, _, spellId = GetTotemInfo(entropicRift.attributes.totemId)
+		if haveTotem and spellId == spells.entropicRift.id then
 			entropicRift.buff:InitializeCustom(duration, startTime)
 		else
 			entropicRift:Reset()
@@ -3920,9 +3920,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 								for x = 1, 5 do
 									local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 									if shadowfiend.spawns[x].guid == nil then
-										local haveTotem, name, startTime, duration, _ = GetTotemInfo(x)
+										local haveTotem, _, startTime, duration, _, _, spellId = GetTotemInfo(x)
 										if haveTotem then
-											if name == spells.entropicRift.name then
+											if spellId == spells.entropicRift.id then
 												snapshots[entry.spellId].attributes.guid = entry.destinationGuid
 												snapshots[entry.spellId].attributes.totemId = x
 												snapshots[entry.spellId].buff:InitializeCustom(duration, startTime)
@@ -3950,15 +3950,15 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 				C_Timer.After(0, function()
 					C_Timer.After(0.1, function()
-						local haveTotem, name
+						local haveTotem, spellId
 						for x = 1, #shadowfiend.spawns do
 							if shadowfiend.spawns[x].guid == nil then
-								haveTotem, name, _, _, _ = GetTotemInfo(x)
+								haveTotem, _, _, _, _, _, spellId = GetTotemInfo(x)
 								if haveTotem then
-									if TRB.Data.character.specId == 2 and name ~= spells.lightwell.name then
+									if TRB.Data.character.specId == 2 and spellId ~= spells.lightwell.id then
 										shadowfiend.spawns[x]:Activate(entry.spellId, entry.destinationGuid, currentTime)
 										break
-									elseif (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3) and name ~= spells.entropicRift.name then
+									elseif (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3) and spellId ~= spells.entropicRift.id then
 										shadowfiend.spawns[x]:Activate(entry.spellId, entry.destinationGuid, currentTime)
 										break
 									end
