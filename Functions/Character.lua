@@ -59,6 +59,7 @@ end
 local function UpdateResourceValues()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
+	snapshotData.attributes.resourceModified = UnitPower("player", TRB.Data.resource, false)
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
 			local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)

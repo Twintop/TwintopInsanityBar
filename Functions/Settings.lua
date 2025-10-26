@@ -478,13 +478,13 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.priest.shadow.thresholds = {
 			width = TwintopInsanityBarSettings.priest.shadow.thresholdWidth,
 			overlapBorder = TwintopInsanityBarSettings.priest.shadow.thresholdsOverlapBorder,
-			devouringPlague = {
-				enabled = TwintopInsanityBarSettings.priest.shadow.devouringPlagueThreshold
+			shadowWordMadness = {
+				enabled = TwintopInsanityBarSettings.priest.shadow.shadowWordMadnessThreshold
 			}
 		}
 
 		TwintopInsanityBarSettings.priest.shadow.thresholdWidth = nil
-		TwintopInsanityBarSettings.priest.shadow.devouringPlagueThreshold = nil
+		TwintopInsanityBarSettings.priest.shadow.shadowWordMadnessThreshold = nil
 		TwintopInsanityBarSettings.priest.shadow.searingNightmareThreshold = nil
 		TwintopInsanityBarSettings.priest.shadow.thresholdsOverlapBorder = nil
 	end
@@ -527,7 +527,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		}
 
 		TwintopInsanityBarSettings.druid.balance.thresholdWidth = nil
-		TwintopInsanityBarSettings.druid.balance.devouringPlagueThreshold = nil
+		TwintopInsanityBarSettings.druid.balance.shadowWordMadnessThreshold = nil
 		TwintopInsanityBarSettings.druid.balance.searingNightmareThreshold = nil
 		TwintopInsanityBarSettings.druid.balance.thresholdsOverlapBorder = nil
 	end
@@ -664,7 +664,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.priest.shadow.colors ~= nil and
 		TwintopInsanityBarSettings.priest.shadow.colors.bar ~= nil and
 		TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform ~= nil then
-		TwintopInsanityBarSettings.priest.shadow.colors.bar.devouringPlagueUsable = TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform
+		TwintopInsanityBarSettings.priest.shadow.colors.bar.shadowWordMadnessUsable = TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform
 		TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform = nil
 	end
 
@@ -1661,10 +1661,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 							if spec == "shadow" and
 							specValue.threshold ~= nil and
-							specValue.threshold.devouringPlagueThresholdOnlyOverShow ~= nil then
+							specValue.threshold.shadowWordMadnessThresholdOnlyOverShow ~= nil then
 								spec.thresholds.specProperties = spec.thresholds.specProperties or {}
-								spec.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow = spec.thresholds.devouringPlagueThresholdOnlyOverShow
-								spec.thresholds.devouringPlagueThresholdOnlyOverShow = nil
+								spec.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow = spec.thresholds.shadowWordMadnessThresholdOnlyOverShow
+								spec.thresholds.shadowWordMadnessThresholdOnlyOverShow = nil
 							end
 							
 							if spec == "balance" and

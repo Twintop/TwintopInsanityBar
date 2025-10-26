@@ -16,6 +16,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 	if 1 == 1 then
 		return
 	end
+	
 	if info.isFullUpdate then
 		--Only do a full refresh of buffs for now
 		snapshotData:RefreshAllBuffs()

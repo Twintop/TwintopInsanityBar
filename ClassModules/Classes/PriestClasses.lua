@@ -707,7 +707,7 @@ end
 
 
 ---@class TRB.Classes.Priest.ShadowSpells : TRB.Classes.SpecializationSpellsBase
----@field public mindBlast TRB.Classes.SpellBase
+--[[---@field public mindBlast TRB.Classes.SpellBase
 ---@field public shadowWordPain TRB.Classes.SpellBase
 ---@field public mindFlay TRB.Classes.SpellBase
 ---@field public vampiricTouch TRB.Classes.SpellBase
@@ -724,16 +724,12 @@ end
 ---@field public hallucinations TRB.Classes.SpellBase
 ---@field public voidEruption TRB.Classes.SpellBase
 ---@field public voidform TRB.Classes.SpellBase
----@field public darkAscension TRB.Classes.SpellBase
 ---@field public mindFlayInsanity TRB.Classes.SpellBase
 ---@field public voidTorrent TRB.Classes.SpellBase
 ---@field public voidVolley TRB.Classes.SpellBase
----@field public shadowCrash TRB.Classes.SpellBase
----@field public voidCrash TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
 ---@field public shatteredPsyche TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellBase
----@field public mindDevourer TRB.Classes.SpellBase
 ---@field public idolOfCthun TRB.Classes.SpellBase
 ---@field public idolOfCthun_Tendril TRB.Classes.SpellBase
 ---@field public idolOfCthun_Lasher TRB.Classes.SpellBase
@@ -751,9 +747,12 @@ end
 ---@field public voidwraith TRB.Classes.SpellBase
 ---@field public twwSeason2SetBonus TRB.Classes.SpellBase
 ---@field public ascension TRB.Classes.SpellBase -- TWW Season 3 Archon 2P
----@field public devouringPlague TRB.Classes.SpellThreshold
----@field public devouringPlague2 TRB.Classes.SpellThreshold
----@field public devouringPlague3 TRB.Classes.SpellThreshold
+]]
+---@field public voidtouched TRB.Classes.SpellBase
+---@field public mindDevourer TRB.Classes.SpellBase
+---@field public shadowWordMadness TRB.Classes.SpellThreshold
+---@field public shadowWordMadness2 TRB.Classes.SpellThreshold
+---@field public shadowWordMadness3 TRB.Classes.SpellThreshold
 TRB.Classes.Priest.ShadowSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Priest.ShadowSpells.__index = TRB.Classes.Priest.ShadowSpells
 
@@ -762,6 +761,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Priest.ShadowSpells) --[[@as TRB.Classes.Priest.ShadowSpells]]
 
+	--[[
 	-- Priest Class Baseline Abilities
 	self.mindBlast = TRB.Classes.SpellBase:New({
 		id = 8092,
@@ -837,32 +837,42 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.powerInfusion = TRB.Classes.SpellBase:New({
 		id = 10060,
 		isTalent = true
-	})
+	})]]
 	-- Shadow Talent Abilities			
-	self.devouringPlague = TRB.Classes.SpellThreshold:New({
+	self.shadowWordMadness = TRB.Classes.SpellThreshold:New({
 		id = 335467,
 		primaryResourceType = Enum.PowerType.Insanity,
-		settingKey = "devouringPlague",
+		settingKey = "shadowWordMadness",
 		isTalent = true,
 		isSnowflake = true
 	})
-	self.devouringPlague2 = TRB.Classes.SpellThreshold:New({
+	self.shadowWordMadness2 = TRB.Classes.SpellThreshold:New({
 		id = 335467,
 		primaryResourceType = Enum.PowerType.Insanity,
 		primaryResourceTypeMod = 2,
-		settingKey = "devouringPlague2",
+		settingKey = "shadowWordMadness2",
 		isTalent = true,
 		isSnowflake = true
 	})
-	self.devouringPlague3 = TRB.Classes.SpellThreshold:New({
+	self.shadowWordMadness3 = TRB.Classes.SpellThreshold:New({
 		id = 335467,
 		primaryResourceType = Enum.PowerType.Insanity,
 		primaryResourceTypeMod = 3,
-		settingKey = "devouringPlague3",
+		settingKey = "shadowWordMadness3",
 		isTalent = true,
 		isSnowflake = true
 	})
-	self.shadowyApparition = TRB.Classes.SpellBase:New({
+	self.mindDevourer = TRB.Classes.SpellBase:New({
+		id = 373204,
+		talentId = 373202,
+		isTalent = true
+	})
+	self.voidtouched = TRB.Classes.SpellBase:New({
+		id = 407430,
+		isTalent = true,
+		maxResource = 50
+	})
+	--[[self.shadowyApparition = TRB.Classes.SpellBase:New({
 		id = 341491,
 		isTalent = true
 	})
@@ -919,16 +929,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resource = 10,
 		isTalent = true
 	})
-	self.shadowCrash = TRB.Classes.SpellBase:New({
-		id = 205385,
-		resource = 6,
-		isTalent = true
-	})
-	self.voidCrash = TRB.Classes.SpellBase:New({
-		id = 457042,
-		resource = 6,
-		isTalent = true
-	})
 	self.shadowyInsight = TRB.Classes.SpellBase:New({
 		id = 375981,
 		isTalent = true
@@ -951,11 +951,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		iconName = "spell_shadow_soulleech_3",
 		energizeId = 200010,
 		resource = 2,
-		isTalent = true
-	})
-	self.mindDevourer = TRB.Classes.SpellBase:New({
-		id = 373204,
-		talentId = 373202,
 		isTalent = true
 	})
 	self.idolOfCthun = TRB.Classes.SpellBase:New({
@@ -1082,7 +1077,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		tickRate = 1,
 		duration = 5,
 		hasTicks = true
-	})
+	})]]
 
 	return self
 end

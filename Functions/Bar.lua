@@ -219,7 +219,7 @@ end
 ---@param maxResource number
 function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 	value = value-- or 0
-	maxResource = maxResource or 1
+	--maxResource = maxResource or 1
 	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
 	--[[if TRB.Data.cache.values.bar[key].value == value and TRB.Data.cache.values.bar[key].maxResource == maxResource then
 		return
@@ -268,22 +268,22 @@ end
 ---@param bar frame
 ---@param value number
 function TRB.Functions.Bar:SetPrimaryValue(settings, key, bar, value)
-	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
+	--if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
 		if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
-			TRB.Functions.Bar:SetValue(settings, key, bar, value, math.min(settings.maxResource.value, TRB.Data.character.maxResource))
+			TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)--math.min(settings.maxResource.value, TRB.Data.character.maxResource))
 		else
 			TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)
 		end
-	end
+	--end
 end
 
 ---Sets the minimum and maximum values for all bars
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.Bar:SetMinMax(settings)
 	if settings ~= nil and settings.bar ~= nil then
-		TRB.Frames.resourceFrame:SetMinMaxValues(0, settings.bar.width)
-		TRB.Frames.castingFrame:SetMinMaxValues(0, settings.bar.width)
-		TRB.Frames.passiveFrame:SetMinMaxValues(0, settings.bar.width)
+		TRB.Frames.resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)-- settings.bar.width)
+		TRB.Frames.castingFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)-- settings.bar.width)
+		TRB.Frames.passiveFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)-- settings.bar.width)
 		if TRB.Frames.resource2Frames ~= nil then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2

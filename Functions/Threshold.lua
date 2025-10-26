@@ -36,7 +36,7 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 	end
 
 	if maxResource == nil or maxResource == 0 then
-		maxResource = TRB.Data.character.maxResource
+		maxResource = TRB.Data.character.maxResourceUnnormalized
 		if maxResource == 0 then
 			maxResource = 100
 		end
@@ -45,7 +45,9 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource then
 		local _, max = parentFrame:GetMinMaxValues()
-		local factor = (max - (settings.bar.border * 2)) / maxResource
+		--local factor = (max - (settings.bar.border * 2)) / maxResource
+		--local max = TRB.Data.character.maxResourceUnnormalized
+		local factor = (settings.bar.width - (settings.bar.border * 2)) / maxResource
 
 		if growRight then
 			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
@@ -323,17 +325,17 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			thresholdUsable = true
 		end
 		
-		if settings.thresholds.icons.desaturated == true then
+		--[[if settings.thresholds.icons.desaturated == true then
 			if cache.desaturated ~= (not thresholdUsable or outOfRange) then
 				threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
 				cache.desaturated = not thresholdUsable or outOfRange
 			end
-		else
+		else]]
 			if cache.desaturated ~= false then
 				threshold.icon.texture:SetDesaturated(false)
 				cache.desaturated = false
 			end
-		end
+		--end
 		
 		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
 			threshold.icon.cooldown:SetCooldown(snapshot.cooldown.startTime, snapshot.cooldown.duration)
@@ -432,7 +434,7 @@ function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snap
 		passiveValue = passiveValue + mana
 
 		if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], true, frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], true, frame, (passiveValue + castingBarValue), TRB.Data.character.maxResourceUnnormalized)
 			---@diagnostic disable-next-line: undefined-field
 			
 			if cache.color ~= settings.colors.threshold.passive.color then

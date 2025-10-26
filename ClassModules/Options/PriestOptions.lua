@@ -1095,7 +1095,7 @@ local function ShadowLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$vfTime}[$vfTime]",
+			text="",--"{$vfTime}[$vfTime]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -1118,7 +1118,7 @@ local function ShadowLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity",
+			text="$resource",--"{$casting}[$casting + ]{$passive}[$passive + ]$insanity",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -1150,7 +1150,7 @@ local function ShadowLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
+			text="$haste% ($gcd)",--"#swp $swpCount   #dp $swmCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -1173,7 +1173,7 @@ local function ShadowLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			guid = TRB.Functions.String:Guid(),
 			name = L["PositionMiddle"],
-			text="{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
+			text="",--"{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -1196,7 +1196,7 @@ local function ShadowLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			guid = TRB.Functions.String:Guid(),
 			name = L["PositionRight"],
-			text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$hvInsanity}[#hv$hvInsanity+]{$psInsanity}[#halo$psInsanity+]$insanity",
+			text="$resource",--"{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$hvInsanity}[#hv$hvInsanity+]{$psInsanity}[#halo$psInsanity+]$insanity",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -1227,7 +1227,7 @@ local function ShadowLoadDefaultBarTextNarrowAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
+			text="$haste% ($gcd)",--"#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -1250,7 +1250,7 @@ local function ShadowLoadDefaultBarTextNarrowAdvancedSettings()
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
-			text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
+			text="",--"{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -1273,7 +1273,7 @@ local function ShadowLoadDefaultBarTextNarrowAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
+			text="$resource",--"{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -1321,16 +1321,16 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			specProperties = {
-				devouringPlagueThresholdOnlyOverShow = false,
+				shadowWordMadnessThresholdOnlyOverShow = false,
 			},
 			thresholdDictionary = {
-				devouringPlague = {
+				shadowWordMadness = {
 					enabled = true,
 				},
-				devouringPlague2 = {
+				shadowWordMadness2 = {
 					enabled = true,
 				},
-				devouringPlague3 = {
+				shadowWordMadness3 = {
 					enabled = true,
 				}
 			}
@@ -1415,8 +1415,8 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				borderMindFlayInsanity="FF00FF00",
 				background="66000000",
 				base="FF763BAF",
-				devouringPlagueUsable="FF5C2F89",
-				devouringPlagueUsableCasting="FFFFFFFF",
+				shadowWordMadnessUsable="FF5C2F89",
+				shadowWordMadnessUsableCasting="FFFFFFFF",
 				critMindBlast={
 					color = "FFC2A3E0",
 					enabled = true
@@ -1496,7 +1496,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 			dpReady={
-				name = L["PriestShadowAudioDevouringPlague"],
+				name = L["PriestShadowAudioshadowWordMadness"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
@@ -3123,7 +3123,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowDevouringPlague"], L["PriestShadowDevouringPlagueAbbreviation"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowshadowWordMadness"], L["PriestShadowshadowWordMadnessAbbreviation"])
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
@@ -3153,10 +3153,10 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.devouringPlagueUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerDevouringPlague"], spec.colors.bar.devouringPlagueUsable, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.devouringPlagueUsable
+	controls.colors.shadowWordMadnessUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickershadowWordMadness"], spec.colors.bar.shadowWordMadnessUsable, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.shadowWordMadnessUsable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "devouringPlagueUsable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "shadowWordMadnessUsable")
 	end)
 
 	yCoord = yCoord - 30
@@ -3194,10 +3194,10 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	end)
 	
 	yCoord = yCoord - 30
-	controls.colors.devouringPlagueUsableCasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerCastingDevouringPlagueReady"], spec.colors.bar.devouringPlagueUsableCasting, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.devouringPlagueUsableCasting
+	controls.colors.shadowWordMadnessUsableCasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerCastingshadowWordMadnessReady"], spec.colors.bar.shadowWordMadnessUsableCasting, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.shadowWordMadnessUsableCasting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "devouringPlagueUsableCasting")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "shadowWordMadnessUsableCasting")
 	end)
 
 	yCoord = yCoord - 30
@@ -3379,47 +3379,47 @@ local function ShadowConstructThresholdPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadness", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague"])
-	f.tooltip = L["PriestShadowThresholdDevouringPlagueTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.devouringPlague.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdshadowWordMadness"])
+	f.tooltip = L["PriestShadowThresholdshadowWordMadnessTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.devouringPlague.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shadowWordMadness.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague2", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadness2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThreshold2Show
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague2x"])
-	f.tooltip = L["PriestShadowThresholdDevouringPlague2xTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.devouringPlague2.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdshadowWordMadness2x"])
+	f.tooltip = L["PriestShadowThresholdshadowWordMadness2xTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness2.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.devouringPlague2.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shadowWordMadness2.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague3", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadness3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThreshold3Show
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdDevouringPlague3x"])
-	f.tooltip = L["PriestShadowThresholdDevouringPlague3xTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.devouringPlague3.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdshadowWordMadness3x"])
+	f.tooltip = L["PriestShadowThresholdshadowWordMadness3xTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness3.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.devouringPlague3.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.shadowWordMadness3.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlagueOnlyOver", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadnessOnlyOver", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThresholdOnlyOverShow
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdCheckboxOnlyCurrentNext"])
 	f.tooltip = L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"]
-	f:SetChecked(spec.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow)
+	f:SetChecked(spec.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow)
 	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
+		spec.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow = self:GetChecked()
 	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
@@ -3621,7 +3621,7 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "dpReady", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxDevouringPlague"], L["PriestShadowAudioCheckboxDevouringPlagueTooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "dpReady", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxshadowWordMadness"], L["PriestShadowAudioCheckboxshadowWordMadnessTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "mdProc", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxMindDevourer"], L["PriestShadowAudioCheckboxMindDevourerTooltip"])
 	
