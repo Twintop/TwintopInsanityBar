@@ -1843,7 +1843,7 @@ local function RefreshLookupData_Shadow()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local currentTime = GetTime()
-	local normalizedInsanity = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedInsanity = snapshotData.attributes.resource-- / TRB.Data.resourceFactor
 
 
 	--$vfTime
@@ -1869,16 +1869,16 @@ local function RefreshLookupData_Shadow()
 		if sharedSettings.colors.text.overcap.enabled and overcap then
 			currentInsanityColor = sharedSettings.colors.text.overcap.color
 			castingInsanityColor = sharedSettings.colors.text.overcap.color
-		elseif sharedSettings.colors.text.overThreshold.enabled and normalizedInsanity >= insanityThreshold then
+		--[[elseif sharedSettings.colors.text.overThreshold.enabled and normalizedInsanity >= insanityThreshold then
 			currentInsanityColor = sharedSettings.colors.text.overThreshold.color
-			castingInsanityColor = sharedSettings.colors.text.overThreshold.color
+			castingInsanityColor = sharedSettings.colors.text.overThreshold.color]]
 		end
 	end
 
 	--$insanity
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentInsanity = normalizedInsanity
-	local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
+	local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, _currentInsanity)-- TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
 	--$casting
 	local _castingInsanity = snapshotData.casting.resourceFinal
 	local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
@@ -1927,21 +1927,21 @@ local function RefreshLookupData_Shadow()
 	end
 	local hvStacks = string.format("%.0f", _hvStacks)
 	--$psInsanity
-	local _psInsanity = snapshots[spells.powerSurge.id].buff.resource + spells.powerSurge.attributes.resource
+	local _psInsanity = 0 -- snapshots[spells.powerSurge.id].buff.resource + spells.powerSurge.attributes.resource
 	local psInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_psInsanity, resourcePrecision, "ceil"))
 
 	--$passive
 	local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity + _hvInsanity + _psInsanity
 	local passiveInsanity = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
 	--$insanityTotal
-	local _insanityTotal = math.min(_passiveInsanity + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
-	local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityTotal, resourcePrecision, "floor"))
+	local _insanityTotal = normalizedInsanity --math.min(_passiveInsanity + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
+	local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, _insanityTotal)-- TRB.Functions.Number:RoundTo(_insanityTotal, resourcePrecision, "floor"))
 	--$insanityPlusCasting
-	local _insanityPlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
-	local insanityPlusCasting = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_insanityPlusCasting, resourcePrecision, "floor"))
+	local _insanityPlusCasting = normalizedInsanity --math.min(snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
+	local insanityPlusCasting = string.format("|c%s%s|r", castingInsanityColor, _insanityPlusCasting)-- TRB.Functions.Number:RoundTo(_insanityPlusCasting, resourcePrecision, "floor"))
 	--$insanityPlusPassive
-	local _insanityPlusPassive = math.min(_passiveInsanity + normalizedInsanity, TRB.Data.character.maxResource)
-	local insanityPlusPassive = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityPlusPassive, resourcePrecision, "floor"))
+	local _insanityPlusPassive = normalizedInsanity --math.min(_passiveInsanity + normalizedInsanity, TRB.Data.character.maxResource)
+	local insanityPlusPassive = string.format("|c%s%s|r", currentInsanityColor, _insanityPlusPassive)-- TRB.Functions.Number:RoundTo(_insanityPlusPassive, resourcePrecision, "floor"))
 
 
 	----------
@@ -2331,7 +2331,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		if event == "UNIT_SPELLCAST_START" then
-			if spellId == spells.mindBlast.id then
+			--[[if spellId == spells.mindBlast.id then
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.mindBlast.resource
 				casting.spellId = spells.mindBlast.id
@@ -2381,10 +2381,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 				casting.spellId = spells.voidBlast.id
 				casting.icon = spells.voidBlast.icon
-			end
+			end]]
 			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-			if spellId == spells.mindFlay.id then
+			--[[if spellId == spells.mindFlay.id then
 				casting.spellId = spells.mindFlay.id
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.mindFlay.resource
@@ -2399,7 +2399,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.voidTorrent.resource
 				casting.icon = spells.voidTorrent.icon
-			end
+			end]]
 			UpdateCastingResourceFinal_Shadow()
 		end
 	end
@@ -2680,23 +2680,24 @@ local function UpdateSnapshot_Holy()
 end
 
 local function UpdateSnapshot_Shadow()
-	local currentTime = GetTime()
+	--[[local currentTime = GetTime()
 	UpdateSnapshot()
 	UpdateExternalCallToTheVoidValues()
 	UpdateHorrificVisionsValues()
 	UpdatePowerSurge()
-	UpdateSnapshot_Voidweaver()
+	UpdateSnapshot_Voidweaver()]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
+	--[[
 	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 
-	snapshots[spells.mindBlast.id].cooldown:Refresh()
+	snapshots[spells.mindBlast.id].cooldown:Refresh()]]
 end
 
 local function UpdateResourceBar()
@@ -3464,7 +3465,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resource --/ TRB.Data.resourceFactor
 
 				local maxPrimaryBarResource = TRB.Data.character.maxResource
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -3506,8 +3507,9 @@ local function UpdateResourceBar()
 				if specSettings.colors.bar.showPassive and
 					(talents:IsTalentActive(spells.auspiciousSpirits) or
 					shadowfiend.resourceFinal > 0 or
-					snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0 or
-					snapshots[spells.horrificVisions.id].attributes.resourceFinal > 0) then
+					snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0 -- or
+					--snapshots[spells.horrificVisions.id].attributes.resourceFinal > 0
+				) then
 					passiveValue = ((CalculateResourceGain(spells.auspiciousSpirits.resource) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + shadowfiend.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) + snapshots[spells.horrificVisions.id].attributes.resourceFinal
 					TRB.Data.cache.values.threshold["shadowfiend"] = TRB.Data.cache.values.threshold["shadowfiend"] or {}
 					local sfCache = TRB.Data.cache.values.threshold["shadowfiend"]
@@ -3552,8 +3554,8 @@ local function UpdateResourceBar()
 								showThreshold = false
 							elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
-							elseif currentResource >= resourceAmount then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
+							--elseif currentResource >= resourceAmount then
+							--	thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
@@ -3569,8 +3571,8 @@ local function UpdateResourceBar()
 							elseif specCacheSettings.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow and
 									spells.devouringPlague:GetPrimaryResourceCost() > currentResource  then
 								showThreshold = false
-							elseif currentResource >= resourceAmount then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
+							--elseif currentResource >= resourceAmount then
+							--	thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
@@ -3586,8 +3588,8 @@ local function UpdateResourceBar()
 							elseif specCacheSettings.thresholds.specProperties.devouringPlagueThresholdOnlyOverShow and
 								spells.devouringPlague2:GetPrimaryResourceCost() > currentResource then
 								showThreshold = false
-							elseif currentResource >= resourceAmount then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
+							--elseif currentResource >= resourceAmount then
+							--	thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
@@ -3604,30 +3606,30 @@ local function UpdateResourceBar()
 						if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 							thresholdColor = specCacheSettings.colors.threshold.unusable.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-						elseif currentResource >= resourceAmount then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
+						--elseif currentResource >= resourceAmount then
+						--	thresholdColor = specCacheSettings.colors.threshold.over.color
 						else
 							thresholdColor = specCacheSettings.colors.threshold.under.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
 					else -- This is an active/available/normal spell threshold
-						if currentResource >= resourceAmount then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
+						--if currentResource >= resourceAmount then
+						--	thresholdColor = specCacheSettings.colors.threshold.over.color
+						--else
 							thresholdColor = specCacheSettings.colors.threshold.under.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-						end
+						--end
 					end
 					
-					if resourceAmount >= maxPrimaryBarResource then
-						showThreshold = false
-					end
+					--if resourceAmount >= maxPrimaryBarResource then
+					--	showThreshold = false
+					--end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
 				end
 
-				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or snapshots[spells.mindDevourer.id].buff.isActive then
+				if snapshots[spells.mindDevourer.id].buff.isActive or --[[currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or]] snapshots[spells.mindDevourer.id].buff.isActive then
 					if specSettings.colors.bar.flashEnabled then
 						TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					else
@@ -3648,12 +3650,12 @@ local function UpdateResourceBar()
 					snapshotData.audio.playedMdCue = false
 				end
 
-				passiveBarValue = castingBarValue + passiveValue
+				--passiveBarValue = castingBarValue + passiveValue
 
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
-				if castingBarValue < currentResource then --Using a spender
+				--[[if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
 						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
 						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
@@ -3667,15 +3669,15 @@ local function UpdateResourceBar()
 						castingBarColor = specSettings.colors.bar.spending
 						passiveBarColor = specSettings.colors.bar.passive
 					end
-				else
+				else]]
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 					castingBarColor = specSettings.colors.bar.casting
 					passiveBarColor = specSettings.colors.bar.passive
-				end
+				--end
 
-				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
+				if snapshots[spells.mindDevourer.id].buff.isActive --[[or currentResource >= spells.devouringPlague:GetPrimaryResourceCost()]] then
 					castingBarColor = specSettings.colors.bar.devouringPlagueUsableCasting
 				else
 					castingBarColor = specSettings.colors.bar.casting
@@ -3703,13 +3705,13 @@ local function UpdateResourceBar()
 
 					if useEndOfVoidformColor and timeLeft <= timeThreshold then
 						barColor = specSettings.colors.bar.inVoidform1GCD
-					elseif snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
+					elseif snapshots[spells.mindDevourer.id].buff.isActive --[[or currentResource >= spells.devouringPlague:GetPrimaryResourceCost()]] then
 						barColor = specSettings.colors.bar.devouringPlagueUsable
 					else
 						barColor = specSettings.colors.bar.inVoidform
 					end
 				else
-					if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
+					if snapshots[spells.mindDevourer.id].buff.isActive --[[or currentResource >= spells.devouringPlague:GetPrimaryResourceCost()]] then
 						barColor = specSettings.colors.bar.devouringPlagueUsable
 					else
 						barColor = specSettings.colors.bar.base
@@ -3734,13 +3736,14 @@ local function UpdateResourceBar()
 	end
 end
 
+--[[ RIP COMBAT_LOG_EVENT_UNFILTERED
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local currentTime = GetTime()
 		local _
-		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spellsData = TRB.Data.spellsData --[@as TRB.Classes.SpellsData]
 		local spells
-		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
 		local snapshots = snapshotData.snapshots
 		local targetData = snapshotData.targetData
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
@@ -3748,23 +3751,23 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local settings
 		if TRB.Data.character.specId == 1 then
 			settings = TRB.Data.settings.priest.discipline
-			spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+			spells = spellsData.spells --[@as TRB.Classes.Priest.DisciplineSpells]
 		elseif TRB.Data.character.specId == 2 then
 			settings = TRB.Data.settings.priest.holy
-			spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+			spells = spellsData.spells --[@as TRB.Classes.Priest.HolySpells]
 		elseif TRB.Data.character.specId == 3 then
 			settings = TRB.Data.settings.priest.shadow
-			spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+			spells = spellsData.spells --[@as TRB.Classes.Priest.ShadowSpells]
 		end
 
 		if entry.destinationGuid == TRB.Data.character.guid then
 			if (TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 				if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 					local castByToken = UnitTokenFromGUID(entry.sourceGuid)
-					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
+					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[@as TRB.Classes.Healer.SymbolOfHope]
 					symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
 				elseif settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
-					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+					local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
 					innervate.buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						snapshotData.audio.innervateCue = false
@@ -3772,27 +3775,27 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshotData.audio.innervateCue = false
 					end
 				elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
-					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[@as TRB.Classes.Healer.ManaTideTotem]
 					manaTideTotem.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.potionOfChilledClarity.id then
-					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[@as TRB.Classes.Healer.PotionOfChilledClarity]
 					potionOfChilledClarity.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.moltenRadiance.id then
-					local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
+					local moltenRadiance = snapshots[spells.moltenRadiance.id] --[@as TRB.Classes.Healer.MoltenRadiance]
 					moltenRadiance.buff:Initialize(entry.type)
 				elseif settings.passiveGeneration.blessingOfWinter and entry.spellId == spells.blessingOfWinter.id then
-					local blessingOfWinter = snapshotData.snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+					local blessingOfWinter = snapshotData.snapshots[spells.blessingOfWinter.id] --[@as TRB.Classes.Healer.BlessingOfWinter]
 					blessingOfWinter.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.cannibalize.buffId then
-					local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+					local cannibalize = snapshots[spells.cannibalize.id] --[@as TRB.Classes.Healer.Cannibalize]
 					cannibalize.buff:Initialize(entry.type)
 				elseif entry.type == "SPELL_ENERGIZE" and entry.spellId == snapshots[spells.shadowfiend.id].spell.energizeId then
-					local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+					local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 					shadowfiend:LogSwingTime(entry.sourceGuid, currentTime)
 				end
 			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 				if entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.mindbender.energizeId or entry.spellId == spells.shadowfiend.energizeId or entry.spellId == spells.voidwraith.energizeId) then
-					local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+					local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 					shadowfiend:LogSwingTime(entry.sourceGuid, currentTime)
 				end
 			end
@@ -3801,7 +3804,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if (TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
-					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[@as TRB.Classes.Healer.ChanneledManaPotion]
 					channeledManaPotion.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.surgeOfLight.id then
 					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
@@ -3918,7 +3921,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						C_Timer.After(0, function()
 							C_Timer.After(0.1, function()
 								for x = 1, 5 do
-									local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+									local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 									if shadowfiend.spawns[x].guid == nil then
 										local haveTotem, _, startTime, duration, _, _, spellId = GetTotemInfo(x)
 										if haveTotem then
@@ -3946,7 +3949,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			elseif 	entry.type == "SPELL_SUMMON" and
 					((TRB.Data.character.specId == 3 and settings.mindbender.enabled) or (TRB.Data.character.specId ~= 3 and settings.shadowfiend.enabled))
 					and (entry.spellId == spells.shadowfiend.id or (TRB.Data.character.specId ~= 2 and (entry.spellId == spells.mindbender.id or entry.spellId == spells.voidwraith.id))) then
-				local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+				local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 
 				C_Timer.After(0, function()
 					C_Timer.After(0.1, function()
@@ -3988,6 +3991,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		end
 	end
 end)
+]]
 
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
@@ -3999,7 +4003,7 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization() or 0
 
@@ -4442,7 +4446,7 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
+		TRB.Data.character.maxResource = 150 -- UnitPowerMax("player", Enum.PowerType.Insanity)
 		
 		if talents:IsTalentActive(spells.voidwraith) then
 			snapshots[spells.shadowfiend.id].spell = spells.voidwraith
@@ -4823,12 +4827,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-			local threshold = ((snapshotData.attributes.resource / TRB.Data.resourceFactor) + snapshotData.casting.resourceFinal)
+			--[[local threshold = ((snapshotData.attributes.resource / TRB.Data.resourceFactor) + snapshotData.casting.resourceFinal)
 			if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) <= threshold then
 				return true
 			elseif settings.overcap.mode == "fixed" and settings.overcap.fixed <= threshold then
 				return true
-			end
+			end]]
 		elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
 			local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
 			if snapshotData.attributes.resource > 0 or

@@ -18,12 +18,12 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId)
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
 		local casting = snapshotData.casting
-		if casting.spellId == spellId and TRB.Functions.Character.ResetCastingSnapshotData ~= nil then
+		--[[if casting.spellId == spellId and TRB.Functions.Character.ResetCastingSnapshotData ~= nil then
 			TRB.Functions.Character:ResetCastingSnapshotData()
-		end
+		end]]
 		return
 	elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
-		TRB.Functions.Class:SpellCast(event, spellId)
+		--TRB.Functions.Class:SpellCast(event, spellId)
 		return
 	end
 end

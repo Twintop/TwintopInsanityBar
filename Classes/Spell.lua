@@ -271,6 +271,9 @@ function TRB.Classes.SpellBase:FillSpellData()
 				icon = spellInfo.originalIconID
 			end
 
+			if icon == nil then
+				icon = "Interface\\Icons\\INV_Misc_QuestionMark"
+			end
 			self.icon = string.format("|T%s:0|t", icon)
 			self.name = spellInfo.name
 

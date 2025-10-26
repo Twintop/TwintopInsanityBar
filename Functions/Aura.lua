@@ -11,6 +11,11 @@ TRB.Functions.Aura = {}
 local function AuraUpdateEvent(self, event, unit, info)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData
+	
+	-- Short circuit this for now
+	if 1 == 1 then
+		return
+	end
 	if info.isFullUpdate then
 		--Only do a full refresh of buffs for now
 		snapshotData:RefreshAllBuffs()

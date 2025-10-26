@@ -264,7 +264,8 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 			self.characterCheckSinceLastUpdate = 0
 		end
 
-		local guid = UnitGUID("target")
+		-- Stop all current target tracking
+		local guid = nil --UnitGUID("target")
 		if targetData.currentTargetGuid ~= guid then
 			targetData.currentTargetGuid = guid
 		end

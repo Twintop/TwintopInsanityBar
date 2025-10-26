@@ -956,7 +956,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	Global_TwintopResourceBar.ttd.seconds = ttdTotalSeconds or 0
 
 	Global_TwintopResourceBar.resource = Global_TwintopResourceBar.resource or {}
-	Global_TwintopResourceBar.resource.resource = snapshotData.attributes.resource or 0
+	Global_TwintopResourceBar.resource.resource = snapshotData.attributes.resource-- or 0
 	Global_TwintopResourceBar.resource.casting = castingAmount
 end
 
@@ -1061,11 +1061,11 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 				local returnText = GetReturnText(barText)
 
-				if TRB.Data.cache.values.frame["textFrames" .. i].text ~= returnText then
+				--if TRB.Data.cache.values.frame["textFrames" .. i].text ~= returnText then
 					pcall(TryUpdateText, textFrames[i],  returnText)
 					--TryUpdateText(textFrames[i], returnText)
 					TRB.Data.cache.values.frame["textFrames" .. i].text = returnText
-				end
+				--end
 				
 				if TRB.Data.cache.values.frame["textFrames" .. i].level ~= TRB.Data.settings.core.strata.level then
 					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)

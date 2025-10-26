@@ -90,13 +90,13 @@ function TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowVa
 			(TRB.Data.character.advancedFlight and not settings.displayBar.dragonriding) or
 			((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
-				(not settings.displayBar.alwaysShow) and (
+				(not settings.displayBar.alwaysShow))--[[ and (
 					(not settings.displayBar.notZeroShow) or
 					(settings.displayBar.notZeroShow and (snapshotData.attributes.resource / TRB.Data.resourceFactor) == notZeroShowValue and
 						(includeComboPoints ~= true or (includeComboPoints and (snapshotData.attributes.resource2 / TRB.Data.resource2Factor) == notZeroShowValueComboPoints))
 					)
-				)
-			)) then
+				)				
+			)]]) then
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Functions.BarText:Hide(settings)
 			snapshotData.attributes.isTracking = false
@@ -218,22 +218,23 @@ end
 ---@param value number
 ---@param maxResource number
 function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
-	value = value or 0
+	value = value-- or 0
 	maxResource = maxResource or 1
 	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
-	if TRB.Data.cache.values.bar[key].value == value and TRB.Data.cache.values.bar[key].maxResource == maxResource then
+	--[[if TRB.Data.cache.values.bar[key].value == value and TRB.Data.cache.values.bar[key].maxResource == maxResource then
 		return
-	end
+	end]]
 	
 	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
-		local _, max = bar:GetMinMaxValues()
+		bar:SetValue(value)
+		--[[local _, max = bar:GetMinMaxValues()
 
 		local factor = max / maxResource
 
 		if maxResource == 0 then
 			factor = max / 1
 		end
-
+		
 		local scaledValue = value * factor
 		if factor ~= math.huge and max ~= math.huge then
 			bar:SetValue(math.min(scaledValue, max))
@@ -254,7 +255,7 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 				bar.endCap:SetWidth(ecWidth)
 			end
 			TRB.Functions.Threshold:RepositionThreshold(settings, "endCap" .. endCapKey, bar.endCap, true, bar, value, maxResource, false)
-		end
+		end]]
 
 		TRB.Data.cache.values.bar[key].value = value
 		TRB.Data.cache.values.bar[key].maxResource = maxResource

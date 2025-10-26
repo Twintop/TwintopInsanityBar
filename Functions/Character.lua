@@ -721,7 +721,7 @@ function TRB.Functions.Character:EventRegistration()
 		end
 		UpdateResourceValues()
 		TRB.Functions.Class:CheckCharacter()
-		barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		--barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Details.addonData.registered = true
@@ -734,7 +734,7 @@ function TRB.Functions.Character:EventRegistration()
 	else
 		targetsTimerFrame:SetScript("OnUpdate", nil)
 		timerFrame:SetScript("OnUpdate", nil)
-		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 		TRB.Functions.Aura:DisableUnitAura()
