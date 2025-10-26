@@ -14,18 +14,18 @@ local content = [====[
 # 12.0.0.0-alpha01 (2025-10-27)
 ## General
 
-- (#462 - NEW) Reports of my demise have been greatly exaggerated. The Resource Bar lives on!
-- (#462 - NEW) Most specs are still bricked, but I am working on unbricking them one at a time with Shadow Priest as the guinea pig.
-- (#462 - UPDATE) Strip out all calls to things related to specific targets and `UNIT_AURA`. 
-- (#462 - UPDATE) Change how max resource is determined to be based off of talents and hardcoded values.
-- (#462 - UPDATE) Adjust bar and threshold rendering to not do computations with `secret` values.
+- [#462 - NEW](#462) Reports of my demise have been greatly exaggerated. The Resource Bar lives on!
+- [#462 - NEW](#462) Most specs are still bricked, but I am working on unbricking them one at a time with Shadow Priest as the guinea pig.
+- [#462 - UPDATE](#462) Strip out all calls to things related to specific targets and `UNIT_AURA`. 
+- [#462 - UPDATE](#462) Change how max resource is determined to be based off of talents and hardcoded values.
+- [#462 - UPDATE](#462) Adjust bar and threshold rendering to not do computations with `secret` values.
 
 ## Priest
 ### Shadow
 
-- (#463 - UPDATE) Strip out everything but Shadow Word: Madness and resource detection.
-- (#463 - UPDATE) Track if Voidtouched is talented and adjust the maximum resource accordingly.
-- (#463 - UPDATE) Clean up default bar text since most of the old variables don't work anymore (yet?).
+- [#463 - UPDATE](#462) Strip out everything but Shadow Word: Madness and resource detection.
+- [#463 - UPDATE](#462) Track if Voidtouched is talented and adjust the maximum resource accordingly.
+- [#463 - UPDATE](#462) Clean up default bar text since most of the old variables don't work anymore (yet?).
 
 ]====]
 
