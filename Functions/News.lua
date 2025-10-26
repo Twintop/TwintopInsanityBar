@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha02 (2025-10-27)
+## General
+
+- [#462 - FIX](#462) Disable smooth bar updates due to Lua errors with secrets.
+
+---
+
 # 12.0.0.0-alpha01 (2025-10-27)
 ## General
 

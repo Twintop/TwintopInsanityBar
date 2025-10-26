@@ -475,7 +475,7 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 		settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 	end
 
-	if TRB.Data.settings.core.smoothBarValueUpdates and not settings.bar.pinToPersonalResourceDisplay then
+	if false and TRB.Data.settings.core.smoothBarValueUpdates and not settings.bar.pinToPersonalResourceDisplay then
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame, 3, 0.2)
 		TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.endCap, 3, 0.1)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame, 3, 0.2)
