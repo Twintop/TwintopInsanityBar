@@ -281,12 +281,12 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		end
 		
 		-- Check if the threshold is unusable 
-		--[[if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
+		if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
 			if not TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings) then
 				TRB.Functions.Threshold:Hide(key, threshold)
 				return false
 			end
-		end]]
+		end
 
 		if threshold.texture == nil or threshold.icon == nil then
 			TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
@@ -325,17 +325,17 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			thresholdUsable = true
 		end
 		
-		--[[if settings.thresholds.icons.desaturated == true then
+		if settings.thresholds.icons.desaturated == true then
 			if cache.desaturated ~= (not thresholdUsable or outOfRange) then
 				threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
 				cache.desaturated = not thresholdUsable or outOfRange
 			end
-		else]]
+		else
 			if cache.desaturated ~= false then
 				threshold.icon.texture:SetDesaturated(false)
 				cache.desaturated = false
 			end
-		--end
+		end
 		
 		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
 			threshold.icon.cooldown:SetCooldown(snapshot.cooldown.startTime, snapshot.cooldown.duration)

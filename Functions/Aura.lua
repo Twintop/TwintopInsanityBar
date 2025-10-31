@@ -13,7 +13,10 @@ local function AuraUpdateEvent(self, event, unit, info)
 	local snapshotData = TRB.Data.snapshotData
 	
 	-- Short circuit this for now
-	if 1 == 1 then
+	if unit == "player" then
+		TRB.Data.cache.values.resource = {}
+		return
+	elseif 1 == 1 then
 		return
 	end
 	

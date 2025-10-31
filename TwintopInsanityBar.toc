@@ -46,7 +46,7 @@ Libs\base64.lua
 Libs\json.lua
 Libs\LibMarkdown\LibMarkdown.xml
 Libs\LibScrollingTable\lib-st.xml
-Libs\LibAdvFlight-1.0\lib.xml
+#Libs\LibAdvFlight-1.0\lib.xml
 
 Localization\Localization.lua
 Localization\enUS.lua

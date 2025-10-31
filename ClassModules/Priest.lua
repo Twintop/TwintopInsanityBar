@@ -3499,7 +3499,7 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
-				if specSettings.colors.bar.mindDevourer.enabled and snapshots[spells.mindDevourer.id].buff.isActive then
+				if specSettings.colors.bar.mindDevourer.enabled and spells.shadowWordMadness:IsFree() then --snapshots[spells.mindDevourer.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.mindDevourer.color
 				--[[elseif specSettings.colors.bar.critMindBlast.enabled and snapshots[spells.shatteredPsyche.id].buff.isActive and (snapshotData.attributes.crit + (snapshots[spells.shatteredPsyche.id].buff.customProperties["crit"] or 0)) >= 100 then
 					barBorderColor = specSettings.colors.bar.critMindBlast.color
@@ -3553,6 +3553,7 @@ local function UpdateResourceBar()
 					end
 					pairOffset = (thresholdId - 1) * 3
 					local resourceAmount = spell:GetPrimaryResourceCost()
+					local isUsable = spell:IsUsable()
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
@@ -3567,7 +3568,8 @@ local function UpdateResourceBar()
 							elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							--elseif currentResource >= resourceAmount then
-							--	thresholdColor = specCacheSettings.colors.threshold.over.color
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder

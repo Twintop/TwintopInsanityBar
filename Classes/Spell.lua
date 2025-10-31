@@ -108,6 +108,8 @@ end
 ---@field private _lastNonZeroPrimaryResourceValue number? # What was the last non-zero primary resource value seen
 ---@field private _lastPrimaryResourceValueCheck number? # Timestamp of the last time a check was done
 ---@field private _isFreeCurrently boolean # Is this ability free now when it usually has a resource cost?
+---@field private _lastSpellUsableCheck number? # Timestamp of the last time a spell usability check was done
+---@field private _isUsable boolean # Is the spell usable currently
 ---@field private _cacheKey string # Key used to cache the primary resource cost of the spell
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
@@ -350,6 +352,24 @@ end
 ---@return boolean
 function TRB.Classes.SpellBase:IsFree()
 	return self._isFreeCurrently
+end
+
+local spellUsableEmbargoTimespan = 0.05
+
+---Gets whether the spell is currently usable.
+---@return boolean # Is the spell usable
+function TRB.Classes.SpellBase:IsUsable()
+	local currentTime = GetTime()
+	if (self._lastSpellUsableCheck or 0) + spellUsableEmbargoTimespan > currentTime then
+		self._lastSpellUsableCheck = currentTime
+		return self._isUsable
+	end
+
+	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self.id)
+	--We previously only cared about insufficient power, but since we are not doing a check based on just primary and secondary resources we might as well use the full usability.
+	self._isUsable = isUsable and not insufficientPower
+
+	return self._isUsable
 end
 
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.

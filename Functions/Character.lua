@@ -16,8 +16,10 @@ local function OnAdvFlyDisabled()
 	end
 end
 
+--[[
 TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_ENABLED, OnAdvFlyEnabled);
 TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_DISABLED, OnAdvFlyDisabled);
+]]
 
 --TODO: Move this somewhere else.
 --This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
