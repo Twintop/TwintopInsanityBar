@@ -393,10 +393,12 @@ end
 
 
 ---@class TRB.Classes.Priest.HealerSpells : TRB.Classes.Healer.HealerSpells
+--[[
 ---@field public shadowWordPain TRB.Classes.SpellBase
----@field public surgeOfLight TRB.Classes.SpellBase
 ---@field public shadowfiend TRB.Classes.SpellThreshold
 ---@field public cannibalize TRB.Classes.SpellThreshold
+]]
+---@field public surgeOfLight TRB.Classes.SpellBase
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
@@ -406,7 +408,7 @@ function TRB.Classes.Priest.HealerSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
 
 	-- Priest Class Baseline Abilities
-	self.shadowWordPain = TRB.Classes.SpellBase:New({
+	--[[self.shadowWordPain = TRB.Classes.SpellBase:New({
 		id = 589,
 		baseDuration = 16,
 		pandemic = true,
@@ -427,13 +429,14 @@ function TRB.Classes.Priest.HealerSpells:New()
 		duration = 15,
 		hasCooldown = true,
 		rangeCheck = false
-	})
+	})]]
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255,
 		duration = 20,
 		isTalent = true
 	})
 
+	--[[
 	-- Racials
 	self.cannibalize = TRB.Classes.SpellThreshold:New({
 		id = 20577,
@@ -448,7 +451,7 @@ function TRB.Classes.Priest.HealerSpells:New()
 		isSnowflake = true,
 		hasCooldown = true,
 		rangeCheck = false
-	})
+	})]]
 
 	return self
 end
@@ -593,16 +596,9 @@ function TRB.Classes.Priest.HolySpells:New()
 	})
 
 	-- Holy Baseline Abilities
-	self.heal = TRB.Classes.Priest.HolyWordSpell:New({
-		id = 2060,
-		holyWordKey = "holyWordSerenity",
-		holyWordReduction = 6,
-		isTalent = false,
-		baseline = true
-	})
 
 	-- Holy Talent Abilities
-	self.holyWordSerenity = TRB.Classes.SpellBase:New({
+	--[[self.holyWordSerenity = TRB.Classes.SpellBase:New({
 		id = 2050,
 		duration = 60,
 		hasCharges = true
@@ -629,18 +625,6 @@ function TRB.Classes.Priest.HolySpells:New()
 		holyWordKey = "holyWordChastise",
 		holyWordReduction = 2, -- Per rank of Voice of Harmony
 		isTalent = true
-	})
-	self.symbolOfHope = TRB.Classes.SpellThreshold:New({
-		id = 64901,
-		duration = 4.0, --Hasted
-		resourcePercent = 0.02,
-		settingKey = "symbolOfHope",
-		primaryResourceType = Enum.PowerType.Mana,
-		ticks = 4,
-		tickId = 265144,
-		isTalent = true,
-		hasCooldown = true,
-		rangeCheck = false
 	})
 	self.lightOfTheNaaru = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 196985,
@@ -700,7 +684,7 @@ function TRB.Classes.Priest.HolySpells:New()
 		isTalent = true,
 		duration = 8,
 		maxStacks = 5
-	})
+	})]]
 
 	return self
 end
