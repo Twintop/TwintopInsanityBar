@@ -136,10 +136,10 @@ local function FillSpecializationCache()
 	specCache.discipline.snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.slumberingSoulSerumRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
 	specCache.discipline.snapshotData.snapshots[spells.algariManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.algariManaPotionRank1)
-	---@type TRB.Classes.Priest.Shadowfiend
+	--[[---@type TRB.Classes.Priest.Shadowfiend
 	specCache.discipline.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Priest.Shadowfiend:New(TRB.Data.settings.priest.discipline.shadowfiend, specCache.discipline.talents, CalculateManaGain, spells.shadowfiend, spells.mindbender, spells.voidwraith)
 	---@type TRB.Classes.Healer.Cannibalize
-	specCache.discipline.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)
+	specCache.discipline.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)]]
 	---@type TRB.Classes.Snapshot
 	specCache.discipline.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
 	---@type TRB.Classes.Snapshot
@@ -250,10 +250,10 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
 	---@type TRB.Classes.Healer.ManaTideTotem
 	specCache.holy.snapshotData.snapshots[spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(spells.manaTideTotem)
-	---@type TRB.Classes.Priest.Shadowfiend
+	--[[---@type TRB.Classes.Priest.Shadowfiend
 	specCache.holy.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Priest.Shadowfiend:New(TRB.Data.settings.priest.holy.shadowfiend, specCache.holy.talents, CalculateManaGain, spells.shadowfiend, nil, nil)
 	---@type TRB.Classes.Healer.Cannibalize
-	specCache.holy.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)
+	specCache.holy.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)]]
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis, nil, "sometimes")
 	---@type TRB.Classes.Snapshot
@@ -399,14 +399,14 @@ local function FillSpellData_Discipline()
 		{ variable = "#powerWordRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = false },
 		{ variable = "#sc", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = true },
 		{ variable = "#shadowCovenant", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = false },
-		{ variable = "#sf", icon = string.format(L["PriestShadowIcon_sf"], spells.shadowfiend.icon, spells.mindbender.icon, spells.voidwraith.icon), description = spells.shadowfiend.name .. " / " .. spells.mindbender.name .. " / " .. spells.voidwraith.name, printInSettings = true },
+		--[[{ variable = "#sf", icon = string.format(L["PriestShadowIcon_sf"], spells.shadowfiend.icon, spells.mindbender.icon, spells.voidwraith.icon), description = spells.shadowfiend.name .. " / " .. spells.mindbender.name .. " / " .. spells.voidwraith.name, printInSettings = true },
 		{ variable = "#mindbender", icon = spells.mindbender.icon, description = spells.mindbender.name, printInSettings = false },
 		{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = spells.shadowfiend.name, printInSettings = false },
-		{ variable = "#voidwraith", icon = spells.voidwraith.icon, description = spells.voidwraith.name, printInSettings = false },
+		{ variable = "#voidwraith", icon = spells.voidwraith.icon, description = spells.voidwraith.name, printInSettings = false },]]
 		{ variable = "#sol", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
 		{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
-		{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
-		{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
+		--[[{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
+		{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },]]
 
 		{ variable = "#swp", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },
 
@@ -570,11 +570,11 @@ local function FillSpellData_Holy()
 		{ variable = "#poff", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = true },
 		{ variable = "#slumberingSoulSerum", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = false },
 
-		{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
+		--[[{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
 		{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
 		
 		{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = spells.shadowfiend.name, printInSettings = false },
-		{ variable = "#sf", icon = spells.shadowfiend.icon, description = spells.shadowfiend.name, printInSettings = true },
+		{ variable = "#sf", icon = spells.shadowfiend.icon, description = spells.shadowfiend.name, printInSettings = true },]]
 	}
 	specCache.holy.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -1109,7 +1109,7 @@ local function RefreshLookupData_Discipline()
 	local _slumberingSoulSerumTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
 	local slumberingSoulSerumTime = TRB.Functions.BarText:TimerPrecision(_slumberingSoulSerumTime)
 
-	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+	--[[local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 	
 	--$sfMana
 	local _sfMana = shadowfiend.resourceFinal or 0
@@ -1122,10 +1122,10 @@ local function RefreshLookupData_Discipline()
 	local sfSwings = string.format("%.0f", _sfSwings)
 	--$sfTime
 	local _sfTime = shadowfiend.remainingTime
-	local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)
+	local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)]]
 
 	--$passive
-	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana
+	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana --+ _sfMana
 	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1188,7 +1188,7 @@ local function RefreshLookupData_Discipline()
 	local _atonementCount = snapshotData.targetData.count[spells.atonement.id] or 0
 	local atonementCount = string.format("%s", _atonementCount)
 
-	-----------
+	--[[-----------
 	--$swpCount and $swpTime		
 	local _shadowWordPainCount = snapshotData.targetData.count[spells.shadowWordPain.id] or 0
 	local shadowWordPainCount = string.format("%s", _shadowWordPainCount)
@@ -1215,7 +1215,7 @@ local function RefreshLookupData_Discipline()
 		end
 	else
 		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
-	end
+	end]]
 
 	--$entropicRiftTime
 	local _entropicRiftTime = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
@@ -1231,15 +1231,15 @@ local function RefreshLookupData_Discipline()
 	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
 	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _slumberingSoulSerumTicks or 0
 
-	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
+	--[[Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
 	Global_TwintopResourceBar.shadowfiend.mana = shadowfiend.resourceFinal or 0
 	Global_TwintopResourceBar.shadowfiend.gcds = shadowfiend.remainingGcds or 0
 	Global_TwintopResourceBar.shadowfiend.swings = shadowfiend.remainingSwings or 0
 	Global_TwintopResourceBar.shadowfiend.time = shadowfiend.remainingTime or 0
-	Global_TwintopResourceBar.shadowfiend.count = shadowfiend:TotalActive()
+	Global_TwintopResourceBar.shadowfiend.count = shadowfiend:TotalActive()]]
 
-	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
+	--[[Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0]]
 
 	Global_TwintopResourceBar.atonement = Global_TwintopResourceBar.atonement or {}
 	Global_TwintopResourceBar.atonement.count = _atonementCount
@@ -1276,13 +1276,13 @@ local function RefreshLookupData_Discipline()
 	lookup["$slumberingSoulSerumTime"] = slumberingSoulSerumTime
 	lookup["$potionCooldown"] = potionCooldown
 	lookup["$potionCooldownSeconds"] = potionCooldownSeconds
-	lookup["$sfMana"] = sfMana
+	--[[lookup["$sfMana"] = sfMana
 	lookup["$sfGcds"] = sfGcds
 	lookup["$sfSwings"] = sfSwings
 	lookup["$sfTime"] = sfTime
-	lookup["$sfCount"] = shadowfiend:TotalActive()
-	lookup["$swpCount"] = shadowWordPainCount
-	lookup["$swpTime"] = shadowWordPainTime
+	lookup["$sfCount"] = shadowfiend:TotalActive()]]
+	--lookup["$swpCount"] = shadowWordPainCount
+	--lookup["$swpTime"] = shadowWordPainTime
 	lookup["$pwRadianceTime"] = pwRadianceTime
 	lookup["$radianceTime"] = pwRadianceTime
 	lookup["$powerWordRadianceTime"] = pwRadianceTime
@@ -1326,13 +1326,13 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$slumberingSoulSerumTime"] = _slumberingSoulSerumTime
 	lookupLogic["$potionCooldown"] = potionCooldown
 	lookupLogic["$potionCooldownSeconds"] = potionCooldown
-	lookupLogic["$sfMana"] = _sfMana
+	--[[lookupLogic["$sfMana"] = _sfMana
 	lookupLogic["$sfGcds"] = _sfGcds
 	lookupLogic["$sfSwings"] = _sfSwings
 	lookupLogic["$sfTime"] = _sfTime
-	lookupLogic["$sfCount"] = shadowfiend:TotalActive()
-	lookupLogic["$swpCount"] = _shadowWordPainCount
-	lookupLogic["$swpTime"] = _shadowWordPainTime
+	lookupLogic["$sfCount"] = shadowfiend:TotalActive()]]
+	--lookupLogic["$swpCount"] = _shadowWordPainCount
+	--lookupLogic["$swpTime"] = _shadowWordPainTime
 	lookupLogic["$pwRadianceTime"] = _pwRadianceTime
 	lookupLogic["$radianceTime"] = _pwRadianceTime
 	lookupLogic["$powerWordRadianceTime"] = _pwRadianceTime
@@ -1416,7 +1416,7 @@ local function RefreshLookupData_Holy()
 	local _slumberingSoulSerumTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
 	local slumberingSoulSerumTime = TRB.Functions.BarText:TimerPrecision(_slumberingSoulSerumTime)
 
-	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+	--[[local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 	
 	--$sfMana
 	local _sfMana = shadowfiend.resourceFinal or 0
@@ -1429,10 +1429,10 @@ local function RefreshLookupData_Holy()
 	local sfSwings = string.format("%.0f", _sfSwings)
 	--$sfTime
 	local _sfTime = shadowfiend.remainingTime
-	local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)
+	local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)]]
 
 	--$passive
-	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana
+	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana-- + _sfMana
 	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1516,7 +1516,7 @@ local function RefreshLookupData_Holy()
 
 	-----------
 	--$swpCount and $swpTime
-	local _shadowWordPainCount = snapshotData.targetData.count[spells.shadowWordPain.id] or 0
+	--[[local _shadowWordPainCount = snapshotData.targetData.count[spells.shadowWordPain.id] or 0
 	local shadowWordPainCount = string.format("%s", _shadowWordPainCount)
 	local _shadowWordPainTime = 0
 	
@@ -1541,7 +1541,7 @@ local function RefreshLookupData_Holy()
 		end
 	else
 		shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
-	end
+	end]]
 
 	Global_TwintopResourceBar.resource.passive = _passiveMana
 	Global_TwintopResourceBar.resource.channeledPotion = _channeledMana or 0
@@ -1553,15 +1553,15 @@ local function RefreshLookupData_Holy()
 	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
 	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _slumberingSoulSerumTicks or 0
 
-	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
+	--[[Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
 	Global_TwintopResourceBar.shadowfiend.mana = shadowfiend.resourceFinal or 0
 	Global_TwintopResourceBar.shadowfiend.gcds = shadowfiend.remainingGcds or 0
 	Global_TwintopResourceBar.shadowfiend.swings = shadowfiend.remainingSwings or 0
 	Global_TwintopResourceBar.shadowfiend.time = shadowfiend.remainingTime or 0
-	Global_TwintopResourceBar.shadowfiend.count = shadowfiend:TotalActive()
+	Global_TwintopResourceBar.shadowfiend.count = shadowfiend:TotalActive()]]
 
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
+	--Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
 
 	local lookup = TRB.Data.lookup
 	lookup["$manaTotal"] = manaTotal
@@ -1606,11 +1606,11 @@ local function RefreshLookupData_Holy()
 	lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 	lookup["$solStacks"] = solStacks
 	lookup["$solTime"] = solTime
-	lookup["$sfMana"] = sfMana
+	--[[lookup["$sfMana"] = sfMana
 	lookup["$sfGcds"] = sfGcds
 	lookup["$sfSwings"] = sfSwings
 	lookup["$sfTime"] = sfTime
-	lookup["$sfCount"] = shadowfiend:TotalActive()
+	lookup["$sfCount"] = shadowfiend:TotalActive()]]
 	lookup["$lightweaverStacks"] = lightweaverStacks
 	lookup["$lightweaverTime"] = lightweaverTime
 	lookup["$apotheosisTime"] = apotheosisTime
@@ -1618,8 +1618,8 @@ local function RefreshLookupData_Holy()
 	lookup["$answeredPrayersMaxStacks"] = answeredPrayersMaxStacks
 	lookup["$answeredPrayersRemainingStacks"] = answeredPrayersRemainingStacks
 	lookup["$sacredReverenceStacks"] = sacredReverenceStacks
-	lookup["$swpCount"] = shadowWordPainCount
-	lookup["$swpTime"] = shadowWordPainTime
+	--lookup["$swpCount"] = shadowWordPainCount
+	--lookup["$swpTime"] = shadowWordPainTime
 	lookup["$rwTime"] = rwTime
 	TRB.Data.lookup = lookup
 
@@ -1666,10 +1666,10 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$potionCooldownSeconds"] = potionCooldown
 	lookupLogic["$solStacks"] = _solStacks
 	lookupLogic["$solTime"] = _solTime
-	lookupLogic["$sfMana"] = _sfMana
+	--[[lookupLogic["$sfMana"] = _sfMana
 	lookupLogic["$sfGcds"] = _sfGcds
 	lookupLogic["$sfSwings"] = _sfSwings
-	lookupLogic["$sfTime"] = _sfTime
+	lookupLogic["$sfTime"] = _sfTime]]
 	lookupLogic["$lightweaverStacks"] = _lightweaverStacks
 	lookupLogic["$lightweaverTime"] = _lightweaverTime
 	lookupLogic["$apotheosisTime"] = _apotheosisTime
@@ -1677,8 +1677,8 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$answeredPrayersMaxStacks"] = _answeredPrayersMaxStacks
 	lookupLogic["$answeredPrayersRemainingStacks"] = _answeredPrayersRemainingStacks
 	lookupLogic["$sacredReverenceStacks"] = _sacredReverenceStacks
-	lookupLogic["$swpCount"] = _shadowWordPainCount
-	lookupLogic["$swpTime"] = _shadowWordPainTime
+	--lookupLogic["$swpCount"] = _shadowWordPainCount
+	--lookupLogic["$swpTime"] = _shadowWordPainTime
 	lookupLogic["$rwTime"] = rwTime
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -2434,8 +2434,8 @@ local function UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
-	local shadowfiend = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
-	shadowfiend:Update()
+	--[[local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
+	shadowfiend:Update()]]
 end
 
 local function UpdateSnapshot_Healers()
@@ -2452,8 +2452,8 @@ local function UpdateSnapshot_Healers()
 	local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 	manaTideTotem:Update()
 	
-	local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
-	cannibalize:Update()
+	--[[local cannibalize = snapshots[spells.cannibalize.id] --[@as TRB.Classes.Healer.Cannibalize]
+	cannibalize:Update()]]
 	
 	local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 	potionOfChilledClarity:Update()
@@ -2618,10 +2618,10 @@ local function UpdateResourceBar()
 				end
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specCacheSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
-				thresholdCount = thresholdCount + 1
+				--[[thresholdCount = thresholdCount + 1
 				TRB.Data.cache.values.threshold[spells.shadowfiend.id] = TRB.Data.cache.values.threshold[spells.shadowfiend.id] or {}
 				if (talents:IsTalentActive(spells.shadowfiend) or talents:IsTalentActive(spells.mindbender) or talents:IsTalentActive(spells.voidwraith)) and specCacheSettings.thresholds.thresholdDictionary["shadowfiend"].enabled and specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Healer.HealerRegenBase], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[@as TRB.Classes.Priest.Shadowfiend].resourceFinal)
 				else
 					TRB.Functions.Threshold:Hide(spells.shadowfiend.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
@@ -2629,10 +2629,10 @@ local function UpdateResourceBar()
 				thresholdCount = thresholdCount + 1
 				TRB.Data.cache.values.threshold[spells.cannibalize.id] = TRB.Data.cache.values.threshold[spells.cannibalize.id] or {}
 				if TRB.Data.character.raceId == 5 and specCacheSettings.thresholds.thresholdDictionary["cannibalize"].enabled and specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.cannibalize.id] --[@as TRB.Classes.Healer.Cannibalize], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
-				end
+				end]]
 
 				passiveBarValue = castingBarValue + passiveValue
 
@@ -2706,8 +2706,8 @@ local function UpdateResourceBar()
 						else
 							showThreshold = false
 						end
-					elseif spell.id == spells.shadowfiend.id or spell.id == spells.mindbender.id or spell.id == spells.voidwraith.id then
-						snapshot = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+					--[[elseif spell.id == spells.shadowfiend.id or spell.id == spells.mindbender.id or spell.id == spells.voidwraith.id then
+						snapshot = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 						if talents:IsTalentActive(spell) then--and not snapshot.buff.isActive then
 							local mbActive = talents:IsTalentActive(spells.mindbender)
 							local vwActive = talents:IsTalentActive(spells.voidwraith)
@@ -2750,9 +2750,9 @@ local function UpdateResourceBar()
 							end
 						else
 							showThreshold = false
-						end
-					elseif spell.id == spells.cannibalize.id then
-						snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+						end]]
+					--[[elseif spell.id == spells.cannibalize.id then
+						snapshot = snapshots[spells.cannibalize.id] --[@as TRB.Classes.Healer.Cannibalize]
 						local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
 						resourceAmount = castingBarValue + cannibalizeTotal
 						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specCacheSettings.thresholds.thresholdDictionary["cannibalize"].enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specCacheSettings.thresholds.thresholdDictionary["cannibalize"].cooldown) then
@@ -2762,7 +2762,7 @@ local function UpdateResourceBar()
 							end
 						else
 							showThreshold = false
-						end
+						end]]
 					else
 						resourceAmount = spell:GetPrimaryResourceCost()
 					end
@@ -2961,19 +2961,19 @@ local function UpdateResourceBar()
 				end
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specCacheSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
-				thresholdCount = thresholdCount + 1
+				--[[thresholdCount = thresholdCount + 1
 				if talents:IsTalentActive(spells.shadowfiend) and specCacheSettings.thresholds.thresholdDictionary["shadowfiend"].enabled and specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[[@as TRB.Classes.Priest.Shadowfiend]].resourceFinal)
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Healer.HealerRegenBase], passiveFrame, thresholdCount, castingBarValue, passiveValue, snapshots[spells.shadowfiend.id]--[@as TRB.Classes.Priest.Shadowfiend].resourceFinal)
 				else
 					TRB.Functions.Threshold:Hide(spells.shadowfiend.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
 				end
 
 				thresholdCount = thresholdCount + 1
 				if TRB.Data.character.raceId == 5 and specCacheSettings.thresholds.thresholdDictionary["cannibalize"].enabled and specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.cannibalize.id] --[@as TRB.Classes.Healer.Cannibalize], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Functions.Threshold:Hide(spells.cannibalize.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
-				end
+				end]]
 
 				passiveBarValue = castingBarValue + passiveValue
 
@@ -3047,8 +3047,8 @@ local function UpdateResourceBar()
 						else
 							showThreshold = false
 						end
-					elseif spell.id == spells.shadowfiend.id then
-						snapshot = snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Priest.Shadowfiend]]
+					--[[elseif spell.id == spells.shadowfiend.id then
+						snapshot = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 						if talents:IsTalentActive(spell) and not snapshot.buff.isActive and specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].cooldown) then
 							local _, swingsRemaining, _, _, _ = snapshot:GetMaximumValues()
 							local shadowfiendMana = swingsRemaining * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
@@ -3065,9 +3065,9 @@ local function UpdateResourceBar()
 							end
 						else
 							showThreshold = false
-						end
-					elseif spell.id == spells.cannibalize.id then
-						snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+						end]]
+					--[[elseif spell.id == spells.cannibalize.id then
+						snapshot = snapshots[spells.cannibalize.id] --[@as TRB.Classes.Healer.Cannibalize]
 						local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
 						resourceAmount = castingBarValue + cannibalizeTotal
 						if not snapshot.buff.isActive and TRB.Data.character.raceId == 5 and specCacheSettings.thresholds.thresholdDictionary["cannibalize"].enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specCacheSettings.thresholds.thresholdDictionary["cannibalize"].cooldown) then
@@ -3077,7 +3077,7 @@ local function UpdateResourceBar()
 							end
 						else
 							showThreshold = false
-						end
+						end]]
 					else
 						resourceAmount = spell:GetPrimaryResourceCost()
 					end
@@ -3824,16 +3824,16 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
-		local targetData = TRB.Data.snapshotData.targetData
+		--[[local targetData = TRB.Data.snapshotData.targetData
 		targetData:AddSpellTracking(spells.shadowWordPain)
-		targetData:AddSpellTracking(spells.atonement)
+		targetData:AddSpellTracking(spells.atonement)]]
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Discipline
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.discipline.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.discipline)
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#atonement"] = spells.atonement.icon
+		--[[lookup["#atonement"] = spells.atonement.icon
 		lookup["#pwRadiance"] = spells.powerWordRadiance.icon
 		lookup["#radiance"] = spells.powerWordRadiance.icon
 		lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon
@@ -3852,9 +3852,9 @@ local function SwitchSpec()
 		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
 		lookup["#pocc"] = spells.potionOfChilledClarity.icon
 		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
-		lookup["#entropicRift"] = spells.entropicRift.icon
+		lookup["#entropicRift"] = spells.entropicRift.icon]]
 		
-		if specCache.discipline.talents:IsTalentActive(spells.voidwraith) then
+		--[[if specCache.discipline.talents:IsTalentActive(spells.voidwraith) then
 			lookup["#sf"] = spells.voidwraith.icon
 			lookup["#mindbender"] = spells.voidwraith.icon
 			lookup["#shadowfiend"] = spells.voidwraith.icon
@@ -3871,7 +3871,7 @@ local function SwitchSpec()
 				lookup["#shadowfiend"] = spells.shadowfiend.icon
 				lookup["#voidwraith"] = spells.shadowfiend.icon
 			end
-		end
+		end]]
 
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
@@ -3888,17 +3888,17 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
-		local targetData = TRB.Data.snapshotData.targetData
-		targetData:AddSpellTracking(spells.shadowWordPain)
+		--[[local targetData = TRB.Data.snapshotData.targetData
+		targetData:AddSpellTracking(spells.shadowWordPain)]]
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.holy.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#answeredPrayers"] = spells.answeredPrayers.icon
-		lookup["#apotheosis"] = spells.apotheosis.icon
 		lookup["#flashHeal"] = spells.flashHeal.icon
+		--[[lookup["#answeredPrayers"] = spells.answeredPrayers.icon
+		lookup["#apotheosis"] = spells.apotheosis.icon
 		lookup["#heal"] = spells.heal.icon
 		lookup["#hf"] = spells.holyFire.icon
 		lookup["#holyFire"] = spells.holyFire.icon
@@ -3934,7 +3934,7 @@ local function SwitchSpec()
 		lookup["#shadowWordPain"] = spells.shadowWordPain.icon
 		lookup["#sacredReverence"] = spells.sacredReverence.icon
 		lookup["#sf"] = spells.shadowfiend.icon
-		lookup["#shadowfiend"] = spells.shadowfiend.icon
+		lookup["#shadowfiend"] = spells.shadowfiend.icon]]
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -4178,7 +4178,7 @@ function TRB.Functions.Class:CheckCharacter()
 		local settings = TRB.Data.settings.priest.discipline
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 
-		if talents:IsTalentActive(spells.voidwraith) then
+		--[[if talents:IsTalentActive(spells.voidwraith) then
 			snapshots[spells.shadowfiend.id].spell = spells.voidwraith
 		else
 			if talents:IsTalentActive(spells.mindbender) then
@@ -4186,7 +4186,7 @@ function TRB.Functions.Class:CheckCharacter()
 			else
 				snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
 			end
-		end
+		end]]
 		
 		local totalPowerWordCharges = 0
 		
