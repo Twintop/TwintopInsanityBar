@@ -339,7 +339,6 @@ end
 
 ---@class TRB.Classes.Healer.HealerSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public alchemistStone TRB.Classes.SpellBase
----@field public symbolOfHope TRB.Classes.SpellBase
 ---@field public innervate TRB.Classes.SpellBase
 ---@field public manaTideTotem TRB.Classes.SpellBase
 ---@field public blessingOfWinter TRB.Classes.SpellBase
@@ -362,14 +361,6 @@ function TRB.Classes.Healer.HealerSpells:New()
 	self = setmetatable(base:New(), {__index = TRB.Classes.Healer.HealerSpells})
 	
 	-- External mana
-	self.symbolOfHope = TRB.Classes.SpellBase:New({
-		id = 64901,
-		duration = 4.0, --Hasted
-		resourcePercent = 0.02,
-		ticks = 4,
-		tickId = 265144,
-		hasCooldown = true
-	})
 	self.innervate = TRB.Classes.SpellBase:New({
 		id = 29166,
 		duration = 10

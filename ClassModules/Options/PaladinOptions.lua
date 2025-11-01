@@ -258,7 +258,6 @@ local function HolyLoadDefaultSettings(includeBarText)
 		passiveGeneration = {
 			innervate = true,
 			manaTideTotem = true,
-			symbolOfHope = true,
 			blessingOfWinter = true
 		},
 		colors={
@@ -791,20 +790,6 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.passiveGeneration.manaTideTotem = self:GetChecked()
 	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.symbolOfHopeRegen = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_SymbolOfHopePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.symbolOfHopeRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackSymbolOfHope"])
-	f.tooltip = L["HealerCheckboxTrackSymbolOfHopeTooltip"]
-	f:SetChecked(spec.passiveGeneration.symbolOfHope)
-	f:SetScript("OnClick", function(self, ...)
-		spec.passiveGeneration.symbolOfHope = self:GetChecked()
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
 end
 
 local function HolyConstructBarTextDisplayPanel(parent, cache)

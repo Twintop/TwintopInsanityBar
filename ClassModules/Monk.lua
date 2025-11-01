@@ -120,8 +120,6 @@ local function FillSpecializationCache()
 	specCache.mistweaver.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
 	---@type TRB.Classes.Healer.ManaTideTotem
 	specCache.mistweaver.snapshotData.snapshots[spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(spells.manaTideTotem)
-	---@type TRB.Classes.Healer.SymbolOfHope
-	specCache.mistweaver.snapshotData.snapshots[spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(spells.symbolOfHope, CalculateManaGain)
 	---@type TRB.Classes.Healer.ChanneledManaPotion
 	specCache.mistweaver.snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.slumberingSoulSerumRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
@@ -239,9 +237,6 @@ local function FillSpellData_Mistweaver()
 		{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
 		{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
 
-		{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
-		{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
-
 		{ variable = "#amp", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = true },
 		{ variable = "#algariManaPotion", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = false },
 		{ variable = "#pocc", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = true },
@@ -303,10 +298,6 @@ local function FillSpellData_Mistweaver()
 		{ variable = "$bowMana", description = L["MonkMistweaverBarTextVariable_bowMana"], printInSettings = true, color = false },
 		{ variable = "$bowTime", description = L["MonkMistweaverBarTextVariable_bowTime"], printInSettings = true, color = false },
 		{ variable = "$bowTicks", description = L["MonkMistweaverBarTextVariable_bowTicks"], printInSettings = true, color = false },
-
-		{ variable = "$sohMana", description = L["MonkMistweaverBarTextVariable_sohMana"], printInSettings = true, color = false },
-		{ variable = "$sohTime", description = L["MonkMistweaverBarTextVariable_sohTime"], printInSettings = true, color = false },
-		{ variable = "$sohTicks", description = L["MonkMistweaverBarTextVariable_sohTicks"], printInSettings = true, color = false },
 
 		{ variable = "$innervateMana", description = L["MonkMistweaverBarTextVariable_innervateMana"], printInSettings = true, color = false },
 		{ variable = "$innervateTime", description = L["MonkMistweaverBarTextVariable_innervateTime"], printInSettings = true, color = false },
@@ -506,17 +497,6 @@ local function RefreshLookupData_Mistweaver()
 	local _castingMana = snapshotData.casting.resourceFinal
 	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
-	local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-	--$sohMana
-	local _sohMana = symbolOfHope.buff.mana
-	local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
-	--$sohTicks
-	local _sohTicks = symbolOfHope.buff.ticks or 0
-	local sohTicks = string.format("%.0f", _sohTicks)
-	--$sohTime
-	local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
-	local sohTime = TRB.Functions.BarText:TimerPrecision(_sohTime)
-
 	local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 	--$innervateMana
 	local _innervateMana = innervate.mana
@@ -572,12 +552,12 @@ local function RefreshLookupData_Mistweaver()
 	local slumberingSoulSerumTime = TRB.Functions.BarText:TimerPrecision(_slumberingSoulSerumTime)
 	
 	local manaTea = snapshots[spells.manaTea.id] --[[@as TRB.Classes.Snapshot]]
-	--$mrTime
+	--$mtTime
 	local _mtTime = manaTea.buff.remaining
 	local mtTime = TRB.Functions.BarText:TimerPrecision(_mtTime)
 
 	--$passive
-	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _bowMana
+	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _bowMana
 	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -614,16 +594,11 @@ local function RefreshLookupData_Mistweaver()
 	Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _channeledMana or 0
 	Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
 	Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
-	Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 	
 	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
 	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
 	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _slumberingSoulSerumTicks or 0
 	
-	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
-	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
-	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
-
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$manaTotal"] = manaTotal
@@ -640,15 +615,10 @@ local function RefreshLookupData_Mistweaver()
 	lookup["$resource"] = currentMana
 	lookup["$casting"] = castingMana
 	lookup["$passive"] = passiveMana
-	lookup["$sohMana"] = sohMana
-	lookup["$sohTime"] = sohTime
-	lookup["$sohTicks"] = sohTicks
 	lookup["$innervateMana"] = innervateMana
 	lookup["$innervateTime"] = innervateTime
 	lookup["$potionOfChilledClarityMana"] = potionOfChilledClarityMana
 	lookup["$potionOfChilledClarityTime"] = potionOfChilledClarityTime
-	lookup["$mrMana"] = mrMana
-	lookup["$mrTime"] = mrTime
 	lookup["$bowMana"] = bowMana
 	lookup["$bowTime"] = bowTime
 	lookup["$bowTicks"] = bowTicks
@@ -680,15 +650,10 @@ local function RefreshLookupData_Mistweaver()
 	lookupLogic["$resource"] = normalizedMana
 	lookupLogic["$casting"] = _castingMana
 	lookupLogic["$passive"] = _passiveMana
-	lookupLogic["$sohMana"] = _sohMana
-	lookupLogic["$sohTime"] = _sohTime
-	lookupLogic["$sohTicks"] = _sohTicks
 	lookupLogic["$innervateMana"] = _innervateMana
 	lookupLogic["$innervateTime"] = _innervateTime
 	lookupLogic["$potionOfChilledClarityMana"] = _potionOfChilledClarityMana
 	lookupLogic["$potionOfChilledClarityTime"] = _potionOfChilledClarityTime
-	lookupLogic["$mrMana"] = _mrMana
-	lookupLogic["$mrTime"] = _mrTime
 	lookupLogic["$bowMana"] = _bowMana
 	lookupLogic["$bowTime"] = _bowTime
 	lookupLogic["$bowTicks"] = _bowTicks
@@ -947,9 +912,6 @@ local function UpdateSnapshot_Mistweaver()
 
 	local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 	manaTideTotem:Update()
-
-	local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-	symbolOfHope:Update()
 
 	local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
 	blessingOfWinter:Update()
@@ -1398,11 +1360,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 		if entry.destinationGuid == TRB.Data.character.guid then
 			if TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then -- Let's check raid effect mana stuff
-				if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
-					local castByToken = UnitTokenFromGUID(entry.sourceGuid)
-					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-					symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
-				elseif settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
+				if settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
 					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 					innervate.buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -1520,8 +1478,6 @@ local function SwitchSpec()
 		lookup["#innervate"] = spells.innervate.icon
 		lookup["#mtt"] = spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-		lookup["#soh"] = spells.symbolOfHope.icon
-		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
 		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
 		lookup["#bow"] = spells.blessingOfWinter.icon
 		lookup["#amp"] = spells.algariManaPotionRank1.icon
@@ -1820,30 +1776,13 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		elseif var == "$passive" then
 			if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
-				TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
 				TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
 				TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
-				TRB.Functions.Class:IsValidVariableForSpec("$mttMana") or
-				TRB.Functions.Class:IsValidVariableForSpec("$mrMana") then
+				TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
 				valid = true
 			end
 		elseif var == "$casting" then
 			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		elseif var == "$sohMana" then
-			local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-			if symbolOfHope.buff.isActive then
-				valid = true
-			end
-		elseif var == "$sohTime" then
-			local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-			if symbolOfHope.buff.isActive then
-				valid = true
-			end
-		elseif var == "$sohTicks" then
-			local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-			if symbolOfHope.buff.isActive then
 				valid = true
 			end
 		elseif var == "$innervateMana" then

@@ -349,7 +349,6 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 		passiveGeneration = {
 			innervate = true,
 			manaTideTotem = true,
-			symbolOfHope = true,
 			blessingOfWinter = true
 		},
 		colors={
@@ -833,11 +832,6 @@ local function HolyLoadDefaultSettings(includeBarText)
 					enabled = true,
 					cooldown = false
 				},
-				symbolOfHope = {
-					enabled = true,
-					cooldown = false,
-					minimumManaPercent = 25
-				},
 				cannibalize = {
 					enabled = false,
 					cooldown = false
@@ -892,7 +886,6 @@ local function HolyLoadDefaultSettings(includeBarText)
 		passiveGeneration = {
 			innervate = true,
 			manaTideTotem = true,
-			symbolOfHope = true,
 			blessingOfWinter = true
 		},
 		colors={
@@ -1936,17 +1929,6 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.passiveGeneration.manaTideTotem = self:GetChecked()
 	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.symbolOfHopeRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_SymbolOfHopePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.symbolOfHopeRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackSymbolOfHope"])
-	f.tooltip = L["HealerCheckboxTrackSymbolOfHopeTooltip"]
-	f:SetChecked(spec.passiveGeneration.symbolOfHope)
-	f:SetScript("OnClick", function(self, ...)
-		spec.passiveGeneration.symbolOfHope = self:GetChecked()
-	end)
 
 	yCoord = yCoord - 30
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHeaderShadowfiendMindbenderTracking"], oUi.xCoord, yCoord)
@@ -2778,17 +2760,6 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	f:SetChecked(spec.passiveGeneration.manaTideTotem)
 	f:SetScript("OnClick", function(self, ...)
 		spec.passiveGeneration.manaTideTotem = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.symbolOfHopeRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_SymbolOfHopePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.symbolOfHopeRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxTrackSymbolOfHope"])
-	f.tooltip = L["PriestHolyCheckboxTrackSymbolOfHopeTooltip"]
-	f:SetChecked(spec.passiveGeneration.symbolOfHope)
-	f:SetScript("OnClick", function(self, ...)
-		spec.passiveGeneration.symbolOfHope = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

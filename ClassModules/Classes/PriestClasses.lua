@@ -564,7 +564,6 @@ end
 ---@field public voiceOfHarmony TRB.Classes.SpellBase
 ---@field public lightwell TRB.Classes.SpellBase
 ---@field public answeredPrayers TRB.Classes.SpellBase
----@field public symbolOfHope TRB.Classes.SpellThreshold
 ---@field public smite TRB.Classes.Priest.HolyWordSpell
 ---@field public heal TRB.Classes.Priest.HolyWordSpell
 ---@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
