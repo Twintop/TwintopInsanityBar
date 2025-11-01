@@ -394,7 +394,6 @@ function TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(settings, s
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 2, castingBarValue, passiveValue)
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 3, castingBarValue, passiveValue)
 		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 4, castingBarValue, passiveValue)
-		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 5, castingBarValue, passiveValue)
 		TRB.Data.cache.values.threshold["showPassiveDisabled"] = false
 	else
 		if TRB.Data.cache.values.threshold["showPassiveDisabled"] ~= true then
@@ -402,7 +401,6 @@ function TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(settings, s
 			TRB.Frames.passiveFrame.thresholds[2]:Hide()
 			TRB.Frames.passiveFrame.thresholds[3]:Hide()
 			TRB.Frames.passiveFrame.thresholds[4]:Hide()
-			TRB.Frames.passiveFrame.thresholds[5]:Hide()
 			TRB.Data.cache.values.threshold["showPassiveDisabled"] = true
 		end
 	end

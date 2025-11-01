@@ -261,8 +261,7 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 		},
 		passiveGeneration = {
 			innervate = true,
-			manaTideTotem = true,
-			blessingOfWinter = true
+			manaTideTotem = true
 		},
 		colors={
 			text = {
@@ -1123,17 +1122,6 @@ local function MistweaverConstructAudioAndTrackingPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 	
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
-			
-	yCoord = yCoord - 30
-	controls.checkBoxes.blessingOfWinterRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_BlessingOfWinterMana_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.blessingOfWinterRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackBlessingOfWinter"])
-	f.tooltip = L["HealerCheckboxTrackBlessingOfWinterTooltip"]
-	f:SetChecked(spec.passiveGeneration.blessingOfWinter)
-	f:SetScript("OnClick", function(self, ...)
-		spec.passiveGeneration.blessingOfWinter = self:GetChecked()
-	end)
 	
 	yCoord = yCoord - 30
 	controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")

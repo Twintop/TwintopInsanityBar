@@ -136,8 +136,6 @@ local function FillSpecializationCache()
 	specCache.discipline.snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.slumberingSoulSerumRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
 	specCache.discipline.snapshotData.snapshots[spells.algariManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.algariManaPotionRank1)
-	---@type TRB.Classes.Healer.BlessingOfWinter
-	specCache.discipline.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Priest.Shadowfiend
 	specCache.discipline.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Priest.Shadowfiend:New(TRB.Data.settings.priest.discipline.shadowfiend, specCache.discipline.talents, CalculateManaGain, spells.shadowfiend, spells.mindbender, spells.voidwraith)
 	---@type TRB.Classes.Healer.Cannibalize
@@ -274,8 +272,6 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.slumberingSoulSerumRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.algariManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.algariManaPotionRank1)
-	---@type TRB.Classes.Healer.BlessingOfWinter
-	specCache.holy.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, "always")
 	---@type TRB.Classes.Snapshot
@@ -417,8 +413,6 @@ local function FillSpellData_Discipline()
 		{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 		{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 		
-		{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
-		{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
 		{ variable = "#amp", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = true },
 		{ variable = "#algariManaPotion", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = false },
 		{ variable = "#pocc", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = true },
@@ -491,10 +485,6 @@ local function FillSpellData_Discipline()
 		{ variable = "$pwRadianceCharges", description = L["PriestDisciplineBarTextVariable_pwRadianceCharges"], printInSettings = true, color = false },
 		{ variable = "$radianceCharges", description = "", printInSettings = false, color = false },
 		{ variable = "$powerWordRadianceCharges", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$bowMana", description = L["PriestDisciplineBarTextVariable_bowMana"], printInSettings = true, color = false },
-		{ variable = "$bowTime", description = L["PriestDisciplineBarTextVariable_bowTime"], printInSettings = true, color = false },
-		{ variable = "$bowTicks", description = L["PriestDisciplineBarTextVariable_bowTicks"], printInSettings = true, color = false },
 
 		{ variable = "$innervateMana", description = L["PriestDisciplineBarTextVariable_innervateMana"], printInSettings = true, color = false },
 		{ variable = "$innervateTime", description = L["PriestDisciplineBarTextVariable_innervateTime"], printInSettings = true, color = false },
@@ -543,10 +533,8 @@ local function FillSpellData_Holy()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-		{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },			
-		{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },			
-		{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
-		{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
+		{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },	
+		{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },
 		{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
 		{ variable = "#heal", icon = spells.heal.icon, description = spells.heal.name, printInSettings = true },
 		{ variable = "#hf", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = true },
@@ -670,10 +658,6 @@ local function FillSpellData_Holy()
 		{ variable = "$lightweaverTime", description = L["PriestHolyBarTextVariable_lightweaverTime"], printInSettings = true, color = false },
 
 		{ variable = "$rwTime", description = L["PriestHolyBarTextVariable_rwTime"], printInSettings = true, color = false },
-		
-		{ variable = "$bowMana", description = L["PriestHolyBarTextVariable_bowMana"], printInSettings = true, color = false },
-		{ variable = "$bowTime", description = L["PriestHolyBarTextVariable_bowTime"], printInSettings = true, color = false },
-		{ variable = "$bowTicks", description = L["PriestHolyBarTextVariable_bowTicks"], printInSettings = true, color = false },
 
 		{ variable = "$innervateMana", description = L["PriestHolyBarTextVariable_innervateMana"], printInSettings = true, color = false },
 		{ variable = "$innervateTime", description = L["PriestHolyBarTextVariable_innervateTime"], printInSettings = true, color = false },
@@ -1106,17 +1090,6 @@ local function RefreshLookupData_Discipline()
 	local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
 	local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
 
-	local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
-	--$bowMana
-	local _bowMana = blessingOfWinter.mana
-	local bowMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_bowMana, manaPrecision, "floor", true))
-	--$bowTime
-	local _bowTime = blessingOfWinter.buff.remaining
-	local bowTime = TRB.Functions.BarText:TimerPrecision(_bowTime)
-	--$bowTicks
-	local _bowTicks = blessingOfWinter.buff.ticks or 0
-	local bowTicks = string.format("%.0f", _bowTicks)
-
 	--$potionCooldownSeconds
 	local _potionCooldown = snapshots[spells.algariManaPotionRank1.id].cooldown.remaining
 	local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
@@ -1152,7 +1125,7 @@ local function RefreshLookupData_Discipline()
 	local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)
 
 	--$passive
-	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _bowMana
+	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana
 	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1298,9 +1271,6 @@ local function RefreshLookupData_Discipline()
 	lookup["$potionOfChilledClarityTime"] = potionOfChilledClarityTime
 	lookup["$mttMana"] = mttMana
 	lookup["$mttTime"] = mttTime
-	lookup["$bowMana"] = bowMana
-	lookup["$bowTime"] = bowTime
-	lookup["$bowTicks"] = bowTicks
 	lookup["$channeledMana"] = channeledMana
 	lookup["$slumberingSoulSerumTicks"] = slumberingSoulSerumTicks
 	lookup["$slumberingSoulSerumTime"] = slumberingSoulSerumTime
@@ -1349,9 +1319,6 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$innervateTime"] = _innervateTime
 	lookupLogic["$potionOfChilledClarityMana"] = _potionOfChilledClarityMana
 	lookupLogic["$potionOfChilledClarityTime"] = _potionOfChilledClarityTime
-	lookupLogic["$bowMana"] = _bowMana
-	lookupLogic["$bowTime"] = _bowTime
-	lookupLogic["$bowTicks"] = _bowTicks
 	lookupLogic["$mttMana"] = _mttMana
 	lookupLogic["$mttTime"] = _mttTime
 	lookupLogic["$channeledMana"] = _channeledMana
@@ -1429,17 +1396,6 @@ local function RefreshLookupData_Holy()
 	--$mttTime
 	local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
 	local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
-	
-	local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
-	--$bowMana
-	local _bowMana = blessingOfWinter.mana
-	local bowMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_bowMana, manaPrecision, "floor", true))
-	--$bowTime
-	local _bowTime = blessingOfWinter.buff.remaining
-	local bowTime = TRB.Functions.BarText:TimerPrecision(_bowTime)
-	--$bowTicks
-	local _bowTicks = blessingOfWinter.buff.ticks or 0
-	local bowTicks = string.format("%.0f", _bowTicks)
 
 	--$potionCooldownSeconds
 	local _potionCooldown = snapshots[spells.algariManaPotionRank1.id].cooldown.remaining
@@ -1476,7 +1432,7 @@ local function RefreshLookupData_Holy()
 	local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)
 
 	--$passive
-	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _bowMana
+	local _passiveMana = _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana
 	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1643,9 +1599,6 @@ local function RefreshLookupData_Holy()
 	lookup["$potionOfChilledClarityTime"] = potionOfChilledClarityTime
 	lookup["$mttMana"] = mttMana
 	lookup["$mttTime"] = mttTime
-	lookup["$bowMana"] = bowMana
-	lookup["$bowTime"] = bowTime
-	lookup["$bowTicks"] = bowTicks
 	lookup["$channeledMana"] = channeledMana
 	lookup["$slumberingSoulSerumTicks"] = slumberingSoulSerumTicks
 	lookup["$slumberingSoulSerumTime"] = slumberingSoulSerumTime
@@ -1704,9 +1657,6 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$innervateTime"] = _innervateTime
 	lookupLogic["$potionOfChilledClarityMana"] = _potionOfChilledClarityMana
 	lookupLogic["$potionOfChilledClarityTime"] = _potionOfChilledClarityTime
-	lookupLogic["$bowMana"] = _bowMana
-	lookupLogic["$bowTime"] = _bowTime
-	lookupLogic["$bowTicks"] = _bowTicks
 	lookupLogic["$mttMana"] = _mttMana
 	lookupLogic["$mttTime"] = _mttTime
 	lookupLogic["$channeledMana"] = _channeledMana
@@ -2501,9 +2451,6 @@ local function UpdateSnapshot_Healers()
 
 	local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 	manaTideTotem:Update()
-
-	local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
-	blessingOfWinter:Update()
 	
 	local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
 	cannibalize:Update()
@@ -3651,9 +3598,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif entry.spellId == spells.potionOfChilledClarity.id then
 					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[@as TRB.Classes.Healer.PotionOfChilledClarity]
 					potionOfChilledClarity.buff:Initialize(entry.type)
-				elseif settings.passiveGeneration.blessingOfWinter and entry.spellId == spells.blessingOfWinter.id then
-					local blessingOfWinter = snapshotData.snapshots[spells.blessingOfWinter.id] --[@as TRB.Classes.Healer.BlessingOfWinter]
-					blessingOfWinter.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.cannibalize.buffId then
 					local cannibalize = snapshots[spells.cannibalize.id] --[@as TRB.Classes.Healer.Cannibalize]
 					cannibalize.buff:Initialize(entry.type)
@@ -3900,8 +3844,6 @@ local function SwitchSpec()
 		lookup["#innervate"] = spells.innervate.icon
 		lookup["#mtt"] = spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
-		lookup["#bow"] = spells.blessingOfWinter.icon
 		lookup["#sol"] = spells.surgeOfLight.icon
 		lookup["#surgeOfLight"] = spells.surgeOfLight.icon
 		lookup["#amp"] = spells.algariManaPotionRank1.icon
@@ -3977,8 +3919,6 @@ local function SwitchSpec()
 		lookup["#lightOfTheNaaru"] = spells.lightOfTheNaaru.icon
 		lookup["#mtt"] = spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
-		lookup["#bow"] = spells.blessingOfWinter.icon
 		lookup["#poh"] = spells.prayerOfHealing.icon
 		lookup["#prayerOfHealing"] = spells.prayerOfHealing.icon
 		lookup["#smite"] = spells.smite.icon
@@ -4480,21 +4420,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$mttTime" then
 			local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 			if manaTideTotem.buff.isActive then
-				valid = true
-			end
-		elseif var == "$bowMana" then
-			local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
-			if blessingOfWinter.buff.isActive then
-				valid = true
-			end
-		elseif var == "$bowTime" then
-			local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
-			if blessingOfWinter.buff.isActive then
-				valid = true
-			end
-		elseif var == "$bowTicks" then
-			local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
-			if blessingOfWinter.buff.isActive then
 				valid = true
 			end
 		elseif var == "$channeledMana" then

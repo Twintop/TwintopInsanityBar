@@ -294,54 +294,10 @@ function TRB.Classes.Healer.ChanneledManaPotion:Update()
 end
 
 
---[[
-	******************************
-	***** Blessing of Winter *****
-	******************************
-	]]
-
----@class TRB.Classes.Healer.BlessingOfWinter : TRB.Classes.Healer.HealerRegenBase
----@field public mana number
----@field public ticks integer
-TRB.Classes.Healer.BlessingOfWinter = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
-TRB.Classes.Healer.BlessingOfWinter.__index = TRB.Classes.Healer.BlessingOfWinter
-
----Creates a new BlessingOfWinter object
----@param spell table # Spell we are snapshotting, in this case BlessingOfWinter
----@return TRB.Classes.Healer.BlessingOfWinter
-function TRB.Classes.Healer.BlessingOfWinter:New(spell)
-	---@type TRB.Classes.Healer.HealerRegenBase
-	local snapshot = TRB.Classes.Healer.HealerRegenBase
-	local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.BlessingOfWinter)
-	self:Reset()
-	self.attributes = {}
-	return self
-end
-
----Resets BlessingOfWinter's values to default
-function TRB.Classes.Healer.BlessingOfWinter:Reset()
-	---@type TRB.Classes.Healer.HealerRegenBase
-	local snapshot = TRB.Classes.Healer.HealerRegenBase
-	snapshot.Reset(self)
-	self.ticks = 0
-end
-
----Updates BlessingOfWinter's values
-function TRB.Classes.Healer.BlessingOfWinter:Update()
-	if self.buff.isActive then
-		self.buff:UpdateTicks()
-		self.mana = self.spell.attributes.resourcePercent * TRB.Data.character.maxResource * self.buff.ticks
-	else
-		self.ticks = 0
-		self.mana = 0
-	end
-end
-
 ---@class TRB.Classes.Healer.HealerSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public alchemistStone TRB.Classes.SpellBase
 ---@field public innervate TRB.Classes.SpellBase
 ---@field public manaTideTotem TRB.Classes.SpellBase
----@field public blessingOfWinter TRB.Classes.SpellBase
 ---@field public potionOfChilledClarity TRB.Classes.SpellBase
 ---@field public algariManaPotionRank1 TRB.Classes.SpellThreshold
 ---@field public algariManaPotionRank2 TRB.Classes.SpellThreshold
@@ -369,13 +325,6 @@ function TRB.Classes.Healer.HealerSpells:New()
 		id = 320763,
 		duration = 8,
 		resourceMod = 0.8
-	})
-	self.blessingOfWinter = TRB.Classes.SpellBase:New({
-		id = 388011,
-		tickRate = 2,
-		hasTicks = true,
-		resourcePerTick = 0,
-		resourcePercent = 0.01
 	})
 
 	-- Potions
