@@ -473,7 +473,7 @@ local function RefreshLookupData_Mistweaver()
 	local specSettings = TRB.Data.settings.monk.mistweaver
 	local sharedSettings = TRB.Data.specCache["mistweaver"].settings
 	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -944,7 +944,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
 
 				local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
@@ -1128,7 +1128,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 				local maxPrimaryBarResource = TRB.Data.character.maxResource

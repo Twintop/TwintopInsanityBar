@@ -558,7 +558,7 @@ local function RefreshLookupData_Devastation()
 	local specSettings = TRB.Data.settings.evoker.devastation
 	local sharedSettings = TRB.Data.specCache["devastation"].settings
 	--Spec specific implementation
-	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -635,7 +635,7 @@ local function RefreshLookupData_Preservation()
 	local specSettings = TRB.Data.settings.evoker.preservation
 	local sharedSettings = TRB.Data.specCache["preservation"].settings
 	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -854,7 +854,7 @@ local function RefreshLookupData_Augmentation()
 	local specSettings = TRB.Data.settings.evoker.augmentation
 	local sharedSettings = TRB.Data.specCache["augmentation"].settings
 	--Spec specific implementation
-	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -1046,7 +1046,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 				local castingBarColor = specSettings.colors.bar.casting
@@ -1141,7 +1141,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
 
 				local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
@@ -1343,7 +1343,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 				local castingBarColor = specSettings.colors.bar.casting

@@ -962,7 +962,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 				local maxPrimaryBarResource = TRB.Data.character.maxResource
@@ -1165,7 +1165,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 				local maxPrimaryBarResource = TRB.Data.character.maxResource

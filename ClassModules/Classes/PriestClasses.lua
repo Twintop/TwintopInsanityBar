@@ -6,7 +6,6 @@ end
 
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Priest = TRB.Classes.Priest or {}
-
 ---@alias shadowfiendType
 ---| '"Shadowfiend"' # Shadowfiend
 ---| '"Mindbender"' # Mindbender
@@ -458,7 +457,7 @@ end
 
 
 ---@class TRB.Classes.Priest.DisciplineSpells : TRB.Classes.Priest.HealerSpells
----@field public atonement TRB.Classes.SpellBase
+--[[---@field public atonement TRB.Classes.SpellBase
 ---@field public evangelism TRB.Classes.SpellBase
 ---@field public powerWordRadiance TRB.Classes.SpellBase
 ---@field public lightsPromise TRB.Classes.SpellBase
@@ -466,7 +465,7 @@ end
 ---@field public entropicRift TRB.Classes.SpellBase
 ---@field public depthOfShadows TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellThreshold
----@field public voidwraith TRB.Classes.SpellThreshold
+---@field public voidwraith TRB.Classes.SpellThreshold]]
 TRB.Classes.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.DisciplineSpells.__index = TRB.Classes.Priest.DisciplineSpells
 
@@ -476,15 +475,15 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Priest.DisciplineSpells) --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
 	-- Priest Class Baseline Abilities
-	self.shadowfiend.baseline = true
-	self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
+	--[[self.shadowfiend.baseline = true
+	self.shadowfiend.primaryResourceType = Enum.PowerType.Mana]]
 	
 	-- Discipline Baseline Abilities
 
 	-- Priest Talent Abilities
 
 	-- Discipline Talent Abilities
-	self.atonement = TRB.Classes.SpellBase:New({
+	--[[self.atonement = TRB.Classes.SpellBase:New({
 		id = 194384,
 		isTalent = true,
 		isBuff = true,
@@ -546,7 +545,7 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		resourcePercentMindbender = 0.002,
 		hasCooldown = true,
 		rangeCheck = false
-	})
+	})]]
 	
 	return self
 end
@@ -554,7 +553,7 @@ end
 
 ---@class TRB.Classes.Priest.HolySpells : TRB.Classes.Priest.HealerSpells
 ---@field public flashHeal TRB.Classes.SpellBase
----@field public holyWordSerenity TRB.Classes.SpellBase
+--[[---@field public holyWordSerenity TRB.Classes.SpellBase
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
 ---@field public resonantWords TRB.Classes.SpellBase
@@ -569,7 +568,7 @@ end
 ---@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
 ---@field public holyFire TRB.Classes.Priest.HolyWordSpell
 ---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
----@field public apotheosis TRB.Classes.Priest.HolyWordSpell
+---@field public apotheosis TRB.Classes.Priest.HolyWordSpell]]
 TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.HolySpells.__index = TRB.Classes.Priest.HolySpells
 
@@ -586,13 +585,13 @@ function TRB.Classes.Priest.HolySpells:New()
 		isTalent = false,
 		baseline = true
 	})
-	self.smite = TRB.Classes.Priest.HolyWordSpell:New({
+	--[[self.smite = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 585,
 		holyWordKey = "holyWordChastise",
 		holyWordReduction = 4,
 		isTalent = false,
 		baseline = true
-	})
+	})]]
 
 	-- Holy Baseline Abilities
 

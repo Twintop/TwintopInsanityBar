@@ -746,7 +746,7 @@ local function RefreshLookupData_Enhancement()
 	local target = targetData.targets[targetData.currentTargetGuid]
 	--Spec specific implementation
 	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -831,7 +831,7 @@ local function RefreshLookupData_Restoration()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 ---@diagnostic disable-next-line: cast-local-type
@@ -1196,7 +1196,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
 
 				local maxPrimaryBarResource = TRB.Data.character.maxResource
@@ -1396,7 +1396,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 				local castingBarColor = specSettings.colors.bar.casting
@@ -1481,7 +1481,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
 
 				local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]

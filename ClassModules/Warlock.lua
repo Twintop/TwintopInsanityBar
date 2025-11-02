@@ -241,7 +241,7 @@ local function RefreshLookupData_Affliction()
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local targetData = snapshotData.targetData
 	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	local normalizedSoulShards = snapshotData.attributes.resource2 / TRB.Data.resource2Factor
 
 	-- This probably needs to be pulled every refresh
@@ -630,7 +630,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 				local castingBarColor = specSettings.colors.bar.casting

@@ -301,7 +301,7 @@ local function RefreshLookupData_Holy()
 	local specSettings = TRB.Data.settings.paladin.holy
 	local sharedSettings = TRB.Data.specCache["holy"].settings
 	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -563,7 +563,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
 
 				local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
