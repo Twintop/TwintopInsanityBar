@@ -1713,19 +1713,19 @@ local function RefreshLookupData_Shadow()
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")]]
 
 	local currentInsanityColor = sharedSettings.colors.text.current.color
-	--[[local castingInsanityColor = sharedSettings.colors.text.casting.color
+	--[[local castingInsanityColor = sharedSettings.colors.text.casting.color]]
 
 	local insanityThreshold = spells.shadowWordMadness:GetPrimaryResourceCost()
 
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overcap.enabled and overcap then
+		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
 			currentInsanityColor = sharedSettings.colors.text.overcap.color
 			castingInsanityColor = sharedSettings.colors.text.overcap.color
-		elseif sharedSettings.colors.text.overThreshold.enabled and normalizedInsanity >= insanityThreshold then
+		else]]if sharedSettings.colors.text.overThreshold.enabled and normalizedInsanity >= insanityThreshold then
 			currentInsanityColor = sharedSettings.colors.text.overThreshold.color
-			castingInsanityColor = sharedSettings.colors.text.overThreshold.color
+			--castingInsanityColor = sharedSettings.colors.text.overThreshold.color
 		end
-	end]]
+	end
 
 	--$insanity
 	--local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))

@@ -891,7 +891,7 @@ local function RefreshLookupData_Balance()
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
-	local normalizedAstralPower = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedAstralPower = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	--$overcap
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")

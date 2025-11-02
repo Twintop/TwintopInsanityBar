@@ -416,7 +416,7 @@ local function RefreshLookupData_Havoc()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.havoc
 	local sharedSettings = TRB.Data.specCache["havoc"].settings
-	local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	--Spec specific implementation
 
 	--$overcap
@@ -624,7 +624,7 @@ local function RefreshLookupData_Vengeance()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.vengeance
 	local sharedSettings = TRB.Data.specCache["vengeance"].settings
-	local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	--Spec specific implementation
 
 	--$overcap
@@ -1733,7 +1733,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local settings = nil
-	local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
