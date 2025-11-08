@@ -373,14 +373,16 @@ end
 ---@param force boolean? # Force the update even if within embargo timespan
 function TRB.Classes.SpellBase:UpdateIsSpellUsable(force)
 	local currentTime = GetTime()
-	if (force == nil or force == false) and (self._lastSpellUsableCheck or currentTime) + spellUsableEmbargoTimespan > currentTime then
-	else
-		local isUsable, insufficientPower = C_Spell.IsSpellUsable(self.id)
-		--We previously only cared about insufficient power, but since we are not doing a check based on just primary and secondary resources we might as well use the full usability.
-		self._isUsable = isUsable
-		self._insufficientPower = insufficientPower
+	if (self._lastSpellUsableCheck or 0) + spellUsableEmbargoTimespan > currentTime then
 		self._lastSpellUsableCheck = currentTime
+		return self._isUsable
 	end
+
+	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self.id)
+	--We previously only cared about insufficient power, but since we are not doing a check based on just primary and secondary resources we might as well use the full usability.
+	self._isUsable = isUsable
+	self._insufficientPower = insufficientPower
+	self._lastSpellUsableCheck = currentTime
 end
 
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.

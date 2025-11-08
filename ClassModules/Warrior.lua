@@ -1161,7 +1161,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 				local maxPrimaryBarResource = TRB.Data.character.maxResource
-				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnnormalized
+				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 
 				local maxPrimaryBarResource = TRB.Data.character.maxResource
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -2171,8 +2171,8 @@ function TRB.Functions.Class:CheckCharacter()
 	end
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "warrior"
-	TRB.Data.character.maxResourceUnnormalized = 100-- UnitPowerMax("player", Enum.PowerType.Rage)
-	TRB.Data.character.maxResource = TRB.Data.character.maxResourceUnnormalized --* 100
+	TRB.Data.character.maxResourceUnmodified = 100-- UnitPowerMax("player", Enum.PowerType.Rage)
+	TRB.Data.character.maxResource = TRB.Data.character.maxResourceUnmodified --* 100
 
 	if TRB.Data.character.specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]

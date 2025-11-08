@@ -36,7 +36,7 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 	end
 
 	if maxResource == nil or maxResource == 0 then
-		maxResource = TRB.Data.character.maxResourceUnnormalized
+		maxResource = TRB.Data.character.maxResource
 		if maxResource == 0 then
 			maxResource = 100
 		end
@@ -44,9 +44,9 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource then
-		local _, max = parentFrame:GetMinMaxValues()
+		--local _, max = parentFrame:GetMinMaxValues()
 		--local factor = (max - (settings.bar.border * 2)) / maxResource
-		--local max = TRB.Data.character.maxResourceUnnormalized
+		--local max = TRB.Data.character.maxResourceUnmodified
 		local factor = (settings.bar.width - (settings.bar.border * 2)) / maxResource
 
 		if growRight then
@@ -428,7 +428,7 @@ function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snap
 		passiveValue = passiveValue + mana
 
 		if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], true, frame, (passiveValue + castingBarValue), TRB.Data.character.maxResourceUnnormalized)
+			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], true, frame, (passiveValue + castingBarValue), TRB.Data.character.maxResourceUnmodified)
 			---@diagnostic disable-next-line: undefined-field
 			
 			if cache.color ~= settings.colors.threshold.passive.color then

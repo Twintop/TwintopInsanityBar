@@ -458,8 +458,8 @@ local function FillSpellData_Discipline()
 		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
 		{ variable = "$manaMax", description = L["PriestDisciplineBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$casting", description = L["PriestDisciplineBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$passive", description = L["PriestDisciplineBarTextVariable_passive"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["PriestDisciplineBarTextVariable_casting"], printInSettings = true, color = false },
+		--[[{ variable = "$passive", description = L["PriestDisciplineBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$manaPlusCasting", description = L["PriestDisciplineBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
 		{ variable = "$manaPlusPassive", description = L["PriestDisciplineBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
@@ -614,8 +614,8 @@ local function FillSpellData_Holy()
 		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
 		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$casting", description = L["PriestHolyBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$passive", description = L["PriestHolyBarTextVariable_passive"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["PriestHolyBarTextVariable_casting"], printInSettings = true, color = false },
+		--[[{ variable = "$passive", description = L["PriestHolyBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$manaPlusCasting", description = L["PriestHolyBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
 		{ variable = "$manaPlusPassive", description = L["PriestHolyBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
@@ -817,8 +817,8 @@ local function FillSpellData_Shadow()
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
 		{ variable = "$insanityMax", description = L["PriestShadowBarTextVariable_insanityMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$casting", description = L["PriestShadowBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$passive", description = L["PriestShadowBarTextVariable_passive"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["PriestShadowBarTextVariable_casting"], printInSettings = true, color = false },
+		--[[{ variable = "$passive", description = L["PriestShadowBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$insanityPlusCasting", description = L["PriestShadowBarTextVariable_insanityPlusCasting"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
 		{ variable = "$insanityPlusPassive", description = L["PriestShadowBarTextVariable_insanityPlusPassive"], printInSettings = true, color = false },
@@ -1057,16 +1057,16 @@ local function RefreshLookupData_Discipline()
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
 	local currentManaColor = sharedSettings.colors.text.current.color
-	--local castingManaColor = sharedSettings.colors.text.casting.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, BreakUpLargeNumbers(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
-	--[[--$casting
+	local currentMana = string.format("|c%s%s|r", currentManaColor, FormatLargeNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+	local castingMana = string.format("|c%s%s|r", castingManaColor, FormatLargeNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
-	local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
+	--[[local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
 	--$innervateMana
 	local _innervateMana = innervate.mana
 	local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
@@ -1137,7 +1137,7 @@ local function RefreshLookupData_Discipline()
 	local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
 	local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))]]
 	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, BreakUpLargeNumbers(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+	local manaMax = string.format("|c%s%s|r", currentManaColor, FormatLargeNumber(TRB.Data.character.maxResource))-- BreakUpLargeNumbers(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
 	--[[local maxResource = TRB.Data.character.maxResource
@@ -1256,12 +1256,12 @@ local function RefreshLookupData_Discipline()
 	lookup["$resource"] = currentMana
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
+	lookup["$casting"] = castingMana
 	--[[lookup["$resourcePlusCasting"] = manaPlusCasting
 	lookup["$manaPlusCasting"] = manaPlusCasting
 	lookup["$resourcePlusPassive"] = manaPlusPassive
 	lookup["$manaPlusPassive"] = manaPlusPassive
-	lookup["$resourceTotal"] = manaTotal]]
-	--[[lookup["$casting"] = castingMana
+	lookup["$resourceTotal"] = manaTotal
 	lookup["$passive"] = passiveMana
 	lookup["$solStacks"] = solStacks
 	lookup["$solTime"] = solTime
@@ -1306,12 +1306,12 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$resource"] = normalizedMana
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
+	lookupLogic["$casting"] = _castingMana
 	--[[lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
 	lookupLogic["$manaPlusCasting"] = _manaPlusCasting
 	lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
 	lookupLogic["$manaPlusPassive"] = _manaPlusPassive
-	lookupLogic["$resourceTotal"] = _manaTotal]]
-	--[[lookupLogic["$casting"] = _castingMana
+	lookupLogic["$resourceTotal"] = _manaTotal
 	lookupLogic["$passive"] = _passiveMana
 	lookupLogic["$solStacks"] = _solStacks
 	lookupLogic["$solTime"] = _solTime
@@ -1364,15 +1364,16 @@ local function RefreshLookupData_Holy()
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
 	local currentManaColor = sharedSettings.colors.text.current.color
-	--[[local castingManaColor = sharedSettings.colors.text.casting.color]]
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, BreakUpLargeNumbers(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
-	--[[--$casting
+	local currentMana = string.format("|c%s%s|r", currentManaColor, FormatLargeNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+	local castingMana = string.format("|c%s%s|r", castingManaColor, FormatLargeNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
+	--[[
 	local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
 	--$innervateMana
 	local _innervateMana = innervate.mana
@@ -1444,7 +1445,7 @@ local function RefreshLookupData_Holy()
 	local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
 	local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))]]
 	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, BreakUpLargeNumbers(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+	local manaMax = string.format("|c%s%s|r", currentManaColor, FormatLargeNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
 	--[[local maxResource = TRB.Data.character.maxResource
@@ -1573,12 +1574,12 @@ local function RefreshLookupData_Holy()
 	lookup["$resource"] = currentMana
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
+	lookup["$casting"] = castingMana
 	--[[lookup["$resourcePlusCasting"] = manaPlusCasting
 	lookup["$manaPlusCasting"] = manaPlusCasting
 	lookup["$resourcePlusPassive"] = manaPlusPassive
 	lookup["$manaPlusPassive"] = manaPlusPassive
-	lookup["$resourceTotal"] = manaTotal]]
-	--[[lookup["$casting"] = castingMana
+	lookup["$resourceTotal"] = manaTotal
 	lookup["$passive"] = passiveMana
 	lookup["$hwChastiseTime"] = hwChastiseTime
 	lookup["$chastiseTime"] = hwChastiseTime
@@ -1633,12 +1634,12 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$resource"] = normalizedMana
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
+	lookupLogic["$casting"] = _castingMana
 	--[[lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
 	lookupLogic["$manaPlusCasting"] = _manaPlusCasting
 	lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
 	lookupLogic["$manaPlusPassive"] = _manaPlusPassive
-	lookupLogic["$resourceTotal"] = _manaTotal]]
-	--[[lookupLogic["$casting"] = _castingMana
+	lookupLogic["$resourceTotal"] = _manaTotal
 	lookupLogic["$passive"] = _passiveMana
 	lookupLogic["$hwChastiseTime"] = _hwChastiseTime
 	lookupLogic["$chastiseTime"] = _hwChastiseTime
@@ -1713,7 +1714,7 @@ local function RefreshLookupData_Shadow()
 	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")]]
 
 	local currentInsanityColor = sharedSettings.colors.text.current.color
-	--[[local castingInsanityColor = sharedSettings.colors.text.casting.color]]
+	local castingInsanityColor = sharedSettings.colors.text.casting.color
 
 	local insanityThreshold = spells.shadowWordMadness:GetPrimaryResourceCost()
 
@@ -1728,14 +1729,14 @@ local function RefreshLookupData_Shadow()
 	end
 
 	--$insanity
-	--local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentInsanity = normalizedInsanity
 	local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, _currentInsanity)-- TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
 	--$casting
-	--[[local _castingInsanity = snapshotData.casting.resourceFinal
+	local _castingInsanity = snapshotData.casting.resourceFinal
 	local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
 	
-	local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
+	--[[local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 	
 	--$mbInsanity
 	local _mbInsanity = shadowfiend.resourceFinal
@@ -1985,6 +1986,7 @@ local function RefreshLookupData_Shadow()
 	lookup["$insanity"] = currentInsanity
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$resource"] = currentInsanity
+	lookup["$casting"] = castingInsanity
 	--[[lookup["$swpCount"] = shadowWordPainCount
 	lookup["$swpTime"] = shadowWordPainTime
 	lookup["$vtCount"] = vampiricTouchCount
@@ -2016,7 +2018,6 @@ local function RefreshLookupData_Shadow()
 	lookup["$resourcePlusPassive"] = insanityPlusPassive
 	lookup["$insanityPlusPassive"] = insanityPlusPassive
 	lookup["$resourceTotal"] = insanityTotal
-	lookup["$casting"] = castingInsanity
 	lookup["$passive"] = passiveInsanity
 	lookup["$overcap"] = overcap
 	lookup["$resourceOvercap"] = overcap
@@ -2053,6 +2054,7 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$insanity"] = _currentInsanity
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = _currentInsanity
+	lookupLogic["$casting"] = _castingInsanity
 	--[[lookupLogic["$swpCount"] = _shadowWordPainCount
 	lookupLogic["$swpTime"] = _shadowWordPainTime
 	lookupLogic["$vtCount"] = _vampiricTouchCount
@@ -2084,7 +2086,6 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$resourcePlusPassive"] = _insanityPlusPassive
 	lookupLogic["$insanityPlusPassive"] = _insanityPlusPassive
 	lookupLogic["$resourceTotal"] = _insanityTotal
-	lookupLogic["$casting"] = _castingInsanity
 	lookupLogic["$passive"] = _passiveInsanity
 	lookupLogic["$overcap"] = overcap
 	lookupLogic["$resourceOvercap"] = overcap
@@ -2152,15 +2153,15 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	if TRB.Data.character.specId == 1 then
 		casting:SnapshotManaSpell()
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
-			--casting:SnapshotManaSpell()
+			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Discipline()
 		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
-			--[[casting:SnapshotManaSpell()
+			casting:SnapshotManaSpell()
 
-			if spellId == spells.heal.id then
+			--[[if spellId == spells.heal.id then
 				casting.spellKey = "heal"
 			elseif spellId == spells.flashHeal.id then
 				casting.spellKey = "flashHeal"
@@ -2179,12 +2180,12 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		if event == "UNIT_SPELLCAST_START" then
-			--[[if spellId == spells.mindBlast.id then
+			if spellId == spells.mindBlast.id then
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.mindBlast.resource
 				casting.spellId = spells.mindBlast.id
 				casting.icon = spells.mindBlast.icon
-			elseif spellId == spells.darkAscension.id then
+			--[[elseif spellId == spells.darkAscension.id then
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.darkAscension.resource
 				casting.spellId = spells.darkAscension.id
@@ -2228,8 +2229,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					casting.resourceRaw = spells.voidBlast.resource
 				end
 				casting.spellId = spells.voidBlast.id
-				casting.icon = spells.voidBlast.icon
-			end]]
+				casting.icon = spells.voidBlast.icon]]
+			end
 			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			--[[if spellId == spells.mindFlay.id then
@@ -2884,7 +2885,7 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local maxPrimaryBarResource = TRB.Data.character.maxResource
-				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnnormalized
+				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				local passiveBarValue = 0
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
@@ -3291,7 +3292,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 				local maxPrimaryBarResource = TRB.Data.character.maxResource
-				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnnormalized
+				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
 					maxPrimaryBarResource = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResource)
 				end
@@ -3321,11 +3322,11 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity]]
 				end
 
-				if snapshotData.casting.spellId ~= nil and specSettings.colors.bar.showCasting  then
+				--[[if snapshotData.casting.spellId ~= nil and specSettings.colors.bar.showCasting  then
 					castingBarValue = snapshotData.casting.resourceFinal + currentResource
-				else
+				else]]
 					castingBarValue = currentResource
-				end
+				--end
 
 				--[[local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 				if specSettings.colors.bar.showPassive and
@@ -3375,11 +3376,13 @@ local function UpdateResourceBar()
 						if spell.settingKey == spells.shadowWordMadness--[[@as TRB.Classes.SpellThreshold]].settingKey then
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif resourceAmount > maxPrimaryBarResourceUnnormalized then
+							elseif resourceAmount > TRB.Data.character.maxResource then
 								showThreshold = false
 							elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							--elseif currentResource >= resourceAmount then
+							elseif spell:IsFree() then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
 							elseif isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
@@ -3389,7 +3392,7 @@ local function UpdateResourceBar()
 						elseif spell.settingKey == spells.shadowWordMadness2--[[@as TRB.Classes.SpellThreshold]].settingKey then
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif resourceAmount > maxPrimaryBarResourceUnnormalized then
+							elseif resourceAmount > TRB.Data.character.maxResource then
 								showThreshold = false
 							--[[elseif snapshots[spells.mindDevourer.id].buff.isActive and
 								currentResource >= spells.shadowWordMadness:GetPrimaryResourceCost() then
@@ -4179,7 +4182,8 @@ function TRB.Functions.Class:CheckCharacter()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		TRB.Data.character.specName = "discipline"
 ---@diagnostic disable-next-line: missing-parameter
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		local settings = TRB.Data.settings.priest.discipline
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 
@@ -4212,7 +4216,8 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		TRB.Data.character.specName = "holy"
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		local settings = TRB.Data.settings.priest.holy
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 		
@@ -4247,14 +4252,8 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"
-		--TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
-		TRB.Data.character.maxResourceUnnormalized = 100
-
-		if talents:IsTalentActive(spells.voidtouched) then
-			TRB.Data.character.maxResourceUnnormalized = TRB.Data.character.maxResourceUnnormalized + spells.voidtouched.attributes.maxResource
-		end
-		
-		TRB.Data.character.maxResource = TRB.Data.character.maxResourceUnnormalized * 100
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity, true)
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Insanity, false)
 		
 		--[[if talents:IsTalentActive(spells.voidwraith) then
 			snapshots[spells.shadowfiend.id].spell = spells.voidwraith
@@ -4597,12 +4596,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshotData.attributes.resource > 0 or
 				((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + shadowfiend.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
 				valid = true
-			end
+			end]]
 		elseif var == "$casting" then
 			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0 then
 				valid = true
 			end
-		elseif var == "$passive" then
+		--[[elseif var == "$passive" then
 			local shadowfiend = snapshots[spells.shadowfiend.id] --[@as TRB.Classes.Priest.Shadowfiend]
 			if ((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + shadowfiend.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
 				valid = true

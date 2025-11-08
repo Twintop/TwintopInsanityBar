@@ -90,13 +90,13 @@ function TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowVa
 			(TRB.Data.character.advancedFlight and not settings.displayBar.dragonriding) or
 			((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
-				(not settings.displayBar.alwaysShow))--[[ and (
-					(not settings.displayBar.notZeroShow) or
+				(not settings.displayBar.alwaysShow)) and (
+					(not settings.displayBar.notZeroShow) --[[or
 					(settings.displayBar.notZeroShow and (snapshotData.attributes.resource / TRB.Data.resourceFactor) == notZeroShowValue and
 						(includeComboPoints ~= true or (includeComboPoints and (snapshotData.attributes.resource2 / TRB.Data.resource2Factor) == notZeroShowValueComboPoints))
 					)
-				)				
-			)]]) then
+				)]]
+			)) then
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Functions.BarText:Hide(settings)
 			snapshotData.attributes.isTracking = false
@@ -268,13 +268,13 @@ end
 ---@param bar frame
 ---@param value number
 function TRB.Functions.Bar:SetPrimaryValue(settings, key, bar, value)
-	--if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
+	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
 		if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
-			TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)--math.min(settings.maxResource.value, TRB.Data.character.maxResource))
+			TRB.Functions.Bar:SetValue(settings, key, bar, value, math.min(settings.maxResource.value * TRB.Data.resourceFactor, TRB.Data.character.maxResource))
 		else
 			TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)
 		end
-	--end
+	end
 end
 
 ---Sets the minimum and maximum values for all bars

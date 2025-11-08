@@ -689,8 +689,8 @@ end
 
 
 ---@class TRB.Classes.Priest.ShadowSpells : TRB.Classes.SpecializationSpellsBase
---[[---@field public mindBlast TRB.Classes.SpellBase
----@field public shadowWordPain TRB.Classes.SpellBase
+---@field public mindBlast TRB.Classes.SpellBase
+--[[---@field public shadowWordPain TRB.Classes.SpellBase
 ---@field public mindFlay TRB.Classes.SpellBase
 ---@field public vampiricTouch TRB.Classes.SpellBase
 ---@field public voidBolt TRB.Classes.SpellBase
@@ -743,7 +743,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Priest.ShadowSpells) --[[@as TRB.Classes.Priest.ShadowSpells]]
 
-	--[[
+	
 	-- Priest Class Baseline Abilities
 	self.mindBlast = TRB.Classes.SpellBase:New({
 		id = 8092,
@@ -752,7 +752,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		baseline = true,
 		hasCharges = true
 	})
-	self.shadowWordPain = TRB.Classes.SpellBase:New({
+	--[[self.shadowWordPain = TRB.Classes.SpellBase:New({
 		id = 589,
 		resource = 3,
 		baseDuration = 16,
