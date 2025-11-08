@@ -996,11 +996,14 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		spec.bar.dragAndDrop = self:GetChecked()
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Frames.barContainerFrame:SetMovable((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
-			TRB.Frames.barContainerFrame:EnableMouse((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+			--TRB.Frames.barContainerFrame:SetMovable((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+			--TRB.Frames.barContainerFrame:EnableMouse((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+			TRB.Frames.barContainerFrame:SetMovable(TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+			TRB.Frames.barContainerFrame:EnableMouse(TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
 		end
 	end)
 
+	--[[
 	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
 	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
@@ -1022,6 +1025,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
 		end
 	end)
+	]]
 
 	yCoord = yCoord - 30
 
@@ -1329,7 +1333,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		function(newValue)
 			StatusbarSetValue("resource", newValue)
 		end)
-
+	--[[
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			StatusbarSetValue("casting", newValue)
@@ -1339,49 +1343,49 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", L["PassiveBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			StatusbarSetValue("passive", newValue)
-		end)
+		end)]]
 
 	if includeComboPoints then
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
 			function(newValue)
 				StatusbarSetValue("comboPoints", newValue)
 			end)
-	end
-	
-	controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textureLock
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	f:SetChecked(spec.textures.textureLock)
-	getglobal(f:GetName() .. 'Text'):SetText(L["UseSameTexture"])
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["UseSameTextureTooltip"]
+	--end	
+		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.textureLock
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+		f:SetChecked(spec.textures.textureLock)
+		getglobal(f:GetName() .. 'Text'):SetText(L["UseSameTexture"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = L["UseSameTextureTooltip"]
 
-	f:SetScript("OnClick", function(self, ...)
-		spec.textures.textureLock = self:GetChecked()
-		if spec.textures.textureLock then
-			spec.textures.passiveBar = spec.textures.resourceBar
-			spec.textures.passiveBarName = spec.textures.resourceBarName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.passiveBar)
-			spec.textures.castingBar = spec.textures.resourceBar
-			spec.textures.castingBarName = spec.textures.resourceBarName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.castingBar)
+		f:SetScript("OnClick", function(self, ...)
+			spec.textures.textureLock = self:GetChecked()
+			if spec.textures.textureLock then
+				spec.textures.passiveBar = spec.textures.resourceBar
+				spec.textures.passiveBarName = spec.textures.resourceBarName
+				--DropdownSetupMenuWrapper(controls.dropDown.textures.passiveBar)
+				spec.textures.castingBar = spec.textures.resourceBar
+				spec.textures.castingBarName = spec.textures.resourceBarName
+				--DropdownSetupMenuWrapper(controls.dropDown.textures.castingBar)
 
-			if includeComboPoints then
-				spec.textures.comboPointsBar = spec.textures.resourceBar
-				spec.textures.comboPointsBarName = spec.textures.resourceBarName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBar)
-				spec.textures.comboPointsBorder = spec.textures.border
-				spec.textures.comboPointsBorderName = spec.textures.borderName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
-				spec.textures.comboPointsBackground = spec.textures.background
-				spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+				if includeComboPoints then
+					spec.textures.comboPointsBar = spec.textures.resourceBar
+					spec.textures.comboPointsBarName = spec.textures.resourceBarName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBar)
+					spec.textures.comboPointsBorder = spec.textures.border
+					spec.textures.comboPointsBorderName = spec.textures.borderName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+					spec.textures.comboPointsBackground = spec.textures.background
+					spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+				end
+
+				TRB.Functions.Character:ResetCaches()
+				TRB.Functions.Bar:Construct()
 			end
-
-			TRB.Functions.Character:ResetCaches()
-			TRB.Functions.Bar:Construct()
-		end
-	end)
+		end)
+	end
 
 	yCoord = yCoord - 60
 
@@ -1595,6 +1599,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		yCoord2 = yCoord2-20
 	end
 
+	--[[
 	controls.checkBoxes.dragonridingEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_DragonridingEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dragonridingEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-70)
@@ -1605,6 +1610,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.dragonriding = self:GetChecked()
 	end)
+	]]
 
 	return yCoord
 end
@@ -2581,6 +2587,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame)
 	end)
 
+	--[[
 	if includeOvercap then
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
@@ -2600,6 +2607,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 	end
+	]]
 
 	if isHealer then
 		yCoord = yCoord - 30
@@ -2728,6 +2736,13 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		spec.maxResource.value = value
+		if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
+			local specNameInner = specName
+			if classId == nil then
+				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
+			end
+			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[specNameInner].settings)
+		end
 	end)
 
 	return yCoord
@@ -2844,7 +2859,25 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 	return yCoord
 end
 
+---comment
+---@param parent any
+---@param controls any
+---@param spec any
+---@param classId any
+---@param specId any
+---@param yCoord integer
+---@param dotCheckbox any
+---@param dotTooltip any
+---@param showUp any
+---@param showPandemic any
+---@param showDown any
+---@return integer
 function TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, classId, specId, yCoord, dotCheckbox, dotTooltip, showUp, showPandemic, showDown)
+	--Short-circuit for now
+	if 1 == 1 then
+		return yCoord
+	end
+
 	if showUp == nil then
 		showUp = true
 	end

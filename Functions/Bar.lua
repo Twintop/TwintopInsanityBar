@@ -219,7 +219,7 @@ end
 ---@param maxResource number
 function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 	value = value-- or 0
-	--maxResource = maxResource or 1
+	maxResource = maxResource or 1
 	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
 	--[[if TRB.Data.cache.values.bar[key].value == value and TRB.Data.cache.values.bar[key].maxResource == maxResource then
 		return
@@ -281,9 +281,15 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.Bar:SetMinMax(settings)
 	if settings ~= nil and settings.bar ~= nil then
-		TRB.Frames.resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)-- settings.bar.width)
-		TRB.Frames.castingFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)-- settings.bar.width)
-		TRB.Frames.passiveFrame:SetMinMaxValues(0, TRB.Data.character.maxResource)-- settings.bar.width)
+		local max = TRB.Data.character.maxResource
+
+		if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
+			max = math.min(settings.maxResource.value * TRB.Data.resourceFactor, TRB.Data.character.maxResource)
+		end
+
+		TRB.Frames.resourceFrame:SetMinMaxValues(0, max)-- settings.bar.width)
+		TRB.Frames.castingFrame:SetMinMaxValues(0, max)-- settings.bar.width)
+		TRB.Frames.passiveFrame:SetMinMaxValues(0, max)-- settings.bar.width)
 		if TRB.Frames.resource2Frames ~= nil then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
@@ -303,10 +309,10 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param containerFrame frame
 function TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(settings, containerFrame)
-	if settings.bar.pinToPersonalResourceDisplay then
+	--[[if settings.bar.pinToPersonalResourceDisplay then
 		containerFrame:ClearAllPoints()
 		containerFrame:SetPoint("CENTER", C_NamePlate.GetNamePlateForUnit("player"), "CENTER", settings.bar.xPos, settings.bar.yPos)
-	end
+	end]]
 end
 
 ---Sets the position of the `containerFrame`
@@ -317,13 +323,13 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		return
 	end
 
-	if settings.bar.pinToPersonalResourceDisplay then
+	--[[if settings.bar.pinToPersonalResourceDisplay then
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(settings, containerFrame)
-	else
+	else]]
 		containerFrame:ClearAllPoints()
 		containerFrame:SetPoint("CENTER", UIParent)
 		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
-	end
+	--end
 
 	if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
 		local containerFrame2 = TRB.Frames.resource2ContainerFrame
@@ -475,7 +481,7 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 		settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 	end
 
-	if false and TRB.Data.settings.core.smoothBarValueUpdates and not settings.bar.pinToPersonalResourceDisplay then
+	if false and TRB.Data.settings.core.smoothBarValueUpdates then --and not settings.bar.pinToPersonalResourceDisplay then
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame, 3, 0.2)
 		TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.endCap, 3, 0.1)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame, 3, 0.2)

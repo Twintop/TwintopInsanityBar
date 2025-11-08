@@ -2244,7 +2244,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 							C_Timer.After(spells.powerSurge.tickRate, function()
 								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
 							end)
-							C_Timer.After(spells.powerSurge.tickRate * 2, function()
+							C_Timer.After((spells.powerSurge.tickRate * 2), function()
 								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
 							end)
 							if talents:IsTalentActive(spells.energyConservation) then
@@ -3282,7 +3282,7 @@ local function UpdateResourceBar()
 				local maxPrimaryBarResource = TRB.Data.character.maxResource
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
-					maxPrimaryBarResource = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResource)
+					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
 				local passiveValue = 0
@@ -3446,14 +3446,14 @@ local function UpdateResourceBar()
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 
-				if snapshots[spells.mindDevourer.id].buff.isActive or --[[currentResource >= spells.shadowWordMadness:GetPrimaryResourceCost() or]] snapshots[spells.mindDevourer.id].buff.isActive then
+				if spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then-- snapshots[spells.mindDevourer.id].buff.isActive or --[[currentResource >= spells.shadowWordMadness:GetPrimaryResourceCost() or]] snapshots[spells.mindDevourer.id].buff.isActive then
 					if specSettings.colors.bar.flashEnabled then
 						TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					else
 						barContainerFrame:SetAlpha(1.0)
 					end
 
-					if snapshots[spells.mindDevourer.id].buff.isActive and specSettings.audio.mdProc.enabled and snapshotData.audio.playedMdCue == false then
+					if spells.shadowWordMadness:IsFree() --[[snapshots[spells.mindDevourer.id].buff.isActive]] and specSettings.audio.mdProc.enabled and snapshotData.audio.playedMdCue == false then
 						snapshotData.audio.playedDpCue = true
 						snapshotData.audio.playedMdCue = true
 						PlaySoundFile(specSettings.audio.mdProc.sound, coreSettings.audio.channel.channel)
@@ -3526,7 +3526,7 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.inVoidform
 					end
 				else]]
-					if snapshots[spells.mindDevourer.id].buff.isActive --[[or currentResource >= spells.shadowWordMadness:GetPrimaryResourceCost()]] then
+					if spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then-- snapshots[spells.mindDevourer.id].buff.isActive --[[or currentResource >= spells.shadowWordMadness:GetPrimaryResourceCost()]] then
 						barColor = specSettings.colors.bar.shadowWordMadnessUsable
 					else
 						barColor = specSettings.colors.bar.base
