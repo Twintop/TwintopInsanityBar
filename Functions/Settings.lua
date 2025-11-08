@@ -478,13 +478,13 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.priest.shadow.thresholds = {
 			width = TwintopInsanityBarSettings.priest.shadow.thresholdWidth,
 			overlapBorder = TwintopInsanityBarSettings.priest.shadow.thresholdsOverlapBorder,
-			shadowWordMadness = {
-				enabled = TwintopInsanityBarSettings.priest.shadow.shadowWordMadnessThreshold
+			devouringPlague = {
+				enabled = TwintopInsanityBarSettings.priest.shadow.devouringPlagueThreshold
 			}
 		}
 
 		TwintopInsanityBarSettings.priest.shadow.thresholdWidth = nil
-		TwintopInsanityBarSettings.priest.shadow.shadowWordMadnessThreshold = nil
+		TwintopInsanityBarSettings.priest.shadow.devouringPlagueThreshold = nil
 		TwintopInsanityBarSettings.priest.shadow.searingNightmareThreshold = nil
 		TwintopInsanityBarSettings.priest.shadow.thresholdsOverlapBorder = nil
 	end
@@ -527,8 +527,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 		}
 
 		TwintopInsanityBarSettings.druid.balance.thresholdWidth = nil
-		TwintopInsanityBarSettings.druid.balance.shadowWordMadnessThreshold = nil
-		TwintopInsanityBarSettings.druid.balance.searingNightmareThreshold = nil
+		TwintopInsanityBarSettings.druid.balance.starsurgeThreshold = nil
+		TwintopInsanityBarSettings.druid.balance.starsurge2Threshold = nil
+		TwintopInsanityBarSettings.druid.balance.starsurge3Threshold = nil
+		TwintopInsanityBarSettings.druid.balance.starfallThreshold = nil
 		TwintopInsanityBarSettings.druid.balance.thresholdsOverlapBorder = nil
 	end
   
@@ -664,7 +666,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.priest.shadow.colors ~= nil and
 		TwintopInsanityBarSettings.priest.shadow.colors.bar ~= nil and
 		TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform ~= nil then
-		TwintopInsanityBarSettings.priest.shadow.colors.bar.shadowWordMadnessUsable = TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform
+		TwintopInsanityBarSettings.priest.shadow.colors.bar.devouringPlagueUsable = TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform
 		TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform = nil
 	end
 
@@ -1661,10 +1663,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 							if spec == "shadow" and
 							specValue.threshold ~= nil and
-							specValue.threshold.shadowWordMadnessThresholdOnlyOverShow ~= nil then
+							specValue.threshold.devouringPlagueThresholdOnlyOverShow ~= nil then
 								spec.thresholds.specProperties = spec.thresholds.specProperties or {}
 								spec.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow = spec.thresholds.shadowWordMadnessThresholdOnlyOverShow
-								spec.thresholds.shadowWordMadnessThresholdOnlyOverShow = nil
+								spec.thresholds.devouringPlagueThresholdOnlyOverShow = nil
 							end
 							
 							if spec == "balance" and

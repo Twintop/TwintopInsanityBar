@@ -1721,7 +1721,7 @@ local function RefreshLookupData_Shadow()
 		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
 			currentInsanityColor = sharedSettings.colors.text.overcap.color
 			castingInsanityColor = sharedSettings.colors.text.overcap.color
-		else]]if sharedSettings.colors.text.overThreshold.enabled and normalizedInsanity >= insanityThreshold then
+		else]]if sharedSettings.colors.text.overThreshold.enabled and spells.shadowWordMadness:IsUsable() then-- normalizedInsanity >= insanityThreshold then
 			currentInsanityColor = sharedSettings.colors.text.overThreshold.color
 			--castingInsanityColor = sharedSettings.colors.text.overThreshold.color
 		end

@@ -110,6 +110,7 @@ end
 ---@field private _isFreeCurrently boolean # Is this ability free now when it usually has a resource cost?
 ---@field private _lastSpellUsableCheck number? # Timestamp of the last time a spell usability check was done
 ---@field private _isUsable boolean # Is the spell usable currently
+---@field private _insufficientPower boolean # Is there insufficient power to cast the spell currently
 ---@field private _cacheKey string # Key used to cache the primary resource cost of the spell
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
@@ -359,17 +360,27 @@ local spellUsableEmbargoTimespan = 0.05
 ---Gets whether the spell is currently usable.
 ---@return boolean # Is the spell usable
 function TRB.Classes.SpellBase:IsUsable()
+	self:UpdateIsSpellUsable()
+	return self._isUsable and not self._insufficientPower
+end
+
+function TRB.Classes.SpellBase:InsufficientPower()
+	self:UpdateIsSpellUsable()
+	return self._insufficientPower
+end
+
+---Updates IsSpellUsable cache.
+---@param force boolean? # Force the update even if within embargo timespan
+function TRB.Classes.SpellBase:UpdateIsSpellUsable(force)
 	local currentTime = GetTime()
-	if (self._lastSpellUsableCheck or 0) + spellUsableEmbargoTimespan > currentTime then
+	if (force == nil or force == false) and (self._lastSpellUsableCheck or currentTime) + spellUsableEmbargoTimespan > currentTime then
+	else
+		local isUsable, insufficientPower = C_Spell.IsSpellUsable(self.id)
+		--We previously only cared about insufficient power, but since we are not doing a check based on just primary and secondary resources we might as well use the full usability.
+		self._isUsable = isUsable
+		self._insufficientPower = insufficientPower
 		self._lastSpellUsableCheck = currentTime
-		return self._isUsable
 	end
-
-	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self.id)
-	--We previously only cared about insufficient power, but since we are not doing a check based on just primary and secondary resources we might as well use the full usability.
-	self._isUsable = isUsable and not insufficientPower
-
-	return self._isUsable
 end
 
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.
