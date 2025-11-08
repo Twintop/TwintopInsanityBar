@@ -270,14 +270,54 @@ end
 ---Initializes the buff with custom endTime and duration values
 ---@param duration number # How long the buff will last
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
-function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime)
+---@param hasStacks boolean? # Should the buff be marked as having stacks
+function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStacks)
 	local startTime = startTime or GetTime()
 	self.duration = duration
 	self.endTime = startTime + duration
 	self.isCustom = true
+	if hasStacks then
+		self.applications = 1
+	else
+		self.applications = 0
+	end
 	self:GetRemainingTime()
 end
 
+---comment
+---@param duration number # How long the buff will last
+---@param startTime number? # When did this buff begin. Defaults to GetTime()
+---@param refreshTime boolean # Should the endTime be refreshed to now + duration
+function TRB.Classes.SnapshotBuff:AddStackOrInitializeCustom(duration, startTime, refreshTime)
+	if not self.isActive then
+		self:InitializeCustom(duration, startTime)
+	else
+		self:AddStack(refreshTime)
+	end
+end
+
+---Adds a new stack (application) to the buff
+---@param refreshTime boolean # Should the endTime be refreshed to now + duration
+function TRB.Classes.SnapshotBuff:AddStack(refreshTime)
+	if self.isActive then
+		self.applications = self.applications + 1
+		if refreshTime then
+			self.endTime = GetTime() + self.duration
+			self:GetRemainingTime()
+		end
+	end
+end
+
+---Removesa stack (application) from the buff
+function TRB.Classes.SnapshotBuff:RemoveStack()
+	if self.isActive then
+		if self.applications <= 1 then
+			self:Reset()
+			return
+		end
+		self.applications = self.applications - 1
+	end
+end
 
 ---Parse the buff
 ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating

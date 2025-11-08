@@ -331,11 +331,9 @@ local function FillSpecializationCache()
 		playedMdCue = false,
 		overcapCue = false
 	}
-	--[[
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform, nil, "sometimes")
-	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.darkAscension.id] = TRB.Classes.Snapshot:New(spells.darkAscension, nil, "sometimes")
+	--[[
 	---@type TRB.Classes.Priest.Shadowfiend
 	specCache.shadow.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Priest.Shadowfiend:New(TRB.Data.settings.priest.shadow.mindbender, specCache.shadow.talents, CalculateManaGain, spells.shadowfiend, spells.mindbender, spells.voidwraith)
 	---@type TRB.Classes.Snapshot
@@ -348,9 +346,9 @@ local function FillSpecializationCache()
 	})]]
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.mindDevourer.id] = TRB.Classes.Snapshot:New(spells.mindDevourer)
-	--[[---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.mindFlayInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
 	---@type TRB.Classes.Snapshot
+	specCache.shadow.snapshotData.snapshots[spells.mindFlayInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
+	--[[---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.twistOfFate.id] = TRB.Classes.Snapshot:New(spells.twistOfFate)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.shatteredPsyche.id] = TRB.Classes.Snapshot:New(spells.shatteredPsyche)
@@ -372,9 +370,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.voidVolley.id] = TRB.Classes.Snapshot:New(spells.voidVolley)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.powerSurge.id] = TRB.Classes.Snapshot:New(spells.powerSurge)
-	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.ascension.id] = TRB.Classes.Snapshot:New(spells.ascension)]]
+	specCache.shadow.snapshotData.snapshots[spells.powerSurge.id] = TRB.Classes.Snapshot:New(spells.powerSurge)]]
 end
 
 local function Setup_Discipline()
@@ -715,23 +711,20 @@ local function FillSpellData_Shadow()
 		{ variable = "#swm", icon = spells.shadowWordMadness.icon, description = spells.shadowWordMadness.name, printInSettings = true },
 		{ variable = "#shadowWordMadness", icon = spells.shadowWordMadness.icon, description = spells.shadowWordMadness.name, printInSettings = false },
 
-		--[[{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },
+		--[[{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },]]
 
 		{ variable = "#halo", icon = spells.halo.icon, description = spells.halo.name, printInSettings = true },
 				
-		{ variable = "#hv", icon = spells.horrificVisions.icon, description = spells.horrificVisions.name, printInSettings = true },
+		--[[{ variable = "#hv", icon = spells.horrificVisions.icon, description = spells.horrificVisions.name, printInSettings = true },
 		{ variable = "#horrificVisions", icon = spells.horrificVisions.icon, description = spells.horrificVisions.name, printInSettings = false },]]
 
 		{ variable = "#mDev", icon = spells.mindDevourer.icon, description = spells.mindDevourer.name, printInSettings = true },
 		{ variable = "#mindDevourer", icon = spells.mindDevourer.icon, description = spells.mindDevourer.name, printInSettings = false },
 
-		--[[{ variable = "#mindgames", icon = spells.mindgames.icon, description = spells.mindgames.name, printInSettings = true },
+		{ variable = "#mindgames", icon = spells.mindgames.icon, description = spells.mindgames.name, printInSettings = true },
 
 		{ variable = "#mb", icon = spells.mindBlast.icon, description = spells.mindBlast.name, printInSettings = true },
 		{ variable = "#mindBlast", icon = spells.mindBlast.icon, description = spells.mindBlast.name, printInSettings = false },
-		
-		{ variable = "#md", icon = spells.massDispel.icon, description = spells.massDispel.name, printInSettings = true },
-		{ variable = "#massDispel", icon = spells.massDispel.icon, description = spells.massDispel.name, printInSettings = false },
 		
 		{ variable = "#mfi", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = true },
 		{ variable = "#mindFlayInsanity", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = false },
@@ -739,7 +732,7 @@ local function FillSpellData_Shadow()
 		{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
 		{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
 																
-		{ variable = "#sa", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = true },
+		--[[{ variable = "#sa", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = true },
 		{ variable = "#shadowyApparition", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = false },
 																																																				
 		{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
@@ -762,10 +755,8 @@ local function FillSpellData_Shadow()
 		{ variable = "#thingFromBeyond", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = false },
 		
 		{ variable = "#tof", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = true },
-		{ variable = "#twistOfFate", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = false },
-
-		{ variable = "#vb", icon = spells.voidBolt.icon, description = spells.voidBolt.name, printInSettings = true },
-		{ variable = "#voidBolt", icon = spells.voidBolt.icon, description = spells.voidBolt.name, printInSettings = false },
+		{ variable = "#twistOfFate", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = false },]]
+		
 		{ variable = "#vf", icon = spells.voidform.icon, description = spells.voidform.name, printInSettings = true },
 		{ variable = "#voidform", icon = spells.voidform.icon, description = spells.voidform.name, printInSettings = false },
 																															
@@ -778,7 +769,7 @@ local function FillSpellData_Shadow()
 		{ variable = "#vt", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = true },
 		{ variable = "#vampiricTouch", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = false },
 		
-		{ variable = "#ys", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = true },
+		--[[{ variable = "#ys", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = true },
 		{ variable = "#idolOfYoggSaron", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = false },]]
 	}
 	specCache.shadow.barTextVariables.values = {
@@ -861,14 +852,14 @@ local function FillSpellData_Shadow()
 		{ variable = "$swmCount", description = L["PriestShadowBarTextVariable_swmCount"], printInSettings = true, color = false },
 		{ variable = "$swmTime", description = L["PriestShadowBarTextVariable_swmTime"], printInSettings = true, color = false },
 
-		--[[{ variable = "$tofTime", description = L["PriestShadowBarTextVariable_tofTime"], printInSettings = true, color = false },
+		--[[{ variable = "$tofTime", description = L["PriestShadowBarTextVariable_tofTime"], printInSettings = true, color = false },]]
 
 		{ variable = "$mdTime", description = L["PriestShadowBarTextVariable_mdTime"], printInSettings = true, color = false },
 
 		{ variable = "$mfiTime", description = L["PriestShadowBarTextVariable_mfiTime"], printInSettings = true, color = false },
 		{ variable = "$mfiStacks", description = L["PriestShadowBarTextVariable_mfiStacks"], printInSettings = true, color = false },
 		
-		{ variable = "$siTime", description = L["PriestShadowBarTextVariable_siTime"], printInSettings = true, color = false },
+		--[[{ variable = "$siTime", description = L["PriestShadowBarTextVariable_siTime"], printInSettings = true, color = false },
 		
 		{ variable = "$mindBlastCharges", description = L["PriestShadowBarTextVariable_mindBlastCharges"], printInSettings = true, color = false },
 		{ variable = "$mindBlastMaxCharges", description = L["PriestShadowBarTextVariable_mindBlastMaxCharges"], printInSettings = true, color = false },
@@ -1701,12 +1692,6 @@ local function RefreshLookupData_Shadow()
 
 	--$vfTime
 	local _voidformTime = snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
-
-	--TODO: not use this hacky workaroud for timers
-	if snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime) > 0 then
-		_voidformTime = snapshots[spells.darkAscension.id].buff.remaining
-	end
-
 	local voidformTime = TRB.Functions.BarText:TimerPrecision(_voidformTime)
 	----------
 
@@ -1867,7 +1852,7 @@ local function RefreshLookupData_Shadow()
 
 	--$mdTime
 	local _mdTime = snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
-	local mdTime = TRB.Functions.BarText:TimerPrecision(_mdTime)
+	local mdTime = TRB.Functions.BarText:TimerPrecision(_mdTime)]]
 	
 	--$mfiTime
 	local _mfiTime = 0
@@ -1881,8 +1866,8 @@ local function RefreshLookupData_Shadow()
 	
 	local mfiTime = TRB.Functions.BarText:TimerPrecision(_mfiTime)
 	local mfiStacks = string.format("%.0f", _mfiStacks)
-
-	--$tofTime
+	
+	--[[--$tofTime
 	local _tofTime = snapshots[spells.twistOfFate.id].buff:GetRemainingTime(currentTime)
 	local tofTime = TRB.Functions.BarText:TimerPrecision(_tofTime)
 	
@@ -1993,10 +1978,10 @@ local function RefreshLookupData_Shadow()
 	lookup["$vtTime"] = vampiricTouchTime
 	lookup["$swmCount"] = shadowWordMadnessCount
 	lookup["$swmTime"] = shadowWordMadnessTime
-	lookup["$mdTime"] = mdTime
+	lookup["$mdTime"] = mdTime]]
 	lookup["$mfiTime"] = mfiTime
 	lookup["$mfiStacks"] = mfiStacks
-	lookup["$tofTime"] = tofTime
+	--[[lookup["$tofTime"] = tofTime
 	lookup["$vfTime"] = voidformTime
 	lookup["$spTime"] = spTime
 	lookup["$mmTime"] = spTime
@@ -2061,10 +2046,10 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$vtTime"] = _vampiricTouchTime
 	lookupLogic["$swmCount"] = shadowWordMadnessCount
 	lookupLogic["$swmTime"] = _shadowWordMadnessTime
-	lookupLogic["$mdTime"] = _mdTime
+	lookupLogic["$mdTime"] = _mdTime]]
 	lookupLogic["$mfiTime"] = _mfiTime
 	lookupLogic["$mfiStacks"] = _mfiStacks
-	lookupLogic["$tofTime"] = _tofTime
+	--[[lookupLogic["$tofTime"] = _tofTime
 	lookupLogic["$vfTime"] = _voidformTime
 	lookupLogic["$spTime"] = _spTime
 	lookupLogic["$mmTime"] = _spTime
@@ -2185,27 +2170,20 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = spells.mindBlast.resource
 				casting.spellId = spells.mindBlast.id
 				casting.icon = spells.mindBlast.icon
-			--[[elseif spellId == spells.darkAscension.id then
-				casting.startTime = currentTime
-				casting.resourceRaw = spells.darkAscension.resource
-				casting.spellId = spells.darkAscension.id
-				casting.icon = spells.darkAscension.icon
-
-				if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
-					casting.resourceRaw = casting.resourceRaw + spells.voidBolt.resource
-				end
-			elseif spellId == spells.voidEruption.id then
-				if TRB.Data.character.items.twwSeason2SetBonusCount >= 2 then
-					casting.startTime = currentTime
-					casting.resourceRaw = spells.voidBolt.resource
-					casting.spellId = spells.voidEruption.id
-					casting.icon = spells.voidEruption.icon
-				end
 			elseif spellId == spells.vampiricTouch.id then
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.vampiricTouch.resource
 				casting.spellId = spells.vampiricTouch.id
 				casting.icon = spells.vampiricTouch.icon
+			elseif spellId == spells.voidform.id then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.voidform.resource
+				casting.spellId = spells.voidform.id
+				casting.icon = spells.voidform.icon
+
+				if talents:IsTalentActive(spells.improvedVoidform) or true then -- This seems to be bugged and always adds the resource generation
+					casting.resourceRaw = casting.resourceRaw + spells.improvedVoidform.resource
+				end
 			elseif spellId == spells.mindgames.id then
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.mindgames.resource
@@ -2216,11 +2194,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = spells.halo.resource
 				casting.spellId = spells.halo.id
 				casting.icon = spells.halo.icon
-			elseif spellId == spells.massDispel.id and talents:IsTalentActive(spells.hallucinations) and affectingCombat then
-				casting.startTime = currentTime
-				casting.resourceRaw = spells.hallucinations.resource
-				casting.spellId = spells.massDispel.id
-				casting.icon = spells.massDispel.icon
 			elseif spellId == spells.voidBlast.id then
 				casting.startTime = currentTime
 				if talents:IsTalentActive(spells.voidInfusion) then
@@ -2229,27 +2202,58 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					casting.resourceRaw = spells.voidBlast.resource
 				end
 				casting.spellId = spells.voidBlast.id
-				casting.icon = spells.voidBlast.icon]]
+				casting.icon = spells.voidBlast.icon
 			end
 			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-			--[[if spellId == spells.mindFlay.id then
+			if spellId == spells.mindFlay.id then
 				casting.spellId = spells.mindFlay.id
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.mindFlay.resource
 				casting.icon = spells.mindFlay.icon
+
+				if talents:IsTalentActive(spells.surgeOfInsanity) then
+					casting.resourceRaw = casting.resourceRaw * spells.surgeOfInsanity.attributes.resourceMod
+				end
+
+				-- If Mind Flay: Insanity is supposedly active but we're channeling Mind Flay, something got messed up in the buff tracking and we need to clear the buff
+				if snapshotData.snapshots[spells.mindFlayInsanity.id].buff.isActive then
+					snapshotData.snapshots[spells.mindFlayInsanity.id].buff:Reset()
+				end
 			elseif spellId == spells.mindFlayInsanity.castId then
 				casting.spellId = spells.mindFlayInsanity.castId
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.mindFlayInsanity.resource
 				casting.icon = spells.mindFlayInsanity.icon
+
+				snapshotData.snapshots[spells.mindFlayInsanity.id].buff:RemoveStack()
 			elseif spellId == spells.voidTorrent.id then
 				casting.spellId = spells.voidTorrent.id
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.voidTorrent.resource
 				casting.icon = spells.voidTorrent.icon
-			end]]
+			end
 			UpdateCastingResourceFinal_Shadow()
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.halo.id then
+				if talents:IsTalentActive(spells.manifestedPower) then
+					snapshotData.snapshots[spells.mindFlayInsanity.id].buff:InitializeCustom(spells.mindFlayInsanity.duration, currentTime, true)
+					--TODO: Clean this up into something more automated
+					if talents:IsTalentActive(spells.resonantEnergy) then
+						C_Timer.After(0, function()
+							C_Timer.After(5, function()
+								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + 5, true)
+							end)
+							C_Timer.After(10, function()
+								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + 10, true)
+							end)
+							C_Timer.After(15, function()
+								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + 15, true)
+							end)
+						end)
+					end
+				end
+			end
 		end
 	end
 end
@@ -2401,28 +2405,11 @@ local function UpdatePowerSurge()
 	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Priest.ShadowSpells]
 	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
 	local snapshots = snapshotData.snapshots
-	local ascension = spells.ascension
 	local powerSurge = spells.powerSurge
-	local ascensionBuff = snapshots[ascension.id].buff
 	local powerSurgeBuff = snapshots[powerSurge.id].buff
 	
 	if powerSurgeBuff.isActive then
 		powerSurgeBuff:UpdateTicks(currentTime)
-	end
-
-	if ascensionBuff.isActive then
-		ascensionBuff:UpdateTicks(currentTime)
-		local powerSurgeTicksRemaining = TRB.Functions.Number:RoundTo((powerSurgeBuff.remaining / ascension.duration), 0, "floor", true)
-		if powerSurgeBuff.isActive then
-			powerSurgeTicksRemaining = powerSurgeTicksRemaining + 1
-		end
-
-		powerSurge.attributes.ticks = math.ceil((ascensionBuff.ticks or 0) + (powerSurgeTicksRemaining * (ascension.duration / ascension.tickRate)))
-		powerSurge.attributes.resource = ascensionBuff.ticks * ascensionBuff.resourcePerTick
-		powerSurge.attributes.endTime = ascensionBuff.endTime + (powerSurgeTicksRemaining * ascension.duration)
-		powerSurge.attributes.remaining = powerSurge.attributes.endTime - currentTime
-
-		return
 	end
 	
 	powerSurge.attributes.ticks = powerSurgeBuff.ticks or 0
@@ -2521,8 +2508,8 @@ local function UpdateSnapshot_Holy()
 end
 
 local function UpdateSnapshot_Shadow()
-	--[[local currentTime = GetTime()
-	UpdateSnapshot()
+	local currentTime = GetTime()
+	--[[UpdateSnapshot()
 	UpdateExternalCallToTheVoidValues()
 	UpdateHorrificVisionsValues()
 	UpdatePowerSurge()
@@ -2531,10 +2518,9 @@ local function UpdateSnapshot_Shadow()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
+	snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
 	--[[
 	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 
@@ -3317,9 +3303,9 @@ local function UpdateResourceBar()
 				--[[elseif specSettings.colors.bar.critMindBlast.enabled and snapshots[spells.shatteredPsyche.id].buff.isActive and (snapshotData.attributes.crit + (snapshots[spells.shatteredPsyche.id].buff.customProperties["crit"] or 0)) >= 100 then
 					barBorderColor = specSettings.colors.bar.critMindBlast.color
 				elseif specSettings.colors.bar.voidVolley.enabled and snapshots[spells.voidVolley.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.voidVolley.color
+					barBorderColor = specSettings.colors.bar.voidVolley.color]]
 				elseif specSettings.colors.bar.mindFlayInsanityBorderChange and snapshots[spells.mindFlayInsanity.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity]]
+					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
 				end
 
 				--[[if snapshotData.casting.spellId ~= nil and specSettings.colors.bar.showCasting  then
@@ -3515,11 +3501,8 @@ local function UpdateResourceBar()
 				--[[
 				if specSettings.colors.bar.instantMindBlast.enabled and snapshots[spells.mindBlast.id].cooldown.charges > 0 and snapshots[spells.shadowyInsight.id].buff.isActive then
 					barColor = specSettings.colors.bar.instantMindBlast.color
-				elseif snapshots[spells.voidform.id].buff.isActive or snapshots[spells.darkAscension.id].buff.isActive then
+				elseif snapshots[spells.voidform.id].buff.isActive then
 					local timeLeft = snapshots[spells.voidform.id].buff.remaining
-					if snapshots[spells.darkAscension.id].buff.isActive then
-						timeLeft = snapshots[spells.darkAscension.id].buff.remaining
-					end
 					local timeThreshold = 0
 					local useEndOfVoidformColor = false
 
@@ -3974,7 +3957,7 @@ local function SwitchSpec()
 		--[[lookup["#as"] = spells.auspiciousSpirits.icon
 		lookup["#auspiciousSpirits"] = spells.auspiciousSpirits.icon
 		lookup["#sa"] = spells.shadowyApparition.icon
-		lookup["#shadowyApparition"] = spells.shadowyApparition.icon
+		lookup["#shadowyApparition"] = spells.shadowyApparition.icon]]
 		lookup["#mb"] = spells.mindBlast.icon
 		lookup["#mindBlast"] = spells.mindBlast.icon
 		lookup["#mf"] = spells.mindFlay.icon
@@ -3984,15 +3967,13 @@ local function SwitchSpec()
 		lookup["#mindgames"] = spells.mindgames.icon
 		lookup["#vf"] = spells.voidform.icon
 		lookup["#voidform"] = spells.voidform.icon
-		lookup["#vb"] = spells.voidBolt.icon
-		lookup["#voidBolt"] = spells.voidBolt.icon
 		lookup["#voit"] = spells.voidTorrent.icon
 		lookup["#voidTorrent"] = spells.voidTorrent.icon
 		lookup["#vv"] = spells.voidVolley.icon
 		lookup["#voidVolley"] = spells.voidVolley.icon
 		lookup["#vt"] = spells.vampiricTouch.icon
 		lookup["#vampiricTouch"] = spells.vampiricTouch.icon
-		lookup["#swp"] = spells.shadowWordPain.icon
+		--[[lookup["#swp"] = spells.shadowWordPain.icon
 		lookup["#shadowWordPain"] = spells.shadowWordPain.icon]]
 		lookup["#swm"] = spells.shadowWordMadness.icon
 		lookup["#shadowWordMadness"] = spells.shadowWordMadness.icon
@@ -4607,8 +4588,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$vfTime" then
-			if (snapshots[spells.voidform.id].buff.remaining ~= nil and snapshots[spells.voidform.id].buff.remaining > 0) or
-				(snapshots[spells.darkAscension.id].buff.remaining ~= nil and snapshots[spells.darkAscension.id].buff.remaining > 0) then
+			if (snapshots[spells.voidform.id].buff.remaining ~= nil and snapshots[spells.voidform.id].buff.remaining > 0) then
 				valid = true
 			end
 		elseif var == "$mbInsanity" then
@@ -4704,7 +4684,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.mindDevourer.id].buff.isActive then
 				valid = true
 			end
-		--[[elseif var == "$mfiTime" then
+		elseif var == "$mfiTime" then
 			if snapshots[spells.mindFlayInsanity.id].buff.isActive then
 				valid = true
 			end
@@ -4712,7 +4692,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.mindFlayInsanity.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$tofTime" then
+		--[[elseif var == "$tofTime" then
 			if snapshots[spells.twistOfFate.id].buff.isActive then
 				valid = true
 			end
@@ -4762,10 +4742,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$voidVolleyTime" then
 			if snapshots[spells.voidVolley.id].buff.isActive  then
-				valid = true
-			end
-		elseif var == "$psInsanity" then
-			if snapshots[spells.powerSurge.id].buff.isActive or snapshots[spells.ascension.id].buff.isActive then
 				valid = true
 			end]]
 		else

@@ -13,28 +13,45 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId)
 	if unit ~= "player" then
 		return
 	end
-
 	if event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
 		local casting = snapshotData.casting
-		if casting.spellId == spellId and TRB.Functions.Character.ResetCastingSnapshotData ~= nil then
+
+		if event == "UNIT_SPELLCAST_CHANNEL_STOP" then
+			TRB.Functions.Character:ResetCastingSnapshotData() -- Always reset on channel stop to avoid secrets
+		elseif casting.spellId == spellId and TRB.Functions.Character.ResetCastingSnapshotData ~= nil then
 			TRB.Functions.Character:ResetCastingSnapshotData()
 		end
 		return
 	elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
-		TRB.Functions.Class:SpellCast(event, spellId)
+		if event == "UNIT_SPELLCAST_CHANNEL_START" then
+			local channelId = select(8, UnitChannelInfo("player"))
+			if type(channelId) ~= "secret" then
+				TRB.Functions.Class:SpellCast(event, channelId)
+			else
+				TRB.Functions.Class:SpellCast(event, 0) -- Pass a dummy value to wipe casting data
+			end
+		else
+			TRB.Functions.Class:SpellCast(event, spellId)
+		end
 		return
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+		TRB.Functions.Class:SpellCast(event, spellId) -- Pass a dummy value to wipe casting data
 	end
 end
 
 local spellCastFrame = CreateFrame("Frame")
 spellCastFrame:SetScript("OnEvent", SpellCastEvent)
 
+
+-- NOTE: 2025-11-08 -- UNIT_SPELLCAST_CHANNEL_* still returns a secret. Comment out for now.
+
 function TRB.Functions.SpellCast:EnableSpellCast()
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
+	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
@@ -45,6 +62,7 @@ function TRB.Functions.SpellCast:DisableSpellCast()
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_START")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_STOP")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_DELAYED")
+	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
@@ -55,6 +73,7 @@ end
 ---| '"UNIT_SPELLCAST_START"' # UNIT_SPELLCAST_START
 ---| '"UNIT_SPELLCAST_STOP"' # UNIT_SPELLCAST_STOP
 ---| '"UNIT_SPELLCAST_DELAYED"' # UNIT_SPELLCAST_DELAYED
+---| '"UNIT_SPELLCAST_SUCCEEDED"' # UNIT_SPELLCAST_SUCCEEDED
 ---| '"UNIT_SPELLCAST_CHANNEL_START"' # UNIT_SPELLCAST_CHANNEL_START
 ---| '"UNIT_SPELLCAST_CHANNEL_STOP"' # UNIT_SPELLCAST_CHANNEL_STOP
 ---| '"UNIT_SPELLCAST_EMPOWER_START"' # UNIT_SPELLCAST_EMPOWER_START

@@ -690,25 +690,28 @@ end
 
 ---@class TRB.Classes.Priest.ShadowSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public mindBlast TRB.Classes.SpellBase
---[[---@field public shadowWordPain TRB.Classes.SpellBase
 ---@field public mindFlay TRB.Classes.SpellBase
+---@field public surgeOfInsanity TRB.Classes.SpellBase
 ---@field public vampiricTouch TRB.Classes.SpellBase
----@field public voidBolt TRB.Classes.SpellBase
----@field public shadowfiend TRB.Classes.SpellBase
----@field public massDispel TRB.Classes.SpellBase
----@field public twistOfFate TRB.Classes.SpellBase
+---@field public voidform TRB.Classes.SpellBase
+---@field public improvedVoidform TRB.Classes.SpellBase
+---@field public ancientMadness TRB.Classes.SpellBase
+---@field public voidVolley TRB.Classes.SpellBase
 ---@field public halo TRB.Classes.SpellBase
----@field public powerSurge TRB.Classes.SpellBase
+---@field public manifestedPower TRB.Classes.SpellBase
+---@field public mindFlayInsanity TRB.Classes.SpellBase
+---@field public resonantEnergy TRB.Classes.SpellBase
+---@field public voidTorrent TRB.Classes.SpellBase
+---@field public voidBlast TRB.Classes.SpellBase
+---@field public voidInfusion TRB.Classes.SpellBase
 ---@field public mindgames TRB.Classes.SpellBase
+--[[---@field public shadowWordPain TRB.Classes.SpellBase]]
+--[[---@field public shadowfiend TRB.Classes.SpellBase
+---@field public twistOfFate TRB.Classes.SpellBase
+---@field public powerSurge TRB.Classes.SpellBase
 ---@field public shadowyApparition TRB.Classes.SpellBase
 ---@field public auspiciousSpirits TRB.Classes.SpellBase
 ---@field public misery TRB.Classes.SpellBase
----@field public hallucinations TRB.Classes.SpellBase
----@field public voidEruption TRB.Classes.SpellBase
----@field public voidform TRB.Classes.SpellBase
----@field public mindFlayInsanity TRB.Classes.SpellBase
----@field public voidTorrent TRB.Classes.SpellBase
----@field public voidVolley TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
 ---@field public shatteredPsyche TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellBase
@@ -721,16 +724,9 @@ end
 ---@field public thingFromBeyond TRB.Classes.SpellBase
 ---@field public horrificVisions TRB.Classes.SpellBase
 ---@field public subservientShadows TRB.Classes.SpellBase
----@field public resonantEnergy TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
----@field public voidBlast TRB.Classes.SpellBase
----@field public voidInfusion TRB.Classes.SpellBase
 ---@field public depthOfShadows TRB.Classes.SpellBase
----@field public voidwraith TRB.Classes.SpellBase
----@field public twwSeason2SetBonus TRB.Classes.SpellBase
----@field public ascension TRB.Classes.SpellBase -- TWW Season 3 Archon 2P
-]]
----@field public voidtouched TRB.Classes.SpellBase
+---@field public voidwraith TRB.Classes.SpellBase]]
 ---@field public mindDevourer TRB.Classes.SpellBase
 ---@field public shadowWordMadness TRB.Classes.SpellThreshold
 ---@field public shadowWordMadness2 TRB.Classes.SpellThreshold
@@ -761,7 +757,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		baseline = true,
 		miseryPandemic = 21,
 		miseryPandemicTime = 21 * 0.3,
-	})
+	})]]
 
 	-- Shadow Baseline Abilities
 	self.mindFlay = TRB.Classes.SpellBase:New({
@@ -769,6 +765,11 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resource = 3,
 		isTalent = false,
 		baseline = true
+	})
+	self.surgeOfInsanity = TRB.Classes.SpellBase:New({
+		id = 391399,
+		isTalent = true,
+		resourceMod = 1.3
 	})
 	self.vampiricTouch = TRB.Classes.SpellBase:New({
 		id = 34914,
@@ -778,16 +779,9 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		isTalent = false,
 		baseline = true
 	})
-	self.voidBolt = TRB.Classes.SpellBase:New({
-		id = 205448,
-		resource = 10,
-		isTalent = false,
-		baseline = true
-	})
-
 
 	-- Priest Talent Abilities			
-	self.shadowfiend = TRB.Classes.SpellBase:New({
+	--[[self.shadowfiend = TRB.Classes.SpellBase:New({
 		id = 34433,
 		iconName = "spell_shadow_shadowfiend",
 		energizeId = 279420,
@@ -802,11 +796,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.twistOfFate = TRB.Classes.SpellBase:New({
 		id = 390978,
 		isTalent = true
-	})
-	self.halo = TRB.Classes.SpellBase:New({
-		id = 120644,
-		isTalent = true,
-		resource = 10
 	})
 	self.powerSurge = TRB.Classes.SpellBase:New({
 		id = 453113,
@@ -849,10 +838,26 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		talentId = 373202,
 		isTalent = true
 	})
-	self.voidtouched = TRB.Classes.SpellBase:New({
-		id = 407430,
+	self.voidform = TRB.Classes.SpellBase:New({
+		id = 228260,
+		buffId = 194249,
 		isTalent = true,
-		maxResource = 50
+		resource = 10
+	})
+	self.improvedVoidform = TRB.Classes.SpellBase:New({
+		id = 341540,
+		isTalent = true,
+		resource = 60
+	})
+	self.ancientMadness = TRB.Classes.SpellBase:New({
+		id = 1231346,
+		isTalent = true,
+		durationMod = 2.5
+	})
+	self.voidVolley = TRB.Classes.SpellBase:New({
+		id = 1242173,
+		resource = 10,
+		isTalent = true
 	})
 	--[[self.shadowyApparition = TRB.Classes.SpellBase:New({
 		id = 341491,
@@ -879,36 +884,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.hallucinations = TRB.Classes.SpellBase:New({
 		id = 280752,
 		resource = 4,
-		isTalent = true
-	})
-	self.voidEruption = TRB.Classes.SpellBase:New({
-		id = 228260,
-		isTalent = true
-	})
-	self.voidform = TRB.Classes.SpellBase:New({
-		id = 194249,
-		isTalent = true
-	})
-	self.darkAscension = TRB.Classes.SpellBase:New({
-		id = 391109,
-		resource = 30,
-		isTalent = true
-	})
-	self.mindFlayInsanity = TRB.Classes.SpellBase:New({
-		id = 391401,
-		buffId = 391401,
-		castId = 391403,
-		resource = 2
-	})
-	self.voidTorrent = TRB.Classes.SpellBase:New({
-		id = 263165,
-		resource = 6,
-		isTalent = true
-	})
-	self.voidVolley = TRB.Classes.SpellBase:New({
-		id = 1242171,
-		talentId = 1240401,
-		resource = 10,
 		isTalent = true
 	})
 	self.shadowyInsight = TRB.Classes.SpellBase:New({
@@ -988,9 +963,25 @@ function TRB.Classes.Priest.ShadowSpells:New()
 				ticks = 12
 			}
 		}
-	})
+	})]]
 
 	-- Archon
+	self.halo = TRB.Classes.SpellBase:New({
+		id = 120644,
+		isTalent = true,
+		resource = 10
+	})
+	self.manifestedPower = TRB.Classes.SpellBase:New({
+		id = 453783,
+		isTalent = true
+	})
+	self.mindFlayInsanity = TRB.Classes.SpellBase:New({
+		id = 391401,
+		buffId = 391401,
+		castId = 391403,
+		resource = 4,
+		duration = 30
+	})
 	self.resonantEnergy = TRB.Classes.SpellBase:New({
 		id = 453845,
 		debuffId = 453850,
@@ -1000,11 +991,10 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	})
 
 	-- Voidweaver
-	self.entropicRift = TRB.Classes.SpellBase:New({
-		id = 450193,
-		talentId = 447444,
-		isTalent = true,
-		duration = 8
+	self.voidTorrent = TRB.Classes.SpellBase:New({
+		id = 263165,
+		resource = 6,
+		isTalent = true
 	})
 	self.voidBlast = TRB.Classes.SpellBase:New({
 		id = 450983,
@@ -1018,6 +1008,12 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resourceMod = 2,
 		isTalent = true
 	})
+	--[[self.entropicRift = TRB.Classes.SpellBase:New({
+		id = 450193,
+		talentId = 447444,
+		isTalent = true,
+		duration = 8
+	})
 	self.depthOfShadows = TRB.Classes.SpellBase:New({
 		id = 451308,
 		isTalent = true
@@ -1028,7 +1024,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		energizeId = 262485,
 		resource = 2,
 		isTalent = true
-	})
+	})]]
 
 	-- PvP Talents
 	self.mindgames = TRB.Classes.SpellBase:New({
@@ -1039,27 +1035,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	})
 
     --Set Bonuses
-    self.twwSeason2SetBonus = TRB.Classes.SpellBase:New({
-        headId = 229334,
-        shoulderId = 229332,
-        chestId = 229337,
-        handId = 229335,
-        legId = 229333
-    })
-    self.twwSeason3SetBonus = TRB.Classes.SpellBase:New({
-        headId = 237709,
-        shoulderId = 237707,
-        chestId = 237715,
-        handId = 237710,
-        legId = 237708
-    })
-	self.ascension = TRB.Classes.SpellBase:New({
-		id = 1239336,
-		resourcePerTick = 2,
-		tickRate = 1,
-		duration = 5,
-		hasTicks = true
-	})]]
 
 	return self
 end
