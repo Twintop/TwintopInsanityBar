@@ -2239,17 +2239,19 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				if talents:IsTalentActive(spells.manifestedPower) then
 					snapshotData.snapshots[spells.mindFlayInsanity.id].buff:InitializeCustom(spells.mindFlayInsanity.duration, currentTime, true)
 					--TODO: Clean this up into something more automated
-					if talents:IsTalentActive(spells.resonantEnergy) then
+					if talents:IsTalentActive(spells.powerSurge) then
 						C_Timer.After(0, function()
-							C_Timer.After(5, function()
-								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + 5, true)
+							C_Timer.After(spells.powerSurge.tickRate, function()
+								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
 							end)
-							C_Timer.After(10, function()
-								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + 10, true)
+							C_Timer.After(spells.powerSurge.tickRate * 2, function()
+								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
 							end)
-							C_Timer.After(15, function()
-								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + 15, true)
-							end)
+							if talents:IsTalentActive(spells.energyConservation) then
+								C_Timer.After((spells.powerSurge.tickRate * 3), function()
+									snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 3), true)
+								end)
+							end
 						end)
 					end
 				end

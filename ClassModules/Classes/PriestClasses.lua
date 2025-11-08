@@ -700,7 +700,8 @@ end
 ---@field public halo TRB.Classes.SpellBase
 ---@field public manifestedPower TRB.Classes.SpellBase
 ---@field public mindFlayInsanity TRB.Classes.SpellBase
----@field public resonantEnergy TRB.Classes.SpellBase
+---@field public powerSurge TRB.Classes.SpellBase
+---@field public energyConservation TRB.Classes.SpellBase
 ---@field public voidTorrent TRB.Classes.SpellBase
 ---@field public voidBlast TRB.Classes.SpellBase
 ---@field public voidInfusion TRB.Classes.SpellBase
@@ -982,13 +983,27 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resource = 4,
 		duration = 30
 	})
-	self.resonantEnergy = TRB.Classes.SpellBase:New({
+	self.powerSurge = TRB.Classes.SpellBase:New({
+		id = 453109,
+		isTalent = true,
+		resourcePerTick = 10,
+		tickRate = 5,
+		ticks = 2,
+		duration = 10,
+		hasTicks = true
+	})
+	self.energyConservation = TRB.Classes.SpellBase:New({
+		id = 1272308,
+		ticks = 1,
+		isTalent = true
+	})
+	--[[self.resonantEnergy = TRB.Classes.SpellBase:New({
 		id = 453845,
 		debuffId = 453850,
 		isTalent = true,
 		duration = 8,
 		maxStacks = 5
-	})
+	})]]
 
 	-- Voidweaver
 	self.voidTorrent = TRB.Classes.SpellBase:New({
