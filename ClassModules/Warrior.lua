@@ -2411,12 +2411,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			return true
 		elseif settings.overcap.mode == "fixed" and settings.overcap.fixed <= threshold then
 			return true
-		end
+		end]]
 	elseif var == "$casting" then
 		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
 			valid = true
 		end
-	elseif var == "$suddenDeathTime" then
+	--[[elseif var == "$suddenDeathTime" then
 		if snapshots[spells.suddenDeath.id].buff.isActive then
 			valid = true
 		end]]

@@ -127,14 +127,18 @@ function TRB.Classes.Druid.BalanceSpells:New()
 
     -- Balance Spec Talents
     self.eclipse = TRB.Classes.SpellBase:New({
-        id = 79577,
+        id = 1239669,
         isTalent = true
     })
     self.eclipseSolar = TRB.Classes.SpellBase:New({
         id = 48517,
+        castId = 1233346,
+        duration = 15
     })
     self.eclipseLunar = TRB.Classes.SpellBase:New({
         id = 48518,
+        castId = 1233272,
+        duration = 15
     })
     self.naturesBalance = TRB.Classes.SpellBase:New({
         id = 202430,
@@ -166,8 +170,11 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 393944,
     })
     self.celestialAlignment = TRB.Classes.SpellBase:New({
-        id = 194223,
-        isTalent = true
+        id = 383410,
+        talentId = 194223,
+        castId = 383410,
+        isTalent = true,
+        duration = 15
     })
     self.soulOfTheForest = TRB.Classes.SpellBase:New({
         id = 114107,
@@ -177,11 +184,12 @@ function TRB.Classes.Druid.BalanceSpells:New()
         },
         isTalent = true
     })
-    -- TODO: Add Wild Mushroom + associated tracking
     self.incarnationChosenOfElune = TRB.Classes.SpellBase:New({
         id = 102560,
         talentId = 394013,
-        isTalent = true
+        castId = 390414,
+        isTalent = true,
+        duration = 20
     })
     self.furyOfElune = TRB.Classes.SpellBase:New({
         id = 202770,

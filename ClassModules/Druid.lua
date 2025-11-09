@@ -88,7 +88,7 @@ local function FillSpecializationCache()
 		playedSfCue = false,
 		playedstarweaverCue = false
 	}
-	---@type TRB.Classes.Snapshot
+	--[[---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.moonkinForm.id] = TRB.Classes.Snapshot:New(spells.moonkinForm, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.furyOfElune.id] = TRB.Classes.Snapshot:New(spells.furyOfElune, {
@@ -101,7 +101,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.theLightOfElune.id] = TRB.Classes.Snapshot:New(spells.theLightOfElune, {
 		guid = nil
-	})
+	})]]
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(spells.eclipseSolar)
 	---@type TRB.Classes.Snapshot
@@ -110,8 +110,8 @@ local function FillSpecializationCache()
 	specCache.balance.snapshotData.snapshots[spells.celestialAlignment.id] = TRB.Classes.Snapshot:New(spells.celestialAlignment)
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.incarnationChosenOfElune.id] = TRB.Classes.Snapshot:New(spells.incarnationChosenOfElune)
-	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.starfall.id] = TRB.Classes.Snapshot:New(spells.starfall)
+	--[[---@type TRB.Classes.Snapshot
+	specCache.balance.snapshotData.snapshots[spells.starfall.id] = TRB.Classes.Snapshot:New(spells.starfall)]]
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.newMoon.id] = TRB.Classes.Snapshot:New(spells.newMoon, {
 		currentSpellId = nil,
@@ -119,7 +119,7 @@ local function FillSpecializationCache()
 		currentKey = "",
 		checkAfter = nil
 	})
-	---@type TRB.Classes.Snapshot
+	--[[---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.starweaversWarp.id] = TRB.Classes.Snapshot:New(spells.starweaversWarp)
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.starweaversWeft.id] = TRB.Classes.Snapshot:New(spells.starweaversWeft)
@@ -134,7 +134,7 @@ local function FillSpecializationCache()
 	
 	--Keeper of the Grove
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.dreamburst.id] = TRB.Classes.Snapshot:New(spells.dreamburst)
+	specCache.balance.snapshotData.snapshots[spells.dreamburst.id] = TRB.Classes.Snapshot:New(spells.dreamburst)]]
 
 	-- Feral
 	specCache.feral.Global_TwintopResourceBar = {
@@ -170,7 +170,7 @@ local function FillSpecializationCache()
 	specCache.feral.snapshotData.audio = {
 		overcapCue = false
 	}
-	---@type TRB.Classes.Snapshot
+	--[[---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.brutalSlash.id] = TRB.Classes.Snapshot:New(spells.brutalSlash)
@@ -210,7 +210,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.ravage.id] = TRB.Classes.Snapshot:New(spells.ravage)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
+	specCache.feral.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)]]
 
 	-- Restoration
 	specCache.restoration.Global_TwintopResourceBar = {
@@ -282,7 +282,7 @@ local function FillSpecializationCache()
 	specCache.restoration.snapshotData.audio = {
 		innervateCue = false
 	}
-	---@type TRB.Classes.Snapshot
+	--[[---@type TRB.Classes.Snapshot
 	specCache.restoration.snapshotData.snapshots[spells.efflorescence.id] = TRB.Classes.Snapshot:New(spells.efflorescence)
 	---@type TRB.Classes.Snapshot
 	specCache.restoration.snapshotData.snapshots[spells.clearcasting.id] = TRB.Classes.Snapshot:New(spells.clearcasting)
@@ -299,7 +299,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.restoration.snapshotData.snapshots[spells.reforestation.id] = TRB.Classes.Snapshot:New(spells.reforestation, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.restoration.snapshotData.snapshots[spells.incarnationTreeOfLife.id] = TRB.Classes.Snapshot:New(spells.incarnationTreeOfLife)
+	specCache.restoration.snapshotData.snapshots[spells.incarnationTreeOfLife.id] = TRB.Classes.Snapshot:New(spells.incarnationTreeOfLife)]]
 
 	specCache.restoration.barTextVariables = {
 		icons = {},
@@ -403,7 +403,13 @@ local function FillSpellData_Balance()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$moonkinForm", description = L["DruidBalanceBarTextVariable_moonkinForm"], printInSettings = true, color = false },
+		{ variable = "$astralPower", description = L["DruidBalanceBarTextVariable_astralPower"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$astralPowerMax", description = L["DruidBalanceBarTextVariable_astralPowerMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = L["DruidBalanceBarTextVariable_casting"], printInSettings = true, color = false },
+
+		--{ variable = "$moonkinForm", description = L["DruidBalanceBarTextVariable_moonkinForm"], printInSettings = true, color = false },
 		{ variable = "$eclipse", description = L["DruidBalanceBarTextVariable_eclipse"], printInSettings = true, color = false },
 		{ variable = "$eclipseTime", description = L["DruidBalanceBarTextVariable_eclipseTime"], printInSettings = true, color = false },
 		{ variable = "$lunar", description = L["DruidBalanceBarTextVariable_lunar"], printInSettings = true, color = false },
@@ -414,7 +420,7 @@ local function FillSpellData_Balance()
 		{ variable = "$eclipseSolar", description = "", printInSettings = false, color = false },
 		{ variable = "$celestialAlignment", description = L["DruidBalanceBarTextVariable_celestialAlignment"], printInSettings = true, color = false },
 
-		{ variable = "$pulsarCollected", description = L["DruidBalanceBarTextVariable_pulsarCollected"], printInSettings = true, color = false },
+		--[[{ variable = "$pulsarCollected", description = L["DruidBalanceBarTextVariable_pulsarCollected"], printInSettings = true, color = false },
 		{ variable = "$pulsarCollectedPercent", description = L["DruidBalanceBarTextVariable_pulsarCollectedPercent"], printInSettings = true, color = false },
 		{ variable = "$pulsarRemaining", description = L["DruidBalanceBarTextVariable_pulsarRemaining"], printInSettings = true, color = false },
 		{ variable = "$pulsarRemainingPercent", description = L["DruidBalanceBarTextVariable_pulsarRemainingPercent"], printInSettings = true, color = false },
@@ -423,11 +429,6 @@ local function FillSpellData_Balance()
 		{ variable = "$pulsarStarsurgeCount", description = L["DruidBalanceBarTextVariable_pulsarStarsurgeCount"], printInSettings = true, color = false },
 		{ variable = "$pulsarStarfallCount", description = L["DruidBalanceBarTextVariable_pulsarStarfallCount"], printInSettings = true, color = false },
 
-		{ variable = "$astralPower", description = L["DruidBalanceBarTextVariable_astralPower"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$astralPowerMax", description = L["DruidBalanceBarTextVariable_astralPowerMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DruidBalanceBarTextVariable_casting"], printInSettings = true, color = false },
 		{ variable = "$passive", description = L["DruidBalanceBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$astralPowerPlusCasting", description = L["DruidBalanceBarTextVariable_astralPowerPlusCasting"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
@@ -466,7 +467,7 @@ local function FillSpellData_Balance()
 		{ variable = "$starweaversWeft", description = L["DruidBalanceBarTextVariable_starweaversWeft"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
+		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
 	}
 end
 
@@ -551,7 +552,11 @@ local function FillSpellData_Feral()
 		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DruidFeralBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$passive", description = L["DruidFeralBarTextVariable_passive"], printInSettings = true, color = false },
+
+		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false },
+		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
+
+		--[[{ variable = "$passive", description = L["DruidFeralBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$regen", description = L["DruidFeralBarTextVariable_regen"], printInSettings = true, color = false },
 		{ variable = "$regenEnergy", description = "", printInSettings = false, color = false },
 		{ variable = "$energyPlusCasting", description = L["DruidFeralBarTextVariable_energyPlusCasting"], printInSettings = true, color = false },
@@ -559,10 +564,7 @@ local function FillSpellData_Feral()
 		{ variable = "$energyPlusPassive", description = L["DruidFeralBarTextVariable_energyPlusPassive"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
 		{ variable = "$energyTotal", description = L["DruidFeralBarTextVariable_energyTotal"], printInSettings = true, color = false },   
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },	 
-		
-		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
+		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },			
 
 		{ variable = "$ripCount", description = L["DruidFeralBarTextVariable_ripCount"], printInSettings = true, color = false },
 		{ variable = "$ripTime", description = L["DruidFeralBarTextVariable_ripTime"], printInSettings = true, color = false },
@@ -619,7 +621,7 @@ local function FillSpellData_Feral()
 		{ variable = "$predatorRevealedNextCp", description = L["DruidFeralBarTextVariable_predatorRevealedNextCp"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
+		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
 	}
 end
 
@@ -695,7 +697,7 @@ local function FillSpellData_Restoration()
 		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DruidRestorationBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$passive", description = L["DruidRestorationBarTextVariable_passive"], printInSettings = true, color = false },
+		--[[{ variable = "$passive", description = L["DruidRestorationBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$manaPlusCasting", description = L["DruidRestorationBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
 		{ variable = "$manaPlusPassive", description = L["DruidRestorationBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
@@ -734,7 +736,7 @@ local function FillSpellData_Restoration()
 		{ variable = "$clearcastingTime", description = L["DruidRestorationBarTextVariable_clearcastingTime"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
+		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
 	}
 end
 
@@ -764,7 +766,7 @@ local function GetCurrentMoonSpell()
 		moon.attributes.currentKey = "newMoon"
 		moon.attributes.checkAfter = nil
 	end
-	moon.cooldown:GetRemainingTime(currentTime)
+	--moon.cooldown:GetRemainingTime(currentTime)
 end
 
 local function RefreshTargetTracking()
@@ -819,19 +821,20 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Bar:Construct(settings)
 end
 
+--[[
 local function GetBerserkRemainingTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
+	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
 	if talents:IsTalentActive(spells.incarnationAvatarOfAshamane) then
 		return snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].cooldown.remaining
 	else
 		return snapshotData.snapshots[spells.berserk.id].cooldown.remaining
 	end
-end
+end]]
 
 local function GetEclipseRemainingTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.BalanceSpells]
+	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
 	local remainingTime = 0
 	local icon = nil
 
@@ -852,9 +855,9 @@ local function GetEclipseRemainingTime()
 	return remainingTime, icon
 end
 
-local function GetCurrentSnapshot(bonuses)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+--[[local function GetCurrentSnapshot(bonuses)
+	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
+	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
 	local snapshotValue = 1.0
 
 	if bonuses.tigersFury == true and snapshotData.snapshots[spells.tigersFury.id].buff.isActive then
@@ -881,7 +884,7 @@ local function GetCurrentSnapshot(bonuses)
 	end
 
 	return snapshotValue
-end
+end]]
 
 local function RefreshLookupData_Balance()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
@@ -894,7 +897,7 @@ local function RefreshLookupData_Balance()
 	local normalizedAstralPower = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	--$overcap
-	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
+	--local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 	local currentAstralPowerColor = sharedSettings.colors.text.current.color
 	local castingAstralPowerColor = sharedSettings.colors.text.casting.color
@@ -902,10 +905,10 @@ local function RefreshLookupData_Balance()
 	local astralPowerThreshold = math.min(spells.starsurge:GetPrimaryResourceCost(), spells.starfall:GetPrimaryResourceCost())
 
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overcap.enabled and overcap then
+		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
 			currentAstralPowerColor = sharedSettings.colors.text.overcap.color
 			castingAstralPowerColor = sharedSettings.colors.text.overcap.color
-		elseif sharedSettings.colors.text.overThreshold.enabled and normalizedAstralPower >= astralPowerThreshold then
+		else]]if sharedSettings.colors.text.overThreshold.enabled and normalizedAstralPower >= astralPowerThreshold then
 			currentAstralPowerColor = sharedSettings.colors.text.overThreshold.color
 			castingAstralPowerColor = sharedSettings.colors.text.overThreshold.color
 		end
@@ -913,10 +916,12 @@ local function RefreshLookupData_Balance()
 
 	--$astralPower
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
+	local _currentAstralPower = normalizedAstralPower
+	local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, _currentAstralPower)-- TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
 	--$casting
 	local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	--$passive
+	
+	--[[--$passive
 	local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource + snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + snapshotData.snapshots[spells.forceOfNature.id].buff.resource
 	if talents:IsTalentActive(spells.naturesBalance) then
 		if TRB.Data.character.inCombat then
@@ -1050,12 +1055,12 @@ local function RefreshLookupData_Balance()
 	local bbTicks = snapshotData.snapshots[spells.forceOfNature.id].buff.ticks
 	--$bbTime
 	local _bbTime = snapshotData.snapshots[spells.forceOfNature.id].buff:GetRemainingTime(currentTime)
-	local bbTime = TRB.Functions.BarText:TimerPrecision(_bbTime)
+	local bbTime = TRB.Functions.BarText:TimerPrecision(_bbTime)]]
 
 	--New Moon
 	local currentMoonIcon = spells.newMoon.icon
 	--$moonAstralPower
-	local moonAstralPower = 0
+	--[[local moonAstralPower = 0
 	--$moonCharges
 	local moonCharges = snapshotData.snapshots[spells.newMoon.id].cooldown.charges
 	--$moonCooldown
@@ -1073,13 +1078,12 @@ local function RefreshLookupData_Balance()
 	end
 	local moonCooldown = TRB.Functions.BarText:TimerPrecision(_moonCooldown)
 	local moonCooldownTotal = TRB.Functions.BarText:TimerPrecision(_moonCooldownTotal)
-
+	]]
 	--$eclipseTime
 	local _eclispeTime, eclipseIcon = GetEclipseRemainingTime()
 	local eclipseTime = TRB.Functions.BarText:TimerPrecision(_eclispeTime)
 
-	--#starweaver
-
+	--[[--#starweaver
 	local starweaverIcon = spells.starweaversWarp.icon
 	if snapshotData.snapshots[spells.starweaversWeft.id].buff.isActive then
 		starweaverIcon = spells.starweaversWeft.icon
@@ -1097,10 +1101,10 @@ local function RefreshLookupData_Balance()
 	local dreamburstTime = TRB.Functions.BarText:TimerPrecision(_dreamburstTime)
 	--$dreamburstStacks
 	local _dreamburstStacks = snapshotData.snapshots[spells.dreamburst.id].buff.applications or 0
-	local dreamburstStacks = string.format("%.0f", _dreamburstStacks)
+	local dreamburstStacks = string.format("%.0f", _dreamburstStacks)]]
 	----------------------------
 
-	Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
+	--[[Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
 	Global_TwintopResourceBar.resource.furyOfElune = foeAstralPower or 0
 	
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
@@ -1111,13 +1115,18 @@ local function RefreshLookupData_Balance()
 	Global_TwintopResourceBar.furyOfElune = Global_TwintopResourceBar.furyOfElune or {}
 	Global_TwintopResourceBar.furyOfElune.astralPower = foeAstralPower or 0
 	Global_TwintopResourceBar.furyOfElune.ticks = foeTicks or 0
-	Global_TwintopResourceBar.furyOfElune.remaining = foeTime or 0
+	Global_TwintopResourceBar.furyOfElune.remaining = foeTime or 0]]
 	
 	local lookup = TRB.Data.lookup or {}
-	lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
+	lookup["$resource"] = currentAstralPower
+	lookup["$astralPower"] = currentAstralPower
+	lookup["$resourceMax"] = TRB.Data.character.maxResource
+	lookup["$astralPowerMax"] = TRB.Data.character.maxResource
+	lookup["$casting"] = castingAstralPower
 	lookup["#moon"] = currentMoonIcon
-	lookup["#starweaver"] = starweaverIcon
-	lookup["$moonkinForm"] = ""
+	lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
+	--lookup["#starweaver"] = starweaverIcon
+	--lookup["$moonkinForm"] = ""
 	lookup["$eclipseTime"] = eclipseTime
 	lookup["$eclipse"] = ""
 	lookup["$lunar"] = ""
@@ -1127,7 +1136,7 @@ local function RefreshLookupData_Balance()
 	lookup["$solarEclipse"] = ""
 	lookup["$eclipseSolar"] = ""
 	lookup["$celestialAlignment"] = ""
-	lookup["$starweaverTime"] = starweaverTime
+	--[[lookup["$starweaverTime"] = starweaverTime
 	lookup["$starweaver"] = ""
 	lookup["$starweaversWarp"] = ""
 	lookup["$starweaversWeft"] = ""
@@ -1141,18 +1150,13 @@ local function RefreshLookupData_Balance()
 	lookup["$moonfireTime"] = moonfireTime
 	lookup["$stellarFlareCount"] = stellarFlareCount
 	lookup["$stellarFlareTime"] = stellarFlareTime
-	lookup["$astralPowerTotal"] = astralPowerTotal
-	lookup["$astralPowerMax"] = TRB.Data.character.maxResource
-	lookup["$astralPower"] = currentAstralPower
-	lookup["$resourcePlusCasting"] = astralPowerPlusCasting
+	lookup["$astralPowerTotal"] = astralPowerTotal]]
+	--[[lookup["$resourcePlusCasting"] = astralPowerPlusCasting
 	lookup["$astralPowerPlusCasting"] = astralPowerPlusCasting
 	lookup["$resourcePlusPassive"] = astralPowerPlusPassive
 	lookup["$astralPowerPlusPassive"] = astralPowerPlusPassive
-	lookup["$resourceTotal"] = astralPowerTotal
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$resource"] = currentAstralPower
-	lookup["$casting"] = castingAstralPower
-	lookup["$passive"] = passiveAstralPower
+	lookup["$resourceTotal"] = astralPowerTotal]]
+	--[[lookup["$passive"] = passiveAstralPower
 	lookup["$overcap"] = overcap
 	lookup["$resourceOvercap"] = overcap
 	lookup["$astralPowerOvercap"] = overcap
@@ -1166,12 +1170,17 @@ local function RefreshLookupData_Balance()
 	lookup["$starlordTime"] = starlordTime
 	lookup["$starlordStacks"] = starlordStacks
 	lookup["$dreamburstTime"] = dreamburstTime
-	lookup["$dreamburstStacks"] = dreamburstStacks
+	lookup["$dreamburstStacks"] = dreamburstStacks]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	lookupLogic["$resource"] = normalizedAstralPower
+	lookupLogic["$astralPower"] = normalizedAstralPower
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+	lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource
+	lookupLogic["$casting"] = currentAstralPower
 	lookupLogic["$eclipseTime"] = _eclispeTime
-	lookupLogic["$starweaver"] = _starweaver
+	--[[lookupLogic["$starweaver"] = _starweaver
 	lookupLogic["$starweaverTime"] = _starweaverTime
 	lookupLogic["$starweaversWarp"] = _starweaversWarp
 	lookupLogic["$starweaversWeft"] = _starweaversWeft
@@ -1186,16 +1195,11 @@ local function RefreshLookupData_Balance()
 	lookupLogic["$stellarFlareCount"] = _stellarFlareCount
 	lookupLogic["$stellarFlareTime"] = _stellarFlareTime
 	lookupLogic["$astralPowerTotal"] = _astralPowerTotal
-	lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource
-	lookupLogic["$astralPower"] = normalizedAstralPower
 	lookupLogic["$resourcePlusCasting"] = _astralPowerPlusCasting
 	lookupLogic["$astralPowerPlusCasting"] = _astralPowerPlusCasting
 	lookupLogic["$resourcePlusPassive"] = _astralPowerPlusPassive
 	lookupLogic["$astralPowerPlusPassive"] = _astralPowerPlusPassive
 	lookupLogic["$resourceTotal"] = _astralPowerTotal
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = normalizedAstralPower
-	lookupLogic["$casting"] = currentAstralPower
 	lookupLogic["$passive"] = _passiveAstralPower
 	lookupLogic["$overcap"] = overcap
 	lookupLogic["$resourceOvercap"] = overcap
@@ -1209,7 +1213,7 @@ local function RefreshLookupData_Balance()
 	lookupLogic["$starlordTime"] = _starlordTime
 	lookupLogic["$starlordStacks"] = starlordStacks
 	lookupLogic["$dreamburstTime"] = _dreamburstTime
-	lookupLogic["$dreamburstStacks"] = dreamburstStacks
+	lookupLogic["$dreamburstStacks"] = dreamburstStacks]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1521,7 +1525,7 @@ local function RefreshLookupData_Feral()
 	local clearcastingTime = TRB.Functions.BarText:TimerPrecision(_clearcastingTime)
 
 	--$berserkTime (and $incarnationTime)
-	local _berserkTime = GetBerserkRemainingTime()
+	local _berserkTime = 0-- GetBerserkRemainingTime()
 	local berserkTime = TRB.Functions.BarText:TimerPrecision(_berserkTime)
 
 	--$incarnationTicks 
@@ -2024,48 +2028,62 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
+	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
-		if spellId == spells.wrath.id then
-			FillSnapshotDataCasting_Balance(spells.wrath)
+		
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			if spellId == spells.wrath.id then
+				FillSnapshotDataCasting_Balance(spells.wrath)
 
-			if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
-				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModWrath
-			end
-			if talents:IsTalentActive(spells.wildSurges) then
-				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
-			end
-			if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
-				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.attributes.modifier.wrath)
-			end
-		elseif spellId == spells.starfire.id then
-			FillSnapshotDataCasting_Balance(spells.starfire)
+				--[[if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
+					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModWrath
+				end]]
+				if talents:IsTalentActive(spells.wildSurges) then
+					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
+				end
+				--[[if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
+					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.attributes.modifier.wrath)
+				end]]
+			elseif spellId == spells.starfire.id then
+				FillSnapshotDataCasting_Balance(spells.starfire)
 
-			if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
-				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModStarfire
+				--[[if GetEclipseRemainingTime() > 0 and TRB.Data.character.items.twwSeason1SetBonusCount >= 4 then
+					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.twwSeason1SetBonus.attributes.resourceModStarfire
+				end]]
+				if talents:IsTalentActive(spells.wildSurges) then
+					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
+				end
+				--[[if talents:IsTalentActive(spells.moonGuardian) then
+					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.moonGuardian.attributes.resourceMod
+				end]]
+				--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
+				--snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
+				--Warrior of Elune logic would go here if it didn't make it instant cast!
+			--[[elseif spellId == spells.sunfire.id then
+				FillSnapshotDataCasting_Balance(spells.sunfire)
+			elseif spellId == spells.moonfire.id then
+				FillSnapshotDataCasting_Balance(spells.moonfire)]]
+			elseif spellId == spells.stellarFlare.id then
+				FillSnapshotDataCasting_Balance(spells.stellarFlare)
+			elseif spellId == spells.newMoon.id then
+				FillSnapshotDataCasting_Balance(spells.newMoon)
+			elseif spellId == spells.halfMoon.id then
+				FillSnapshotDataCasting_Balance(spells.halfMoon)
+			elseif spellId == spells.fullMoon.id then
+				FillSnapshotDataCasting_Balance(spells.fullMoon)
 			end
-			if talents:IsTalentActive(spells.wildSurges) then
-				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.eclipseSolar.castId then
+				snapshotData.snapshots[spells.eclipseSolar.id].buff:InitializeCustom(spells.eclipseSolar.duration, currentTime)
+			elseif spellId == spells.eclipseLunar.castId then
+				snapshotData.snapshots[spells.eclipseLunar.id].buff:InitializeCustom(spells.eclipseLunar.duration, currentTime)
+			elseif spellId == spells.celestialAlignment.castId then
+				snapshotData.snapshots[spells.celestialAlignment.id].buff:InitializeCustom(spells.celestialAlignment.duration, currentTime)
+			elseif spellId == spells.incarnationChosenOfElune.castId then
+				snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:InitializeCustom(spells.incarnationChosenOfElune.duration, currentTime)
 			end
-			if talents:IsTalentActive(spells.moonGuardian) then
-				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.moonGuardian.attributes.resourceMod
-			end
-			--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
-			--snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
-			--Warrior of Elune logic would go here if it didn't make it instant cast!
-		elseif spellId == spells.sunfire.id then
-			FillSnapshotDataCasting_Balance(spells.sunfire)
-		elseif spellId == spells.moonfire.id then
-			FillSnapshotDataCasting_Balance(spells.moonfire)
-		elseif spellId == spells.stellarFlare.id then
-			FillSnapshotDataCasting_Balance(spells.stellarFlare)
-		elseif spellId == spells.newMoon.id then
-			FillSnapshotDataCasting_Balance(spells.newMoon)
-		elseif spellId == spells.halfMoon.id then
-			FillSnapshotDataCasting_Balance(spells.halfMoon)
-		elseif spellId == spells.fullMoon.id then
-			FillSnapshotDataCasting_Balance(spells.fullMoon)
 		end
 	elseif TRB.Data.character.specId == 2 then
 	elseif TRB.Data.character.specId == 4 then
@@ -2144,15 +2162,16 @@ local function UpdateSnapshot_Balance()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
-	
-	snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
-	snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
-	snapshotData.snapshots[spells.theLightOfElune.id].buff:UpdateTicks(currentTime)
-	snapshotData.snapshots[spells.forceOfNature.id].buff:UpdateTicks(currentTime)
+
 	snapshotData.snapshots[spells.celestialAlignment.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.eclipseSolar.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.eclipseLunar.id].buff:GetRemainingTime(currentTime)
+	
+	--[[snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
+	snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
+	snapshotData.snapshots[spells.theLightOfElune.id].buff:UpdateTicks(currentTime)
+	snapshotData.snapshots[spells.forceOfNature.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.starfall.id].buff:GetRemainingTime(currentTime)
 	
 	if talents:IsTalentActive(spells.theEternalMoon) then
@@ -2167,7 +2186,7 @@ local function UpdateSnapshot_Balance()
 		if snapshotData.snapshots[spells.theLightOfElune.id].buff.isActive then
 			snapshotData.snapshots[spells.theLightOfElune.id].buff.resource = snapshotData.snapshots[spells.theLightOfElune.id].buff.resource + spells.theEternalMoon.attributes.furyResourceMod
 		end
-	end
+	end]]
 end
 
 local function UpdateSnapshot_Feral()
@@ -2179,10 +2198,10 @@ local function UpdateSnapshot_Feral()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 
-	snapshotData.attributes.bleeds.moonfire = GetCurrentSnapshot(spells.moonfire.attributes.bonuses)
+	--[[snapshotData.attributes.bleeds.moonfire = GetCurrentSnapshot(spells.moonfire.attributes.bonuses)
 	snapshotData.attributes.bleeds.rake = GetCurrentSnapshot(spells.rake.attributes.bonuses)
 	snapshotData.attributes.bleeds.rip = GetCurrentSnapshot(spells.rip.attributes.bonuses)
-	snapshotData.attributes.bleeds.thrash = GetCurrentSnapshot(spells.thrash.attributes.bonuses)
+	snapshotData.attributes.bleeds.thrash = GetCurrentSnapshot(spells.thrash.attributes.bonuses)]]
 
 	snapshotData.snapshots[spells.clearcasting.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.suddenAmbush.id].buff:GetRemainingTime(currentTime)
@@ -2268,11 +2287,17 @@ local function UpdateResourceBar()
 				local affectingCombat = TRB.Data.character.inCombat
 				local passiveBarValue = 0
 				local castingBarValue = 0
-				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local flashBar = false
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and affectingCombat then
+				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
+
+				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
+				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
+					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
+				end
+
+				--[[if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and affectingCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -2281,21 +2306,17 @@ local function UpdateResourceBar()
 					end
 				else
 					snapshotData.audio.overcapCue = false
-				end
+				end]]
 
-				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
+				--[[if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
 					castingBarValue = currentResource + snapshotData.casting.resourceFinal
 				else
 					castingBarValue = currentResource
-				end
+				end]]
 
-				local maxPrimaryBarResource = TRB.Data.character.maxResource
-				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
-					maxPrimaryBarResource = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResource)
-				end
 
 				local passiveValue = 0
-				if specSettings.colors.bar.showPassive then
+				--[[if specSettings.colors.bar.showPassive then
 					passiveValue = snapshots[spells.furyOfElune.id].buff.resource + snapshots[spells.sunderedFirmament.id].buff.resource
 
 					if talents:IsTalentActive(spells.naturesBalance) then
@@ -2311,12 +2332,12 @@ local function UpdateResourceBar()
 						passiveValue = snapshots[spells.furyOfElune.id].buff.resource + snapshots[spells.sunderedFirmament.id].buff.resource + snapshots[spells.theLightOfElune.id].buff.resource + snapshots[spells.forceOfNature.id].buff.resource
 					end
 				end
-				passiveBarValue = castingBarValue + passiveValue
+				passiveBarValue = castingBarValue + passiveValue]]
 				
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
-				if castingBarValue < currentResource then --Using a spender
+				--[[if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
 						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
 						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
@@ -2330,13 +2351,13 @@ local function UpdateResourceBar()
 						castingBarColor = specSettings.colors.bar.spending
 						passiveBarColor = specSettings.colors.bar.passive
 					end
-				else
+				else]]
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 					castingBarColor = specSettings.colors.bar.casting
 					passiveBarColor = specSettings.colors.bar.passive
-				end
+				--end
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -2349,17 +2370,18 @@ local function UpdateResourceBar()
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
+					local isUsable = spell:IsUsable()
 						
 					local astralCommunionOffset = 0
-					if snapshotData.snapshots[spells.astralCommunion.id].buff.isActive then
+					--[[if snapshotData.snapshots[spells.astralCommunion.id].buff.isActive then
 						astralCommunionOffset = -spells.astralCommunion.attributes.resourceMod
-					end
+					end]]
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.settingKey == spells.starsurge.settingKey then
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif snapshots[spells.starweaversWeft.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive or currentResource >= spells.starsurge:GetPrimaryResourceCost() then
+							elseif isUsable then-- snapshots[spells.starweaversWeft.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive or currentResource >= spells.starsurge:GetPrimaryResourceCost() then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2367,7 +2389,7 @@ local function UpdateResourceBar()
 							end
 							
 							if showThreshold then
-								if (snapshots[spells.starweaversWeft.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive) and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
+								if isUsable --[[(snapshots[spells.starweaversWeft.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive)]] and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
 									snapshotData.audio.playedstarweaverCue = true
 									snapshotData.audio.playedSfCue = true
 									PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
@@ -2380,7 +2402,7 @@ local function UpdateResourceBar()
 								snapshotData.audio.playedstarweaverCue = false
 							end
 						elseif spell.settingKey == spells.starsurge2.settingKey then
-							resourceAmount = spells.starsurge2:GetPrimaryResourceCost() + astralCommunionOffset
+							--[[resourceAmount = spells.starsurge2:GetPrimaryResourceCost() + astralCommunionOffset
 							local aboveCounts = 0
 							if snapshots[spells.starweaversWeft.id].buff.isActive then
 								aboveCounts = aboveCounts + 1
@@ -2394,22 +2416,22 @@ local function UpdateResourceBar()
 								aboveCounts = aboveCounts + 2
 							elseif currentResource >= spells.starsurge:GetPrimaryResourceCost() then
 								aboveCounts = aboveCounts + 1
-							end
+							end]]
 
-							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+							--[[if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif resourceAmount >= TRB.Data.character.maxResource then
 								showThreshold = false
-							elseif specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow and aboveCounts < 2 then
+							else]]if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then--and aboveCounts < 2 then
 								showThreshold = false
-							elseif aboveCounts >= 2 then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
+							--[[elseif aboveCounts >= 2 then
+								thresholdColor = specCacheSettings.colors.threshold.over.color]]
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						elseif spell.settingKey == spells.starsurge3.settingKey then
-							resourceAmount = spells.starsurge3:GetPrimaryResourceCost() + (astralCommunionOffset * 2)
+							--[[resourceAmount = spells.starsurge3:GetPrimaryResourceCost() + (astralCommunionOffset * 2)
 							local aboveCounts = 0
 							if snapshots[spells.starweaversWeft.id].buff.isActive then
 								aboveCounts = aboveCounts + 1
@@ -2431,10 +2453,10 @@ local function UpdateResourceBar()
 								showThreshold = false
 							elseif resourceAmount >= TRB.Data.character.maxResource then
 								showThreshold = false
-							elseif specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow and aboveCounts < 3 then
+							else]]if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then-- and aboveCounts < 3 then
 								showThreshold = false
-							elseif aboveCounts >= 3 then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
+							--[[elseif aboveCounts >= 3 then
+								thresholdColor = specCacheSettings.colors.threshold.over.color]]
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
@@ -2442,19 +2464,19 @@ local function UpdateResourceBar()
 						elseif spell.id == spells.starfall.id then
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif snapshots[spells.starweaversWarp.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive or currentResource >= spells.starfall:GetPrimaryResourceCost() then
-								if snapshots[spells.starfall.id].buff.isActive and (snapshots[spells.starfall.id].buff.remaining) > (TRB.Data.character.pandemicModifier * spells.starfall.pandemicTime) then
+							elseif isUsable then -- snapshots[spells.starweaversWarp.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive or currentResource >= spells.starfall:GetPrimaryResourceCost() then
+								--[[if snapshots[spells.starfall.id].buff.isActive and (snapshots[spells.starfall.id].buff.remaining) > (TRB.Data.character.pandemicModifier * spells.starfall.pandemicTime) then
 									thresholdColor = specCacheSettings.colors.threshold.starfallPandemic.color
-								else
+								else]]
 									thresholdColor = specCacheSettings.colors.threshold.over.color
-								end
+								--end
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 
 							if showThreshold then
-								if (snapshots[spells.starweaversWarp.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive) and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
+								if isUsable --[[(snapshots[spells.starweaversWarp.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive)]] and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
 									snapshotData.audio.playedstarweaverCue = true
 									snapshotData.audio.playedSfCue = true
 									PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
@@ -2472,17 +2494,17 @@ local function UpdateResourceBar()
 					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 						showThreshold = false
 					elseif spell.hasCooldown then
-						if snapshots[spell.id].cooldown:IsUnusable() then
+						--[[if snapshots[spell.id].cooldown:IsUnusable() then
 							thresholdColor = specCacheSettings.colors.threshold.unusable.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-						elseif currentResource >= resourceAmount then
+						else]]if isUsable then-- currentResource >= resourceAmount then
 							thresholdColor = specCacheSettings.colors.threshold.over.color
 						else
 							thresholdColor = specCacheSettings.colors.threshold.under.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
 					else -- This is an active/available/normal spell threshold
-						if currentResource >= resourceAmount then
+						if isUsable then --currentResource >= resourceAmount then
 							thresholdColor = specCacheSettings.colors.threshold.over.color
 						else
 							thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2498,26 +2520,29 @@ local function UpdateResourceBar()
 					end
 					]]
 					
-					if resourceAmount >= maxPrimaryBarResource then
+					if resourceAmount == nil then
+						showThreshold = false
+						print("Error: Resource amount for threshold " .. spell.name .. " is nil.")
+					elseif resourceAmount >= maxPrimaryBarResourceUnnormalized then
 						showThreshold = false
 					end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 				
-				if specSettings.colors.bar.flashSsEnabled and currentResource >= spells.starsurge:GetPrimaryResourceCost() then
+				if specSettings.colors.bar.flashSsEnabled and spells.starsurge:IsUsable() then-- currentResource >= spells.starsurge:GetPrimaryResourceCost() then
 					flashBar = true
 				end
 
 				local barColor = specSettings.colors.bar.base
 
-				if not snapshots[spells.moonkinForm.id].buff.isActive and affectingCombat then
+				--[[if not snapshots[spells.moonkinForm.id].buff.isActive and affectingCombat then
 					barColor = specSettings.colors.bar.moonkinFormMissing
 					if specSettings.colors.bar.flashEnabled then
 						flashBar = true
 					end
-				elseif snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
+				else]]if snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
 					local timeThreshold = 0
 					local useEndOfEclipseColor = false
 
@@ -3115,31 +3140,32 @@ local function UpdateResourceBar()
 	end
 end
 
+--[[
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
 	local spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local targetData = snapshotData.targetData --[[@as TRB.Classes.TargetData]]
+	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
+	local targetData = snapshotData.targetData --[@as TRB.Classes.TargetData]
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 		local settings
 		if TRB.Data.character.specId == 1 then
-			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.BalanceSpells]
 			settings = TRB.Data.settings.druid.balance
 		elseif TRB.Data.character.specId == 2 then
-			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
 			settings = TRB.Data.settings.druid.feral
 		elseif TRB.Data.character.specId == 4 then
-			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.RestorationSpells]
 			settings = TRB.Data.settings.druid.restoration
 		end
 
 		if entry.destinationGuid == TRB.Data.character.guid then
 			if TRB.Data.character.specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
 				if settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
-					local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+					local innervate = snapshotData.snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
 					innervate.buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						snapshotData.audio.innervateCue = false
@@ -3147,7 +3173,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshotData.audio.innervateCue = false
 					end
 				elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
-					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[@as TRB.Classes.Healer.ManaTideTotem]
 					manaTideTotem:Initialize(entry.type)
 				end
 			end
@@ -3314,10 +3340,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				end
 			elseif TRB.Data.character.specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
 				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
-					local channeledManaPotion = snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+					local channeledManaPotion = snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] --[@as TRB.Classes.Healer.ChanneledManaPotion]
 					channeledManaPotion.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.potionOfChilledClarity.id then
-					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[@as TRB.Classes.Healer.PotionOfChilledClarity]
 					potionOfChilledClarity.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.efflorescence.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
@@ -3340,7 +3366,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			RefreshTargetTracking()
 		end
 	end
-end)
+end)]]
 
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
@@ -3352,7 +3378,7 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 	
@@ -3365,10 +3391,10 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
-		local targetData = TRB.Data.snapshotData.targetData
+		--[[local targetData = TRB.Data.snapshotData.targetData
 		targetData:AddSpellTracking(spells.moonfire)
 		targetData:AddSpellTracking(spells.stellarFlare)
-		targetData:AddSpellTracking(spells.sunfire)
+		targetData:AddSpellTracking(spells.sunfire)]]
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Balance
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.balance.settings)
@@ -3425,11 +3451,11 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
-		local targetData = TRB.Data.snapshotData.targetData
+		--[[local targetData = TRB.Data.snapshotData.targetData
 		targetData:AddSpellTracking(spells.moonfire, true, false, true)
 		targetData:AddSpellTracking(spells.rake, true, false, true)
 		targetData:AddSpellTracking(spells.rip, true, false, true)
-		targetData:AddSpellTracking(spells.thrash, true, false, true)
+		targetData:AddSpellTracking(spells.thrash, true, false, true)]]
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Feral
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.feral.settings)
@@ -3480,9 +3506,9 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
-		local targetData = TRB.Data.snapshotData.targetData
+		--[[local targetData = TRB.Data.snapshotData.targetData
 		targetData:AddSpellTracking(spells.moonfire)
-		targetData:AddSpellTracking(spells.sunfire)
+		targetData:AddSpellTracking(spells.sunfire)]]
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.restoration)
@@ -3646,36 +3672,11 @@ function TRB.Functions.Class:CheckCharacter()
 
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "balance"
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower, true)
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.LunarPower, false)
 		GetCurrentMoonSpell()
 
-		local twwSeason1SetBonusSpell = TRB.Data.spellsData.spells.twwSeason1SetBonus --[[@as TRB.Classes.SpellBase]]
-
-		local headItemLink = GetInventoryItemLink("player", 1)
-		local shoulderItemLink = GetInventoryItemLink("player", 3)
-		local chestItemLink = GetInventoryItemLink("player", 5)
-		local handItemLink = GetInventoryItemLink("player", 10)
-		local legItemLink = GetInventoryItemLink("player", 7)
-		
-		local twwSeason1SetBonusCount = 0
-		if TRB.Functions.Item:DoesItemLinkMatchId(headItemLink, twwSeason1SetBonusSpell.attributes.headId) then
-			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
-		end
-		if TRB.Functions.Item:DoesItemLinkMatchId(shoulderItemLink, twwSeason1SetBonusSpell.attributes.shoulderId) then
-			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
-		end
-		if TRB.Functions.Item:DoesItemLinkMatchId(chestItemLink, twwSeason1SetBonusSpell.attributes.chestId) then
-			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
-		end
-		if TRB.Functions.Item:DoesItemLinkMatchId(handItemLink, twwSeason1SetBonusSpell.attributes.handId) then
-			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
-		end
-		if TRB.Functions.Item:DoesItemLinkMatchId(legItemLink, twwSeason1SetBonusSpell.attributes.legId) then
-			twwSeason1SetBonusCount = twwSeason1SetBonusCount + 1
-		end
-
-		TRB.Data.character.items.twwSeason1SetBonusCount = twwSeason1SetBonusCount
-		TRB.Data.snapshotData.snapshots[TRB.Data.spellsData.spells.moonkinForm.id].buff:Initialize(nil, true)
+		--TRB.Data.snapshotData.snapshots[TRB.Data.spellsData.spells.moonkinForm.id].buff:Initialize(nil, true)
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		TRB.Data.character.specName = "feral"
@@ -3749,9 +3750,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 				(not UnitInVehicle("player")) and (
 					(not sharedSettings.displayBar.alwaysShow) and (
 						(not sharedSettings.displayBar.notZeroShow) or
-						(sharedSettings.displayBar.notZeroShow and
+						(sharedSettings.displayBar.notZeroShow --[[and
 							((not talents:IsTalentActive(spells.naturesBalance) and snapshotData.attributes.resource == 0) or
-							(talents:IsTalentActive(spells.naturesBalance) and (snapshotData.attributes.resource / TRB.Data.resourceFactor) >= 50))
+							(talents:IsTalentActive(spells.naturesBalance) and (snapshotData.attributes.resource / TRB.Data.resourceFactor) >= 50))]]
 						)
 					)
 				)) then
@@ -3819,11 +3820,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local affectingCombat = TRB.Data.character.inCombat
 
 	if TRB.Data.character.specId == 1 then -- Balance
-		if var == "$moonkinForm" then
+		--[[if var == "$moonkinForm" then
 			if snapshots[spells.moonkinForm.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$eclipse" then
+		else]]if var == "$eclipse" then
 			if snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
 				valid = true
 			end
@@ -3849,7 +3850,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$resourceMax" or var == "$astralPowerMax" then
 			valid = true
-		elseif var == "$resourceTotal" or var == "$astralPowerTotal" then
+		--[[elseif var == "$resourceTotal" or var == "$astralPowerTotal" then
 			if snapshotData.attributes.resource > 0 or
 				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0) or
 				snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 or snapshots[spells.theLightOfElune.id].buff.resource > 0 or snapshots[spells.forceOfNature.id].buff.resource > 0 then
@@ -3870,12 +3871,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
 			if snapshotData.attributes.resource > 0 or snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 or snapshots[spells.theLightOfElune.id].buff.resource > 0 or snapshots[spells.forceOfNature.id].buff.resource > 0 then
 				valid = true
-			end
+			end]]
 		elseif var == "$casting" then
 			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0 then
 				valid = true
 			end
-		elseif var == "$passive" then
+		--[[elseif var == "$passive" then
 			if (talents:IsTalentActive(spells.naturesBalance) and (affectingCombat or (snapshotData.attributes.resource / TRB.Data.resourceFactor) < 50)) or snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 or snapshots[spells.theLightOfElune.id].buff.resource > 0 or snapshots[spells.forceOfNature.id].buff.resource > 0 then
 				valid = true
 			end
@@ -3993,7 +3994,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$dreamburstTime" then
 			if snapshots[spells.dreamburst.id].buff.isActive then
 				valid = true
-			end
+			end]]
+		end
 	elseif TRB.Data.character.specId == 2 then -- Feral
 		if var == "$resource" or var == "$energy" then
 			if snapshotData.attributes.resource > 0 then
@@ -4208,9 +4210,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$berserkTime" or var == "$incarnationTime" then
-			if GetBerserkRemainingTime() > 0 then
-				valid = true
-			end
+			--if GetBerserkRemainingTime() > 0 then
+			--	valid = true
+			--end
 		elseif var == "$incarnationTicks" then
 			if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
 				valid = true
