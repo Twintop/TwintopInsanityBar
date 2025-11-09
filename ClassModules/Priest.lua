@@ -1701,8 +1701,6 @@ local function RefreshLookupData_Shadow()
 	local currentInsanityColor = sharedSettings.colors.text.current.color
 	local castingInsanityColor = sharedSettings.colors.text.casting.color
 
-	local insanityThreshold = spells.shadowWordMadness:GetPrimaryResourceCost()
-
 	if TRB.Data.character.inCombat then
 		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
 			currentInsanityColor = sharedSettings.colors.text.overcap.color
@@ -3279,7 +3277,6 @@ local function UpdateResourceBar()
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
-				local maxPrimaryBarResource = TRB.Data.character.maxResource
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
