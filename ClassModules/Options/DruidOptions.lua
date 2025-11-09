@@ -117,7 +117,7 @@ local function BalanceLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount     {$talentStellarFlare}[          ]{$ttd}[TTD: $ttd]",
+			text="$haste% ($gcd)",--#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount     {$talentStellarFlare}[          ]{$ttd}[TTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -1488,7 +1488,7 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "eclipse1GCD")
 	end)
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.colors.moonkinFormMissing = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerMoonkinMissing"], spec.colors.bar.moonkinFormMissing, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.moonkinFormMissing
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1527,7 +1527,7 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1536,8 +1536,8 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 11, 1, yCoord)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 11, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], true, false)
@@ -1594,14 +1594,11 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfEclipse.timeMax = value
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], BALANCE_MAX_ASTRAL_POWER)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], BALANCE_MAX_ASTRAL_POWER)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], 1, BALANCE_MAX_ASTRAL_POWER)
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 end
 
 local function BalanceConstructThresholdPanel(parent)
@@ -1693,10 +1690,10 @@ local function BalanceConstructThresholdPanel(parent)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
-		{
+		--[[{
 			name = "starfallPandemic",
 			colorLocalization = L["DruidBalanceThresholdStarfallPandemic"]
-		}
+		}]]
 	}
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], true, true, false, true, custom)
@@ -1757,11 +1754,11 @@ local function BalanceConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 
@@ -1827,9 +1824,9 @@ local function BalanceConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "sfReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarfallCheckbox"], L["DruidBalanceAudioStarfallCheckboxTooltip"])
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "starweaversReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarweaverCheckbox"], L["DruidBalanceAudioStarweaverCheckboxTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "starweaversReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarweaverCheckbox"], L["DruidBalanceAudioStarweaverCheckboxTooltip"])
 	
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceAstralPower"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceAstralPower"]))
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceAstralPower"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceAstralPower"]))
 end
 
 local function BalanceConstructBarTextDisplayPanel(parent, cache)
