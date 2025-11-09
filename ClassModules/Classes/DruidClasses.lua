@@ -40,7 +40,6 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public dreamburst TRB.Classes.SpellBase
 ---@field public forceOfNature TRB.Classes.SpellBase
 ---@field public starlord TRB.Classes.SpellBase
----@field public twwSeason1SetBonus TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
 ---@field public starsurge3 TRB.Classes.SpellThreshold
@@ -282,15 +281,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         isTalent = true
     })
     --Set Bonuses
-    self.twwSeason1SetBonus = TRB.Classes.SpellBase:New({
-        headId = 212056,
-        shoulderId = 212054,
-        chestId = 212059,
-        handId = 212057,
-        legId = 212055,
-        resourceModWrath = 2,
-        resourceModStarfire = 5
-    })
 
     return self
 end
@@ -622,6 +612,8 @@ end
 ---@field public moonfire TRB.Classes.SpellBase
 ---@field public sunfire TRB.Classes.SpellBase
 ---@field public efflorescence TRB.Classes.SpellBase
+---@field public lifetreading TRB.Classes.SpellBase
+---@field public lifebloom TRB.Classes.SpellBase
 ---@field public incarnationTreeOfLife TRB.Classes.SpellBase
 ---@field public cenariusGuidance TRB.Classes.SpellBase
 ---@field public reforestation TRB.Classes.SpellBase
@@ -654,18 +646,33 @@ function TRB.Classes.Druid.RestorationSpells:New()
     -- Restoration Spec Talents
     self.efflorescence = TRB.Classes.SpellBase:New({
         id = 145205,
+        castId = 145205,
         duration = 30,
         isTalent = true
     })
+    self.lifetreading = TRB.Classes.SpellBase:New({
+        id = 1217941,
+        isTalent = true
+    })
+    self.lifebloom = TRB.Classes.SpellBase:New({
+        id = 33763,
+        castId = 33763,
+        isTalent = true
+    })
     self.incarnationTreeOfLife = TRB.Classes.SpellBase:New({
-        id = 117679
+        id = 117679,
+        castId = 33891,
+        isTalent = true,
+        duration = 30
     })
     self.cenariusGuidance = TRB.Classes.SpellBase:New({
         id = 393371,
         isTalent = true
     })
     self.reforestation = TRB.Classes.SpellBase:New({
-        id = 392360
+        id = 392360,
+        talentId = 392356,
+        isTalent = true
     })
     self.clearcasting = TRB.Classes.SpellBase:New({
         id = 16870

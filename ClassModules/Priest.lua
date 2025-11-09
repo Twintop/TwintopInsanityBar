@@ -2870,8 +2870,6 @@ local function UpdateResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
-				local maxPrimaryBarResource = TRB.Data.character.maxResource
-				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				local passiveBarValue = 0
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
