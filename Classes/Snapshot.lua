@@ -311,7 +311,7 @@ end
 ---Removesa stack (application) from the buff
 function TRB.Classes.SnapshotBuff:RemoveStack()
 	if self.isActive then
-		if self.applications <= 1 then
+		if self.applications == 1 then
 			self:Reset()
 			return
 		end
