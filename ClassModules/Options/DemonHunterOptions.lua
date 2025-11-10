@@ -1403,10 +1403,10 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], L["ResourceSoulFragments"])
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])--, L["ResourceSoulFragments"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord, true, L["ResourceSoulFragments"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord)--, true, L["ResourceSoulFragments"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false)
@@ -1438,7 +1438,7 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
 	end)
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showPassiveBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1453,7 +1453,7 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1462,13 +1462,13 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 12, 2, yCoord)
+	--[[yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 12, 2, yCoord)]]
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, false)
 
-	yCoord = yCoord - 40
+	--[[yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterVengeanceHeaderSoulFragmentColors"], oUi.xCoord, yCoord)
 	
 	controls.colors.comboPoints = {}
@@ -1514,7 +1514,7 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
-	end)
+	end)]]
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"], oUi.xCoord, yCoord)
@@ -1568,8 +1568,8 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfMetamorphosis.timeMax = value
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], VENGEANCE_MAX_FURY)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], VENGEANCE_MAX_FURY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], 1, VENGEANCE_MAX_FURY)
@@ -1644,13 +1644,13 @@ local function VengeanceConstructThresholdPanel(parent)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
-		{
+		--[[{
 			name = "special",
 			hasEnabledCheckbox = true,
 			colorLocalization = L["DemonHunterVengeanceThresholdSpecial"],
 			enabledCheckboxLocalization = L["DemonHunterVengeanceThresholdSpecialEnabled"],
 			enabledCheckboxTooltipLocalization = L["DemonHunterVengeanceThresholdSpecialEnabledTooltip"]
-		}
+		}]]
 	}
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, true, true, true, custom)
@@ -1704,11 +1704,11 @@ local function VengeanceConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 
@@ -1756,7 +1756,7 @@ local function VengeanceConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFury"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFury"]))
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFury"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFury"]))
 end
 
 local function VengeanceConstructBarTextDisplayPanel(parent, cache)

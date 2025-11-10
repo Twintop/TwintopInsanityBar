@@ -300,7 +300,7 @@ local function FillSpellData_Vengeance()
 		{ variable = "#ia", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = false },
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#soulFragments", icon = spells.soulFragments.icon, description = spells.soulFragments.name, printInSettings = true },
+		--{ variable = "#soulFragments", icon = spells.soulFragments.icon, description = spells.soulFragments.name, printInSettings = true },
 		{ variable = "#studentOfSuffering", icon = spells.studentOfSuffering.icon, description = spells.studentOfSuffering.name, printInSettings = true },
 	}
 	specCache.vengeance.barTextVariables.values = {
@@ -351,12 +351,12 @@ local function FillSpellData_Vengeance()
 		{ variable = "$soulFragments", description = L["DemonHunterVengeanceBarTextVariable_soulFragments"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulFragmentsMax", description = L["DemonHunterVengeanceBarTextVariable_soulFragmentsMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },]]
 
 		{ variable = "$metaTime", description = L["DemonHunterVengeanceBarTextVariable_metaTime"], printInSettings = true, color = false },
 		{ variable = "$metamorphosisTime", description = "", printInSettings = false, color = false },
 
-		{ variable = "$iaFury", description = L["DemonHunterVengeanceBarTextVariable_iaFury"], printInSettings = true, color = false },
+		--[[{ variable = "$iaFury", description = L["DemonHunterVengeanceBarTextVariable_iaFury"], printInSettings = true, color = false },
 		{ variable = "$iaTicks", description = L["DemonHunterVengeanceBarTextVariable_iaTicks"], printInSettings = true, color = false },
 		{ variable = "$iaTime", description = L["DemonHunterVengeanceBarTextVariable_iaTime"], printInSettings = true, color = false },
 
@@ -622,15 +622,15 @@ local function RefreshLookupData_Vengeance()
 	--Spec specific implementation
 
 	--$overcap
-	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
+	--local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 	local currentFuryColor = sharedSettings.colors.text.current.color
 	local castingFuryColor = sharedSettings.colors.text.casting.color
 	
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overcap.enabled and overcap then
+		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
 			currentFuryColor = sharedSettings.colors.text.overcap.color
-		elseif sharedSettings.colors.text.overThreshold.enabled then
+		else]]if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedResource then
@@ -645,15 +645,15 @@ local function RefreshLookupData_Vengeance()
 		end
 	end
 
-	if snapshotData.casting.resourceFinal < 0 then
+	--[[if snapshotData.casting.resourceFinal < 0 then
 		castingFuryColor = sharedSettings.colors.text.spending.color
-	end
+	end]]
 
 	--$metamorphosisTime
 	local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 	local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
 
-	--$iaFury
+	--[[--$iaFury
 	local iaFury = snapshotData.snapshots[spells.immolationAura.id].buff.resource
 
 	--$iaTicks
@@ -671,15 +671,16 @@ local function RefreshLookupData_Vengeance()
 
 	--$sosTime
 	local _sosTime = snapshotData.snapshots[spells.studentOfSuffering.id].buff:GetRemainingTime(currentTime)
-	local sosTime = TRB.Functions.BarText:TimerPrecision(_sosTime)
+	local sosTime = TRB.Functions.BarText:TimerPrecision(_sosTime)]]
 
 	--$fury
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedResource, resourcePrecision, "floor"))
+	local _currentFury = normalizedResource
+	local currentFury = string.format("|c%s%s|r", currentFuryColor, _currentFury)-- TRB.Functions.Number:RoundTo(normalizedResource, resourcePrecision, "floor"))
 	--$casting
 	local _castingFury = snapshotData.casting.resourceFinal
 	local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
-	--$passive
+	--[[--$passive
 	local _passiveFury = iaFury + sosFury
 	local passiveFury = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.Number:RoundTo(_passiveFury, resourcePrecision, "floor"))
 	
@@ -706,11 +707,11 @@ local function RefreshLookupData_Vengeance()
 
 	--$rsTime
 	local _rsTime = snapshotData.snapshots[spells.rendingStrike.id].buff:GetRemainingTime(currentTime)
-	local rsTime = TRB.Functions.BarText:TimerPrecision(_rsTime)
+	local rsTime = TRB.Functions.BarText:TimerPrecision(_rsTime)]]
 	
 	----------------------------
 
-	Global_TwintopResourceBar.resource.resource = normalizedResource
+	--[[Global_TwintopResourceBar.resource.resource = normalizedResource
 	Global_TwintopResourceBar.resource.passive = _passiveFury
 	Global_TwintopResourceBar.resource.immolationAura = iaFury
 	Global_TwintopResourceBar.resource.studentOfSuffering = sosFury
@@ -723,20 +724,25 @@ local function RefreshLookupData_Vengeance()
 	Global_TwintopResourceBar.studentOfSuffering = Global_TwintopResourceBar.studentOfSuffering or {}
 	Global_TwintopResourceBar.studentOfSuffering.fury = sosFury
 	Global_TwintopResourceBar.studentOfSuffering.ticks = sosTicks
-	Global_TwintopResourceBar.studentOfSuffering.time = sosTime
+	Global_TwintopResourceBar.studentOfSuffering.time = sosTime]]
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
+	lookup["$resource"] = currentFury
+	lookup["$fury"] = currentFury
+	lookup["$resourceMax"] = TRB.Data.character.maxResource
+	lookup["$furyMax"] = TRB.Data.character.maxResource
+	lookup["$casting"] = castingFury
+	lookup["$metaTime"] = metamorphosisTime
+	lookup["$metamorphosisTime"] = metamorphosisTime
+	--[[lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
 	lookup["#glaiveFlurry"] = spells.glaiveFlurry.icon
 	lookup["#ia"] = spells.immolationAura.icon
 	lookup["#immolationAura"] = spells.immolationAura.icon
 	lookup["#metamorphosis"] = spells.metamorphosis.icon
 	lookup["#meta"] = spells.metamorphosis.icon
 	lookup["#rendingStrike"] = spells.rendingStrike.icon
-	lookup["#soulFragments"] = spells.soulFragments.icon
-	lookup["$metaTime"] = metamorphosisTime
-	lookup["$metamorphosisTime"] = metamorphosisTime
-	lookup["$iaFury"] = iaFury
+	--lookup["#soulFragments"] = spells.soulFragments.icon]]
+	--[[lookup["$iaFury"] = iaFury
 	lookup["$iaTicks"] = iaTicks
 	lookup["$iaTime"] = iaTime
 	lookup["$sosFury"] = sosFury
@@ -744,20 +750,15 @@ local function RefreshLookupData_Vengeance()
 	lookup["$sosTime"] = _sosTime
 	lookup["$furyPlusCasting"] = furyPlusCasting
 	lookup["$furyTotal"] = furyTotal
-	lookup["$furyMax"] = TRB.Data.character.maxResource
-	lookup["$fury"] = currentFury
 	lookup["$resourcePlusCasting"] = furyPlusCasting
 	lookup["$furyPlusCasting"] = furyPlusCasting
 	lookup["$resourcePlusPassive"] = furyPlusPassive
 	lookup["$furyPlusPassive"] = furyPlusPassive
 	lookup["$resourceTotal"] = furyTotal
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$resource"] = currentFury
-	lookup["$soulFragments"] = snapshotData.attributes.resource2
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$soulFragmentsMax"] = TRB.Data.character.maxResource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$casting"] = castingFury
+	--lookup["$soulFragments"] = snapshotData.attributes.resource2
+	--lookup["$comboPoints"] = snapshotData.attributes.resource2
+	--lookup["$soulFragmentsMax"] = TRB.Data.character.maxResource2
+	--lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$passive"] = passiveFury
 	lookup["$overcap"] = overcap
 	lookup["$resourceOvercap"] = overcap
@@ -765,13 +766,18 @@ local function RefreshLookupData_Vengeance()
 	lookup["$aotgStacks"] = aotgStacks
 	lookup["$aotgTime"] = aotgTime
 	lookup["$gfTime"] = gfTime
-	lookup["$rsTime"] = rsTime
+	lookup["$rsTime"] = rsTime]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	lookupLogic["$resource"] = normalizedResource
+	lookupLogic["$fury"] = normalizedResource
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+	lookupLogic["$furyMax"] = TRB.Data.character.maxResource
+	lookupLogic["$casting"] = _castingFury
 	lookupLogic["$metaTime"] = _metamorphosisTime
 	lookupLogic["$metamorphosisTime"] = _metamorphosisTime
-	lookupLogic["$iaFury"] = iaFury
+	--[[lookupLogic["$iaFury"] = iaFury
 	lookupLogic["$iaTicks"] = iaTicks
 	lookupLogic["$iaTime"] = _iaTime
 	lookupLogic["$sosFury"] = sosFury
@@ -779,20 +785,15 @@ local function RefreshLookupData_Vengeance()
 	lookupLogic["$sosTime"] = _sosTime
 	lookupLogic["$furyPlusCasting"] = _furyPlusCasting
 	lookupLogic["$furyTotal"] = _furyTotal
-	lookupLogic["$furyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$fury"] = normalizedResource
 	lookupLogic["$resourcePlusCasting"] = _furyPlusCasting
 	lookupLogic["$furyPlusCasting"] = _furyPlusCasting
 	lookupLogic["$resourcePlusPassive"] = _furyPlusPassive
 	lookupLogic["$furyPlusPassive"] = _furyPlusPassive
 	lookupLogic["$resourceTotal"] = _furyTotal
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = normalizedResource
-	lookupLogic["$soulFragments"] = snapshotData.attributes.resource2
-	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$soulFragmentsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$casting"] = _castingFury
+	--lookupLogic["$soulFragments"] = snapshotData.attributes.resource2
+	--lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+	--lookupLogic["$soulFragmentsMax"] = TRB.Data.character.maxResource2
+	--lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$passive"] = _passiveFury
 	lookupLogic["$overcap"] = overcap
 	lookupLogic["$resourceOvercap"] = overcap
@@ -800,7 +801,7 @@ local function RefreshLookupData_Vengeance()
 	lookupLogic["$aotgStacks"] = aotgStacks
 	lookupLogic["$aotgTime"] = _aotgTime
 	lookupLogic["$gfTime"] = _gfTime
-	lookupLogic["$rsTime"] = _rsTime
+	lookupLogic["$rsTime"] = _rsTime]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -840,6 +841,18 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
+		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+		if event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.metamorphosis.castId then
+				local duration = spells.metamorphosis.duration
+
+				if talents:IsTalentActive(spells.vengefulBeast) then
+					duration = duration + spells.vengefulBeast.duration
+				end
+
+				snapshotData.snapshots[spells.metamorphosis.id].buff:InitializeCustom(duration, currentTime)
+			end
+		end
 	end
 end
 
@@ -934,11 +947,11 @@ local function UpdateSnapshot_Vengeance()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local _
 
-	snapshotData.snapshots[spells.immolationAura.id].buff:UpdateTicks(currentTime)
+	--snapshotData.snapshots[spells.immolationAura.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
-	snapshotData.snapshots[spells.chaosNova.id].cooldown:Refresh()
-	snapshotData.snapshots[spells.felDevastation.id].cooldown:Refresh()
+	--snapshotData.snapshots[spells.chaosNova.id].cooldown:Refresh()
+	--snapshotData.snapshots[spells.felDevastation.id].cooldown:Refresh()
 end
 
 local function UpdateResourceBar()
@@ -1157,14 +1170,15 @@ local function UpdateResourceBar()
 				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
+				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
-				local maxPrimaryBarResource = TRB.Data.character.maxResource
+				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
-					maxPrimaryBarResource = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResource)
+					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
 				local passiveValue = 0
-				if specSettings.colors.bar.showPassive then
+				--[[if specSettings.colors.bar.showPassive then
 					if snapshots[spells.immolationAura.id].buff.resource then
 						passiveValue = passiveValue + snapshots[spells.immolationAura.id].buff.resource
 					end
@@ -1175,12 +1189,12 @@ local function UpdateResourceBar()
 				else
 					castingBarValue = currentResource
 				end
-				passiveBarValue = castingBarValue + passiveValue
+				passiveBarValue = castingBarValue + passiveValue]]
 
 				local castingBarColor = specSettings.colors.bar.casting
 				local passiveBarColor = specSettings.colors.bar.passive
 
-				if castingBarValue < currentResource then --Using a spender
+				--[[if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
 						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
 						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
@@ -1194,13 +1208,13 @@ local function UpdateResourceBar()
 						castingBarColor = specSettings.colors.bar.spending
 						passiveBarColor = specSettings.colors.bar.passive
 					end
-				else
+				else]]
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
 					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 					castingBarColor = specSettings.colors.bar.casting
 					passiveBarColor = specSettings.colors.bar.passive
-				end
+				--end
 
 
 				local pairOffset = 0
@@ -1210,6 +1224,7 @@ local function UpdateResourceBar()
 					end
 					pairOffset = (thresholdId - 1) * 3
 					local resourceAmount = spell:GetPrimaryResourceCost()
+					local isUsable = spell:IsUsable()
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
@@ -1220,10 +1235,10 @@ local function UpdateResourceBar()
 						showThreshold = false
 					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.soulCleave.id or spell.id == spells.spiritBomb.id then
-							if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.soulFurnace.id].buff.isActive then
+							--[[if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.soulFurnace.id].buff.isActive then
 								thresholdColor = specCacheSettings.colors.threshold.special.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-							elseif currentResource >= resourceAmount then
+							else]]if isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -1233,17 +1248,17 @@ local function UpdateResourceBar()
 					elseif resourceAmount == 0 then
 						showThreshold = false
 					elseif spell.hasCooldown then
-						if snapshots[spell.id].cooldown:IsUnusable() then
+						--[[if snapshots[spell.id].cooldown:IsUnusable() then
 							thresholdColor = specCacheSettings.colors.threshold.unusable.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-						elseif currentResource >= resourceAmount then
+						else]]if isUsable then-- currentResource >= resourceAmount then
 							thresholdColor = specCacheSettings.colors.threshold.over.color
 						else
 							thresholdColor = specCacheSettings.colors.threshold.under.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
 					else -- This is an active/available/normal spell threshold
-						if currentResource >= resourceAmount then
+						if isUsable then-- currentResource >= resourceAmount then
 							thresholdColor = specCacheSettings.colors.threshold.over.color
 						else
 							thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -1258,12 +1273,12 @@ local function UpdateResourceBar()
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					end
 					
-					if resourceAmount >= maxPrimaryBarResource then
+					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
 						showThreshold = false
 					end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 				
 				local barColor = specSettings.colors.bar.base
@@ -1290,7 +1305,7 @@ local function UpdateResourceBar()
 
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
+				--[[if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
@@ -1299,7 +1314,7 @@ local function UpdateResourceBar()
 					end
 				else
 					snapshotData.audio.overcapCue = false
-				end
+				end]]
 
 				barContainerFrame:SetAlpha(1.0)
 
@@ -1315,7 +1330,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				--[[local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
@@ -1338,7 +1353,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end
+				end]]
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1493,7 +1508,7 @@ local function SwitchSpec()
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#rendingStrike"] = spells.rendingStrike.icon
-		lookup["#soulFragments"] = spells.soulFragments.icon
+		--lookup["#soulFragments"] = spells.soulFragments.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1657,7 +1672,7 @@ function TRB.Functions.Class:CheckCharacter()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 		TRB.Data.character.specName = "vengeance"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
-		local maxComboPoints = spells.soulFragments.attributes.maxResource
+		--[[local maxComboPoints = spells.soulFragments.attributes.maxResource
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
 		if sharedSettings ~= nil then
@@ -1665,7 +1680,7 @@ function TRB.Functions.Class:CheckCharacter()
 				TRB.Data.character.maxResource2 = maxComboPoints
 				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
 			end
-		end
+		end]]
 	end
 end
 
@@ -1683,9 +1698,9 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1
-		TRB.Data.resource2 = "SPELL"
+		--[[TRB.Data.resource2 = "SPELL"
 		TRB.Data.resource2Id = spells.soulFragments.id
-		TRB.Data.resource2Factor = 1
+		TRB.Data.resource2Factor = 1]]
 	else
 		TRB.Data.specSupported = false
 	end

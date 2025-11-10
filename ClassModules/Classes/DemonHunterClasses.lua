@@ -254,9 +254,10 @@ end
 
 
 ---@class TRB.Classes.DemonHunter.VengeanceSpells : TRB.Classes.SpecializationSpellsBase
----@field public soulFragments TRB.Classes.SpellBase
+--[[---@field public soulFragments TRB.Classes.SpellBase]]
 ---@field public immolationAura TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
+---@field public vengefulBeast TRB.Classes.SpellBase
 ---@field public soulFurnace TRB.Classes.SpellBase
 ---@field public artOfTheGlaive TRB.Classes.SpellBase
 ---@field public glaiveFlurry TRB.Classes.SpellBase
@@ -276,11 +277,11 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.DemonHunter.VengeanceSpells) --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 
 	--Resource
-	self.soulFragments = TRB.Classes.SpellBase:New({
+	--[[self.soulFragments = TRB.Classes.SpellBase:New({
 		id = 203981,
 		attributes = {},
 		maxResource = 5
-	})
+	})]]
 
 	--Demon Hunter Class Baseline Abilities
 	self.immolationAura = TRB.Classes.SpellBase:New({
@@ -293,8 +294,15 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 	})
 	self.metamorphosis = TRB.Classes.SpellBase:New({
 		id = 187827,
+		castId = 187827,
 		isTalent = false,
-		baseline = true
+		baseline = true,
+		duration = 15
+	})
+	self.vengefulBeast = TRB.Classes.SpellBase:New({
+		id = 1265818,
+		isTalent = true,
+		duration = 5
 	})
 
 	--Vengeance Baseline Abilities
