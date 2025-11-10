@@ -354,8 +354,6 @@ if locale == "deDE" then
     L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "Dadurch wird die vertikale Linie auf der Leiste angezeigt, die angibt, wie viel Wut erforderlich ist, um Eye Beam zu verwenden."
     L["DemonHunterHavocThresholdCheckboxFelBarrage"] = "Teufelssperrfeuer"
     L["DemonHunterHavocThresholdCheckboxFelBarrageTooltip"] = "Dadurch wird die vertikale Linie auf der Leiste angezeigt, die angibt, wie viel Wut erforderlich ist, um Teufelssperrfeuer einzusetzen. Nur sichtbar, wenn man das Talent „Teufelssperrfeuer“ besitzt."
-    L["DemonHunterHavocThresholdCheckboxFelEruption"] = "Teufelsausbruch"
-    L["DemonHunterHavocThresholdCheckboxFelEruptionTooltip"] = "Dadurch wird die vertikale Linie auf der Leiste angezeigt, die angibt, wie viel Wut erforderlich ist, um „Teufelsausbruch“ zu nutzen. Nur sichtbar, wenn man Talent für Teufelsausbruch hat."
     L["DemonHunterHavocThresholdCheckboxGlaiveTempest"] = "Glevensturm"
     L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"] = "Dadurch wird die vertikale Linie auf der Leiste angezeigt, die angibt, wie viel Wut erforderlich ist, um Glaive Tempest zu verwenden. Nur sichtbar, wenn Talent für Glaive Tempest vorhanden ist."
     L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "Glaive werfen (Wütende Würfe)"

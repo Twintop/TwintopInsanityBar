@@ -354,8 +354,6 @@ if locale == "koKR" then
     L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "그러면 Eye Beam을 사용하는 데 필요한 Fury의 양을 나타내는 수직선이 막대에 표시됩니다."
     L["DemonHunterHavocThresholdCheckboxFelBarrage"] = "지옥 포화"
     L["DemonHunterHavocThresholdCheckboxFelBarrageTooltip"] = "그러면 지옥 포화를 사용하는 데 필요한 분노의 양을 나타내는 수직선이 막대에 표시됩니다. 지옥 포화에 재능이 있는 경우에만 표시됩니다."
-    L["DemonHunterHavocThresholdCheckboxFelEruption"] = "지옥 분출"
-    L["DemonHunterHavocThresholdCheckboxFelEruptionTooltip"] = "그러면 지옥 분출을 사용하는 데 필요한 분노의 양을 나타내는 수직선이 막대에 표시됩니다. 지옥 분출에 재능이 있는 경우에만 표시됩니다."
     L["DemonHunterHavocThresholdCheckboxGlaiveTempest"] = "글레이브 폭풍우"
     L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"] = "Glaive Tempest를 사용하는 데 필요한 Fury의 양을 나타내는 수직선이 막대에 표시됩니다. Glaive Tempest에 재능이 있는 경우에만 표시됩니다."
     L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "글레이브 투척(분노한 투척)"

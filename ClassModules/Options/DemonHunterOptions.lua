@@ -28,7 +28,7 @@ local function HavocLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$ucTime}[$ucTime]",
+			text="", --{$ucTime}[$ucTime]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -106,7 +106,7 @@ local function HavocLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$ttd}[TTD: $ttd]",
+			text="",--{$ttd}[TTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -152,7 +152,7 @@ local function HavocLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$tacticalRetreatFury}[#tacticalRetreat$tacticalRetreatFury+]{$bhFury}[#bh$bhFury+]{$casting}[#casting$casting+]$fury",
+			text="{$casting}[#casting$casting+]$fury",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -217,9 +217,6 @@ local function HavocLoadDefaultSettings(includeBarText)
 				},
 				-- Talents
 				glaiveTempest = {
-					enabled = true,
-				},
-				felEruption = {
 					enabled = true,
 				},
 				throwGlaive = {
@@ -862,7 +859,7 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
 	end)
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -894,7 +891,7 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -903,8 +900,8 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 12, 1, yCoord)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 12, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, false)
@@ -961,8 +958,8 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfMetamorphosis.timeMax = value
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], HAVOC_MAX_FURY)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], HAVOC_MAX_FURY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], 1, HAVOC_MAX_FURY)
@@ -1049,17 +1046,6 @@ local function HavocConstructThresholdPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.felEruptionVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_felEruption", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.felEruptionVictoryThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxFelEruption"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxFelEruptionTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.felEruption.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.felEruption.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.glaiveTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_glaiveTempest", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.glaiveTempestThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1083,13 +1069,13 @@ local function HavocConstructThresholdPanel(parent)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
-		{
+		--[[{
 			name = "special",
 			hasEnabledCheckbox = true,
 			colorLocalization = L["DemonHunterHavocThresholdSpecial"],
 			enabledCheckboxLocalization = L["DemonHunterHavocThresholdSpecialEnabled"],
 			enabledCheckboxTooltipLocalization = L["DemonHunterHavocThresholdSpecialEnabledTooltip"]
-		}
+		}]]
 	}
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, true, true, true, custom)
@@ -1143,11 +1129,11 @@ local function HavocConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 
@@ -1195,7 +1181,7 @@ local function HavocConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord,string.format(L["OvercapAudioCheckbox"], L["ResourceFury"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFury"]))
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord,string.format(L["OvercapAudioCheckbox"], L["ResourceFury"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFury"]))
 end
 
 local function HavocConstructBarTextDisplayPanel(parent, cache)

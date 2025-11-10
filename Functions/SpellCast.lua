@@ -19,6 +19,7 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId)
 		local casting = snapshotData.casting
 
 		if event == "UNIT_SPELLCAST_CHANNEL_STOP" then
+			TRB.Functions.Class:SpellCast(event)
 			TRB.Functions.Character:ResetCastingSnapshotData() -- Always reset on channel stop to avoid secrets
 		elseif casting.spellId == spellId and TRB.Functions.Character.ResetCastingSnapshotData ~= nil then
 			TRB.Functions.Character:ResetCastingSnapshotData()

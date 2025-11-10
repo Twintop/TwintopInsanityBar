@@ -284,7 +284,20 @@ function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStack
 	self:GetRemainingTime()
 end
 
----comment
+---Adds time to a currently active buff or initializes it if not active
+---@param duration number # How much time to add
+---@param startTime number? # When did this buff begin. Defaults to GetTime()
+function TRB.Classes.SnapshotBuff:AddTimeOrInitializeCustom(duration, startTime)
+	if not self.isActive then
+		self:InitializeCustom(duration, startTime)
+	else
+		self.endTime = self.endTime + duration
+		self.duration = self.duration + duration
+		self:GetRemainingTime()
+	end
+end
+
+---Adds stacks to a currently active buff or initializes it if not active
 ---@param duration number # How long the buff will last
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
 ---@param refreshTime boolean # Should the endTime be refreshed to now + duration

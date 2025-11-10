@@ -7,6 +7,7 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 
 
 ---@class TRB.Classes.DemonHunter.HavocSpells : TRB.Classes.SpecializationSpellsBase
+---@field public demonic TRB.Classes.SpellBase
 ---@field public immolationAura TRB.Classes.SpellBase
 ---@field public immolationAura1 TRB.Classes.SpellBase
 ---@field public immolationAura2 TRB.Classes.SpellBase
@@ -34,7 +35,6 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public deathSweep TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public eyeBeam TRB.Classes.SpellThreshold
----@field public felEruption TRB.Classes.SpellThreshold
 ---@field public glaiveTempest TRB.Classes.SpellThreshold
 ---@field public felBarrage TRB.Classes.SpellThreshold
 TRB.Classes.DemonHunter.HavocSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -72,8 +72,15 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 	})
 	self.metamorphosis = TRB.Classes.SpellBase:New({
 		id = 162264,
+		castId = 200166,
 		isTalent = false,
-		baseline = true
+		baseline = true,
+		duration = 20
+	})
+	self.demonic = TRB.Classes.SpellBase:New({
+		id = 213410,
+		isTalent = true,
+		duration = 5
 	})
 	self.throwGlaive = TRB.Classes.SpellThreshold:New({
 		id = 185123,
@@ -164,16 +171,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		duration = 4, -- These don't match what's seen on the PTR, should be 2,
 		ticks = 4, --2,
 		isTalent = true
-	})
-	self.felEruption = TRB.Classes.SpellThreshold:New({
-		id = 211881,
-		primaryResourceType = Enum.PowerType.Fury,
-		cooldown = 30,
-		settingKey = "felEruption",
-		hasCooldown = true,
-		isTalent = false,
-		baseline = true,
-		isSnowflake = true
 	})
 	self.blindFury = TRB.Classes.SpellBase:New({
 		id = 203550,

@@ -354,8 +354,6 @@ if locale == "zhTW" then
     L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "這將在條上顯示垂直線，表示使用眼光束需要多少怒氣。"
     L["DemonHunterHavocThresholdCheckboxFelBarrage"] = "邪能彈幕"
     L["DemonHunterHavocThresholdCheckboxFelBarrageTooltip"] = "這將在條上顯示垂直線，表示使用邪能彈幕需要多少怒氣。 只有當天賦進入邪能彈幕時才可見。"
-    L["DemonHunterHavocThresholdCheckboxFelEruption"] = "邪能噴發"
-    L["DemonHunterHavocThresholdCheckboxFelEruptionTooltip"] = "這將在條上顯示垂直線，表示使用邪能噴發需要多少怒氣。 僅當有邪能噴發天賦時可見。"
     L["DemonHunterHavocThresholdCheckboxGlaiveTempest"] = "戰刃風暴"
     L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"] = "這將在條上顯示垂直線，表示使用戰刃風暴需要多少怒氣。 僅在有天賦進入戰刃風暴時可見。"
     L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "投擲戰刃（狂暴投擲）"

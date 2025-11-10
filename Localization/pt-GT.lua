@@ -354,8 +354,6 @@ if locale == "ptBR" or locale == "ptPT" then
     L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "Isso mostrará a linha vertical na barra indicando quanta Fúria é necessária para usar o Eye Beam."
     L["DemonHunterHavocThresholdCheckboxFelBarrage"] = "Barragem Vil"
     L["DemonHunterHavocThresholdCheckboxFelBarrageTooltip"] = "Isso mostrará a linha vertical na barra indicando quanta Fúria é necessária para usar a Barragem Vil. Visível apenas se tiver talento para Fel Barrage."
-    L["DemonHunterHavocThresholdCheckboxFelEruption"] = "Erupção Vil"
-    L["DemonHunterHavocThresholdCheckboxFelEruptionTooltip"] = "Isso mostrará a linha vertical na barra indicando quanta Fúria é necessária para usar a Erupção Vil. Visível apenas se tiver talento em Erupção Vil."
     L["DemonHunterHavocThresholdCheckboxGlaiveTempest"] = "Glaive Tempestade"
     L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"] = "Isso mostrará a linha vertical na barra indicando quanta Fúria é necessária para usar Glaive Tempest. Visível apenas se tiver talento para Glaive Tempest."
     L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "Jogue Glaive (arremessos furiosos)"

@@ -354,8 +354,6 @@ if locale == "ruRU" then
     L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "На шкале появится вертикальная линия, обозначающая, сколько ярости требуется для использования Eye Beam."
     L["DemonHunterHavocThresholdCheckboxFelBarrage"] = "Залп Скверны"
     L["DemonHunterHavocThresholdCheckboxFelBarrageTooltip"] = "На шкале появится вертикальная линия, обозначающая, сколько ярости требуется для использования «Залпа Скверны». Видно только в том случае, если вы талантливы в «Шквал Скверны»."
-    L["DemonHunterHavocThresholdCheckboxFelEruption"] = "Извержение Скверны"
-    L["DemonHunterHavocThresholdCheckboxFelEruptionTooltip"] = "На шкале появится вертикальная линия, обозначающая, сколько ярости требуется для использования «Извержения Скверны». Видно только при таланте к «Извержению Скверны»."
     L["DemonHunterHavocThresholdCheckboxGlaiveTempest"] = "Глефа Буря"
     L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"] = "На шкале появится вертикальная линия, обозначающая, сколько ярости требуется для использования Glaive Tempest. Видно только в том случае, если вы талантливы в Glaive Tempest."
     L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "Бросок глефы (Яростные броски)"
