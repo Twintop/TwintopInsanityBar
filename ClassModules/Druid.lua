@@ -3102,7 +3102,6 @@ local function UpdateResourceBar()
 				end]]
 
 				local barColor = specSettings.colors.bar.base
-
 				local affectingCombat = TRB.Data.character.inCombat
 
 				if affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive then
