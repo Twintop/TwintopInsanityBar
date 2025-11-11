@@ -65,7 +65,7 @@ local content = [====[
 
 - [#470 - UPDATE](#470) In addition to items listed above under **General** and **Healers**, the following changes have been made:
 <br/>&emsp;&ensp;- Fix Incarnation: Tree of Life detection. This re-enabled bar color change, end of color change, and bar text.
-<br/>&emsp;&ensp;- Fix and update Effloresence detection. Add support for the new Lifetreading talent.
+<br/>&emsp;&ensp;- Fix and update Efflorescence detection. Add support for the new Lifetreading talent.
 
 ## Monk
 ### Mistweaver
