@@ -82,7 +82,7 @@ local content = [====[
 
 ### Holy
 
-- [#465 - UPDATE](#465) In addition to items listed above under **General** and **Healers**, the following changes have been made:
+- [#464 - UPDATE](#465) In addition to items listed above under **General** and **Healers**, the following changes have been made:
 <br/>&emsp;&ensp;- Disable Holy Word bars since they can no longer be easily tracked.
 
 ### Shadow
