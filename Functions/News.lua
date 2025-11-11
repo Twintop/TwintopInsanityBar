@@ -11,6 +11,98 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha03 (2025-11-11)
+## General
+
+- [#462 - FIX](#462) The following specializations are now functional again to varying degrees:
+  - Demon Hunter: Havoc, Vengeance
+  - Druid: Balance, Restoration
+  - Monk: Mistweaver
+  - Priest: Discipline, Holy, Shadow
+  - Warrior: Arms, Fury
+- [#462 - UPDATE](#462) Updated implementations for the following due to API changes:
+  - Continue to use `UnitPowerMax()` as it is no longer `secret`.
+  - Adjusted spell cast handling to avoid `secret` values from `UNIT_SPELLCAST_CHANNEL_*` events. This is likely a bug that will be fixed in a future beta build.
+  - Hide or manually override (disable) many options that are no longer functional due to API changes.
+  - Improve spell usable state detection.
+  - Update threshold line rendering to use some alternate approaches to avoid computations with `secret` values. 
+  - Disable all passive tracking and related threshold lines.
+  - Disable most bar and border color changes.
+  - Disable bar text variables that are no longer functional. Some of these ability icons remain for now.
+  - Remove DoT tracking.
+  - Adjusted default bar text to reflect current functionality.
+
+### Healers
+
+- [#490 - UPDATE](#490) Removed the following functionality due to API changes:
+  - Passive mana generation tracking from Symbol of Hope, Blessing of Winter, Innervate, Mana Tide Totem, Molten Radiance, and channeled mana potions.
+  - Mana potions and their cooldown tracking.
+  - Thresholds for spells that restore mana.
+  - Change mana text formatting to use Blizzard's built-in formatting of large numbers.
+
+## Demon Hunter
+### Havoc
+
+- [#466 - UPDATE](#466) In addition to items listed above under **General**, the following changes have been made:
+  - Fix Metamorphosis detection. This re-enabled bar color change, end of color change, bar text, and Metamorphosis specific threshold lines.
+  - Remove Fel Eruption.
+
+### Vengeance
+
+- [#467 - UPDATE](#467) In addition to items listed above under **General**, the following changes have been made:
+  - Disable Soul Fragment bars since they can no longer be easily tracked.
+  - Fix Metamorphosis detection. This re-enabled bar color change, end of color change, and bar text.
+  - Remove Fel Eruption.
+
+## Druid
+### Balance
+
+- [#468 - UPDATE](#468) In addition to items listed above under **General**, the following changes have been made:
+  - Fix Eclipse detection. This re-enabled bar color change, end of color change, and bar text for Eclipse (Solar), Eclipse (Lunar), Celestial Alignment, and Incarnation: Chosen of Elune.
+  - Boomkin Form detection is not presently working.
+
+### Restoration
+
+- [#470 - UPDATE](#470) In addition to items listed above under **General** and **Healers**, the following changes have been made:
+  - Fix Incarnation: Tree of Life detection. This re-enabled bar color change, end of color change, and bar text.
+  - Fix and update Effloresence detection. Add support for the new Lifetreading talent.
+
+## Monk
+### Mistweaver
+
+- [#477 - UPDATE](#477) In addition to items listed above under **General** and **Healers**, the following changes have been made:
+  - Mana tea is disabled but may make a return.
+  - Vivacious Vivification and Spirit of the Jade Serpent detection is disabled but may make a return.
+
+## Priest
+### Discipline
+
+- [#465 - UPDATE](#465) In addition to items listed above under **General** and **Healers**, the following changes have been made:
+  - Disable Power Word bars since they can no longer be easily tracked.
+
+### Holy
+
+- [#465 - UPDATE](#465) In addition to items listed above under **General** and **Healers**, the following changes have been made:
+  - Disable Holy Word bars since they can no longer be easily tracked.
+
+### Shadow
+
+- [#463 - UPDATE](#463) In addition to items listed above under **General**, the following changes have been made:
+  - Fix Mind Devourer detection. This re-enabled bar border color change, bar text, audio cues, and Shadow Word: Madness threshold lines color change.
+  - Fix Mind Flay: Insanity detection. This re-enabled bar border color change, audio cues, and bar text.
+  - Disable Voidform tracking for now since it can no longer be easily tracked. This may make a return in the future.
+
+## Warrior
+### Arms
+
+- [#487 - UPDATE](#487) Barebones updates to make Arms functional again.
+
+### Fury
+
+- [#488 - UPDATE](#488) Barebones updates to make Fury functional again.
+
+---
+
 # 12.0.0.0-alpha02 (2025-10-27)
 ## General
 
