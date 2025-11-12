@@ -11,6 +11,16 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha04 (2025-11-13)
+## Druid
+### [#468](#468) Balance
+
+- Added support for Whirling Stars for calculating the duration of Eclipse when using Celestial Alignment or Incarnation: Chosen of Elune.
+- Fixed an issue where Eclipse duration was not being calculated when talented into both Whirling Stars and incarnation: Chosen of Elune.
+- Re-enable Soul of the Forest and Moon Guardian for predictive Astral Power from hardcasting.
+
+---
+
 # 12.0.0.0-alpha03 (2025-11-11)
 ## General
 

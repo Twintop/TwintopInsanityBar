@@ -2043,24 +2043,20 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				if talents:IsTalentActive(spells.wildSurges) then
 					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
 				end
-				--[[if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
+				if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
 					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.attributes.modifier.wrath)
-				end]]
+				end
 			elseif spellId == spells.starfire.id then
 				FillSnapshotDataCasting_Balance(spells.starfire)
 				if talents:IsTalentActive(spells.wildSurges) then
 					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
 				end
-				--[[if talents:IsTalentActive(spells.moonGuardian) then
+				if talents:IsTalentActive(spells.moonGuardian) then
 					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.moonGuardian.attributes.resourceMod
-				end]]
-				--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
-				--snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
-				--Warrior of Elune logic would go here if it didn't make it instant cast!
-			--[[elseif spellId == spells.sunfire.id then
-				FillSnapshotDataCasting_Balance(spells.sunfire)
-			elseif spellId == spells.moonfire.id then
-				FillSnapshotDataCasting_Balance(spells.moonfire)]]
+				end
+				if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseLunar.id].buff.isActive then
+					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.attributes.modifier.starfire)
+				end
 			elseif spellId == spells.stellarFlare.id then
 				FillSnapshotDataCasting_Balance(spells.stellarFlare)
 			elseif spellId == spells.newMoon.id then
@@ -2076,9 +2072,17 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			elseif spellId == spells.eclipseLunar.castId then
 				snapshotData.snapshots[spells.eclipseLunar.id].buff:InitializeCustom(spells.eclipseLunar.duration, currentTime)
 			elseif spellId == spells.celestialAlignment.castId then
-				snapshotData.snapshots[spells.celestialAlignment.id].buff:InitializeCustom(spells.celestialAlignment.duration, currentTime)
-			elseif spellId == spells.incarnationChosenOfElune.castId then
-				snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:InitializeCustom(spells.incarnationChosenOfElune.duration, currentTime)
+				local duration = spells.celestialAlignment.duration
+				if talents:IsTalentActive(spells.whirlingStars) then
+					duration = duration * spells.whirlingStars.attributes.durationMod
+				end
+				snapshotData.snapshots[spells.celestialAlignment.id].buff:InitializeCustom(duration, currentTime)
+			elseif spellId == spells.incarnationChosenOfElune.castId or spellId == spells.incarnationChosenOfElune.id then
+				local duration = spells.incarnationChosenOfElune.duration
+				if talents:IsTalentActive(spells.whirlingStars) then
+					duration = duration * spells.whirlingStars.attributes.durationMod
+				end
+				snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:InitializeCustom(duration, currentTime)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then

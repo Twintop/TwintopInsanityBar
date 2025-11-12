@@ -16,15 +16,16 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public eclipse TRB.Classes.SpellBase
 ---@field public eclipseSolar TRB.Classes.SpellBase
 ---@field public eclipseLunar TRB.Classes.SpellBase
+---@field public celestialAlignment TRB.Classes.SpellBase
+---@field public whirlingStars TRB.Classes.SpellBase
+---@field public incarnationChosenOfElune TRB.Classes.SpellBase
 ---@field public naturesBalance TRB.Classes.SpellBase
 ---@field public stellarFlare TRB.Classes.SpellBase
 ---@field public wildSurges TRB.Classes.SpellBase
 ---@field public starweaver TRB.Classes.SpellBase
 ---@field public starweaversWarp TRB.Classes.SpellBase
 ---@field public starweaversWeft TRB.Classes.SpellBase
----@field public celestialAlignment TRB.Classes.SpellBase
 ---@field public soulOfTheForest TRB.Classes.SpellBase
----@field public incarnationChosenOfElune TRB.Classes.SpellBase
 ---@field public furyOfElune TRB.Classes.SpellBase
 ---@field public newMoon TRB.Classes.SpellBase
 ---@field public halfMoon TRB.Classes.SpellBase
@@ -139,6 +140,19 @@ function TRB.Classes.Druid.BalanceSpells:New()
         castId = 1233272,
         duration = 15
     })
+    self.celestialAlignment = TRB.Classes.SpellBase:New({
+        id = 383410,
+        talentId = 194223,
+        castId = 383410,
+        isTalent = true,
+        duration = 15
+    })
+    self.whirlingStars = TRB.Classes.SpellBase:New({
+        id = 468743,
+        isTalent = true,
+        durationMod = 0.8
+    })
+
     self.naturesBalance = TRB.Classes.SpellBase:New({
         id = 202430,
         resource = 2,
@@ -168,18 +182,11 @@ function TRB.Classes.Druid.BalanceSpells:New()
     self.starweaversWeft = TRB.Classes.SpellBase:New({ --Free Starsurge
         id = 393944,
     })
-    self.celestialAlignment = TRB.Classes.SpellBase:New({
-        id = 383410,
-        talentId = 194223,
-        castId = 383410,
-        isTalent = true,
-        duration = 15
-    })
     self.soulOfTheForest = TRB.Classes.SpellBase:New({
         id = 114107,
         modifier = {
-            wrath = 0.6,
-            starfire = 0.2
+            wrath = 0.5,
+            starfire = 0.5
         },
         isTalent = true
     })
