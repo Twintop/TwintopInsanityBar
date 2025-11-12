@@ -3173,8 +3173,8 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	--[[
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 5, 3, yCoord)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 5, 3, yCoord)
 	]]
 
 	yCoord = yCoord - 40

@@ -3363,7 +3363,7 @@ local function UpdateResourceBar()
 								showThreshold = false
 							elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
-							--elseif currentResource >= resourceAmount then
+							--elseif isUsable then-- currentResource >= resourceAmount then
 							elseif spell:IsFree() then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							elseif isUsable then
@@ -3383,7 +3383,7 @@ local function UpdateResourceBar()
 							elseif specCacheSettings.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow --[[and
 									spells.shadowWordMadness:GetPrimaryResourceCost() > currentResource]]  then
 								showThreshold = false
-							--elseif currentResource >= resourceAmount then
+							--elseif isUsable then-- currentResource >= resourceAmount then
 							--	thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -3400,7 +3400,7 @@ local function UpdateResourceBar()
 							elseif specCacheSettings.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow --[[and
 								spells.shadowWordMadness2:GetPrimaryResourceCost() > currentResource]] then
 								showThreshold = false
-							--elseif currentResource >= resourceAmount then
+							--elseif isUsable then-- currentResource >= resourceAmount then
 							--	thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -3418,14 +3418,14 @@ local function UpdateResourceBar()
 						if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 							thresholdColor = specCacheSettings.colors.threshold.unusable.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-						--elseif currentResource >= resourceAmount then
+						--elseif isUsable then-- currentResource >= resourceAmount then
 						--	thresholdColor = specCacheSettings.colors.threshold.over.color
 						else
 							thresholdColor = specCacheSettings.colors.threshold.under.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
 					else -- This is an active/available/normal spell threshold
-						--if currentResource >= resourceAmount then
+						--if isUsable then-- currentResource >= resourceAmount then
 						--	thresholdColor = specCacheSettings.colors.threshold.over.color
 						--else
 							thresholdColor = specCacheSettings.colors.threshold.under.color

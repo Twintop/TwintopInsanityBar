@@ -19,6 +19,25 @@ local content = [====[
 - Fixed an issue where Eclipse duration was not being calculated when talented into both Whirling Stars and incarnation: Chosen of Elune.
 - Re-enable Soul of the Forest and Moon Guardian for predictive Astral Power from hardcasting.
 
+## Hunter
+
+- Fix implementations to allow the bar to function in a mimimalist version.
+- Many features are disabled for now and new spells have (largely) not been implemented yet.
+- Threshold likes work but are probably wrong/don't show correct use status/are missing abilities.
+
+### [#474](#474) Beast Mastery
+
+- Remove most of the old Barbed Shot tracking.
+- Disable Bestial Wrath and Beast Cleave features until changes can be properly implemented.
+
+### [#475](#475) Marksmanship
+
+- Restore Trueshot tracking. Add support for Can't Miss, Won't Miss.
+
+### [#476](#476) Survival
+
+- Cull almost everything to reflect the changes made. You've got a Raptor Strike threshold line, what more do you *really* need?
+
 ---
 
 # 12.0.0.0-alpha03 (2025-11-11)

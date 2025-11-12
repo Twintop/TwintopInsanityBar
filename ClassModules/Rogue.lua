@@ -2112,7 +2112,7 @@ local function UpdateResourceBar()
 					if spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 						if spell.id == spells.ambush.id then
 							if stealthViaBuff then
-								if currentResource >= resourceAmount then
+								if isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2124,7 +2124,7 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 						elseif stealthViaBuff then
-							if currentResource >= resourceAmount then
+							if isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2136,7 +2136,7 @@ local function UpdateResourceBar()
 					else
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.sliceAndDice.id then
-								if currentResource >= resourceAmount then
+								if isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2158,7 +2158,7 @@ local function UpdateResourceBar()
 									elseif snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specCacheSettings.colors.threshold.unusable.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentResource >= resourceAmount then
+									elseif isUsable then-- currentResource >= resourceAmount then
 										thresholdColor = specCacheSettings.colors.threshold.over.color
 									else
 										thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2169,7 +2169,7 @@ local function UpdateResourceBar()
 								if specCacheSettings.colors.threshold["echoingReprimand"].enabled and snapshots[spells.echoingReprimand.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold["echoingReprimand"].color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2186,14 +2186,14 @@ local function UpdateResourceBar()
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= resourceAmount then
+							elseif isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else -- This is an active/available/normal spell threshold
-							if currentResource >= resourceAmount then
+							if isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2202,7 +2202,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					if resourceAmount >= maxPrimaryBarResource then
+					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
 						showThreshold = false
 					end
 
@@ -2214,7 +2214,7 @@ local function UpdateResourceBar()
 					end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -2401,7 +2401,7 @@ local function UpdateResourceBar()
 					if spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 						if spell.id == spells.ambush.id then
 							if stealthViaBuff then
-								if currentResource >= resourceAmount then
+								if isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over.color
 								else
 									thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under.color
@@ -2411,7 +2411,7 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 						elseif stealthViaBuff then
-							if currentResource >= resourceAmount then
+							if isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over.color
 							else
 								thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under.color
@@ -2426,7 +2426,7 @@ local function UpdateResourceBar()
 								if specCacheSettings.colors.threshold["echoingReprimand"].enabled and snapshots[spells.echoingReprimand.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold["echoingReprimand"].color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.skullAndCrossbones.id].buff.isActive then
 										thresholdColor = specCacheSettings.colors.threshold.special.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -2443,7 +2443,7 @@ local function UpdateResourceBar()
 									end
 								end
 							elseif spell.id == spells.pistolShot.id then
-								if currentResource >= resourceAmount then
+								if isUsable then-- currentResource >= resourceAmount then
 									if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.opportunity.id].buff.isActive then
 										thresholdColor = specCacheSettings.colors.threshold.special.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -2463,7 +2463,7 @@ local function UpdateResourceBar()
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specCacheSettings.colors.threshold.unusable.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.ruthlessPrecision.id].buff.isActive then
 										thresholdColor = specCacheSettings.colors.threshold.special.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -2480,7 +2480,7 @@ local function UpdateResourceBar()
 									end
 								end
 							elseif spell.id == spells.sliceAndDice.id then
-								if currentResource >= resourceAmount then
+								if isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2495,7 +2495,7 @@ local function UpdateResourceBar()
 							elseif spell.id == spells.dispatch.id then
 								if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.attributes.maxStacks then
 									showThreshold = false
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2522,14 +2522,14 @@ local function UpdateResourceBar()
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= resourceAmount then
+							elseif isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else -- This is an active/available/normal spell threshold
-							if currentResource >= resourceAmount then
+							if isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2553,12 +2553,12 @@ local function UpdateResourceBar()
 						frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 					end
 					
-					if resourceAmount >= maxPrimaryBarResource then
+					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
 						showThreshold = false
 					end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -2731,7 +2731,7 @@ local function UpdateResourceBar()
 					
 					if spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 						if stealthViaBuff then
-							if currentResource >= resourceAmount then
+							if isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2743,7 +2743,7 @@ local function UpdateResourceBar()
 					else
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.sliceAndDice.id then
-								if currentResource >= resourceAmount then
+								if isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2759,7 +2759,7 @@ local function UpdateResourceBar()
 								if talents:IsTalentActive(spells.gloomblade) then
 									showThreshold = false
 								else
-									if currentResource >= resourceAmount then
+									if isUsable then-- currentResource >= resourceAmount then
 										thresholdColor = specCacheSettings.colors.threshold.over.color
 									else
 										thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2773,7 +2773,7 @@ local function UpdateResourceBar()
 									if specCacheSettings.colors.threshold["echoingReprimand"].enabled and snapshots[spells.echoingReprimand.id].buff.isActive then
 										thresholdColor = specCacheSettings.colors.threshold["echoingReprimand"].color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-									elseif currentResource >= resourceAmount then
+									elseif isUsable then-- currentResource >= resourceAmount then
 										thresholdColor = specCacheSettings.colors.threshold.over.color
 									else
 										thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2784,7 +2784,7 @@ local function UpdateResourceBar()
 								if snapshots[spells.shotInTheDark.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2794,7 +2794,7 @@ local function UpdateResourceBar()
 								if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.silentStorm.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold.special.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2804,7 +2804,7 @@ local function UpdateResourceBar()
 								if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.finalityBlackPowder.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold.special.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2816,7 +2816,7 @@ local function UpdateResourceBar()
 								elseif specCacheSettings.colors.threshold.special.enabled and snapshots[spells.finalityEviscerate.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold.special.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2825,7 +2825,7 @@ local function UpdateResourceBar()
 							elseif spell.id == spells.coupDeGrace.id then
 								if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.attributes.maxStacks then
 									showThreshold = false
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									if specCacheSettings.colors.threshold.special.enabled then
 										thresholdColor = specCacheSettings.colors.threshold.special.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -2840,7 +2840,7 @@ local function UpdateResourceBar()
 								if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.finalityRupture.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold.special.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif currentResource >= resourceAmount then
+								elseif isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2857,14 +2857,14 @@ local function UpdateResourceBar()
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= resourceAmount then
+							elseif isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else -- This is an active/available/normal spell threshold
-							if currentResource >= resourceAmount then
+							if isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2884,12 +2884,12 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					if resourceAmount >= maxPrimaryBarResource then
+					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
 						showThreshold = false
 					end
 
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -3226,7 +3226,7 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 

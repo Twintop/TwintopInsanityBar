@@ -38,7 +38,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.endOfTrueshot = settings.endOfTrueshot
 				configuration.steadyFocus = settings.steadyFocus
 			elseif specId == 3 then -- Survival
-				configuration.endOfCoordinatedAssault = settings.endOfCoordinatedAssault
 			end
 		elseif classId == 4 then -- Rogue
 			if specId == 1 then -- Assassination
