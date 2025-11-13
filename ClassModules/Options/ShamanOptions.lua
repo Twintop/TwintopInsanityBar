@@ -464,7 +464,7 @@ local function EnhancementLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="#flameShock $fsCount {$ttd}[   TTD: $ttd]",
+			text="",--#flameShock $fsCount {$ttd}[   TTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -721,7 +721,7 @@ local function RestorationLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="{$ascendanceTime}[$ascendanceTime sec]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -799,7 +799,7 @@ local function RestorationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="{$ascendanceTime}[#ascendance $ascendanceTime #ascendance]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -1184,7 +1184,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 	end)
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1216,7 +1216,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1231,7 +1231,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, false)
 	
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.checkBoxes.primalFractureBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Border_Option_primalFractureBorderChange", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.primalFractureBorderChange
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1246,7 +1246,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.primalFracture
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "primalFracture")
-	end)
+	end)]]
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
@@ -1302,8 +1302,8 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfAscendance.timeMax = value
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], ELEMENTAL_MAX_MAELSTROM)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], ELEMENTAL_MAX_MAELSTROM)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], 1, ELEMENTAL_MAX_MAELSTROM)
@@ -1356,13 +1356,13 @@ local function ElementalConstructThresholdPanel(parent)
 	end)
 
 	local custom = {
-		{
+		--[[{
 			name = "special",
 			hasEnabledCheckbox = true,
 			colorLocalization = L["ShamanElementalThresholdColorPickerEchoesOfGreatSundering"],
 			enabledCheckboxLocalization = L["ShamanElementalThresholdColorPickerEchoesOfGreatSunderingEnabled"],
 			enabledCheckboxTooltipLocalization = L["ShamanElementalThresholdColorPickerEchoesOfGreatSunderingEnabledTooltip"]
-		}
+		}]]
 	}
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, true, false, true, custom)
@@ -1421,11 +1421,11 @@ local function ElementalConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 
@@ -1439,7 +1439,7 @@ local function ElementalConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overcapTextEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -1450,7 +1450,7 @@ local function ElementalConstructFontAndTextPanel(parent)
 	end)
 	
 	local dotVariables = "$fsCount/$fsTime"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 1, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 1, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))]]
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 1, yCoord)
 end
@@ -1478,7 +1478,7 @@ local function ElementalConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "esReady", spec, classId, specId, yCoord, L["ShamanElementalAudioCheckboxEarthShock"], L["ShamanElementalAudioCheckboxEarthShockTooltip"])
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceMaelstrom"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceMaelstrom"]))
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceMaelstrom"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceMaelstrom"]))
 end
 
 local function ElementalConstructBarTextDisplayPanel(parent, cache)
@@ -1694,8 +1694,8 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], L["ResourceMaelstromWeapon"])
+	--yCoord = yCoord - 30
+	--yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], L["ResourceMaelstromWeapon"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 2, yCoord, true, L["ResourceMaelstromWeapon"])
@@ -1743,7 +1743,7 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
 
-	yCoord = yCoord - 40
+	--[[yCoord = yCoord - 40
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanEnhancementMaelstromWeaponColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
@@ -1789,7 +1789,8 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.comboPoints.sameColor)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
-	end)
+	end)]]
+
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
 
@@ -1842,8 +1843,6 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 		self.EditBox:SetText(value)
 		spec.endOfAscendance.timeMax = value
 	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
 end
 
 local function EnhancementConstructFontAndTextPanel(parent)
@@ -1879,8 +1878,8 @@ local function EnhancementConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 	
-	local dotVariables = "$fsCount/$fsTime"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 2, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
+	--local dotVariables = "$fsCount/$fsTime"
+	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 2, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 2, yCoord)
 end
@@ -2184,7 +2183,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 	end)
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2216,7 +2215,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -2284,9 +2283,6 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 		self.EditBox:SetText(value)
 		spec.endOfAscendance.timeMax = value
 	end)
-	
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
 end
 
 local function RestorationConstructThresholdPanel(parent)
@@ -2306,11 +2302,11 @@ local function RestorationConstructThresholdPanel(parent)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 7, 3, false, true, false, false, false, false)
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 7, 3, yCoord)
+	--yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 7, 3, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 3, yCoord)
+	--yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 3, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 7, 3, yCoord)
+	--yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 7, 3, yCoord)
 end
 
 local function RestorationConstructFontAndTextPanel(parent)
@@ -2359,8 +2355,8 @@ local function RestorationConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 	
-	local dotVariables = "$fsCount/$fsTime"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 3, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
+	--local dotVariables = "$fsCount/$fsTime"
+	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 3, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 3, yCoord)
 end
@@ -2389,7 +2385,7 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 	
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
+	--[[controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
 	
 	yCoord = yCoord - 30
 	controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -2411,7 +2407,7 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 	f:SetChecked(spec.passiveGeneration.manaTideTotem)
 	f:SetScript("OnClick", function(self, ...)
 		spec.passiveGeneration.manaTideTotem = self:GetChecked()
-	end)
+	end)]]
 end
 
 local function RestorationConstructBarTextDisplayPanel(parent, cache)

@@ -626,7 +626,7 @@ function TRB.Functions.Character:IsComboPointUser()
 		(TRB.Data.character.classId == 2) or -- Paladin
 		(TRB.Data.character.classId == 4) or -- Rogue
 		(TRB.Data.character.classId == 5 and (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2)) or -- Discipline or Holy Priest
-		(TRB.Data.character.classId == 7 and TRB.Data.character.specId == 2) or -- Enhancement Shaman
+		--(TRB.Data.character.classId == 7 and TRB.Data.character.specId == 2) or -- Enhancement Shaman
 		(TRB.Data.character.classId == 9 and TRB.Data.character.specId == 1) or -- Affliction Warlock
 		(TRB.Data.character.classId == 10 and TRB.Data.character.specId == 3) or -- Windwalker Monk
 		(TRB.Data.character.classId == 11 and TRB.Data.character.specId == 2) or -- Feral Druid

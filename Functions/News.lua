@@ -16,6 +16,25 @@ local content = [====[
 
 - Update large number abbreviations of resources (e.g. Mana) to use Blizzard's built-in methods that allow `secret`s to be passed into them. This has been configured to attempt to reproduce the previous 4-digit outputs as closely as possible but is not 100% identical.
 
+## Shaman
+
+- Fix implementations to allow the bar to function in a mimimalist version.
+- Many features are disabled for now and new spells have (largely) not been implemented yet.
+- Clean up options menus to only show things that are functionable.
+
+### [#483](#483) Elemental
+
+- Restore Ascendance tracking. Add support for Preeminence.
+
+### [#484](#484) Enhancement
+
+- Disable Maelstrom Weapon UX elements. At the time, this is untrackable due to it being a buff and not a proper resource in the eyes of the API.
+- Restore Ascendance tracking and add support for Doom Winds. Both of these use the `$ascendanceTime` bar text variable. Detection does not work when talented into Deeply Rooted Elements due to API limitations.
+
+### [#485](#485) Restoration
+
+- Restore Ascendance tracking. Add support for Preeminence.
+
 ---
 
 # 12.0.0.0-alpha04 (2025-11-13)

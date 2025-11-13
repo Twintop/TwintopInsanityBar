@@ -41,9 +41,9 @@ end
 ---@field public hex TRB.Classes.SpellBase
 ---@field public inundate TRB.Classes.SpellBase
 ---@field public stormkeeper TRB.Classes.SpellBase
----@field public surgeOfPower TRB.Classes.SpellBase
 ---@field public echoesOfGreatSundering TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
+---@field public preeminence TRB.Classes.SpellBase
 ---@field public primalFracture TRB.Classes.SpellBase
 ---@field public tempest TRB.Classes.SpellBase
 ---@field public lightningBolt TRB.Classes.Shaman.OverloadSpell
@@ -146,10 +146,6 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         stacks = 2,
         duration = 15
     })
-    self.surgeOfPower = TRB.Classes.SpellBase:New({
-        id = 285514,
-        isTalent = true
-    })
     self.powerOfTheMaelstrom = TRB.Classes.SpellBase:New({
         id = 191877,
         isTalent = true
@@ -166,8 +162,16 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     })
     self.ascendance = TRB.Classes.SpellBase:New({
         id = 114050,
-        isTalent = true
+        castId = 114050,
+        isTalent = true,
+        duration = 15
     })
+    self.preeminence = TRB.Classes.SpellBase:New({
+        id = 462443,
+        isTalent = true,
+        duration = 3
+    })
+    
     self.primalFracture = TRB.Classes.SpellBase:New({ -- T30 4P
         id = 410018,
         resourcePercent = 1.5
@@ -185,6 +189,7 @@ end
 
 ---@class TRB.Classes.Shaman.EnhancementSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public flameShock TRB.Classes.SpellBase
+---@field public doomWinds TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
 TRB.Classes.Shaman.EnhancementSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Shaman.EnhancementSpells.__index = TRB.Classes.Shaman.EnhancementSpells
@@ -199,9 +204,17 @@ function TRB.Classes.Shaman.EnhancementSpells:New()
         baseDuration = 18,
         pandemic = true
     })
+    self.doomWinds = TRB.Classes.SpellBase:New({
+        id = 384352,
+        castId = 384352,
+        isTalent = true,
+        duration = 10
+    })
     self.ascendance = TRB.Classes.SpellBase:New({
         id = 114051,
-        isTalent = true
+        castId = 114051,
+        isTalent = true,
+        duration = 15
     })
 
     return self
@@ -211,6 +224,7 @@ end
 ---@class TRB.Classes.Shaman.RestorationSpells : TRB.Classes.Healer.HealerSpells
 ---@field public flameShock TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
+---@field public preeminence TRB.Classes.SpellBase
 TRB.Classes.Shaman.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Shaman.RestorationSpells.__index = TRB.Classes.Shaman.RestorationSpells
 
@@ -226,7 +240,14 @@ function TRB.Classes.Shaman.RestorationSpells:New()
     })
     self.ascendance = TRB.Classes.SpellBase:New({
         id = 114052,
-        isTalent = true
+        castId = 114052,
+        isTalent = true,
+        duration = 15
+    })
+    self.preeminence = TRB.Classes.SpellBase:New({
+        id = 462443,
+        isTalent = true,
+        duration = 3
     })
 
     return self

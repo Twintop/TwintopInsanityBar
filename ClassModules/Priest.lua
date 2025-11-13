@@ -2651,7 +2651,7 @@ local function UpdateResourceBar()
 				--end
 
 
-				local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
+				--[[local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
 				local potionCooldownThreshold = 0
 				local potionThresholdColor = specCacheSettings.colors.threshold.over.color
 				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
@@ -2667,10 +2667,10 @@ local function UpdateResourceBar()
 							potionCooldownThreshold = specCacheSettings.thresholds.potionCooldown.timeMax
 						end
 					end
-				end
+				end]]
 
-				local pairOffset = 0
-				--[[for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]=]) do
+				--[[local pairOffset = 0
+				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]=]) do
 					if resourceFrame.thresholds[thresholdId] == nil then
 						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
