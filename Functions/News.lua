@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha05 (2025-11-14)
+## [#462](#462) General
+
+- Update large number abbreviations of resources (e.g. Mana) to use Blizzard's built-in methods that allow `secret`s to be passed into them. This has been configured to attempt to reproduce the previous 4-digit outputs as closely as possible but is not 100% identical.
+
+---
+
 # 12.0.0.0-alpha04 (2025-11-13)
 ## Druid
 ### [#468](#468) Balance

@@ -568,9 +568,9 @@ local function RefreshLookupData_Devastation()
 	local currentManaColor = sharedSettings.colors.text.current.color
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, AbbreviateLargeNumbers(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, AbbreviateLargeNumbers(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 	
 	--[[--$ebTime
 	local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
@@ -649,10 +649,10 @@ local function RefreshLookupData_Preservation()
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, AbbreviateLargeNumbers(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, AbbreviateLargeNumbers(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 	--$ecMana
 	local _ecMana = snapshots[spells.emeraldCommunion.id].buff.resource
@@ -866,9 +866,9 @@ local function RefreshLookupData_Augmentation()
 	local currentManaColor = sharedSettings.colors.text.current.color
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, AbbreviateLargeNumbers(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, AbbreviateLargeNumbers(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--[[--$ebTime
 	local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)

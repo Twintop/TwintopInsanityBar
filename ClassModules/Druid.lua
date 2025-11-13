@@ -1756,10 +1756,10 @@ local function RefreshLookupData_Restoration()
 
 	--$mana
 	local manaPrecision = TRB.Data.settings.druid.restoration.manaPrecision or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, AbbreviateLargeNumbers(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, AbbreviateLargeNumbers(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 	--[[
 	local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
@@ -1819,7 +1819,7 @@ local function RefreshLookupData_Restoration()
 	local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))]]
 
 	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, AbbreviateLargeNumbers(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
 	--[[local maxResource = TRB.Data.character.maxResource

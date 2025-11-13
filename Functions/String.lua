@@ -2,7 +2,109 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.String = {}
 
+local abbrevData = {
+  breakpointData = {
+    {
+      breakpoint = 1e15,
+      abbreviation = "FOURTH_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e12,
+      fractionDivisor = 1e0,
+    },
+    {
+      breakpoint = 1e14,
+      abbreviation = "FOURTH_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e11,
+      fractionDivisor = 1e1,
+    },
+    {
+      breakpoint = 1e13,
+      abbreviation = "FOURTH_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e10,
+      fractionDivisor = 1e2,
+    },
+    {
+      breakpoint = 1e12,
+      abbreviation = "THIRD_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e9,
+      fractionDivisor = 1e0,
+    },
+    {
+      breakpoint = 1e11,
+      abbreviation = "THIRD_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e8,
+      fractionDivisor = 1e1,
+    },
+    {
+      breakpoint = 1e10,
+      abbreviation = "THIRD_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e7,
+      fractionDivisor = 1e2,
+    },
+    {
+      breakpoint = 1e9,
+      abbreviation = "SECOND_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e6,
+      fractionDivisor = 1e0,
+    },
+    {
+      breakpoint = 1e8,
+      abbreviation = "SECOND_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e5,
+      fractionDivisor = 1e1,
+    },
+    {
+      breakpoint = 1e7,
+      abbreviation = "SECOND_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e4,
+      fractionDivisor = 1e2,
+    },
+    {
+      breakpoint = 1e6,
+      abbreviation = "FIRST_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e3,
+      fractionDivisor = 1e0,
+    },
+    {
+      breakpoint = 1e5,
+      abbreviation = "FIRST_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e2,
+      fractionDivisor = 1e1,
+    },
+    {
+      breakpoint = 1e4,
+      abbreviation = "FIRST_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e1,
+      fractionDivisor = 1e2,
+    },
+  },
+}
+
+--[[ 
+--Test data for debugging, borrowed from the WoW Addons discord.
+local t = {1, 12, 123, 1234, 12345, 123456, 1234567, 12345678, 123456789, 1234567890, 12345678901, 123456789012, 1234567890123, 12345678901234, 123456789012345, 1234567890123456, 12345678901234567}
+local t = {1, 1.2, 1.23, 1.234, 1.2345, 12.3, 123.4, 1234.5, 12.34, 12.345, 123.4, 123.456 }
+print("|cffffd200AbbreviateLargeNumbers:|r")
+for _, number in next, t do
+  print(" ", BreakUpLargeNumbers(number), "|cffffd200->|r", AbbreviateLargeNumbers(number, abbrevData))
+end
+
+print("|cffffd200AbbreviateNumbers:|r")
+for _, number in next, t do
+  print(" ", BreakUpLargeNumbers(number), "|cffffd200->|r", AbbreviateNumbers(number, abbrevData))
+end
+]]
+
 ---Converts a number into a short notation following the pattern: 1000, 10.00k, 100.0k, 1000k, 10.00m, 100.0m, 1000m, 10.00b, 100.0b, 1000b
+---As of Midnight, using built-in AbbreviateNumbers() method which means it returns capitals but in exchange can accept secrets.
+---The old version has been kept as `_OLD()`
+---@param num number
+---@return string # Short notation output
+function TRB.Functions.String:ConvertToAbbreviatedNumber(num)
+---@diagnostic disable-next-line: redundant-parameter
+	return AbbreviateNumbers(num, abbrevData)
+end
+
+---Converts a number into a short notation following the pattern: 1000, 10.00K, 100.0K, 1000K, 10.00M, 100.0M, 1000M, 10.00B, 100.0B, 1000B
 ---@param num number
 ---@param numDecimalPlaces integer # Only used if sub 1000 and `num` is not an integer
 ---@param mode string # Rounding mode
@@ -19,23 +121,23 @@ function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces
 	end
 
 	if num >= 10^12 then
-		return string.format(negative .. "%.0fb", TRB.Functions.Number:RoundTo(num / 10^9, 0, mode))
+		return string.format(negative .. "%.0f"..THIRD_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^9, 0, mode))
 	elseif num >= 10^11 then
-		return string.format(negative .. "%.1fb", TRB.Functions.Number:RoundTo(num / 10^9, 3, mode))
+		return string.format(negative .. "%.1f"..THIRD_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^9, 3, mode))
 	elseif num >= 10^10 then
-		return string.format(negative .. "%.2fb", TRB.Functions.Number:RoundTo(num / 10^9, 2, mode))
+		return string.format(negative .. "%.2f"..THIRD_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^9, 2, mode))
 	elseif num >= 10^9 then
-		return string.format(negative .. "%.0fm", TRB.Functions.Number:RoundTo(num / 10^6, 0, mode))
+		return string.format(negative .. "%.0f"..SECOND_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^6, 0, mode))
 	elseif num >= 10^8 then
-		return string.format(negative .. "%.1fm", TRB.Functions.Number:RoundTo(num / 10^6, 3, mode))
+		return string.format(negative .. "%.1f"..SECOND_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^6, 3, mode))
 	elseif num >= 10^7 then
-		return string.format(negative .. "%.2fm", TRB.Functions.Number:RoundTo(num / 10^6, 2, mode))
+		return string.format(negative .. "%.2f"..SECOND_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^6, 2, mode))
 	elseif num >= 10^6 then
-		return string.format(negative .. "%.0fk", TRB.Functions.Number:RoundTo(num / 10^3, 0, mode))
+		return string.format(negative .. "%.0f"..FIRST_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^3, 0, mode))
 	elseif num >= 10^5 then
-		return string.format(negative .. "%.1fk", TRB.Functions.Number:RoundTo(num / 10^3, 3, mode))
+		return string.format(negative .. "%.1f"..FIRST_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^3, 3, mode))
 	elseif num >= 10^4 then
-		return string.format(negative .. "%.2fk", TRB.Functions.Number:RoundTo(num / 10^3, 2, mode))
+		return string.format(negative .. "%.2f"..FIRST_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^3, 2, mode))
 	elseif num >= 10^3 then
 		return string.format(negative .. "%.0f", TRB.Functions.Number:RoundTo(num, 0, mode))
 	else
