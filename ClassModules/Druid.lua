@@ -2071,7 +2071,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.snapshots[spells.eclipseSolar.id].buff:InitializeCustom(spells.eclipseSolar.duration, currentTime)
 			elseif spellId == spells.eclipseLunar.castId then
 				snapshotData.snapshots[spells.eclipseLunar.id].buff:InitializeCustom(spells.eclipseLunar.duration, currentTime)
-			elseif spellId == spells.celestialAlignment.castId then
+			elseif spellId == spells.celestialAlignment.castId or spellId == spells.celestialAlignment.talentId then
 				local duration = spells.celestialAlignment.duration
 				if talents:IsTalentActive(spells.whirlingStars) then
 					duration = duration * spells.whirlingStars.attributes.durationMod

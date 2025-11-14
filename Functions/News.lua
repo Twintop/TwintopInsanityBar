@@ -11,8 +11,7 @@ local content = [====[
 
 ---
 
-## 12.0.0.0-alpha06 (2025-11-15)
-
+# 12.0.0.0-alpha06 (2025-11-15)
 ## [#462](#462) General
 
 - Enhance detection of procs or ability changes for tracking purposes.
@@ -23,6 +22,11 @@ local content = [====[
 - Add barebones support for Devourer, tracking Fury.
 - Add threshold line for Void Ray. This will only show when Void Metamorphosis is not active.
 - Add Metamorphosis tracking for bar color change. No duration is available due to API limitations, however the `$voidMeta` bar text variable has been added to indicate if Void Metamorphosis is active for Boolean logic purposes.
+
+## Druid
+### [#468](#468) Balance
+
+- Fix an issue where Eclipse detection was not functioning consistently depending on the state of talents.
 
 ---
 
