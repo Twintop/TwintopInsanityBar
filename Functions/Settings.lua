@@ -249,7 +249,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				globalEnable = false,
 				demonhunter = {
 					havoc = specGlobalDefaults,
-					vengeance = specGlobalDefaults
+					vengeance = specGlobalDefaults,
+					devourer = specGlobalDefaults
 				},
 				druid = {
 					balance = specGlobalDefaults,
@@ -300,7 +301,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			enabled = {
 				demonhunter = {
 					havoc = true,
-					vengeance = true
+					vengeance = true,
+					devourer = true
 				},
 				druid = {
 					balance = true,
@@ -361,7 +363,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 		},
 		demonhunter = {
 			havoc = {},
-			vengeance = {}
+			vengeance = {},
+			devourer = {}
 		},
 		druid = {
 			balance = {},

@@ -96,6 +96,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
+			elseif specId == 3 then -- Devourer
+				configuration.endOfDevourerForm = settings.endOfDevourerForm
 			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
@@ -166,6 +168,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 12 then -- Demon Hunter
 			if specId == 1 then -- Havoc
 			elseif specId == 2 then -- Vengeance
+			elseif specId == 3 then -- Devourer
 			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
@@ -237,6 +240,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 12 then -- Demon Hunter
 			if specId == 1 then -- Havoc
 			elseif specId == 2 then -- Vengeance
+			elseif specId == 3 then -- Devourer
 			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
@@ -402,6 +406,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.demonhunter.vengeance) > 0 then -- Vengeance
 				configuration.demonhunter.vengeance = ExportConfigurationSections(12, 2, settings.demonhunter.vengeance, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.demonhunter.devourer) > 0 then -- Devourer
+				configuration.demonhunter.devourer = ExportConfigurationSections(12, 3, settings.demonhunter.devourer, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 13 and settings.evoker ~= nil then -- Evoker
 			configuration.evoker = {}
 			
@@ -491,6 +499,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Vengeance
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Devourer
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		
 		-- Evoker
 		-- Devastation
@@ -576,7 +586,8 @@ function TRB.Functions.IO:Import(input)
 			configuration.druid.restoration)) or
 		(configuration.demonhunter ~= nil and
 			(configuration.demonhunter.havoc ~= nil or
-			configuration.demonhunter.vengeance ~= nil)) or
+			configuration.demonhunter.vengeance ~= nil or
+			configuration.demonhunter.devourer ~= nil)) or
 		(configuration.evoker ~= nil and
 			(configuration.evoker.devastation ~= nil or
 			configuration.evoker.preservation ~= nil or

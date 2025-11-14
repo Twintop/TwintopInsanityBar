@@ -11,6 +11,21 @@ local content = [====[
 
 ---
 
+## 12.0.0.0-alpha06 (2025-11-15)
+
+## [#462](#462) General
+
+- Enhance detection of procs or ability changes for tracking purposes.
+
+## Demon Hunter
+### [#491](#491) Devourer
+
+- Add barebones support for Devourer, tracking Fury.
+- Add threshold line for Void Ray. This will only show when Void Metamorphosis is not active.
+- Add Metamorphosis tracking for bar color change. No duration is available due to API limitations, however the `$voidMeta` bar text variable has been added to indicate if Void Metamorphosis is active for Boolean logic purposes.
+
+---
+
 # 12.0.0.0-alpha05 (2025-11-14)
 ## [#462](#462) General
 

@@ -38,7 +38,10 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId)
 		end
 		return
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-		TRB.Functions.Class:SpellCast(event, spellId) -- Pass a dummy value to wipe casting data
+		TRB.Functions.Class:SpellCast(event, spellId)
+	elseif event == "UNIT_MODEL_CHANGED" then
+		-- Some forms change the unit model. We can use this to detect loss or gain of a proc
+		TRB.Functions.Class:SpellCast(event, 0)
 	end
 end
 
@@ -57,6 +60,7 @@ function TRB.Functions.SpellCast:EnableSpellCast()
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
+	spellCastFrame:RegisterEvent("UNIT_MODEL_CHANGED")
 end
 
 function TRB.Functions.SpellCast:DisableSpellCast()
@@ -68,6 +72,7 @@ function TRB.Functions.SpellCast:DisableSpellCast()
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
+	spellCastFrame:UnregisterEvent("UNIT_MODEL_CHANGED")
 end
 
 ---@alias trbSpellCastType
@@ -79,3 +84,4 @@ end
 ---| '"UNIT_SPELLCAST_CHANNEL_STOP"' # UNIT_SPELLCAST_CHANNEL_STOP
 ---| '"UNIT_SPELLCAST_EMPOWER_START"' # UNIT_SPELLCAST_EMPOWER_START
 ---| '"UNIT_SPELLCAST_EMPOWER_STOP"' # UNIT_SPELLCAST_EMPOWER_STOP
+---| '"UNIT_MODEL_CHANGED"' # UNIT_MODEL_CHANGED

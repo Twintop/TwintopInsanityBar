@@ -250,6 +250,8 @@ function TRB.Functions.Character:GetSpecializationName(className, specId)
             return "havoc"
         elseif specId == 2 then
             return "vengeance"
+		elseif specId == 3 then
+			return "devourer"
         end
     elseif className == "DRUID" then
         if specId == 1 then
@@ -445,6 +447,7 @@ end
 ---@param specName string
 ---| '"havoc"' # Havoc (Demon Hunter)
 ---| '"vengeance"' # Vengeance (Demon Hunter)
+---| '"devourer"' # Devourer (Demon Hunter)
 ---| '"balance"' # Balance (Druid)
 ---| '"feral"' # Feral (Druid)
 ---| '"restoration"' # Restoration (Druid, Shaman)

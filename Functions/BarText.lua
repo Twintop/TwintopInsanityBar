@@ -1223,7 +1223,7 @@ function TRB.Functions.BarText:Show(settings)
 	if entries > 0 then
 		for i = 1, entries do
 			local _, isEnabled = TRB.Functions.Class:GetBarTextFrame(displayText.barText[i].position.relativeToFrame)
-			if displayText.barText[i].enabled and isEnabled then
+			if displayText.barText[i].enabled and isEnabled and textFrames[i] ~= nil then
 				textFrames[i]:Show()
 				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Show()

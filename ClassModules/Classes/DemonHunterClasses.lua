@@ -382,3 +382,35 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 
 	return self
 end
+
+
+---@class TRB.Classes.DemonHunter.DevourerSpells : TRB.Classes.SpecializationSpellsBase
+---@field public metamorphosis TRB.Classes.SpellBase -- Void Metamorphosis but keeping it simple naming to re-use existing code
+---@field public voidRay TRB.Classes.SpellThreshold
+TRB.Classes.DemonHunter.DevourerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.DemonHunter.DevourerSpells.__index = TRB.Classes.DemonHunter.DevourerSpells
+
+function TRB.Classes.DemonHunter.DevourerSpells:New()
+	---@type TRB.Classes.SpecializationSpellsBase
+	local base = TRB.Classes.SpecializationSpellsBase
+	self = setmetatable(base:New(), TRB.Classes.DemonHunter.DevourerSpells) --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	--Demon Hunter Class Baseline Abilities
+	self.metamorphosis = TRB.Classes.SpellBase:New({
+		id = 1217605,
+		castId = 1217605,
+		isTalent = false,
+		baseline = true
+	})
+	self.voidRay = TRB.Classes.SpellThreshold:New({
+		id = 473728,
+		primaryResourceType = Enum.PowerType.Fury,
+		settingKey = "voidRay",
+		hasCooldown = true,
+		isTalent = true,
+		rangeCheck = false,
+		isSnowflake = true,
+		resource = 100
+	})
+
+	return self
+end

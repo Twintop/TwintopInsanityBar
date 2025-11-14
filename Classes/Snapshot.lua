@@ -99,6 +99,7 @@ end
 ---@field private onlyRefreshOnRequest boolean
 ---@field private lastRefreshGetTime number
 ---@field public previousRemaining number
+---@field public attributes table
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
@@ -146,6 +147,7 @@ function TRB.Classes.SnapshotBuff:New(parent, simpleBuff, onlyRefreshOnRequest)
 	end
 	
 	self.customProperties = {}
+	self.attributes = {}
 	self:Reset()
 
 
@@ -177,6 +179,7 @@ function TRB.Classes.SnapshotBuff:Reset()
 	self.refreshRequested = false
 	self.lastRefreshGetTime = 0
 	self.previousRemaining = 0
+	self.attributes = {}
 
 	if self.customPropertyDefinitions ~= nil then
 		for _, prop in ipairs(self.customPropertyDefinitions) do
@@ -284,6 +287,18 @@ function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStack
 	self:GetRemainingTime()
 end
 
+---Initializes the buff with custom endTime and duration values
+---@param hasStacks boolean? # Should the buff be marked as having stacks
+function TRB.Classes.SnapshotBuff:InitializeCustomSimple(hasStacks)
+	self.isCustom = true
+	self.isActive = true
+	if hasStacks then
+		self.applications = 1
+	else
+		self.applications = 0
+	end
+end
+
 ---Adds time to a currently active buff or initializes it if not active
 ---@param duration number # How much time to add
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
@@ -300,8 +315,11 @@ end
 ---Adds stacks to a currently active buff or initializes it if not active
 ---@param duration number # How long the buff will last
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
----@param refreshTime boolean # Should the endTime be refreshed to now + duration
+---@param refreshTime boolean? # Should the endTime be refreshed to now + duration
 function TRB.Classes.SnapshotBuff:AddStackOrInitializeCustom(duration, startTime, refreshTime)
+	if refreshTime == nil then
+		refreshTime = false
+	end
 	if not self.isActive then
 		self:InitializeCustom(duration, startTime)
 	else
@@ -310,8 +328,11 @@ function TRB.Classes.SnapshotBuff:AddStackOrInitializeCustom(duration, startTime
 end
 
 ---Adds a new stack (application) to the buff
----@param refreshTime boolean # Should the endTime be refreshed to now + duration
+---@param refreshTime boolean? # Should the endTime be refreshed to now + duration
 function TRB.Classes.SnapshotBuff:AddStack(refreshTime)
+	if refreshTime == nil then
+		refreshTime = false
+	end
 	if self.isActive then
 		self.applications = self.applications + 1
 		if refreshTime then
@@ -321,7 +342,7 @@ function TRB.Classes.SnapshotBuff:AddStack(refreshTime)
 	end
 end
 
----Removesa stack (application) from the buff
+---Removes a stack (application) from the buff
 function TRB.Classes.SnapshotBuff:RemoveStack()
 	if self.isActive then
 		if self.applications == 1 then
@@ -403,7 +424,7 @@ function TRB.Classes.SnapshotBuff:RefreshWithAuraData(auraData)
 		else
 			self:Reset()
 		end
-	end 
+	end
 end
 
 ---Refreshes the buff information for the snapshot
