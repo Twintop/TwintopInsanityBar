@@ -625,16 +625,18 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 end
 
 function TRB.Functions.Character:IsComboPointUser()
-	if 	(TRB.Data.character.classId == 1 and TRB.Data.character.specId == 3) or -- Protection Warrior
-		(TRB.Data.character.classId == 2) or -- Paladin
-		(TRB.Data.character.classId == 4) or -- Rogue
-		(TRB.Data.character.classId == 5 and (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2)) or -- Discipline or Holy Priest
-		--(TRB.Data.character.classId == 7 and TRB.Data.character.specId == 2) or -- Enhancement Shaman
-		(TRB.Data.character.classId == 9 and TRB.Data.character.specId == 1) or -- Affliction Warlock
-		(TRB.Data.character.classId == 10 and TRB.Data.character.specId == 3) or -- Windwalker Monk
-		(TRB.Data.character.classId == 11 and TRB.Data.character.specId == 2) or -- Feral Druid
-		(TRB.Data.character.classId == 12 and TRB.Data.character.specId == 2) or -- Vengeance Demon Hunter
-		(TRB.Data.character.classId == 13) -- Evoker
+	local classId = TRB.Data.character.classId
+	local specId = TRB.Data.character.specId
+	if 	(classId == 1 and specId == 3) or -- Protection Warrior
+		(classId == 2) or -- Paladin
+		(classId == 4) or -- Rogue
+		(classId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
+		--(classId == 7 and specId == 2) or -- Enhancement Shaman
+		(classId == 9 and specId == 1) or -- Affliction Warlock
+		(classId == 10 and specId == 3) or -- Windwalker Monk
+		(classId == 11 and specId == 2) or -- Feral Druid
+		(classId == 12 and (specId == 2 or specId == 3)) or -- Vengeance or Devourer Demon Hunter
+		(classId == 13) -- Evoker
 		then
 		return true
 	end

@@ -625,7 +625,7 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				base="FFC942FD",
 				casting="FFFFFFFF",
 				passive="FF660066",
-				metamorphosis="FF67F100",
+				voidMetamorphosis = "FF67F100",
 				metamorphosisEnding="FFFF0000",
 				overcapEnabled=true,
 				showPassive=true,
@@ -724,32 +724,9 @@ local function DevourerLoadDefaultBarTextSimpleSettings()
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="", --{$ucTime}[$ucTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="$resource",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -770,24 +747,24 @@ local function DevourerLoadDefaultBarTextSimpleSettings()
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
-			name = L["PositionRight"],
+			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive + ]{$casting}[$casting + ]$fury",
+			text="$soulFragments",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=18,
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
 			color = "FFFFFFFF",
 			position = {
-				xPos = -2,
+				xPos = 0,
 				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "ComboPoint_1",
+				relativeToFrameName = L["SoulFragments"]
 			}
-		}
+		},
 	}
 
 	return textSettings
@@ -930,6 +907,17 @@ local function DevourerLoadDefaultSettings(includeBarText)
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
 		},
+		comboPoints = {
+			width=25,
+			height=13,
+			xPos=0,
+			yPos=4,
+			border=1,
+			spacing=14,
+			relativeTo="TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
 		colors = {
 			text = {
 				current = {
@@ -957,11 +945,29 @@ local function DevourerLoadDefaultSettings(includeBarText)
 				base="FFC942FD",
 				casting="FFFFFFFF",
 				passive="FF660066",
-				metamorphosis="FF431863",
-				--metamorphosisEnding="FFFF0000",
+				voidMetamorphosis = {
+					color = "FF431863",
+					enabled = true
+				},
 				overcapEnabled=true,
 				showPassive=true,
 				showCasting=true
+			},
+			comboPoints = {
+				border="FF660088",
+				background="66000000",
+				base="FFC942FD",
+				penultimate="FFFF9900",
+				final="FFFF0000",
+				sameColor=false,
+				voidMetamorphosisReady = {
+					color = "FF431863",
+					enabled = true
+				},
+				collapsingStarReady = {
+					color = "FF431863",
+					enabled = true
+				},
 			},
 			threshold = {
 				under = {
@@ -1023,7 +1029,13 @@ local function DevourerLoadDefaultSettings(includeBarText)
 			passiveBarName="Blizzard",
 			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
 			castingBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			comboPointsBackgroundName="Blizzard Tooltip",
+			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+			comboPointsBorderName="1 Pixel",
+			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+			comboPointsBarName="Blizzard",
 		}
 	}
 
@@ -1723,8 +1735,8 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])--, L["ResourceSoulFragments"])
+	--yCoord = yCoord - 30
+	--yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"]), L["ResourceSoulFragments"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord)--, true, L["ResourceSoulFragments"])
@@ -2299,7 +2311,10 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 3, yCoord)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 3, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], L["ResourceSoulFragments"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 3, yCoord, true, L["ResourceSoulFragments"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false)
@@ -2308,10 +2323,20 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
-	controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosis"], spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.metamorphosis
+	controls.checkBoxes.voidMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Checkbox_VoidMetamorphosis", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.voidMetamorphosis
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxVoidMetamorphosis"])
+	f.tooltip = L["DemonHunterDevourerCheckboxVoidMetamorphosisTooltip"]
+	f:SetChecked(spec.colors.bar.voidMetamorphosis.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.voidMetamorphosis.enabled = self:GetChecked()
+	end)
+
+	controls.colors.voidMetamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosis"], spec.colors.bar.voidMetamorphosis.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.voidMetamorphosis
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosis")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "voidMetamorphosis")
 	end)
 
 	--[[yCoord = yCoord - 30
@@ -2377,6 +2402,60 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], true, false)
+
+	yCoord = yCoord - 40
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterDevourerHeaderSoulFragmentColors"], oUi.xCoord, yCoord)
+	
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceFury"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.base
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.voidMetamorphosisReady = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Checkbox_VoidMetamorphosisReady", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.voidMetamorphosisReady
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxVoidMetamorphosisReady"])
+	f.tooltip = L["DemonHunterDevourerCheckboxVoidMetamorphosisReadyTooltip"]
+	f:SetChecked(spec.colors.comboPoints.voidMetamorphosisReady.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.voidMetamorphosisReady.enabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.voidMetamorphosisReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentVoidMetamorphosisReady"], spec.colors.comboPoints.voidMetamorphosisReady.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.voidMetamorphosisReady
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "voidMetamorphosisReady")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.collapsingStarReady = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Checkbox_CollapsingStarReady", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.collapsingStarReady
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxCollapsingStarReady"])
+	f.tooltip = L["DemonHunterDevourerCheckboxCollapsingStarReadyTooltip"]
+	f:SetChecked(spec.colors.comboPoints.collapsingStarReady.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.collapsingStarReady.enabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.collapsingStarReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentCollapsingStarReady"], spec.colors.comboPoints.collapsingStarReady.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.collapsingStarReady
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "collapsingStarReady")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
 
 	--[[yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterDevourerEndOfMetamorphosisConfigurationHeader"], oUi.xCoord, yCoord)
@@ -2589,11 +2668,11 @@ local function DevourerConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerTextColorPickerPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerTextColorPickerPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
@@ -2620,7 +2699,7 @@ local function DevourerConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overcapTextEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -2628,7 +2707,7 @@ local function DevourerConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overcap.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
+	end)]]
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 12, 3, yCoord)
 end

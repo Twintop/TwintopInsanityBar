@@ -411,6 +411,15 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 		isSnowflake = true,
 		resource = 100
 	})
+	-- Really Void Metamorphosis but splittng out for tracking
+	self.soulFragments = TRB.Classes.SpellBase:New({
+		id = 1225789,
+		maxResource = 50
+	})
+	self.collapsingStar = TRB.Classes.SpellBase:New({
+		id = 1227702,--1221150
+		maxResource = 40
+	})
 
 	return self
 end

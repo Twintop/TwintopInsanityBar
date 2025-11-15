@@ -290,7 +290,7 @@ function TRB.Functions.Bar:SetMinMax(settings)
 		TRB.Frames.resourceFrame:SetMinMaxValues(0, max)-- settings.bar.width)
 		TRB.Frames.castingFrame:SetMinMaxValues(0, max)-- settings.bar.width)
 		TRB.Frames.passiveFrame:SetMinMaxValues(0, max)-- settings.bar.width)
-		if TRB.Frames.resource2Frames ~= nil then
+		if TRB.Frames.resource2Frames ~= nil and TRB.Data.resource2 ~= "CUSTOM" then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
 			local nodeWidth = GetComboPointNodeWidth(settings)
@@ -334,7 +334,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
 		local containerFrame2 = TRB.Frames.resource2ContainerFrame
 		local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-		local nodes = TRB.Data.character.maxResource2
+		local nodes = TRB.Data.character.maxResource2 or 1
 
 		if nodes == nil then
 			nodes = length

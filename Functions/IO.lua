@@ -97,7 +97,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.comboPoints = settings.comboPoints
 				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 			elseif specId == 3 then -- Devourer
-				configuration.endOfDevourerForm = settings.endOfDevourerForm
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation

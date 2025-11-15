@@ -11,6 +11,21 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha07 (2025-11-16)
+## [#462](#462) General
+
+## Demon Hunter
+### [#491](#491) Devourer
+
+- Add support for Soul Fragments.
+- Add Soul Fragments color change for when Void Metamorphosis is ready.
+- Add Soul Fragments color change for when Collapsing Star is ready when in Void Metamorphosis.
+- Adjust default bar text to be centered and include Soul Fragments.
+- Fix an issue with exporting setting configurations.
+- Add English localization entries for currently available feature strings.
+
+---
+
 # 12.0.0.0-alpha06 (2025-11-15)
 ## [#462](#462) General
 

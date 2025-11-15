@@ -235,7 +235,7 @@ if 	TRB.Data.character.classId == 1 or -- Protection Warrior
 	TRB.Data.character.classId == 9 or -- Affliction Warlock
 	TRB.Data.character.classId == 10 or -- Windwalker Monk
 	TRB.Data.character.classId == 11 or -- Feral Druid
-	TRB.Data.character.classId == 12 or -- Vengeance Demon Hunter
+	TRB.Data.character.classId == 12 or -- Vengeance or Devourer Demon Hunter
 	TRB.Data.character.classId == 13 -- Evoker
 	then
 	TRB.Frames.resource2Frames = {}

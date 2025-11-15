@@ -3388,6 +3388,13 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["SoulFragment5"],
 			L["Screen"],
 		}
+	elseif (classId == 12 and specId == 3) then -- Devourer Demon Hunter
+		relativeToFrame[L["SoulFragments"]] = "ComboPoint_1"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["SoulFragments"],
+			L["Screen"],
+		}
 	elseif (classId == 13) then -- Evoker
 		relativeToFrame[L["Essence1"]] = "ComboPoint_1"
 		relativeToFrame[L["Essence2"]] = "ComboPoint_2"

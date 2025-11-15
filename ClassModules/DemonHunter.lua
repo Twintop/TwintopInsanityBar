@@ -473,6 +473,12 @@ local function FillSpellData_Devourer()
 		{ variable = "$furyMax", description = L["DemonHunterHavocBarTextVariable_furyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DemonHunterHavocBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$soulFragments", description = L["DemonHunterDevourerBarTextVariable_soulFragments"], printInSettings = true, color = false },
+		{ variable = "$collapsingStar", description = "", printInSettings = false, color = false },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+		{ variable = "$soulFragmentsMax", description = L["DemonHunterDevourerBarTextVariable_soulFragmentsMax"], printInSettings = true, color = false },
+		{ variable = "$collapsingStarMax", description = "", printInSettings = false, color = false },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 		--[[{ variable = "$passive", description = L["DemonHunterHavocBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$furyPlusCasting", description = L["DemonHunterHavocBarTextVariable_furyPlusCasting"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
@@ -516,7 +522,7 @@ local function ConstructResourceBar(settings)
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Frames.resource2ContainerFrame:Show()
 	elseif TRB.Data.character.specId == 3 then
-		TRB.Frames.resource2ContainerFrame:Hide()
+		TRB.Frames.resource2ContainerFrame:Show()
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -995,6 +1001,10 @@ local function RefreshLookupData_Devourer()
 	local _furyPlusPassive = math.min(_passiveFury + normalizedResource, TRB.Data.character.maxResource)
 	local furyPlusPassive = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyPlusPassive, resourcePrecision, "floor"))]]
 
+	--$soulFragments
+	local _soulFragments = snapshotData.attributes.resource2
+	local soulFragments = string.format("%s", _soulFragments)
+
 	----------------------------
 
 	--[[Global_TwintopResourceBar.resource.resource = normalizedResource
@@ -1006,6 +1016,12 @@ local function RefreshLookupData_Devourer()
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$furyMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingFury
+	lookup["$soulFragments"] = soulFragments
+	lookup["$comboPoints"] = soulFragments
+	lookup["$collapsingStars"] = soulFragments
+	lookup["$soulFragmentsMax"] = TRB.Data.character.maxResource2Value
+	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Value
+	lookup["$collapsingStarsMax"] = TRB.Data.character.maxResource2Value
 	lookup["$metaTime"] = ""
 	lookup["$metamorphosisTime"] = ""
 	lookup["$voidMetaTime"] = ""
@@ -1029,6 +1045,12 @@ local function RefreshLookupData_Devourer()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$furyMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = _castingFury
+	lookupLogic["$soulFragments"] = _soulFragments
+	lookupLogic["$comboPoints"] = _soulFragments
+	lookupLogic["$collapsingStars"] = _soulFragments
+	lookupLogic["$soulFragmentsMax"] = TRB.Data.character.maxResource2Value
+	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Value
+	lookupLogic["$collapsingStarsMax"] = TRB.Data.character.maxResource2Value
 	lookupLogic["$metaTime"] = _metamorphosisTime
 	lookupLogic["$metamorphosisTime"] = _metamorphosisTime
 	lookupLogic["$voidMetaTime"] = _metamorphosisTime
@@ -1229,9 +1251,22 @@ local function UpdateSnapshot_Devourer()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local _
+	
+	local blizzSfBar = _G["DemonHunterSoulFragmentsBar"]
+	local sfMin, sfMax = blizzSfBar:GetMinMaxValues()
+	local sfCurrent = blizzSfBar:GetValue()
+	--[[local sfMax = spells.soulFragments.attributes.maxResource
+	local sfMin = 0
+	if snapshotData.snapshots[spells.metamorphosis.id].buff.isActive then
+		sfMax = spells.collapsingStar.attributes.maxResource
+	end]]
+
+	TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(sfMin, sfMax)
+	snapshotData.attributes.resource2 = sfCurrent
+	TRB.Data.character.maxResource2Value = sfMax
 end
 
 local function UpdateResourceBar()
@@ -1769,7 +1804,7 @@ local function UpdateResourceBar()
 				end
 				
 				local barColor = specSettings.colors.bar.base
-				if snapshots[spells.metamorphosis.id].buff.isActive then
+				if snapshots[spells.metamorphosis.id].buff.isActive and specSettings.colors.bar.voidMetamorphosis.enabled then
 					--[[local timeThreshold = 0
 					local useEndOfMetamorphosisColor = false
 
@@ -1786,7 +1821,7 @@ local function UpdateResourceBar()
 					if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
 						barColor = specSettings.colors.bar.metamorphosisEnding
 					else]]
-						barColor = specSettings.colors.bar.metamorphosis
+						barColor = specSettings.colors.bar.voidMetamorphosis.color
 					--end
 				end
 
@@ -1816,6 +1851,33 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+				local blizzSfBar = _G["DemonHunterSoulFragmentsBar"]
+				local min, max = blizzSfBar:GetMinMaxValues()
+				local current = blizzSfBar:GetValue()
+
+				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(min, max)
+				
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border
+				local cpColor = specSettings.colors.comboPoints.base
+
+				local metaUsable = spells.metamorphosis:IsUsable()
+
+				if specSettings.colors.comboPoints.voidMetamorphosisReady.enabled and not snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
+					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
+				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
+					cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
+				end
+
+				local cpBR = cpBackgroundRed
+				local cpBG = cpBackgroundGreen
+				local cpBB = cpBackgroundBlue
+
+				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, max)
+				
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
+				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -2186,6 +2248,15 @@ function TRB.Functions.Class:CheckCharacter()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 		TRB.Data.character.specName = "devourer"
 
+		local maxComboPoints = 1
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+
+		if sharedSettings ~= nil then
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+			end
+		end
 		--[[if talents:IsTalentActive(spells.burningHatred) then
 			snapshots[spells.immolationAura.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
 			snapshots[spells.immolationAura1.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred:GetTickRate())
@@ -2228,8 +2299,8 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1
-		TRB.Data.resource2 = nil
-		TRB.Data.resource2Factor = nil
+		TRB.Data.resource2 = "CUSTOM"
+		TRB.Data.resource2Factor = 1
 	else
 		TRB.Data.specSupported = false
 	end
@@ -2398,6 +2469,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		if TRB.Functions.Class:IsValidVariableForSpec("$bhFury") or TRB.Functions.Class:IsValidVariableForSpec("$tacticalRetreatFury") or TRB.Functions.Class:IsValidVariableForSpec("$iaFury") or TRB.Functions.Class:IsValidVariableForSpec("$sosFury") then
 			valid = true
 		end]]
+		elseif var == "$comboPoints" or var == "$soulFragments" or var == "$collapsingStar" then
+			valid = true
+		elseif var == "$comboPointsMax"or var == "$soulFragmentsMax" or var == "$collapsingStarMax" then
+			valid = true
 	end
 
 	return valid
