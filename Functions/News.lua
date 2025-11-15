@@ -12,8 +12,6 @@ local content = [====[
 ---
 
 # 12.0.0.0-alpha07 (2025-11-16)
-## [#462](#462) General
-
 ## Demon Hunter
 ### [#491](#491) Devourer
 
