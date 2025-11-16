@@ -353,6 +353,13 @@ function TRB.Classes.SnapshotBuff:RemoveStack()
 	end
 end
 
+---comment
+---@param auraInstanceId integer
+function TRB.Classes.SnapshotBuff:SetAuraInstanceId(auraInstanceId)
+	self.auraInstanceId = auraInstanceId
+	TRB.Functions.Aura:StoreBuffAuraInstanceId(self)
+end
+
 ---Parse the buff
 ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
 ---@param aura AuraData # Data about the buff
@@ -584,9 +591,9 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 
 	self.remaining = remainingTime
 	
-	if self.maxCharges > 1 and self.charges < self.maxCharges then
+	if not issecretvalue(self.maxCharges) and not issecretvalue(self.charges) and self.maxCharges > 1 and self.charges < self.maxCharges then
 		self.remainingTotal = self.remaining +  ((self.maxCharges - self.charges - 1) * self.duration)
-	elseif self.maxCharges > 1 and self.maxCharges == self.charges then
+	elseif not issecretvalue(self.maxCharges) and not issecretvalue(self.charges) and self.maxCharges > 1 and self.maxCharges == self.charges then
 		self.startTime = nil
 		self.duration = 0
 		self.remainingTotal = 0
@@ -619,7 +626,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 			self.maxCharges = spellCharges.maxCharges
 			startTime = spellCharges.cooldownStartTime
 			duration = spellCharges.cooldownDuration
-			if self.charges == self.maxCharges then
+			if not issecretvalue(self.charges) and not issecretvalue(self.maxCharges) and self.charges == self.maxCharges then
 				startTime = 0
 				duration = 0
 			end
@@ -633,28 +640,30 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 			self.castCount = C_Spell.GetSpellCastCount(self.parent.spell.id)
 		end
 
-		---@type TRB.Classes.SnapshotCasting
-		local casting = TRB.Data.snapshotData.casting
-		local gcd = casting:GetCurrentGCDLockRemaining()
-		
-		local currentTime = GetTime()
-		local remainingTime = startTime + duration - currentTime
+		if not issecretvalue(startTime) then
+			---@type TRB.Classes.SnapshotCasting
+			local casting = TRB.Data.snapshotData.casting
+			local gcd = casting:GetCurrentGCDLockRemaining()
+			
+			local currentTime = GetTime()
+			local remainingTime = startTime + duration - currentTime
 
-		if ((startTime ~= nil and startTime > 0 and not self.onCooldown and remainingTime > gcd + TRB.Data.character.latency) or
-			(self.onCooldown and remainingTime > gcd + TRB.Data.character.latency)) and (self.parent.spell.hasChanges ~= true or (self.parent.spell.hasChanges and self.charges < self.maxCharges))
-			then
-			self.startTime = startTime
-			self.duration = duration
-			self.retryForceTime = nil
-		elseif self.onCooldown and remainingTime > gcd + TRB.Data.character.latency then
-			self.startTime = startTime
-			self.duration = duration
-			self.retryForceTime = nil
-		else
-			self.startTime = nil
-			self.duration = 0
-			if retryForce then
-				self.retryForceTime = currentTime
+			if ((startTime ~= nil and startTime > 0 and not self.onCooldown and remainingTime > gcd + TRB.Data.character.latency) or
+				(self.onCooldown and remainingTime > gcd + TRB.Data.character.latency)) and (self.parent.spell.hasChanges ~= true or (self.parent.spell.hasChanges and self.charges < self.maxCharges))
+				then
+				self.startTime = startTime
+				self.duration = duration
+				self.retryForceTime = nil
+			elseif self.onCooldown and remainingTime > gcd + TRB.Data.character.latency then
+				self.startTime = startTime
+				self.duration = duration
+				self.retryForceTime = nil
+			else
+				self.startTime = nil
+				self.duration = 0
+				if retryForce then
+					self.retryForceTime = currentTime
+				end
 			end
 		end
 	end
@@ -664,6 +673,10 @@ end
 ---Determines if the cooldown is unusable, either by virtue of being completely on cooldown or having no charges to spend
 ---@return boolean
 function TRB.Classes.SnapshotCooldown:IsUnusable()
+	-- Lie and say it is not unusable if we have secret values for charges or cooldown state
+	if issecretvalue(self.charges) or issecretvalue(self.onCooldown) then
+		return false
+	end
 	return (self.charges == nil or self.charges == 0) and self.onCooldown
 end
 

@@ -145,6 +145,112 @@ function TRB.Functions.Aura:DisableUnitAura()
 	unitAuraFrame:UnregisterEvent("UNIT_AURA")
 end
 
+
+---@type table<number, integer>
+local auraCacheBuffer = {}
+---@type table<number, TRB.Classes.SnapshotBuff>
+local auraRequests = {}
+local auraCacheCleanupTime = 0
+local AURA_CACHE_MAX_DURATION = 1 -- seconds
+
+---Handles UNIT_AURA events that need caching for later processing
+---@param self any
+---@param event string
+---@param unit UnitToken
+---@param info UnitAuraUpdateInfo
+local function AuraUpdateEventCache(self, event, unit, info)
+	---@type TRB.Classes.SnapshotData
+	local snapshotData = TRB.Data.snapshotData
+	local currentTime = GetTime()
+	
+	-- Only do this for the player
+	if unit ~= "player" then
+		return
+	end
+	
+	--[[if info.isFullUpdate then
+		--Only do a full refresh of buffs for now
+		snapshotData:RefreshAllBuffs()
+		TRB.Data.cache.values.resource = {}
+		return
+	end]]
+
+	if info.addedAuras then
+		if unit == "player" and #info.addedAuras == 1 then
+			for _, v in pairs(info.addedAuras) do
+				if auraRequests[currentTime] ~= nil then
+					auraRequests[currentTime]:SetAuraInstanceId(v.auraInstanceID)
+					--print("Found matching aura request for ID " .. v.auraInstanceID .. ", spell " .. auraRequests[currentTime].parent.spell.name .. " (" .. auraRequests[currentTime].parent.spell.id .. ")")
+					auraRequests[currentTime] = nil
+				else
+					auraCacheBuffer[currentTime] = v.auraInstanceID
+					--print("Did not find matching aura request for ID " .. v.auraInstanceID .. ", buffering")
+				end
+			end
+		end
+	end
+
+	--[[if info.updatedAuraInstanceIDs then
+		if unit == "player" then
+			for _, v in pairs(info.updatedAuraInstanceIDs) do
+				if auraCache[v] ~= nil then
+					-- TODO: something about refreshing
+					print("Refreshing aura ID " .. v)
+				end
+			end
+		end
+	end]]
+
+	if info.removedAuraInstanceIDs then
+		if unit == "player" then
+			for _, v in pairs(info.removedAuraInstanceIDs) do
+				local snapshot = snapshotData.auraInstanceIds[v]
+				if snapshot ~= nil then
+					--print("Removing aura ID " .. v .. " from snapshot tracking for spell " .. (snapshot.parent.spell.name) .. " (" .. (snapshot.parent.spell.id) .. ")")
+					snapshot:Reset()
+				end
+				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
+			end
+		end
+	end
+
+	if currentTime - auraCacheCleanupTime > AURA_CACHE_MAX_DURATION then
+		auraCacheCleanupTime = currentTime
+		for k, v in pairs(auraCacheBuffer) do
+			if currentTime - k > AURA_CACHE_MAX_DURATION then
+				--print("Cleaning up buffered aura ID " .. v)
+				auraCacheBuffer[k] = nil
+			end
+		end
+	end	
+end
+
+local unitAuraCacheFrame = CreateFrame("Frame")
+unitAuraCacheFrame:SetScript("OnEvent", AuraUpdateEventCache)
+
+function TRB.Functions.Aura:EnableUnitAuraCache()
+	unitAuraCacheFrame:RegisterEvent("UNIT_AURA")
+end
+
+function TRB.Functions.Aura:DisableUnitAuraCache()
+	unitAuraCacheFrame:UnregisterEvent("UNIT_AURA")
+end
+
+---Gets an aura from the cache buffer by its timestamp
+---@param time number
+---@return integer
+function TRB.Functions.Aura:GetFromAuraCacheBuffer(time)
+	return auraCacheBuffer[time]
+end
+
+---Inserts an aura request into the request cache
+---@param time number
+---@param buff TRB.Classes.SnapshotBuff
+function TRB.Functions.Aura:InsertAuraRequest(time, buff)
+	auraRequests[time] = buff
+end
+
+
 ---Stores the AuraInstanceId->SnapshotBuff in a dictionary
 ---@param snapshotBuff TRB.Classes.SnapshotBuff
 function TRB.Functions.Aura:StoreBuffAuraInstanceId(snapshotBuff)
