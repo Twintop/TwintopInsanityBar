@@ -218,44 +218,51 @@ end
 ---@param value number
 ---@param maxResource number
 function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
-	value = value-- or 0
-	maxResource = maxResource or 1
 	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
-	--[[if TRB.Data.cache.values.bar[key].value == value and TRB.Data.cache.values.bar[key].maxResource == maxResource then
+	local valueIsSecret = issecretvalue(value)
+	local maxResourceIsSecret = issecretvalue(maxResource)
+	if not valueIsSecret and not maxResourceIsSecret and TRB.Data.cache.values.bar[key].value == value and TRB.Data.cache.values.bar[key].maxResource == maxResource then
 		return
-	end]]
+	end
 	
 	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
-		bar:SetValue(value)
-		--[[local _, max = bar:GetMinMaxValues()
+		local _, max = bar:GetMinMaxValues()
+		local barMaxValueIsSecret = issecretvalue(max)
 
-		local factor = max / maxResource
+		if barMaxValueIsSecret or valueIsSecret or maxResourceIsSecret then
+			bar:SetValue(value)
+		else
+			maxResource = maxResource or 1
+			value = value or 0
 
-		if maxResource == 0 then
-			factor = max / 1
-		end
-		
-		local scaledValue = value * factor
-		if factor ~= math.huge and max ~= math.huge then
-			bar:SetValue(math.min(scaledValue, max))
-		end
+			local factor = max / maxResource
 
-		local endCapKey = key
-		if key == "resource" then
-			endCapKey = "base"
-		end
-
-		if bar.endCap ~= nil and settings.colors.endCap ~= nil and settings.colors.endCap[endCapKey] ~= nil and settings.colors.endCap[endCapKey].enabled then
-			local ecWidth = settings.colors.endCap[endCapKey].width
-			if scaledValue < ecWidth then
-				ecWidth = scaledValue
+			if maxResource == 0 then
+				factor = max / 1
 			end
 
-			if TRB.Data.cache.values.bar[key].endCapWidth ~= ecWidth then
-				bar.endCap:SetWidth(ecWidth)
+			local scaledValue = value * factor
+			if factor ~= math.huge and max ~= math.huge then
+				bar:SetValue(math.min(scaledValue, max))
 			end
-			TRB.Functions.Threshold:RepositionThreshold(settings, "endCap" .. endCapKey, bar.endCap, true, bar, value, maxResource, false)
-		end]]
+
+			local endCapKey = key
+			if key == "resource" then
+				endCapKey = "base"
+			end
+
+			if bar.endCap ~= nil and settings.colors.endCap ~= nil and settings.colors.endCap[endCapKey] ~= nil and settings.colors.endCap[endCapKey].enabled then
+				local ecWidth = settings.colors.endCap[endCapKey].width
+				if scaledValue < ecWidth then
+					ecWidth = scaledValue
+				end
+
+				if TRB.Data.cache.values.bar[key].endCapWidth ~= ecWidth then
+					bar.endCap:SetWidth(ecWidth)
+				end
+				TRB.Functions.Threshold:RepositionThreshold(settings, "endCap" .. endCapKey, bar.endCap, true, bar, value, maxResource, false)
+			end
+		end
 
 		TRB.Data.cache.values.bar[key].value = value
 		TRB.Data.cache.values.bar[key].maxResource = maxResource
