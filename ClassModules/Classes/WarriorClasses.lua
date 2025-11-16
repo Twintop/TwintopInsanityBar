@@ -56,13 +56,15 @@ function TRB.Classes.Warrior.WarriorBaseSpells:New()
 	})]]
 	self.shieldBlock = TRB.Classes.SpellThreshold:New({
 		id = 2565,
+		castId = 2565,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "shieldBlock",
 		buffId = 132404,
 		isTalent = false,
 		baseline = true,
 		hasCooldown = true,
-		rangeCheck = false
+		rangeCheck = false,
+		duration = 8
 	})
 
     return self
@@ -384,7 +386,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 end
 
 ---@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
----@field public deepWounds TRB.Classes.SpellBase
+--[[---@field public deepWounds TRB.Classes.SpellBase]]
 ---@field public ignorePain TRB.Classes.SpellThreshold
 ---@field public rend TRB.Classes.SpellThreshold
 ---@field public revenge TRB.Classes.SpellThreshold
@@ -398,7 +400,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 	local base = TRB.Classes.Warrior.WarriorBaseSpells
 	self = setmetatable(base:New(), TRB.Classes.Warrior.ProtectionSpells) --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 	--Warrior base abilities	
-	self.execute = TRB.Classes.SpellThreshold:New({
+	--[[self.execute = TRB.Classes.SpellThreshold:New({
 		id = 163201,
 		healthMinimum = 0.2,
 		primaryResourceType = Enum.PowerType.Rage,
@@ -407,7 +409,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		isTalent = false,
 		baseline = true,
 		isSnowflake = true
-	})
+	})]]
 	self.executeMinimum = TRB.Classes.SpellThreshold:New({
 		id = 163201,
 		healthMinimum = 0.2,
@@ -454,19 +456,20 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		talentId = 29725,
 		isTalent = true
 	})
-	self.deepWounds = TRB.Classes.SpellBase:New({
+	--[[self.deepWounds = TRB.Classes.SpellBase:New({
 		id = 115767,
 		baseDuration = 10,
 		pandemic = true,
 		pandemicTime = 3 --Refreshes add 12sec, capping at 15? --10 * 0.3				
-	})
+	})]]
 	self.ignorePain = TRB.Classes.SpellThreshold:New({
 		id = 190456,
+		castId = 190456,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "ignorePain",
 		isTalent = true,
 		hasCooldown = true,
-		duration = 11,
+		duration = 12,
 		rangeCheck = false,
 		---@type TRB.Classes.BuffCustomProperty[]
 		customPropertyDefinitions = {
