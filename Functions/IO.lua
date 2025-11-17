@@ -86,6 +86,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Feral
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+			elseif specId == 3 then -- Guardian
+				-- No special bar display configuration for Guardian
 			elseif specId == 4 then -- Restoration
 				configuration.endOfIncarnation = settings.endOfIncarnation
 			end
@@ -165,6 +167,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
 			elseif specId == 2 then -- Feral
+			elseif specId == 3 then -- Guardian
 			elseif specId == 4 then -- Restoration
 			end
 		elseif classId == 12 then -- Demon Hunter
@@ -236,6 +239,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 11 then -- Druid
 			if specId == 1 then -- Balance
 			elseif specId == 2 then -- Feral
+			elseif specId == 3 then -- Guardian
 			elseif specId == 4 then -- Restoration
 				configuration.passiveGeneration = settings.passiveGeneration
 			end
@@ -395,6 +399,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				configuration.druid.feral = ExportConfigurationSections(11, 2, settings.druid.feral, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.druid.guardian) > 0 then -- Guardian
+				configuration.druid.guardian = ExportConfigurationSections(11, 3, settings.druid.guardian, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
 			if (specId == 4 or specId == nil) and TRB.Functions.Table:Length(settings.druid.restoration) > 0 then -- Restoration
 				configuration.druid.restoration = ExportConfigurationSections(11, 4, settings.druid.restoration, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
@@ -493,6 +501,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Feral
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Guardian
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Restoration
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 4, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
@@ -585,6 +595,7 @@ function TRB.Functions.IO:Import(input)
 		(configuration.druid ~= nil and
 			(configuration.druid.balance ~= nil or
 			configuration.druid.feral ~= nil or
+			configuration.druid.guardian ~= nil or
 			configuration.druid.restoration)) or
 		(configuration.demonhunter ~= nil and
 			(configuration.demonhunter.havoc ~= nil or

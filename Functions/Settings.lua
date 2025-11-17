@@ -255,6 +255,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				druid = {
 					balance = specGlobalDefaults,
 					feral = specGlobalDefaults,
+					guardian = specGlobalDefaults,
 					restoration = specGlobalDefaults
 				},
 				evoker = {
@@ -307,6 +308,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				druid = {
 					balance = true,
 					feral = true,
+					guardian = true,
 					restoration = true
 				},
 				evoker = {
@@ -369,6 +371,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 		druid = {
 			balance = {},
 			feral = {},
+			guardian = {},
 			restoration = {}
 		},
 		evoker = {

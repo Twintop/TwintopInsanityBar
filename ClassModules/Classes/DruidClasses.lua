@@ -615,6 +615,21 @@ function TRB.Classes.Druid.FeralSpells:New()
 end
 
 
+---@class TRB.Classes.Druid.GuardianSpells : TRB.Classes.SpecializationSpellsBase
+TRB.Classes.Druid.GuardianSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Druid.GuardianSpells.__index = TRB.Classes.Druid.GuardianSpells
+
+function TRB.Classes.Druid.GuardianSpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), {__index = TRB.Classes.Druid.GuardianSpells})
+
+    -- Guardian spell definitions will be added here
+
+    return self
+end
+
+
 ---@class TRB.Classes.Druid.RestorationSpells : TRB.Classes.Healer.HealerSpells
 ---@field public moonfire TRB.Classes.SpellBase
 ---@field public sunfire TRB.Classes.SpellBase

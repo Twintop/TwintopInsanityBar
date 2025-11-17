@@ -24,6 +24,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = {}
 
 local BALANCE_MAX_ASTRAL_POWER = 140
 local FERAL_MAX_ENERGY = 160
+local GUARDIAN_MAX_RAGE = 100
 
 --[[ 
 	Balance Defaults
@@ -953,6 +954,325 @@ local function FeralLoadDefaultSettings(includeBarText)
 	return settings
 end
 
+--[[ 
+	Guardian Defaults
+]]
+
+local function GuardianLoadDefaultBarTextSimpleSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		}
+	}
+
+	return textSettings
+end
+TRB.Options.Druid.GuardianLoadDefaultBarTextSimpleSettings = GuardianLoadDefaultBarTextSimpleSettings
+
+local function GuardianLoadDefaultBarTextAdvancedSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="$haste% ($gcd)||n{$ttd}[TTD: $ttd]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=13,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=13,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=22,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		}
+	}
+
+	return textSettings
+end
+
+local function GuardianLoadDefaultSettings(includeBarText)
+	local settings = {
+		enabled = true,
+		ttd = {
+			enabled = true,
+			mode = "gcd",
+			gcdsMax = 4.5,
+			gcdsTime = 10
+		},
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
+		thresholds = {
+			width = 2,
+			overlapBorder=true,
+			outOfRange=true,
+			icons = {
+				showCooldown=true,
+				border=2,
+				relativeTo = "BOTTOM",
+				relativeToName = L["PositionBelow"],
+				enabled=true,
+				desaturated=true,
+				xPos=0,
+				yPos=12,
+				width=24,
+				height=24
+			},
+			--[[
+			thresholdDictionary = {
+				abilityName = {
+					enabled = true,
+				},
+			}
+			]]
+		},
+		maxResource = {
+			value = GUARDIAN_MAX_RAGE,
+			enabled = false
+		},
+		displayBar = {
+			alwaysShow=false,
+			notZeroShow=true,
+			neverShow=false,
+			dragonriding=true
+		},
+		overcap={
+			mode="relative",
+			relative=0,
+			fixed=100
+		},
+		bar = {
+			width=555,
+			height=34,
+			xPos=0,
+			yPos=-200,
+			border=4,
+			dragAndDrop=false,
+			pinToPersonalResourceDisplay=false
+		},
+		colors = {
+			text = {
+				current = {
+					color = "FFFF0000"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FFEA3C53"
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
+				overThreshold = {
+					color = "FF00FF00",
+					enabled = false
+				}
+			},
+			bar = {
+				border="FFC21807",
+				borderOvercap="FF800000",
+				background="66000000",
+				base="FFFF0000",
+				casting="FFFFFFFF",
+				spending="FF555555",
+				passive="FFEA3C53",
+				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
+			},
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
+			endCap = {
+				base = {
+					color = "FFFFFFFF",
+					enabled = false,
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
+				}
+			}
+		},
+		displayText={
+			default = {
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = L["PositionLeft"],
+				fontSize=18,
+				color = "FFFFFFFF",
+			},
+			barText = {}
+		},
+		audio = {
+			overcap={
+				name = L["Overcap"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+				soundName = L["LSMSoundAirHorn"]
+			}
+		},
+		textures = {
+			background="Interface\\Tooltips\\UI-Tooltip-Background",
+			backgroundName="Blizzard Tooltip",
+			border="Interface\\Buttons\\WHITE8X8",
+			borderName="1 Pixel",
+			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+			resourceBarName="Blizzard",
+			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+			passiveBarName="Blizzard",
+			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+			castingBarName="Blizzard",
+			textureLock=true
+		}
+	}
+
+	if includeBarText then
+		settings.displayText.barText = GuardianLoadDefaultBarTextSimpleSettings()
+	end
+
+	return settings
+end
+
 -- Restoration
 local function RestorationLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
@@ -1303,6 +1623,7 @@ local function LoadDefaultSettings(includeBarText)
 
 	settings.druid.balance = BalanceLoadDefaultSettings(includeBarText)
 	settings.druid.feral = FeralLoadDefaultSettings(includeBarText)
+	settings.druid.guardian = GuardianLoadDefaultSettings(includeBarText)
 	settings.druid.restoration = RestorationLoadDefaultSettings(includeBarText)
 	return settings
 end
@@ -2748,6 +3069,420 @@ end
 
 --[[
 
+Guardian Druid
+
+]]
+
+local function GuardianConstructResetDefaultsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.guardian
+	local yCoord = 5
+
+	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_Reset"] = {
+		text = L["ResetBarDialog"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function(self)
+			TRB.Data.settings.druid.guardian = GuardianLoadDefaultSettings(true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_ResetBarTextSimple"] = {
+		text = L["ResetBarTextSimpleDialog"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function(self)
+			spec.displayText.barText = GuardianLoadDefaultBarTextSimpleSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_ResetBarTextAdvanced"] = {
+		text = L["ResetBarTextAdvancedFullDialog"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function(self)
+			spec.displayText.barText = GuardianLoadDefaultBarTextAdvancedSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Guardian_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton1:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Guardian_ResetBarTextSimple")
+	end)
+	yCoord = yCoord - 40
+
+	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton3:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Guardian_ResetBarTextAdvanced")
+	end)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+end
+
+local function GuardianConstructBarColorsAndBehaviorPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.guardian
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Druid_Guardian_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Druid_Guardian_BarDisplay:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 11, 3, true, false, false, false, false, false)
+	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 3, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 3, yCoord, false)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil)
+
+	yCoord = yCoord - 70
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showPassiveBar
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
+	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
+	f:SetChecked(spec.colors.bar.showPassive)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.showPassive = self:GetChecked()
+	end)
+
+	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.passive
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], false, false)
+
+	--yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], GUARDIAN_MAX_RAGE)
+
+	yCoord = yCoord - 25
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], 1, GUARDIAN_MAX_RAGE)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+end
+
+local function GuardianConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.guardian
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+	controls.buttons.exportButton_Druid_Guardian_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Druid_Guardian_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 3, false, true, false, false, false, false)
+	end)
+
+	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+	controls.checkBoxes.thresholdsSetDefaultColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_thresholdsSetDefaultColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdsSetDefaultColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdSetDefaultColor"])
+	f.tooltip = L["ThresholdSetDefaultColorTooltip"]
+	f:SetChecked(true)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.thresholdsSetCooldownColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_thresholdsSetCooldownColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdsSetCooldownColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdSetCooldownColor"])
+	f.tooltip = L["ThresholdSetCooldownColorTooltip"]
+	f:SetChecked(false)
+	
+	yCoord = yCoord - 25
+	controls.checkBoxes.thresholdsSetOutOfRangeColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_thresholdsSetOutOfRangeColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdsSetOutOfRangeColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdSetOutOfRangeColor"])
+	f.tooltip = L["ThresholdSetOutOfRangeColorTooltip"]
+	f:SetChecked(true)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 3, yCoord)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+end
+
+local function GuardianConstructFontAndTextPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.guardian
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+	controls.buttons.exportButton_Druid_Guardian_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Druid_Guardian_FontAndText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 11, 3, false, false, true, false, false, false)
+	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 11, 3, yCoord)
+
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidGuardianTextColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianTextColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianTextColorPickerPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.passive
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianTextColorPickerOverThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.overThreshold
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
+	end)
+
+	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_OverThreshold_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overThresholdEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DruidGuardianCheckboxThresholdOverTooltip"]
+	f:SetChecked(spec.colors.text.overThreshold.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianTextColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord, yCoord-30)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_CB3_OC_O", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DruidGuardianCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 11, 3, yCoord)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+end
+
+local function GuardianConstructAudioAndTrackingPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.guardian
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+	controls.buttons.exportButton_Druid_Guardian_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Druid_Guardian_AudioAndTracking:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 11, 3, false, false, false, true, false, false)
+	end)
+
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, 11, 3, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceRage"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceRage"]))
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+end
+
+local function GuardianConstructBarTextDisplayPanel(parent, cache)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.guardian
+	local yCoord = 5
+
+	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	controls.buttons.exportButton_Druid_Guardian_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Druid_Guardian_BarText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 11, 3, false, false, false, false, true, false)
+	end)
+
+	yCoord = yCoord - 30
+	local spec = TRB.Data.settings.druid.guardian
+	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 11, 3, yCoord, cache)
+end
+
+local function GuardianConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(11, 3)
+	local namePrefix = className .. "_" .. specName
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local parent = interfaceSettingsFrame.panel
+	local controls = interfaceSettingsFrame.controls.guardian or {}
+	local yCoord = 0
+	local f = nil
+
+	controls.colors = {}
+	controls.labels = {}
+	controls.textbox = {}
+	controls.checkBoxes = {}
+	controls.dropDown = {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.guardianDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Guardian", UIParent)
+	interfaceSettingsFrame.guardianDisplayPanel.name = L["DruidGuardianFull"]
+---@diagnostic disable-next-line: undefined-field
+	interfaceSettingsFrame.guardianDisplayPanel.parent = parent.name
+	TRB.Details.addonCategory.specs["guardian"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.guardianDisplayPanel, L["DruidGuardianFull"])
+
+	parent = interfaceSettingsFrame.guardianDisplayPanel
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidGuardianFull"], oUi.xCoord, yCoord-5)
+
+	controls.checkBoxes.guardianDruidEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_guardianDruidEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.guardianDruidEnabled
+	f:SetPoint("TOPLEFT", 320, yCoord-10)
+	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DruidGuardianFull"])
+	f:SetChecked(TRB.Data.settings.core.enabled.druid.guardian)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.enabled.druid.guardian = self:GetChecked()
+		TRB.Functions.Class:EventRegistration()
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.guardianDruidEnabled, TRB.Data.settings.core.enabled.druid.guardian, true)
+	end)
+
+	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.guardianDruidEnabled, TRB.Data.settings.core.enabled.druid.guardian, true)
+
+	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
+	controls.buttons.importButton:SetFrameLevel(10000)
+	controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
+		StaticPopup_Show("TwintopResourceBar_Import")
+	end)
+
+	controls.buttons.exportButton_Druid_Guardian_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
+	controls.buttons.exportButton_Druid_Guardian_All:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 3, true, true, true, true, true, false)
+	end)
+
+	yCoord = yCoord - 52
+
+	local tabs = {}
+	local tabsheets = {}
+
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
+
+	yCoord = yCoord - 15
+
+	for i = 1, 6 do
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	end
+
+	tabsheets[1]:Show()
+	tabsheets[1].selected = true
+	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	parent.tabs = tabs
+	parent.tabsheets = tabsheets
+	parent.lastTab = tabsheets[1]
+	parent.lastTabId = 1
+
+	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+
+	GuardianConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+	GuardianConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	GuardianConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	GuardianConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	GuardianConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	GuardianConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+end
+
+--[[
+
 Restoration Druid
 
 ]]
@@ -3262,6 +3997,7 @@ local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	BalanceConstructOptionsPanel(specCache.balance)
 	FeralConstructOptionsPanel(specCache.feral)
+	GuardianConstructOptionsPanel(specCache.guardian)
 	RestorationConstructOptionsPanel(specCache.restoration)
 end
 TRB.Options.Druid.ConstructOptionsPanel = ConstructOptionsPanel

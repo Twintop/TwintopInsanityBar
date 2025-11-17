@@ -24,6 +24,7 @@ local specCache = {
 	feral = TRB.Classes.SpecCache:New({
 		bleeds = {}
 	}),
+	guardian = TRB.Classes.SpecCache:New(),
 	restoration = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
@@ -211,6 +212,35 @@ local function FillSpecializationCache()
 	specCache.feral.snapshotData.snapshots[spells.ravage.id] = TRB.Classes.Snapshot:New(spells.ravage)
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)]]
+
+	-- Guardian
+	specCache.guardian.Global_TwintopResourceBar = {
+		resource = {
+			resource = 0,
+			casting = 0,
+			passive = 0
+		}
+	}
+	
+	specCache.guardian.character = {
+		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 3,
+		maxResource = 100,
+		pandemicModifier = 1.0,
+		effects = {
+		},
+		items = {}
+	}
+	
+	---@type TRB.Classes.Druid.GuardianSpells
+	specCache.guardian.spellsData.spells = TRB.Classes.Druid.GuardianSpells:New()
+	--local spells = specCache.guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	
+	specCache.guardian.snapshotData.audio = {
+		overcapCue = false
+	}
 
 	-- Restoration
 	specCache.restoration.Global_TwintopResourceBar = {
@@ -625,6 +655,72 @@ local function FillSpellData_Feral()
 	}
 end
 
+local function Setup_Guardian()
+	TRB.Functions.Character:FillSpecializationCacheSettings("druid", "guardian")
+end
+
+local function FillSpellData_Guardian()
+	Setup_Guardian()
+	specCache.guardian.spellsData:FillSpellData()
+	local spells = specCache.guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+
+	-- This is done here so that we can get icons for the options menu!
+	specCache.guardian.barTextVariables.icons = {
+		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true }
+	}
+
+	specCache.guardian.barTextVariables.values = {
+		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
+
+		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
+		
+		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
+
+		{ variable = "$rage", description = L["DruidGuardianTextColorPickerCurrent"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$rageMax", description = L["BarTextVariableResourceMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = L["BarTextVariableCasting"], printInSettings = true, color = false },
+		{ variable = "$passive", description = L["DruidGuardianTextColorPickerPassive"], printInSettings = true, color = false },
+		--[[{ variable = "$rageTotal", description = L["BarTextVariableResourceTotal"], printInSettings = true, color = false },
+		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
+		{ variable = "$ragePlusCasting", description = L["BarTextVariableResourcePlusCasting"], printInSettings = true, color = false },
+		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+		{ variable = "$ragePlusPassive", description = L["BarTextVariableResourcePlusPassive"], printInSettings = true, color = false },
+		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+
+		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
+	}
+end
+
 local function Setup_Restoration()
 	TRB.Functions.Character:FillSpecializationCacheSettings("druid", "restoration", true)
 end
@@ -786,6 +882,8 @@ local function TargetsCleanup(clearAll)
 		targetData:Cleanup(clearAll)
 	elseif TRB.Data.character.specId == 2 then
 		targetData:Cleanup(clearAll)
+	elseif TRB.Data.character.specId == 3 then
+		targetData:Cleanup(clearAll)
 	elseif TRB.Data.character.specId == 4 then
 		targetData:Cleanup(clearAll)
 	end
@@ -807,6 +905,8 @@ local function ConstructResourceBar(settings)
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Frames.resource2ContainerFrame:Show()
+	elseif TRB.Data.character.specId == 3 then
+		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 4 then
 		for x = 1, 7 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
@@ -1736,6 +1836,145 @@ local function RefreshLookupData_Feral()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+local function RefreshLookupData_Guardian()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local specSettings = TRB.Data.settings.druid.guardian
+	local sharedSettings = TRB.Data.specCache["guardian"].settings
+	---@type TRB.Classes.Target
+	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+	local currentTime = GetTime()
+	local normalizedRage = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
+
+	--Spec specific implementation
+	-- This probably needs to be pulled every refresh
+
+	--$overcap
+	--local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
+
+	local currentRageColor = sharedSettings.colors.text.current.color
+	local castingRageColor = sharedSettings.colors.text.casting.color
+
+	if TRB.Data.character.inCombat then
+		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
+			currentRageColor = sharedSettings.colors.text.overcap.color
+			castingRageColor = sharedSettings.colors.text.overcap.color
+		else]]if sharedSettings.colors.text.overThreshold.enabled then
+			local _overThreshold = false
+			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+					_overThreshold = true
+					break
+				end
+			end
+
+			if _overThreshold then
+				currentRageColor = sharedSettings.colors.text.overThreshold.color
+				castingRageColor = sharedSettings.colors.text.overThreshold.color
+			end
+		end
+	end
+
+	if snapshotData.casting.resourceFinal < 0 then
+		castingRageColor = sharedSettings.colors.text.spending.color
+	end
+
+	--$rage
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+	local _currentRage = normalizedRage
+	local currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)-- TRB.Functions.Number:RoundTo(_currentRage, resourcePrecision, "floor"))
+	--$casting
+	local _castingRage = snapshotData.casting.resourceFinal
+	local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_castingRage, resourcePrecision, "floor"))
+	--$passive
+	--[[local _regenRage = 0
+	local _passiveRage
+	local _passiveRageMinusRegen
+
+	local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
+
+	if specSettings.generation.enabled then
+		if specSettings.generation.mode == "time" then
+			_regenRage = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
+		else
+			_regenRage = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
+		end
+	end
+
+	--$regenRage
+	local regenRage = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenRage)
+
+	_passiveRage = _regenRage
+	_passiveRageMinusRegen = _passiveRage - _regenRage
+
+	local passiveRage = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveRage)
+	local passiveRageMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveRageMinusRegen)
+	--$rageTotal
+	local _rageTotal = snapshotData.attributes.resource + _passiveRage
+	local rageTotal = string.format("|c%s%.0f|r", currentRageColor, _rageTotal)
+	--$ragePlusCasting
+	local _ragePlusCasting = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+	local ragePlusCasting = string.format("|c%s%.0f|r", currentRageColor, _ragePlusCasting)
+	--$ragePlusPassive
+	local _ragePlusPassive = snapshotData.attributes.resource + _passiveRage
+	local ragePlusPassive = string.format("|c%s%.0f|r", currentRageColor, _ragePlusPassive)]]
+
+	----------
+	local lookup = TRB.Data.lookup or {}
+	lookup["$resource"] = currentRage
+	lookup["$rage"] = currentRage
+	lookup["$resourceMax"] = TRB.Data.character.maxResource
+	lookup["$rageMax"] = TRB.Data.character.maxResource
+	lookup["$casting"] = castingRage
+	--[[lookup["$ragePlusCasting"] = ragePlusCasting
+	lookup["$ragePlusPassive"] = ragePlusPassive
+	lookup["$rageTotal"] = rageTotal
+	lookup["$resourcePlusCasting"] = ragePlusCasting
+	lookup["$resourcePlusPassive"] = ragePlusPassive
+	lookup["$resourceTotal"] = rageTotal
+
+	if TRB.Data.character.maxResource == snapshotData.attributes.resource then
+		lookup["$passive"] = passiveRageMinusRegen
+	else
+		lookup["$passive"] = passiveRage
+	end
+
+	lookup["$regen"] = regenRage
+	lookup["$regenRage"] = regenRage
+	lookup["$resourceRegen"] = regenRage
+	lookup["$overcap"] = overcap
+	lookup["$resourceOvercap"] = overcap
+	lookup["$rageOvercap"] = overcap]]
+
+	TRB.Data.lookup = lookup
+
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	lookupLogic["$resource"] = snapshotData.attributes.resource
+	lookupLogic["$rage"] = snapshotData.attributes.resource
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+	lookupLogic["$rageMax"] = TRB.Data.character.maxResource
+	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+	--[[lookupLogic["$ragePlusCasting"] = _ragePlusCasting
+	lookupLogic["$rageTotal"] = _rageTotal
+	lookupLogic["$resourcePlusCasting"] = _ragePlusCasting
+	lookupLogic["$resourcePlusPassive"] = _ragePlusPassive
+	lookupLogic["$resourceTotal"] = _rageTotal
+
+	if TRB.Data.character.maxResource == snapshotData.attributes.resource then
+		lookupLogic["$passive"] = _passiveRageMinusRegen
+	else
+		lookupLogic["$passive"] = _passiveRage
+	end
+
+	lookupLogic["$regen"] = _regenRage
+	lookupLogic["$regenRage"] = _regenRage
+	lookupLogic["$resourceRegen"] = _regenRage
+	lookupLogic["$overcap"] = overcap
+	lookupLogic["$resourceOvercap"] = overcap
+	lookupLogic["$rageOvercap"] = overcap
+	TRB.Data.lookupLogic = lookupLogic]]
+end
+
 local function RefreshLookupData_Restoration()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -2241,6 +2480,16 @@ local function UpdateSnapshot_Feral()
 	if talents:IsTalentActive(spells.empoweredShapeshifting) then
 		snapshotData.snapshots[spells.frenziedRegeneration.id].cooldown:Refresh()
 	end
+end
+
+local function UpdateSnapshot_Guardian()
+	UpdateSnapshot()
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local currentTime = GetTime()
+
+	-- Add any Guardian-specific snapshot updates here when spells are defined
 end
 
 local function UpdateSnapshot_Restoration()
@@ -2984,6 +3233,42 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
+	elseif TRB.Data.character.specId == 3 then
+		local specSettings = classSettings.guardian
+		local specCacheSettings = TRB.Data.specCache.guardian.settings
+		UpdateSnapshot_Guardian()
+
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
+
+		if snapshotData.attributes.isTracking then
+			TRB.Functions.Bar:HideResourceBar()
+
+			if specSettings.displayBar.neverShow == false then
+				--local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+				refreshText = true
+				local currentResource = snapshotData.attributes.resource
+
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, currentResource)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
+
+				local barColor = specSettings.colors.bar.base
+				
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", specSettings.colors.bar.border)
+				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
+					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and specSettings.colors.bar.border == specSettings.colors.bar.border then
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
+					else
+						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.bar.border, true)
+					end
+				end
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", specSettings.colors.bar.casting)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", specSettings.colors.bar.passive)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+			end
+
+			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
+		end
 	elseif TRB.Data.character.specId == 4 then
 		local specSettings = classSettings.restoration
 		local specCacheSettings = TRB.Data.specCache.restoration.settings
@@ -3168,6 +3453,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		elseif TRB.Data.character.specId == 2 then
 			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
 			settings = TRB.Data.settings.druid.feral
+		elseif TRB.Data.character.specId == 3 then
+			--spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.GuardianSpells]
+			settings = TRB.Data.settings.druid.guardian
 		elseif TRB.Data.character.specId == 4 then
 			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.RestorationSpells]
 			settings = TRB.Data.settings.druid.restoration
@@ -3508,6 +3796,28 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "feral"
 			ConstructResourceBar(specCache.feral.settings)
 		end
+	elseif TRB.Data.character.specId == 3 then
+		specCache.guardian.talents:GetTalents()
+		FillSpellData_Guardian()
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.guardian)
+
+		--local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		--local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+		---@type TRB.Classes.TargetData
+		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+
+		TRB.Functions.RefreshLookupData = RefreshLookupData_Guardian
+		TRB.Functions.Class:CheckCharacter()
+		TRB.Functions.Bar:SetPosition(TRB.Data.settings.druid.guardian, TRB.Frames.barContainerFrame)
+
+		TRB.Data.lookup = {}
+		TRB.Data.lookupLogic = {}
+
+		if TRB.Data.barConstructedForSpec ~= "guardian" then
+			talents = specCache.guardian.talents
+			TRB.Data.barConstructedForSpec = "guardian"
+			ConstructResourceBar(specCache.guardian.settings)
+		end
 	elseif TRB.Data.character.specId == 4 then
 		specCache.restoration.talents:GetTalents()
 		FillSpellData_Restoration()
@@ -3600,6 +3910,12 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					end
 
 					if TwintopInsanityBarSettings.druid == nil or
+						TwintopInsanityBarSettings.druid.guardian == nil or
+						TwintopInsanityBarSettings.druid.guardian.displayText == nil then
+						settings.druid.guardian.displayText.barText = TRB.Options.Druid.GuardianLoadDefaultBarTextSimpleSettings()
+					end
+
+					if TwintopInsanityBarSettings.druid == nil or
 						TwintopInsanityBarSettings.druid.restoration == nil or
 						TwintopInsanityBarSettings.druid.restoration.displayText == nil then
 						settings.druid.restoration.displayText.barText = TRB.Options.Druid.RestorationLoadDefaultBarTextSimpleSettings()
@@ -3639,10 +3955,12 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						TRB.Data.settings.core = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["GlobalOptions"], TRB.Data.settings.core)
 						TRB.Data.settings.druid.balance = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["DruidBalanceFull"], TRB.Data.settings.druid.balance)
 						TRB.Data.settings.druid.feral = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["DruidFeralFull"], TRB.Data.settings.druid.feral)
+						TRB.Data.settings.druid.guardian = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["DruidGuardianFull"], TRB.Data.settings.druid.guardian)
 						TRB.Data.settings.druid.restoration = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["DruidRestorationFull"], TRB.Data.settings.druid.restoration)
 						
 						FillSpellData_Balance()
 						FillSpellData_Feral()
+						FillSpellData_Guardian()
 						FillSpellData_Restoration()
 
 						TRB.Data.barConstructedForSpec = nil
@@ -3705,6 +4023,10 @@ function TRB.Functions.Class:CheckCharacter()
 		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then
 			TRB.Data.character.pandemicModifier = spells.circleOfLifeAndDeath.attributes.modifier
 		end
+	elseif TRB.Data.character.specId == 3 then
+		TRB.Data.character.specName = "guardian"
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage, true)
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Rage, false)
 	elseif TRB.Data.character.specId == 4 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
@@ -3732,6 +4054,14 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = Enum.PowerType.ComboPoints
 		TRB.Data.resource2Factor = 1
 		primaryResourceToken = "ENERGY"
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.druid.balance == true then
+		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.guardian)
+		TRB.Data.specSupported = true
+		TRB.Data.resource = Enum.PowerType.Rage
+		TRB.Data.resourceFactor = 10
+		TRB.Data.resource2 = nil
+		TRB.Data.resource2Factor = nil
+		primaryResourceToken = "RAGE"
 	elseif TRB.Data.character.specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.restoration)
 		TRB.Data.specSupported = true
@@ -3784,7 +4114,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 			end
 		end
-	elseif TRB.Data.character.specId == 2 or TRB.Data.character.specId == 4 then
+	elseif TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 or TRB.Data.character.specId == 4 then
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 0
 		local includeComboPoints = false
@@ -3822,6 +4152,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		settings = TRB.Data.settings.druid.feral
+	elseif TRB.Data.character.specId == 3 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+		settings = TRB.Data.settings.druid.guardian
 	elseif TRB.Data.character.specId == 4 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		settings = TRB.Data.settings.druid.restoration
@@ -4270,6 +4603,45 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		end
+	elseif TRB.Data.character.specId == 3 then -- Guardian
+		if var == "$resource" or var == "$rage" then
+			if snapshotData.attributes.resource > 0 then
+				valid = true
+			end
+		elseif var == "$resourceMax" or var == "$rageMax" then
+			valid = true
+		--[[elseif var == "$resourceTotal" or var == "$rageTotal" then
+			if snapshotData.attributes.resource > 0 or
+				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$resourcePlusCasting" or var == "$ragePlusCasting" then
+			if snapshotData.attributes.resource > 0 or
+				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$overcap" or var == "$rageOvercap" or var == "$resourceOvercap" then
+			local threshold = (snapshotData.attributes.resource + snapshotData.casting.resourceFinal)
+			if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) <= threshold then
+				return true
+			elseif settings.overcap.mode == "fixed" and settings.overcap.fixed <= threshold then
+				return true
+			end
+		elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
+			if snapshotData.attributes.resource > 0 then
+				valid = true
+			end
+		elseif var == "$passive" or var == "$ragePassive" then
+			if settings.generation.enabled and
+				((settings.generation.mode == "time" and settings.generation.time > 0) or
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
+			end]]
+		elseif var == "$casting" then
+			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
+		end
 	elseif TRB.Data.character.specId == 4 then --Restoration
 		if var == "$resource" or var == "$mana" then
 			valid = true
@@ -4409,7 +4781,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 4 then
+	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3 and TRB.Data.character.specId ~= 4 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

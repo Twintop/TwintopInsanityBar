@@ -24,7 +24,7 @@ local content = [====[
 
 ---
 
-# 12.0.0.0-alpha08 (2025-11-17)
+# 12.0.0.0-alpha08 (2025-11-17)0
 ## [#462](#462) General
 
 - Restore some more granular bar value setting for non-secrets. This should help with showing timers as bars for certain abilities.

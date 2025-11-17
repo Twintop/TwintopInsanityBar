@@ -2364,3 +2364,11 @@ L["PriestShadowCheckboxEntropicRift"] = "Entropic Rift"
 L["PriestShadowCheckboxEntropicRiftTooltip"] = "This will change the bar border color while Entropic Rift is active."
 L["PriestShadowColorPickerEntropicRift"] = "Entropic Rift is active"
 L["PriestShadowBarTextVariable_entropicRiftExtensionsRemaining"] = "Number of duration extensions remaining for Entropic Rift"
+
+-- Druid - Guardian
+L["DruidGuardianTextColorPickerCurrent"] = "Current Rage"
+L["DruidGuardianTextColorPickerPassive"] = "Passive Rage"
+L["DruidGuardianTextColorPickerOverThreshold"] = "Have enough Rage to use any enabled threshold ability"
+L["DruidGuardianTextColorPickerOvercap"] = "Overcapping Rage"
+L["DruidGuardianCheckboxThresholdOverTooltip"] = "This will change the Rage text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+L["DruidGuardianCheckboxThresholdOvercapTooltip"] = "This will change the Rage text color when your current Rage is above the overcapping maximum Rage value."
