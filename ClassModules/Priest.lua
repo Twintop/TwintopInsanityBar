@@ -348,6 +348,10 @@ local function FillSpecializationCache()
 	specCache.shadow.snapshotData.snapshots[spells.mindDevourer.id] = TRB.Classes.Snapshot:New(spells.mindDevourer)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.mindFlayInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
+	---@type TRB.Classes.Snapshot
+	specCache.shadow.snapshotData.snapshots[spells.screamsOfTheVoid.id] = TRB.Classes.Snapshot:New(spells.screamsOfTheVoid)
+	---@type TRB.Classes.Snapshot
+	specCache.shadow.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift)
 	--[[---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.twistOfFate.id] = TRB.Classes.Snapshot:New(spells.twistOfFate)
 	---@type TRB.Classes.Snapshot
@@ -360,11 +364,6 @@ local function FillSpecializationCache()
 	specCache.shadow.snapshotData.snapshots[spells.idolOfYoggSaron.id] = TRB.Classes.Snapshot:New(spells.idolOfYoggSaron)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.thingFromBeyond.id] = TRB.Classes.Snapshot:New(spells.thingFromBeyond)
-	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift, {
-		guid = nil,
-		totemId = nil
-	}, false, true)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.horrificVisions.id] = TRB.Classes.Snapshot:New(spells.horrificVisions)
 	---@type TRB.Classes.Snapshot
@@ -711,7 +710,7 @@ local function FillSpellData_Shadow()
 		{ variable = "#swm", icon = spells.shadowWordMadness.icon, description = spells.shadowWordMadness.name, printInSettings = true },
 		{ variable = "#shadowWordMadness", icon = spells.shadowWordMadness.icon, description = spells.shadowWordMadness.name, printInSettings = false },
 
-		--[[{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },]]
+		{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },
 
 		{ variable = "#halo", icon = spells.halo.icon, description = spells.halo.name, printInSettings = true },
 				
@@ -731,6 +730,9 @@ local function FillSpellData_Shadow()
 
 		{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
 		{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
+
+		{ variable = "#sotv", icon = spells.screamsOfTheVoid.icon, description = spells.screamsOfTheVoid.name, printInSettings = true },
+		{ variable = "#screamsOfTheVoid", icon = spells.screamsOfTheVoid.icon, description = spells.screamsOfTheVoid.name, printInSettings = false },
 																
 		--[[{ variable = "#sa", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = true },
 		{ variable = "#shadowyApparition", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = false },
@@ -858,7 +860,12 @@ local function FillSpellData_Shadow()
 
 		{ variable = "$mfiTime", description = L["PriestShadowBarTextVariable_mfiTime"], printInSettings = true, color = false },
 		{ variable = "$mfiStacks", description = L["PriestShadowBarTextVariable_mfiStacks"], printInSettings = true, color = false },
-		
+
+		{ variable = "$sotvTime", description = L["PriestShadowBarTextVariable_sotvTime"], printInSettings = true, color = false },
+
+		{ variable = "$entropicRiftTime", description = L["PriestShadowBarTextVariable_entropicRiftTime"], printInSettings = true },
+		{ variable = "$entropicRiftExtensionsRemaining", description = L["PriestShadowBarTextVariable_entropicRiftExtensionsRemaining"], printInSettings = true },
+
 		--[[{ variable = "$siTime", description = L["PriestShadowBarTextVariable_siTime"], printInSettings = true, color = false },
 		
 		{ variable = "$mindBlastCharges", description = L["PriestShadowBarTextVariable_mindBlastCharges"], printInSettings = true, color = false },
@@ -879,8 +886,6 @@ local function FillSpellData_Shadow()
 
 		{ variable = "$reTime", description = L["PriestShadowBarTextVariable_reTime"], printInSettings = true, color = false },
 		{ variable = "$reStacks", description = L["PriestShadowBarTextVariable_reStacks"], printInSettings = true, color = false },
-
-		{ variable = "$entropicRiftTime", description = L["PriestShadowBarTextVariable_entropicRiftTime"], printInSettings = true },
 
 		{ variable = "$voidVolleyTime", description = L["PriestShadowBarTextVariable_voidVolleyTime"], printInSettings = true },
 
@@ -1865,6 +1870,14 @@ local function RefreshLookupData_Shadow()
 	local mfiTime = TRB.Functions.BarText:TimerPrecision(_mfiTime)
 	local mfiStacks = string.format("%.0f", _mfiStacks)
 	
+	--$sotvTime
+	local _sotvTime = 0
+	if snapshots[spells.screamsOfTheVoid.id].buff.isActive then
+		_sotvTime = snapshots[spells.screamsOfTheVoid.id].buff:GetRemainingTime(currentTime)
+	end
+	local sotvTime = TRB.Functions.BarText:TimerPrecision(_sotvTime)
+
+
 	--[[--$tofTime
 	local _tofTime = snapshots[spells.twistOfFate.id].buff:GetRemainingTime(currentTime)
 	local tofTime = TRB.Functions.BarText:TimerPrecision(_tofTime)
@@ -1906,13 +1919,16 @@ local function RefreshLookupData_Shadow()
 		reStacks = target.spells[spells.resonantEnergy.debuffId].stacks or 0
 		_reTime = target.spells[spells.resonantEnergy.debuffId].remainingTime
 	end
-	local reTime = TRB.Functions.BarText:TimerPrecision(_reTime)
+	local reTime = TRB.Functions.BarText:TimerPrecision(_reTime)]]
 
 	--$entropicRiftTime
 	local _entropicRiftTime = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 	local entropicRiftTime = TRB.Functions.BarText:TimerPrecision(_entropicRiftTime)
 
-	--$voidVolleyTime
+	--$entropicRiftExtensionsRemaining
+	local entropicRiftExtensionsRemaining = snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] or 0
+
+	--[[--$voidVolleyTime
 	local _voidVolleyTime = snapshots[spells.voidVolley.id].buff:GetRemainingTime(currentTime)
 	local voidVolleyTime = TRB.Functions.BarText:TimerPrecision(_voidVolleyTime)
 
@@ -1970,6 +1986,11 @@ local function RefreshLookupData_Shadow()
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$resource"] = currentInsanity
 	lookup["$casting"] = castingInsanity
+	lookup["$mfiTime"] = mfiTime
+	lookup["$mfiStacks"] = mfiStacks
+	lookup["$sotvTime"] = sotvTime
+	lookup["$entropicRiftTime"] = entropicRiftTime
+	lookup["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
 	--[[lookup["$swpCount"] = shadowWordPainCount
 	lookup["$swpTime"] = shadowWordPainTime
 	lookup["$vtCount"] = vampiricTouchCount
@@ -1977,8 +1998,6 @@ local function RefreshLookupData_Shadow()
 	lookup["$swmCount"] = shadowWordMadnessCount
 	lookup["$swmTime"] = shadowWordMadnessTime
 	lookup["$mdTime"] = mdTime]]
-	lookup["$mfiTime"] = mfiTime
-	lookup["$mfiStacks"] = mfiStacks
 	--[[lookup["$tofTime"] = tofTime
 	lookup["$vfTime"] = voidformTime
 	lookup["$spTime"] = spTime
@@ -2024,7 +2043,6 @@ local function RefreshLookupData_Shadow()
 	lookup["$ecttvCount"] = ecttvCount
 	lookup["$asCount"] = asCount
 	lookup["$asInsanity"] = asInsanity
-	lookup["$entropicRiftTime"] = entropicRiftTime
 	lookup["$voidVolleyTime"] = voidVolleyTime
 	lookup["$psInsanity"] = psInsanity
 	lookup["$overcap"] = ""
@@ -2038,6 +2056,11 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = _currentInsanity
 	lookupLogic["$casting"] = _castingInsanity
+	lookupLogic["$mfiTime"] = _mfiTime
+	lookupLogic["$mfiStacks"] = _mfiStacks
+	lookupLogic["$sotvTime"] = _sotvTime
+	lookupLogic["$entropicRiftTime"] = _entropicRiftTime
+	lookupLogic["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
 	--[[lookupLogic["$swpCount"] = _shadowWordPainCount
 	lookupLogic["$swpTime"] = _shadowWordPainTime
 	lookupLogic["$vtCount"] = _vampiricTouchCount
@@ -2045,8 +2068,6 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$swmCount"] = shadowWordMadnessCount
 	lookupLogic["$swmTime"] = _shadowWordMadnessTime
 	lookupLogic["$mdTime"] = _mdTime]]
-	lookupLogic["$mfiTime"] = _mfiTime
-	lookupLogic["$mfiStacks"] = _mfiStacks
 	--[[lookupLogic["$tofTime"] = _tofTime
 	lookupLogic["$vfTime"] = _voidformTime
 	lookupLogic["$spTime"] = _spTime
@@ -2092,7 +2113,6 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$ecttvCount"] = _ecttvCount
 	lookupLogic["$asCount"] = _asCount
 	lookupLogic["$asInsanity"] = _asInsanity
-	lookupLogic["$entropicRiftTime"] = _entropicRiftTime
 	lookupLogic["$voidVolleyTime"] = _voidVolleyTime
 	lookupLogic["$psInsanity"] = _psInsanity]]
 end
@@ -2230,6 +2250,13 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.voidTorrent.resource
 				casting.icon = spells.voidTorrent.icon
+
+				snapshotData.snapshots[spells.entropicRift.id].buff:InitializeCustom(spells.entropicRift.duration, currentTime)
+				if talents:IsTalentActive(spells.darkeningHorizon) then
+					snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = spells.darkeningHorizon.attributes["maxExtensions"]
+				else
+					snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = 0
+				end
 			end
 			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
@@ -2252,6 +2279,16 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 							end
 						end)
 					end
+				end
+			elseif spellId == spells.shadowWordMadness.castId then
+				if talents:IsTalentActive(spells.screamsOfTheVoid) then
+					snapshotData.snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime)
+				end
+			elseif spellId == spells.voidBlast.id then
+				snapshotData.snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime) -- Force update of remaining time before checking
+				if talents:IsTalentActive(spells.darkeningHorizon) and snapshotData.snapshots[spells.entropicRift.id].buff.isActive and snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] > 0 then
+					snapshotData.snapshots[spells.entropicRift.id].buff:AddTimeOrInitializeCustom(spells.darkeningHorizon.duration, currentTime)
+					snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] - 1
 				end
 			end
 		end
@@ -2458,21 +2495,19 @@ local function UpdateSnapshot_Healers()
 	snapshots[spells.algariManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
 end
 
---[[local function UpdateSnapshot_Voidweaver()
+local function UpdateSnapshot_Voidweaver()
 	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.ShadowSpells]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local entropicRift = snapshots[spells.entropicRift.id]
 	
-	if entropicRift.attributes.totemId ~= nil then
-		local haveTotem, name, startTime, duration, _, _, spellId = GetTotemInfo(entropicRift.attributes.totemId)
-		if haveTotem and spellId == spells.entropicRift.id then
-			entropicRift.buff:InitializeCustom(duration, startTime)
-		else
-			entropicRift:Reset()
+	if snapshots[spells.entropicRift.id].buff.isActive then
+		snapshots[spells.entropicRift.id].buff:GetRemainingTime()
+		if not snapshots[spells.entropicRift.id].buff.isActive then
+			snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = 0
 		end
 	end
-end]]
+end
 
 local function UpdateSnapshot_Discipline()
 	local currentTime = GetTime()
@@ -2512,8 +2547,8 @@ local function UpdateSnapshot_Shadow()
 	--[[UpdateSnapshot()
 	UpdateExternalCallToTheVoidValues()
 	UpdateHorrificVisionsValues()
-	UpdatePowerSurge()
-	UpdateSnapshot_Voidweaver()]]
+	UpdatePowerSurge()]]
+	UpdateSnapshot_Voidweaver()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -3284,23 +3319,23 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				local barColor = specSettings.colors.bar.base
 
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
+				--[[if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
 					barBorderColor = specSettings.colors.bar.borderOvercap
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 						snapshotData.audio.overcapCue = true
 						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 					end
-				else
+				else]]
 					barBorderColor = specSettings.colors.bar.border
 					snapshotData.audio.overcapCue = false
-				end
+				--end
 
 				if specSettings.colors.bar.mindDevourer.enabled and spells.shadowWordMadness:IsFree() then --snapshots[spells.mindDevourer.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.mindDevourer.color
 				--[[elseif specSettings.colors.bar.critMindBlast.enabled and snapshots[spells.shatteredPsyche.id].buff.isActive and (snapshotData.attributes.crit + (snapshots[spells.shatteredPsyche.id].buff.customProperties["crit"] or 0)) >= 100 then
-					barBorderColor = specSettings.colors.bar.critMindBlast.color
-				elseif specSettings.colors.bar.voidVolley.enabled and snapshots[spells.voidVolley.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.voidVolley.color]]
+					barBorderColor = specSettings.colors.bar.critMindBlast.color]]
+				elseif specSettings.colors.bar.entropicRift.enabled and snapshots[spells.entropicRift.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.entropicRift.color
 				elseif specSettings.colors.bar.mindFlayInsanityBorderChange and snapshots[spells.mindFlayInsanity.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
 				end
@@ -3970,12 +4005,15 @@ local function SwitchSpec()
 		lookup["#voidVolley"] = spells.voidVolley.icon
 		lookup["#vt"] = spells.vampiricTouch.icon
 		lookup["#vampiricTouch"] = spells.vampiricTouch.icon
-		--[[lookup["#swp"] = spells.shadowWordPain.icon
-		lookup["#shadowWordPain"] = spells.shadowWordPain.icon]]
 		lookup["#swm"] = spells.shadowWordMadness.icon
 		lookup["#shadowWordMadness"] = spells.shadowWordMadness.icon
 		lookup["#mDev"] = spells.mindDevourer.icon
 		lookup["#mindDevourer"] = spells.mindDevourer.icon
+		lookup["#sotv"] = spells.screamsOfTheVoid.icon
+		lookup["#screamsOfTheVoid"] = spells.screamsOfTheVoid.icon
+		lookup["#entropicRift"] = spells.entropicRift.icon
+		--[[lookup["#swp"] = spells.shadowWordPain.icon
+		lookup["#shadowWordPain"] = spells.shadowWordPain.icon]]
 		--[[lookup["#tof"] = spells.twistOfFate.icon
 		lookup["#twistOfFate"] = spells.twistOfFate.icon
 		lookup["#si"] = spells.shadowyInsight.icon
@@ -3995,8 +4033,7 @@ local function SwitchSpec()
 		lookup["#loi"] = spells.idolOfCthun.icon
 		lookup["#halo"] = spells.halo.icon
 		lookup["#hv"] = spells.horrificVisions.icon
-		lookup["#horrificVisions"] = spells.horrificVisions.icon
-		lookup["#entropicRift"] = spells.entropicRift.icon]]
+		lookup["#horrificVisions"] = spells.horrificVisions.icon]]
 
 		--[[if specCache.shadow.talents:IsTalentActive(spells.voidwraith) then
 			lookup["#sf"] = spells.voidwraith.icon
@@ -4689,6 +4726,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.mindFlayInsanity.id].buff.isActive then
 				valid = true
 			end
+		elseif var == "$sotvTime" then
+			if snapshots[spells.screamsOfTheVoid.id].buff.isActive then
+				valid = true
+			end
 		--[[elseif var == "$tofTime" then
 			if snapshots[spells.twistOfFate.id].buff.isActive then
 				valid = true
@@ -4746,17 +4787,22 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	end
 
-	--[[
 	-- Voidweaver
-	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.ShadowSpells]
+	--if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3 then
+	if TRB.Data.character.specId == 3 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.ShadowSpells]]
 		if var == "$entropicRiftTime" then
 			if snapshots[spells.entropicRift.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$entropicRiftExtensionsRemaining" then
+			if snapshots[spells.entropicRift.id].buff.isActive and snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] > 0 then
 				valid = true
 			end
 		end
 	end
 
+	--[[
 	-- Spec Agnostic
 	local spells = spellsData.spells --[@as TRB.Classes.Priest.DisciplineSpells]
 	if var == "$swpCount" then

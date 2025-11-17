@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha09 (2025-11-18)
+## General
+
+## Priest
+### [#463](#463) Shadow
+
+- Add support for tracking Screams of the Void via bar text variable `$sotvTime`.
+- Add support for tracking Entropic Rift and its extension behavior via Darkening Horizon. This is available via bar text variables `$entropicRiftTime` and `$entropicRiftExtensionsRemaining`.
+- Add an optional bar border color change when you have Entropic Rift active.
+
+---
+
 # 12.0.0.0-alpha08 (2025-11-17)
 ## [#462](#462) General
 

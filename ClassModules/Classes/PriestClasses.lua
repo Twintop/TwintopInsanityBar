@@ -705,7 +705,10 @@ end
 ---@field public voidTorrent TRB.Classes.SpellBase
 ---@field public voidBlast TRB.Classes.SpellBase
 ---@field public voidInfusion TRB.Classes.SpellBase
+---@field public entropicRift TRB.Classes.SpellBase
+---@field public darkeningHorizon TRB.Classes.SpellBase
 ---@field public mindgames TRB.Classes.SpellBase
+---@field public screamsOfTheVoid TRB.Classes.SpellBase
 --[[---@field public shadowWordPain TRB.Classes.SpellBase]]
 --[[---@field public shadowfiend TRB.Classes.SpellBase
 ---@field public twistOfFate TRB.Classes.SpellBase
@@ -725,7 +728,6 @@ end
 ---@field public thingFromBeyond TRB.Classes.SpellBase
 ---@field public horrificVisions TRB.Classes.SpellBase
 ---@field public subservientShadows TRB.Classes.SpellBase
----@field public entropicRift TRB.Classes.SpellBase
 ---@field public depthOfShadows TRB.Classes.SpellBase
 ---@field public voidwraith TRB.Classes.SpellBase]]
 ---@field public mindDevourer TRB.Classes.SpellBase
@@ -739,7 +741,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Priest.ShadowSpells) --[[@as TRB.Classes.Priest.ShadowSpells]]
-
 	
 	-- Priest Class Baseline Abilities
 	self.mindBlast = TRB.Classes.SpellBase:New({
@@ -813,6 +814,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	-- Shadow Talent Abilities			
 	self.shadowWordMadness = TRB.Classes.SpellThreshold:New({
 		id = 335467,
+		castId = 335467,
 		primaryResourceType = Enum.PowerType.Insanity,
 		settingKey = "shadowWordMadness",
 		isTalent = true,
@@ -860,6 +862,11 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resource = 10,
 		isTalent = true
 	})
+	self.screamsOfTheVoid = TRB.Classes.SpellBase:New({
+		id = 375767,
+		isTalent = true,
+		duration = 3
+	})	
 	--[[self.shadowyApparition = TRB.Classes.SpellBase:New({
 		id = 341491,
 		isTalent = true
@@ -1023,13 +1030,18 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		resourceMod = 2,
 		isTalent = true
 	})
-	--[[self.entropicRift = TRB.Classes.SpellBase:New({
+	self.entropicRift = TRB.Classes.SpellBase:New({
 		id = 450193,
-		talentId = 447444,
 		isTalent = true,
 		duration = 8
 	})
-	self.depthOfShadows = TRB.Classes.SpellBase:New({
+	self.darkeningHorizon = TRB.Classes.SpellBase:New({
+		id = 449912,
+		isTalent = true,
+		duration = 1,
+		maxExtensions = 3
+	})
+	--[[self.depthOfShadows = TRB.Classes.SpellBase:New({
 		id = 451308,
 		isTalent = true
 	})

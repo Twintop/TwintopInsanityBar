@@ -1164,7 +1164,7 @@ local function ShadowLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			guid = TRB.Functions.String:Guid(),
 			name = L["PositionMiddle"],
-			text="",--"{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
+			text="{$mfiTime}[#mfi $mfiTime - $mfiStacks #mfi]{$entropicRiftTime}[#entropicRift $entropicRiftTime - $entropicRiftExtensionsRemaining #entropicRift]||n{$sotvTime}[#sotv $sotvTime #screamsOfTheVoid]",--"{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			fontFaceName = "Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -1420,6 +1420,10 @@ local function ShadowLoadDefaultSettings(includeBarText)
 					color = "FF00C3FF",
 					enabled = true,
 				},
+				entropicRift = {
+					color = "FF8A004C",
+					enabled = true
+				},
 				inVoidform="FF431863",
 				inVoidform1GCD="FFFF0000",
 				casting="FFFFFFFF",
@@ -1431,10 +1435,6 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				mindFlayInsanityBorderChange=true,
 				showPassive=true,
 				showCasting=true,
-				voidVolley = {
-					color = "FF8A004C",
-					enabled = true
-				},
 			},
 			threshold = {
 				under = {
@@ -3196,25 +3196,25 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
 	end)
-	--[[
 	yCoord = yCoord - 30
-	controls.checkBoxes.voidVolleyBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_voidVolleyBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.voidVolleyBorderChange
+	controls.checkBoxes.entropicRiftBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_entropicRiftBorderChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.entropicRiftBorderChange
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxVoidVolley"])
-	f.tooltip = L["PriestShadowCheckboxVoidVolleyTooltip"]
-	f:SetChecked(spec.colors.bar.voidVolley.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxEntropicRift"])
+	f.tooltip = L["PriestShadowCheckboxEntropicRiftTooltip"]
+	f:SetChecked(spec.colors.bar.entropicRift.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.voidVolley.enabled = self:GetChecked()
+		spec.colors.bar.entropicRift.enabled = self:GetChecked()
 	end)
 
-	controls.colors.voidVolley = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidVolley"], spec.colors.bar.voidVolley.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.voidVolley
+	controls.colors.entropicRift = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerEntropicRift"], spec.colors.bar.entropicRift.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.entropicRift
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "voidVolley")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "entropicRift")
 	end)
 
-	yCoord = yCoord - 30
+	
+	--[[yCoord = yCoord - 30
 	controls.checkBoxes.critMindBlastBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_critMindBlastBorderChange", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.critMindBlastBorderChange
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)

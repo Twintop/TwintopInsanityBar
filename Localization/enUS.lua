@@ -2261,7 +2261,7 @@ L["PriestShadowBarTextVariable_hvInsanity"] = "Insanity from Horrific Visions"
 L["PriestShadowBarTextVariable_hvTicks"] = "Number of ticks left on Horrific Visions"
 L["PriestShadowBarTextVariable_hvStacks"] = "Number of stacks of Horrific Visions on your current target"
 L["PriestShadowCheckboxVoidVolley"] = "Void Volley"
-L["PriestShadowCheckboxVoidVolleyTooltip"] = "This will change the bar border color when you are able to case Void Volley."
+L["PriestShadowCheckboxVoidVolleyTooltip"] = "This will change the bar border color when you are able to cast Void Volley."
 L["PriestShadowColorPickerVoidVolley"] = "Border when you can cast Void Volley"
 L["PriestShadowCheckboxCritMindBlast"] = "100% Crit Mind Blast"
 L["PriestShadowCheckboxCritMindBlastTooltip"] = "This will change the bar border color when your next Mind Blast has a 100% chance to critically strike."
@@ -2334,6 +2334,7 @@ L["WarriorColorPickerThresholdOver"] = "Have enough Rage to use any enabled thre
 --[[
     Midnight additions
 ]]
+
 L["DemonHunterDevourerCheckboxVoidMetamorphosis"] = "Change color during Void Metamorphosis"
 L["DemonHunterDevourerCheckboxVoidMetamorphosisTooltip"] = "This will change the bar color when you enter Void Metamorphosis."
 L["DemonHunterDevourerColorPickerMetamorphosis"] = "Fury while Void Metamorphosis is active"
@@ -2358,3 +2359,8 @@ L["DemonHunterDevourerBarTextVariable_soulFragmentsMax"] = "Maximum Soul Fragmen
 L["DemonHunterDevourerBarTextVariable_fury"] = "Current Fury"
 L["DemonHunterDevourerBarTextVariable_furyMax"] = "Maximum Fury"
 L["DemonHunterDevourerBarTextVariable_passive"] = "Fury from Passive Sources"
+L["PriestShadowBarTextVariable_sotvTime"] = "Time remaining on Screams of the Void buff"
+L["PriestShadowCheckboxEntropicRift"] = "Entropic Rift"
+L["PriestShadowCheckboxEntropicRiftTooltip"] = "This will change the bar border color while Entropic Rift is active."
+L["PriestShadowColorPickerEntropicRift"] = "Entropic Rift is active"
+L["PriestShadowBarTextVariable_entropicRiftExtensionsRemaining"] = "Number of duration extensions remaining for Entropic Rift"
