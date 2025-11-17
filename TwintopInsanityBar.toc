@@ -14,8 +14,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.0.0.0
-## X-ReleaseType: alpha08
-## X-ReleaseDate: 2025-11-17
+## X-ReleaseType: alpha09
+## X-ReleaseDate: 2025-11-18
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -146,4 +146,5 @@ ClassModules\Options\PriestOptions.lua
 ClassModules\Options\RogueOptions.lua
 ClassModules\Options\ShamanOptions.lua
 ClassModules\Options\WarlockOptions.lua
+
 ClassModules\Options\WarriorOptions.lua
