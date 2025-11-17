@@ -20,6 +20,7 @@ local content = [====[
 - Add support for tracking Screams of the Void via bar text variable `$sotvTime`.
 - Add support for tracking Entropic Rift and its extension behavior via Darkening Horizon. This is available via bar text variables `$entropicRiftTime` and `$entropicRiftExtensionsRemaining`.
 - Add an optional bar border color change when you have Entropic Rift active.
+- Improve reliability of Mind Flay: Insanity tracking.
 
 ---
 

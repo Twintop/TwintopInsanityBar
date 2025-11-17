@@ -162,7 +162,11 @@ function TRB.Classes.SnapshotBuff:SetCustomProperties(customProperties)
 end
 
 ---Resets the object to default values
-function TRB.Classes.SnapshotBuff:Reset()
+---@param includeAttributes boolean? # If true or nil, also resets custom attributes
+function TRB.Classes.SnapshotBuff:Reset(includeAttributes)
+	if includeAttributes == nil then
+		includeAttributes = true
+	end
 	if self.auraInstanceId ~= nil then
 		TRB.Functions.Aura:RemoveBuffAuraInstanceId(self.auraInstanceId)
 	end
@@ -179,7 +183,10 @@ function TRB.Classes.SnapshotBuff:Reset()
 	self.refreshRequested = false
 	self.lastRefreshGetTime = 0
 	self.previousRemaining = 0
-	self.attributes = {}
+
+	if includeAttributes then
+		self.attributes = {}
+	end
 
 	if self.customPropertyDefinitions ~= nil then
 		for _, prop in ipairs(self.customPropertyDefinitions) do
@@ -321,7 +328,7 @@ function TRB.Classes.SnapshotBuff:AddStackOrInitializeCustom(duration, startTime
 		refreshTime = false
 	end
 	if not self.isActive then
-		self:InitializeCustom(duration, startTime)
+		self:InitializeCustom(duration, startTime, true)
 	else
 		self:AddStack(refreshTime)
 	end
@@ -343,10 +350,11 @@ function TRB.Classes.SnapshotBuff:AddStack(refreshTime)
 end
 
 ---Removes a stack (application) from the buff
-function TRB.Classes.SnapshotBuff:RemoveStack()
+---@param resetAttributes boolean? # If true or nil, resets custom attributes when the buff is fully removed
+function TRB.Classes.SnapshotBuff:RemoveStack(resetAttributes)
 	if self.isActive then
 		if self.applications == 1 then
-			self:Reset()
+			self:Reset(resetAttributes)
 			return
 		end
 		self.applications = self.applications - 1
