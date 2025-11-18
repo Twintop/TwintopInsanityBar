@@ -1142,13 +1142,11 @@ local function GuardianLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			--[[
 			thresholdDictionary = {
-				abilityName = {
+				--[[abilityName = {
 					enabled = true,
-				},
+				},]]
 			}
-			]]
 		},
 		maxResource = {
 			value = GUARDIAN_MAX_RAGE,

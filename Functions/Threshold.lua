@@ -167,6 +167,73 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.threshold.over.color, true)
 end
 
+
+
+function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings)
+--[[
+		Threshold StrataFrameLevel info, decreasing:
+		- Starts at 1200 for unusable
+		- Starts at 1400 for not enough resources
+		- Starts at 1600 for usable
+		- Counter increments by 3 on every render in modules that source threshold data from the spell table
+		- Threshold Line Frame is X-2, Icon Frame Level is X-1, Cooldown Frame Level is X, for X = Counter
+		Example:
+		Threshold doesn't have enough resources and is the 4th threshold processed.
+		Counter = 9 (seen 3).
+		Line = 1389, Icon = 1390, Cooldown = 1391
+
+		This is done to maintain backward compatability for how threshold line stacking used to work before this change.
+	]]
+	
+	threshold:SetWidth(settings.comboPoints.border * 2)
+	threshold:SetHeight(settings.comboPoints.height)
+	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
+	threshold.texture:SetAllPoints(threshold)
+	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
+	threshold:Show()
+	threshold.hasIcon = false
+	
+	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.bar.border, true)
+end
+
+function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
+	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
+		return
+	end
+
+	if growRight == nil then
+		growRight = true
+	end
+
+	if maxResource == nil or maxResource == 0 then
+		maxResource = TRB.Data.character.maxResource
+		if maxResource == 0 then
+			maxResource = 100
+		end
+	end
+
+	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
+	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource then
+		--local _, max = parentFrame:GetMinMaxValues()
+		--local factor = (max - (settings.bar.border * 2)) / maxResource
+		--local max = TRB.Data.character.maxResourceUnmodified
+		local factor = (settings.bar.width - (settings.comboPoints.border * 2)) / maxResource
+
+		if growRight then
+			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
+		else
+			thresholdLine:SetPoint("RIGHT", parentFrame, "LEFT", math.ceil(value * factor), 0)
+		end
+		TRB.Data.cache.values.threshold[key].value = value
+		TRB.Data.cache.values.threshold[key].maxResource = maxResource
+	end
+
+	if TRB.Data.cache.values.threshold[key].icon ~= thresholdLine.icon then
+		SetThresholdIconSizeAndPosition(settings, thresholdLine)
+		TRB.Data.cache.values.threshold[key].icon = thresholdLine.icon
+	end
+end
+
 ---Resets end caps threshold to match expected values based on current settings
 ---@param frame frame
 ---@param settings any
