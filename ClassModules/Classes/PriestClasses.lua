@@ -709,7 +709,9 @@ end
 ---@field public darkeningHorizon TRB.Classes.SpellBase
 ---@field public mindgames TRB.Classes.SpellBase
 ---@field public screamsOfTheVoid TRB.Classes.SpellBase
---[[---@field public shadowWordPain TRB.Classes.SpellBase]]
+---@field public shadowWordPain TRB.Classes.SpellBase
+---@field public tentacleSlam TRB.Classes.SpellBase
+---@field public maddeningTentacles TRB.Classes.SpellBase
 --[[---@field public shadowfiend TRB.Classes.SpellBase
 ---@field public twistOfFate TRB.Classes.SpellBase
 ---@field public powerSurge TRB.Classes.SpellBase
@@ -750,7 +752,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		baseline = true,
 		hasCharges = true
 	})
-	--[[self.shadowWordPain = TRB.Classes.SpellBase:New({
+	self.shadowWordPain = TRB.Classes.SpellBase:New({
 		id = 589,
 		resource = 3,
 		baseDuration = 16,
@@ -759,7 +761,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		baseline = true,
 		miseryPandemic = 21,
 		miseryPandemicTime = 21 * 0.3,
-	})]]
+	})
 
 	-- Shadow Baseline Abilities
 	self.mindFlay = TRB.Classes.SpellBase:New({
@@ -866,7 +868,17 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 375767,
 		isTalent = true,
 		duration = 3
-	})	
+	})
+	self.tentacleSlam = TRB.Classes.SpellBase:New({
+		id = 1227280,
+		castId = 1227280,
+		isTalent = true,
+		delay = 0.75
+	})
+	self.maddeningTentacles = TRB.Classes.SpellBase:New({
+		id = 1279353,
+		isTalent = true
+	})
 	--[[self.shadowyApparition = TRB.Classes.SpellBase:New({
 		id = 341491,
 		isTalent = true

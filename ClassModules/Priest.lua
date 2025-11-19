@@ -2284,6 +2284,12 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				if talents:IsTalentActive(spells.screamsOfTheVoid) then
 					snapshotData.snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime)
 				end
+			elseif spellId == spells.tentacleSlam.castId then
+				if talents:IsTalentActive(spells.screamsOfTheVoid) and talents:IsTalentActive(spells.maddeningTentacles) then
+					C_Timer.After((spells.tentacleSlam.attributes.delay), function()
+						snapshotData.snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime+spells.tentacleSlam.attributes.delay)
+					end)
+				end
 			elseif spellId == spells.voidBlast.id then
 				snapshotData.snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime) -- Force update of remaining time before checking
 				if talents:IsTalentActive(spells.darkeningHorizon) and snapshotData.snapshots[spells.entropicRift.id].buff.isActive and snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] > 0 then
