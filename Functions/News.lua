@@ -11,8 +11,28 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha11 (2025-11-20)
+## Druid
+### [#469](#469) Feral
+
+NYI - Clean up options menus to only show things that are functional.
+
+## Monk
+### [#494](#494) Brewmaster
+
+NYI STAGGER - Add barebones support for Brewmaster, tracking Energy and Stagger.
+- Options UI is...messy. Blame the vibecoder (aka me).
+
+### [#478](#478) Windwalker
+
+- Fix implementation to allow the bar to function in a minimalist version.
+- Many features are disabled for now and new spells have (largely) not been implemented yet.
+- Restore functionality for tracking combo points with a workaround. This is placeholder behavior with combo points being part of single bar instead of individual UI elements.
+
+---
+
 # 12.0.0.0-alpha10 (2025-11-19)
-## General
+## [#462](#462) General
 
 - Fix issues with importing and exporting settings configurations.
 
@@ -32,8 +52,6 @@ local content = [====[
 ---
 
 # 12.0.0.0-alpha09 (2025-11-18)
-## General
-
 ## Priest
 ### [#463](#463) Shadow
 

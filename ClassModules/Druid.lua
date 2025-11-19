@@ -3189,24 +3189,15 @@ local function UpdateResourceBar()
 				local cpColor = specSettings.colors.comboPoints.base
 				local cpBR = cpBackgroundRed
 				local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
+				local cpBB = cpBackgroundBlue
 
 				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
 				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
-
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[1]:Show()
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[2]:Show()
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[3]:Show()
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[4]:Show()
-				TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[1], cpBorderColor, true)
-				TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[2], cpBorderColor, true)
-				TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[3], cpBorderColor, true)
-				TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[4], cpBorderColor, true)
-				TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[1], true, TRB.Frames.resource2Frames[1].containerFrame, 1, TRB.Data.character.maxResource2)
-				TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold2", TRB.Frames.resource2Frames[1].containerFrame.thresholds[2], true, TRB.Frames.resource2Frames[1].containerFrame, 2, TRB.Data.character.maxResource2)
-				TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold3", TRB.Frames.resource2Frames[1].containerFrame.thresholds[3], true, TRB.Frames.resource2Frames[1].containerFrame, 3, TRB.Data.character.maxResource2)
-				TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold4", TRB.Frames.resource2Frames[1].containerFrame.thresholds[4], true, TRB.Frames.resource2Frames[1].containerFrame, 4, TRB.Data.character.maxResource2)
-
+				for x = 1, TRB.Data.character.maxResource2 do
+					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
+					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
+					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
+				end
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
 				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)

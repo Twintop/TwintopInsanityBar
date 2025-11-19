@@ -3358,6 +3358,13 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Chi6"],
 			L["Screen"],
 		}
+	elseif (classId == 10 and specId == 1) then -- Windwalker Monk
+		relativeToFrame[L["Stagger"]] = "ComboPoint_1"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["Stagger"],
+			L["Screen"],
+		}
 	elseif (classId == 11 and specId == 2) then -- Feral Druid
 		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"
 		relativeToFrame[L["ComboPoint2"]] = "ComboPoint_2"

@@ -19,8 +19,332 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = {}
 
+local BREWMASTER_MAX_ENERGY = 100
 local WINDWALKER_MAX_ENERGY = 150
 
+
+
+-- Brewmaster
+local function BrewmasterLoadDefaultBarTextSimpleSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$passive}[$passive + ]$energy",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		}
+	}
+
+	return textSettings
+end
+TRB.Options.Monk.BrewmasterLoadDefaultBarTextSimpleSettings = BrewmasterLoadDefaultBarTextSimpleSettings
+
+local function BrewmasterLoadDefaultBarTextAdvancedSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$ttd}[||nTTD: $ttd]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=13,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=13,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=22,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		}
+	}
+
+	return textSettings
+end
+
+local function BrewmasterLoadDefaultSettings(includeBarText)
+	local settings = {
+		precision = {
+			secondary = 2,
+			resource = 0
+		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder=true
+			},
+			icons = {
+				showCooldown=true,
+				border=2,
+				relativeTo = "BOTTOM",
+				relativeToName = L["PositionBelow"],
+				enabled=true,
+				desaturated=true,
+				xPos=0,
+				yPos=12,
+				width=24,
+				height=24
+			},
+			thresholdDictionary = {
+			}
+		},
+		generation = {
+			mode="gcd",
+			gcds=1,
+			time=1.5,
+			enabled=true
+		},
+		maxResource = {
+			value = BREWMASTER_MAX_ENERGY,
+			enabled = false
+		},
+		displayBar = {
+			alwaysShow=false,
+			notZeroShow=true,
+			neverShow=false,
+			dragonriding=true
+		},
+		overcap={
+			mode="relative",
+			relative=0,
+			fixed=100
+		},
+		bar = {
+			width=555,
+			height=34,
+			xPos=0,
+			yPos=-200,
+			border=4,
+			dragAndDrop=false,
+			pinToPersonalResourceDisplay=false
+		},
+		comboPoints = {
+			width=25,
+			height=13,
+			xPos=0,
+			yPos=4,
+			border=1,
+			spacing=14,
+			relativeTo="TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		colors = {
+			text = {
+				current = {
+					color = "FFFFFF00"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FFD59900"
+				},
+				overcap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				overThreshold = {
+					color = "FF00FF00",
+					enabled = false
+				}
+			},
+			bar = {
+				border="FFFFD300",
+				borderOvercap="FFFF0000",
+				background="66000000",
+				base="FFFFFF00",
+				casting="FFFFFFFF",
+				spending="FF555555",
+				passive="FF9F4500",
+				overcapEnabled=true,
+				showPassive=true,
+				showCasting=true
+			},
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
+			endCap = {
+				base = {
+					color = "FFFFFFFF",
+					enabled = false,
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
+				}
+			}
+		},
+		displayText={
+			default = {
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = L["PositionLeft"],
+				fontSize=18,
+				color = "FFFFFFFF",
+			},
+			barText = {}
+		},
+		audio = {
+			overcap={
+				name = L["Overcap"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+				soundName = L["LSMSoundAirHorn"]
+			}
+		},
+		textures = {
+			background="Interface\\Tooltips\\UI-Tooltip-Background",
+			backgroundName="Blizzard Tooltip",
+			border="Interface\\Buttons\\WHITE8X8",
+			borderName="1 Pixel",
+			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+			resourceBarName="Blizzard",
+			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+			passiveBarName="Blizzard",
+			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+			castingBarName="Blizzard",
+			textureLock=true
+		}
+	}
+
+	if includeBarText then
+		settings.displayText.barText = BrewmasterLoadDefaultBarTextSimpleSettings()
+	end
+
+	return settings
+end
 
 -- Mistweaver
 local function MistweaverLoadDefaultBarTextSimpleSettings()
@@ -749,12 +1073,445 @@ end
 local function LoadDefaultSettings(includeBarText)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
+	settings.monk.brewmaster = BrewmasterLoadDefaultSettings(includeBarText)
 	settings.monk.mistweaver = MistweaverLoadDefaultSettings(includeBarText)
 	settings.monk.windwalker = WindwalkerLoadDefaultSettings(includeBarText)
 	return settings
 end
 TRB.Options.Monk.LoadDefaultSettings = LoadDefaultSettings
 
+
+
+--[[
+
+Brewmaster Option Menus
+
+]]
+
+local function BrewmasterConstructResetDefaultsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster
+	local yCoord = 5
+
+	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_Reset"] = {
+		text = string.format(L["ResetBarDialog"], L["MonkBrewmasterFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.monk.Brewmaster = BrewmasterLoadDefaultSettings(true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_ResetBarTextSimple"] = {
+		text = string.format(L["ResetBarTextSimpleDialog"], L["MonkBrewmasterFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BrewmasterLoadDefaultBarTextSimpleSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_ResetBarTextAdvanced"] = {
+		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["MonkBrewmasterFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BrewmasterLoadDefaultBarTextAdvancedSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton1:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextSimple")
+	end)
+	yCoord = yCoord - 40
+
+	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton3:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextAdvanced")
+	end)
+end
+
+local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Monk_Brewmaster_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_BarDisplay:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 1, true, false, false, false, false, false)
+	end)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
+
+	--[[yCoord = yCoord - 30
+	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.casting
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 2)
+	end)
+
+	controls.checkBoxes.showCastingColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Checkbox_ShowCastingColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showCastingColor
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EnergyShowCastingBar"])
+	f.tooltip = L["EnergyShowCastingBarTooltip"]
+	f:SetChecked(spec.colors.bar.showCasting)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.showCasting = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.passive
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
+	end)
+
+	controls.checkBoxes.showPassiveColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Checkbox_ShowPassiveColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showPassiveColor
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EnergyShowPassiveBar"])
+	f.tooltip = L["EnergyShowPassiveBarTooltip"]
+	f:SetChecked(spec.colors.bar.showPassive)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.showPassive = self:GetChecked()
+	end)]]
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], false, false)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceStagger"])
+
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
+end
+
+local function BrewmasterConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Monk_Brewmaster_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_Thresholds:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 10, 1, false, true, false, false, false, false)
+	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 1, yCoord)
+
+	controls.colors.threshold = {}
+end
+
+local function BrewmasterConstructFontAndTextPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+	controls.buttons.exportButton_Monk_Brewmaster_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_FontAndText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 10, 1, false, false, true, false, false, false)
+	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 1, yCoord)
+
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 10, 1, yCoord)
+	
+	yCoord = yCoord - 30
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCasting"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.casting
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.passive
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
+	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 1, yCoord)
+end
+
+local function BrewmasterConstructAudioAndTrackingPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Monk_Brewmaster_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_AudioAndTracking:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 10, 1, false, false, false, true, false, false)
+	end)
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, 10, 1, yCoord, L["Overcap"], L["OvercapAudioTooltip"])
+	
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyGenerationTitle"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_trackEnergyRegen_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.trackEnergyRegen
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["TrackEnergyRegen"])
+	f.tooltip = L["TrackEnergyRegenTooltip"]
+	f:SetChecked(spec.generation.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.generation.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_PFG_GCD", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.energyGenerationModeGCDs
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["TrackEnergyRegenGCDs"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = L["TrackEnergyRegenGCDsTooltip"]
+	if spec.generation.mode == "gcd" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
+		controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
+		spec.generation.mode = "gcd"
+	end)
+
+	local title = L["TrackEnergyRegenEnergyGCDs"]
+	controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.generation.gcds = value
+	end)
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_PFG_TIME", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.energyGenerationModeTime
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["TrackEnergyRegenTime"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = L["TrackEnergyRegenTimeTooltip"]
+	if spec.generation.mode == "time" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
+		controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
+		spec.generation.mode = "time"
+	end)
+
+	title = L["TrackEnergyRegenEnergyTime"]
+	controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.generation.time = value
+	end)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = controls
+end
+
+local function BrewmasterConstructBarTextDisplayPanel(parent, cache)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
+
+	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	controls.buttons.exportButton_Monk_Brewmaster_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_BarText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 10, 1, false, false, false, false, true, false)
+	end)
+
+	yCoord = yCoord - 30
+	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 10, 1, yCoord, cache)
+end
+
+local function BrewmasterConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(10, 1)
+	local namePrefix = className .. "_" .. specName
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local parent = interfaceSettingsFrame.panel
+	local controls = interfaceSettingsFrame.controls.brewmaster or {}
+	local yCoord = 0
+	local f = nil
+
+	controls.colors = {}
+	controls.labels = {}
+	controls.textbox = {}
+	controls.checkBoxes = {}
+	controls.dropDown = {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.brewmasterDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Brewmaster", UIParent)
+	interfaceSettingsFrame.brewmasterDisplayPanel.name = L["MonkBrewmasterFull"]
+---@diagnostic disable-next-line: undefined-field
+	interfaceSettingsFrame.brewmasterDisplayPanel.parent = parent.name
+	TRB.Details.addonCategory.specs["brewmaster"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.brewmasterDisplayPanel, L["MonkBrewmasterFull"])
+	
+	parent = interfaceSettingsFrame.brewmasterDisplayPanel
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkBrewmasterFull"], oUi.xCoord, yCoord-5)
+
+	controls.checkBoxes.brewmasterMonkEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_brewmasterMonkEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.brewmasterMonkEnabled
+	f:SetPoint("TOPLEFT", 320, yCoord-10)		
+	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MonkBrewmasterFull"])
+	f:SetChecked(TRB.Data.settings.core.enabled.monk.brewmaster)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.enabled.monk.brewmaster = self:GetChecked()
+		TRB.Functions.Class:EventRegistration()
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.brewmasterMonkEnabled, TRB.Data.settings.core.enabled.monk.brewmaster, true)
+	end)
+
+	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.brewmasterMonkEnabled, TRB.Data.settings.core.enabled.monk.brewmaster, true)
+
+	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
+	controls.buttons.importButton:SetFrameLevel(10000)
+	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Import")
+	end)
+
+	controls.buttons.exportButton_Monk_Brewmaster_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_All:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 1, true, true, true, true, true, false)
+	end)
+
+	yCoord = yCoord - 52
+
+	local tabs = {}
+	local tabsheets = {}
+
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
+
+	yCoord = yCoord - 15
+
+	for i = 1, 6 do
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	end
+
+	tabsheets[1]:Show()
+	tabsheets[1].selected = true
+	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	parent.tabs = tabs
+	parent.tabsheets = tabsheets
+	parent.lastTab = tabsheets[1]
+	parent.lastTabId = 1
+
+	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+	TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = controls
+
+	BrewmasterConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+	BrewmasterConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	BrewmasterConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	BrewmasterConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	BrewmasterConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	BrewmasterConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+end
 
 
 --[[
@@ -1376,7 +2133,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1408,7 +2165,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1423,7 +2180,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, false)
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.colors.borderChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerDanceOfChiJi"], spec.colors.bar.borderChiJi, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderChiJi
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1462,7 +2219,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.heartOfTheJadeSerpent
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
-	end)
+	end)]]
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ChiColorsHeader"], oUi.xCoord, yCoord)
@@ -1512,13 +2269,11 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
 end
 
 local function WindwalkerConstructThresholdPanel(parent)
@@ -1679,11 +2434,11 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 
@@ -1697,7 +2452,7 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overcapTextEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -1705,7 +2460,7 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overcap.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
+	end)]]
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 3, yCoord)
 end
@@ -1734,11 +2489,11 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
 
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
+	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -1798,9 +2553,7 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.generation.time = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
+	end)]]
 end
 
 local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
@@ -1919,6 +2672,7 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	BrewmasterConstructOptionsPanel(specCache.brewmaster)
 	MistweaverConstructOptionsPanel(specCache.mistweaver)
 	WindwalkerConstructOptionsPanel(specCache.windwalker)
 end

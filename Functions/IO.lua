@@ -76,13 +76,14 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.colors.comboPoints = settings.comboPoints
 			end
-		elseif classId == 10 then -- Monk
-			if specId == 2 then -- Mistweaver
-			elseif specId == 3 then -- Windwalker
-			end
-		elseif classId == 11 then -- Druids
-			if specId == 1 then -- Balance
-				configuration.endOfEclipse = settings.endOfEclipse
+	elseif classId == 10 then -- Monk
+		if specId == 1 then -- Brewmaster
+		elseif specId == 2 then -- Mistweaver
+		elseif specId == 3 then -- Windwalker
+		end
+	elseif classId == 11 then -- Druids
+		if specId == 1 then -- Balance
+			configuration.endOfEclipse = settings.endOfEclipse
 			elseif specId == 2 then -- Feral
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
@@ -160,13 +161,14 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
 			end
-		elseif classId == 10 then -- Monk
-			if specId == 2 then -- Mistweaver
-			elseif specId == 3 then -- Windwalker
-			end
-		elseif classId == 11 then -- Druids
-			if specId == 1 then -- Balance
-			elseif specId == 2 then -- Feral
+	elseif classId == 10 then -- Monk
+		if specId == 1 then -- Brewmaster
+		elseif specId == 2 then -- Mistweaver
+		elseif specId == 3 then -- Windwalker
+		end
+	elseif classId == 11 then -- Druids
+		if specId == 1 then -- Balance
+		elseif specId == 2 then -- Feral
 			elseif specId == 3 then -- Guardian
 			elseif specId == 4 then -- Restoration
 			end
@@ -232,7 +234,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		elseif classId == 10 then -- Monk
-			if specId == 2 then -- Mistweaver
+			if specId == 1 then -- Brewmaster
+			elseif specId == 2 then -- Mistweaver
 				configuration.passiveGeneration = settings.passiveGeneration
 			elseif specId == 3 then -- Windwalker
 			end
@@ -380,6 +383,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			end
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}
+
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.monk.brewmaster) > 0 then -- Brewmaster
+				configuration.monk.brewmaster = ExportConfigurationSections(10, 1, settings.monk.brewmaster, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.monk.mistweaver) > 0 then -- Mistweaver
 				configuration.monk.mistweaver = ExportConfigurationSections(10, 2, settings.monk.mistweaver, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)

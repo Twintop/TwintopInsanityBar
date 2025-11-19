@@ -269,6 +269,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					survival = specGlobalDefaults
 				},
 				monk = {
+					brewmaster = specGlobalDefaults,
 					mistweaver = specGlobalDefaults,
 					windwalker = specGlobalDefaults
 				},
@@ -322,6 +323,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					survival = true
 				},
 				monk = {
+					brewmaster = true,
 					mistweaver = true,
 					windwalker = true
 				},
@@ -385,6 +387,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			survival = {}
 		},
 		monk = {
+			brewmaster = {},
 			mistweaver = {},
 			windwalker = {}
 		},

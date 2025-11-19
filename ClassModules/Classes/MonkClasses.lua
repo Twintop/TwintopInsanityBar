@@ -315,3 +315,18 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 
 	return self
 end
+
+
+---@class TRB.Classes.Monk.BrewmasterSpells : TRB.Classes.SpecializationSpellsBase
+TRB.Classes.Monk.BrewmasterSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Monk.BrewmasterSpells.__index = TRB.Classes.Monk.BrewmasterSpells
+
+function TRB.Classes.Monk.BrewmasterSpells:New()
+	---@type TRB.Classes.SpecializationSpellsBase
+	local base = TRB.Classes.SpecializationSpellsBase
+	self = setmetatable(base:New(), TRB.Classes.Monk.BrewmasterSpells) --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+
+	-- Spells can be added here in the future
+
+	return self
+end
