@@ -3082,7 +3082,7 @@ local function GuardianConstructResetDefaultsPanel(parent)
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_Reset"] = {
-		text = L["ResetBarDialog"],
+		text = string.format(L["ResetBarDialog"], L["DruidGuardianFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function(self)
@@ -3095,7 +3095,7 @@ local function GuardianConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_ResetBarTextSimple"] = {
-		text = L["ResetBarTextSimpleDialog"],
+		text = string.format(L["ResetBarTextSimpleDialog"], L["DruidGuardianFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function(self)
@@ -3108,7 +3108,7 @@ local function GuardianConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_ResetBarTextAdvanced"] = {
-		text = L["ResetBarTextAdvancedFullDialog"],
+		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DruidGuardianFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function(self)

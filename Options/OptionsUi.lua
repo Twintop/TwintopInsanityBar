@@ -3806,7 +3806,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnShow = function(self, data)
-			self.text:SetFormattedText(data.message)
+			self:SetFormattedText(data.message)
 			self.data = data
 		end,
 		OnAccept = function(self)

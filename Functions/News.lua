@@ -11,6 +11,26 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha10 (2025-11-19)
+## General
+
+- Fix issues with importing and exporting settings configurations.
+
+## Druid
+### [#469](#469) Feral
+
+- Fix implementation to allow the bar to function in a minimalist version.
+- Many features are disabled for now and new spells have (largely) not been implemented yet.
+- Restore functionality for tracking combo points with a workaround. This is placeholder behavior with combo points being part of single bar instead of individual UI elements.
+- Options UI _has not_ yet been cleaned up to only show functional features.
+
+### [#493](#493) Guardian
+
+- Add *bear*bones support for Guardian, tracking Rage.
+- Options UI is...messy. Blame the vibecoder (aka me).
+
+---
+
 # 12.0.0.0-alpha09 (2025-11-18)
 ## General
 
@@ -340,10 +360,10 @@ function TRB.Functions.News:BuildNewsPopup()
 	StaticPopupDialogs["LIBMARKDOWNDEMOFRAME_URL"] = {
 		OnShow = function(self, data)
 			self:SetWidth(450)
-			self.text:SetFormattedText(string.format(L["NewsHyperlinkGeneric"], data.title))
-			self.editBox:SetText(data.url)
-			self.editBox:SetAutoFocus(true)
-			self.editBox:HighlightText()
+			self.SetFormattedText(string.format(L["NewsHyperlinkGeneric"], data.title))
+			self.GetEditBox():SetText(data.url)
+			self.GetEditBox():SetAutoFocus(true)
+			self.GetEditBox():HighlightText()
 		end,
 		OnAccept = function(self)
 			self:Hide()

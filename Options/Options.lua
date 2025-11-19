@@ -715,7 +715,7 @@ local function ConstructImportExportPanel()
 		editBoxWidth = 500,
 		OnAccept = function(self)
 			local result = false
-			result = TRB.Functions.IO:Import(self.editBox:GetText())
+			result = TRB.Functions.IO:Import(self:GetEditBox():GetText())
 
 			if result >= 0 then
 				StaticPopup_Show("TwintopResourceBar_ImportReload")
@@ -755,10 +755,10 @@ local function ConstructImportExportPanel()
 		whileDead = true,
 		OnShow = function(self, data)
 			self:SetWidth(450)
-			self.text:SetFormattedText(data.message)
-			self.editBox:SetText(data.exportString)
-			self.editBox:SetAutoFocus(true)
-			self.editBox:HighlightText()
+			self:SetFormattedText(data.message)
+			self:GetEditBox():SetText(data.exportString)
+			self:GetEditBox():SetAutoFocus(true)
+			self:GetEditBox():HighlightText()
 		end,
 		EditBoxOnEscapePressed = function(self)
 			self:GetParent():Hide()

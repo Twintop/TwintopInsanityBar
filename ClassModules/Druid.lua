@@ -905,11 +905,14 @@ local function ConstructResourceBar(settings)
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Frames.resource2ContainerFrame:Show()
-		for thresholdId = 1, TRB.Data.character.maxResource2-1 do
-			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
+		if TRB.Data.character.maxResource2 ~= nil then
+			for thresholdId = 1, TRB.Data.character.maxResource2-1 do
+				if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
+					TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
+				end
+				TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
+				TRB.Frames.resource2Frames[thresholdId+1].resourceFrame:Hide()
 			end
-			TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Frames.resource2ContainerFrame:Hide()
@@ -3842,8 +3845,10 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Guardian
-		TRB.Functions.Class:CheckCharacter()
-		TRB.Functions.Bar:SetPosition(TRB.Data.settings.druid.guardian, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.guardian)
+		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.guardian)
+		--TRB.Functions.Class:CheckCharacter()
+		--TRB.Functions.Bar:SetPosition(TRB.Data.settings.druid.guardian, TRB.Frames.barContainerFrame)
 
 		TRB.Data.lookup = {}
 		TRB.Data.lookupLogic = {}
@@ -4041,6 +4046,12 @@ function TRB.Functions.Class:CheckCharacter()
 		GetCurrentMoonSpell()
 
 		--TRB.Data.snapshotData.snapshots[TRB.Data.spellsData.spells.moonkinForm.id].buff:Initialize(nil, true)
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+
+		if sharedSettings ~= nil then
+			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+		end
+		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		TRB.Data.character.specName = "feral"
@@ -4050,10 +4061,10 @@ function TRB.Functions.Class:CheckCharacter()
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
 		if sharedSettings ~= nil then
-			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+			--if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
 				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
-			end
+			--end
 		end
 
 		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then
@@ -4063,12 +4074,24 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "guardian"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Rage, false)
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+
+		if sharedSettings ~= nil then
+			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+		end
+		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 4 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+
+		if sharedSettings ~= nil then
+			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+		end
+		TRB.Frames.resource2ContainerFrame:Hide()
 	end
 end
 
