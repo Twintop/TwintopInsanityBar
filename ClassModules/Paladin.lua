@@ -741,62 +741,6 @@ local function UpdateResourceBar()
 	end
 end
 
-barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local targetData = snapshotData.targetData
-
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
-		
-		local settings
-		if TRB.Data.character.specId == 1 then
-			settings = TRB.Data.settings.paladin.holy
-		end
-
-		if entry.destinationGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "holy" then -- Let's check raid effect mana stuff
-				if settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
-					local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-					innervate.buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-						snapshotData.audio.innervateCue = false
-					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
-						snapshotData.audio.innervateCue = false
-					end
-				elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
-					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-					manaTideTotem:Initialize(entry.type)
-				end
-			end
-		end
-
-		if entry.sourceGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "holy" then
-				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
-					local channeledManaPotion = snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-					channeledManaPotion.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.potionOfChilledClarity.id then
-					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-					potionOfChilledClarity.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.infusionOfLight.id then
-					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
-						snapshotData.audio.infusionOfLight2Cue = false
-					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
-						snapshotData.audio.infusionOfLightCue = false
-						snapshotData.audio.infusionOfLight2Cue = false
-					end
-				end
-			end
-		end
-
-		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-			targetData:Remove(entry.destinationGuid)
-			RefreshTargetTracking()
-		end
-	end
-end)
-
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
@@ -807,7 +751,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 	

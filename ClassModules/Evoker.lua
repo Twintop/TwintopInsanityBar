@@ -1432,99 +1432,6 @@ local function UpdateResourceBar()
 	end
 end
 
---[[
-barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local currentTime = GetTime()
-	local spells
-	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
-	local targetData = snapshotData.targetData
-	local snapshots = snapshotData.snapshots
-
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
-		
-		local settings
-		if TRB.Data.character.specId == 1 then
-			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Evoker.DevastationSpells]
-			settings = TRB.Data.settings.evoker.devastation
-		elseif TRB.Data.character.specId == 2 then
-			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Evoker.PreservationSpells]
-			settings = TRB.Data.settings.evoker.preservation
-		elseif TRB.Data.character.specId == 3 then
-			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Evoker.AugmentationSpells]
-			settings = TRB.Data.settings.evoker.augmentation
-		end
-
-		if entry.destinationGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then -- Let's check raid effect mana stuff
-				if settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
-					local innervate = snapshotData.snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
-					innervate.buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-						snapshotData.audio.innervateCue = false
-					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
-						snapshotData.audio.innervateCue = false
-					end
-				elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
-					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[@as TRB.Classes.Healer.ManaTideTotem]
-					manaTideTotem:Initialize(entry.type)
-				end
-			end
-		end	
-
-		if entry.sourceGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
-			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then
-				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
-					local channeledManaPotion = snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] --[@as TRB.Classes.Healer.ChanneledManaPotion]
-					channeledManaPotion.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.potionOfChilledClarity.id then
-					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[@as TRB.Classes.Healer.PotionOfChilledClarity]
-					potionOfChilledClarity.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.emeraldCommunion.id then
-					if entry.type == "SPELL_PERIODIC_ENERGIZE" then
-						if not snapshots[entry.spellId].buff.isActive then
-							local duration = spells.emeraldCommunion.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
-							snapshots[entry.spellId].buff:InitializeCustom(duration)
-							snapshots[entry.spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion:GetTickRate())
-						end
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
-				end
-			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
-			end
-
-			-- Scalecommander
-			if (TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "devastation") or (TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
-				if entry.spellId == spells.meltArmor.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				end
-			end
-
-			-- Chronowarden
-			--if (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "preservation") or (TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
-			--end
-
-			-- Spec Agnostic
-			if entry.spellId == spells.essenceBurst.id then
-				if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
-					snapshotData.audio.essenceBurst2Cue = false
-				elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
-					snapshotData.audio.essenceBurstCue = false
-					snapshotData.audio.essenceBurst2Cue = false
-				end
-			end
-		end
-
-		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-			targetData:Remove(entry.destinationGuid)
-			RefreshTargetTracking()
-		end
-	end
-end)]]
-
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
@@ -1535,7 +1442,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 	if TRB.Data.character.specId == 1 then

@@ -738,76 +738,6 @@ local function UpdateResourceBar()
 	end
 end
 
-barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local targetData = snapshotData.targetData
-
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
-		
-		local settings
-		if TRB.Data.character.specId == 1 then
-			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
-			settings = TRB.Data.settings.warlock.affliction
-		end
-
-		if entry.sourceGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "affliction" then --Affliction					
-				if entry.spellId == spells.unstableAffliction.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.agony.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.corruption.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.wither.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.haunt.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.vileTaint.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.soulRot.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.phantomSingularity.id then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.shadowEmbraceShadowBolt.id or entry.spellId == spells.shadowEmbraceDrainSoul then
-					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-					end
-				elseif entry.spellId == spells.tormentedCrescendo.id then
-					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
-						snapshotData.audio.tormentedCrescendo2Cue = false
-					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
-						snapshotData.audio.tormentedCrescendoCue = false
-						snapshotData.audio.tormentedCrescendo2Cue = false
-					end
-				end
-			end
-		end
-
-		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-			targetData:Remove(entry.destinationGuid)
-			RefreshTargetTracking()
-		end
-	end
-end)
-
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
@@ -818,7 +748,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 

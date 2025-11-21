@@ -1713,107 +1713,6 @@ local function UpdateResourceBar()
 	end
 end
 
---[[
-barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local spells
-	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
-	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
-
-		local settings
-		if TRB.Data.character.specId == 2 then
-			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Monk.MistweaverSpells]
-			settings = TRB.Data.settings.monk.mistweaver
-		elseif TRB.Data.character.specId == 3 then
-			spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Monk.WindwalkerSpells]
-			settings = TRB.Data.settings.monk.windwalker
-		end
-
-		if entry.destinationGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then -- Let's check raid effect mana stuff
-				if settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
-					local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
-					innervate.buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-						snapshotData.audio.innervateCue = false
-					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
-						snapshotData.audio.innervateCue = false
-					end
-				elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
-					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[@as TRB.Classes.Healer.ManaTideTotem]
-					manaTideTotem.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.potionOfChilledClarity.id then
-					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[@as TRB.Classes.Healer.PotionOfChilledClarity]
-					potionOfChilledClarity.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.cannibalize.buffId then
-					local cannibalize = snapshots[spells.cannibalize.id] --[@as TRB.Classes.Healer.Cannibalize]
-					cannibalize.buff:Initialize(entry.type)
-				end
-			end
-		end
-
-		if entry.sourceGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then
-				if entry.spellId == spells.slumberingSoulSerumRank1.spellId or entry.spellId == spells.slumberingSoulSerumRank2.spellId or entry.spellId == spells.slumberingSoulSerumRank3.spellId then
-					local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[@as TRB.Classes.Healer.ChanneledManaPotion]
-					channeledManaPotion.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.cannibalize.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.sheilunsGift.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				end
-			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
-				if entry.spellId == spells.danceOfChiJi.id then
-					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
-						if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled and not snapshotData.audio.playedDanceOfChiJiCue then
-							snapshotData.audio.playedDanceOfChiJiCue = true
-							PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					elseif entry.type == "SPELL_AURA_REMOVED" then
-						snapshotData.audio.playedDanceOfChiJiCue = false
-					end
-				elseif entry.spellId == spells.detox.id then
-					if entry.type == "SPELL_DISPEL" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.expelHarm.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.paralysis.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-
-						if talents:IsTalentActive(spells.paralysisRank2) then
-							snapshots[entry.spellId].cooldown.duration = snapshots[entry.spellId].cooldown.duration + spells.paralysisRank2.attributes.cooldownMod
-						end
-					end
-				elseif entry.spellId == spells.strikeOfTheWindlord.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				end
-			end
-
-			-- Mistweaver or Windwalker / Conduit of the Celestials shared abilities
-			--if (TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver") or (TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "windwalker") then
-			--end
-		end
-
-		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-			targetData:Remove(entry.destinationGuid)
-			RefreshTargetTracking()
-		end
-	end
-end)]]
-
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
@@ -1824,7 +1723,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 

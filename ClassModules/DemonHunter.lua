@@ -1884,76 +1884,6 @@ local function UpdateResourceBar()
 	end
 end
 
---[[
-barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local spellsData = TRB.Data.spellsData --[@as TRB.Classes.SpellsData]
-		local spells
-		local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
-		local snapshots = snapshotData.snapshots
-		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
-
-		if TRB.Data.character.specId == 1 then
-			spells = spellsData.spells --[@as TRB.Classes.DemonHunter.HavocSpells]
-		elseif TRB.Data.character.specId == 2 then
-			spells = spellsData.spells --[@as TRB.Classes.DemonHunter.VengeanceSpells]
-		end
-
-		if entry.sourceGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "havoc" then --Havoc
-				if entry.spellId == spells.bladeDance.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.deathSweep.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.chaosNova.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.eyeBeam.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.glaiveTempest.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.throwGlaive.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.felBarrage.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				end
-			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "vengeance" then --Vengeance
-				if entry.spellId == spells.felDevastation.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.chaosNova.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				end
-			end
-
-			-- All specs
-		end
-
-		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-			---@type TRB.Classes.TargetData
-			local targetData = TRB.Data.snapshotData.targetData
-			targetData:Remove(entry.destinationGuid)
-			RefreshTargetTracking()
-		end
-	end
-end)]]
-
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
@@ -1964,7 +1894,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 

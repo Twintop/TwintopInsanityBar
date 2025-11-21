@@ -1827,90 +1827,6 @@ local function UpdateResourceBar()
 	end
 end
 
---[[
-barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-	local currentTime = GetTime()
-	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
-	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local coreSettings = TRB.Data.settings.core
-	local classSettings = TRB.Data.settings.hunter
-
-	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Hunter.BeastMasterySpells|TRB.Classes.Hunter.MarksmanshipSpells|TRB.Classes.Hunter.SurvivalSpells]
-
-	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
-
-		if entry.sourceGuid == TRB.Data.character.guid then
-			if TRB.Data.character.specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
-				local specSettings = classSettings.beastMastery
-				if entry.spellId == spells.frenzy.id and entry.destinationGuid == TRB.Data.character.petGuid then
-					snapshots[entry.spellId].buff:Initialize(entry.type, nil, "pet")
-				elseif entry.spellId == spells.killCommand.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.bestialWrath.id then
-					snapshots[entry.spellId].cooldown:Initialize()
-				elseif entry.spellId == spells.blackArrow.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.direBeastHawk.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				elseif entry.spellId == spells.beastCleave.id then
-					if entry.type == "SPELL_AURA_REMOVED" then
-						if specSettings.audio.beastCleaveDown.enabled then
-							PlaySoundFile(specSettings.audio.beastCleaveDown.sound, coreSettings.audio.channel.channel)
-						end
-					end
-				end
-			elseif TRB.Data.character.specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship
-				if entry.spellId == spells.burstingShot.id then
-					snapshots[entry.spellId].cooldown:Initialize()
-				elseif entry.spellId == spells.aimedShot.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-						snapshotData.audio.playedAimedShotCue = false
-					end
-				elseif entry.spellId == spells.lockAndLoad.id then
-					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
-						if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
-							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					end
-				elseif entry.spellId == spells.blackArrow.id then
-					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshots[entry.spellId].cooldown:Initialize()
-					end
-				end
-			elseif TRB.Data.character.specId == 3 and TRB.Data.barConstructedForSpec == "survival" then --Survival
-				if entry.spellId == spells.wildfireBomb.id then
-					snapshots[entry.spellId].cooldown:Initialize()
-				end
-			end
-
-			-- Spec agnostic
-
-			if entry.spellId == spells.killShot.id then
-				snapshotData.audio.playedKillShotCue = false
-				snapshots[entry.spellId].cooldown:Initialize()
-			elseif entry.spellId == spells.serpentSting.id then
-				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-					targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
-				end
-			end
-		end
-
-		if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-			targetData:Remove(entry.destinationGuid)
-			RefreshTargetTracking()
-		end
-	end
-end)]]
-
 function targetsTimerFrame:onUpdate(sinceLastUpdate)
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	if self.sinceLastUpdate >= 1 then -- in seconds
@@ -1921,7 +1837,6 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
-	--barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 
