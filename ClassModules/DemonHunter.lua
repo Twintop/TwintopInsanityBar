@@ -2082,6 +2082,16 @@ local function SwitchSpec()
 	end
 	
 	TRB.Functions.Class:EventRegistration()
+
+	C_Timer.After(0, function()
+		C_Timer.After(0.05, function()
+			TRB.Functions.Class:CheckCharacter()
+			if TRB.Data.barConstructedForSpec ~= nil then
+				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+				TRB.Functions.Character:ResetCaches()
+			end
+		end)
+	end)
 end
 
 resourceFrame:RegisterEvent("ADDON_LOADED")

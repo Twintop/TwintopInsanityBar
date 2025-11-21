@@ -55,7 +55,7 @@ local function AssassinationLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$sadTime}[$sadTime]",
+			text="",--{$sadTime}[$sadTime]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -110,7 +110,7 @@ local function AssassinationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[	   ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[	  ]  TTD: $ttd]",
+			text="",--#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[	   ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[	  ]  TTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -133,7 +133,7 @@ local function AssassinationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$sadTime}[#sad $sadTime #sad]|n{$blindsideTime}[#blindside $blindsideTime #blindside]",
+			text="",--{$sadTime}[#sad $sadTime #sad]|n{$blindsideTime}[#blindside $blindsideTime #blindside]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -475,7 +475,7 @@ local function OutlawLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime]",
+			text="",--{$rtbBuffTime}[#rollTheBones $rtbBuffTime]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -498,7 +498,7 @@ local function OutlawLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$sadTime}[#sliceAndDice $sadTime]",
+			text="",--{$sadTime}[#sliceAndDice $sadTime]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -553,7 +553,7 @@ local function OutlawLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime #rollTheBones]{$ttd}[||nTTD: $ttd]",
+			text="",--{$rtbBuffTime}[#rollTheBones $rtbBuffTime #rollTheBones]{$ttd}[||nTTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -576,7 +576,7 @@ local function OutlawLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$sadTime}[#sad $sadTime #sad]",
+			text="",--{$sadTime}[#sad $sadTime #sad]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -944,7 +944,7 @@ local function SubtletyLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$sadTime}[#sliceAndDice $sadTime]",
+			text="",--{$sadTime}[#sliceAndDice $sadTime]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -999,7 +999,7 @@ local function SubtletyLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="#shadowTechniques $shadowTechniquesCount	#rupture $ruptureCount {$ruptureTime}[ $ruptureTime]||n{$ttd}[TTD: $ttd] ",
+			text="",--#shadowTechniques $shadowTechniquesCount	#rupture $ruptureCount {$ruptureTime}[ $ruptureTime]||n{$ttd}[TTD: $ttd] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -1022,7 +1022,7 @@ local function SubtletyLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$sadTime}[#sad $sadTime #sad]|n{$sodTime}[#sod $sodTime #sod] ",
+			text="",--{$sadTime}[#sad $sadTime #sad]|n{$sodTime}[#sod $sodTime #sod] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -1478,7 +1478,7 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.sliceAndDicePandemic
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1507,7 +1507,7 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1612,13 +1612,11 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.spec.serratedBoneSpikeColor = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], ASSASSINATION_MAX_ENERGY)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], ASSASSINATION_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 1, ASSASSINATION_MAX_ENERGY)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 end
 
 local function AssassinationConstructThresholdPanel(parent)
@@ -1946,11 +1944,11 @@ local function AssassinationConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 
@@ -1964,7 +1962,7 @@ local function AssassinationConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overcapTextEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -1972,9 +1970,9 @@ local function AssassinationConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overcap.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
+	end)]]
 	
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 1, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 1, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 1, yCoord)
 end
@@ -2003,11 +2001,11 @@ local function AssassinationConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "blindside", spec, classId, specId, yCoord, L["RogueAssassinationAudioCheckboxBlindsideProc"], L["RogueAssassinationAudioCheckboxBlindsideProcTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "blindside", spec, classId, specId, yCoord, L["RogueAssassinationAudioCheckboxBlindsideProc"], L["RogueAssassinationAudioCheckboxBlindsideProcTooltip"])
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
+	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -2069,7 +2067,7 @@ local function AssassinationConstructAudioAndTrackingPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.generation.time = value
-	end)
+	end)]]
 end
 
 local function AssassinationConstructBarTextDisplayPanel(parent, cache)
@@ -2302,7 +2300,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.sliceAndDicePandemic
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2331,7 +2329,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -2433,8 +2431,8 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], OUTLAW_MAX_ENERGY)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], OUTLAW_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 1, OUTLAW_MAX_ENERGY)
@@ -2779,11 +2777,11 @@ local function OutlawConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 
@@ -2797,7 +2795,7 @@ local function OutlawConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overcapTextEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -2805,9 +2803,9 @@ local function OutlawConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overcap.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
+	end)]]
 	
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 2, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 2, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 2, yCoord)
 end
@@ -2836,11 +2834,11 @@ local function OutlawConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "opportunity", spec, classId, specId, yCoord, L["RogueOutlawAudioCheckboxOpportunityProc"], L["RogueOutlawAudioCheckboxOpportunityProcTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "opportunity", spec, classId, specId, yCoord, L["RogueOutlawAudioCheckboxOpportunityProc"], L["RogueOutlawAudioCheckboxOpportunityProcTooltip"])
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
+	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -2902,7 +2900,7 @@ local function OutlawConstructAudioAndTrackingPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.generation.time = value
-	end)
+	end)]]
 end
 
 local function OutlawConstructBarTextDisplayPanel(parent, cache)
@@ -3134,7 +3132,7 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.sliceAndDicePandemic
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3163,7 +3161,7 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -3178,12 +3176,12 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, false)
 
-	yCoord = yCoord - 30
+	--[[yCoord = yCoord - 30
 	controls.colors.borderShadowcraft = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowcraft"], spec.colors.bar.borderShadowcraft, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderShadowcraft
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderShadowcraft")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
@@ -3264,8 +3262,8 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], SUBTLETY_MAX_ENERGY)
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], SUBTLETY_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 1, SUBTLETY_MAX_ENERGY)
@@ -3612,11 +3610,11 @@ local function SubtletyConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 
@@ -3630,7 +3628,7 @@ local function SubtletyConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overcapTextEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -3638,9 +3636,9 @@ local function SubtletyConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overcap.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
+	end)]]
 	
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 3, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 3, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 3, yCoord)
 end
@@ -3669,9 +3667,9 @@ local function SubtletyConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
+	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -3733,7 +3731,7 @@ local function SubtletyConstructAudioAndTrackingPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.generation.time = value
-	end)
+	end)]]
 end
 
 local function SubtletyConstructBarTextDisplayPanel(parent, cache)

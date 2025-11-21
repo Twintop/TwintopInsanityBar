@@ -753,6 +753,16 @@ function TRB.Functions.Bar:Construct(settings)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpResource)
+
+				if x > nodes then
+					container:Hide()
+				else
+					container:Show()
+				end
+			end
+		else
+			if TRB.Frames.resource2ContainerFrame ~= nil then
+				TRB.Frames.resource2ContainerFrame:Hide()
 			end
 		end
 

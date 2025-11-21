@@ -905,14 +905,12 @@ local function ConstructResourceBar(settings)
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Frames.resource2ContainerFrame:Show()
-		if TRB.Data.character.maxResource2 ~= nil then
-			for thresholdId = 1, TRB.Data.character.maxResource2-1 do
-				if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
-				end
-				TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
-				TRB.Frames.resource2Frames[thresholdId+1].resourceFrame:Hide()
+		for thresholdId = 1, 5 do-- TRB.Data.character.maxResource2-1 do
+			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
+				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
 			end
+			TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
+			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
 		end
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Frames.resource2ContainerFrame:Hide()
@@ -3193,7 +3191,7 @@ local function UpdateResourceBar()
 
 				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
 				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
-				for x = 1, TRB.Data.character.maxResource2 do
+				for x = 1, TRB.Data.character.maxResource2-1 do
 					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
 					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
 					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
@@ -3899,6 +3897,16 @@ local function SwitchSpec()
 	end
 	
 	TRB.Functions.Class:EventRegistration()
+
+	C_Timer.After(0, function()
+		C_Timer.After(0.05, function()
+			TRB.Functions.Class:CheckCharacter()
+			if TRB.Data.barConstructedForSpec ~= nil then
+				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+				TRB.Functions.Character:ResetCaches()
+			end
+		end)
+	end)
 end
 
 resourceFrame:RegisterEvent("ADDON_LOADED")

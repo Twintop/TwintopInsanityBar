@@ -170,7 +170,10 @@ end
 
 
 function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings)
---[[
+	if settings.comboPoints == nil then
+		return
+	end
+	--[[
 		Threshold StrataFrameLevel info, decreasing:
 		- Starts at 1200 for unusable
 		- Starts at 1400 for not enough resources

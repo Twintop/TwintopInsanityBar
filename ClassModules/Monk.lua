@@ -565,10 +565,13 @@ local function ConstructResourceBar(settings)
 
 	if TRB.Data.character.specId == 1 then
 		TRB.Frames.resource2ContainerFrame:Show()
-		for thresholdId = 1, TRB.Data.character.maxResource2-1 do
+		for thresholdId = 1, 7 do-- TRB.Data.character.maxResource2-1 do
 			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] ~= nil then
 				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
 			end
+		end
+		for cp = 2, 10 do
+			TRB.Frames.resource2Frames[cp].containerFrame:Hide()
 		end
 	elseif TRB.Data.character.specId == 2 then
 		for x = 1, 9 do
@@ -581,11 +584,12 @@ local function ConstructResourceBar(settings)
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Frames.resource2ContainerFrame:Show()
-		for thresholdId = 1, TRB.Data.character.maxResource2-1 do
+		for thresholdId = 1, 7 do-- TRB.Data.character.maxResource2-1 do
 			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
 				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
 			end
 			TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
+			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
 		end
 	end
 
@@ -1938,8 +1942,12 @@ local function SwitchSpec()
 	TRB.Functions.Class:EventRegistration()
 
 	C_Timer.After(0, function()
-		C_Timer.After(1, function()
+		C_Timer.After(0.05, function()
 			TRB.Functions.Class:CheckCharacter()
+			if TRB.Data.barConstructedForSpec ~= nil then
+				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+				TRB.Functions.Character:ResetCaches()
+			end
 		end)
 	end)
 end
