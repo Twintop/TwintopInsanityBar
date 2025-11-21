@@ -31,6 +31,7 @@ Clean up options menus to only show things that are functional.
 
 ## Rogue
 ### [#480](#480) Assassination, [#481](#481) Outlaw, and [#482](#482) Subtlety
+
 - Fix implementation to allow the bar to function in a minimalist version for all three specializations.
 - Many features are disabled for now and new spells have (largely) not been implemented yet.
 - Restore functionality for tracking combo points with a workaround. This is placeholder behavior with combo points being part of single bar instead of individual UI elements.
