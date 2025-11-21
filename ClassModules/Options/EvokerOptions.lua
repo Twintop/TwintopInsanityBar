@@ -22,7 +22,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = {}
 local function EvokerLoadExtraBarTextSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
+		--[[{
 			enabled = true,
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			useDefaultFontFace = false,
@@ -159,7 +159,7 @@ local function EvokerLoadExtraBarTextSettings()
 			useDefaultFontSize = false,
 			fontFaceName = "Friz Quadrata TT",
 			useDefaultFontColor = false,
-		}
+		}]]
 	}
 
 	return textSettings
@@ -222,7 +222,7 @@ local function DevastationLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive + ]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -259,7 +259,7 @@ local function DevastationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$ttd}[||nTTD: $ttd]",
+			text="",--{$ttd}[||nTTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -582,7 +582,7 @@ local function PreservationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$potionCooldown}[#slumberingSoulSerum $potionCooldown] ",
+			text="",--{$potionCooldown}[#slumberingSoulSerum $potionCooldown] ",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -963,7 +963,7 @@ local function AugmentationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$ttd}[||nTTD: $ttd]",
+			text="",--{$ttd}[||nTTD: $ttd]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",

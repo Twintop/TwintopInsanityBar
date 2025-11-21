@@ -11,6 +11,20 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha12 (2025-11-21)
+## [#462](#462) General
+
+- RIP `COMBAT_LOG_EVENT_UNFILTERED`. It was commented out but all references to it have now been removed.
+
+## Evoker
+### [#471](#471) Devastation, [#472](#472) Preservation, and [#473](#473) Augmentation
+
+- Fix implementation to allow the bar to function in a minimalist version for all three specializations.
+- Many features are disabled for now and new spells have (largely) not been implemented yet.
+- Restore functionality for tracking Essence with a workaround. This is placeholder behavior with Essence being part of single bar instead of individual UI elements. For now, Essence regen is not displayed due to API limitations.
+
+---
+
 # 12.0.0.0-alpha11 (2025-11-21)
 ## Druid
 ### [#469](#469) Feral

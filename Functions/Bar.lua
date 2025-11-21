@@ -322,6 +322,7 @@ function TRB.Functions.Bar:SetMinMax(settings)
 			end
 
 			for x = 1, nodes do
+				print(x, nodes)
 				TRB.Frames.resource2Frames[x].resourceFrame:SetMinMaxValues(0, nodeWidth)
 			end
 		end
@@ -370,6 +371,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		TRB.Data.resource2 == Enum.PowerType.SoulShards then
 			nodes = 1
 		end
+		print(nodes, length, TRB.Data.character.maxResource2)
 	
 		local nodeWidth = settings.comboPoints.width
 		local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2

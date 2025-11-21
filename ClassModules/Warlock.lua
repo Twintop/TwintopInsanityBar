@@ -45,8 +45,6 @@ local function FillSpecializationCache()
 		specId = 1,
 		maxResource = 10000,
 		maxResource2 = 5,
-		maxResource2Resource = 0,
-		maxResource2ResourceMax = 1000,
 		effects = {
 		},
 		items = {}

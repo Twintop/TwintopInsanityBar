@@ -3169,7 +3169,6 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 				local berserkTotalCps = snapshots[spells.berserk.id].attributes.ticks
 				local berserkNextTick = spells.berserk:GetTickRate() - snapshots[spells.berserk.id].attributes.untilNextTick
@@ -3183,6 +3182,7 @@ local function UpdateResourceBar()
 
 				local current = snapshotData.attributes.resource2
 				
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border
 				local cpColor = specSettings.colors.comboPoints.base
 				local cpBR = cpBackgroundRed
