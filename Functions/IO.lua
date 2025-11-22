@@ -74,7 +74,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
 				configuration.colors.comboPoints = settings.colors.comboPoints
-				configuration.colors.comboPoints = settings.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			elseif specId == 2 then -- Demonology
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end
 	elseif classId == 10 then -- Monk
 		if specId == 1 then -- Brewmaster
@@ -380,6 +383,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			
 			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.affliction) > 0 then -- Affliction
 				configuration.warlock.affliction = ExportConfigurationSections(9, 1, settings.warlock.affliction, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.demonology) > 0 then -- Demonology
+				configuration.warlock.demonology = ExportConfigurationSections(9, 2, settings.warlock.demonology, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}

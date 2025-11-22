@@ -129,3 +129,30 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
 
     return self
 end
+
+---@class TRB.Classes.Warlock.DemonologySpells : TRB.Classes.SpecializationSpellsBase
+TRB.Classes.Warlock.DemonologySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Warlock.DemonologySpells.__index = TRB.Classes.Warlock.DemonologySpells
+
+function TRB.Classes.Warlock.DemonologySpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), TRB.Classes.Warlock.DemonologySpells) --[[@as TRB.Classes.Warlock.DemonologySpells]]
+
+
+    return self
+end
+
+
+---@class TRB.Classes.Warlock.DestructionSpells : TRB.Classes.SpecializationSpellsBase
+TRB.Classes.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Warlock.DestructionSpells.__index = TRB.Classes.Warlock.DestructionSpells
+
+function TRB.Classes.Warlock.DestructionSpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), TRB.Classes.Warlock.DestructionSpells) --[[@as TRB.Classes.Warlock.DestructionSpells]]
+
+
+    return self
+end

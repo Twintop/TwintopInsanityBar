@@ -20,7 +20,8 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	affliction = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]	
+	affliction = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
+	demonology = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 }
 TRB.Data.specCache = specCache
 
@@ -72,6 +73,43 @@ local function FillSpecializationCache()
 	specCache.affliction.snapshotData.snapshots[spells.malignOmen.id] = TRB.Classes.Snapshot:New(spells.malignOmen)
 	---@type TRB.Classes.Snapshot
 	specCache.affliction.snapshotData.snapshots[spells.succulentSoul.id] = TRB.Classes.Snapshot:New(spells.succulentSoul)
+
+	-- Demonology
+	specCache.demonology.Global_TwintopResourceBar = {
+		resource = {
+			resource = 0,
+			casting = 0,
+			passive = 0,
+			regen = 0
+		},
+		dots = {
+		},
+		isPvp = false
+	}
+
+	specCache.demonology.character = {
+		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 2,
+		maxResource = 10000,
+		maxResource2 = 5,
+		effects = {
+		},
+		items = {}
+	}
+	
+	---@type TRB.Classes.Warlock.DemonologySpells
+	specCache.demonology.spellsData.spells = TRB.Classes.Warlock.DemonologySpells:New()
+	local spells = specCache.demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+
+	specCache.demonology.snapshotData.audio = {
+	}
+
+	specCache.demonology.barTextVariables = {
+		icons = {},
+		values = {}
+	}
 end
 
 local function Setup_Affliction()
@@ -142,20 +180,20 @@ local function FillSpellData_Affliction()
 		{ variable = "$manaMax", description = L["WarlockAfflictionBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$passive", description = L["WarlockAfflictionBarTextVariable_passive"], printInSettings = true, color = false },
+		--[[{ variable = "$passive", description = L["WarlockAfflictionBarTextVariable_passive"], printInSettings = true, color = false },
 		{ variable = "$manaPlusCasting", description = L["WarlockAfflictionBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
 		{ variable = "$manaPlusPassive", description = L["WarlockAfflictionBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
 		{ variable = "$manaTotal", description = L["WarlockAfflictionBarTextVariable_manaTotal"], printInSettings = true, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
+		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },]]
 					
 		{ variable = "$soulShards", description = L["WarlockAfflictionBarTextVariable_soulShards"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 		
-		{ variable = "$agonyCount", description = L["WarlockAfflictionBarTextVariable_agonyCount"], printInSettings = true, color = false },
+		--[[{ variable = "$agonyCount", description = L["WarlockAfflictionBarTextVariable_agonyCount"], printInSettings = true, color = false },
 		{ variable = "$agonyStacks", description = L["WarlockAfflictionBarTextVariable_agonyStacks"], printInSettings = true, color = false },
 		{ variable = "$agonyTime", description = L["WarlockAfflictionBarTextVariable_agonyTime"], printInSettings = true, color = false },
 		{ variable = "$corruptionTime", description = L["WarlockAfflictionBarTextVariable_corruptionTime"], printInSettings = true, color = false },
@@ -183,7 +221,69 @@ local function FillSpellData_Affliction()
 		{ variable = "$malignOmenStacks", description = L["WarlockAfflictionBarTextVariable_malignOmenStacks"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
+		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
+	}
+end
+
+local function Setup_Demonology()
+	TRB.Functions.Character:FillSpecializationCacheSettings("warlock", "demonology")
+end
+
+local function FillSpellData_Demonology()
+	Setup_Demonology()
+	specCache.demonology.spellsData:FillSpellData()
+	local spells = specCache.demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+
+	-- This is done here so that we can get icons for the options menu!
+	specCache.demonology.barTextVariables.icons = {
+		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+	}
+	specCache.demonology.barTextVariables.values = {
+		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
+
+		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
+		
+		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
+
+		{ variable = "$mana", description = L["WarlockDemonologyBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$manaPercent", description = L["WarlockDemonologyBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$manaMax", description = L["WarlockDemonologyBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = L["WarlockDemonologyBarTextVariable_casting"], printInSettings = true, color = false },
+					
+		{ variable = "$soulShards", description = L["WarlockDemonologyBarTextVariable_soulShards"], printInSettings = true, color = false },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+		{ variable = "$soulShardsMax", description = L["WarlockDemonologyBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 	}
 end
 
@@ -194,7 +294,7 @@ local function RefreshTargetTracking()
 	---@type TRB.Classes.TargetData
 	local targetData = snapshotData.targetData
 
-	if TRB.Data.character.specId == 1 then -- Affliction	
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then -- Affliction or Demonology
 		targetData:UpdateTrackedSpells(currentTime)
 	end
 end
@@ -205,7 +305,7 @@ local function TargetsCleanup(clearAll)
 	targetData:Cleanup(clearAll)
 	if clearAll == true then
 		if TRB.Data.character.specId == 1 then
-		
+		elseif TRB.Data.character.specId == 2 then
 		end
 	end
 end
@@ -221,8 +321,16 @@ local function ConstructResourceBar(settings)
 		end
 		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
 	end
+	
+	for thresholdId = 1, 5 do-- TRB.Data.character.maxResource2-1 do
+		if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
+			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
+		end
+		TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
+		TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
+	end
 
-	if TRB.Data.character.specId == 1 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
 	end
 	TRB.Frames.resource2ContainerFrame:Show()
 	
@@ -240,7 +348,7 @@ local function RefreshLookupData_Affliction()
 	local targetData = snapshotData.targetData
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-	local normalizedSoulShards = snapshotData.attributes.resource2 / TRB.Data.resource2Factor
+	local normalizedSoulShards = snapshotData.attributes.resource2-- / TRB.Data.resource2Factor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -250,11 +358,12 @@ local function RefreshLookupData_Affliction()
 
 	--$mana
 	local manaPrecision = specSettings.manaPrecision or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
+	--[[
 	--$passive
 	local _passiveMana = 0
 	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
@@ -267,20 +376,21 @@ local function RefreshLookupData_Affliction()
 	--$manaPlusPassive
 	local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
 	local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))
-
+	]]
 	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
-	local maxResource = TRB.Data.character.maxResource
+	--[[local maxResource = TRB.Data.character.maxResource
 
 	if maxResource == 0 then
 		maxResource = 1
-	end
-	local _manaPercent = (normalizedMana/maxResource)
-	local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.Number:RoundTo(_manaPercent*100, manaPrecision, "floor"))
+	end]]
+	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, true)
+	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
-	--$unstableAfflictionTime
+	--[[--$unstableAfflictionTime
 	local _unstableAfflictionTime = 0
 	local unstableAfflictionTime
 	if target ~= nil then
@@ -307,7 +417,7 @@ local function RefreshLookupData_Affliction()
 		_corruptionCount = snapshotData.targetData.count[spells.corruption.id] or 0
 	end
 	local corruptionCount = string.format("%s", _corruptionCount)
-	--[[@type integer|boolean]]
+	--[@type integer|boolean]
 	local _corruptionTime = 0
 	local corruptionTime = "0"
 	if target ~= nil then
@@ -497,27 +607,27 @@ local function RefreshLookupData_Affliction()
 	Global_TwintopResourceBar.dots.corruptionCount = _corruptionCount or 0
 	Global_TwintopResourceBar.dots.hauntCount = _hauntCount or 0
 	Global_TwintopResourceBar.dots.soulRotCount = _soulRotCount or 0
-	Global_TwintopResourceBar.dots.vileTaintCount = _vileTaintCount or 0
+	Global_TwintopResourceBar.dots.vileTaintCount = _vileTaintCount or 0]]
 
 	local lookup = TRB.Data.lookup or {}	
-	lookup["$resourceTotal"] = manaTotal
-	lookup["$manaTotal"] = manaTotal
 	lookup["$resourceMax"] = manaMax
 	lookup["$manaMax"] = manaMax
 	lookup["$resource"] = currentMana
 	lookup["$mana"] = currentMana
-	lookup["$resourcePlusCasting"] = manaPlusCasting
-	lookup["$manaPlusCasting"] = manaPlusCasting
-	lookup["$resourcePlusPassive"] = manaPlusPassive
-	lookup["$manaPlusPassive"] = manaPlusPassive
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
 	lookup["$casting"] = castingMana
-	lookup["$passive"] = passiveMana
 	lookup["$soulShards"] = normalizedSoulShards
 	lookup["$comboPoints"] = normalizedSoulShards
 	lookup["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	--[[lookup["$resourceTotal"] = manaTotal
+	lookup["$manaTotal"] = manaTotal
+	lookup["$resourcePlusCasting"] = manaPlusCasting
+	lookup["$manaPlusCasting"] = manaPlusCasting
+	lookup["$resourcePlusPassive"] = manaPlusPassive
+	lookup["$manaPlusPassive"] = manaPlusPassive
+	lookup["$passive"] = passiveMana
 	lookup["$unstableAfflictionTime"] = unstableAfflictionTime
 	lookup["$agonyCount"] = agonyCount
 	lookup["$agonyStacks"] = agonyStacks
@@ -541,29 +651,28 @@ local function RefreshLookupData_Affliction()
 	lookup["$malignOmenStacks"] = malignOmenStacks
 	lookup["$shadowEmbraceStacks"] = shadowEmbraceStacks
 	lookup["$shadowEmbraceMaxStacks"] = shadowEmbraceMaxStacks
-	lookup["$shadowEmbraceTime"] = shadowEmbraceTime
+	lookup["$shadowEmbraceTime"] = shadowEmbraceTime]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	
-	lookupLogic["$resourceTotal"] = _manaTotal
-	lookupLogic["$manaTotal"] = _manaTotal
 	lookupLogic["$resourceMax"] = manaMax
 	lookupLogic["$manaMax"] = manaMax
 	lookupLogic["$resource"] = normalizedMana
 	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
-	lookupLogic["$manaPlusCasting"] = _manaPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
-	lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
-	lookupLogic["$passive"] = _passiveMana
 	lookupLogic["$soulShards"] = normalizedSoulShards
 	lookupLogic["$comboPoints"] = normalizedSoulShards
 	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	--[[lookupLogic["$resourceTotal"] = _manaTotal
+	lookupLogic["$manaTotal"] = _manaTotal
+	lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+	lookupLogic["$manaPlusCasting"] = _manaPlusCasting
+	lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+	lookupLogic["$manaPlusPassive"] = _manaPlusPassive
+	lookupLogic["$passive"] = _passiveMana
 	lookupLogic["$unstableAfflictionTime"] = _unstableAfflictionTime
 	lookupLogic["$agonyCount"] = _agonyCount
 	lookupLogic["$agonyStacks"] = _agonyStacks
@@ -587,7 +696,73 @@ local function RefreshLookupData_Affliction()
 	lookupLogic["$malignOmenStacks"] = _malignOmenStacks
 	lookupLogic["$shadowEmbraceStacks"] = _shadowEmbraceStacks
 	lookupLogic["$shadowEmbraceMaxStacks"] = _shadowEmbraceMaxStacks
-	lookupLogic["$shadowEmbraceTime"] = _shadowEmbraceTime
+	lookupLogic["$shadowEmbraceTime"] = _shadowEmbraceTime]]
+	TRB.Data.lookupLogic = lookupLogic
+end
+
+local function RefreshLookupData_Demonology()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local specSettings = TRB.Data.settings.warlock.demonology
+	local sharedSettings = TRB.Data.specCache["demonology"].settings
+	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+	local targetData = snapshotData.targetData
+	local currentTime = GetTime()
+	local normalizedMana = snapshotData.attributes.resourceModified
+	local normalizedSoulShards = snapshotData.attributes.resource2
+
+	-- This probably needs to be pulled every refresh
+	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
+
+	--$mana
+	local manaPrecision = specSettings.manaPrecision or 1
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	--$casting
+	local _castingMana = snapshotData.casting.resourceFinal
+	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+
+	--$manaMax
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+
+	--$manaPercent
+	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, true)
+	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+
+	--$soulShards
+	local soulShards = string.format("%.0f", normalizedSoulShards)
+	--$soulShardsMax
+	local soulShardsMax = string.format("%.0f", TRB.Data.character.maxResource2)
+
+	local lookup = TRB.Data.lookup or {}
+	lookup["$mana"] = currentMana
+	lookup["$manaMax"] = manaMax
+	lookup["$manaPercent"] = manaPercent
+	lookup["$casting"] = castingMana
+	lookup["$soulShards"] = soulShards
+	lookup["$soulShardsMax"] = soulShardsMax
+	lookup["$resource"] = currentMana
+	lookup["$resourceMax"] = manaMax
+	lookup["$resourcePercent"] = manaPercent
+	lookup["$comboPoints"] = soulShards
+	lookup["$comboPointsMax"] = soulShardsMax
+	TRB.Data.lookup = lookup
+
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	lookupLogic["$mana"] = normalizedMana
+	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+	lookupLogic["$manaPercent"] = manaPercentRaw
+	lookupLogic["$casting"] = _castingMana
+	lookupLogic["$soulShards"] = normalizedSoulShards
+	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
+	lookupLogic["$resource"] = normalizedMana
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+	lookupLogic["$resourcePercent"] = manaPercentRaw
+	lookupLogic["$comboPoints"] = normalizedSoulShards
+	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -602,6 +777,10 @@ local function UpdateSnapshot()
 end
 
 local function UpdateSnapshot_Affliction()
+	UpdateSnapshot()
+end
+
+local function UpdateSnapshot_Demonology()
 	UpdateSnapshot()
 end
 
@@ -672,7 +851,7 @@ local function UpdateResourceBar()
 					shadowEmbrace = spells.shadowEmbraceDrainSoul
 				end
 
-				if specSettings.colors.bar.shadowEmbraceNotMax.enabled and talents:IsTalentActive(shadowEmbrace) and target ~= nil and
+				--[[if specSettings.colors.bar.shadowEmbraceNotMax.enabled and talents:IsTalentActive(shadowEmbrace) and target ~= nil and
 					not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") and
 					target.spells[shadowEmbrace.id].stacks < shadowEmbrace.attributes.maxStacks then
 					barColor = specSettings.colors.bar.shadowEmbraceNotMax.color
@@ -685,11 +864,32 @@ local function UpdateResourceBar()
 					else
 						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
 					end
-				end
+				end]]
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
+				local current = snapshotData.attributes.resource2
+				
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border
+				local cpColor = specSettings.colors.comboPoints.base
+				local cpBR = cpBackgroundRed
+				local cpBG = cpBackgroundGreen
+				local cpBB = cpBackgroundBlue
+
+				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
+				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
+				for x = 1, TRB.Data.character.maxResource2-1 do
+					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
+					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
+					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
+				end
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
+				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				
+				--[[
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				local normalizedResource2 = snapshotData.attributes.resource2 / TRB.Data.resource2Factor
 				for x = 1, TRB.Data.character.maxResource2 do
@@ -729,7 +929,62 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				end]]
+			end
+		end
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
+	elseif TRB.Data.character.specId == 2 then
+		local specSettings = classSettings.demonology
+		local specCacheSettings = TRB.Data.specCache.demonology.settings
+		UpdateSnapshot_Demonology()
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
+
+		if snapshotData.attributes.isTracking then
+			TRB.Functions.Bar:HideResourceBar()
+
+			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+				local targetData = snapshotData.targetData
+				local target = targetData.targets[targetData.currentTargetGuid]
+				refreshText = true
+				local passiveBarValue = 0
+				local castingBarValue = 0
+				local currentResource = snapshotData.attributes.resourceModified
+				local barColor = specSettings.colors.bar.base
+				local barBorderColor = specSettings.colors.bar.border
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
+
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
+
+				barContainerFrame:SetAlpha(1.0)
+
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+				
+				local current = snapshotData.attributes.resource2
+				
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border
+				local cpColor = specSettings.colors.comboPoints.base
+				local cpBR = cpBackgroundRed
+				local cpBG = cpBackgroundGreen
+				local cpBB = cpBackgroundBlue
+
+				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
+				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)
+				for x = 1, TRB.Data.character.maxResource2-1 do
+					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
+					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
+					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
 				end
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
+				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -763,7 +1018,7 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Affliction
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.affliction.settings)
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.affliction)
-		targetData:AddSpellTracking(spells.unstableAffliction)
+		--[[targetData:AddSpellTracking(spells.unstableAffliction)
 		targetData:AddSpellTracking(spells.agony)
 		targetData:AddSpellTracking(spells.corruption)
 		targetData:AddSpellTracking(spells.wither)
@@ -772,7 +1027,7 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.soulRot)
 		targetData:AddSpellTracking(spells.phantomSingularity)
 		targetData:AddSpellTracking(spells.shadowEmbraceShadowBolt)
-		targetData:AddSpellTracking(spells.shadowEmbraceDrainSoul)
+		targetData:AddSpellTracking(spells.shadowEmbraceDrainSoul)]]
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ua"] = spells.unstableAffliction.icon
@@ -794,6 +1049,30 @@ local function SwitchSpec()
 			talents = specCache.affliction.talents
 			TRB.Data.barConstructedForSpec = "affliction"
 			ConstructResourceBar(specCache.affliction.settings)
+		end
+	elseif TRB.Data.character.specId == 2 then
+		specCache.demonology.talents:GetTalents()
+		FillSpellData_Demonology()
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.demonology)
+		
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		---@type TRB.Classes.TargetData
+		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+		local targetData = TRB.Data.snapshotData.targetData
+
+		TRB.Functions.RefreshLookupData = RefreshLookupData_Demonology
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.demonology.settings)
+		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.demonology)
+
+		local lookup = TRB.Data.lookup or {}
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
+		if TRB.Data.barConstructedForSpec ~= "demonology" then
+			talents = specCache.demonology.talents
+			TRB.Data.barConstructedForSpec = "demonology"
+			ConstructResourceBar(specCache.demonology.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -850,6 +1129,12 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.warlock.affliction.displayText.barText = TRB.Options.Warlock.AfflictionLoadDefaultBarTextSimpleSettings()
 					end
 
+					if (TwintopInsanityBarSettings.warlock == nil or
+						TwintopInsanityBarSettings.warlock.demonology == nil or
+						TwintopInsanityBarSettings.warlock.demonology.displayText == nil) then
+						settings.warlock.demonology.displayText.barText = TRB.Options.Warlock.DemonologyLoadDefaultBarTextSimpleSettings()
+					end
+
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
@@ -883,8 +1168,10 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					C_Timer.After(1, function()
 						TRB.Data.settings.core = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["GlobalOptions"], TRB.Data.settings.core)
 						TRB.Data.settings.warlock.affliction = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["WarlockAfflictionFull"], TRB.Data.settings.warlock.affliction)
+						TRB.Data.settings.warlock.demonology = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["WarlockDemonologyFull"], TRB.Data.settings.warlock.demonology)
 
 						FillSpellData_Affliction()
+						FillSpellData_Demonology()
 
 						TRB.Data.barConstructedForSpec = nil
 						SwitchSpec()
@@ -921,25 +1208,36 @@ function TRB.Functions.Class:CheckCharacter()
 	end
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "warlock"
-	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
+	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource, true)
+	TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", TRB.Data.resource, false)
 	TRB.Data.character.maxResource2 = 1
-	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
+	TRB.Data.resource2 = Enum.PowerType.SoulShards
+	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2, false)
 	local sharedSettings = nil
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "affliction"
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+	elseif TRB.Data.character.specId == 2 then
+		TRB.Data.character.specName = "demonology"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 	end
 
 	if sharedSettings ~= nil then
-		if maxComboPoints ~= TRB.Data.character.maxResource2 then
+		--if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
 			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
-		end
+		--end
 	end
 end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.warlock.affliction == true then
+		TRB.Data.specSupported = true
+		TRB.Data.resource = Enum.PowerType.Mana
+		TRB.Data.resourceFactor = 1
+		TRB.Data.resource2 = Enum.PowerType.SoulShards
+		TRB.Data.resource2Factor = 10
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.warlock.demonology == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
@@ -956,7 +1254,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if TRB.Data.character.specId == 1 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 3
 		local sharedSettings
@@ -987,12 +1285,15 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if TRB.Data.character.specId == 1 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 		settings = TRB.Data.settings.warlock.affliction
+	elseif TRB.Data.character.specId == 2 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		settings = TRB.Data.settings.warlock.demonology
 	else
 		return false
 	end
 
 	if TRB.Data.character.specId == 1 then --Affliction
-		if var == "$nightfallTime" then
+		--[[if var == "$nightfallTime" then
 			if snapshots[spells.nightfall.id].buff.isActive then
 				valid = true
 			end
@@ -1136,13 +1437,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			target.spells[shadowEmbrace.id].remainingTime > 0 then
 			valid = true
 			end
-		end
+		end]]
+	elseif TRB.Data.character.specId == 2 then --Demonology
 	end
 
 	--Spec agnostic
-	if var == "$passive" then
+	--[[if var == "$passive" then
 		-- we'll set this to valid once there's something passive being tracked
-	elseif var == "$casting" then
+	else]]if var == "$casting" then
 		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
 			valid = true
 		end
@@ -1152,7 +1454,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif var == "$resourceMax" or var == "$manaMax" then
 		valid = true
-	elseif var == "$resourceTotal" or var == "$manaTotal" then
+	--[[elseif var == "$resourceTotal" or var == "$manaTotal" then
 		if snapshotData.attributes.resource > 0 or
 			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
 			then
@@ -1168,7 +1470,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			((settings.generation.mode == "time" and settings.generation.time > 0) or
 			(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 			valid = true
-		end
+		end]]
 	elseif var == "$comboPoints" or var == "$soulShards" then
 		valid = true
 	elseif var == "$comboPointsMax"or var == "$soulShardsMax" then
@@ -1183,7 +1485,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if (TRB.Data.character.specId ~= 1) then
+	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

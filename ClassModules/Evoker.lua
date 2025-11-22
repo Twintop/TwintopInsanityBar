@@ -1110,8 +1110,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
-				
-				
+			
 
 				local current = snapshotData.attributes.resource2
 				
@@ -1773,7 +1772,6 @@ function TRB.Functions.Class:CheckCharacter()
 	if sharedSettings ~= nil then
 		--if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
-			print(maxComboPoints, TRB.Data.character.maxResource2, TRB.Data.resource2, UnitPowerMax("player", TRB.Data.resource2))
 			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
 		--end
 	end
