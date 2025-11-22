@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 12.0.0.0-alpha12 (2025-11-21)
+# 12.0.0.0-alpha12 (2025-11-23)
 ## [#462](#462) General
 
 - RIP `COMBAT_LOG_EVENT_UNFILTERED`. It was commented out but all references to it have now been removed.
