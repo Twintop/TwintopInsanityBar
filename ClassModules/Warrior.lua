@@ -1084,10 +1084,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime)
 				if bufferEntry ~= nil then
 					snapshotData.snapshots[spells.ignorePain.id].buff:SetAuraInstanceId(bufferEntry)
-					--print("Found buffered aura for ignore pain with ID " .. bufferEntry)
 				else
 					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.ignorePain.id].buff)
-					--print("Did not find buffered aura for ignore pain, creating request")
 				end
 			end
 		end

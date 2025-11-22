@@ -314,15 +314,14 @@ function TRB.Functions.Bar:SetMinMax(settings)
 			end
 			
 			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-			TRB.Data.resource2 == Enum.PowerType.Chi or
-			TRB.Data.resource2 == Enum.PowerType.HolyPower or
-			TRB.Data.resource2 == Enum.PowerType.Essence or
-			TRB.Data.resource2 == Enum.PowerType.SoulShards then
+				TRB.Data.resource2 == Enum.PowerType.Chi or
+				TRB.Data.resource2 == Enum.PowerType.HolyPower or
+				TRB.Data.resource2 == Enum.PowerType.Essence or
+				TRB.Data.resource2 == Enum.PowerType.SoulShards then
 				nodes = 1
 			end
 
-			for x = 1, nodes do
-				print(x, nodes)
+			for x = 1, math.min(nodes, 10) do
 				TRB.Frames.resource2Frames[x].resourceFrame:SetMinMaxValues(0, nodeWidth)
 			end
 		end
@@ -371,7 +370,6 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		TRB.Data.resource2 == Enum.PowerType.SoulShards then
 			nodes = 1
 		end
-		print(nodes, length, TRB.Data.character.maxResource2)
 	
 		local nodeWidth = settings.comboPoints.width
 		local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2

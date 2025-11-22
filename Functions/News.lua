@@ -30,9 +30,9 @@ local content = [====[
 - Many features are disabled for now and new spells have (largely) not been implemented yet.
 - Restore functionality for tracking Soul Shards with a workaround. This is placeholder behavior with Soul Shards being part of single bar instead of individual UI elements.
 
-### [#495](#495) Demonology
+### [#495](#495) Demonology and [#496](#496) Destruction
 
-- Add barebones support for Demonology, tracking Mana and Soul Shards.
+- Add barebones support for Demonology and Destruction, tracking Mana and Soul Shards.
 - Tracking Soul Shards is currently being done with a workaround. This is placeholder behavior with Soul Shards being part of single bar instead of individual UI elements.
 
 ---

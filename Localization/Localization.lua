@@ -56,7 +56,7 @@ L["MageFrost"] = select(2, GetSpecializationInfoByID(64))
 
 L["WarlockAffliction"] = select(2, GetSpecializationInfoByID(265))
 L["WarlockDemonology"] = select(2, GetSpecializationInfoByID(266))
-L["WarlockDescruction"] = select(2, GetSpecializationInfoByID(267))
+L["WarlockDestruction"] = select(2, GetSpecializationInfoByID(267))
 
 L["MonkBrewmaster"] = select(2, GetSpecializationInfoByID(268))
 L["MonkMistweaver"] = select(2, GetSpecializationInfoByID(270))
@@ -101,7 +101,7 @@ L["MageFireFull"] = string.format("%s %s", L["MageFire"], L["Mage"])
 L["MageFrostFull"] = string.format("%s %s", L["MageFrost"], L["Mage"])
 L["WarlockAfflictionFull"] = string.format("%s %s", L["WarlockAffliction"], L["Warlock"])
 L["WarlockDemonologyFull"] = string.format("%s %s", L["WarlockDemonology"], L["Warlock"])
-L["WarlockDescructionFull"] = string.format("%s %s", L["WarlockDescruction"], L["Warlock"])
+L["WarlockDestructionFull"] = string.format("%s %s", L["WarlockDestruction"], L["Warlock"])
 L["MonkBrewmasterFull"] = string.format("%s %s", L["MonkBrewmaster"], L["Monk"])
 L["MonkMistweaverFull"] = string.format("%s %s", L["MonkMistweaver"], L["Monk"])
 L["MonkWindwalkerFull"] = string.format("%s %s", L["MonkWindwalker"], L["Monk"])
@@ -131,6 +131,6 @@ L["ResourceChi"] = CHI_POWER
 L["ResourceFocus"] = POWER_TYPE_FOCUS
 L["ResourceEssence"] = POWER_TYPE_ESSENCE
 L["ResourceHolyPower"] = HOLY_POWER
-L["ResourceSoulShards"] = SOUL_SHARDS_POWER 
+L["ResourceSoulShards"] = SOUL_SHARDS_POWER
 
 TRB.Localization = L

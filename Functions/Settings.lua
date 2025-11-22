@@ -293,7 +293,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				},
 				warlock = {
 					affliction = specGlobalDefaults,
-					demonology = specGlobalDefaults
+					demonology = specGlobalDefaults,
+					destruction = specGlobalDefaults
 				},
 				warrior = {
 					arms = specGlobalDefaults,
@@ -348,7 +349,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				},
 				warlock = {
 					affliction = true,
-					demonology = true
+					demonology = true,
+					destruction = true
 				},
 				warrior = {
 					arms = true,
@@ -413,7 +415,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 		},
 		warlock = {
 			affliction = {},
-			demonology = {}
+			demonology = {},
+			destruction = {}
 		},
 		warrior = {
 			arms = {},

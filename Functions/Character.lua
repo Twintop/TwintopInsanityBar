@@ -73,11 +73,8 @@ local function UpdateResourceValues()
 		elseif TRB.Data.resource2 == "CUSTOM" then
 			-- Do nothing
 		else
-			if TRB.Data.resource2 == Enum.PowerType.SoulShards then
-				snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, false)
-			else
-				snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
-			end
+			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, false)
+			snapshotData.attributes.resource2Modified = UnitPower("player", TRB.Data.resource2, true)
 		end
 	end
 end
@@ -636,7 +633,7 @@ function TRB.Functions.Character:IsComboPointUser()
 		(classId == 4) or -- Rogue
 		(classId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
 		--(classId == 7 and specId == 2) or -- Enhancement Shaman
-		(classId == 9 and (specId == 1 or specId == 2)) or -- Affliction or Demonology Warlock
+		(classId == 9) or -- Warlock
 		(classId == 10 and specId == 3) or -- Windwalker Monk
 		(classId == 11 and specId == 2) or -- Feral Druid
 		(classId == 12 and (specId == 2 or specId == 3)) or -- Vengeance or Devourer Demon Hunter

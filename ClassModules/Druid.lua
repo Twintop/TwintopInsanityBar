@@ -2789,7 +2789,6 @@ local function UpdateResourceBar()
 					
 					if resourceAmount == nil then
 						showThreshold = false
-						print("Error: Resource amount for threshold " .. spell.name .. " is nil.")
 					elseif resourceAmount >= maxPrimaryBarResourceUnnormalized then
 						showThreshold = false
 					end

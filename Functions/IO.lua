@@ -78,6 +78,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Demonology
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+			elseif specId == 3 then -- Destruction
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end
 	elseif classId == 10 then -- Monk
 		if specId == 1 then -- Brewmaster

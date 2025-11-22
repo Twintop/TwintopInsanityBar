@@ -21,7 +21,8 @@ Global_TwintopResourceBar = {}
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
 	affliction = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
-	demonology = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	demonology = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
+	destruction = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 }
 TRB.Data.specCache = specCache
 
@@ -107,6 +108,43 @@ local function FillSpecializationCache()
 	}
 
 	specCache.demonology.barTextVariables = {
+		icons = {},
+		values = {}
+	}
+
+	-- Destruction
+	specCache.destruction.Global_TwintopResourceBar = {
+		resource = {
+			resource = 0,
+			casting = 0,
+			passive = 0,
+			regen = 0
+		},
+		dots = {
+		},
+		isPvp = false
+	}
+
+	specCache.destruction.character = {
+		guid = UnitGUID("player"),
+		raceId = TRB.Data.character.raceId,
+		classId = TRB.Data.character.classId,
+		specId = 3,
+		maxResource = 10000,
+		maxResource2 = 50,
+		effects = {
+		},
+		items = {}
+	}
+	
+	---@type TRB.Classes.Warlock.DestructionSpells
+	specCache.destruction.spellsData.spells = TRB.Classes.Warlock.DestructionSpells:New()
+	local spells = specCache.destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+
+	specCache.destruction.snapshotData.audio = {
+	}
+
+	specCache.destruction.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -287,6 +325,57 @@ local function FillSpellData_Demonology()
 	}
 end
 
+
+
+local function Setup_Destruction()
+	TRB.Functions.Character:FillSpecializationCacheSettings("warlock", "destruction")
+end
+
+local function FillSpellData_Destruction()
+	Setup_Destruction()
+	specCache.destruction.spellsData:FillSpellData()
+	local spells = specCache.destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+
+	-- This is done here so that we can get icons for the options menu!
+	specCache.destruction.barTextVariables.icons = {
+		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+	}
+	specCache.destruction.barTextVariables.values = {
+		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+		{ variable = "$versatility", description = L["BarTextVariableVersatility"], printInSettings = true, color = false },
+		{ variable = "$versatilityPercent", description = L["BarTextVariableVersatility"], printInSettings = false, color = false },
+		{ variable = "$versatilityRating", description = L["BarTextVariableVersatilityRating"], printInSettings = true, color = false },
+		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true },
+		
+		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$manaMax", description = L["WarlockDestructionBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["WarlockDestructionBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$soulShards", description = L["WarlockDestructionBarTextVariable_soulShards"], printInSettings = true, color = false },
+		{ variable = "$soulShardsMax", description = L["WarlockDestructionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
+
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
+		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+		{ variable = "$passive", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = "", printInSettings = false, color = false },
+	}
+end
+
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -306,6 +395,7 @@ local function TargetsCleanup(clearAll)
 	if clearAll == true then
 		if TRB.Data.character.specId == 1 then
 		elseif TRB.Data.character.specId == 2 then
+		elseif TRB.Data.character.specId == 3 then
 		end
 	end
 end
@@ -330,7 +420,8 @@ local function ConstructResourceBar(settings)
 		TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
 	end
 
-	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
+		TRB.Functions.Bar:Construct(settings)
 	end
 	TRB.Frames.resource2ContainerFrame:Show()
 	
@@ -766,6 +857,72 @@ local function RefreshLookupData_Demonology()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+local function RefreshLookupData_Destruction()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local specSettings = TRB.Data.settings.warlock.destruction
+	local sharedSettings = TRB.Data.specCache["destruction"].settings
+	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+	local targetData = snapshotData.targetData
+	local currentTime = GetTime()
+	local normalizedMana = snapshotData.attributes.resourceModified
+	local normalizedSoulShards = snapshotData.attributes.resource2
+
+	-- This probably needs to be pulled every refresh
+	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
+
+	--$mana
+	local manaPrecision = specSettings.manaPrecision or 1
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	--$casting
+	local _castingMana = snapshotData.casting.resourceFinal
+	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+
+	--$manaMax
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+
+	--$manaPercent
+	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, true)
+	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+
+	--$soulShards
+	local soulShards = string.format("%.0f", normalizedSoulShards)
+	--$soulShardsMax
+	local soulShardsMax = string.format("%.0f", TRB.Data.character.maxResource2)
+
+	local lookup = TRB.Data.lookup or {}
+	lookup["$mana"] = currentMana
+	lookup["$manaMax"] = manaMax
+	lookup["$manaPercent"] = manaPercent
+	lookup["$casting"] = castingMana
+	lookup["$soulShards"] = soulShards
+	lookup["$soulShardsMax"] = soulShardsMax
+	lookup["$resource"] = currentMana
+	lookup["$resourceMax"] = manaMax
+	lookup["$resourcePercent"] = manaPercent
+	lookup["$comboPoints"] = soulShards
+	lookup["$comboPointsMax"] = soulShardsMax
+	TRB.Data.lookup = lookup
+
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	lookupLogic["$mana"] = normalizedMana
+	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+	lookupLogic["$manaPercent"] = manaPercentRaw
+	lookupLogic["$casting"] = _castingMana
+	lookupLogic["$soulShards"] = normalizedSoulShards
+	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
+	lookupLogic["$resource"] = normalizedMana
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+	lookupLogic["$resourcePercent"] = manaPercentRaw
+	lookupLogic["$comboPoints"] = normalizedSoulShards
+	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	TRB.Data.lookupLogic = lookupLogic
+end
+
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
@@ -781,6 +938,10 @@ local function UpdateSnapshot_Affliction()
 end
 
 local function UpdateSnapshot_Demonology()
+	UpdateSnapshot()
+end
+
+local function UpdateSnapshot_Destruction()
 	UpdateSnapshot()
 end
 
@@ -988,6 +1149,69 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
+	elseif TRB.Data.character.specId == 3 then
+		local specSettings = classSettings.destruction
+		local specCacheSettings = TRB.Data.specCache.destruction.settings
+		UpdateSnapshot_Destruction()
+		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
+
+		if snapshotData.attributes.isTracking then
+			TRB.Functions.Bar:HideResourceBar()
+
+			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+				local targetData = snapshotData.targetData
+				local target = targetData.targets[targetData.currentTargetGuid]
+				refreshText = true
+				local passiveBarValue = 0
+				local castingBarValue = 0
+				local currentResource = snapshotData.attributes.resourceModified
+				local barColor = specSettings.colors.bar.base
+				local barBorderColor = specSettings.colors.bar.border
+				local castingBarColor = specSettings.colors.bar.casting
+				local passiveBarColor = specSettings.colors.bar.passive
+
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
+
+				barContainerFrame:SetAlpha(1.0)
+
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+
+				local current = snapshotData.attributes.resource2Modified
+				local max = TRB.Data.character.maxResource2Modified
+
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border
+				local cpColor = specSettings.colors.comboPoints.base
+				local cpBR = cpBackgroundRed
+				local cpBG = cpBackgroundGreen
+				local cpBB = cpBackgroundBlue
+
+				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, max)
+				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, max)
+				
+				-- Thresholds for shards (every 10 fragments)
+				local shardCount = max / 10
+				for x = 1, shardCount - 1 do
+					if TRB.Frames.resource2Frames[1].containerFrame.thresholds[x] == nil then
+						TRB.Frames.resource2Frames[1].containerFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
+					end
+					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
+					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
+					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x * 10, max)
+				end
+				
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
+				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
+			end
+		end
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
 
@@ -1074,6 +1298,30 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "demonology"
 			ConstructResourceBar(specCache.demonology.settings)
 		end
+	elseif TRB.Data.character.specId == 3 then
+		specCache.destruction.talents:GetTalents()
+		FillSpellData_Destruction()
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.destruction)
+		
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+		---@type TRB.Classes.TargetData
+		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+		local targetData = TRB.Data.snapshotData.targetData
+
+		TRB.Functions.RefreshLookupData = RefreshLookupData_Destruction
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.destruction.settings)
+		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.destruction)
+
+		local lookup = TRB.Data.lookup or {}
+		TRB.Data.lookup = lookup
+		TRB.Data.lookupLogic = {}
+
+		if TRB.Data.barConstructedForSpec ~= "destruction" then
+			talents = specCache.destruction.talents
+			TRB.Data.barConstructedForSpec = "destruction"
+			ConstructResourceBar(specCache.destruction.settings)
+		end
 	else
 		TRB.Data.barConstructedForSpec = nil
 	end
@@ -1094,7 +1342,6 @@ local function SwitchSpec()
 		end)
 	end)
 end
-
 
 resourceFrame:RegisterEvent("ADDON_LOADED")
 resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -1135,6 +1382,12 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.warlock.demonology.displayText.barText = TRB.Options.Warlock.DemonologyLoadDefaultBarTextSimpleSettings()
 					end
 
+					if (TwintopInsanityBarSettings.warlock == nil or
+						TwintopInsanityBarSettings.warlock.destruction == nil or
+						TwintopInsanityBarSettings.warlock.destruction.displayText == nil) then
+						settings.warlock.destruction.displayText.barText = TRB.Options.Warlock.DestructionLoadDefaultBarTextSimpleSettings()
+					end
+
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 				else
@@ -1169,9 +1422,11 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						TRB.Data.settings.core = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["GlobalOptions"], TRB.Data.settings.core)
 						TRB.Data.settings.warlock.affliction = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["WarlockAfflictionFull"], TRB.Data.settings.warlock.affliction)
 						TRB.Data.settings.warlock.demonology = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["WarlockDemonologyFull"], TRB.Data.settings.warlock.demonology)
+						TRB.Data.settings.warlock.destruction = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["WarlockDestructionFull"], TRB.Data.settings.warlock.destruction)
 
 						FillSpellData_Affliction()
 						FillSpellData_Demonology()
+						FillSpellData_Destruction()
 
 						TRB.Data.barConstructedForSpec = nil
 						SwitchSpec()
@@ -1211,6 +1466,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource, true)
 	TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", TRB.Data.resource, false)
 	TRB.Data.character.maxResource2 = 1
+	TRB.Data.character.maxResource2Modified = UnitPowerMax("player", TRB.Data.resource2, true)
 	TRB.Data.resource2 = Enum.PowerType.SoulShards
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2, false)
 	local sharedSettings = nil
@@ -1219,6 +1475,9 @@ function TRB.Functions.Class:CheckCharacter()
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "demonology"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+	elseif TRB.Data.character.specId == 3 then
+		TRB.Data.character.specName = "destruction"
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 	end
 
@@ -1243,6 +1502,12 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.SoulShards
 		TRB.Data.resource2Factor = 10
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.warlock.destruction == true then
+		TRB.Data.specSupported = true
+		TRB.Data.resource = Enum.PowerType.Mana
+		TRB.Data.resourceFactor = 1
+		TRB.Data.resource2 = Enum.PowerType.SoulShards
+		TRB.Data.resource2Factor = 10
 	else
 		TRB.Data.specSupported = false
 	end
@@ -1254,7 +1519,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 3
 		local sharedSettings
@@ -1288,6 +1553,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 		settings = TRB.Data.settings.warlock.demonology
+	elseif TRB.Data.character.specId == 3 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+		settings = TRB.Data.settings.warlock.destruction
 	else
 		return false
 	end
@@ -1439,6 +1707,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		end]]
 	elseif TRB.Data.character.specId == 2 then --Demonology
+	elseif TRB.Data.character.specId == 3 then --Destruction
 	end
 
 	--Spec agnostic
@@ -1485,7 +1754,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2) then
+	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

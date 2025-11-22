@@ -678,11 +678,329 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 end
 TRB.Options.Warlock.DemonologyLoadDefaultSettings = DemonologyLoadDefaultSettings
 
+-- Destruction
+local function DestructionLoadDefaultBarTextSimpleSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$soulShards/$soulShardsMax",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		}
+	}
+	return textSettings
+end
+TRB.Options.Warlock.DestructionLoadDefaultBarTextSimpleSettings = DestructionLoadDefaultBarTextSimpleSettings
+
+local function DestructionLoadDefaultBarTextAdvancedSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=13,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=13,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$soulShards/$soulShardsMax",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		}
+	}
+	return textSettings
+end
+
+local function DestructionLoadDefaultSettings(includeBarText)
+	local settings = {
+		precision = {
+			secondary = 0,
+			resource = 0
+		},
+		displayBar = {
+			alwaysShow=false,
+			notZeroShow=true,
+			neverShow=false,
+			dragonriding=true
+		},
+		bar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-215,
+			border=2,
+			dragAndDrop=false,
+			pinToPersonalResourceDisplay=false
+		},
+		comboPoints = {
+			width=25,
+			height=16,
+			xPos=0,
+			yPos=4,
+			border=2,
+			spacing=14,
+			relativeTo="TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		passiveGeneration = {
+		},
+		colors={
+			text = {
+				current = {
+					color = "FF4D4DFF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				dots = {
+					options = {
+						enabled=true,
+					},
+					up = {
+						color = "FFFFFFFF"
+					},
+					down = {
+						color = "FFFF0000"
+					},
+					pandemic = {
+						color = "FFFFFF00"
+					}
+				}
+			},
+			bar={
+				border="FF000099",
+				background="66000000",
+				base="FF0000FF",
+				spending="FFFFFFFF",
+				passive="FF8080FF",
+				showPassive=true,
+				showCasting=true
+			},
+			comboPoints = {
+				border="FF4749B5",
+				background="66000000",
+				base="FF8788EE",
+				penultimate="FFFF9900",
+				final="FFFF0000",
+				sameColor=false,
+			},
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
+			endCap = {
+				base = {
+					color = "FFFFFFFF",
+					enabled = false,
+					width = 2,
+					useBorderColor = false,
+					useBorderColorExceptDefault = false
+				}
+			}
+		},
+		displayText={
+			default = {
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = L["PositionLeft"],
+				fontSize=18,
+				color = "FFFFFFFF",
+			},
+			barText = {}
+		},
+		audio={
+		},
+		textures={
+			background="Interface\\Tooltips\\UI-Tooltip-Background",
+			backgroundName="Blizzard Tooltip",
+			border="Interface\\Buttons\\WHITE8X8",
+			borderName="1 Pixel",
+			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+			resourceBarName="Blizzard",
+			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+			passiveBarName="Blizzard",
+			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+			castingBarName="Blizzard",
+			textureLock=true,
+			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			comboPointsBackgroundName="Blizzard Tooltip",
+			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+			comboPointsBorderName="1 Pixel",
+			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+			comboPointsBarName="Blizzard",
+		},
+		thresholds = {
+			width = 2,
+			overlapBorder=true,
+			outOfRange=true,
+			icons = {
+				show = true,
+				xPos = 0,
+				yPos = -5,
+				width = 24,
+				height = 24,
+				desaturate = true,
+				enabled = true,
+				border=2,
+				relativeTo = "BOTTOM",
+				relativeToName = L["PositionBottom"],
+				fullWidth = true,
+			},
+		}
+	}
+
+	if includeBarText then
+		settings.displayText.barText = DestructionLoadDefaultBarTextSimpleSettings()
+	end
+
+	return settings
+end
+TRB.Options.Warlock.DestructionLoadDefaultSettings = DestructionLoadDefaultSettings
+
 local function LoadDefaultSettings(includeBarText)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
 	settings.warlock.affliction = AfflictionLoadDefaultSettings(includeBarText)
 	settings.warlock.demonology = DemonologyLoadDefaultSettings(includeBarText)
+	settings.warlock.destruction = DestructionLoadDefaultSettings(includeBarText)
 	return settings
 end
 TRB.Options.Warlock.LoadDefaultSettings = LoadDefaultSettings
@@ -1475,7 +1793,7 @@ local function DemonologyConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.demonologyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warlock_Demonology", UIParent)
+	interfaceSettingsFrame.demonologyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_OptionsnamePrefix", UIParent)
 	interfaceSettingsFrame.demonologyDisplayPanel.name = L["WarlockDemonologyFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.demonologyDisplayPanel.parent = parent.name
@@ -1485,7 +1803,7 @@ local function DemonologyConstructOptionsPanel(cache)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockDemonologyFull"], oUi.xCoord, yCoord-5)	
 	
-	controls.checkBoxes.demonologyWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Demonology_demonologyWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.demonologyWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar" .. namePrefix .. "_demonologyWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.demonologyWarlockEnabled
 	f:SetPoint("TOPLEFT", 320, yCoord-10)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -1563,10 +1881,387 @@ local function DemonologyConstructOptionsPanel(cache)
 	DemonologyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
+local function DestructionConstructResetDefaultsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.destruction
+
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.destruction
+	local yCoord = 5
+
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Destruction_Reset"] = {
+		text = string.format(L["ResetBarDialog"], L["WarlockDestructionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.warlock.destruction = DestructionLoadDefaultSettings(true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Destruction_ResetBarTextSimple"] = {
+		text = string.format(L["ResetBarTextSimpleDialog"], L["WarlockDestructionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DestructionLoadDefaultBarTextSimpleSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Destruction_ResetBarTextAdvanced"] = {
+		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["WarlockDestructionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DestructionLoadDefaultBarTextAdvancedSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Destruction_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton1:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Destruction_ResetBarTextSimple")
+	end)
+	yCoord = yCoord - 40
+
+	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton3:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Destruction_ResetBarTextAdvanced")
+	end)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.destruction = controls
+end
+
+local function DestructionConstructBarColorsAndBehaviorPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.destruction
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.destruction
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Warlock_Destruction_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Warlock_Destruction_BarDisplay:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 9, 3, true, false, false, false, false, false)
+	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 9, 3, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], L["ResourceSoulShards"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 3, yCoord, true, L["ResourceSoulShards"])
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "notFull", false)
+
+	yCoord = yCoord - 90
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 30
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
+	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], false)
+	
+	yCoord = yCoord - 40
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulShards"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.base
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.penultimate
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Destruction_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sameColorComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsCheckboxUseHighestForAll"])
+	f.tooltip = L["WarlockSoulShardsCheckboxUseHighestForAllTooltip"]
+	f:SetChecked(spec.comboPoints.sameColor)
+	f:SetScript("OnClick", function(self, ...)
+		spec.comboPoints.sameColor = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.final
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Destruction_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.consistentUnfilledColorComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsCheckboxAlwaysDefaultBackground"])
+	f.tooltip = L["WarlockSoulShardsCheckboxAlwaysDefaultBackgroundTooltip"]
+	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+	end)
+end
+
+local function DestructionConstructThresholdPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.destruction
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.destruction
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Warlock_Destruction_Threshold = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThreshold"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Warlock_Destruction_Threshold:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixThreshold"] .. ".", 9, 3, false, true, false, false, false, false)
+	end)
+
+	--yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "threshold")
+
+	--yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "threshold")
+end
+
+local function DestructionConstructFontAndTextPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.destruction
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.destruction
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+	controls.buttons.exportButton_Warlock_Destruction_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Warlock_Destruction_FontAndText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 9, 3, false, false, true, false, false, false)
+	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 9, 3, yCoord)
+
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockManaTextColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 9, 3, yCoord)
+	
+	yCoord = yCoord - 30
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCastingMana"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.casting
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.passive
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
+	end)
+end
+
+local function DestructionConstructAudioAndTrackingPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.destruction
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.destruction
+	local yCoord = 5
+	local f = nil
+
+	controls.buttons.exportButton_Warlock_Destruction_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Warlock_Destruction_AudioAndTracking:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 9, 3, false, false, false, true, false, false)
+	end)
+
+	controls.textAudioSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+end
+
+local function DestructionConstructBarTextDisplayPanel(parent, cache)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.destruction
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.destruction
+	local yCoord = 5
+
+	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	controls.buttons.exportButton_Warlock_Destruction_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Warlock_Destruction_BarText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 9, 2, false, false, false, false, true, false)
+	end)
+
+	yCoord = yCoord - 30
+	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 9, 3, yCoord, cache)
+end
+
+local function DestructionConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 2)
+	local namePrefix = className .. "_" .. specName
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local parent = interfaceSettingsFrame.panel
+	local controls = interfaceSettingsFrame.controls.destruction or {}
+	local yCoord = 0
+	local f = nil
+
+	controls.colors = {}
+	controls.labels = {}
+	controls.textbox = {}
+	controls.checkBoxes = {}
+	controls.dropDown = {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.destructionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warlock_Destruction", UIParent)
+	interfaceSettingsFrame.destructionDisplayPanel.name = L["WarlockDestructionFull"]
+---@diagnostic disable-next-line: undefined-field
+	interfaceSettingsFrame.destructionDisplayPanel.parent = parent.name
+	TRB.Details.addonCategory.specs["destruction"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.destructionDisplayPanel, L["WarlockDestructionFull"])
+	
+	parent = interfaceSettingsFrame.destructionDisplayPanel
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockDestructionFull"], oUi.xCoord, yCoord-5)	
+	
+	controls.checkBoxes.destructionWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Destruction_destructionWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.destructionWarlockEnabled
+	f:SetPoint("TOPLEFT", 320, yCoord-10)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarlockDestructionFull"])
+	f:SetChecked(TRB.Data.settings.core.enabled.warlock.destruction)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.enabled.warlock.destruction = self:GetChecked()
+		TRB.Functions.Class:EventRegistration()
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.destructionWarlockEnabled, TRB.Data.settings.core.enabled.warlock.destruction, true)
+	end)
+	
+	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.destructionWarlockEnabled, TRB.Data.settings.core.enabled.warlock.destruction, true)
+
+	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
+	controls.buttons.importButton:SetFrameLevel(10000)
+	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Import")
+	end)
+
+	controls.buttons.exportButton_Warlock_Destruction_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
+	controls.buttons.exportButton_Warlock_Destruction_All:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 3, true, true, true, true, true, false)
+	end)
+
+	yCoord = yCoord - 52
+
+	local tabs = {}
+	local tabsheets = {}
+
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
+	--[[
+		This spec doesn't use Threshold Lines. Make the width 1 instead of 100
+	]]
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
+
+	yCoord = yCoord - 15
+
+	for i = 1, 6 do
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Warlock_Destruction_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	end
+
+	tabsheets[1]:Show()
+	tabsheets[1].selected = true
+	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	parent.tabs = tabs
+	parent.tabsheets = tabsheets
+	parent.lastTab = tabsheets[1]
+	parent.lastTabId = 1
+
+	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+	TRB.Frames.interfaceSettingsFrameContainer.controls.destruction = controls
+
+	DestructionConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+	--DestructionConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	DestructionConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
+	DestructionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	DestructionConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
+	DestructionConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+end
+
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	
 	AfflictionConstructOptionsPanel(specCache.affliction)
 	DemonologyConstructOptionsPanel(specCache.demonology)
+	DestructionConstructOptionsPanel(specCache.destruction)
 end
 TRB.Options.Warlock.ConstructOptionsPanel = ConstructOptionsPanel
