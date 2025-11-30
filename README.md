@@ -33,7 +33,7 @@ Currently supported specs:
 
 #### Alpha (Midnight)
 
-- Death Knight - None (yet!)
+- Death Knight - Blood, Frost, Unholy
 - Demon Hunter - Havoc, Vengeance, Devourer
 - Druid - Balance, Feral, Guardian, Restoration
 - Evoker - Devastation, Preservation, Augmentation
