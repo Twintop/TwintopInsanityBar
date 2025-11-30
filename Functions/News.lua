@@ -30,6 +30,7 @@ local content = [====[
 - Remove experimental gating from Enhancement.
 
 ## Warlock
+### [#495](#495) Demonology and [#496](#496) Destruction
 
 - Add export buttons for Demonology and Destruction to the Import/Export screen.
 
