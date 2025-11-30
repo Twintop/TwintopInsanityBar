@@ -33,13 +33,15 @@ Currently supported specs:
 
 #### Alpha (Midnight)
 
+- Death Knight - None (yet!)
 - Demon Hunter - Havoc, Vengeance, Devourer
 - Druid - Balance, Feral, Guardian, Restoration
 - Evoker - Devastation, Preservation, Augmentation
 - Hunter - Beast Mastery, Marksmanship, Survival
+- Mage - None (yet!)
 - Monk - Brewmaster, Mistweaver, Windwalker
 - Priest - Discipline, Holy, Shadow
-- Paladin - Holy, Protection
+- Paladin - Holy, Protection, Retribution
 - Rogue - Assassination, Outlaw, Subtlety
 - Shaman - Elemental, Enhancement, Restoration
 - Warlock - Affliction, Demonology, Destruction

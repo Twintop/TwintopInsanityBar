@@ -328,6 +328,9 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.paladin.protection) > 0 then -- Protection
 				configuration.paladin.protection = ExportConfigurationSections(2, 2, settings.paladin.protection, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.paladin.retribution) > 0 then -- Retribution
+				configuration.paladin.retribution = ExportConfigurationSections(2, 3, settings.paladin.retribution, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
 			configuration.hunter = {}
 

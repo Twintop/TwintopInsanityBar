@@ -20,9 +20,9 @@ local content = [====[
 - Many features are disabled for now and new spells have (largely) not been implemented yet.
 - Restore functionality for tracking Holy Power with a workaround. This is placeholder behavior with Holy Power being part of single bar instead of individual UI elements.
 
-### [#497](#497) Protection
+### [#497](#497) Protection and [#498](#498) Retribution
 
-- Add barebones support for Protection, tracking Mana and Holy Power.
+- Add barebones support for Protection and Retribution, tracking Mana and Holy Power.
 - Tracking Holy Power is currently being done with a workaround. This is placeholder behavior with Holy Power being part of single bar instead of individual UI elements.
 
 ## Shaman

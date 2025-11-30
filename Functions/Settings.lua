@@ -276,6 +276,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				paladin = {
 					holy = specGlobalDefaults,
 					protection = specGlobalDefaults,
+					retribution = specGlobalDefaults,
 				},
 				priest = {
 					discipline = specGlobalDefaults,
@@ -332,7 +333,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				},
 				paladin = {
 					holy = true,
-					protection = true
+					protection = true,
+					retribution = true
 				},
 				priest = {
 					discipline = true,
@@ -393,7 +395,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 		},
 		paladin = {
 			holy = {},
-			protection = {}
+			protection = {},
+			retribution = {}
 		},
 		priest = {
 			discipline = {},

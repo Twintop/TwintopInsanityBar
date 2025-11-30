@@ -2403,3 +2403,9 @@ L["PaladinProtectionManaTextColorsHeader"] = "Mana Text Colors"
 L["PaladinProtectionColorPickerCurrentMana"] = "Current Mana"
 L["PaladinProtectionColorPickerCastingMana"] = "Mana spent from hardcasting spells"
 L["PaladinProtectionColorPickerPassiveMana"] = "Mana from passive sources"
+
+-- Retribution Paladin
+L["PaladinRetributionManaTextColorsHeader"] = "Mana Text Colors"
+L["PaladinRetributionColorPickerCurrentMana"] = "Current Mana"
+L["PaladinRetributionColorPickerCastingMana"] = "Mana spent from hardcasting spells"
+L["PaladinRetributionColorPickerPassiveMana"] = "Mana from passive sources"
