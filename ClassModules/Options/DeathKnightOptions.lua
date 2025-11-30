@@ -260,7 +260,7 @@ local function BloodLoadDefaultSettings(includeBarText)
 				border="FF980002",
 				background="66000000",
 				base="FFC41E3A",
-				cooldown="FF808080",
+				cooldown="FFCCCCCC",
 			},
 			threshold = {
 				under = {
@@ -570,7 +570,7 @@ local function FrostLoadDefaultSettings(includeBarText)
 				border="FF006BAD",
 				background="66000000",
 				base="FF368BC1",
-				cooldown="FF808080",
+				cooldown="FFCCCCCC",
 			},
 			threshold = {
 				under = {
@@ -879,7 +879,7 @@ local function UnholyLoadDefaultSettings(includeBarText)
 				border="FF12721A",
 				background="66000000",
 				base="FF20BD2D",
-				cooldown="FF808080",
+				cooldown="FFCCCCCC",
 			},
 			threshold = {
 				under = {
