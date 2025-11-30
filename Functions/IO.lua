@@ -316,10 +316,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				configuration.warrior.fury = ExportConfigurationSections(1, 2, settings.warrior.fury, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if TRB.Data.settings.core.experimental.specs.warrior.protection then
-				if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.protection) > 0 then -- Protection
-					configuration.warrior.protection = ExportConfigurationSections(1, 3, settings.warrior.protection, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.protection) > 0 then -- Protection
+				configuration.warrior.protection = ExportConfigurationSections(1, 3, settings.warrior.protection, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 2 and settings.paladin ~= nil then -- Paladin
 			configuration.paladin = {}
@@ -378,10 +376,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				configuration.shaman.elemental = ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 			
-			if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
-				if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.enhancement) > 0 then -- Enhancement
-					configuration.shaman.enhancement = ExportConfigurationSections(7, 2, settings.shaman.enhancement, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.enhancement) > 0 then -- Enhancement
+				configuration.shaman.enhancement = ExportConfigurationSections(7, 2, settings.shaman.enhancement, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
 			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.restoration) > 0 then -- Restoration
@@ -466,10 +462,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Fury
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		if TRB.Data.settings.core.experimental.specs.warrior.protection then
-			-- Protection
-			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Protection
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Paladin
 		-- Holy
@@ -502,10 +496,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Shaman
 		-- Elemental
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
-			-- Enhancement
-			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Enhancement
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Restoration
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
@@ -591,7 +583,7 @@ function TRB.Functions.IO:Import(input)
 		(configuration.warrior ~= nil and
 			(configuration.warrior.arms ~= nil or
 			configuration.warrior.fury ~= nil or
-			(TRB.Data.settings.core.experimental.specs.warrior.protection and configuration.warrior.protection ~= nil))) or
+			configuration.warrior.protection ~= nil)) or
 		(configuration.paladin ~= nil and
 			(configuration.paladin.holy ~= nil or
 			configuration.paladin.protection ~= nil)) or
@@ -613,7 +605,7 @@ function TRB.Functions.IO:Import(input)
 		(configuration.shaman ~= nil and
 			(configuration.shaman.elemental ~= nil or
 			configuration.shaman.restoration ~= nil or
-			(TRB.Data.settings.core.experimental.specs.shaman.enhancement and configuration.shaman.enhancement ~= nil))) or
+			configuration.shaman.enhancement ~= nil)) or
 		(configuration.warlock ~= nil and
 			(configuration.warlock.affliction ~= nil)) or
 		(configuration.druid ~= nil and

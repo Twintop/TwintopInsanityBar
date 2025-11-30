@@ -2527,11 +2527,7 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	ElementalConstructOptionsPanel(specCache.elemental)
-	
-	if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
-		EnhancementConstructOptionsPanel(specCache.enhancement)
-	end
-
+	EnhancementConstructOptionsPanel(specCache.enhancement)
 	RestorationConstructOptionsPanel(specCache.restoration)
 end
 TRB.Options.Shaman.ConstructOptionsPanel = ConstructOptionsPanel

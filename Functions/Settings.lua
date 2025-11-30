@@ -362,12 +362,6 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			},
 			experimental = {
 				specs = {
-					shaman = {
-						enhancement = false
-					},
-					warrior = {
-						protection = false
-					}
 				}
 			}
 		},

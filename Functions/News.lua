@@ -25,6 +25,20 @@ local content = [====[
 - Add barebones support for Protection, tracking Mana and Holy Power.
 - Tracking Holy Power is currently being done with a workaround. This is placeholder behavior with Holy Power being part of single bar instead of individual UI elements.
 
+## Shaman
+### [#484](#484) Enhancement
+
+- Remove experimental gating from Enhancement.
+
+## Warlock
+
+- Add export buttons for Demonology and Destruction specializations to the Import/Export screen.
+
+## Warrior
+### [#489](#489) Protection
+
+- Remove experimental gating from Protection.
+
 ---
 
 # 12.0.0.0-alpha12 (2025-11-23)

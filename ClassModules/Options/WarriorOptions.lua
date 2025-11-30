@@ -2910,9 +2910,6 @@ local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	ArmsConstructOptionsPanel(specCache.arms)
 	FuryConstructOptionsPanel(specCache.fury)
-	
-	if TRB.Data.settings.core.experimental.specs.warrior.protection then
-		ProtectionConstructOptionsPanel(specCache.protection)
-	end
+	ProtectionConstructOptionsPanel(specCache.protection)
 end
 TRB.Options.Warrior.ConstructOptionsPanel = ConstructOptionsPanel

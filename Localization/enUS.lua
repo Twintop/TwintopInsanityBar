@@ -44,8 +44,6 @@ L["AudioChannel"] = "Audio Channel"
 L["AudioChannelDescription"] = "Audio Channel to use"
 L["ExperimentalFeatures"] = "Experimental Features"
 L["Support"] = "Support"
-L["ExperimentalEnhancementShaman"] = "Enhancement Shaman support"
-L["ExperimentalEnhancementShamanTooltip"] = "This will enable experimental Enhancement Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Enhancement Shaman configuration options become available."
 L["ShowNewsPopup"] = "Show News Popup"
 
 --- Import/Export
@@ -2327,8 +2325,6 @@ L["WarriorProtectionBarTextVariable_rendTime"] = "Time remaining on Rend on your
 L["WarriorProtectionBarTextVariable_suddenDeathTime"] = "Time remaining on Sudden Death proc"
 L["WarriorProtectionBarTextVariable_ravagerTicks"] = "Number of expected ticks remaining on Ravager"
 L["WarriorProtectionBarTextVariable_ravagerRage"] = "Rage from Ravager"
-L["ExperimentalProtectionWarrior"] = "Protection Warrior support"
-L["ExperimentalProtectionWarriorTooltip"] = "This will enable experimental Protection Warrior support within the bar. If you change this setting and are currently logged in on a Warrior, you'll need to reload your UI before Protection Warrior configuration options become available."
 L["WarriorColorPickerThresholdOver"] = "Have enough Rage to use any enabled threshold ability"
 
 --[[

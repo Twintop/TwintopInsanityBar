@@ -532,7 +532,7 @@ local function ConstructResourceBar(settings)
 
 	if TRB.Data.character.specId == 1 then
 		TRB.Frames.resource2ContainerFrame:Hide()
-	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+	elseif TRB.Data.character.specId == 2 then
 		--TRB.Frames.resource2ContainerFrame:Show()
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 3 then
@@ -1716,7 +1716,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "elemental"
 			ConstructResourceBar(specCache.elemental.settings)
 		end
-	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+	elseif TRB.Data.character.specId == 2 then
 		specCache.enhancement.talents:GetTalents()
 		FillSpellData_Enhancement()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
@@ -1834,10 +1834,9 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.shaman.elemental.displayText.barText = TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings()
 					end
 
-					if TwintopInsanityBarSettings.core.experimental.specs.shaman.enhancement and
-						(TwintopInsanityBarSettings.shaman == nil or
+					if TwintopInsanityBarSettings.shaman == nil or
 						TwintopInsanityBarSettings.shaman.enhancement == nil or
-						TwintopInsanityBarSettings.shaman.enhancement.displayText == nil) then
+						TwintopInsanityBarSettings.shaman.enhancement.displayText == nil then
 						settings.shaman.enhancement.displayText.barText = TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings()
 					end
 
@@ -1927,7 +1926,7 @@ function TRB.Functions.Class:CheckCharacter()
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Maelstrom, false)
-	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "enhancement"
 		local maxComboPoints = 10
 		if maxComboPoints ~= TRB.Data.character.maxResource2 then
@@ -1952,7 +1951,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Id = nil
-	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.enhancement)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1978,7 +1977,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if TRB.Data.character.specId == 1 or (TRB.Data.character.specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement) or TRB.Data.character.specId == 3 then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local notZeroShowValue = TRB.Data.character.maxResource
 		local notZeroShowValueComboPoints = 0
 		local includeComboPoints = false
@@ -2244,8 +2243,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3) or
-		(TRB.Data.character.specId == 2 and not TRB.Data.settings.core.experimental.specs.shaman.enhancement) then
+	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end

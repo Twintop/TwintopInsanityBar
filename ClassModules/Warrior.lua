@@ -484,7 +484,7 @@ local function ConstructResourceBar(settings)
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Frames.resource2ContainerFrame:Hide()
 		TRB.Functions.Aura:DisableUnitAuraCache()
-	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.experimental.specs.warrior.protection then
+	elseif TRB.Data.character.specId == 3 then
 		TRB.Frames.resource2ContainerFrame:Show()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 		TRB.Functions.Aura:EnableUnitAuraCache()
@@ -1900,7 +1900,7 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "fury"
 			ConstructResourceBar(specCache.fury.settings)
 		end
-	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.experimental.specs.warrior.protection then
+	elseif TRB.Data.character.specId == 3 then
 		specCache.protection.talents:GetTalents()
 		FillSpellData_Protection()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.protection)
@@ -1995,10 +1995,9 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.warrior.fury.displayText.barText = TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings()
 					end
 
-					if  TwintopInsanityBarSettings.core.experimental.specs.warrior.protection and
-						(TwintopInsanityBarSettings.warrior == nil or
+					if  TwintopInsanityBarSettings.warrior == nil or
 						TwintopInsanityBarSettings.warrior.protection == nil or
-						TwintopInsanityBarSettings.warrior.protection.displayText == nil) then
+						TwintopInsanityBarSettings.warrior.protection.displayText == nil then
 						settings.warrior.protection.displayText.barText = TRB.Options.Warrior.ProtectionLoadDefaultBarTextSimpleSettings()
 					end
 
@@ -2089,7 +2088,7 @@ function TRB.Functions.Class:CheckCharacter()
 		end]]
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "fury"
-	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.experimental.specs.warrior.protection then
+	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "protection"
 		local maxComboPoints = 2 -- Shield Block and Ignore Pain
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
@@ -2114,7 +2113,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
 		TRB.Data.specSupported = true
-	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.warrior.protection == true and TRB.Data.settings.core.experimental.specs.warrior.protection then
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.warrior.protection == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.protection)
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
@@ -2130,7 +2129,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or (TRB.Data.character.specId == 3 and TRB.Data.settings.core.experimental.specs.warrior.protection) then
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local notZeroShowValue = 0
 		local sharedSettings
 		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
@@ -2345,7 +2344,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and (TRB.Data.character.specId ~= 3 and TRB.Data.settings.core.experimental.specs.warrior.protection) then
+	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end
