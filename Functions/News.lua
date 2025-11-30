@@ -32,12 +32,13 @@ local content = [====[
 
 ## Warlock
 
-- Add export buttons for Demonology and Destruction specializations to the Import/Export screen.
+- Add export buttons for Demonology and Destruction to the Import/Export screen.
 
 ## Warrior
 ### [#489](#489) Protection
 
 - Remove experimental gating from Protection.
+- Add export button for Protection to the Import/Export screen.
 
 ---
 
