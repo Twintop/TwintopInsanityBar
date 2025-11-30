@@ -2401,3 +2401,9 @@ L["WarlockDemonologyBarTextVariable_manaMax"] = "Maximum Mana"
 L["WarlockDemonologyBarTextVariable_casting"] = "Mana from Hardcasting Spells"
 L["WarlockDemonologyBarTextVariable_soulShards"] = "Current Soul Shards"
 L["WarlockDemonologyBarTextVariable_soulShardsMax"] = "Maximum Soul Shards"
+
+-- Protection Paladin
+L["PaladinProtectionManaTextColorsHeader"] = "Mana Text Colors"
+L["PaladinProtectionColorPickerCurrentMana"] = "Current Mana"
+L["PaladinProtectionColorPickerCastingMana"] = "Mana spent from hardcasting spells"
+L["PaladinProtectionColorPickerPassiveMana"] = "Mana from passive sources"

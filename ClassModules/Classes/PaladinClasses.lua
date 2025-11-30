@@ -31,3 +31,29 @@ function TRB.Classes.Paladin.HolySpells:New()
 
     return self
 end
+
+
+---@class TRB.Classes.Paladin.ProtectionSpells : TRB.Classes.SpecializationSpellsBase
+TRB.Classes.Paladin.ProtectionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Paladin.ProtectionSpells.__index = TRB.Classes.Paladin.ProtectionSpells
+
+function TRB.Classes.Paladin.ProtectionSpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), TRB.Classes.Paladin.ProtectionSpells) --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+    
+    return self
+end
+
+
+---@class TRB.Classes.Paladin.RetributionSpells : TRB.Classes.SpecializationSpellsBase
+TRB.Classes.Paladin.RetributionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Paladin.RetributionSpells.__index = TRB.Classes.Paladin.RetributionSpells
+
+function TRB.Classes.Paladin.RetributionSpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), TRB.Classes.Paladin.RetributionSpells) --[[@as TRB.Classes.Paladin.RetributionSpells]]
+   
+    return self
+end

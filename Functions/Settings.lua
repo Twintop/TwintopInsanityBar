@@ -275,6 +275,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				},
 				paladin = {
 					holy = specGlobalDefaults,
+					protection = specGlobalDefaults,
 				},
 				priest = {
 					discipline = specGlobalDefaults,
@@ -330,7 +331,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					windwalker = true
 				},
 				paladin = {
-					holy = true
+					holy = true,
+					protection = true
 				},
 				priest = {
 					discipline = true,
@@ -396,7 +398,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			windwalker = {}
 		},
 		paladin = {
-			holy = {}
+			holy = {},
+			protection = {}
 		},
 		priest = {
 			discipline = {},

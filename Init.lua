@@ -14,12 +14,12 @@ TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFF7C0A" .. L["Dr
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF33937F" .. L["Evoker"] .. "|r - " .. L["EvokerDevastation"] .. ", " .. L["EvokerPreservation"] .. ", " .. L["EvokerAugmentation"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFAAD372" .. L["Hunter"] .. "|r - " .. L["HunterBeastMastery"] .. ", " .. L["HunterMarksmanship"] .. ", Survival\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF00FF98" .. L["Monk"] .. "|r - " .. L["MonkMistweaver"] .. ", " .. L["MonkWindwalker"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFF48CBA" .. L["Paladin"] .. "|r - " .. L["PaladinHoly"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFF48CBA" .. L["Paladin"] .. "|r - " .. L["PaladinHoly"] .. ", " .. L["PaladinProtection"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFFFFF" .. L["Priest"] .. "|r - " .. L["PriestDiscipline"] .. ", " .. L["PriestHoly"] .. ", " .. L["PriestShadow"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFF468" .. L["Rogue"] .. "|r - " .. L["RogueAssassination"] .. ", " .. L["RogueOutlaw"] .. ", " .. L["RogueSubtlety"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF0070DD" .. L["Shaman"] .. "|r - " .. L["ShamanElemental"] .. ", " .. L["ShamanEnhancement"] .. " (" .. L["ExperimentalMinimal"] .. "), " .. L["ShamanRestoration"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF0070DD" .. L["Shaman"] .. "|r - " .. L["ShamanElemental"] .. ", " .. L["ShamanEnhancement"] .. "), " .. L["ShamanRestoration"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF8788EE" .. L["Warlock"] .. "|r - " .. L["WarlockAffliction"] .. ", " .. L["WarlockDemonology"] .. ", " .. L["WarlockDestruction"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFC69B6D" .. L["Warrior"] .. "|r - " .. L["WarriorArms"] .. ", " .. L["WarriorFury"] .. " (" .. L["ExperimentalMinimal"] .. "), " .. L["WarriorProtection"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFC69B6D" .. L["Warrior"] .. "|r - " .. L["WarriorArms"] .. ", " .. L["WarriorFury"] .. ", " .. L["WarriorProtection"] .. "\n"
 
 local addonData = {
 	loaded = false,
