@@ -26,12 +26,15 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Protection
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
-			end		
+			end
 		elseif classId == 2 then -- Paladin
 			if specId == 1 then -- Holy
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Protection
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			elseif specId == 3 then -- Retribution
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			end
@@ -64,6 +67,17 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
 			end
+		elseif classId == 6 then -- Death Knight
+			if specId == 1 then -- Blood
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			elseif specId == 2 then -- Frost
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			elseif specId == 3 then -- Unholy
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
 				configuration.endOfAscendance = settings.endOfAscendance
@@ -85,22 +99,22 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			end
-	elseif classId == 10 then -- Monk
-		if specId == 1 then -- Brewmaster
-		elseif specId == 2 then -- Mistweaver
-		elseif specId == 3 then -- Windwalker
-		end
-	elseif classId == 11 then -- Druids
-		if specId == 1 then -- Balance
-			configuration.endOfEclipse = settings.endOfEclipse
-			elseif specId == 2 then -- Feral
-				configuration.colors.comboPoints = settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Guardian
-				-- No special bar display configuration for Guardian
-			elseif specId == 4 then -- Restoration
-				configuration.endOfIncarnation = settings.endOfIncarnation
+		elseif classId == 10 then -- Monk
+			if specId == 1 then -- Brewmaster
+			elseif specId == 2 then -- Mistweaver
+			elseif specId == 3 then -- Windwalker
 			end
+		elseif classId == 11 then -- Druids
+			if specId == 1 then -- Balance
+				configuration.endOfEclipse = settings.endOfEclipse
+				elseif specId == 2 then -- Feral
+					configuration.colors.comboPoints = settings.colors.comboPoints
+					configuration.comboPoints = settings.comboPoints
+				elseif specId == 3 then -- Guardian
+					-- No special bar display configuration for Guardian
+				elseif specId == 4 then -- Restoration
+					configuration.endOfIncarnation = settings.endOfIncarnation
+				end
 		elseif classId == 12 then -- Demon Hunter
 			if specId == 1 then -- Havoc
 				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
@@ -144,6 +158,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 2 then -- Paladins
 			if specId == 1 then -- Holy
+			elseif specId == 2 then -- Protection
+			elseif specId == 3 then -- Retribution
 			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
@@ -162,6 +178,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
 				configuration.hasteThreshold = settings.hasteThreshold
 			end
+		elseif classId == 6 then -- Death Knight
+			if specId == 1 then -- Blood
+			elseif specId == 2 then -- Frost
+			elseif specId == 3 then -- Unholy
+			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
 			elseif specId == 2 then -- Enhancement
@@ -170,14 +191,14 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
 			end
-	elseif classId == 10 then -- Monk
-		if specId == 1 then -- Brewmaster
-		elseif specId == 2 then -- Mistweaver
-		elseif specId == 3 then -- Windwalker
-		end
-	elseif classId == 11 then -- Druids
-		if specId == 1 then -- Balance
-		elseif specId == 2 then -- Feral
+		elseif classId == 10 then -- Monk
+			if specId == 1 then -- Brewmaster
+			elseif specId == 2 then -- Mistweaver
+			elseif specId == 3 then -- Windwalker
+			end
+		elseif classId == 11 then -- Druids
+			if specId == 1 then -- Balance
+			elseif specId == 2 then -- Feral
 			elseif specId == 3 then -- Guardian
 			elseif specId == 4 then -- Restoration
 			end
@@ -203,8 +224,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Protection
 			end
 		elseif classId == 2 then -- Paladin
-			if specId == 2 then -- Holy
+			if specId == 1 then -- Holy
 				configuration.passiveGeneration = settings.passiveGeneration
+			elseif specId == 2 then -- Protection
+			elseif specId == 3 then -- Retribution
 			end
 		elseif classId == 3 then -- Hunters
 			configuration.generation = settings.generation
@@ -231,6 +254,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.mindbender = settings.mindbender
 				configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
 				configuration.voidTendrilTracker = settings.voidTendrilTracker
+			end
+		elseif classId == 6 then -- Death Knight
+			if specId == 1 then -- Blood
+			elseif specId == 2 then -- Frost
+			elseif specId == 3 then -- Unholy
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
@@ -372,6 +400,19 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.priest.shadow) > 0 then -- Shadow
 				configuration.priest.shadow = ExportConfigurationSections(5, 3, settings.priest.shadow, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+		elseif classId == 6 and settings.deathknight ~= nil then -- Death Knight
+			configuration.deathknight = {}			
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.deathknight.blood) > 0 then -- Blood
+				configuration.deathknight.blood = ExportConfigurationSections(6, 1, settings.deathknight.blood, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.deathknight.frost) > 0 then -- Frost
+				configuration.deathknight.frost = ExportConfigurationSections(6, 2, settings.deathknight.frost, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.deathknight.unholy) > 0 then -- Unholy
+				configuration.deathknight.unholy = ExportConfigurationSections(6, 3, settings.deathknight.unholy, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 7 and settings.shaman ~= nil then -- Shaman
 			configuration.shaman = {}
 
@@ -395,6 +436,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.demonology) > 0 then -- Demonology
 				configuration.warlock.demonology = ExportConfigurationSections(9, 2, settings.warlock.demonology, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.destruction) > 0 then -- Destruction
+				configuration.warlock.destruction = ExportConfigurationSections(9, 3, settings.warlock.destruction, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}
@@ -471,6 +516,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Paladin
 		-- Holy
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Protection
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Retribution
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Hunter
 		-- Beast Mastery
@@ -496,6 +545,14 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Shadow
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
+		-- Death Knight
+		-- Blood
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Frost
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Unholy
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+
 		-- Shaman
 		-- Elemental
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
@@ -507,8 +564,14 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Warlock
 		-- Affliction
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Demonology
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Destruction
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Monk
+		-- Brewmaster
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Mistweaver
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Windwalker
@@ -589,7 +652,8 @@ function TRB.Functions.IO:Import(input)
 			configuration.warrior.protection ~= nil)) or
 		(configuration.paladin ~= nil and
 			(configuration.paladin.holy ~= nil or
-			configuration.paladin.protection ~= nil)) or
+			configuration.paladin.protection ~= nil or
+			configuration.paladin.retribution ~= nil)) or
 		(configuration.rogue ~= nil and
 			(configuration.rogue.assassination ~= nil or
 			configuration.rogue.outlaw ~= nil or
@@ -605,12 +669,18 @@ function TRB.Functions.IO:Import(input)
 			(configuration.priest.discipline ~= nil or
 			configuration.priest.holy ~= nil or
 			configuration.priest.shadow ~= nil)) or
+		(configuration.deathknight ~= nil and
+			(configuration.deathknight.blood ~= nil or
+			configuration.deathknight.frost ~= nil or
+			configuration.deathknight.unholy ~= nil)) or
 		(configuration.shaman ~= nil and
 			(configuration.shaman.elemental ~= nil or
 			configuration.shaman.restoration ~= nil or
 			configuration.shaman.enhancement ~= nil)) or
 		(configuration.warlock ~= nil and
-			(configuration.warlock.affliction ~= nil)) or
+			(configuration.warlock.affliction ~= nil or
+			configuration.warlock.demonology ~= nil or
+			configuration.warlock.destiny ~= nil)) or
 		(configuration.druid ~= nil and
 			(configuration.druid.balance ~= nil or
 			configuration.druid.feral ~= nil or

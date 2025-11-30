@@ -11,5 +11,5 @@ if locale == "enCN" then
     L["Author"] = "Author"
     L["Version"] = "Version"
     L["Released"] = "Released"
-    L["SupportedSpecs"] = "Supported Specs (The War Within)"
+    L["SupportedSpecs"] = "Supported Specs (Midnight)"
 end

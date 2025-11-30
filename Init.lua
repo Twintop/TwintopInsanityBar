@@ -9,17 +9,18 @@ TRB.Details.addonAuthor = C_AddOns.GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = C_AddOns.GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = C_AddOns.GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = C_AddOns.GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9" .. L["DemonHunter"] .. "|r - " .. L["DemonHunterHavoc"] .. ", " .. L["DemonHunterVengeance"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFF7C0A" .. L["Druid"] .. "|r - " .. L["DruidBalance"] .. ", " .. L["DruidFeral"] .. ", " .. L["DruidRestoration"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF33937F" .. L["Evoker"] .. "|r - " .. L["EvokerDevastation"] .. ", " .. L["EvokerPreservation"] .. ", " .. L["EvokerAugmentation"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFAAD372" .. L["Hunter"] .. "|r - " .. L["HunterBeastMastery"] .. ", " .. L["HunterMarksmanship"] .. ", Survival\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF00FF98" .. L["Monk"] .. "|r - " .. L["MonkMistweaver"] .. ", " .. L["MonkWindwalker"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFF48CBA" .. L["Paladin"] .. "|r - " .. L["PaladinHoly"] .. ", " .. L["PaladinProtection"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFFFFF" .. L["Priest"] .. "|r - " .. L["PriestDiscipline"] .. ", " .. L["PriestHoly"] .. ", " .. L["PriestShadow"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFF468" .. L["Rogue"] .. "|r - " .. L["RogueAssassination"] .. ", " .. L["RogueOutlaw"] .. ", " .. L["RogueSubtlety"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF0070DD" .. L["Shaman"] .. "|r - " .. L["ShamanElemental"] .. ", " .. L["ShamanEnhancement"] .. "), " .. L["ShamanRestoration"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF8788EE" .. L["Warlock"] .. "|r - " .. L["WarlockAffliction"] .. ", " .. L["WarlockDemonology"] .. ", " .. L["WarlockDestruction"] .. "\n"
-TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFC69B6D" .. L["Warrior"] .. "|r - " .. L["WarriorArms"] .. ", " .. L["WarriorFury"] .. ", " .. L["WarriorProtection"] .. "\n"
+TRB.Details.supportedSpecs = "|c" .. select(4, GetClassColor("DEATHKNIGHT")) .. L["DeathKnight"] .. "|r - " .. L["DeathKnightBlood"] .. ", " .. L["DeathKnightFrost"] .. ", " .. L["DeathKnightUnholy"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("DEMONHUNTER")) .. L["DemonHunter"] .. "|r - " .. L["DemonHunterHavoc"] .. ", " .. L["DemonHunterVengeance"] .. ", " .. L["DemonHunterDevourer"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("DRUID")) .. L["Druid"] .. "|r - " .. L["DruidBalance"] .. ", " .. L["DruidFeral"] .. ", " .. L["DruidRestoration"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("EVOKER")) .. L["Evoker"] .. "|r - " .. L["EvokerDevastation"] .. ", " .. L["EvokerPreservation"] .. ", " .. L["EvokerAugmentation"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("HUNTER")) .. L["Hunter"] .. "|r - " .. L["HunterBeastMastery"] .. ", " .. L["HunterMarksmanship"] .. ", Survival\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("MONK")) .. L["Monk"] .. "|r - " .. L["MonkMistweaver"] .. ", " .. L["MonkWindwalker"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("PALADIN")) .. L["Paladin"] .. "|r - " .. L["PaladinHoly"] .. ", " .. L["PaladinProtection"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("PRIEST")) .. L["Priest"] .. "|r - " .. L["PriestDiscipline"] .. ", " .. L["PriestHoly"] .. ", " .. L["PriestShadow"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("ROGUE")) .. L["Rogue"] .. "|r - " .. L["RogueAssassination"] .. ", " .. L["RogueOutlaw"] .. ", " .. L["RogueSubtlety"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("SHAMAN")) .. L["Shaman"] .. "|r - " .. L["ShamanElemental"] .. ", " .. L["ShamanEnhancement"] .. ", " .. L["ShamanRestoration"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("WARLOCK")) .. L["Warlock"] .. "|r - " .. L["WarlockAffliction"] .. ", " .. L["WarlockDemonology"] .. ", " .. L["WarlockDestruction"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("WARRIOR")) .. L["Warrior"] .. "|r - " .. L["WarriorArms"] .. ", " .. L["WarriorFury"] .. ", " .. L["WarriorProtection"] .. "\n"
 
 local addonData = {
 	loaded = false,
@@ -231,6 +232,7 @@ if 	TRB.Data.character.classId == 1 or -- Protection Warrior
 	TRB.Data.character.classId == 2 or -- Paladin
 	TRB.Data.character.classId == 4 or -- Rogue
 	TRB.Data.character.classId == 5 or -- Discipline or Holy Priest
+	TRB.Data.character.classId == 6 or -- Death Knight
 	TRB.Data.character.classId == 7 or -- Enhancement Shaman
 	TRB.Data.character.classId == 9 or -- Warlock
 	TRB.Data.character.classId == 10 or -- Windwalker Monk

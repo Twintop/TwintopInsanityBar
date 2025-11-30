@@ -11,6 +11,31 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-alpha14 (2025-12-01)
+
+- Fix many import/export issues across newly added specializations.
+
+## [#490](#490) Healers
+
+- Disable bar border color changes for Potion of Chilled Clarity and Innervate. These may be readded in the future but have been disabled for now to avoid confusion.
+
+## Death Knight
+### [#499](#499) Blood, [#500](#500) Frost, and [#501](#501) Unholy
+
+- Add barebones support for Blood, Frost, and Unholy, tracking Runic Power and Runes.
+- Rune recharge sorting and bar text for timers coming soon.
+
+## Paladin
+
+- Disable some invalid bar text variables.
+- Clean up Option menus.
+
+### [#498](#498) Retribution
+
+- Fix issue with default bar settings not loading properly.
+
+---
+
 # 12.0.0.0-alpha13 (2025-11-30)
 ## Paladin
 ### [#479](#479) Holy

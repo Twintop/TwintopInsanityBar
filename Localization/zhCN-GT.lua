@@ -14,7 +14,7 @@ if locale == "zhCN" then
     L["Author"] = "作者"
     L["Version"] = "版本"
     L["Released"] = "已发布"
-    L["SupportedSpecs"] = "支持的规格 (The War Within)"
+    L["SupportedSpecs"] = "支持的规格 (Midnight)"
     L["Experimental"] = "实验性的"
     L["Minimal"] = "最小"
     L["ExperimentalMinimal"] = "实验性/最小化"

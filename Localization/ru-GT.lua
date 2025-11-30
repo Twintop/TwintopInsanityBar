@@ -14,7 +14,7 @@ if locale == "ruRU" then
     L["Author"] = "Автор"
     L["Version"] = "Версия"
     L["Released"] = "Выпущенный"
-    L["SupportedSpecs"] = "Поддерживаемые характеристики (The War Within)"
+    L["SupportedSpecs"] = "Поддерживаемые характеристики (Midnight)"
     L["Experimental"] = "Экспериментальный"
     L["Minimal"] = "Минимальный"
     L["ExperimentalMinimal"] = "Экспериментальный/Минимальный"

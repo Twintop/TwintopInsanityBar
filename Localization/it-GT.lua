@@ -14,7 +14,7 @@ if locale == "itIT" then
     L["Author"] = "Autore"
     L["Version"] = "Versione"
     L["Released"] = "Rilasciato"
-    L["SupportedSpecs"] = "Specifiche supportate (The War Within)"
+    L["SupportedSpecs"] = "Specifiche supportate (Midnight)"
     L["Experimental"] = "Sperimentale"
     L["Minimal"] = "Minimo"
     L["ExperimentalMinimal"] = "Sperimentale/minimo"

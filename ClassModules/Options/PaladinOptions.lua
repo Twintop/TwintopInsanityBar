@@ -9,12 +9,15 @@ local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
 local castingFrame = TRB.Frames.castingFrame
-
 local passiveFrame = TRB.Frames.passiveFrame
 
 TRB.Options.Paladin = {}
 TRB.Options.Paladin.Holy = {}
+TRB.Options.Paladin.Protection = {}
+TRB.Options.Paladin.Retribution = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.holy = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.protection = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.retribution = {}
 
 -- Holy
 local function HolyLoadDefaultBarTextSimpleSettings()
@@ -559,12 +562,6 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 			},
 			thresholdDictionary = {
 			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -862,12 +859,6 @@ local function RetributionLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
 			},
 		},
 		displayBar = {
@@ -1655,8 +1646,11 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
 
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 2, 2, yCoord)
+
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"], false, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"], false, false)
 	
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinHolyPowerColorsHeader"], oUi.xCoord, yCoord)
@@ -2028,6 +2022,12 @@ local function RetributionConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"])
+
+	--yCoord = yCoord - 40
+	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 2, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"], false, false)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinHolyPowerColorsHeader"], oUi.xCoord, yCoord)

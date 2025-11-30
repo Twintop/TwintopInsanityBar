@@ -2362,7 +2362,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 5, 2, yCoord)]]
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], false, true, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], false, true)
 
 	--[[controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight1"], spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.surgeOfLight1

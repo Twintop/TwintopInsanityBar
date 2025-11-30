@@ -247,6 +247,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			},
 			global = {
 				globalEnable = false,
+				deathknight = {
+					blood = specGlobalDefaults,
+					frost = specGlobalDefaults,
+					unholy = specGlobalDefaults
+				},
 				demonhunter = {
 					havoc = specGlobalDefaults,
 					vengeance = specGlobalDefaults,
@@ -305,6 +310,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				}
 			},
 			enabled = {
+				deathknight = {
+					blood = true,
+					frost = true,
+					unholy = true
+				},
 				demonhunter = {
 					havoc = true,
 					vengeance = true,
@@ -367,6 +377,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				}
 			}
 		},
+		deathknight = {
+			blood = {},
+			frost = {},
+			unholy = {}
+		},
 		demonhunter = {
 			havoc = {},
 			vengeance = {},
@@ -420,7 +435,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 		},
 		warrior = {
 			arms = {},
-			fury = {}
+			fury = {},
+			protection = {}
 		}
 	}
 

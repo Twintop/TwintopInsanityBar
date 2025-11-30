@@ -3258,8 +3258,6 @@ local function GuardianConstructThresholdPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 3, yCoord)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
 end
 
 local function GuardianConstructFontAndTextPanel(parent)

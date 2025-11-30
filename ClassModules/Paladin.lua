@@ -1382,6 +1382,10 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						TwintopInsanityBarSettings.paladin.protection == nil or
 						TwintopInsanityBarSettings.paladin.protection.displayText == nil then
 						settings.paladin.protection.displayText.barText = TRB.Options.Paladin.ProtectionLoadDefaultBarTextSimpleSettings()
+					elseif TwintopInsanityBarSettings.paladin == nil or
+						TwintopInsanityBarSettings.paladin.retribution == nil or
+						TwintopInsanityBarSettings.paladin.retribution.displayText == nil then
+						settings.paladin.retribution.displayText.barText = TRB.Options.Paladin.RetributionLoadDefaultBarTextSimpleSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
@@ -1640,13 +1644,13 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif var == "$resourceMax" or var == "$manaMax" then
 		valid = true
-	elseif var == "$resourceTotal" or var == "$manaTotal" then
+	--[[elseif var == "$resourceTotal" or var == "$manaTotal" then
 		if snapshotData.attributes.resource > 0 or
 			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
 			then
 			valid = true
 		end
-	--[[elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
+	elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
 		if snapshotData.attributes.resource > 0 or
 			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
 			valid = true

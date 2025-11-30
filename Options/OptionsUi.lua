@@ -2610,7 +2610,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 	]]
 
 	if isHealer then
-		yCoord = yCoord - 30
+		--[[yCoord = yCoord - 30
 		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.innervateBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2644,7 +2644,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		f = controls.colors.potionOfChilledClarity
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
-		end)
+		end)]]
 	end
 
 	return yCoord
@@ -3299,6 +3299,23 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HolyWordSanctifyCharge1"],
 			L["HolyWordSanctifyCharge2"],
 			L["HolyWordChastiseCharge1"],
+			L["Screen"],
+		}
+	elseif(classId == 6) then -- Death Knight
+		relativeToFrame[L["Rune1"]] = "ComboPoint_1"
+		relativeToFrame[L["Rune2"]] = "ComboPoint_2"
+		relativeToFrame[L["Rune3"]] = "ComboPoint_3"
+		relativeToFrame[L["Rune4"]] = "ComboPoint_4"
+		relativeToFrame[L["Rune5"]] = "ComboPoint_5"
+		relativeToFrame[L["Rune6"]] = "ComboPoint_6"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["Rune1"],
+			L["Rune2"],
+			L["Rune3"],
+			L["Rune4"],
+			L["Rune5"],
+			L["Rune6"],
 			L["Screen"],
 		}
 	elseif (classId == 7 and specId == 2) then -- Enhancement Shaman
