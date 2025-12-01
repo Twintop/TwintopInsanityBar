@@ -23,6 +23,152 @@ local BLOOD_MAX_RUNIC_POWER = 125
 local FROST_MAX_RUNIC_POWER = 110
 local UNHOLY_MAX_RUNIC_POWER = 100
 
+local function DeathKnightLoadExtraBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			enabled = true,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune1Time}[$rune1Time]",
+			fontSize = 14,
+			color = "FFFFFFFF",
+			name = L["Rune1"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune1"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_1",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = "Friz Quadrata TT",
+			useDefaultFontColor = false,
+		},
+		{
+			enabled = true,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune2Time}[$rune2Time]",
+			fontSize = 14,
+			color = "FFFFFFFF",
+			name = L["Rune2"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune2"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_2",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = "Friz Quadrata TT",
+			useDefaultFontColor = false,
+		},
+		{
+			enabled = true,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune3Time}[$rune3Time]",
+			fontSize = 14,
+			color = "FFFFFFFF",
+			name = L["Rune3"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune3"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_3",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = "Friz Quadrata TT",
+			useDefaultFontColor = false,
+		},
+		{
+			enabled = true,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune4Time}[$rune4Time]",
+			fontSize = 14,
+			color = "FFFFFFFF",
+			name = L["Rune4"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune4"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_4",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = "Friz Quadrata TT",
+			useDefaultFontColor = false,
+		},
+		{
+			enabled = true,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune5Time}[$rune5Time]",
+			fontSize = 14,
+			color = "FFFFFFFF",
+			name = L["Rune5"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune5"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_5",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = "Friz Quadrata TT",
+			useDefaultFontColor = false,
+		},
+		{
+			enabled = true,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune6Time}[$rune6Time]",
+			fontSize = 14,
+			color = "FFFFFFFF",
+			name = L["Rune6"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune6"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_6",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = "Friz Quadrata TT",
+			useDefaultFontColor = false,
+		}
+	}
+
+	return textSettings
+end
+
 -- Blood
 local function BloodLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
@@ -80,7 +226,7 @@ local function BloodLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="$runicPower",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -97,6 +243,12 @@ local function BloodLoadDefaultBarTextSimpleSettings()
 			}
 		}
 	}
+
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
 	return textSettings
 end
 TRB.Options.DeathKnight.BloodLoadDefaultBarTextSimpleSettings = BloodLoadDefaultBarTextSimpleSettings
@@ -157,7 +309,7 @@ local function BloodLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="$runicPower",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -174,6 +326,12 @@ local function BloodLoadDefaultBarTextAdvancedSettings()
 			}
 		}
 	}
+	
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
 	return textSettings
 end
 
@@ -261,6 +419,7 @@ local function BloodLoadDefaultSettings(includeBarText)
 				background="66000000",
 				base="FFC41E3A",
 				cooldown="FFCCCCCC",
+				sortRunes = true
 			},
 			threshold = {
 				under = {
@@ -390,7 +549,7 @@ local function FrostLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="$runicPower",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -407,6 +566,12 @@ local function FrostLoadDefaultBarTextSimpleSettings()
 			}
 		}
 	}
+	
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
 	return textSettings
 end
 TRB.Options.DeathKnight.FrostLoadDefaultBarTextSimpleSettings = FrostLoadDefaultBarTextSimpleSettings
@@ -467,7 +632,7 @@ local function FrostLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="$runicPower",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -484,6 +649,12 @@ local function FrostLoadDefaultBarTextAdvancedSettings()
 			}
 		}
 	}
+	
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
 	return textSettings
 end
 
@@ -571,6 +742,7 @@ local function FrostLoadDefaultSettings(includeBarText)
 				background="66000000",
 				base="FF368BC1",
 				cooldown="FFCCCCCC",
+				sortRunes = true
 			},
 			threshold = {
 				under = {
@@ -699,7 +871,7 @@ local function UnholyLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="$runicPower",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -716,6 +888,12 @@ local function UnholyLoadDefaultBarTextSimpleSettings()
 			}
 		}
 	}
+	
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
 	return textSettings
 end
 TRB.Options.DeathKnight.UnholyLoadDefaultBarTextSimpleSettings = UnholyLoadDefaultBarTextSimpleSettings
@@ -776,7 +954,7 @@ local function UnholyLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="$runicPower",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -793,6 +971,12 @@ local function UnholyLoadDefaultBarTextAdvancedSettings()
 			}
 		}
 	}
+	
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
 	return textSettings
 end
 
@@ -878,8 +1062,9 @@ local function UnholyLoadDefaultSettings(includeBarText)
 			comboPoints = {
 				border="FF12721A",
 				background="66000000",
-				base="FF20BD2D",
+				base="FFA6FF49",
 				cooldown="FFCCCCCC",
+				sortRunes = true
 			},
 			threshold = {
 				under = {
@@ -1173,6 +1358,17 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sortRunesComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxSortRunes"])
+	f.tooltip = L["DeathKnightRunesCheckboxSortRunesTooltip"]
+	f:SetChecked(spec.colors.comboPoints.sortRunes)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
 
 	--yCoord = yCoord - 40
@@ -1601,6 +1797,17 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 	end)
 
+	yCoord = yCoord - 30
+	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sortRunesComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxSortRunes"])
+	f.tooltip = L["DeathKnightRunesCheckboxSortRunesTooltip"]
+	f:SetChecked(spec.colors.comboPoints.sortRunes)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.sortRunes = self:GetChecked()
+	end)
+
 	--yCoord = yCoord - 40
 	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], FROST_MAX_RUNIC_POWER)
 
@@ -1982,6 +2189,17 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sortRunesComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxSortRunes"])
+	f.tooltip = L["DeathKnightRunesCheckboxSortRunesTooltip"]
+	f:SetChecked(spec.colors.comboPoints.sortRunes)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
 
 	--yCoord = yCoord - 40

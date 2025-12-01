@@ -9,9 +9,9 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon is still underway! If you have any interest in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
----
+--- 
 
-# 12.0.0.0-alpha14 (2025-12-01)
+# 12.0.0.0-alpha14 (2025-12-02)
 
 - Fix many import/export issues across newly added specializations.
 
@@ -23,7 +23,8 @@ local content = [====[
 ### [#499](#499) Blood, [#500](#500) Frost, and [#501](#501) Unholy
 
 - Add barebones support for Blood, Frost, and Unholy, tracking Runic Power and Runes.
-- Rune recharge sorting and bar text for timers coming soon.
+- Runes can be sorted by cooldown remaining or position.
+- Bar text variables for the time remaining for each rune (`$rune1Time`) and if it is ready (`$rune1Ready`).
 
 ## Paladin
 

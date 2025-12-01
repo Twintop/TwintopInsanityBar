@@ -244,6 +244,22 @@ local function FillSpellData_Blood()
 		{ variable = "$runicPowerMax", description = L["DeathKnightBloodBarTextVariable_runicpowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DeathKnightBloodBarTextVariable_casting"], printInSettings = true, color = false },
+
+		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
+		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
+		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
+		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
+		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
+		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
+		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
+		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
+		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
+		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
+		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
 	}
 end
 
@@ -294,11 +310,27 @@ local function FillSpellData_Frost()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$runicPower", description = L["DeathKnightBloodBarTextVariable_runicpower"], printInSettings = true, color = false },
+		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicpower"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$runicPowerMax", description = L["DeathKnightBloodBarTextVariable_runicpowerMax"], printInSettings = true, color = false },
+		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicpowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DeathKnightBloodBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["DeathKnightBarTextVariable_casting"], printInSettings = true, color = false },
+
+		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
+		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
+		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
+		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
+		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
+		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
+		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
+		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
+		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
+		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
+		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
 	}
 end
 
@@ -354,6 +386,22 @@ local function FillSpellData_Unholy()
 		{ variable = "$runicPowerMax", description = L["DeathKnightBloodBarTextVariable_runicpowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DeathKnightBloodBarTextVariable_casting"], printInSettings = true, color = false },
+
+		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
+		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
+		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
+		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
+		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
+		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
+		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
+		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
+		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
+		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
+		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
 	}
 end
 
@@ -447,6 +495,31 @@ local function RefreshLookupData_Blood()
 	--$runicPowerMax
 	local runicpowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicpowerPrecision, "floor", true))
 	
+	local runes = TRB.Data.character.runes
+	--$runeXTime
+	local _rune1Time = runes[1].remaining
+	local rune1Time = TRB.Functions.BarText:TimerPrecision(_rune1Time)
+	local _rune2Time = runes[2].remaining
+	local rune2Time = TRB.Functions.BarText:TimerPrecision(_rune2Time)
+	local _rune3Time = runes[3].remaining
+	local rune3Time = TRB.Functions.BarText:TimerPrecision(_rune3Time)
+	local _rune4Time = runes[4].remaining
+	local rune4Time = TRB.Functions.BarText:TimerPrecision(_rune4Time)
+	local _rune5Time = runes[5].remaining
+	local rune5Time = TRB.Functions.BarText:TimerPrecision(_rune5Time)
+	local _rune6Time = runes[6].remaining
+	local rune6Time = TRB.Functions.BarText:TimerPrecision(_rune6Time)
+
+	--$runeXReady
+	local _rune1Ready = runes[1].ready
+	local _rune2Ready = runes[2].ready
+	local _rune3Ready = runes[3].ready
+	local _rune4Ready = runes[4].ready
+	local _rune5Ready = runes[5].ready
+	local _rune6Ready = runes[6].ready
+	local _runesReadyCount = (_rune1Ready and 1 or 0) + (_rune2Ready and 1 or 0) + (_rune3Ready and 1 or 0) + (_rune4Ready and 1 or 0) + (_rune5Ready and 1 or 0) + (_rune6Ready and 1 or 0)
+	local runesReadyCount = tostring(_runesReadyCount)
+
 	----------
 
 	local lookup = TRB.Data.lookup or {}
@@ -455,6 +528,19 @@ local function RefreshLookupData_Blood()
 	lookup["$runicPowerMax"] = runicpowerMax
 	lookup["$resourceMax"] = runicpowerMax
 	lookup["$casting"] = castingRunicPower
+	lookup["$rune1Time"] = rune1Time
+	lookup["$rune2Time"] = rune2Time
+	lookup["$rune3Time"] = rune3Time
+	lookup["$rune4Time"] = rune4Time
+	lookup["$rune5Time"] = rune5Time
+	lookup["$rune6Time"] = rune6Time
+	lookup["$rune1Ready"] = ""
+	lookup["$rune2Ready"] = ""
+	lookup["$rune3Ready"] = ""
+	lookup["$rune4Ready"] = ""
+	lookup["$rune5Ready"] = ""
+	lookup["$rune6Ready"] = ""
+	lookup["$runesReadyCount"] = runesReadyCount
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -463,6 +549,19 @@ local function RefreshLookupData_Blood()
 	lookupLogic["$runicPower"] = normalizedRunicPower
 	lookupLogic["$resource"] = normalizedRunicPower
 	lookupLogic["$casting"] = _castingRunicPower
+	lookupLogic["$rune1Time"] = _rune1Time
+	lookupLogic["$rune2Time"] = _rune2Time
+	lookupLogic["$rune3Time"] = _rune3Time
+	lookupLogic["$rune4Time"] = _rune4Time
+	lookupLogic["$rune5Time"] = _rune5Time
+	lookupLogic["$rune6Time"] = _rune6Time
+	lookupLogic["$rune1Ready"] = _rune1Ready
+	lookupLogic["$rune2Ready"] = _rune2Ready
+	lookupLogic["$rune3Ready"] = _rune3Ready
+	lookupLogic["$rune4Ready"] = _rune4Ready
+	lookupLogic["$rune5Ready"] = _rune5Ready
+	lookupLogic["$rune6Ready"] = _rune6Ready
+	lookupLogic["$runesReadyCount"] = _runesReadyCount
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -488,6 +587,31 @@ local function RefreshLookupData_Frost()
 	--$runicPowerMax
 	local runicpowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicpowerPrecision, "floor", true))
 	
+	local runes = TRB.Data.character.runes
+	--$runeXTime
+	local _rune1Time = runes[1].remaining
+	local rune1Time = TRB.Functions.BarText:TimerPrecision(_rune1Time)
+	local _rune2Time = runes[2].remaining
+	local rune2Time = TRB.Functions.BarText:TimerPrecision(_rune2Time)
+	local _rune3Time = runes[3].remaining
+	local rune3Time = TRB.Functions.BarText:TimerPrecision(_rune3Time)
+	local _rune4Time = runes[4].remaining
+	local rune4Time = TRB.Functions.BarText:TimerPrecision(_rune4Time)
+	local _rune5Time = runes[5].remaining
+	local rune5Time = TRB.Functions.BarText:TimerPrecision(_rune5Time)
+	local _rune6Time = runes[6].remaining
+	local rune6Time = TRB.Functions.BarText:TimerPrecision(_rune6Time)
+
+	--$runeXReady
+	local _rune1Ready = runes[1].ready
+	local _rune2Ready = runes[2].ready
+	local _rune3Ready = runes[3].ready
+	local _rune4Ready = runes[4].ready
+	local _rune5Ready = runes[5].ready
+	local _rune6Ready = runes[6].ready
+	local _runesReadyCount = (_rune1Ready and 1 or 0) + (_rune2Ready and 1 or 0) + (_rune3Ready and 1 or 0) + (_rune4Ready and 1 or 0) + (_rune5Ready and 1 or 0) + (_rune6Ready and 1 or 0)
+	local runesReadyCount = tostring(_runesReadyCount)
+
 	----------
 
 	local lookup = TRB.Data.lookup or {}
@@ -496,6 +620,19 @@ local function RefreshLookupData_Frost()
 	lookup["$runicPowerMax"] = runicpowerMax
 	lookup["$resourceMax"] = runicpowerMax
 	lookup["$casting"] = castingRunicPower
+	lookup["$rune1Time"] = rune1Time
+	lookup["$rune2Time"] = rune2Time
+	lookup["$rune3Time"] = rune3Time
+	lookup["$rune4Time"] = rune4Time
+	lookup["$rune5Time"] = rune5Time
+	lookup["$rune6Time"] = rune6Time
+	lookup["$rune1Ready"] = ""
+	lookup["$rune2Ready"] = ""
+	lookup["$rune3Ready"] = ""
+	lookup["$rune4Ready"] = ""
+	lookup["$rune5Ready"] = ""
+	lookup["$rune6Ready"] = ""
+	lookup["$runesReadyCount"] = runesReadyCount
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -504,6 +641,19 @@ local function RefreshLookupData_Frost()
 	lookupLogic["$runicPower"] = normalizedRunicPower
 	lookupLogic["$resource"] = normalizedRunicPower
 	lookupLogic["$casting"] = _castingRunicPower
+	lookupLogic["$rune1Time"] = _rune1Time
+	lookupLogic["$rune2Time"] = _rune2Time
+	lookupLogic["$rune3Time"] = _rune3Time
+	lookupLogic["$rune4Time"] = _rune4Time
+	lookupLogic["$rune5Time"] = _rune5Time
+	lookupLogic["$rune6Time"] = _rune6Time
+	lookupLogic["$rune1Ready"] = _rune1Ready
+	lookupLogic["$rune2Ready"] = _rune2Ready
+	lookupLogic["$rune3Ready"] = _rune3Ready
+	lookupLogic["$rune4Ready"] = _rune4Ready
+	lookupLogic["$rune5Ready"] = _rune5Ready
+	lookupLogic["$rune6Ready"] = _rune6Ready
+	lookupLogic["$runesReadyCount"] = _runesReadyCount
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -529,6 +679,31 @@ local function RefreshLookupData_Unholy()
 	--$runicPowerMax
 	local runicpowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicpowerPrecision, "floor", true))
 	
+	local runes = TRB.Data.character.runes
+	--$runeXTime
+	local _rune1Time = runes[1].remaining
+	local rune1Time = TRB.Functions.BarText:TimerPrecision(_rune1Time)
+	local _rune2Time = runes[2].remaining
+	local rune2Time = TRB.Functions.BarText:TimerPrecision(_rune2Time)
+	local _rune3Time = runes[3].remaining
+	local rune3Time = TRB.Functions.BarText:TimerPrecision(_rune3Time)
+	local _rune4Time = runes[4].remaining
+	local rune4Time = TRB.Functions.BarText:TimerPrecision(_rune4Time)
+	local _rune5Time = runes[5].remaining
+	local rune5Time = TRB.Functions.BarText:TimerPrecision(_rune5Time)
+	local _rune6Time = runes[6].remaining
+	local rune6Time = TRB.Functions.BarText:TimerPrecision(_rune6Time)
+
+	--$runeXReady
+	local _rune1Ready = runes[1].ready
+	local _rune2Ready = runes[2].ready
+	local _rune3Ready = runes[3].ready
+	local _rune4Ready = runes[4].ready
+	local _rune5Ready = runes[5].ready
+	local _rune6Ready = runes[6].ready
+	local _runesReadyCount = (_rune1Ready and 1 or 0) + (_rune2Ready and 1 or 0) + (_rune3Ready and 1 or 0) + (_rune4Ready and 1 or 0) + (_rune5Ready and 1 or 0) + (_rune6Ready and 1 or 0)
+	local runesReadyCount = tostring(_runesReadyCount)
+
 	----------
 
 	local lookup = TRB.Data.lookup or {}
@@ -537,6 +712,19 @@ local function RefreshLookupData_Unholy()
 	lookup["$runicPowerMax"] = runicpowerMax
 	lookup["$resourceMax"] = runicpowerMax
 	lookup["$casting"] = castingRunicPower
+	lookup["$rune1Time"] = rune1Time
+	lookup["$rune2Time"] = rune2Time
+	lookup["$rune3Time"] = rune3Time
+	lookup["$rune4Time"] = rune4Time
+	lookup["$rune5Time"] = rune5Time
+	lookup["$rune6Time"] = rune6Time
+	lookup["$rune1Ready"] = ""
+	lookup["$rune2Ready"] = ""
+	lookup["$rune3Ready"] = ""
+	lookup["$rune4Ready"] = ""
+	lookup["$rune5Ready"] = ""
+	lookup["$rune6Ready"] = ""
+	lookup["$runesReadyCount"] = runesReadyCount
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -545,6 +733,19 @@ local function RefreshLookupData_Unholy()
 	lookupLogic["$runicPower"] = normalizedRunicPower
 	lookupLogic["$resource"] = normalizedRunicPower
 	lookupLogic["$casting"] = _castingRunicPower
+	lookupLogic["$rune1Time"] = _rune1Time
+	lookupLogic["$rune2Time"] = _rune2Time
+	lookupLogic["$rune3Time"] = _rune3Time
+	lookupLogic["$rune4Time"] = _rune4Time
+	lookupLogic["$rune5Time"] = _rune5Time
+	lookupLogic["$rune6Time"] = _rune6Time
+	lookupLogic["$rune1Ready"] = _rune1Ready
+	lookupLogic["$rune2Ready"] = _rune2Ready
+	lookupLogic["$rune3Ready"] = _rune3Ready
+	lookupLogic["$rune4Ready"] = _rune4Ready
+	lookupLogic["$rune5Ready"] = _rune5Ready
+	lookupLogic["$rune6Ready"] = _rune6Ready
+	lookupLogic["$runesReadyCount"] = _runesReadyCount
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -587,6 +788,18 @@ local function UpdateSnapshot()
 	for x = 1, TRB.Data.character.maxResource2 do
 		UpdateRune(x, true)
 	end
+	
+	local specSettings = TRB.Data.settings.deathknight[TRB.Data.barConstructedForSpec]
+	local runes = TRB.Data.character.runes
+	if specSettings.colors.comboPoints.sortRunes == true then
+		-- Sort: ready runes first, then by percentage (high to low)
+		table.sort(runes, function(a, b)
+			if a.ready ~= b.ready then
+				return a.ready -- true comes before false
+			end
+			return a.percentage > b.percentage
+		end)
+	end
 end
 
 local function UpdateSnapshot_Blood()
@@ -602,6 +815,33 @@ end
 local function UpdateSnapshot_Unholy()
 	local currentTime = GetTime()
 	UpdateSnapshot()
+end
+
+---Updates the rune display
+---@param specSettings table
+---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
+local function UpdateRunes(specSettings, specCacheSettings)
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+
+	local runes = TRB.Data.character.runes
+	for x = 1, TRB.Data.character.maxResource2 do
+		local rune = runes[x]
+		local cpBorderColor = specSettings.colors.comboPoints.border
+		local cpColor = specSettings.colors.comboPoints.base
+		local cpBR = cpBackgroundRed
+		local cpBG = cpBackgroundGreen
+		local cpBB = cpBackgroundBlue
+
+		TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, rune.percentage, 1)
+
+		if not rune.ready then
+			cpColor = specSettings.colors.comboPoints.cooldown
+		end
+		
+		TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
+		TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
+		TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
+	end
 end
 
 local function UpdateResourceBar()
@@ -665,27 +905,8 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
-				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-				for x = 1, TRB.Data.character.maxResource2 do
-					local rune = TRB.Data.character.runes[x]
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
-
-					TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, rune.percentage, 1)
-
-					if not rune.ready then
-						cpColor = specSettings.colors.comboPoints.cooldown
-					end
-					
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
-					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end
+				UpdateRunes(specSettings, specCacheSettings)
 			end
 
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -722,27 +943,8 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
-				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-
-				for x = 1, TRB.Data.character.maxResource2 do
-					local rune = TRB.Data.character.runes[x]
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
-
-					TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, rune.percentage, 1)
-
-					if not rune.ready then
-						cpColor = specSettings.colors.comboPoints.cooldown
-					end
-					
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
-					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end
+								
+				UpdateRunes(specSettings, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -779,26 +981,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-
-				for x = 1, TRB.Data.character.maxResource2 do
-					local rune = TRB.Data.character.runes[x]
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
-
-					TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, rune.percentage, 1)
-
-					if not rune.ready then
-						cpColor = specSettings.colors.comboPoints.cooldown
-					end
-					
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
-					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end
+				UpdateRunes(specSettings, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1135,6 +1318,62 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif var == "$resourceMax" or var == "$runicPowerMax" then
 		valid = true
+	elseif var == "$rune1Time" then
+		if TRB.Data.character.runes[1].remaining > 0 then
+			valid = true
+		end
+	elseif var == "$rune2Time" then
+		if TRB.Data.character.runes[2].remaining > 0 then
+			valid = true
+		end
+	elseif var == "$rune3Time" then
+		if TRB.Data.character.runes[3].remaining > 0 then
+			valid = true
+		end
+	elseif var == "$rune4Time" then
+		if TRB.Data.character.runes[4].remaining > 0 then
+			valid = true
+		end
+	elseif var == "$rune5Time" then
+		if TRB.Data.character.runes[5].remaining > 0 then
+			valid = true
+		end
+	elseif var == "$rune6Time" then
+		if TRB.Data.character.runes[6].remaining > 0 then
+			valid = true
+		end
+	elseif var == "$rune1Ready" then
+		if TRB.Data.character.runes[1].ready then
+			valid = true
+		end
+	elseif var == "$rune2Ready" then
+		if TRB.Data.character.runes[2].ready then
+			valid = true
+		end
+	elseif var == "$rune3Ready" then
+		if TRB.Data.character.runes[3].ready then
+			valid = true
+		end
+	elseif var == "$rune4Ready" then
+		if TRB.Data.character.runes[4].ready then
+			valid = true
+		end
+	elseif var == "$rune5Ready" then
+		if TRB.Data.character.runes[5].ready then
+			valid = true
+		end
+	elseif var == "$rune6Ready" then
+		if TRB.Data.character.runes[6].ready then
+			valid = true
+		end
+	elseif var == "$runesReadyCount" then
+		local runesReady = 0
+		for x = 1, TRB.Data.character.maxResource2 do
+			if TRB.Data.character.runes[x].ready then
+				valid = true
+				break
+			end
+		end
 	end
 
 	return valid
