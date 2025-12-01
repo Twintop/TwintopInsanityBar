@@ -12,6 +12,7 @@ local content = [====[
 --- 
 
 # 12.0.0.0-alpha14 (2025-12-02)
+## General
 
 - Fix many import/export issues across newly added specializations.
 
