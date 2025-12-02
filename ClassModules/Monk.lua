@@ -322,6 +322,9 @@ local function FillSpellData_Brewmaster()
 		{ variable = "$resourceOvercap", description = "", printInSettings = false, color = false },
 		{ variable = "$energyOvercap", description = "", printInSettings = false, color = false },]]
 
+		{ variable = "$stagger", description = L["MonkBrewmasterBarTextVariable_stagger"], printInSettings = true, color = false },
+		--{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false },
+
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true }
 	}
 end
@@ -672,11 +675,15 @@ local function RefreshLookupData_Brewmaster()
 	local energyPlusCasting = string.format("|c%s%.0f|r", castingEnergyColor, _energyPlusCasting)
 	--$energyPlusPassive
 	local _energyPlusPassive = math.min(_passiveEnergy + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
+	local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)]]
+
+	local stagger = snapshotData.attributes.stagger or 0
+	--local _staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.maxHealth
+	--local staggerPercent = string.format("%.1f%", _staggerPercent * 100)
 
 	----------------------------
 
-	Global_TwintopResourceBar.resource.passive = _passiveEnergy
+	--[[Global_TwintopResourceBar.resource.passive = _passiveEnergy
 	Global_TwintopResourceBar.resource.regen = _regenEnergy
 	
 	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}]]
@@ -687,6 +694,8 @@ local function RefreshLookupData_Brewmaster()
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$energyMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingEnergy
+	lookup["$stagger"] = stagger
+	--lookup["$staggerPercent"] = staggerPercent
 	--[[lookup["$energyPlusCasting"] = energyPlusCasting
 	lookup["$resourcePlusCasting"] = energyPlusCasting
 	lookup["$energyPlusPassive"] = energyPlusPassive
@@ -715,6 +724,8 @@ local function RefreshLookupData_Brewmaster()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+	lookupLogic["$stagger"] = stagger
+	--lookupLogic["$staggerPercent"] = _staggerPercent
 	--[[lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 	lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
 	lookupLogic["$energyPlusPassive"] = _energyPlusPassive
@@ -1333,16 +1344,17 @@ local function UpdateResourceBar()
 
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border
-				--local cpColor = specSettings.colors.comboPoints.base
+				local cpColor = specSettings.colors.comboPoints.base
 
 				local cpBR = cpBackgroundRed
 				local cpBG = cpBackgroundGreen
 				local cpBB = cpBackgroundBlue
 				
-				local curveColor = UnitHealthPercentColor("player", TRB.Data.snapshotData.attributes.colorCurve)
+				--local curveColor = UnitHealthPercentColor("player", TRB.Data.snapshotData.attributes.colorCurve)
+				--TRB.Functions.Color:SetStatusBarVertexColor(TRB.Frames.resource2Frames[1].resourceFrame, nil, curveColor:GetRGBA())
 
+				TRB.Functions.Color:SetStatusBarVertexColor(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarVertexColor(TRB.Frames.resource2Frames[1].resourceFrame, nil, curveColor:GetRGBA())
 				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
 
 				-- Medium Stagger
@@ -2135,6 +2147,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		elseif var == "$casting" then
 			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$stagger" then
+			if snapshotData.attributes.stagger ~= nil and snapshotData.attributes.stagger > 0 then
 				valid = true
 			end
 		end
