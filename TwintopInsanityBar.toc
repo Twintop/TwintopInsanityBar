@@ -14,8 +14,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.0.0.0
-## X-ReleaseType: alpha14
-## X-ReleaseDate: 2025-12-02
+## X-ReleaseType: alpha15
+## X-ReleaseDate: 2025-12-03
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -95,6 +95,7 @@ ClassModules\Classes\DemonHunterClasses.lua
 ClassModules\Classes\DruidClasses.lua
 ClassModules\Classes\EvokerClasses.lua
 ClassModules\Classes\HunterClasses.lua
+ClassModules\Classes\MageClasses.lua
 ClassModules\Classes\MonkClasses.lua
 ClassModules\Classes\PaladinClasses.lua
 ClassModules\Classes\PriestClasses.lua
@@ -128,6 +129,7 @@ ClassModules\DemonHunter.lua
 ClassModules\Druid.lua
 ClassModules\Evoker.lua
 ClassModules\Hunter.lua
+ClassModules\Mage.lua
 ClassModules\Monk.lua
 ClassModules\Paladin.lua
 ClassModules\Priest.lua
@@ -143,6 +145,7 @@ ClassModules\Options\DemonHunterOptions.lua
 ClassModules\Options\DruidOptions.lua
 ClassModules\Options\EvokerOptions.lua
 ClassModules\Options\HunterOptions.lua
+ClassModules\Options\MageOptions.lua
 ClassModules\Options\MonkOptions.lua
 ClassModules\Options\PaladinOptions.lua
 ClassModules\Options\PriestOptions.lua

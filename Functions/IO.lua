@@ -88,6 +88,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Restoration
 				configuration.endOfAscendance = settings.endOfAscendance
 			end
+		elseif classId == 8 then -- Mage
+			if specId == 1 then -- Arcane
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			elseif specId == 2 then -- Fire
+			elseif specId == 3 then -- Frost
+			end
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
 				configuration.colors.comboPoints = settings.colors.comboPoints
@@ -188,6 +195,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Enhancement
 			elseif specId == 3 then -- Restoration
 			end
+		elseif classId == 8 then -- Mage
+			if specId == 1 then -- Arcane
+			elseif specId == 2 then -- Fire
+			elseif specId == 3 then -- Frost
+			end
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
 			end
@@ -265,6 +277,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Enhancement
 			elseif specId == 3 then -- Restoration
 				configuration.passiveGeneration = settings.passiveGeneration
+			end
+		elseif classId == 8 then -- Mage
+			if specId == 1 then -- Arcane
+			elseif specId == 2 then -- Fire
+			elseif specId == 3 then -- Frost
 			end
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
@@ -401,7 +418,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				configuration.priest.shadow = ExportConfigurationSections(5, 3, settings.priest.shadow, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 6 and settings.deathknight ~= nil then -- Death Knight
-			configuration.deathknight = {}			
+			configuration.deathknight = {}
 			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.deathknight.blood) > 0 then -- Blood
 				configuration.deathknight.blood = ExportConfigurationSections(6, 1, settings.deathknight.blood, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
@@ -426,6 +443,19 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.restoration) > 0 then -- Restoration
 				configuration.shaman.restoration = ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+		elseif classId == 8 and settings.mage ~= nil then -- Mage
+			configuration.mage = {}
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.mage.arcane) > 0 then -- Arcane
+				configuration.mage.arcane = ExportConfigurationSections(8, 1, settings.mage.arcane, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.mage.fire) > 0 then -- Fire
+				configuration.mage.fire = ExportConfigurationSections(8, 2, settings.mage.fire, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.mage.frost) > 0 then -- Frost
+				configuration.mage.frost = ExportConfigurationSections(8, 3, settings.mage.frost, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 9 and settings.warlock ~= nil then
 			configuration.warlock = {}
@@ -665,14 +695,18 @@ function TRB.Functions.IO:Import(input)
 		(configuration.monk ~= nil and
 			(configuration.monk.mistweaver ~= nil or
 			configuration.monk.windwalker ~= nil)) or
-		(configuration.priest ~= nil and
-			(configuration.priest.discipline ~= nil or
-			configuration.priest.holy ~= nil or
-			configuration.priest.shadow ~= nil)) or
 		(configuration.deathknight ~= nil and
 			(configuration.deathknight.blood ~= nil or
 			configuration.deathknight.frost ~= nil or
 			configuration.deathknight.unholy ~= nil)) or
+		(configuration.priest ~= nil and
+			(configuration.priest.discipline ~= nil or
+			configuration.priest.holy ~= nil or
+			configuration.priest.shadow ~= nil)) or
+		(configuration.mage ~= nil and
+			(configuration.mage.arcane ~= nil or
+			configuration.mage.fire ~= nil or
+			configuration.mage.frost ~= nil)) or
 		(configuration.shaman ~= nil and
 			(configuration.shaman.elemental ~= nil or
 			configuration.shaman.restoration ~= nil or

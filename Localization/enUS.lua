@@ -2430,3 +2430,7 @@ L["DeathKnightBarTextVariable_rune3Ready"] = "Is Rune 3 ready for use? LOGIC VAR
 L["DeathKnightBarTextVariable_rune4Ready"] = "Is Rune 4 ready for use? LOGIC VARIABLE ONLY!"
 L["DeathKnightBarTextVariable_rune5Ready"] = "Is Rune 5 ready for use? LOGIC VARIABLE ONLY!"
 L["DeathKnightBarTextVariable_rune6Ready"] = "Is Rune 6 ready for use? LOGIC VARIABLE ONLY!"
+L["ArcaneCharge1"] = "Arcane Charge 1"
+L["ArcaneCharge2"] = "Arcane Charge 2"
+L["ArcaneCharge3"] = "Arcane Charge 3"
+L["ArcaneCharge4"] = "Arcane Charge 4"

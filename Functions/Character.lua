@@ -634,6 +634,7 @@ function TRB.Functions.Character:IsComboPointUser()
 		(classId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
 		(classId == 6) or -- Death Knight
 		--(classId == 7 and specId == 2) or -- Enhancement Shaman
+		(classId == 8 and specId == 1) or -- Arcane Mage
 		(classId == 9) or -- Warlock
 		(classId == 10 and specId == 3) or -- Windwalker Monk
 		(classId == 11 and specId == 2) or -- Feral Druid
@@ -724,6 +725,8 @@ function TRB.Functions.Character:EventRegistration()
 					TRB.Data.resource2Token = "HOLY_POWER"
 				elseif TRB.Data.resource2 == 12 then
 					TRB.Data.resource2Token = "CHI"
+				elseif TRB.Data.resource2 == 16 then
+					TRB.Data.resource2Token = "ARCANE_CHARGES"
 				elseif TRB.Data.resource2 == 19 then
 					TRB.Data.resource2Token = "ESSENCE"
 				end

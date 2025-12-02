@@ -11,6 +11,18 @@ local content = [====[
 
 --- 
 
+# 12.0.0.0-alpha15 (2025-12-03)
+## Mage
+### [#502](#502) Arcane
+
+- Add barebones support for Arcane, tracking Mana and Arcane Charges.
+
+### [#503](#503) Fire and [#504](#504) Frost
+
+- Add barebones support for Fire and Frost, tracking Mana.
+
+--- 
+
 # 12.0.0.0-alpha14 (2025-12-02)
 ## General
 

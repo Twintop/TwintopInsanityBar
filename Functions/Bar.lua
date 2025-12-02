@@ -14,7 +14,8 @@ local function GetComboPointNodeWidth(settings)
 				TRB.Data.resource2 == Enum.PowerType.Chi or
 				TRB.Data.resource2 == Enum.PowerType.HolyPower or
 				TRB.Data.resource2 == Enum.PowerType.Essence or
-				TRB.Data.resource2 == Enum.PowerType.SoulShards then
+				TRB.Data.resource2 == Enum.PowerType.SoulShards or
+				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
 				nodes = 1
 			end
 			local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2
@@ -41,7 +42,7 @@ function TRB.Functions.Bar:GetSanityCheckValues(settings)
 		end
 
 		if settings.comboPoints ~= nil then
-			sc.comboPointsMaxWidth = math.floor(GetScreenWidth() / 10) -- This should really be based on the maximum Combo Points for a specialization. Enhancement Shaman would be max (10), Discipline Priest would be min (2)
+			sc.comboPointsMaxWidth = math.floor(GetScreenWidth() / 10) -- This should really be based on the maximum Combo Points for a specialization. Enhancement Shaman would be max (10), Devourer Demon Hunter would be min (1)
 			sc.comboPointsMinWidth = math.max(math.ceil(settings.comboPoints.border * 2), 1)
 			sc.comboPointsMaxHeight = math.floor(GetScreenHeight())
 			sc.comboPointsMinHeight = math.max(math.ceil(settings.comboPoints.border * 2), 1)
@@ -317,7 +318,8 @@ function TRB.Functions.Bar:SetMinMax(settings)
 				TRB.Data.resource2 == Enum.PowerType.Chi or
 				TRB.Data.resource2 == Enum.PowerType.HolyPower or
 				TRB.Data.resource2 == Enum.PowerType.Essence or
-				TRB.Data.resource2 == Enum.PowerType.SoulShards then
+				TRB.Data.resource2 == Enum.PowerType.SoulShards or
+				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
 				nodes = 1
 			end
 
@@ -364,10 +366,11 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		end
 		
 		if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-		TRB.Data.resource2 == Enum.PowerType.Chi or
-		TRB.Data.resource2 == Enum.PowerType.HolyPower or
-		TRB.Data.resource2 == Enum.PowerType.Essence or
-		TRB.Data.resource2 == Enum.PowerType.SoulShards then
+			TRB.Data.resource2 == Enum.PowerType.Chi or
+			TRB.Data.resource2 == Enum.PowerType.HolyPower or
+			TRB.Data.resource2 == Enum.PowerType.Essence or
+			TRB.Data.resource2 == Enum.PowerType.SoulShards or
+			TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
 			nodes = 1
 		end
 	
@@ -537,10 +540,11 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 			end
 
 			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-			TRB.Data.resource2 == Enum.PowerType.Chi or
-			TRB.Data.resource2 == Enum.PowerType.HolyPower or
-			TRB.Data.resource2 == Enum.PowerType.Essence or
-			TRB.Data.resource2 == Enum.PowerType.SoulShards then
+				TRB.Data.resource2 == Enum.PowerType.Chi or
+				TRB.Data.resource2 == Enum.PowerType.HolyPower or
+				TRB.Data.resource2 == Enum.PowerType.Essence or
+				TRB.Data.resource2 == Enum.PowerType.SoulShards or
+				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
 				nodes = 1
 			end
 
@@ -572,10 +576,11 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 			end
 
 			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-			TRB.Data.resource2 == Enum.PowerType.Chi or
-			TRB.Data.resource2 == Enum.PowerType.HolyPower or
-			TRB.Data.resource2 == Enum.PowerType.Essence or
-			TRB.Data.resource2 == Enum.PowerType.SoulShards then
+				TRB.Data.resource2 == Enum.PowerType.Chi or
+				TRB.Data.resource2 == Enum.PowerType.HolyPower or
+				TRB.Data.resource2 == Enum.PowerType.Essence or
+				TRB.Data.resource2 == Enum.PowerType.SoulShards or
+				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
 				nodes = 1
 			end
 
@@ -712,10 +717,11 @@ function TRB.Functions.Bar:Construct(settings)
 			end
 
 			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-			TRB.Data.resource2 == Enum.PowerType.Chi or
-			TRB.Data.resource2 == Enum.PowerType.HolyPower or
-			TRB.Data.resource2 == Enum.PowerType.Essence or
-			TRB.Data.resource2 == Enum.PowerType.SoulShards then
+				TRB.Data.resource2 == Enum.PowerType.Chi or
+				TRB.Data.resource2 == Enum.PowerType.HolyPower or
+				TRB.Data.resource2 == Enum.PowerType.Essence or
+				TRB.Data.resource2 == Enum.PowerType.SoulShards or
+				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
 				nodes = 1
 			end
 

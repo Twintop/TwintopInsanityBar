@@ -134,5 +134,6 @@ L["ResourceHolyPower"] = HOLY_POWER
 L["ResourceSoulShards"] = SOUL_SHARDS_POWER
 L["ResourceRunicPower"] = RUNIC_POWER
 L["ResourceRunes"] = RUNES
+L["ResourceArcaneCharges"] = ARCANE_CHARGES_POWER
 
 TRB.Localization = L

@@ -14,6 +14,7 @@ TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, Get
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("DRUID")) .. L["Druid"] .. "|r - " .. L["DruidBalance"] .. ", " .. L["DruidFeral"] .. ", " .. L["DruidRestoration"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("EVOKER")) .. L["Evoker"] .. "|r - " .. L["EvokerDevastation"] .. ", " .. L["EvokerPreservation"] .. ", " .. L["EvokerAugmentation"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("HUNTER")) .. L["Hunter"] .. "|r - " .. L["HunterBeastMastery"] .. ", " .. L["HunterMarksmanship"] .. ", Survival\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("MAGE")) .. L["Mage"] .. "|r - " .. L["MageArcane"] .. ", " .. L["MageFire"] .. ", " .. L["MageFrost"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("MONK")) .. L["Monk"] .. "|r - " .. L["MonkMistweaver"] .. ", " .. L["MonkWindwalker"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("PALADIN")) .. L["Paladin"] .. "|r - " .. L["PaladinHoly"] .. ", " .. L["PaladinProtection"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor("PRIEST")) .. L["Priest"] .. "|r - " .. L["PriestDiscipline"] .. ", " .. L["PriestHoly"] .. ", " .. L["PriestShadow"] .. "\n"
@@ -234,6 +235,7 @@ if 	TRB.Data.character.classId == 1 or -- Protection Warrior
 	TRB.Data.character.classId == 5 or -- Discipline or Holy Priest
 	TRB.Data.character.classId == 6 or -- Death Knight
 	TRB.Data.character.classId == 7 or -- Enhancement Shaman
+	TRB.Data.character.classId == 8 or -- Arcane Mage
 	TRB.Data.character.classId == 9 or -- Warlock
 	TRB.Data.character.classId == 10 or -- Windwalker Monk
 	TRB.Data.character.classId == 11 or -- Feral Druid

@@ -273,6 +273,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					marksmanship = specGlobalDefaults,
 					survival = specGlobalDefaults
 				},
+				mage = {
+					arcane = specGlobalDefaults,
+					fire = specGlobalDefaults,
+					frost = specGlobalDefaults
+				},
 				monk = {
 					brewmaster = specGlobalDefaults,
 					mistweaver = specGlobalDefaults,
@@ -335,6 +340,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					beastMastery = true,
 					marksmanship = true,
 					survival = true
+				},
+				mage = {
+					arcane = true,
+					fire = true,
+					frost = true
 				},
 				monk = {
 					brewmaster = true,
@@ -402,6 +412,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			beastMastery = {},
 			marksmanship = {},
 			survival = {}
+		},
+		mage = {
+			arcane = {},
+			fire = {},
+			frost = {}
 		},
 		monk = {
 			brewmaster = {},
@@ -1720,8 +1735,8 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 	if oldSettings ~= nil then
 		for k, v in pairs(oldSettings) do
 			if  k == "core" or
-				k == "demonhunter" or
 				k == "deathknight" or
+				k == "demonhunter" or
 				k == "druid" or
 				k == "evoker" or
 				k == "hunter" or

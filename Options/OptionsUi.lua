@@ -3343,6 +3343,19 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Maelstrom10"],
 			L["Screen"],
 		}
+	elseif(classId == 8 and specId == 1) then -- Arcane Mage
+		relativeToFrame[L["ArcaneCharge1"]] = "ComboPoint_1"
+		relativeToFrame[L["ArcaneCharge2"]] = "ComboPoint_2"
+		relativeToFrame[L["ArcaneCharge3"]] = "ComboPoint_3"
+		relativeToFrame[L["ArcaneCharge4"]] = "ComboPoint_4"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["ArcaneCharge1"],
+			L["ArcaneCharge2"],
+			L["ArcaneCharge3"],
+			L["ArcaneCharge4"],
+			L["Screen"],
+		}
 	elseif (classId == 9) then -- Warlock
 		relativeToFrame[L["SoulShard1"]] = "ComboPoint_1"
 		relativeToFrame[L["SoulShard2"]] = "ComboPoint_2"
