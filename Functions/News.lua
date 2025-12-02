@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 11.2.7.0-release (2025-12-03)
+## General
+
+- (UPDATE) TOC bump for 11.2.7
+
+---
+
 # 11.2.5.0-release (2025-10-07)
 ## General
 
