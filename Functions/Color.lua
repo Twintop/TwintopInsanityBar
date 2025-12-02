@@ -173,6 +173,34 @@ function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 	end
 end
 
+function TRB.Functions.Color:SetStatusBarVertexColor(frame, key, r, g, b, a)
+	local changed = false
+
+	if key == nil then
+		changed = true
+	else
+		if TRB.Data.cache.colors.bar[key] == nil then
+			TRB.Data.cache.colors.bar[key] = {
+				r = r,
+				g = g,
+				b = b,
+				a = a
+			}
+			changed = true
+		elseif TRB.Data.cache.colors.bar[key].r ~= r or TRB.Data.cache.colors.bar[key].g ~= g or TRB.Data.cache.colors.bar[key].b ~= b or TRB.Data.cache.colors.bar[key].a ~= a then
+			TRB.Data.cache.colors.bar[key].r = r
+			TRB.Data.cache.colors.bar[key].g = g
+			TRB.Data.cache.colors.bar[key].b = b
+			TRB.Data.cache.colors.bar[key].a = a
+			changed = true
+		end
+	end
+	
+	if changed then
+		frame:GetStatusBarTexture():SetVertexColor(r, g, b, a)
+	end
+end
+
 function TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, key, rgbaString, normalize)
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
 	TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)

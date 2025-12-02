@@ -1,5 +1,5 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~=  12 then --Only do this if we're on a DemonHunter!
+if TRB.Data.character.classId ~= 12 then --Only do this if we're on a DemonHunter!
 	return
 end
 
@@ -1851,6 +1851,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+				--TODO: remove this since we're updating it above in UpdateDevourer() ?
 				local blizzSfBar = _G["DemonHunterSoulFragmentsBar"]
 				local min, max = blizzSfBar:GetMinMaxValues()
 				local current = blizzSfBar:GetValue()
@@ -2230,6 +2231,8 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1
+		TRB.Data.resource2 = nil
+		TRB.Data.resource2Factor = nil
 		--[[TRB.Data.resource2 = "SPELL"
 		TRB.Data.resource2Id = spells.soulFragments.id
 		TRB.Data.resource2Factor = 1]]

@@ -565,13 +565,12 @@ local function ConstructResourceBar(settings)
 
 	if TRB.Data.character.specId == 1 then
 		TRB.Frames.resource2ContainerFrame:Show()
-		for thresholdId = 1, 7 do-- TRB.Data.character.maxResource2-1 do
-			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] ~= nil then
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
+		for thresholdId = 1, 2 do
+			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
+				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
 			end
-		end
-		for cp = 2, 10 do
-			TRB.Frames.resource2Frames[cp].containerFrame:Hide()
+			TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
+			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Show()
 		end
 	elseif TRB.Data.character.specId == 2 then
 		for x = 1, 9 do
@@ -1151,8 +1150,26 @@ local function UpdateSnapshot()
 end
 
 local function UpdateSnapshot_Brewmaster()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	UpdateSnapshot()
-	-- No spells to snapshot yet
+	
+	local previousMaxHealth = snapshotData.attributes.maxHealth
+
+	snapshotData.attributes.maxHealth = UnitHealthMax("player")
+	snapshotData.attributes.stagger = UnitStagger("player")
+
+	if previousMaxHealth ~= snapshotData.attributes.maxHealth or TRB.Data.snapshotData.attributes.colorCurve == nil then
+		local specSettings = TRB.Data.settings.monk.brewmaster
+		local curve = TRB.Data.snapshotData.attributes.colorCurve or C_CurveUtil.CreateColorCurve()
+		curve:SetType(Enum.LuaCurveType.Step)
+		curve:ClearPoints()
+		curve:AddPoint(0, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.base, true))) -- Light stagger at 0
+		--curve:AddPoint(snapshotData.attributes.maxHealth * STAGGER_STATES.YELLOW.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerMedium, true))) -- Medium stagger at 30%
+		--curve:AddPoint(snapshotData.attributes.maxHealth * STAGGER_STATES.RED.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerHeavy, true))) -- Heavy stagger at 60%
+		curve:AddPoint(STAGGER_STATES.YELLOW.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerMedium, true))) -- Medium stagger at 30%
+		curve:AddPoint(STAGGER_STATES.RED.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerHeavy, true))) -- Heavy stagger at 60%
+		TRB.Data.snapshotData.attributes.colorCurve = curve
+	end
 end
 
 local function UpdateSnapshot_Mistweaver()
@@ -1310,6 +1327,31 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+				
+				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, snapshotData.attributes.maxHealth)
+				TRB.Frames.resource2Frames[1].resourceFrame:SetValue(snapshotData.attributes.stagger)
+
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border
+				--local cpColor = specSettings.colors.comboPoints.base
+
+				local cpBR = cpBackgroundRed
+				local cpBG = cpBackgroundGreen
+				local cpBB = cpBackgroundBlue
+				
+				local curveColor = UnitHealthPercentColor("player", TRB.Data.snapshotData.attributes.colorCurve)
+
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
+				TRB.Functions.Color:SetStatusBarVertexColor(TRB.Frames.resource2Frames[1].resourceFrame, nil, curveColor:GetRGBA())
+				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
+
+				-- Medium Stagger
+				TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[1], specSettings.colors.comboPoints.staggerMedium, true)
+				TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[1], true, TRB.Frames.resource2Frames[1].containerFrame, STAGGER_STATES.YELLOW.threshold * snapshotData.attributes.maxHealth, snapshotData.attributes.maxHealth)
+
+				-- High Stagger
+				TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[2], specSettings.colors.comboPoints.staggerHeavy, true)
+				TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[2], true, TRB.Frames.resource2Frames[1].containerFrame, STAGGER_STATES.RED.threshold * snapshotData.attributes.maxHealth, snapshotData.attributes.maxHealth)
 			end
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
@@ -1878,6 +1920,12 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					local settings = TRB.Options.Monk.LoadDefaultSettings(false)
 
 					if TwintopInsanityBarSettings.monk == nil or
+						TwintopInsanityBarSettings.monk.brewmaster == nil or
+						TwintopInsanityBarSettings.monk.brewmaster.displayText == nil then
+						settings.monk.brewmaster.displayText.barText = TRB.Options.Monk.BrewmasterLoadDefaultBarTextSimpleSettings()
+					end
+
+					if TwintopInsanityBarSettings.monk == nil or
 						TwintopInsanityBarSettings.monk.mistweaver == nil or
 						TwintopInsanityBarSettings.monk.mistweaver.displayText == nil then
 						settings.monk.mistweaver.displayText.barText = TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings()
@@ -1969,6 +2017,16 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResource = 100
 		TRB.Data.character.resourceTypeName = "ENERGY"
 		TRB.Data.character.resourceType = Enum.PowerType.Energy
+
+		local maxComboPoints = 1
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+
+		if sharedSettings ~= nil then
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+			end
+		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		TRB.Data.character.specName = "mistweaver"
@@ -1998,6 +2056,8 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy
 		TRB.Data.resourceFactor = 1
+		TRB.Data.resource2 = "CUSTOM"
+		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.mistweaver)
 		TRB.Data.specSupported = true

@@ -279,6 +279,13 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 				showPassive=true,
 				showCasting=true
 			},
+			comboPoints = {
+				border="FF00FF98",
+				background="66000000",
+				base="FF85FF85", -- staggerLight				
+				staggerMedium="FFFFFAB8",
+				staggerHeavy="FFFF6B6B"
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -335,7 +342,13 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			passiveBarName="Blizzard",
 			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
 			castingBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			comboPointsBackgroundName="Blizzard Tooltip",
+			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+			comboPointsBorderName="1 Pixel",
+			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+			comboPointsBarName="Blizzard",
 		}
 	}
 

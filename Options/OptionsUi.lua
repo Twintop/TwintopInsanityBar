@@ -3371,6 +3371,13 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["SoulShard5"],
 			L["Screen"],
 		}
+	elseif (classId == 10 and specId == 1) then -- Brewmaster Monk
+		relativeToFrame[L["Stagger"]] = "ComboPoint_1"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["Stagger"],
+			L["Screen"],
+		}
 	elseif (classId == 10 and specId == 3) then -- Windwalker Monk
 		relativeToFrame[L["Chi1"]] = "ComboPoint_1"
 		relativeToFrame[L["Chi2"]] = "ComboPoint_2"
@@ -3386,13 +3393,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Chi4"],
 			L["Chi5"],
 			L["Chi6"],
-			L["Screen"],
-		}
-	elseif (classId == 10 and specId == 1) then -- Windwalker Monk
-		relativeToFrame[L["Stagger"]] = "ComboPoint_1"
-		relativeToFrameList = {
-			L["MainResourceBar"],
-			L["Stagger"],
 			L["Screen"],
 		}
 	elseif (classId == 11 and specId == 2) then -- Feral Druid

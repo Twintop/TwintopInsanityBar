@@ -12,6 +12,10 @@ local content = [====[
 --- 
 
 # 12.0.0.0-alpha15 (2025-12-03)
+## General
+
+- As of this release, every specialization has some level of support in the addon!
+
 ## Mage
 ### [#502](#502) Arcane
 
@@ -20,6 +24,12 @@ local content = [====[
 ### [#503](#503) Fire and [#504](#504) Frost
 
 - Add barebones support for Fire and Frost, tracking Mana.
+
+## Monk
+### [#494](#494) Brewmaster
+
+- Add Stagger Bar with threshold lines for Medium and Heavy Stagger. More functionality coming soon.
+- Fix a lack of default bar text.
 
 --- 
 

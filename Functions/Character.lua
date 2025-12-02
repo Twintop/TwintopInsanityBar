@@ -69,7 +69,7 @@ local function UpdateResourceValues()
 				snapshotData.attributes.resource2 = resourceBuff.applications or 0
 			else
 				snapshotData.attributes.resource2 = 0
-			end			
+			end
 		elseif TRB.Data.resource2 == "CUSTOM" then
 			-- Do nothing
 		else
@@ -636,7 +636,7 @@ function TRB.Functions.Character:IsComboPointUser()
 		--(classId == 7 and specId == 2) or -- Enhancement Shaman
 		(classId == 8 and specId == 1) or -- Arcane Mage
 		(classId == 9) or -- Warlock
-		(classId == 10 and specId == 3) or -- Windwalker Monk
+		(classId == 10 and (specId == 1 or specId == 3)) or -- Brewmaster or Windwalker Monk
 		(classId == 11 and specId == 2) or -- Feral Druid
 		(classId == 12 and (specId == 2 or specId == 3)) or -- Vengeance or Devourer Demon Hunter
 		(classId == 13) -- Evoker
