@@ -8,7 +8,6 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local passiveFrame = TRB.Frames.passiveFrame
 
 TRB.Options.Rogue = {}
 TRB.Options.Rogue.Assassination = {}
@@ -78,7 +77,7 @@ local function AssassinationLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive + ]$energy",
+			text="$energy",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -290,11 +289,6 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -326,43 +320,18 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FFD59900"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFFFD300",
-				borderOvercap="FFFF0000",
 				borderStealth="FF000000",
 				background="66000000",
 				base="FFFFFF00",
 				noSliceAndDice="FFFF0000",
 				sliceAndDicePandemic="FFFF9900",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FF9F4500",
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -401,15 +370,6 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -424,12 +384,6 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			blindside={
 				name = L["RogueAssassinationAudioBlindsideProc"],
 				enabled=false,
@@ -444,10 +398,6 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -521,7 +471,7 @@ local function OutlawLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive + ]$energy",
+			text="$energy",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -733,11 +683,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -769,32 +714,13 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FFD59900"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFFFD300",
-				borderOvercap="FFFF0000",
 				borderStealth="FF000000",
 				borderRtbBad="FFFF8888",
 				borderRtbGood="FF00FF00",
@@ -802,12 +728,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				base="FFFFFF00",
 				noSliceAndDice="FFFF0000",
 				sliceAndDicePandemic="FFFF9900",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FF9F4500",
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -846,15 +766,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				},
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -869,12 +780,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			opportunity={
 				name = L["RogueOutlawAudioOpportunityProc"],
 				enabled=false,
@@ -889,10 +794,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -967,7 +868,7 @@ local function SubtletyLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive + ]$energy",
+			text="$energy",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -1186,11 +1087,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -1222,44 +1118,19 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FFD59900"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFFFD300",
-				borderOvercap="FFFF0000",
 				borderStealth="FF000000",
 				borderShadowcraft = "FF431863",
 				background="66000000",
 				base="FFFFFF00",
 				noSliceAndDice="FFFF0000",
 				sliceAndDicePandemic="FFFF9900",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FF9F4500",
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -1295,15 +1166,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				},
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -1318,12 +1180,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 		},
 		textures = {
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -1332,10 +1188,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -1490,23 +1342,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.noSliceAndDice
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
 	end)]]
 
 	yCoord = yCoord - 30
@@ -1515,9 +1350,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 4, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], true, false)
@@ -1611,9 +1443,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.spec.serratedBoneSpikeColor = self:GetChecked()
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], ASSASSINATION_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 1, ASSASSINATION_MAX_ENERGY)
@@ -1944,14 +1773,7 @@ local function AssassinationConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
-
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overThresholdEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
@@ -1961,18 +1783,6 @@ local function AssassinationConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
-
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["CheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)]]
-	
-	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 1, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 1, yCoord)
 end
@@ -2002,8 +1812,6 @@ local function AssassinationConstructAudioAndTrackingPanel(parent)
 	yCoord = yCoord - 30
 
 	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "blindside", spec, classId, specId, yCoord, L["RogueAssassinationAudioCheckboxBlindsideProc"], L["RogueAssassinationAudioCheckboxBlindsideProcTooltip"])
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
 	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
@@ -2312,23 +2120,6 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.noSliceAndDice
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
 	end)]]
 
 	yCoord = yCoord - 30
@@ -2337,9 +2128,6 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 4, 2, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, false)
@@ -2430,9 +2218,6 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], OUTLAW_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 1, OUTLAW_MAX_ENERGY)
@@ -2777,12 +2562,6 @@ local function OutlawConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2794,18 +2573,6 @@ local function OutlawConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
-
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["CheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)]]
-	
-	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 2, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 2, yCoord)
 end
@@ -2835,8 +2602,6 @@ local function OutlawConstructAudioAndTrackingPanel(parent)
 	yCoord = yCoord - 30
 
 	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "opportunity", spec, classId, specId, yCoord, L["RogueOutlawAudioCheckboxOpportunityProc"], L["RogueOutlawAudioCheckboxOpportunityProcTooltip"])
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
 	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
@@ -3144,23 +2909,6 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.noSliceAndDice
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
 	end)]]
 
 	yCoord = yCoord - 30
@@ -3169,9 +2917,6 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 4, 3, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, false)
@@ -3261,9 +3006,6 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], SUBTLETY_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 1, SUBTLETY_MAX_ENERGY)
@@ -3610,12 +3352,6 @@ local function SubtletyConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -3627,18 +3363,6 @@ local function SubtletyConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
-
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["CheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)]]
-	
-	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 4, 3, yCoord, L["RogueDotChangeColorCheckbox"], L["RogueDotChangeColorCheckboxTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 3, yCoord)
 end
@@ -3666,8 +3390,6 @@ local function SubtletyConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
 	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 

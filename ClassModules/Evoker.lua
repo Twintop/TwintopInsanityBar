@@ -8,8 +8,6 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 
 local barContainerFrame = TRB.Frames.barContainerFrame
 local resourceFrame = TRB.Frames.resourceFrame
-local castingFrame = TRB.Frames.castingFrame
-local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -51,8 +49,6 @@ local function FillSpecializationCache()
 			passive = 0,
 			regen = 0
 		},
-		dots = {
-		},
 		isPvp = false
 	}
 
@@ -92,8 +88,6 @@ local function FillSpecializationCache()
 			casting = 0,
 			passive = 0,
 		},
-		dots = {
-		},
 	}
 
 	specCache.preservation.character = {
@@ -106,45 +100,6 @@ local function FillSpecializationCache()
 		effects = {
 		},
 		items = {
-			potions = {
-				algariManaPotionRank3 = {
-					id = 212241,
-					mana = 270000
-				},
-				algariManaPotionRank2 = {
-					id = 212240,
-					mana = 234783
-				},
-				algariManaPotionRank1 = {
-					id = 212239,
-					mana = 204159
-				},
-				cavedwellersDelightRank3 = {
-					id = 212244,
-					mana = 202500
-				},
-				cavedwellersDelightRank2 = {
-					id = 212243,
-					mana = 176087
-				},
-				cavedwellersDelightRank1 = {
-					id = 212243,
-					mana = 153119
-				},
-				slumberingSoulSerumRank3 = {
-					id = 212247,
-					mana = 375000
-				},
-				slumberingSoulSerumRank2 = {
-					id = 212246,
-					mana = 326090
-				},
-				slumberingSoulSerumRank1 = {
-					id = 212245,
-					mana = 283550
-				},
-			},
-			alchemyStone = false
 		}
 	}
 	
@@ -155,23 +110,10 @@ local function FillSpecializationCache()
 
 	specCache.preservation.snapshotData.attributes.manaRegen = 0
 	specCache.preservation.snapshotData.audio = {
-		innervateCue = false,
 		essenceBurstCue = false,
 		essenceBurst2Cue = false
 	}
 	
-	--[[---@type TRB.Classes.Healer.Innervate
-	specCache.preservation.snapshotData.snapshots[spells.innervate.id] = TRB.Classes.Healer.Innervate:New(spells.innervate)
-	---@type TRB.Classes.Healer.PotionOfChilledClarity
-	specCache.preservation.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
-	---@type TRB.Classes.Healer.ManaTideTotem
-	specCache.preservation.snapshotData.snapshots[spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(spells.manaTideTotem)
-	---@type TRB.Classes.Healer.ChanneledManaPotion
-	specCache.preservation.snapshotData.snapshots[spells.slumberingSoulSerumRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.slumberingSoulSerumRank1, CalculateManaGain)
-	---@type TRB.Classes.Snapshot
-	specCache.preservation.snapshotData.snapshots[spells.algariManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.algariManaPotionRank1)
-	---@type TRB.Classes.Snapshot
-	specCache.preservation.snapshotData.snapshots[spells.emeraldCommunion.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.emeraldCommunion)]]
 	---@type TRB.Classes.Snapshot
 	specCache.preservation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
 	---@type TRB.Classes.Snapshot
@@ -189,8 +131,6 @@ local function FillSpecializationCache()
 			casting = 0,
 			passive = 0,
 			regen = 0
-		},
-		dots = {
 		},
 		isPvp = false
 	}
@@ -230,14 +170,6 @@ end
 
 local function Setup_Devastation()
 	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "devastation")
-end
-
-local function Setup_Preservation()
-	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "preservation", true)
-end
-
-local function Setup_Augmentation()
-	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "augmentation")
 end
 
 local function FillSpellData_Devastation()
@@ -296,15 +228,11 @@ local function FillSpellData_Devastation()
 		--{ variable = "$essenceRegenTime", description = L["EvokerDevastationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerDevastationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-
-		--[[{ variable = "$ebTime", description = L["EvokerDevastationBarTextVariable_ebTime"], printInSettings = true, color = false },
-		{ variable = "$ebStacks", description = L["EvokerDevastationBarTextVariable_ebStacks"], printInSettings = true, color = false },
-
-		{ variable = "$meltArmorTime", description = L["EvokerDevastationBarTextVariable_meltArmorTime"], printInSettings = true, color = false },
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
 	}
+end
+
+local function Setup_Preservation()
+	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "preservation", true)
 end
 
 local function FillSpellData_Preservation()
@@ -321,13 +249,7 @@ local function FillSpellData_Preservation()
 		{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
 		{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
 
-		--{ variable = "#ec", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = true },
-		--{ variable = "#emeraldCommunion", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = false },
-
 		{ variable = "#temporalBurst", icon = spells.temporalBurst.icon, description = spells.temporalBurst.name, printInSettings = true },
-
-		{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
-		{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 
 		{ variable = "#amp", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = true },
 		{ variable = "#algariManaPotion", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = false },
@@ -375,48 +297,17 @@ local function FillSpellData_Preservation()
 		{ variable = "$manaMax", description = L["EvokerPreservationBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["EvokerPreservationBarTextVariable_casting"], printInSettings = true, color = false },
-		--[[{ variable = "$passive", description = L["EvokerPreservationBarTextVariable_passive"], printInSettings = true, color = false },
-		{ variable = "$manaPlusCasting", description = L["EvokerPreservationBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPlusPassive", description = L["EvokerPreservationBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$manaTotal", description = L["EvokerPreservationBarTextVariable_manaTotal"], printInSettings = true, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },]]
 					
 		{ variable = "$essence", description = L["EvokerPreservationBarTextVariable_essence"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		--{ variable = "$essenceRegenTime", description = L["EvokerPreservationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerPreservationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		
-		--[[{ variable = "$temporalBurstTime", description = L["EvokerPreservationBarTextVariable_temporalBurstTime"], printInSettings = true, color = false },
-
-		{ variable = "$ebTime", description = L["EvokerPreservationBarTextVariable_ebTime"], printInSettings = true, color = false },
-		{ variable = "$ebStacks", description = L["EvokerPreservationBarTextVariable_ebStacks"], printInSettings = true, color = false },
-
-		{ variable = "$ecMana", description = L["EvokerPreservationBarTextVariable_ecMana"], printInSettings = true, color = false },
-		{ variable = "$ecTime", description = L["EvokerPreservationBarTextVariable_ecTime"], printInSettings = true, color = false },
-		{ variable = "$ecTicks", description = L["EvokerPreservationBarTextVariable_ecTicks"], printInSettings = true, color = false },
-
-		{ variable = "$innervateMana", description = L["EvokerPreservationBarTextVariable_innervateMana"], printInSettings = true, color = false },
-		{ variable = "$innervateTime", description = L["EvokerPreservationBarTextVariable_innervateTime"], printInSettings = true, color = false },
-		
-		{ variable = "$mttMana", description = L["EvokerPreservationBarTextVariable_mttMana"], printInSettings = true, color = false },
-		{ variable = "$mttTime", description = L["EvokerPreservationBarTextVariable_mttTime"], printInSettings = true, color = false },
-
-		{ variable = "$channeledMana", description = L["EvokerPreservationBarTextVariable_channeledMana"], printInSettings = true, color = false },
-		{ variable = "$slumberingSoulSerumTicks", description = L["EvokerPreservationBarTextVariable_slumberingSoulSerumTicks"], printInSettings = true, color = false },
-		{ variable = "$slumberingSoulSerumTime", description = L["EvokerPreservationBarTextVariable_slumberingSoulSerumTime"], printInSettings = true, color = false },
-		
-		{ variable = "$potionOfChilledClarityMana", description = L["EvokerPreservationBarTextVariable_potionOfChilledClarityMana"], printInSettings = true, color = false },
-		{ variable = "$potionOfChilledClarityTime", description = L["EvokerPreservationBarTextVariable_potionOfChilledClarityTime"], printInSettings = true, color = false },
-
-		{ variable = "$potionCooldown", description = L["EvokerPreservationBarTextVariable_potionCooldown"], printInSettings = true, color = false },
-		{ variable = "$potionCooldownSeconds", description = L["EvokerPreservationBarTextVariable_potionCooldownSeconds"], printInSettings = true, color = false },
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
 	}
+end
+
+local function Setup_Augmentation()
+	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "augmentation")
 end
 
 local function FillSpellData_Augmentation()
@@ -476,16 +367,6 @@ local function FillSpellData_Augmentation()
 		--{ variable = "$essenceRegenTime", description = L["EvokerAugmentationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerAugmentationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-
-		--[[{ variable = "$ebTime", description = L["EvokerAugmentationBarTextVariable_ebTime"], printInSettings = true, color = false },
-		{ variable = "$ebStacks", description = L["EvokerAugmentationBarTextVariable_ebStacks"], printInSettings = true, color = false },
-
-		{ variable = "$meltArmorTime", description = L["EvokerAugmentationBarTextVariable_meltArmorTime"], printInSettings = true, color = false },
-		
-		{ variable = "$temporalBurstTime", description = L["EvokerAugmentationBarTextVariable_temporalBurstTime"], printInSettings = true, color = false },
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
 	}
 end
 
@@ -538,12 +419,6 @@ local function ConstructResourceBar(settings)
 
 	if TRB.Data.character.specId == 1 then
 	elseif TRB.Data.character.specId == 2 then
-		for x = 1, 8 do
-			if TRB.Frames.passiveFrame.thresholds[x] == nil then
-				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
-			end
-			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.passiveFrame.thresholds[x], settings, false)
-		end
 	elseif TRB.Data.character.specId == 3 then
 	end
 
@@ -577,23 +452,6 @@ local function RefreshLookupData_Devastation()
 	--$manaMax
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 	
-	--[[--$ebTime
-	local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-	local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
-	--$ebTicks
-	local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
-	local ebStacks = string.format("%.0f", _ebStacks)
-
-	--$meltArmorTime
-	local _meltArmorTime = 0
-	local meltArmorTime
-	
-	if target ~= nil then
-		_meltArmorTime = target.spells[spells.meltArmor.id].remainingTime or 0
-	end
-	
-	meltArmorTime = TRB.Functions.BarText:TimerPrecision(_meltArmorTime)]]
-
 	--$essenceRegenTime
 	--[[local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -608,9 +466,6 @@ local function RefreshLookupData_Devastation()
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = manaMax
 	lookup["$resource"] = currentMana
-	--[[lookup["$ebTime"] = ebTime
-	lookup["$ebStacks"] = ebStacks
-	lookup["$meltArmorTime"] = meltArmorTime]]
 	lookup["$essence"] = snapshotData.attributes.resource2
 	--lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
@@ -624,9 +479,6 @@ local function RefreshLookupData_Devastation()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	--[[lookupLogic["$ebTime"] = _ebTime
-	lookupLogic["$ebStacks"] = _ebStacks
-	lookupLogic["$meltArmorTime"] = _meltArmorTime]]
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
 	--lookupLogic["$essenceRegenTime"] = _essenceRegenTime
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
@@ -659,72 +511,6 @@ local function RefreshLookupData_Preservation()
 	local _castingMana = snapshotData.casting.resourceFinal
 	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
-	--[[--$ecMana
-	local _ecMana = snapshots[spells.emeraldCommunion.id].buff.resource
-	local ecMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_ecMana, manaPrecision, "floor", true))
-	--$ecTicks
-	local _ecTicks = snapshots[spells.emeraldCommunion.id].buff.ticks
-	local ecTicks = string.format("%.0f", _ecTicks)
-	--$ecTime
-	local _ecTime = snapshots[spells.emeraldCommunion.id].buff:GetRemainingTime(currentTime)
-	local ecTime = TRB.Functions.BarText:TimerPrecision(_ecTime)
-	
-	local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
-	--$innervateMana
-	local _innervateMana = innervate.mana
-	local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
-	--$innervateTime
-	local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
-	local innervateTime = TRB.Functions.BarText:TimerPrecision(_innervateTime)
-
-	local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[@as TRB.Classes.Healer.PotionOfChilledClarity]
-	--$potionOfChilledClarityMana
-	local _potionOfChilledClarityMana = potionOfChilledClarity.mana
-	local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
-	--$potionOfChilledClarityTime
-	local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-	local potionOfChilledClarityTime = TRB.Functions.BarText:TimerPrecision(_potionOfChilledClarityTime)
-	
-	local manaTideTotem = snapshots[spells.manaTideTotem.id] --[@as TRB.Classes.Healer.ManaTideTotem]
-	--$mttMana
-	local _mttMana = manaTideTotem.mana
-	local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
-	--$mttTime
-	local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
-	local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
-
-	--$potionCooldownSeconds
-	local _potionCooldown = snapshots[spells.algariManaPotionRank1.id].cooldown.remaining
-	local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
-	local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
-	local _potionCooldownSeconds = _potionCooldown % 60
-	--$potionCooldown
-	local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
-	
-	local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[@as TRB.Classes.Healer.ChanneledManaPotion]
-	--$channeledMana
-	local _channeledMana = channeledManaPotion.mana
-	local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
-	--$slumberingSoulSerumTicks
-	local _slumberingSoulSerumTicks = channeledManaPotion.ticks or 0
-	local slumberingSoulSerumTicks = string.format("%.0f", _slumberingSoulSerumTicks)
-	--$slumberingSoulSerumTime
-	local _slumberingSoulSerumTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-	local slumberingSoulSerumTime = TRB.Functions.BarText:TimerPrecision(_slumberingSoulSerumTime)
-
-	--$passive
-	local _passiveMana = _ecMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana
-	local passiveMana = string.format("|c%s%s|r", sharedSettings.colors.text.passive.color, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
-	--$manaTotal
-	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
-	local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
-	--$manaPlusCasting
-	local _manaPlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
-	local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
-	--$manaPlusPassive
-	local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
-	local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))]]
-
 	--$manaMax
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
@@ -738,18 +524,6 @@ local function RefreshLookupData_Preservation()
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, true)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
-	--[[
-	--$ebTime
-	local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-	local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
-	--$ecTicks
-	local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
-	local ebStacks = string.format("%.0f", _ebStacks)
-
-	--$temporalBurstTime
-	local _temporalBurstTime = snapshots[spells.temporalBurst.id].buff.remaining
-	local temporalBurstTime = TRB.Functions.BarText:TimerPrecision(_temporalBurstTime)]]
-
 	--$essenceRegenTime
 	--[[local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -758,20 +532,6 @@ local function RefreshLookupData_Preservation()
 	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)]]
 
 	----------
-
-	--[[Global_TwintopResourceBar.resource.passive = _passiveMana
-	Global_TwintopResourceBar.resource.channeledPotion = _channeledMana or 0
-	Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
-	Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
-	Global_TwintopResourceBar.resource.potionOfChilledClarity = _potionOfChilledClarityMana or 0
-	
-	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
-	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
-	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _slumberingSoulSerumTicks or 0
-
-	Global_TwintopResourceBar.emeraldCommunion = Global_TwintopResourceBar.emeraldCommunion or {}
-	Global_TwintopResourceBar.emeraldCommunion.mana = _ecMana
-	Global_TwintopResourceBar.emeraldCommunion.ticks = _ecTicks]]
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resource"] = currentMana
@@ -786,30 +546,6 @@ local function RefreshLookupData_Preservation()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$essenceMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	--[[lookup["$manaTotal"] = manaTotal
-	lookup["$resourcePlusCasting"] = manaPlusCasting
-	lookup["$manaPlusCasting"] = manaPlusCasting
-	lookup["$resourcePlusPassive"] = manaPlusPassive
-	lookup["$manaPlusPassive"] = manaPlusPassive
-	lookup["$resourceTotal"] = manaTotal
-	lookup["$passive"] = passiveMana
-	lookup["$ecMana"] = ecMana
-	lookup["$ecTime"] = ecTime
-	lookup["$ecTicks"] = ecTicks
-	lookup["$innervateMana"] = innervateMana
-	lookup["$innervateTime"] = innervateTime
-	lookup["$potionOfChilledClarityMana"] = potionOfChilledClarityMana
-	lookup["$potionOfChilledClarityTime"] = potionOfChilledClarityTime
-	lookup["$mttMana"] = mttMana
-	lookup["$mttTime"] = mttTime
-	lookup["$channeledMana"] = channeledMana
-	lookup["$slumberingSoulSerumTicks"] = slumberingSoulSerumTicks
-	lookup["$slumberingSoulSerumTime"] = slumberingSoulSerumTime
-	lookup["$potionCooldown"] = potionCooldown
-	lookup["$potionCooldownSeconds"] = potionCooldownSeconds
-	lookup["$ebTime"] = ebTime
-	lookup["$ebStacks"] = ebStacks
-	lookup["$temporalBurstTime"] = temporalBurstTime]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -825,32 +561,6 @@ local function RefreshLookupData_Preservation()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-	--[[lookupLogic["$manaTotal"] = _manaTotal
-	lookupLogic["$manaMax"] = maxResource
-	lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
-	lookupLogic["$manaPlusCasting"] = _manaPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
-	lookupLogic["$manaPlusPassive"] = _manaPlusPassive
-	lookupLogic["$resourceTotal"] = _manaTotal
-	lookupLogic["$resourceMax"] = maxResource
-	lookupLogic["$passive"] = _passiveMana
-	lookupLogic["$ecMana"] = _ecMana
-	lookupLogic["$ecTime"] = _ecTime
-	lookupLogic["$ecTicks"] = _ecTicks
-	lookupLogic["$innervateMana"] = _innervateMana
-	lookupLogic["$innervateTime"] = _innervateTime
-	lookupLogic["$potionOfChilledClarityMana"] = _potionOfChilledClarityMana
-	lookupLogic["$potionOfChilledClarityTime"] = _potionOfChilledClarityTime
-	lookupLogic["$mttMana"] = _mttMana
-	lookupLogic["$mttTime"] = _mttTime
-	lookupLogic["$channeledMana"] = _channeledMana
-	lookupLogic["$slumberingSoulSerumTicks"] = _slumberingSoulSerumTicks
-	lookupLogic["$slumberingSoulSerumTime"] = _slumberingSoulSerumTime
-	lookupLogic["$potionCooldown"] = potionCooldown
-	lookupLogic["$potionCooldownSeconds"] = potionCooldown
-	lookupLogic["$ebTime"] = _ebTime
-	lookupLogic["$ebStacks"] = _ebStacks
-	lookupLogic["$temporalBurstTime"] = _temporalBurstTime]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -878,27 +588,6 @@ local function RefreshLookupData_Augmentation()
 	--$manaMax
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
-	--[[--$ebTime
-	local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-	local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
-	--$ecTicks
-	local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
-	local ebStacks = string.format("%.0f", _ebStacks)
-
-	--$meltArmorTime
-	local _meltArmorTime = 0
-	local meltArmorTime
-	
-	if target ~= nil then
-		_meltArmorTime = target.spells[spells.meltArmor.id].remainingTime or 0
-	end
-	
-	meltArmorTime = TRB.Functions.BarText:TimerPrecision(_meltArmorTime)
-
-	--$temporalBurstTime
-	local _temporalBurstTime = snapshots[spells.temporalBurst.id].buff.remaining
-	local temporalBurstTime = TRB.Functions.BarText:TimerPrecision(_temporalBurstTime)]]
-
 	--$essenceRegenTime
 	--[[local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -913,10 +602,6 @@ local function RefreshLookupData_Augmentation()
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = manaMax
 	lookup["$resource"] = currentMana
-	--[[lookup["$ebTime"] = ebTime
-	lookup["$ebStacks"] = ebStacks
-	lookup["$meltArmorTime"] = meltArmorTime
-	lookup["$temporalBurstTime"] = temporalBurstTime]]
 	lookup["$essence"] = snapshotData.attributes.resource
 	--lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
@@ -925,10 +610,6 @@ local function RefreshLookupData_Augmentation()
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	--[[lookupLogic["$ebTime"] = _ebTime
-	lookupLogic["$ebStacks"] = _ebStacks
-	lookupLogic["$meltArmorTime"] = _meltArmorTime
-	lookupLogic["$temporalBurstTime"] = _temporalBurstTime]]
 	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 	lookupLogic["$mana"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -947,10 +628,8 @@ local function UpdateCastingResourceFinal_Preservation()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-	local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 	-- Do nothing for now
-	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw --* innervate.modifier * potionOfChilledClarity.modifier
+	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class
@@ -968,15 +647,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Preservation()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-			--[[if spellId == spells.emeraldCommunion.id then
-				local _, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _ = UnitChannelInfo("player")
-				casting.spellId = spells.emeraldCommunion.id
-				casting.startTime = currentChannelStartTime / 1000
-				casting.endTime = currentChannelEndTime / 1000
-				casting.resourceRaw = 0
-				casting.icon = spells.emeraldCommunion.icon
-				UpdateCastingResourceFinal_Preservation()
-			end]]
 		end
 	elseif TRB.Data.character.specId == 3 then
 	end
@@ -999,28 +669,6 @@ local function UpdateSnapshot_Preservation()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
-	
-	local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-	--innervate:Update()
-
-	local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-	--manaTideTotem:Update()
-
-	local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-	--potionOfChilledClarity:Update()
-
-	local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-	--channeledManaPotion:Update()
-
-	-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-	--[[snapshots[spells.algariManaPotionRank1.id].cooldown.startTime, snapshots[spells.algariManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.algariManaPotionRank1.id)
-	snapshots[spells.algariManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
-
-	local emeraldCommunion = snapshots[spells.emeraldCommunion.id] --[@as TRB.Classes.Healer.HealerRegenBase]
-	emeraldCommunion.buff:UpdateTicks(currentTime)
-	emeraldCommunion.mana = emeraldCommunion.buff.resource
-
-	snapshots[spells.temporalBurst.id].buff:GetRemainingTime(currentTime)]]
 end
 
 local function UpdateSnapshot_Augmentation()
@@ -1030,8 +678,6 @@ local function UpdateSnapshot_Augmentation()
 	local snapshots = TRB.Data.snapshotData.snapshots
 	
 	local currentTime = GetTime()
-
-	--snapshots[spells.temporalBurst.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateResourceBar()
@@ -1052,21 +698,15 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
-				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
 
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 
 				barContainerFrame:SetAlpha(1.0)
 
@@ -1100,17 +740,7 @@ local function UpdateResourceBar()
 				end
 				
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
-			
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)			
 
 				local current = snapshotData.attributes.resource2
 				
@@ -1171,15 +801,10 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
-
-				--local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-				--local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 
 				if snapshots[spells.essenceBurst.id].buff.isActive then
 					if snapshots[spells.essenceBurst.id].buff.applications == 1 then
@@ -1205,128 +830,14 @@ local function UpdateResourceBar()
 					end
 				end
 
-				--[[if potionOfChilledClarity.buff.isActive then
-					if specSettings.colors.bar.potionOfChilledClarityBorderChange then
-						barBorderColor = specSettings.colors.bar.potionOfChilledClarity
-					end
-				elseif innervate.buff.isActive then
-					if specSettings.colors.bar.innervateBorderChange then
-						barBorderColor = specSettings.colors.bar.innervate
-					end
-
-					if specSettings.audio.innervate.enabled and snapshotData.audio.innervateCue == false then
-						snapshotData.audio.innervateCue = true
-						PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
-					end
-				end]]
-
-				--[[if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
-					castingBarValue = currentResource + snapshotData.casting.resourceFinal
-				else
-					castingBarValue = currentResource
-				end
-
-				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specCacheSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
-				thresholdCount = thresholdCount + 1
-				if specSettings.colors.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specCacheSettings, snapshots[spells.emeraldCommunion.id] --[@as TRB.Classes.Healer.HealerRegenBase], passiveFrame,thresholdCount, castingBarValue, passiveValue)
-				else
-					TRB.Functions.Threshold:Hide(spells.emeraldCommunion.id, TRB.Frames.passiveFrame.thresholds[thresholdCount])
-				end
-				passiveBarValue = castingBarValue + passiveValue]]
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 				
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
-
-				--[[castingBarValue < currentResource then --Using a spender
-					if -snapshotData.casting.resourceFinal > passiveValue then
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.passive
-						passiveBarColor = specSettings.colors.bar.spending
-					else
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.spending
-						passiveBarColor = specSettings.colors.bar.passive
-					end
-				else]]
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
-					castingBarColor = specSettings.colors.bar.casting
-					passiveBarColor = specSettings.colors.bar.passive
-				--end
-
-				--[[local potion = snapshots[spells.algariManaPotionRank1.id].cooldown
-				local potionCooldownThreshold = 0
-				local potionThresholdColor = specCacheSettings.colors.threshold.over.color
-				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
-
-				if potion.onCooldown then
-					potionThresholdColor = specCacheSettings.colors.threshold.unusable.color
-					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-					if specCacheSettings.thresholds.potionCooldown.enabled then
-						if specCacheSettings.thresholds.potionCooldown.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							potionCooldownThreshold = gcd * specCacheSettings.thresholds.potionCooldown.gcdsMax
-						elseif specCacheSettings.thresholds.potionCooldown.mode == "time" then
-							potionCooldownThreshold = specCacheSettings.thresholds.potionCooldown.timeMax
-						end
-					end
-				end
-
-				local pairOffset = 0
-				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]=]) do
-					if resourceFrame.thresholds[thresholdId] == nil then
-						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-					end
-					pairOffset = (thresholdId - 1) * 3
-					local showThreshold = true
-					local thresholdColor = specCacheSettings.colors.threshold.over.color
-					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-					local snapshot = snapshots[spell.id]
-					local resourceAmount = 0
-
-					if spell.attributes.isPotion then
-						snapshot = snapshots[spells.algariManaPotionRank1.id]
-						thresholdColor = potionThresholdColor
-						frameLevel = potionFrameLevel
-						if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
-							local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
-							resourceAmount = castingBarValue + potionMana
-							if specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
-							else
-								showThreshold = false
-							end
-						else
-							showThreshold = false
-						end
-					else
-						resourceAmount = spell:GetPrimaryResourceCost()
-					end
-
-					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-				end]]
-
 				local barColor = specSettings.colors.bar.base
 				if specSettings.colors.bar.temporalBurst.enabled and snapshots[spells.temporalBurst.id].buff.isActive then
 					barColor = specSettings.colors.bar.temporalBurst.color
 				end
 				
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
 				local current = snapshotData.attributes.resource2
@@ -1390,21 +901,15 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
-				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
 
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
 
 				barContainerFrame:SetAlpha(1.0)
 
@@ -1432,22 +937,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if target ~= nil and target.spells[spells.meltArmor.id].active and specSettings.colors.bar.meltArmor.enabled then
-					barColor = specSettings.colors.bar.meltArmor.color
-				elseif specSettings.colors.bar.temporalBurst.enabled and snapshots[spells.temporalBurst.id].buff.isActive then
-					barColor = specSettings.colors.bar.temporalBurst.color
-				end
-
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 
 				local current = snapshotData.attributes.resource2
@@ -1561,11 +1051,6 @@ local function SwitchSpec()
 		lookup["#eb"] = spells.essenceBurst.icon
 		lookup["#temporalBurst"] = spells.temporalBurst.icon
 		lookup["#essenceBurst"] = spells.essenceBurst.icon
-		--lookup["#ec"] = spells.emeraldCommunion.icon
-		--lookup["#emeraldCommunion"] = spells.emeraldCommunion.icon
-		lookup["#innervate"] = spells.innervate.icon
-		lookup["#mtt"] = spells.manaTideTotem.icon
-		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
 		lookup["#amp"] = spells.algariManaPotionRank1.icon
 		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
 		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
@@ -1590,7 +1075,6 @@ local function SwitchSpec()
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
-		--targetData:AddSpellTracking(spells.meltArmor)
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Augmentation
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.augmentation.settings)
@@ -1852,80 +1336,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 
 	if TRB.Data.character.specId == 1 then --Devastation			
 	elseif TRB.Data.character.specId == 2 then --Preservation
-		--[[if var == "$passive" then
-			if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
-				TRB.Functions.Class:IsValidVariableForSpec("$ecMana") or
-				TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
-				TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
-				TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
-				valid = true
-			end
-		elseif var == "$ecMana" then
-			if snapshots[spells.emeraldCommunion.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ecTime" then
-			if snapshots[spells.emeraldCommunion.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ecTicks" then
-			if snapshots[spells.emeraldCommunion.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$innervateMana" then
-			local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
-			if innervate.buff.isActive then
-				valid = true
-			end
-		elseif var == "$innervateTime" then
-			local innervate = snapshots[spells.innervate.id] --[@as TRB.Classes.Healer.Innervate]
-			if innervate.buff.isActive then
-				valid = true
-			end
-		elseif var == "$potionOfChilledClarityMana" then
-			local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[@as TRB.Classes.Healer.PotionOfChilledClarity]
-			if potionOfChilledClarity.buff.isActive then
-				valid = true
-			end
-		elseif var == "$potionOfChilledClarityTime" then
-			local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[@as TRB.Classes.Healer.PotionOfChilledClarity]
-			if potionOfChilledClarity.buff.isActive then
-				valid = true
-			end
-		elseif var == "$mttMana" then
-			local manaTideTotem = snapshots[spells.manaTideTotem.id] --[@as TRB.Classes.Healer.ManaTideTotem]
-			if manaTideTotem.buff.isActive then
-				valid = true
-			end
-		elseif var == "$mttTime" then
-			local manaTideTotem = snapshots[spells.manaTideTotem.id] --[@as TRB.Classes.Healer.ManaTideTotem]
-			if manaTideTotem.buff.isActive then
-				valid = true
-			end
-		elseif var == "$channeledMana" then
-			local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[@as TRB.Classes.Healer.ChanneledManaPotion]
-			if channeledManaPotion.buff.isActive then
-				valid = true
-			end
-		elseif var == "$slumberingSoulSerumTicks" then
-			local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[@as TRB.Classes.Healer.ChanneledManaPotion]
-			if channeledManaPotion.buff.isActive then
-				valid = true
-			end
-		elseif var == "$slumberingSoulSerumTime" then
-			local channeledManaPotion = snapshots[spells.slumberingSoulSerumRank1.id] --[@as TRB.Classes.Healer.ChanneledManaPotion]
-			if channeledManaPotion.buff.isActive then
-				valid = true
-			end
-		elseif var == "$potionCooldown" then
-			if snapshots[spells.algariManaPotionRank1.id].cooldown:IsUnusable() then
-				valid = true
-			end
-		elseif var == "$potionCooldownSeconds" then
-			if snapshots[spells.algariManaPotionRank1.id].cooldown:IsUnusable() then
-				valid = true
-			end
-		end]]
 	elseif TRB.Data.character.specId == 3 then -- Augmentation
 	end
 
@@ -1962,23 +1372,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif var == "$resourceMax" or var == "$manaMax" then
 		valid = true
-	--[[elseif var == "$resourceTotal" or var == "$manaTotal" then
-		if snapshotData.attributes.resource > 0 or
-			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
-			then
-			valid = true
-		end
-	elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-		if snapshotData.attributes.resource > 0 or
-			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
-			valid = true
-		end
-	elseif var == "$regen" then
-		if snapshotData.attributes.resource < TRB.Data.character.maxResource and
-			((settings.generation.mode == "time" and settings.generation.time > 0) or
-			(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-			valid = true
-		end]]
 	elseif var == "$comboPoints" or var == "$essence" then
 		valid = true
 	--[[elseif var == "$essenceRegenTime" then
@@ -1987,29 +1380,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end]]
 	elseif var == "$comboPointsMax"or var == "$essenceMax" then
 		valid = true
-	--[[elseif var == "$ebTime" then
-		if snapshots[spells.essenceBurst.id].buff.isActive then
-			valid = true
-		end
-	elseif var == "$ebStacks" then
-		if snapshots[spells.essenceBurst.id].buff.isActive then
-			valid = true
-		end]]
 	end
 
 	return valid
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	--local settings = TRB.Data.settings.evoker
-	--local spells = TRB.Data.spells
-	--local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-
-	--[[
-	if TRB.Data.character.specId == 1 then
-	elseif TRB.Data.character.specId == 2 then
-	elseif TRB.Data.character.specId == 3 then
-	end]]
 	return nil, true
 end
 

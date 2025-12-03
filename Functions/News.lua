@@ -11,6 +11,19 @@ local content = [====[
 
 --- 
 
+# 12.0.0.0-alpha16 (2025-12-04)
+## General
+
+- Clean up dead code from specializations.
+- Remove features that won't be returning due to API limitations: Overcap, End Cap, Casting Bar, Passive Bar, Regen, DoT tracking, potions, passive thresholds.
+- Removed backward compatability with older versions of the Bar from as far back as 7.3.5.
+
+### Localization
+
+- Cleared existing Google Translated localizations as most of them are invalid or missing.
+
+--- 
+
 # 12.0.0.0-alpha15 (2025-12-03)
 ## General
 

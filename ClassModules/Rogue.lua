@@ -8,8 +8,6 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 
 local barContainerFrame = TRB.Frames.barContainerFrame
 local resourceFrame = TRB.Frames.resourceFrame
-local castingFrame = TRB.Frames.castingFrame
-local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -35,8 +33,6 @@ local function FillSpecializationCache()
 			passive = 0,
 			regen = 0
 		},
-		dots = {
-		},
 		isPvp = false
 	}
 
@@ -59,7 +55,6 @@ local function FillSpecializationCache()
 	specCache.assassination.snapshotData.attributes.resourceRegen = 0
 	specCache.assassination.snapshotData.attributes.comboPoints = 0
 	specCache.assassination.snapshotData.audio = {
-		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -110,8 +105,6 @@ local function FillSpecializationCache()
 			passive = 0,
 			regen = 0
 		},
-		dots = {
-		},
 		isPvp = false
 	}
 
@@ -134,7 +127,6 @@ local function FillSpecializationCache()
 	specCache.outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.outlaw.snapshotData.attributes.comboPoints = 0
 	specCache.outlaw.snapshotData.audio = {
-		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -225,8 +217,6 @@ local function FillSpecializationCache()
 			passive = 0,
 			regen = 0
 		},
-		dots = {
-		},
 		isPvp = false
 	}
 
@@ -249,7 +239,6 @@ local function FillSpecializationCache()
 	specCache.subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.subtlety.snapshotData.attributes.comboPoints = 0
 	specCache.subtlety.snapshotData.audio = {
-		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -386,16 +375,6 @@ local function FillSpellData_Assassination()
 		{ variable = "$energyMax", description = L["RogueAssassinationBarTextVariable_energyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$passive", description = L["RogueAssassinationBarTextVariable_passive"], printInSettings = true, color = false },
-		{ variable = "$regen", description = L["RogueAssassinationBarTextVariable_regen"], printInSettings = true, color = false },
-		{ variable = "$regenEnergy", description = "", printInSettings = false, color = false },
-		{ variable = "$energyRegen", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceRegen", description = "", printInSettings = false, color = false },
-		{ variable = "$regenResource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyPlusPassive", description = L["RogueAssassinationBarTextVariable_energyPlusPassive"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$energyTotal", description = L["RogueAssassinationBarTextVariable_energyTotal"], printInSettings = true, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },]]
 		
 		{ variable = "$comboPoints", description = L["RogueAssassinationBarTextVariable_comboPoints"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = L["RogueAssassinationBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
@@ -403,61 +382,8 @@ local function FillSpellData_Assassination()
 		--[[{ variable = "$sadTime", description = L["RogueAssassinationBarTextVariable_sadTime"], printInSettings = true, color = false },
 		{ variable = "$sliceAndDiceTime", description = "", printInSettings = false, color = false },
 
-		-- Bleeds
-		{ variable = "$isBleeding", description = L["RogueAssassinationBarTextVariable_isBleeding"], printInSettings = true, color = false },
-		{ variable = "$ctCount", description = L["RogueAssassinationBarTextVariable_ctCount"], printInSettings = true, color = false },
-		{ variable = "$crimsonTempestCount", description = "", printInSettings = false, color = false },
-		{ variable = "$ctTime", description = L["RogueAssassinationBarTextVariable_ctTime"], printInSettings = true, color = false },
-		{ variable = "$crimsonTempestTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$garroteCount", description = L["RogueAssassinationBarTextVariable_garroteCount"], printInSettings = true, color = false },
-		{ variable = "$garroteTime", description = L["RogueAssassinationBarTextVariable_garroteTime"], printInSettings = true, color = false },
-
-		{ variable = "$ibCount", description = L["RogueAssassinationBarTextVariable_ibCount"], printInSettings = true, color = false },
-		{ variable = "$internalBleedingCount", description = "", printInSettings = false, color = false },
-		{ variable = "$ibTime", description = L["RogueAssassinationBarTextVariable_ibTime"], printInSettings = true, color = false },
-		{ variable = "$internalBleedingTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$ruptureCount", description = L["RogueAssassinationBarTextVariable_ruptureCount"], printInSettings = true, color = false },
-		{ variable = "$ruptureTime", description = L["RogueAssassinationBarTextVariable_ruptureTime"], printInSettings = true, color = false },
-	
-		{ variable = "$sbsCount", description = L["RogueAssassinationBarTextVariable_sbsCount"], printInSettings = true, color = false },
-		{ variable = "$serratedBoneSpikeCount", description = "", printInSettings = false, color = false },
-
-		-- Poisons
-		
-		{ variable = "$amplifyingPoisonCount", description = L["RogueAssassinationBarTextVariable_amplifyingPoisonCount"], printInSettings = true, color = false },
-		{ variable = "$amplifyingPoisonTime", description = L["RogueAssassinationBarTextVariable_amplifyingPoisonTime"], printInSettings = true, color = false },
-
-		{ variable = "$atrophicPoisonCount", description = L["RogueAssassinationBarTextVariable_atrophicPoisonCount"], printInSettings = true, color = false },
-		{ variable = "$atrophicPoisonTime", description = L["RogueAssassinationBarTextVariable_atrophicPoisonTime"], printInSettings = true, color = false },
-
-		{ variable = "$cpCount", description = L["RogueAssassinationBarTextVariable_cpCount"], printInSettings = true, color = false },
-		{ variable = "$cripplingPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$cpTime", description = L["RogueAssassinationBarTextVariable_cpTime"], printInSettings = true, color = false },
-		{ variable = "$cripplingPoisonTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$dpCount", description = L["RogueAssassinationBarTextVariable_dpCount"], printInSettings = true, color = false },
-		{ variable = "$deadlyPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$dpTime", description = L["RogueAssassinationBarTextVariable_dpTime"], printInSettings = true, color = false },
-		{ variable = "$deadlyPoisonTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$npCount", description = L["RogueAssassinationBarTextVariable_npCount"], printInSettings = true, color = false },
-		{ variable = "$numbingPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$npTime", description = L["RogueAssassinationBarTextVariable_npTime"], printInSettings = true, color = false },
-		{ variable = "$numbingPoisonTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$wpCount", description = L["RogueAssassinationBarTextVariable_wpCount"], printInSettings = true, color = false },
-		{ variable = "$woundPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$wpTime", description = L["RogueAssassinationBarTextVariable_wpTime"], printInSettings = true, color = false },
-		{ variable = "$woundPoisonTime", description = "", printInSettings = false, color = false },
-
 		-- Proc
 		{ variable = "$blindsideTime", description = L["RogueAssassinationBarTextVariable_blindsideTime"], printInSettings = true, color = false },]]
-
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
 end
 
@@ -544,16 +470,6 @@ local function FillSpellData_Outlaw()
 		{ variable = "$energyMax", description = L["RogueOutlawBarTextVariable_energyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$passive", description = L["RogueOutlawBarTextVariable_passive"], printInSettings = true, color = false },
-		{ variable = "$regen", description = L["RogueOutlawBarTextVariable_regen"], printInSettings = true, color = false },
-		{ variable = "$regenEnergy", description = "", printInSettings = false, color = false },
-		{ variable = "$energyRegen", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceRegen", description = "", printInSettings = false, color = false },
-		{ variable = "$regenResource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyPlusPassive", description = L["RogueOutlawBarTextVariable_energyPlusPassive"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$energyTotal", description = L["RogueOutlawBarTextVariable_energyTotal"], printInSettings = true, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },]]
 		
 		{ variable = "$comboPoints", description = L["RogueOutlawBarTextVariable_comboPoints"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = L["RogueOutlawBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
@@ -584,29 +500,7 @@ local function FillSpellData_Outlaw()
 		{ variable = "$sliceAndDiceTime", description = "", printInSettings = false, color = false },
 
 		-- Proc
-		{ variable = "$opportunityTime", description = L["RogueOutlawBarTextVariable_opportunityTime"], printInSettings = true, color = false },
-
-		-- Poisons
-		{ variable = "$atrophicPoisonCount", description = L["RogueOutlawBarTextVariable_atrophicPoisonCount"], printInSettings = true, color = false },
-		{ variable = "$atrophicPoisonTime", description = L["RogueOutlawBarTextVariable_atrophicPoisonTime"], printInSettings = true, color = false },
-
-		{ variable = "$cpCount", description = L["RogueOutlawBarTextVariable_cpCount"], printInSettings = true, color = false },
-		{ variable = "$cripplingPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$cpTime", description = L["RogueOutlawBarTextVariable_cpTime"], printInSettings = true, color = false },
-		{ variable = "$cripplingPoisonTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$npCount", description = L["RogueOutlawBarTextVariable_npCount"], printInSettings = true, color = false },
-		{ variable = "$numbingPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$npTime", description = L["RogueOutlawBarTextVariable_npTime"], printInSettings = true, color = false },
-		{ variable = "$numbingPoisonTime", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$wpCount", description = L["RogueOutlawBarTextVariable_wpCount"], printInSettings = true, color = false },
-		{ variable = "$woundPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$wpTime", description = L["RogueOutlawBarTextVariable_wpTime"], printInSettings = true, color = false },
-		{ variable = "$woundPoisonTime", description = "", printInSettings = false, color = false },]]
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
+		{ variable = "$opportunityTime", description = L["RogueOutlawBarTextVariable_opportunityTime"], printInSettings = true, color = false },]]
 	}
 end
 
@@ -682,16 +576,6 @@ local function FillSpellData_Subtlety()
 		{ variable = "$energyMax", description = L["RogueSubtletyBarTextVariable_energyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$passive", description = L["RogueSubtletyBarTextVariable_passive"], printInSettings = true, color = false },
-		{ variable = "$regen", description = L["RogueSubtletyBarTextVariable_regen"], printInSettings = true, color = false },
-		{ variable = "$regenEnergy", description = "", printInSettings = false, color = false },
-		{ variable = "$energyRegen", description = "", printInSettings = false, color = false },
-		{ variable = "$regenResource", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceRegen", description = "", printInSettings = false, color = false },
-		{ variable = "$energyPlusPassive", description = L["RogueSubtletyBarTextVariable_energyPlusPassive"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$energyTotal", description = L["RogueSubtletyBarTextVariable_energyTotal"], printInSettings = true, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },]]
 		
 		{ variable = "$comboPoints", description = L["RogueSubtletyBarTextVariable_comboPoints"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = L["RogueSubtletyBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
@@ -703,53 +587,8 @@ local function FillSpellData_Subtlety()
 		{ variable = "$flagellationTime", description = L["RogueSubtletyBarTextVariable_flagellationTime"], printInSettings = true, color = false },
 
 		{ variable = "$sadTime", description = L["RogueSubtletyBarTextVariable_sadTime"], printInSettings = true, color = false },
-		{ variable = "$sliceAndDiceTime", description = "", printInSettings = false, color = false },
-
-		-- Bleeds
-		{ variable = "$ruptureCount", description = L["RogueSubtletyBarTextVariable_ruptureCount"], printInSettings = true, color = false },
-		{ variable = "$ruptureTime", description = L["RogueSubtletyBarTextVariable_ruptureTime"], printInSettings = true, color = false },
-
-		-- Poisons
-		{ variable = "$atrophicPoisonCount", description = L["RogueSubtletyTextVariable_atrophicPoisonCount"], printInSettings = true, color = false },
-		{ variable = "$atrophicPoisonTime", description = L["RogueSubtletyTextVariable_atrophicPoisonTime"], printInSettings = true, color = false },
-
-		{ variable = "$cpCount", description = L["RogueSubtletyBarTextVariable_cpCount"], printInSettings = true, color = false },
-		{ variable = "$cripplingPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$cpTime", description = L["RogueSubtletyBarTextVariable_cpTime"], printInSettings = true, color = false },
-		{ variable = "$cripplingPoisonTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$npCount", description = L["RogueSubtletyBarTextVariable_npCount"], printInSettings = true, color = false },
-		{ variable = "$numbingPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$npTime", description = L["RogueSubtletyBarTextVariable_npTime"], printInSettings = true, color = false },
-		{ variable = "$numbingPoisonTime", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$wpCount", description = L["RogueSubtletyBarTextVariable_wpCount"], printInSettings = true, color = false },
-		{ variable = "$woundPoisonCount", description = "", printInSettings = false, color = false },
-		{ variable = "$wpTime", description = L["RogueSubtletyBarTextVariable_wpTime"], printInSettings = true, color = false },
-		{ variable = "$woundPoisonTime", description = "", printInSettings = false, color = false },]]
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
+		{ variable = "$sliceAndDiceTime", description = "", printInSettings = false, color = false },]]
 	}
-end
-
-local function IsTargetBleeding(guid)
-	if TRB.Data.character.specId == 1 then -- Assassination
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
-		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		if guid == nil then
-			guid = snapshotData.targetData.currentTargetGuid
-		end
-		
-		local target = snapshotData.targetData.targets[guid] --[[@as TRB.Classes.Target]]
-
-		if target == nil then
-			return false
-		end
-	
-		return target.spells[spells.garrote.id].active or target.spells[spells.rupture.id].active or target.spells[spells.internalBleeding.id].active or target.spells[spells.crimsonTempest.id].active
-	end
-	return false
 end
 
 local function UpdateCastingResourceFinal()
@@ -815,20 +654,11 @@ local function RefreshLookupData_Assassination()
 	local currentTime = GetTime()
 	local normalizedEnergy = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
-	-- This probably needs to be pulled every refresh
-	--snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
-
-	--$overcap
-	--local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
-
 	local currentEnergyColor = sharedSettings.colors.text.current.color
 	local castingEnergyColor = sharedSettings.colors.text.casting.color
 	
 	if TRB.Data.character.inCombat then
-		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
-			currentEnergyColor = sharedSettings.colors.text.overcap.color
-			castingEnergyColor = sharedSettings.colors.text.overcap.color
-		else]]if sharedSettings.colors.text.overThreshold.enabled then
+		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -854,239 +684,8 @@ local function RefreshLookupData_Assassination()
 	local currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)-- TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
 	--$casting
 	local castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	--[[--$passive
-	local _regenEnergy = 0
-	local _passiveEnergy
-	local _passiveEnergyMinusRegen
-
-	local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-
-	if specSettings.generation.enabled then
-		if specSettings.generation.mode == "time" then
-			_regenEnergy = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
-		else
-			_regenEnergy = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
-		end
-	end
-
-	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenEnergy)
-
-	_passiveEnergy = _regenEnergy
-	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
-
-	local passiveEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
-	--$energyTotal
-	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
-	--$energyPlusCasting
-	local _energyPlusCasting = math.min(snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyPlusCasting = string.format("|c%s%.0f|r", castingEnergyColor, _energyPlusCasting)
-	--$energyPlusPassive
-	local _energyPlusPassive = math.min(_passiveEnergy + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
-
-
-	-- Bleeds
-	-- TODO: Somehow account for pandemic being variable
-	--$ctCount and $ctTime
-	local _ctCount = snapshotData.targetData.count[spells.crimsonTempest.id] or 0
-	local ctCount = tostring(_ctCount)
-	local _ctTime = 0
-	local ctTime
-	
-	--$garroteCount and $garroteTime
-	local _garroteCount = snapshotData.targetData.count[spells.garrote.id] or 0
-	local garroteCount = tostring(_garroteCount)
-	local _garroteTime = 0
-	local garroteTime
-	
-	--$ibCount and $ibTime
-	local _ibCount = snapshotData.targetData.count[spells.internalBleeding.id] or 0
-	local ibCount = tostring(_ibCount)
-	local _ibTime = 0
-	local ibTime
-	
-	--$ruptureCount and $ruptureTime
-	local _ruptureCount = snapshotData.targetData.count[spells.rupture.id] or 0
-	local ruptureCount = tostring(_ruptureCount)
-	local _ruptureTime = 0
-	local ruptureTime
-	
-	-- Poisons
-	--$cpCount and $cpTime
-	local _cpCount = snapshotData.targetData.count[spells.cripplingPoison.id] or 0
-	local cpCount = tostring(_cpCount)
-	local _cpTime = 0
-	local cpTime
-			
-	--$dpCount and $dpTime
-	local _dpCount = snapshotData.targetData.count[spells.deadlyPoison.id] or 0
-	local dpCount = tostring(_dpCount)
-	local _dpTime = 0
-	local dpTime
-			
-	--$amplifyingPoisonCount and $amplifyingPoisonTime
-	local _amplifyingPoisonCount = snapshotData.targetData.count[spells.amplifyingPoison.id] or 0
-	local amplifyingPoisonCount = tostring(_amplifyingPoisonCount)
-	local _amplifyingPoisonTime = 0
-	local amplifyingPoisonTime
-			
-	--$npCount and $npTime
-	local _npCount = snapshotData.targetData.count[spells.numbingPoison.id] or 0
-	local npCount = tostring(_npCount)
-	local _npTime = 0
-	local npTime
-			
-	--$atrophicPoisonCount and $atrophicPoisonTime
-	local _atrophicPoisonCount = snapshotData.targetData.count[spells.atrophicPoison.id] or 0
-	local atrophicPoisonCount = tostring(_atrophicPoisonCount)
-	local _atrophicPoisonTime = 0
-	local atrophicPoisonTime
-			
-	--$wpCount and $wpTime
-	local _wpCount = snapshotData.targetData.count[spells.woundPoison.id] or 0
-	local wpCount = tostring(_wpCount)
-	local _wpTime = 0
-	local wpTime
-	
-	--$sbsCount
-	local _sbsCount = snapshotData.targetData.count[spells.serratedBoneSpike.debuffId] or 0
-	local sbsCount = tostring(_sbsCount)
-	local _sbsOnTarget = false
-
-
-	if target ~= nil then
-		_ctTime = target.spells[spells.crimsonTempest.id].remainingTime or 0
-		_garroteTime = target.spells[spells.garrote.id].remainingTime or 0
-		_ibTime = target.spells[spells.internalBleeding.id].remainingTime or 0
-		_ruptureTime = target.spells[spells.rupture.id].remainingTime or 0
-		_cpTime = target.spells[spells.cripplingPoison.id].remainingTime or 0
-		_dpTime = target.spells[spells.deadlyPoison.id].remainingTime or 0
-		_npTime = target.spells[spells.numbingPoison.id].remainingTime or 0
-		_atrophicPoisonTime = target.spells[spells.atrophicPoison.id].remainingTime or 0
-		_amplifyingPoisonTime = target.spells[spells.amplifyingPoison.id].remainingTime or 0
-		_wpTime = target.spells[spells.woundPoison.id].remainingTime or 0
-		_sbsOnTarget = target.spells[spells.serratedBoneSpike.debuffId].active or false
-	end
-
-
-	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		-- Bleeds
-		if _ctTime > spells.crimsonTempest.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			ctCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _ctCount)
-			ctTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_ctTime))
-		elseif _ctTime > 0 then
-			ctCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _ctCount)
-			ctTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_ctTime))
-		else
-			ctCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ctCount)
-			ctTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _garroteTime > spells.garrote.pandemicTime then
-			garroteCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _garroteCount)
-			garroteTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_garroteTime))
-		elseif _garroteTime > 0 then
-			garroteCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _garroteCount)
-			garroteTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_garroteTime))
-		else
-			garroteCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _garroteCount)
-			garroteTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-					
-		if _ibTime > 0 then
-			ibCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _ibCount)
-			ibTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_ibTime))
-		else
-			ibCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ibCount)
-			ibTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _ruptureTime > spells.rupture.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
-		elseif _ruptureTime > 0 then
-			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
-		else
-			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		--Poisons
-		if _cpTime > 0 then
-			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _cpCount)
-			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_cpTime))
-		else
-			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _cpCount)
-			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _dpTime > 0 then
-			dpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _dpCount)
-			dpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_dpTime))
-		else
-			dpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _dpCount)
-			dpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _npTime > 0 then
-			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _npCount)
-			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_npTime))
-		else
-			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _npCount)
-			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _wpTime > 0 then
-			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _wpCount)
-			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_wpTime))
-		else
-			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _wpCount)
-			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _atrophicPoisonTime > 0 then
-			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
-		else
-			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _amplifyingPoisonTime > 0 then
-			amplifyingPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _amplifyingPoisonCount)
-			amplifyingPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_amplifyingPoisonTime))
-		else
-			amplifyingPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _amplifyingPoisonCount)
-			amplifyingPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _sbsOnTarget == false and talents:IsTalentActive(spells.serratedBoneSpike) then
-			sbsCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _sbsCount)
-		else
-			sbsCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _sbsCount)
-		end
-	else
-		-- Bleeds
-		ctTime = TRB.Functions.BarText:TimerPrecision(_ctTime)
-		garroteTime = TRB.Functions.BarText:TimerPrecision(_garroteTime)
-		ibTime = TRB.Functions.BarText:TimerPrecision(_ibTime)
-		ruptureTime = TRB.Functions.BarText:TimerPrecision(_ruptureTime)
-
-		-- Poisons
-		amplifyingPoisonTime = TRB.Functions.BarText:TimerPrecision(_amplifyingPoisonTime)
-		atrophicPoisonTime = TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime)
-		cpTime = TRB.Functions.BarText:TimerPrecision(_cpTime)
-		dpTime = TRB.Functions.BarText:TimerPrecision(_dpTime)
-		npTime = TRB.Functions.BarText:TimerPrecision(_npTime)
-		wpTime = TRB.Functions.BarText:TimerPrecision(_wpTime)
-	end
-	
-
-	--$sadTime
+		
+	--[[--$sadTime
 	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 	local sadTime
 	
@@ -1101,24 +700,9 @@ local function RefreshLookupData_Assassination()
 	
 	--$blindsideTime
 	local _blindsideTime = snapshots[spells.blindside.id].buff:GetRemainingTime(currentTime)
-	local blindsideTime = TRB.Functions.BarText:TimerPrecision(_blindsideTime)
+	local blindsideTime = TRB.Functions.BarText:TimerPrecision(_blindsideTime)]]
 
 	----------------------------
-
-	Global_TwintopResourceBar.resource.passive = _passiveEnergy
-	Global_TwintopResourceBar.resource.regen = _regenEnergy
-	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.amplifyingPoisonCount = _amplifyingPoisonCount
-	Global_TwintopResourceBar.dots.atrophicPoisonCount = _atrophicPoisonCount
-	Global_TwintopResourceBar.dots.cripplingPoisonCount = _cpCount
-	Global_TwintopResourceBar.dots.deadlyPoisonCount = _dpCount
-	Global_TwintopResourceBar.dots.numbingPoisonCount = _npCount
-	Global_TwintopResourceBar.dots.woundPoisonCount = _wpCount
-	Global_TwintopResourceBar.dots.crimsonTempestCount = _ctCount
-	Global_TwintopResourceBar.dots.garroteCount = _garroteCount
-	Global_TwintopResourceBar.dots.internalBleedingCount = _ibCount
-	Global_TwintopResourceBar.dots.ruptureCount = _ruptureCount
-	Global_TwintopResourceBar.dots.serratedBoneSpikeCount = _sbsCount]]
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1129,65 +713,9 @@ local function RefreshLookupData_Assassination()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$inStealth"] = ""
-	--[[lookup["$energyTotal"] = energyTotal
-	lookup["$energyMax"] = TRB.Data.character.maxResource
-	lookup["$energy"] = currentEnergy
-	lookup["$resourcePlusCasting"] = energyPlusCasting
-	lookup["$energyPlusCasting"] = energyPlusCasting
-	lookup["$resourcePlusPassive"] = energyPlusPassive
-	lookup["$energyPlusPassive"] = energyPlusPassive]]
-	--[[lookup["$amplifyingPoisonCount"] = amplifyingPoisonCount
-	lookup["$amplifyingPoisonTime"] = amplifyingPoisonTime
-	lookup["$atrophicPoisonCount"] = atrophicPoisonCount
-	lookup["$atrophicPoisonTime"] = atrophicPoisonTime
-	lookup["$cpCount"] = cpCount
-	lookup["$cripplingPoisonCount"] = cpCount
-	lookup["$cpTime"] = cpTime
-	lookup["$cripplingPoisonTime"] = cpTime
-	lookup["$dpCount"] = dpCount
-	lookup["$deadlyPoisonCount"] = dpCount
-	lookup["$dpTime"] = dpTime
-	lookup["$deadlyPoisonTime"] = dpTime
-	lookup["$npCount"] = npCount
-	lookup["$numbingPoisonCount"] = npCount
-	lookup["$npTime"] = npTime
-	lookup["$numbingPoisonTime"] = npTime
-	lookup["$wpCount"] = wpCount
-	lookup["$woundPoisonCount"] = wpCount
-	lookup["$wpTime"] = wpTime
-	lookup["$woundPoisonTime"] = wpTime
-	lookup["$ctCount"] = ctCount
-	lookup["$crimsonTempestCount"] = ctCount
-	lookup["$ctTime"] = ctTime
-	lookup["$crimsonTempestTime"] = ctTime
-	lookup["$garroteCount"] = garroteCount
-	lookup["$garroteTime"] = garroteTime
-	lookup["$ibCount"] = ibCount
-	lookup["$internalBleedingCount"] = ibCount
-	lookup["$ibTime"] = ibTime
-	lookup["$internalBleedingTime"] = ibTime
-	lookup["$ruptureCount"] = ruptureCount
-	lookup["$ruptureTime"] = ruptureTime
-	lookup["$sbsCount"] = sbsCount
-	lookup["$serratedBoneSpikeCount"] = sbsCount
-	lookup["$sadTime"] = sadTime
+	--[[lookup["$sadTime"] = sadTime
 	lookup["$sliceAndDiceTime"] = sadTime
 	lookup["$blindsideTime"] = blindsideTime]]
-
-	--[[if TRB.Data.character.maxResource == snapshotData.attributes.resource then
-		lookup["$passive"] = passiveEnergyMinusRegen
-	else
-		lookup["$passive"] = passiveEnergy
-	end
-
-	lookup["$regen"] = regenEnergy
-	lookup["$regenEnergy"] = regenEnergy
-	lookup["$regenResource"] = regenEnergy
-	lookup["$resourceRegen"] = regenEnergy
-	lookup["$energyRegen"] = regenEnergy
-	lookup["$overcap"] = overcap
-	lookup["$resourceOvercap"] = overcap
-	lookup["$energyOvercap"] = overcap]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1199,65 +727,9 @@ local function RefreshLookupData_Assassination()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$inStealth"] = IsStealthed()
-	--[[lookupLogic["$energyTotal"] = _energyTotal
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$energy"] = snapshotData.attributes.resource
-	lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
-	lookupLogic["$energyPlusCasting"] = _energyPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
-	lookupLogic["$energyPlusPassive"] = _energyPlusPassive
-	lookupLogic["$amplifyingPoisonCount"] = amplifyingPoisonCount
-	lookupLogic["$amplifyingPoisonTime"] = amplifyingPoisonTime
-	lookupLogic["$atrophicPoisonCount"] = atrophicPoisonCount
-	lookupLogic["$atrophicPoisonTime"] = atrophicPoisonTime
-	lookupLogic["$cpCount"] = _cpCount
-	lookupLogic["$cripplingPoisonCount"] = _cpCount
-	lookupLogic["$cpTime"] = _cpTime
-	lookupLogic["$cripplingPoisonTime"] = _cpTime
-	lookupLogic["$dpCount"] = _dpCount
-	lookupLogic["$deadlyPoisonCount"] = _dpCount
-	lookupLogic["$dpTime"] = _dpTime
-	lookupLogic["$deadlyPoisonTime"] = _dpTime
-	lookupLogic["$npCount"] = _npCount
-	lookupLogic["$numbingPoisonCount"] = _npCount
-	lookupLogic["$npTime"] = _npTime
-	lookupLogic["$numbingPoisonTime"] = _npTime
-	lookupLogic["$wpCount"] = _wpCount
-	lookupLogic["$woundPoisonCount"] = _wpCount
-	lookupLogic["$wpTime"] = _wpTime
-	lookupLogic["$woundPoisonTime"] = _wpTime
-	lookupLogic["$ctCount"] = _ctCount
-	lookupLogic["$crimsonTempestCount"] = _ctCount
-	lookupLogic["$ctTime"] = _ctTime
-	lookupLogic["$crimsonTempestTime"] = _ctTime
-	lookupLogic["$garroteCount"] = _garroteCount
-	lookupLogic["$garroteTime"] = _garroteTime
-	lookupLogic["$ibCount"] = _ibCount
-	lookupLogic["$internalBleedingCount"] = _ibCount
-	lookupLogic["$ibTime"] = _ibTime
-	lookupLogic["$internalBleedingTime"] = _ibTime
-	lookupLogic["$ruptureCount"] = _ruptureCount
-	lookupLogic["$ruptureTime"] = _ruptureTime
-	lookupLogic["$sbsCount"] = _sbsCount
-	lookupLogic["$serratedBoneSpikeCount"] = _sbsCount
-	lookupLogic["$sadTime"] = _sadTime
+	--[[lookupLogic["$sadTime"] = _sadTime
 	lookupLogic["$sliceAndDiceTime"] = _sadTime
 	lookupLogic["$blindsideTime"] = _blindsideTime]]
-
-	--[[if TRB.Data.character.maxResource == snapshotData.attributes.resource then
-		lookupLogic["$passive"] = _passiveEnergyMinusRegen
-	else
-		lookupLogic["$passive"] = _passiveEnergy
-	end
-
-	lookupLogic["$regen"] = _regenEnergy
-	lookupLogic["$regenEnergy"] = _regenEnergy
-	lookupLogic["$regenResource"] = _regenEnergy
-	lookupLogic["$resourceRegen"] = _regenEnergy
-	lookupLogic["$energyRegen"] = _regenEnergy
-	lookupLogic["$overcap"] = overcap
-	lookupLogic["$resourceOvercap"] = overcap
-	lookupLogic["$energyOvercap"] = overcap]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1272,21 +744,11 @@ local function RefreshLookupData_Outlaw()
 
 	--Spec specific implementation
 
-	-- This probably needs to be pulled every refresh
-	---@diagnostic disable-next-line: cast-local-type
-	--snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
-
-	--$overcap
-	--local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")]]
-
 	local currentEnergyColor = sharedSettings.colors.text.current.color
 	local castingEnergyColor = sharedSettings.colors.text.casting.color
 	
 	if TRB.Data.character.inCombat then
-		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
-			currentEnergyColor = sharedSettings.colors.text.overcap.color
-			castingEnergyColor = sharedSettings.colors.text.overcap.color
-		else]]if sharedSettings.colors.text.overThreshold.enabled then
+		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -1312,114 +774,8 @@ local function RefreshLookupData_Outlaw()
 	local currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)-- TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
 	--$casting
 	local castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	--[[--$passive
-	local _regenEnergy = 0
-	local _passiveEnergy
-	local _passiveEnergyMinusRegen
-
-	local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-
-	if specSettings.generation.enabled then
-		if specSettings.generation.mode == "time" then
-			_regenEnergy = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
-		else
-			_regenEnergy = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
-		end
-	end
-
-	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenEnergy)
-
-	_passiveEnergy = _regenEnergy
-	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
-
-	local passiveEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
-	--$energyTotal
-	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
-	--$energyPlusCasting
-	local _energyPlusCasting = math.min(snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyPlusCasting = string.format("|c%s%.0f|r", castingEnergyColor, _energyPlusCasting)
-	--$energyPlusPassive
-	local _energyPlusPassive = math.min(_passiveEnergy + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
-
-	-- Poisons				
-	--$atrophicPoisonCount and $atrophicPoisonTime
-	local _atrophicPoisonCount = snapshotData.targetData.count[spells.atrophicPoison.id] or 0
-	local atrophicPoisonCount = tostring(_atrophicPoisonCount)
-	local _atrophicPoisonTime = 0
-	local atrophicPoisonTime
-
-	--$cpCount and $cpTime
-	local _cpCount = snapshotData.targetData.count[spells.cripplingPoison.id] or 0
-	local cpCount = tostring(_cpCount)
-	local _cpTime = 0
-	local cpTime
-		
-	--$npCount and $npTime
-	local _npCount = snapshotData.targetData.count[spells.numbingPoison.id] or 0
-	local npCount = tostring(_npCount)
-	local _npTime = 0
-	local npTime
-			
-	--$wpCount and $wpTime
-	local _wpCount = snapshotData.targetData.count[spells.woundPoison.id] or 0
-	local wpCount = tostring(_wpCount)
-	local _wpTime = 0
-	local wpTime
-
-
-	if target ~= nil then
-		_atrophicPoisonTime = target.spells[spells.atrophicPoison.id].remainingTime or 0
-		_cpTime = target.spells[spells.cripplingPoison.id].remainingTime or 0
-		_npTime = target.spells[spells.numbingPoison.id].remainingTime or 0
-		_wpTime = target.spells[spells.woundPoison.id].remainingTime or 0
-	end
-
-
-	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		--Poisons
-		if _atrophicPoisonTime > 0 then
-			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
-		else
-			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _cpTime > 0 then
-			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _cpCount)
-			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_cpTime))
-		else
-			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _cpCount)
-			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _npTime > 0 then
-			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _npCount)
-			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_npTime))
-		else
-			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _npCount)
-			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _wpTime > 0 then
-			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _wpCount)
-			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_wpTime))
-		else
-			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _wpCount)
-			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-	else
-		-- Poisons
-		atrophicPoisonTime = TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime)
-		cpTime = TRB.Functions.BarText:TimerPrecision(_cpTime)
-		npTime = TRB.Functions.BarText:TimerPrecision(_npTime)
-		wpTime = TRB.Functions.BarText:TimerPrecision(_wpTime)
-	end
-
+	
+	--[[
 	--$sadTime
 	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 	local sadTime
@@ -1471,18 +827,9 @@ local function RefreshLookupData_Outlaw()
 	
 	--$opportunityTime
 	local _opportunityTime = snapshots[spells.opportunity.id].buff:GetRemainingTime(currentTime)
-	local opportunityTime = TRB.Functions.BarText:TimerPrecision(_opportunityTime)
+	local opportunityTime = TRB.Functions.BarText:TimerPrecision(_opportunityTime)]]
 
 	----------------------------
-
-	Global_TwintopResourceBar.resource.passive = _passiveEnergy
-	Global_TwintopResourceBar.resource.regen = _regenEnergy
-	
-	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.atrophicPoisonCount = _atrophicPoisonCount
-	Global_TwintopResourceBar.dots.cripplingPoisonCount = _cpCount
-	Global_TwintopResourceBar.dots.numbingPoisonCount = _npCount
-	Global_TwintopResourceBar.dots.woundPoisonCount = _wpCount]]
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1493,26 +840,7 @@ local function RefreshLookupData_Outlaw()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$inStealth"] = ""
-	--[[lookup["$energyTotal"] = energyTotal
-	lookup["$resourcePlusCasting"] = energyPlusCasting
-	lookup["$energyPlusCasting"] = energyPlusCasting
-	lookup["$resourcePlusPassive"] = energyPlusPassive
-	lookup["$energyPlusPassive"] = energyPlusPassive
-	lookup["$resourceTotal"] = energyTotal
-	lookup["$atrophicPoisonCount"] = atrophicPoisonCount
-	lookup["$atrophicPoisonTime"] = atrophicPoisonTime
-	lookup["$cpCount"] = cpCount
-	lookup["$cripplingPoisonCount"] = cpCount
-	lookup["$cpTime"] = cpTime
-	lookup["$cripplingPoisonTime"] = cpTime
-	lookup["$npCount"] = npCount
-	lookup["$numbingPoisonCount"] = npCount
-	lookup["$npTime"] = npTime
-	lookup["$numbingPoisonTime"] = npTime
-	lookup["$wpCount"] = wpCount
-	lookup["$woundPoisonCount"] = wpCount
-	lookup["$wpTime"] = wpTime
-	lookup["$woundPoisonTime"] = wpTime
+	--[[
 	lookup["$sadTime"] = sadTime
 	lookup["$sliceAndDiceTime"] = sadTime
 	lookup["$opportunityTime"] = opportunityTime
@@ -1531,22 +859,7 @@ local function RefreshLookupData_Outlaw()
 	lookup["$grandMeleeTime"] = grandMeleeTime
 	lookup["$ruthlessPrecisionTime"] = ruthlessPrecisionTime
 	lookup["$skullAndCrossbonesTime"] = skullAndCrossbonesTime
-	lookup["$trueBearingTime"] = trueBearingTime
-
-	if TRB.Data.character.maxResource == snapshotData.attributes.resource then
-		lookup["$passive"] = passiveEnergyMinusRegen
-	else
-		lookup["$passive"] = passiveEnergy
-	end
-
-	lookup["$regen"] = regenEnergy
-	lookup["$regenEnergy"] = regenEnergy
-	lookup["$regenResource"] = regenEnergy
-	lookup["$resourceRegen"] = regenEnergy
-	lookup["$energyRegen"] = regenEnergy
-	lookup["$overcap"] = overcap
-	lookup["$resourceOvercap"] = overcap
-	lookup["$energyOvercap"] = overcap]]
+	lookup["$trueBearingTime"] = trueBearingTime]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1558,28 +871,7 @@ local function RefreshLookupData_Outlaw()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$inStealth"] = IsStealthed()
-	--[[lookupLogic["$energyTotal"] = _energyTotal
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$energy"] = snapshotData.attributes.resource
-	lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
-	lookupLogic["$energyPlusCasting"] = _energyPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
-	lookupLogic["$energyPlusPassive"] = _energyPlusPassive
-	lookupLogic["$resourceTotal"] = _energyTotal
-	lookupLogic["$atrophicPoisonCount"] = atrophicPoisonCount
-	lookupLogic["$atrophicPoisonTime"] = atrophicPoisonTime
-	lookupLogic["$cpCount"] = _cpCount
-	lookupLogic["$cripplingPoisonCount"] = _cpCount
-	lookupLogic["$cpTime"] = _cpTime
-	lookupLogic["$cripplingPoisonTime"] = _cpTime
-	lookupLogic["$npCount"] = _npCount
-	lookupLogic["$numbingPoisonCount"] = _npCount
-	lookupLogic["$npTime"] = _npTime
-	lookupLogic["$numbingPoisonTime"] = _npTime
-	lookupLogic["$wpCount"] = _wpCount
-	lookupLogic["$woundPoisonCount"] = _wpCount
-	lookupLogic["$wpTime"] = _wpTime
-	lookupLogic["$woundPoisonTime"] = _wpTime
+	--[[
 	lookupLogic["$sadTime"] = _sadTime
 	lookupLogic["$sliceAndDiceTime"] = _sadTime
 	lookupLogic["$opportunityTime"] = _opportunityTime
@@ -1598,51 +890,27 @@ local function RefreshLookupData_Outlaw()
 	lookupLogic["$grandMeleeTime"] = _grandMeleeTime
 	lookupLogic["$ruthlessPrecisionTime"] = _ruthlessPrecisionTime
 	lookupLogic["$skullAndCrossbonesTime"] = _skullAndCrossbonesTime
-	lookupLogic["$trueBearingTime"] = _trueBearingTime
-
-	if TRB.Data.character.maxResource == snapshotData.attributes.resource then
-		lookupLogic["$passive"] = _passiveEnergyMinusRegen
-	else
-		lookupLogic["$passive"] = _passiveEnergy
-	end
-
-	lookupLogic["$regen"] = _regenEnergy
-	lookupLogic["$regenEnergy"] = _regenEnergy
-	lookupLogic["$regenResource"] = _regenEnergy
-	lookupLogic["$resourceRegen"] = _regenEnergy
-	lookupLogic["$energyRegen"] = _regenEnergy
-	lookupLogic["$overcap"] = overcap
-	lookupLogic["$resourceOvercap"] = overcap
-	lookupLogic["$energyOvercap"] = overcap]]
+	lookupLogic["$trueBearingTime"] = _trueBearingTime]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Subtlety()
-	--[[local specSettings = TRB.Data.settings.rogue.subtlety
+	local specSettings = TRB.Data.settings.rogue.subtlety
 	local sharedSettings = TRB.Data.specCache["subtlety"].settings
-	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Rogue.SubtletySpells]
-	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
-
-	-- This probably needs to be pulled every refresh
-	snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
-
-
-	--$overcap
-	local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
+	local normalizedEnergy = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
 	local currentEnergyColor = sharedSettings.colors.text.current.color
 	local castingEnergyColor = sharedSettings.colors.text.casting.color
 	
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overcap.enabled and overcap then
-			currentEnergyColor = sharedSettings.colors.text.overcap.color
-			castingEnergyColor = sharedSettings.colors.text.overcap.color
-		elseif sharedSettings.colors.text.overThreshold.enabled then
+		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
-			for _, spell --[@as TRB.Classes.SpellThreshold] in ipairs(TRB.Data.cache.thresholdSpells) do
+			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
@@ -1658,145 +926,16 @@ local function RefreshLookupData_Subtlety()
 
 	if snapshotData.casting.resourceFinal < 0 then
 		castingEnergyColor = sharedSettings.colors.text.spending.color
-	end]]
+	end
 
 	--$energy
-	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
-	local sharedSettings = TRB.Data.specCache["subtlety"].settings
-	local currentEnergyColor = sharedSettings.colors.text.current.color
-	local castingEnergyColor = sharedSettings.colors.text.casting.color
-	local currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, snapshotData.attributes.resource)
+	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+	local _normalizedEnergy = normalizedEnergy
+	local currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)-- TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
 	--$casting
-	local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, snapshotData.casting.resourceFinal)
-	--[[--$passive
-	local _regenEnergy = 0
-	local _passiveEnergy
-	local _passiveEnergyMinusRegen
-
-	local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-
-	if specSettings.generation.enabled then
-		if specSettings.generation.mode == "time" then
-			_regenEnergy = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
-		else
-			_regenEnergy = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
-		end
-	end
-
-	--$regenEnergy
-	local regenEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenEnergy)
-
-	_passiveEnergy = _regenEnergy
-	_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
-
-	local passiveEnergy = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergy)
-	local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveEnergyMinusRegen)
-	--$energyTotal
-	local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
-	--$energyPlusCasting
-	local _energyPlusCasting = math.min(snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyPlusCasting = string.format("|c%s%.0f|r", castingEnergyColor, _energyPlusCasting)
-	--$energyPlusPassive
-	local _energyPlusPassive = math.min(_passiveEnergy + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
+	local castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	
-	--$ruptureCount and $ruptureTime
-	local _ruptureCount = snapshotData.targetData.count[spells.rupture.id] or 0
-	local ruptureCount = tostring(_ruptureCount)
-	local _ruptureTime = 0
-	local ruptureTime
-	
-	-- Poisons
-	--$cpCount and $cpTime
-	local _cpCount = snapshotData.targetData.count[spells.cripplingPoison.id] or 0
-	local cpCount = tostring(_cpCount)
-	local _cpTime = 0
-	local cpTime
-					
-	--$npCount and $npTime
-	local _npCount = snapshotData.targetData.count[spells.numbingPoison.id] or 0
-	local npCount = tostring(_npCount)
-	local _npTime = 0
-	local npTime
-			
-	--$atrophicPoisonCount and $atrophicPoisonTime
-	local _atrophicPoisonCount = snapshotData.targetData.count[spells.atrophicPoison.id] or 0
-	local atrophicPoisonCount = tostring(_atrophicPoisonCount)
-	local _atrophicPoisonTime = 0
-	local atrophicPoisonTime
-			
-	--$wpCount and $wpTime
-	local _wpCount = snapshotData.targetData.count[spells.woundPoison.id] or 0
-	local wpCount = tostring(_wpCount)
-	local _wpTime = 0
-	local wpTime
-
-	if target ~= nil then
-		_ruptureTime = target.spells[spells.rupture.id].remainingTime or 0
-		_cpTime = target.spells[spells.cripplingPoison.id].remainingTime or 0
-		_npTime = target.spells[spells.numbingPoison.id].remainingTime or 0
-		_atrophicPoisonTime = target.spells[spells.atrophicPoison.id].remainingTime or 0
-		_wpTime = target.spells[spells.woundPoison.id].remainingTime or 0
-	end
-
-	if sharedSettings.colors.text.dots.options.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		-- Bleeds
-		if _ruptureTime > spells.rupture.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
-		elseif _ruptureTime > 0 then
-			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.pandemic.color, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
-		else
-			ruptureCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _ruptureCount)
-			ruptureTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		--Poisons
-		if _cpTime > 0 then
-			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _cpCount)
-			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_cpTime))
-		else
-			cpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _cpCount)
-			cpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _npTime > 0 then
-			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _npCount)
-			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_npTime))
-		else
-			npCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _npCount)
-			npTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _wpTime > 0 then
-			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _wpCount)
-			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_wpTime))
-		else
-			wpCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _wpCount)
-			wpTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-
-		if _atrophicPoisonTime > 0 then
-			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
-		else
-			atrophicPoisonCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _atrophicPoisonCount)
-			atrophicPoisonTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-	else
-		-- Bleeds
-		ruptureTime = TRB.Functions.BarText:TimerPrecision(_ruptureTime)
-
-		-- Poisons
-		atrophicPoisonTime = TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime)
-		cpTime = TRB.Functions.BarText:TimerPrecision(_cpTime)
-		npTime = TRB.Functions.BarText:TimerPrecision(_npTime)
-		wpTime = TRB.Functions.BarText:TimerPrecision(_wpTime)
-	end
-	
-
+	--[[
 	--$sadTime
 	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 	local sadTime
@@ -1818,19 +957,9 @@ local function RefreshLookupData_Subtlety()
 	local sodTime = TRB.Functions.BarText:TimerPrecision(_sodTime)
 
 	--$shadowTechniquesCount
-	local shadowTechniquesCount = snapshots[spells.shadowTechniques.id].buff.applications or 0
+	local shadowTechniquesCount = snapshots[spells.shadowTechniques.id].buff.applications or 0]]
 
 	----------------------------
-
-	Global_TwintopResourceBar.resource.passive = _passiveEnergy
-	Global_TwintopResourceBar.resource.regen = _regenEnergy
-
-	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.atrophicPoisonCount = _atrophicPoisonCount
-	Global_TwintopResourceBar.dots.cripplingPoisonCount = _cpCount
-	Global_TwintopResourceBar.dots.numbingPoisonCount = _npCount
-	Global_TwintopResourceBar.dots.woundPoisonCount = _wpCount
-	Global_TwintopResourceBar.dots.ruptureCount = _ruptureCount]]
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1841,49 +970,13 @@ local function RefreshLookupData_Subtlety()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$inStealth"] = ""
-	--[[lookup["$energyTotal"] = energyTotal
-	lookup["$resourcePlusCasting"] = energyPlusCasting
-	lookup["$energyPlusCasting"] = energyPlusCasting
-	lookup["$resourcePlusPassive"] = energyPlusPassive
-	lookup["$energyPlusPassive"] = energyPlusPassive
-	lookup["$resourceTotal"] = energyTotal
+	--[[
 	lookup["$shadowTechniquesCount"] = shadowTechniquesCount
-	lookup["$atrophicPoisonCount"] = atrophicPoisonCount
-	lookup["$atrophicPoisonTime"] = atrophicPoisonTime
-	lookup["$cpCount"] = cpCount
-	lookup["$cripplingPoisonCount"] = cpCount
-	lookup["$cpTime"] = cpTime
-	lookup["$cripplingPoisonTime"] = cpTime
-	lookup["$npCount"] = npCount
-	lookup["$numbingPoisonCount"] = npCount
-	lookup["$npTime"] = npTime
-	lookup["$numbingPoisonTime"] = npTime
-	lookup["$wpCount"] = wpCount
-	lookup["$woundPoisonCount"] = wpCount
-	lookup["$wpTime"] = wpTime
-	lookup["$woundPoisonTime"] = wpTime
-	lookup["$ruptureCount"] = ruptureCount
-	lookup["$ruptureTime"] = ruptureTime
 	lookup["$sadTime"] = sadTime
 	lookup["$sliceAndDiceTime"] = sadTime
 	lookup["$flagellationTime"] = flagellationTime
 	lookup["$sodTime"] = sodTime
-	lookup["$symbolsOfDeathTime"] = sodTime
-	
-	if TRB.Data.character.maxResource == snapshotData.attributes.resource then
-		lookup["$passive"] = passiveEnergyMinusRegen
-	else
-		lookup["$passive"] = passiveEnergy
-	end
-
-	lookup["$regen"] = regenEnergy
-	lookup["$regenEnergy"] = regenEnergy
-	lookup["$regenResource"] = regenEnergy
-	lookup["$resourceRegen"] = regenEnergy
-	lookup["$energyRegen"] = regenEnergy
-	lookup["$overcap"] = overcap
-	lookup["$resourceOvercap"] = overcap
-	lookup["$energyOvercap"] = overcap]]
+	lookup["$symbolsOfDeathTime"] = sodTime]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1895,51 +988,13 @@ local function RefreshLookupData_Subtlety()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$inStealth"] = IsStealthed()
-	--[[lookupLogic["$energyTotal"] = _energyTotal
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$energy"] = snapshotData.attributes.resource
-	lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
-	lookupLogic["$energyPlusCasting"] = _energyPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
-	lookupLogic["$energyPlusPassive"] = _energyPlusPassive
-	lookupLogic["$resourceTotal"] = _energyTotal
-	lookupLogic["$shadowTechniquesCount"] = shadowTechniquesCount
-	lookupLogic["$atrophicPoisonCount"] = _atrophicPoisonCount
-	lookupLogic["$atrophicPoisonTime"] = _atrophicPoisonTime
-	lookupLogic["$cpCount"] = _cpCount
-	lookupLogic["$cripplingPoisonCount"] = _cpCount
-	lookupLogic["$cpTime"] = _cpTime
-	lookupLogic["$cripplingPoisonTime"] = _cpTime
-	lookupLogic["$npCount"] = _npCount
-	lookupLogic["$numbingPoisonCount"] = _npCount
-	lookupLogic["$npTime"] = _npTime
-	lookupLogic["$numbingPoisonTime"] = _npTime
-	lookupLogic["$wpCount"] = _wpCount
-	lookupLogic["$woundPoisonCount"] = _wpCount
-	lookupLogic["$wpTime"] = _wpTime
-	lookupLogic["$woundPoisonTime"] = _wpTime
-	lookupLogic["$ruptureCount"] = _ruptureCount
-	lookupLogic["$ruptureTime"] = _ruptureTime
+	--[[
+	lookupLogic["$shadowTechniquesCount"] = shadowTechniquesCount	
 	lookupLogic["$sadTime"] = _sadTime
 	lookupLogic["$sliceAndDiceTime"] = _sadTime
 	lookupLogic["$flagellationTime"] = _flagellationTime
 	lookupLogic["$sodTime"] = _sodTime
-	lookupLogic["$symbolsOfDeathTime"] = _sodTime
-	
-	if TRB.Data.character.maxResource == snapshotData.attributes.resource then
-		lookupLogic["$passive"] = _passiveEnergyMinusRegen
-	else
-		lookupLogic["$passive"] = _passiveEnergy
-	end
-
-	lookupLogic["$regen"] = _regenEnergy
-	lookupLogic["$regenEnergy"] = _regenEnergy
-	lookupLogic["$regenResource"] = _regenEnergy
-	lookupLogic["$resourceRegen"] = _regenEnergy
-	lookupLogic["$energyRegen"] = _regenEnergy
-	lookupLogic["$overcap"] = overcap
-	lookupLogic["$resourceOvercap"] = overcap
-	lookupLogic["$energyOvercap"] = overcap]]
+	lookupLogic["$symbolsOfDeathTime"] = _sodTime]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -2067,61 +1122,17 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
-				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
-				--[[local passiveValue = 0
-				if specSettings.colors.bar.showPassive then
-					if specSettings.generation.enabled then
-						if specSettings.generation.mode == "time" then
-							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
-						else
-							passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
-						end
-					end
-				end
-
-				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
-					castingBarValue = currentResource + snapshotData.casting.resourceFinal
-				else
-					castingBarValue = currentResource
-				end
-				passiveBarValue = castingBarValue + passiveValue]]
-								
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
-
-				--[[if castingBarValue < currentResource then --Using a spender
-					if -snapshotData.casting.resourceFinal > passiveValue then
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.passive
-						passiveBarColor = specSettings.colors.bar.spending
-					else
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.spending
-						passiveBarColor = specSettings.colors.bar.passive
-					end
-				else]]
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
-					castingBarColor = specSettings.colors.bar.casting
-					passiveBarColor = specSettings.colors.bar.passive
-				--end
-
+				
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
 
 				local pairOffset = 0
@@ -2247,9 +1258,10 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
+				--[[
 				local affectingCombat = TRB.Data.character.inCombat
 
-				--[[if affectingCombat then
+				if affectingCombat then
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 					if sadTime == 0 then
 						barColor = specSettings.colors.bar.noSliceAndDice
@@ -2261,29 +1273,11 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				if IsStealthed() or stealthViaBuff then
 					barBorderColor = specSettings.colors.bar.borderStealth
-				elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
-					barBorderColor = specSettings.colors.bar.borderOvercap
-
-					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true
-						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
-					end
-				else
-					snapshotData.audio.overcapCue = false
 				end
 
 				barContainerFrame:SetAlpha(1.0)
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
 				--[[local sbsCp = 0
@@ -2376,61 +1370,16 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
-				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
-
-				--[[local passiveValue = 0
-				if specSettings.colors.bar.showPassive then
-					if specSettings.generation.enabled then
-						if specSettings.generation.mode == "time" then
-							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
-						else
-							passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
-						end
-					end
-				end
-
-				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
-					castingBarValue = currentResource + snapshotData.casting.resourceFinal
-				else
-					castingBarValue = currentResource
-				end				
-				passiveBarValue = castingBarValue + passiveValue]]
 				
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
-
-				--[[if castingBarValue < currentResource then --Using a spender
-					if -snapshotData.casting.resourceFinal > passiveValue then
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.passive
-						passiveBarColor = specSettings.colors.bar.spending
-					else
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.spending
-						passiveBarColor = specSettings.colors.bar.passive
-					end
-				else]]
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
-					castingBarColor = specSettings.colors.bar.casting
-					passiveBarColor = specSettings.colors.bar.passive
-				--end
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 				
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
 
@@ -2613,9 +1562,9 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				local affectingCombat = TRB.Data.character.inCombat
+				--[[local affectingCombat = TRB.Data.character.inCombat
 
-				--[[if affectingCombat then
+				if affectingCombat then
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 					if sadTime == 0 then
 						barColor = specSettings.colors.bar.noSliceAndDice
@@ -2632,29 +1581,11 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderRtbGood
 				elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == false and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 					barBorderColor = specSettings.colors.bar.borderRtbBad]]
-				--[[elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
-					barBorderColor = specSettings.colors.bar.borderOvercap
-
-					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true
-						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
-					end]]
-				else
-					snapshotData.audio.overcapCue = false
 				end
 
 				barContainerFrame:SetAlpha(1.0)
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
 				--[[local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -2729,62 +1660,17 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
-				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
-
-				--[[local passiveValue = 0
-				if specSettings.colors.bar.showPassive then
-					if specSettings.generation.enabled then
-						if specSettings.generation.mode == "time" then
-							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
-						else
-							passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
-						end
-					end
-				end
-
-				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
-					castingBarValue = currentResource + snapshotData.casting.resourceFinal
-				else
-					castingBarValue = currentResource
-				end
-				passiveBarValue = castingBarValue + passiveValue]]
-								
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
-
-				--[[if castingBarValue < currentResource then --Using a spender
-					if -snapshotData.casting.resourceFinal > passiveValue then
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.passive
-						passiveBarColor = specSettings.colors.bar.spending
-					else
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.spending
-						passiveBarColor = specSettings.colors.bar.passive
-					end
-				else]]
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
-					castingBarColor = specSettings.colors.bar.casting
-					passiveBarColor = specSettings.colors.bar.passive
-				--end
-
+				
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
 
 				local pairOffset = 0
@@ -2965,9 +1851,9 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				local affectingCombat = TRB.Data.character.inCombat
+				--[[local affectingCombat = TRB.Data.character.inCombat
 
-				--[[if affectingCombat then
+				if affectingCombat then
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 					if sadTime == 0 then
 						barColor = specSettings.colors.bar.noSliceAndDice
@@ -2984,29 +1870,11 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderShadowcraft
 				elseif stealthViaBuff or IsStealthed() then
 					barBorderColor = specSettings.colors.bar.borderStealth
-				--[[elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
-					barBorderColor = specSettings.colors.bar.borderOvercap
-
-					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true
-						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
-					end]]
-				else
-					snapshotData.audio.overcapCue = false
 				end
 
 				barContainerFrame:SetAlpha(1.0)
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
 				--[[local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -3107,17 +1975,6 @@ local function SwitchSpec()
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
-		targetData:AddSpellTracking(spells.crimsonTempest)
-		targetData:AddSpellTracking(spells.garrote)
-		targetData:AddSpellTracking(spells.internalBleeding)
-		targetData:AddSpellTracking(spells.rupture)
-		targetData:AddSpellTracking(spells.amplifyingPoison)
-		targetData:AddSpellTracking(spells.atrophicPoison)
-		targetData:AddSpellTracking(spells.cripplingPoison)
-		targetData:AddSpellTracking(spells.deadlyPoison)
-		targetData:AddSpellTracking(spells.numbingPoison)
-		targetData:AddSpellTracking(spells.woundPoison)
-		targetData:AddSpellTracking(spells.serratedBoneSpike, true, false, false, false)
 
 		spells.shiv:ResetPrimaryResourceCost()
 
@@ -3170,10 +2027,6 @@ local function SwitchSpec()
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
-		targetData:AddSpellTracking(spells.atrophicPoison)
-		targetData:AddSpellTracking(spells.cripplingPoison)
-		targetData:AddSpellTracking(spells.numbingPoison)
-		targetData:AddSpellTracking(spells.woundPoison)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Outlaw
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.outlaw.settings)
@@ -3227,11 +2080,6 @@ local function SwitchSpec()
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
-		targetData:AddSpellTracking(spells.rupture)
-		targetData:AddSpellTracking(spells.atrophicPoison)
-		targetData:AddSpellTracking(spells.cripplingPoison)
-		targetData:AddSpellTracking(spells.numbingPoison)
-		targetData:AddSpellTracking(spells.woundPoison)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Subtlety
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.subtlety.settings)
@@ -3489,85 +2337,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 
 	if TRB.Data.character.specId == 1 then --Assassination
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
-		-- Bleeds
-		--[[if var == "$isBleeding" then
-			if IsTargetBleeding() then
-				valid = true
-			end
-		elseif var == "$ctCount" or var == "$crimsonTempestCount" then
-			if snapshotData.targetData.count[spells.crimsonTempest.id] > 0 then
-				valid = true
-			end
-		elseif var == "$ctTime" or var == "$crimsonTempestTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.crimsonTempest.id] ~= nil and
-				target.spells[spells.crimsonTempest.id].remainingTime > 0 then
-				valid = true
-			end
-		elseif var == "$garroteCount" then
-			if snapshotData.targetData.count[spells.garrote.id] > 0 then
-				valid = true
-			end
-		elseif var == "$garroteTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.garrote.id] ~= nil and
-				target.spells[spells.garrote.id].remainingTime > 0 then
-				valid = true
-			end
-		elseif var == "$ibCount" or var == "$internalBleedingCount" then
-			if snapshotData.targetData.count[spells.internalBleeding.id] > 0 then
-				valid = true
-			end
-		elseif var == "$ibTime" or var == "$internalBleedingTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.internalBleeding.id] ~= nil and
-				target.spells[spells.internalBleeding.id].remainingTime > 0 then
-				valid = true
-			end
-		elseif var == "$ruptureCount" then
-			if snapshotData.targetData.count[spells.rupture.id] > 0 then
-				valid = true
-			end
-		elseif var == "$ruptureTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.rupture.id] ~= nil and
-				target.spells[spells.rupture.id].remainingTime > 0 then
-				valid = true
-			end
-		elseif var == "$dpCount" or var == "$deadlyPoisonCount" then
-			if snapshotData.targetData.count[spells.deadlyPoison.id] > 0 then
-				valid = true
-			end
-		elseif var == "$dpTime" or var == "$deadlyPoisonTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.deadlyPoison.id] ~= nil and
-				target.spells[spells.deadlyPoison.id].remainingTime > 0 then
-				valid = true
-			end
-		elseif var == "$amplifyingPoisonCount" then
-			if snapshotData.targetData.count[spells.amplifyingPoison.id] > 0 then
-				valid = true
-			end
-		elseif var == "$amplifyingPoisonTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.amplifyingPoison.id] ~= nil and
-				target.spells[spells.amplifyingPoison.id].remainingTime > 0 then
-				valid = true
-			end
+		--[[
 		-- Other abilities
-		elseif var == "$blindsideTime" then
+		if var == "$blindsideTime" then
 			if snapshots[spells.blindside.id].buff.isActive then
 				valid = true
 			end
@@ -3640,18 +2412,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.flagellation.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$ruptureCount" then
-			if snapshotData.targetData.count[spells.rupture.id] > 0 then
-				valid = true
-			end
-		elseif var == "$ruptureTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.rupture.id] ~= nil and
-				target.spells[spells.rupture.id].remainingTime > 0 then
-				valid = true
-			end
 		elseif var == "$sodTime" or var == "$symbolsOfDeathTime" then
 			if snapshots[spells.symbolsOfDeath.id].buff.isActive then
 				valid = true
@@ -3665,102 +2425,17 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		end
 	elseif var == "$resourceMax" or var == "$energyMax" then
-		valid = true
-	--[[elseif var == "$resourceTotal" or var == "$energyTotal" then
-		if snapshotData.attributes.resource > 0 or
-			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
-			then
-			valid = true
-		end
-	elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
-		if snapshotData.attributes.resource > 0 or
-			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
-			valid = true
-		end
-	elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-		local threshold = ((snapshotData.attributes.resource / TRB.Data.resourceFactor) + snapshotData.casting.resourceFinal)
-		if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) <= threshold then
-			return true
-		elseif settings.overcap.mode == "fixed" and settings.overcap.fixed <= threshold then
-			return true
-		end
-	elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
-		if snapshotData.attributes.resource > 0 then
-			valid = true
-		end]]
+		valid = true	
 	elseif var == "$casting" then
 		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
 			valid = true
 		end
-	--[[elseif var == "$passive" then
-		if snapshotData.attributes.resource < TRB.Data.character.maxResource and
-			settings.generation.enabled and
-			((settings.generation.mode == "time" and settings.generation.time > 0) or
-			(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-			valid = true
-		end
-	elseif var == "$regen" or var == "$regenEnergy" or var == "$resourceRegen" or var == "$energyRegen" or var == "$regenResource" then
-		if settings.generation.enabled and
-			snapshotData.attributes.resource < TRB.Data.character.maxResource and
-			((settings.generation.mode == "time" and settings.generation.time > 0) or
-			(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-			valid = true
-		end]]
 	elseif var == "$comboPoints" then
 		valid = true
 	elseif var == "$comboPointsMax" then
 		valid = true
 	--[[elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
 		if snapshots[spells.sliceAndDice.id].buff.isActive then
-			valid = true
-		end
-	-- Poisons
-	elseif var == "$cpCount" or var == "$cripplingPoisonCount" then
-		if snapshotData.targetData.count[spells.cripplingPoison.id] > 0 then
-			valid = true
-		end
-	elseif var == "$cpTime" or var == "$cripplingPoisonTime" then
-		if not UnitIsDeadOrGhost("target") and
-			UnitCanAttack("player", "target") and
-			target ~= nil and
-			target.spells[spells.cripplingPoison.id] ~= nil and
-			target.spells[spells.cripplingPoison.id].remainingTime > 0 then
-			valid = true
-		end
-	elseif var == "$npCount" or var == "$numbingPoisonCount" then
-		if snapshotData.targetData.count[spells.numbingPoison.id] > 0 then
-			valid = true
-		end
-	elseif var == "$npTime" or var == "$numbingPoisonTime" then
-		if not UnitIsDeadOrGhost("target") and
-			UnitCanAttack("player", "target") and
-			target ~= nil and
-			target.spells[spells.numbingPoison.id] ~= nil and
-			target.spells[spells.numbingPoison.id].remainingTime > 0 then
-			valid = true
-		end
-	elseif var == "$atrophicPoisonCount" then
-		if snapshotData.targetData.count[spells.atrophicPoison.id] > 0 then
-			valid = true
-		end
-	elseif var == "$atrophicPoisonPoisonTime" then
-		if not UnitIsDeadOrGhost("target") and
-			UnitCanAttack("player", "target") and
-			target ~= nil and
-			target.spells[spells.atrophicPoison.id] ~= nil and
-			target.spells[spells.atrophicPoison.id].remainingTime > 0 then
-			valid = true
-		end
-	elseif var == "$wpCount" or var == "$woundPoisonCount" then
-		if snapshotData.targetData.count[spells.woundPoison.id] > 0 then
-			valid = true
-		end
-	elseif var == "$wpTime" or var == "$woundPoisonTime" then
-		if not UnitIsDeadOrGhost("target") and
-			UnitCanAttack("player", "target") and
-			target ~= nil and
-			target.spells[spells.woundPoison.id] ~= nil and
-			target.spells[spells.woundPoison.id].remainingTime > 0 then
 			valid = true
 		end]]
 	elseif var == "$inStealth" then

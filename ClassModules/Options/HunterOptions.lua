@@ -7,8 +7,6 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local castingFrame = TRB.Frames.castingFrame
-local passiveFrame = TRB.Frames.passiveFrame
 
 TRB.Options.Hunter = {}
 TRB.Options.Hunter.BeastMastery = {}
@@ -78,7 +76,7 @@ local function BeastMasteryLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
+			text="{$casting}[$casting + ]$focus",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -240,11 +238,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -268,51 +261,24 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FF005500"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFAB5124",
-				borderOvercap="FFFF0000",
 				borderbestialWrath="FF005500",
 				background="66000000",
 				base="FFFF8040",
-				--frenzyUse="FF00B60E",
-				--frenzyHold="FFFF0000",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FF005500",
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
-				overcapEnabled=true,
 				bestialWrathEnabled=true,
 				beastCleave = {
 					color = "FF77FF77",
 					enabled = true
-				},
-				showPassive=true,
-				showCasting=true
+				}
 			},
 			threshold = {
 				under = {
@@ -329,15 +295,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -352,12 +309,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			beastCleaveDown={
 				name = L["HunterBeastMasteryAudioBeastCleaveDown"],
 				enabled=false,
@@ -372,10 +323,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true
 		}
 	}
@@ -443,7 +390,7 @@ local function MarksmanshipLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
+			text="{$casting}[$casting + ]$focus",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -521,7 +468,7 @@ local function MarksmanshipLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$passive}[$passive+]$focus",
+			text="{$casting}[#casting$casting+]$focus",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -626,11 +573,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 			gcdsMax=3,
 			timeMax=4.5
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -654,46 +596,21 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FF005500"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFAB5124",
-				borderOvercap="FFFF0000",
 				borderSteadyFocus="FFFFFF00",
 				background="66000000",
 				base="FFFF8040",
 				trueshot="FF00B60E",
 				trueshotEnding="FFFF0000",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FF005500",
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true
 			},
 			threshold = {
 				under = {
@@ -709,15 +626,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 					color = "FF440000",
 					enabled = true,
 					show = true
-				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -748,12 +656,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
 			},
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			secretsOfTheUnblinkingVigil={
 				name = L["HunterMarksmanshipAudioUnblinkingVigilProc"],
 				enabled=false,
@@ -774,10 +676,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true
 		}
 	}
@@ -845,7 +743,7 @@ local function SurvivalLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
+			text="{$casting}[$casting + ]$focus",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -1004,11 +902,6 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=120
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -1032,49 +925,18 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FF005500"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFAB5124",
-				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FFFF8040",
-				--coordinatedAssault="FF00B60E",
-				--coordinatedAssaultEnding="FFFF0000",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FF005500",
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true,
-				--[[explosiveShot = {
-					color = "FFFFD000",
-					enabled = true
-				}]]
 			},
 			threshold = {
 				under = {
@@ -1091,15 +953,6 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -1114,12 +967,6 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 		},
 		textures = {
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -1128,10 +975,6 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true
 		}
 	}
@@ -1297,23 +1140,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.frenzyHold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "frenzyHold")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
 	end)]]
 
 	yCoord = yCoord - 30
@@ -1322,9 +1148,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 3, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, false)
@@ -1362,9 +1185,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "beastCleave")
 	end)]]
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], BEAST_MASTERY_MAX_FOCUS)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
@@ -1532,12 +1352,6 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1550,19 +1364,6 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
-	
-	local dotVariables = "$ssCount/$ssTime"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 3, 1, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables), true, false, true)
-	]]
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 1, yCoord)
 end
 
@@ -1591,70 +1392,6 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 	yCoord = yCoord - 30
 
 	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "beastCleaveDown", spec, classId, specId, yCoord, L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"], L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"])
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
-
-	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackFocusRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegen"])
-	f.tooltip = L["HunterCheckboxTrackFocusRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.focusGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.focusGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.focusGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	title = L["HunterTrackFocusRegenFocusGcds"] 
-	controls.focusGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.generation.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.focusGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.focusGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.focusGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["HunterTrackFocusRegenFocusTime"]
-	controls.focusGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)]]
 end
 
 local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
@@ -1926,47 +1663,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "trueshotEnding")
 	end)
-	
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCastingBuilder"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.casting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame)
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCastingSpender"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.spending
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerBarPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1974,9 +1670,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, false)
@@ -2099,10 +1792,7 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.steadyFocus.timeMax = value
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], MARKSMANSHIP_MAX_FOCUS)]]
+	end)]]
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 1, MARKSMANSHIP_MAX_FOCUS)
@@ -2315,12 +2005,6 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2333,19 +2017,6 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
-	
-	local dotVariables = "$ssCount/$ssTime"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 3, 2, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables), true, false, true)
-]]
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 2, yCoord)
 end
 
@@ -2428,72 +2099,7 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 
 	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "killShot", spec, classId, specId, yCoord, L["HunterAudioCheckboxKillShot"], L["HunterAudioCheckboxKillShotTooltip"])
 
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
-
 	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "secretsOfTheUnblinkingVigil", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxUnblinkingVigil"], L["HunterMarksmanshipCheckboxUnblinkingVigilTooltip"])
-
-	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackFocusRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegen"])
-	f.tooltip = L["HunterCheckboxTrackFocusRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.focusGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.focusGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.focusGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	title = L["HunterTrackFocusRegenFocusGcds"]
-	controls.focusGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.generation.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.focusGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.focusGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.focusGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["HunterTrackFocusRegenFocusTime"]
-	controls.focusGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)]]
 end
 
 local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
@@ -2723,49 +2329,12 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
 
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCastingSpender"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.spending
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending")
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerBarPassive"], spec.colors.bar.passive, 525, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 3, 3, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, false)
@@ -2786,9 +2355,6 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "explosiveShot")
 	end)]]
-
-	--[[yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], SURVIVAL_MAX_FOCUS)]]
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 1, SURVIVAL_MAX_FOCUS)
@@ -2947,12 +2513,6 @@ local function SurvivalConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2964,19 +2524,6 @@ local function SurvivalConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
-
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)]]
-	
-	--local dotVariables = "$ssCount/$ssTime"
-	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 3, 3, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables), true, false, true)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 3, yCoord)
 end
@@ -3004,71 +2551,6 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceFocus"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFocus"]))
-
-	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackFocusRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegen"])
-	f.tooltip = L["HunterCheckboxTrackFocusRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.focusGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.focusGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.focusGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	title = L["HunterTrackFocusRegenFocusGcds"]
-	controls.focusGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.generation.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.focusGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.focusGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.focusGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["HunterTrackFocusRegenFocusTime"]
-	controls.focusGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)]]
 end
 
 local function SurvivalConstructBarTextDisplayPanel(parent, cache)

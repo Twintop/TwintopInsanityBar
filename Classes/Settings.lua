@@ -12,7 +12,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public precision boolean
 ---@field public displayText boolean
 ---@field public textColors boolean
----@field public dotColors boolean
 ---@field public thresholdColors boolean
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
@@ -77,50 +76,29 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.ColorShowEntry : TRB.Classes.Settings.ColorEnabledEntry
 
----@class TRB.Classes.Settings.DotColors
----@field public options table
----@field public up TRB.Classes.Settings.ColorEntry
----@field public down TRB.Classes.Settings.ColorEntry
----@field public pandemic TRB.Classes.Settings.ColorEntry
-
----@class TRB.Classes.Settings.SnapshotDotColors : TRB.Classes.Settings.DotColors
----@field public better TRB.Classes.Settings.ColorEntry
----@field public worse TRB.Classes.Settings.ColorEntry
----@field public same TRB.Classes.Settings.ColorEntry
-
 ---@class TRB.Classes.Settings.TextColors
 ---@field public current TRB.Classes.Settings.ColorEnabledEntry
 ---@field public casting TRB.Classes.Settings.ColorEnabledEntry
 ---@field public spending TRB.Classes.Settings.ColorEnabledEntry
 ---@field public passive TRB.Classes.Settings.ColorEnabledEntry
----@field public overcap TRB.Classes.Settings.ColorEnabledEntry
 ---@field public overThreshold TRB.Classes.Settings.ColorEnabledEntry
----@field public dots TRB.Classes.Settings.DotColors|TRB.Classes.Settings.SnapshotDotColors
 
 ---@class TRB.Classes.Settings.ThresholdColors
 ---@field public under TRB.Classes.Settings.ColorEntry
 ---@field public over TRB.Classes.Settings.ColorEntry
 ---@field public unusable TRB.Classes.Settings.ColorShowEntry
----@field public passive TRB.Classes.Settings.ColorEntry
 ---@field public special TRB.Classes.Settings.ColorEntry
 ---@field public outOfRange TRB.Classes.Settings.ColorShowEntry
 
 ---@class TRB.Classes.Settings.ThresholdHealerColors
 ---@field public over TRB.Classes.Settings.ColorEntry
 ---@field public unusable TRB.Classes.Settings.ColorEntry
----@field public passive TRB.Classes.Settings.ColorEntry
-
----@class TRB.Classes.Settings.EndCapColorEntry : TRB.Classes.Settings.ColorEnabledEntry
----@field public width integer
----@field public useBorderColor boolean
----@field public useBorderColorExceptDefault boolean
 
 ---@class TRB.Classes.Settings.Colors
 ---@field public text TRB.Classes.Settings.TextColors
 ---@field public bar table
 ---@field public comboPoints table
 ---@field public threshold TRB.Classes.Settings.ThresholdColors|{ [string]: TRB.Classes.Settings.ColorEnabledEntry }
----@field public endCap { [string]: TRB.Classes.Settings.EndCapColorEntry }
 
 ---@class TRB.Classes.Settings.ColorsCore : TRB.Classes.Settings.Colors
 ---@field public thresholdHealer TRB.Classes.Settings.ThresholdHealerColors

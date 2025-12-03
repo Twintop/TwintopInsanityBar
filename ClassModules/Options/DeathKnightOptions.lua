@@ -8,8 +8,6 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local castingFrame = TRB.Frames.castingFrame
-local passiveFrame = TRB.Frames.passiveFrame
 
 TRB.Options.DeathKnight = {}
 TRB.Options.DeathKnight.Blood = {}
@@ -391,8 +389,6 @@ local function BloodLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true,
 		},
-		passiveGeneration = {
-		},
 		colors={
 			text = {
 				current = {
@@ -409,10 +405,6 @@ local function BloodLoadDefaultSettings(includeBarText)
 				border="FF009ABD",
 				background="66000000",
 				base="FF00D1FF",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FF980002",
@@ -440,15 +432,6 @@ local function BloodLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -471,10 +454,6 @@ local function BloodLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -714,8 +693,6 @@ local function FrostLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true,
 		},
-		passiveGeneration = {
-		},
 		colors={
 			text = {
 				current = {
@@ -732,10 +709,6 @@ local function FrostLoadDefaultSettings(includeBarText)
 				border="FF009ABD",
 				background="66000000",
 				base="FF00D1FF",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FF006BAD",
@@ -763,15 +736,6 @@ local function FrostLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -794,10 +758,6 @@ local function FrostLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -1036,8 +996,6 @@ local function UnholyLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true,
 		},
-		passiveGeneration = {
-		},
 		colors={
 			text = {
 				current = {
@@ -1054,10 +1012,6 @@ local function UnholyLoadDefaultSettings(includeBarText)
 				border="FF009ABD",
 				background="66000000",
 				base="FF00D1FF",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FF12721A",
@@ -1085,15 +1039,6 @@ local function UnholyLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -1116,10 +1061,6 @@ local function UnholyLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -1283,49 +1224,12 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
 
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.spending
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame)
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 6, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], true, false)
@@ -1370,9 +1274,6 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], BLOOD_MAX_RUNIC_POWER)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], 1, BLOOD_MAX_RUNIC_POWER)
@@ -1720,49 +1621,12 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
 
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.spending
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame)
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 6, 2, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], true, false)
@@ -1807,9 +1671,6 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], FROST_MAX_RUNIC_POWER)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], 1, FROST_MAX_RUNIC_POWER)
@@ -2154,9 +2015,6 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
 
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 6, 3, yCoord)
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], true, false)
 	
@@ -2201,9 +2059,6 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], UNHOLY_MAX_RUNIC_POWER)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], 1, UNHOLY_MAX_RUNIC_POWER)

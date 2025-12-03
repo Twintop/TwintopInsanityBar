@@ -507,8 +507,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		bar = spec.colors.bar,
 ---@diagnostic disable-next-line: missing-fields
 		threshold = {},
-		comboPoints = spec.colors.comboPoints,
-		endCap = {}
+		comboPoints = spec.colors.comboPoints
 	}
 
 	if s.textColors then
@@ -516,30 +515,13 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.text.casting = core.colors.text.casting
 		specCache.settings.colors.text.spending = core.colors.text.spending
 		specCache.settings.colors.text.passive = core.colors.text.passive
-		specCache.settings.colors.text.overcap = core.colors.text.overcap
 		specCache.settings.colors.text.overThreshold = core.colors.text.overThreshold
 	else
 		specCache.settings.colors.text.current = spec.colors.text.current
 		specCache.settings.colors.text.casting = spec.colors.text.casting
 		specCache.settings.colors.text.spending = spec.colors.text.spending
 		specCache.settings.colors.text.passive = spec.colors.text.passive
-		specCache.settings.colors.text.overcap = spec.colors.text.overcap
 		specCache.settings.colors.text.overThreshold = spec.colors.text.overThreshold
-	end
-
-	if s.dotColors then
-		specCache.settings.colors.text.dots.up = spec.colors.text.dots.up
-		specCache.settings.colors.text.dots.down = spec.colors.text.dots.down
-		specCache.settings.colors.text.dots.pandemic = spec.colors.text.dots.pandemic
-		specCache.settings.colors.text.dots.options = spec.colors.text.dots.options
-		if className == "druid" and specName == "feral" then -- Kitty is a special snowflake
-			-- Use spec values			
-			specCache.settings.colors.text.dots.same = spec.colors.text.dots.same
-			specCache.settings.colors.text.dots.worse = spec.colors.text.dots.worse
-			specCache.settings.colors.text.dots.better = spec.colors.text.dots.better
-		end
-	else
-		specCache.settings.colors.text.dots = spec.colors.text.dots
 	end
 
 ---@diagnostic disable-next-line: missing-fields
@@ -552,7 +534,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		if isHealer then
 			specCache.settings.colors.threshold.over = core.colors.thresholdHealers.over
 			specCache.settings.colors.threshold.unusable = core.colors.thresholdHealers.unusable
-			specCache.settings.colors.threshold.passive = core.colors.thresholdHealers.passive
 		else
 			specCache.settings.colors.threshold.over = core.colors.threshold.over
 			specCache.settings.colors.threshold.under = core.colors.threshold.under
@@ -560,12 +541,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			specCache.settings.colors.threshold.special = core.colors.threshold.special
 			specCache.settings.colors.threshold.outOfRange = core.colors.threshold.outOfRange
 		end
-	end
-	
-	if s.endCap then
-		specCache.settings.colors.endCap.base = core.colors.endCap.base
-	else
-		specCache.settings.colors.endCap.base = spec.colors.endCap.base
 	end
 
 	if spec.thresholds ~= nil then

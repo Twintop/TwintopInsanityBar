@@ -54,22 +54,6 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 			settings.textures.resourceBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
 		end
 
-		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.STATUSBAR, settings.textures.passiveBarName) then
-			settings.textures.passiveBar = TRB.Details.addonData.libs.SharedMedia.MediaTable.statusbar[settings.textures.passiveBarName]
-		else
-			print(string.format(L["LSMInvalidBarPassiveTexture"], specName, settings.textures.passiveBarName))
-			settings.textures.passiveBar = TRB.Data.constants.defaultSettings.textures.resourceBar
-			settings.textures.passiveBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
-		end
-
-		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.STATUSBAR, settings.textures.castingBarName) then
-			settings.textures.castingBar = TRB.Details.addonData.libs.SharedMedia.MediaTable.statusbar[settings.textures.castingBarName]
-		else
-			print(string.format(L["LSMInvalidBarCastingTexture"], specName, settings.textures.castingBarName))
-			settings.textures.castingBar = TRB.Data.constants.defaultSettings.textures.resourceBar
-			settings.textures.castingBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
-		end
-
 		-- Combo Points
 		if settings.textures.comboPointsBorder ~= nil then
 			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BACKGROUND, settings.textures.comboPointsBackgroundName) then

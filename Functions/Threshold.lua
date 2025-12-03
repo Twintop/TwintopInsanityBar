@@ -237,26 +237,6 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 	end
 end
 
----Resets end caps threshold to match expected values based on current settings
----@param frame frame
----@param settings any
----@param key any
-function TRB.Functions.Threshold:ResetEndCap(frame, settings, key)
-	local threshold = frame.endCap or CreateFrame("Frame", nil, frame)
-	local borderSubtraction = settings.bar.border * 2
-
-	threshold:SetWidth(settings.colors.endCap[key].width)
-	threshold:SetHeight(settings.bar.height - borderSubtraction)
-	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
-	threshold.texture:SetAllPoints(threshold)
-	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.endCap[key].color, true)
-	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.endCap)
-	if settings.colors.endCap[key].enabled then
-		threshold:Show()
-	else
-		threshold:Hide()
-	end
-end
 function TRB.Functions.Threshold:RedrawThresholdLines()
 	if TRB.Data.barConstructedForSpec == nil or TRB.Data.barConstructedForSpec == "" then
 		return
@@ -264,27 +244,11 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 
 	local settings = TRB.Data.specCache[TRB.Data.barConstructedForSpec].settings
 	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame
 
 	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 	if entries > 0 then
 		for x = 1, entries do
 			TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
-		end
-	end
-	TRB.Functions.Threshold:ResetEndCap(resourceFrame, settings, "base")
-
-
-	entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
-	if entries > 0 and (settings.colors.threshold.passive ~= nil or settings.colors.threshold.mindbender ~= nil) then
-		local passiveColor = settings.colors.threshold.passive
-		if passiveColor == nil then
-			passiveColor = settings.colors.threshold.mindbender
-		end
-
-		for x = 1, entries do
-			TRB.Functions.Threshold:ResetThresholdLine(passiveFrame.thresholds[x], settings, false)
-			TRB.Functions.Color:SetThresholdColor(passiveFrame.thresholds[x], passiveColor.color, true)
 		end
 	end
 
@@ -448,76 +412,4 @@ function TRB.Functions.Threshold:Show(key, threshold)
 	if not threshold:IsVisible() then
 		threshold:Show()
 	end
-end
-
----Updates all shared passive thresholds for a healer specialization.
----@param settings table # Settings for the specific specialization.
----@param spells TRB.Classes.Healer.HealerSpells # Spells used by the specialization.
----@param snapshots TRB.Classes.Snapshot[] # Snapshots that contain information about all shared passive regen healer spells.
----@param frame Frame # Frame that these thresholds are drawn on and children of.
----@param castingBarValue number # Current value of the casting bar.
----@return number, number # The total mana regen of all shared passive regen healer spells.
-function TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(settings, spells, snapshots, frame, castingBarValue)
-	local passiveValue = 0
-	if settings.colors.bar.showPassive then
-		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.slumberingSoulSerumRank1.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 1, castingBarValue, passiveValue)
-		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 2, castingBarValue, passiveValue)
-		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 3, castingBarValue, passiveValue)
-		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 4, castingBarValue, passiveValue)
-		TRB.Data.cache.values.threshold["showPassiveDisabled"] = false
-	else
-		if TRB.Data.cache.values.threshold["showPassiveDisabled"] ~= true then
-			TRB.Frames.passiveFrame.thresholds[1]:Hide()
-			TRB.Frames.passiveFrame.thresholds[2]:Hide()
-			TRB.Frames.passiveFrame.thresholds[3]:Hide()
-			TRB.Frames.passiveFrame.thresholds[4]:Hide()
-			TRB.Data.cache.values.threshold["showPassiveDisabled"] = true
-		end
-	end
-	return passiveValue, 6
-end
-
----Updates a passive threshold for a healer specialization.
----@param settings table # Settings for the specific specialization.
----@param snapshot TRB.Classes.Healer.HealerRegenBase # Snapshot of the shared passive regen healer spell we're updating the threshold line of.
----@param frame Frame # Frame that these thresholds are drawn on and children of.
----@param thresholdId integer # Threshold to be updated
----@param castingBarValue number # Current value of the casting bar.
----@param passiveValue number # The total mana regen of all previous shared passive regen healer spells.
----@param overrideMana number? # Override amount of mana. Used mostly when the snapshot isn't HealerRegenBase, like in the case of Shadowfiend for Priests
----@return number # The total mana regen of all shared passive regen healer spells so far.
-function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshot, frame, thresholdId, castingBarValue, passiveValue, overrideMana)
-	if frame == nil or frame.thresholds == nil then
-		return passiveValue
-	end
-	TRB.Data.cache.values.threshold[snapshot.spell.id] = TRB.Data.cache.values.threshold[snapshot.spell.id] or {}
-	local cache = TRB.Data.cache.values.threshold[snapshot.spell.id]
-
-	local mana = overrideMana or snapshot.mana
-	if mana > 0 then
-		passiveValue = passiveValue + mana
-
-		if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(settings, snapshot.spell.id, frame.thresholds[thresholdId], true, frame, (passiveValue + castingBarValue), TRB.Data.character.maxResourceUnmodified)
-			---@diagnostic disable-next-line: undefined-field
-			
-			if cache.color ~= settings.colors.threshold.passive.color then
-				TRB.Functions.Color:SetThresholdColor(frame.thresholds[thresholdId], settings.colors.threshold.passive.color, true)
-				cache.color = settings.colors.threshold.passive.color
-			end
-
-			if cache.shown ~= true then
-				frame.thresholds[thresholdId]:Show()
-				cache.shown = true
-			end
-		elseif cache.shown == true then
-			frame.thresholds[thresholdId]:Hide()
-			cache.shown = false
-		end
-	elseif cache.shown == true then
-		frame.thresholds[thresholdId]:Hide()
-		cache.shown = false
-	end
-	
-	return passiveValue
 end

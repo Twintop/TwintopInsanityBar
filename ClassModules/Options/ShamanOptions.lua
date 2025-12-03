@@ -8,8 +8,6 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local castingFrame = TRB.Frames.castingFrame
-local passiveFrame = TRB.Frames.passiveFrame
 
 TRB.Options.Shaman = {}
 TRB.Options.Shaman.Elemental = {}
@@ -80,7 +78,7 @@ local function ElementalLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]{$passive}[$passive + ]$maelstrom",
+			text="{$casting}[$casting + ]$maelstrom",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -158,7 +156,7 @@ local function ElementalLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$passive}[$passive+]$maelstrom",
+			text="{$casting}[#casting$casting+]$maelstrom",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -232,11 +230,6 @@ local function ElementalLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -257,49 +250,25 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FF995BDD"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FF00008D",
-				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FF0055FF",
-				casting="FFFFFFFF",
-				passive="FF995BDD",
 				earthShock="FF00096A",
 				inAscendance="FFFA8128",
 				inAscendance1GCD="FFFF0000",
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
-				overcapEnabled=true,
 				primalFracture = {
 					color = "FFFF9900",
 					enabled = true
 				},
-				showPassive=true,
-				showCasting=true
 			},
 			threshold = {
 				under = {
@@ -316,15 +285,6 @@ local function ElementalLoadDefaultSettings(includeBarText)
 					color = "FF440000",
 					enabled = true,
 					show = true
-				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
 				}
 			}
 		},
@@ -346,12 +306,6 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			}
 		},
 		textures = {
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -360,10 +314,6 @@ local function ElementalLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true
 		}
 	}
@@ -585,31 +535,14 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 				},
 				passive = {
 					color = "FF8080FF"
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				passive="FF8080FF",
 				inAscendance="FFFA8128",
 				inAscendance1GCD="FFFF0000",
-				showPassive=false,
-				showCasting=true
 			},
 			comboPoints = {
 				border="ff0071df",
@@ -634,15 +567,6 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -665,10 +589,6 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -744,7 +664,7 @@ local function RestorationLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
+			text="{$casting}[#casting$casting + ]$mana/$manaMax $manaPercent%",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -822,7 +742,7 @@ local function RestorationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
+			text="{$casting}[#casting$casting+]$mana/$manaMax $manaPercent%",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -917,10 +837,6 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
 		},
-		passiveGeneration = {
-			innervate = true,
-			manaTideTotem = true
-		},
 		endOfAscendance = {
 			enabled=true,
 			mode="gcd",
@@ -937,56 +853,14 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				},
 				passive = {
 					color = "FF8080FF"
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar={
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				innervate="FF00FF00",
-				potionOfChilledClarity="FF9EC51E",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
 				inAscendance="FFFA8128",
 				inAscendance1GCD="FFFF0000",
-				innervateBorderChange=true,
-				potionOfChilledClarityBorderChange=true,
-				showPassive=true,
-				showCasting=true
-			},
-			threshold = {
-				over = {
-					color = "FF00FF00"
-				},
-				unusable = {
-					color = "FFFF0000"
-				},
-				passive = {
-					color = "FF8080FF"
-				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -1015,10 +889,6 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true
 		}
 	}
@@ -1184,49 +1054,12 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 	end)
 
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.casting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame)
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 7, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, false)
@@ -1301,9 +1134,6 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 		self.EditBox:SetText(value)
 		spec.endOfAscendance.timeMax = value
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], ELEMENTAL_MAX_MAELSTROM)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], 1, ELEMENTAL_MAX_MAELSTROM)
@@ -1421,12 +1251,6 @@ local function ElementalConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1438,19 +1262,6 @@ local function ElementalConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
-
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["ShamanElementalCheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
-	
-	local dotVariables = "$fsCount/$fsTime"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 1, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))]]
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 1, yCoord)
 end
@@ -1477,8 +1288,6 @@ local function ElementalConstructAudioAndTrackingPanel(parent)
 	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "esReady", spec, classId, specId, yCoord, L["ShamanElementalAudioCheckboxEarthShock"], L["ShamanElementalAudioCheckboxEarthShockTooltip"])
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceMaelstrom"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceMaelstrom"]))
 end
 
 local function ElementalConstructBarTextDisplayPanel(parent, cache)
@@ -1730,9 +1539,6 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 	end)
 
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 7, 2, yCoord)
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], false, false)
 
@@ -1877,9 +1683,6 @@ local function EnhancementConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
-	
-	--local dotVariables = "$fsCount/$fsTime"
-	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 2, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 2, yCoord)
 end
@@ -2183,49 +1986,12 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 	end)
 
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.spending
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame)
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 7, 3, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], false, true)
@@ -2354,9 +2120,6 @@ local function RestorationConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
-	
-	--local dotVariables = "$fsCount/$fsTime"
-	--yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 7, 3, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 3, yCoord)
 end
@@ -2382,32 +2145,6 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
-	
-	--[[controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.innervateRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackInnervate"])
-	f.tooltip = L["HealerCheckboxTrackInnervateTooltip"]
-	f:SetChecked(spec.passiveGeneration.innervate)
-	f:SetScript("OnClick", function(self, ...)
-		spec.passiveGeneration.innervate = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.manaTideTotemRegen = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_ManaTideTotemPassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.manaTideTotemRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackManaTideTotem"])
-	f.tooltip = L["HealerCheckboxTrackManaTideTotemTooltip"]
-	f:SetChecked(spec.passiveGeneration.manaTideTotem)
-	f:SetScript("OnClick", function(self, ...)
-		spec.passiveGeneration.manaTideTotem = self:GetChecked()
-	end)]]
 end
 
 local function RestorationConstructBarTextDisplayPanel(parent, cache)

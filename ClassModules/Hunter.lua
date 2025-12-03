@@ -8,8 +8,6 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 
 local barContainerFrame = TRB.Frames.barContainerFrame
 local resourceFrame = TRB.Frames.resourceFrame
-local castingFrame = TRB.Frames.castingFrame
-local passiveFrame = TRB.Frames.passiveFrame
 local barBorderFrame = TRB.Frames.barBorderFrame
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -32,13 +30,8 @@ local function FillSpecializationCache()
 	specCache.beastMastery.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
-			casting = 0,
-			passive = 0,
-			regen = 0
-		},
-		dots = {
-			serpentSting = 0
-		},
+			casting = 0
+		}
 	}
 
 	specCache.beastMastery.character = {
@@ -57,7 +50,6 @@ local function FillSpecializationCache()
 
 	specCache.beastMastery.snapshotData.attributes.resourceRegen = 0
 	specCache.beastMastery.snapshotData.audio = {
-		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
@@ -90,8 +82,6 @@ local function FillSpecializationCache()
 			casting = 0,
 			passive = 0,
 			regen = 0
-		},
-		dots = {
 		}
 	}
 
@@ -110,7 +100,6 @@ local function FillSpecializationCache()
 
 	specCache.marksmanship.snapshotData.attributes.resourceRegen = 0
 	specCache.marksmanship.snapshotData.audio = {
-		overcapCue = false,
 		playedKillShotCue = false,
 		playedAimedShotCue = true
 	}
@@ -140,13 +129,8 @@ local function FillSpecializationCache()
 	specCache.survival.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
-			casting = 0,
-			passive = 0,
-			regen = 0
-		},
-		dots = {
-			serpentSting = 0
-		},
+			casting = 0
+		}
 	}
 
 	specCache.survival.character = {
@@ -164,7 +148,6 @@ local function FillSpecializationCache()
 
 	specCache.survival.snapshotData.attributes.resourceRegen = 0
 	specCache.survival.snapshotData.audio = {
-		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
@@ -182,14 +165,6 @@ end
 
 local function Setup_BeastMastery()
 	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "beastMastery")
-end
-
-local function Setup_Marksmanship()
-	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "marksmanship")
-end
-
-local function Setup_Survival()
-	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "survival")
 end
 
 local function FillSpellData_BeastMastery()
@@ -251,26 +226,12 @@ local function FillSpellData_BeastMastery()
 		{ variable = "$regen", description = L["HunterBeastMasteryBarTextVariable_regen"], printInSettings = true, color = false },
 		{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
 		{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$passive", description = L["HunterBeastMasteryBarTextVariable_passive"], printInSettings = true, color = false },
-		{ variable = "$focusPlusCasting", description = L["HunterBeastMasteryBarTextVariable_focusPlusCasting"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
-		{ variable = "$focusPlusPassive", description = L["HunterBeastMasteryBarTextVariable_focusPlusPassive"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$focusTotal", description = L["HunterBeastMasteryBarTextVariable_focusTotal"], printInSettings = true, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
-
-		{ variable = "$serpentSting", description = L["HunterBeastMasteryBarTextVariable_serpentSting"], printInSettings = true, color = false },
-		{ variable = "$ssCount", description = L["HunterBeastMasteryBarTextVariable_ssCount"], printInSettings = true, color = false },
-		{ variable = "$ssTime", description = L["HunterBeastMasteryBarTextVariable_ssTime"], printInSettings = true, color = false },
-
-		{ variable = "$frenzyTime", description = L["HunterBeastMasteryBarTextVariable_frenzyTime"], printInSettings = true, color = false },
-		{ variable = "$frenzyStacks", description = L["HunterBeastMasteryBarTextVariable_frenzyStacks"], printInSettings = true, color = false },
-		
-		{ variable = "$beastCleaveTime", description = L["HunterBeastMasteryBarTextVariable_beastCleaveTime"], printInSettings = true, color = false },
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
+		--[[{ variable = "$beastCleaveTime", description = L["HunterBeastMasteryBarTextVariable_beastCleaveTime"], printInSettings = true, color = false },]]
 	}
+end
+
+local function Setup_Marksmanship()
+	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "marksmanship")
 end
 
 local function FillSpellData_Marksmanship()
@@ -338,26 +299,16 @@ local function FillSpellData_Marksmanship()
 		{ variable = "$regen", description = L["HunterMarksmanshipBarTextVariable_regen"], printInSettings = true, color = false },
 		{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
 		{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$passive", description = L["HunterMarksmanshipBarTextVariable_passive"], printInSettings = true, color = false },
-		{ variable = "$focusPlusCasting", description = L["HunterMarksmanshipBarTextVariable_focusPlusCasting"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
-		{ variable = "$focusPlusPassive", description = L["HunterMarksmanshipBarTextVariable_focusPlusPassive"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$focusTotal", description = L["HunterMarksmanshipBarTextVariable_focusTotal"], printInSettings = true, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },]]
 
 		{ variable = "$trueshotTime", description = L["HunterMarksmanshipBarTextVariable_trueshotTime"], printInSettings = true, color = false },
 		{ variable = "$lockAndLoadTime", description = L["HunterMarksmanshipBarTextVariable_lockAndLoadTime"], printInSettings = true, color = false },
 
-		--[[{ variable = "$steadyFocusTime", description = L["HunterMarksmanshipBarTextVariable_steadyFocusTime"], printInSettings = true, color = false },
-
-		{ variable = "$serpentSting", description = L["HunterMarksmanshipBarTextVariable_serpentSting"], printInSettings = true, color = false },
-		{ variable = "$ssCount", description = L["HunterMarksmanshipBarTextVariable_ssCount"], printInSettings = true, color = false },
-		{ variable = "$ssTime", description = L["HunterMarksmanshipBarTextVariable_ssTime"], printInSettings = true, color = false },
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
+		--[[{ variable = "$steadyFocusTime", description = L["HunterMarksmanshipBarTextVariable_steadyFocusTime"], printInSettings = true, color = false },]]
 	}
+end
+
+local function Setup_Survival()
+	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "survival")
 end
 
 local function FillSpellData_Survival()
@@ -424,28 +375,6 @@ local function FillSpellData_Survival()
 		{ variable = "$regen", description = L["HunterSurvivalBarTextVariable_regen"], printInSettings = true, color = false },
 		{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
 		{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$passive", description = L["HunterSurvivalBarTextVariable_passive"], printInSettings = true, color = false },
-		{ variable = "$focusPlusCasting", description = L["HunterSurvivalBarTextVariable_focusPlusCasting"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
-		{ variable = "$focusPlusPassive", description = L["HunterSurvivalBarTextVariable_focusPlusPassive"], printInSettings = true, color = false },
-		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$focusTotal", description = L["HunterSurvivalBarTextVariable_focusTotal"], printInSettings = true, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
-
-		{ variable = "$serpentSting", description = L["HunterSurvivalBarTextVariable_serpentSting"], printInSettings = true, color = false },
-		{ variable = "$ssCount", description = L["HunterSurvivalBarTextVariable_ssCount"], printInSettings = true, color = false },
-		{ variable = "$ssTime", description = L["HunterSurvivalBarTextVariable_ssTime"], printInSettings = true, color = false },
-
-		{ variable = "$toeFocus", description = L["HunterSurvivalBarTextVariable_toeFocus"], printInSettings = true, color = false },
-		{ variable = "$toeTicks", description = L["HunterSurvivalBarTextVariable_toeTicks"], printInSettings = true, color = false },
-
-		{ variable = "$totsTime", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearTime"], printInSettings = true, color = false },
-		{ variable = "$totsStacks", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearStacks"], printInSettings = true, color = false },
-
-		{ variable = "$wildfireBombCharges", description = L["HunterSurvivalBarTextVariable_wildfireBombCharges"], printInSettings = true, color = false },
-
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
 	}
 end
 
@@ -505,19 +434,11 @@ local function RefreshLookupData_BeastMastery()
 	local target = targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
 
-	-- This probably needs to be pulled every refresh
-	snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
-
-	--$overcap
-	--local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
-
 	local currentFocusColor = sharedSettings.colors.text.current.color
 	local castingFocusColor = sharedSettings.colors.text.casting.color
 	
 	if TRB.Data.character.inCombat then
-		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
-			currentFocusColor = sharedSettings.colors.text.overcap.color
-		else]]if sharedSettings.colors.text.overThreshold.enabled then
+		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -540,25 +461,8 @@ local function RefreshLookupData_BeastMastery()
 	local currentFocus = string.format("|c%s%.0f|r", currentFocusColor, snapshotData.attributes.resource)
 	--$casting
 	local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, snapshotData.casting.resourceFinal)
-	--$passive
-	local _regenFocus = 0
-	--[[local _passiveFocus
-	local _passiveFocusMinusRegen
-
-	local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-
-	if specSettings.generation.enabled then
-		if specSettings.generation.mode == "time" then
-			_regenFocus = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
-		else
-			_regenFocus = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
-		end
-	end
-
-	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenFocus)
-	
-	--$beastCleaveTime
+		
+	--[[--$beastCleaveTime
 	local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
 	local beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
 
@@ -566,62 +470,9 @@ local function RefreshLookupData_BeastMastery()
 		_beastCleaveTime = snapshots[spells.callOfTheWild.id].buff.remaining
 	end
 
-	beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
-	
-	_passiveFocus = _regenFocus
-	_passiveFocusMinusRegen = _passiveFocus - _regenFocus
-
-	local passiveFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveFocus)
-	local passiveFocusMinusRegen = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveFocusMinusRegen)
-	--$focusTotal
-	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
-	--$focusPlusCasting
-	local _focusPlusCasting = math.min(snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusPlusCasting = string.format("|c%s%.0f|r", castingFocusColor, _focusPlusCasting)
-	--$focusPlusPassive
-	local _focusPlusPassive = math.min(_passiveFocus + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusPlusPassive = string.format("|c%s%.0f|r", currentFocusColor, _focusPlusPassive)
-
-	--$frenzyTime
-	local _frenzyTime = snapshots[spells.frenzy.id].buff:GetRemainingTime(currentTime)
-	local frenzyTime = TRB.Functions.BarText:TimerPrecision(_frenzyTime)
-
-	--$frenzyStacks
-	local frenzyStacks = snapshots[spells.frenzy.id].buff.applications or 0
-
-
-	--$ssCount and $ssTime
-	local _serpentStingCount = targetData.count[spells.serpentSting.id] or 0
-	local serpentStingCount = tostring(_serpentStingCount)
-	local _serpentStingTime = 0
-	
-	if target ~= nil then
-		_serpentStingTime = target.spells[spells.serpentSting.id].remainingTime or 0
-	end
-
-	local serpentStingTime
-
-	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		if target ~= nil and target.spells[spells.serpentSting.id].active then
-			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
-
-		else
-			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-	else
-		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
-	end]]
+	beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)]]
 
 	----------------------------
-
-	--[[Global_TwintopResourceBar.resource.passive = _passiveFocus
-	Global_TwintopResourceBar.resource.regen = _regenFocus
-	
-	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount]]
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resource"] = currentFocus
@@ -629,30 +480,7 @@ local function RefreshLookupData_BeastMastery()
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$focusMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingFocus
-	--[[lookup["$frenzyTime"] = frenzyTime
-	lookup["$frenzyStacks"] = frenzyStacks
-	lookup["$focusPlusCasting"] = focusPlusCasting
-	lookup["$focusTotal"] = focusTotal
-	lookup["$resourcePlusCasting"] = focusPlusCasting
-	lookup["$focusPlusCasting"] = focusPlusCasting
-	lookup["$resourcePlusPassive"] = focusPlusPassive
-	lookup["$focusPlusPassive"] = focusPlusPassive
-	lookup["$resourceTotal"] = focusTotal	
-	if TRB.Data.character.maxResource == snapshotData.attributes.resource then
-		lookup["$passive"] = passiveFocusMinusRegen
-	else
-		lookup["$passive"] = passiveFocus
-	end
-	lookup["$beastCleaveTime"] = beastCleaveTime
-	lookup["$serpentSting"] = ""
-	lookup["$ssCount"] = serpentStingCount
-	lookup["$ssTime"] = serpentStingTime
-	lookup["$regen"] = regenFocus
-	lookup["$regenFocus"] = regenFocus
-	lookup["$focusRegen"] = regenFocus
-	lookup["$overcap"] = overcap
-	lookup["$resourceOvercap"] = overcap
-	lookup["$focusOvercap"] = overcap]]
+	--lookup["$beastCleaveTime"] = beastCleaveTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -661,31 +489,7 @@ local function RefreshLookupData_BeastMastery()
 	lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	--[[lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
-	lookupLogic["$frenzyTime"] = _frenzyTime
-	lookupLogic["$frenzyStacks"] = frenzyStacks
-	lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-	lookupLogic["$focusTotal"] = _focusTotal
-	lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
-	lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
-	lookupLogic["$focusPlusPassive"] = _focusPlusPassive
-	lookupLogic["$resourceTotal"] = _focusTotal
-	if TRB.Data.character.maxResource == snapshotData.attributes.resource then
-		lookupLogic["$passive"] = _passiveFocusMinusRegen
-	else
-		lookupLogic["$passive"] = _passiveFocus
-	end
-	lookupLogic["$beastCleaveTime"] = _beastCleaveTime
-	lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
-	lookupLogic["$ssCount"] = _serpentStingCount
-	lookupLogic["$ssTime"] = _serpentStingTime
-	lookupLogic["$regen"] = _regenFocus
-	lookupLogic["$regenFocus"] = _regenFocus
-	lookupLogic["$focusRegen"] = _regenFocus
-	lookupLogic["$overcap"] = overcap
-	lookupLogic["$resourceOvercap"] = overcap
-	lookupLogic["$focusOvercap"] = overcap]]
+	--lookupLogic["$beastCleaveTime"] = _beastCleaveTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -699,20 +503,11 @@ local function RefreshLookupData_Marksmanship()
 	local target = targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
 
-	-- This probably needs to be pulled every refresh
-	snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
-
-	--$overcap
-	--local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
-
 	local currentFocusColor = sharedSettings.colors.text.current.color
 	local castingFocusColor = sharedSettings.colors.text.casting.color
 	
 	if TRB.Data.character.inCombat then
-		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
-			currentFocusColor = sharedSettings.colors.text.overcap.color
-			castingFocusColor = sharedSettings.colors.text.overcap.color
-		else]]if sharedSettings.colors.text.overThreshold.enabled then
+		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -736,77 +531,17 @@ local function RefreshLookupData_Marksmanship()
 	local currentFocus = string.format("|c%s%.0f|r", currentFocusColor, snapshotData.attributes.resource)
 	--$casting
 	local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, snapshotData.casting.resourceFinal)
-	--$passive
-	--[[local _regenFocus = 0
-	local _passiveFocus
-
-	local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-
-	if specSettings.generation.enabled then
-		if specSettings.generation.mode == "time" then
-			_regenFocus = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
-		else
-			_regenFocus = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
-		end
-	end
-
-	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenFocus)
-	_passiveFocus = _regenFocus
-
-	local passiveFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveFocus)
-	--$focusTotal
-	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
-	--$focusPlusCasting
-	local _focusPlusCasting = math.min(snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusPlusCasting = string.format("|c%s%.0f|r", castingFocusColor, _focusPlusCasting)
-	--$focusPlusPassive
-	local _focusPlusPassive = math.min(_passiveFocus + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusPlusPassive = string.format("|c%s%.0f|r", currentFocusColor, _focusPlusPassive)]]
-
+	
 	--$trueshotTime
 	local _trueshotTime = snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
 	local trueshotTime = TRB.Functions.BarText:TimerPrecision(_trueshotTime)
 
 	--[[--$steadyFocusTime
 	local _steadyFocusTime = snapshots[spells.steadyFocus.id].buff:GetRemainingTime(currentTime)
-	local steadyFocusTime = TRB.Functions.BarText:TimerPrecision(_steadyFocusTime)
-
-	--$lockAndLoadTime
-	local _lockAndLoadTime = snapshots[spells.lockAndLoad.id].buff:GetRemainingTime(currentTime)
-	local lockAndLoadTime = TRB.Functions.BarText:TimerPrecision(_lockAndLoadTime)
-
-	--$ssCount and $ssTime
-	local _serpentStingCount = targetData.count[spells.serpentSting.id] or 0
-	local serpentStingCount = tostring(_serpentStingCount)
-	local _serpentStingTime = 0
-	
-	if target ~= nil then
-		_serpentStingTime = target.spells[spells.serpentSting.id].remainingTime or 0
-	end
-
-	local serpentStingTime
-
-	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		if target ~= nil and target.spells[spells.serpentSting.id].active then
-			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
-		else
-			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-	else
-		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
-	end]]
+	local steadyFocusTime = TRB.Functions.BarText:TimerPrecision(_steadyFocusTime)]]
 
 	----------------------------
 
-	--[[Global_TwintopResourceBar.resource.passive = _passiveFocus
-	Global_TwintopResourceBar.resource.regen = _regenFocus
-	
-	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount]]
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resource"] = currentFocus
@@ -815,25 +550,7 @@ local function RefreshLookupData_Marksmanship()
 	lookup["$focusMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingFocus
 	lookup["$trueshotTime"] = trueshotTime
-	--[[lookup["$steadyFocusTime"] = steadyFocusTime
-	lookup["$lockAndLoadTime"] = lockAndLoadTime
-	lookup["$focusPlusCasting"] = focusPlusCasting
-	lookup["$serpentSting"] = ""
-	lookup["$ssCount"] = serpentStingCount
-	lookup["$ssTime"] = serpentStingTime
-	lookup["$focusTotal"] = focusTotal
-	lookup["$resourcePlusCasting"] = focusPlusCasting
-	lookup["$focusPlusCasting"] = focusPlusCasting
-	lookup["$resourcePlusPassive"] = focusPlusPassive
-	lookup["$focusPlusPassive"] = focusPlusPassive
-	lookup["$resourceTotal"] = focusTotal
-	lookup["$passive"] = passiveFocus
-	lookup["$regen"] = regenFocus
-	lookup["$regenFocus"] = regenFocus
-	lookup["$focusRegen"] = regenFocus
-	lookup["$overcap"] = overcap
-	lookup["$resourceOvercap"] = overcap
-	lookup["$focusOvercap"] = overcap]]
+	--lookup["$steadyFocusTime"] = steadyFocusTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -843,25 +560,7 @@ local function RefreshLookupData_Marksmanship()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$trueshotTime"] = _trueshotTime
-	--[[lookupLogic["$steadyFocusTime"] = _steadyFocusTime
-	lookupLogic["$lockAndLoadTime"] = _lockAndLoadTime
-	lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-	lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
-	lookupLogic["$ssCount"] = _serpentStingCount
-	lookupLogic["$ssTime"] = _serpentStingTime
-	lookupLogic["$focusTotal"] = _focusTotal
-	lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
-	lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
-	lookupLogic["$focusPlusPassive"] = _focusPlusPassive
-	lookupLogic["$resourceTotal"] = _focusTotal
-	lookupLogic["$passive"] = _passiveFocus
-	lookupLogic["$regen"] = _regenFocus
-	lookupLogic["$regenFocus"] = _regenFocus
-	lookupLogic["$focusRegen"] = _regenFocus
-	lookupLogic["$overcap"] = overcap
-	lookupLogic["$resourceOvercap"] = overcap
-	lookupLogic["$focusOvercap"] = overcap]]
+	--lookupLogic["$steadyFocusTime"] = _steadyFocusTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -875,20 +574,11 @@ local function RefreshLookupData_Survival()
 	local target = targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
 
-	-- This probably needs to be pulled every refresh
-	snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
-
-	--$overcap
-	--local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
-
 	local currentFocusColor = sharedSettings.colors.text.current.color
 	local castingFocusColor = sharedSettings.colors.text.casting.color
 	
 	if TRB.Data.character.inCombat then
-		--[[if sharedSettings.colors.text.overcap.enabled and overcap then
-			currentFocusColor = sharedSettings.colors.text.overcap.color
-			castingFocusColor = sharedSettings.colors.text.overcap.color
-		else]]if sharedSettings.colors.text.overThreshold.enabled then
+		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
 				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
@@ -913,76 +603,7 @@ local function RefreshLookupData_Survival()
 	--$casting
 	local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, snapshotData.casting.resourceFinal)
 
-	--[[local _regenFocus = 0
-	local _passiveFocus
-
-	local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-
-	if specSettings.generation.enabled then
-		if specSettings.generation.mode == "time" then
-			_regenFocus = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
-		else
-			_regenFocus = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
-		end
-	end
-
-	--$regenFocus
-	local regenFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _regenFocus)
-	_passiveFocus = _regenFocus
-
-	--$passive
-	local passiveFocus = string.format("|c%s%.0f|r", sharedSettings.colors.text.passive.color, _passiveFocus)
-	--$focusTotal
-	local _focusTotal = math.min(_passiveFocus + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusTotal = string.format("|c%s%.0f|r", currentFocusColor, _focusTotal)
-	--$focusPlusCasting
-	local _focusPlusCasting = math.min(snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusPlusCasting = string.format("|c%s%.0f|r", castingFocusColor, _focusPlusCasting)
-	--$focusPlusPassive
-	local _focusPlusPassive = math.min(_passiveFocus + snapshotData.attributes.resource, TRB.Data.character.maxResource)
-	local focusPlusPassive = string.format("|c%s%.0f|r", currentFocusColor, _focusPlusPassive)
-
-	--$wildfireBombCharges
-	local wildfireBombCharges = snapshots[spells.wildfireBomb.id].cooldown.charges
-	
-	--$ssCount and $ssTime
-	local _serpentStingCount = targetData.count[spells.serpentSting.id] or 0
-	local serpentStingCount = tostring(_serpentStingCount)
-	local _serpentStingTime = 0
-	
-	if target ~= nil then
-		_serpentStingTime = target.spells[spells.serpentSting.id].remainingTime or 0
-	end
-
-	local serpentStingTime
-
-	--$totsTime 
-	local _totsTime = snapshotData.snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
-	local totsTime = TRB.Functions.BarText:TimerPrecision(_totsTime)
-	
-	--$totsStacks
-	local _totsStacks = snapshotData.snapshots[spells.tipOfTheSpear.id].buff.applications or 0
-	local totsStacks = string.format("%s", _totsStacks)
-
-	if sharedSettings.colors.text.dots.options.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		if target ~= nil and target.spells[spells.serpentSting.id].active then
-			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.up.color, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
-		else
-			serpentStingCount = string.format("|c%s%.0f|r", sharedSettings.colors.text.dots.down.color, _serpentStingCount)
-			serpentStingTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-		end
-	else
-		serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
-	end]]
-
 	----------------------------
-
-	--[[Global_TwintopResourceBar.resource.passive = _passiveFocus
-	Global_TwintopResourceBar.resource.regen = _regenFocus
-	
-	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
-	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount]]
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resource"] = currentFocus
@@ -990,26 +611,6 @@ local function RefreshLookupData_Survival()
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$focusMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingFocus
-	--[[lookup["$focusPlusCasting"] = focusPlusCasting
-	lookup["$serpentSting"] = ""
-	lookup["$ssCount"] = serpentStingCount
-	lookup["$ssTime"] = serpentStingTime
-	lookup["$wildfireBombCharges"] = wildfireBombCharges
-	lookup["$focusTotal"] = focusTotal
-	lookup["$resourcePlusCasting"] = focusPlusCasting
-	lookup["$focusPlusCasting"] = focusPlusCasting
-	lookup["$resourcePlusPassive"] = focusPlusPassive
-	lookup["$focusPlusPassive"] = focusPlusPassive
-	lookup["$resourceTotal"] = focusTotal
-	lookup["$passive"] = passiveFocus
-	lookup["$regen"] = regenFocus
-	lookup["$regenFocus"] = regenFocus
-	lookup["$focusRegen"] = regenFocus
-	lookup["$overcap"] = overcap
-	lookup["$resourceOvercap"] = overcap
-	lookup["$focusOvercap"] = overcap
-	lookup["$totsTime"] = totsTime
-	lookup["$totsStacks"] = totsStacks]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1018,26 +619,6 @@ local function RefreshLookupData_Survival()
 	lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	--[[lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-	lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
-	lookupLogic["$ssCount"] = _serpentStingCount
-	lookupLogic["$ssTime"] = _serpentStingTime
-	lookupLogic["$wildfireBombCharges"] = wildfireBombCharges
-	lookupLogic["$focusTotal"] = _focusTotal
-	lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
-	lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-	lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
-	lookupLogic["$focusPlusPassive"] = _focusPlusPassive
-	lookupLogic["$resourceTotal"] = _focusTotal
-	lookupLogic["$passive"] = _passiveFocus
-	lookupLogic["$regen"] = _regenFocus
-	lookupLogic["$regenFocus"] = _regenFocus
-	lookupLogic["$focusRegen"] = _regenFocus
-	lookupLogic["$overcap"] = overcap
-	lookupLogic["$resourceOvercap"] = overcap
-	lookupLogic["$focusOvercap"] = overcap
-	lookupLogic["$totsTime"] = _totsTime
-	lookupLogic["$totsStacks"] = _totsStacks]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1149,16 +730,6 @@ end
 local function UpdateSnapshot_BeastMastery()
 	UpdateSnapshot()
 	UpdateDarkRanger()
-
-	local currentTime = GetTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
-	---@type table<integer, TRB.Classes.Snapshot>
-	local snapshots = TRB.Data.snapshotData.snapshots
-
-	--[[snapshots[spells.bestialWrath.id].cooldown:Refresh()
-	snapshots[spells.killCommand.id].cooldown:Refresh()
-	
-	snapshots[spells.frenzy.id].buff:Refresh(nil, false, "pet")]]
 end
 
 local function UpdateSnapshot_Marksmanship()
@@ -1170,13 +741,6 @@ local function UpdateSnapshot_Marksmanship()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData
-	local snapshots = snapshotData.snapshots
-
-	--[[snapshots[spells.aimedShot.id].cooldown:Refresh()
-	snapshots[spells.burstingShot.id].cooldown:Refresh()
-	snapshots[spells.killShot.id].cooldown:Refresh()
-
-	snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)]]
 
 	if snapshotData.casting.spellId == spells.rapidFire.id then
 		local casting = snapshotData.casting
@@ -1190,14 +754,6 @@ end
 
 local function UpdateSnapshot_Survival()
 	UpdateSnapshot()
-	
-	local currentTime = GetTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
-	---@type table<integer, TRB.Classes.Snapshot>
-	local snapshots = TRB.Data.snapshotData.snapshots
-
-	--[[snapshots[spells.wildfireBomb.id].cooldown:Refresh()
-	snapshots[spells.killCommand.id].cooldown:Refresh()]]
 end
 
 local function UpdateResourceBar()
@@ -1219,10 +775,8 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]				
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
@@ -1231,49 +785,8 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local passiveValue = 0
-				--[[if specSettings.colors.bar.showPassive then
-					if specSettings.generation.enabled then
-						if specSettings.generation.mode == "time" then
-							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
-						else
-							passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
-						end
-					end
-				end
-
-				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
-					castingBarValue = currentResource + snapshotData.casting.resourceFinal
-				else
-					castingBarValue = currentResource
-				end
-				passiveBarValue = castingBarValue + passiveValue]]
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 				
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
-
-				--[[if castingBarValue < currentResource then --Using a spender
-					if -snapshotData.casting.resourceFinal > passiveValue then
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.passive
-						passiveBarColor = specSettings.colors.bar.spending
-					else
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.spending
-						passiveBarColor = specSettings.colors.bar.passive
-					end
-				else]]
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
-					castingBarColor = specSettings.colors.bar.casting
-					passiveBarColor = specSettings.colors.bar.passive
-				--end
-
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					if resourceFrame.thresholds[thresholdId] == nil then
@@ -1356,50 +869,13 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				--local bestialWrathCooldownRemaining = snapshots[spells.bestialWrath.id].cooldown:GetRemainingTime(currentTime)
-				local affectingCombat = TRB.Data.character.inCombat
-
 				local barBorderColor = specSettings.colors.bar.border
 
 				if specSettings.colors.bar.beastCleave.enabled and TRB.Functions.Class:IsValidVariableForSpec("$beastCleaveTime") then
 					barBorderColor = specSettings.colors.bar.beastCleave.color
 				end
 
-				--[[if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
-					barBorderColor = specSettings.colors.bar.borderOvercap
-
-					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true
-						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
-					end
-				else
-					snapshotData.audio.overcapCue = false
-				end]]
-
-				--[[if bestialWrathCooldownRemaining <= gcd and affectingCombat and talents:IsTalentActive(spells.bestialWrath) then
-					if specSettings.colors.bar.bestialWrathEnabled then
-						barBorderColor = specSettings.colors.bar.borderbestialWrath
-					end
-
-					if specSettings.colors.bar.flashEnabled then
-						TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
-					else
-						barContainerFrame:SetAlpha(1.0)
-					end
-				else
-					barContainerFrame:SetAlpha(1.0)
-				end]]
-
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
@@ -1414,10 +890,8 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
@@ -1427,16 +901,6 @@ local function UpdateResourceBar()
 				end
 
 				local barBorderColor = specSettings.colors.bar.border
-				--[[if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
-					barBorderColor = specSettings.colors.bar.borderOvercap
-
-					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true
-						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
-					end
-				else
-					snapshotData.audio.overcapCue = false
-				end]]
 
 				if TRB.Data.character.inCombat and specSettings.steadyFocus.enabled and talents:IsTalentActive(spells.steadyFocus) then
 					local timeThreshold = 0
@@ -1452,50 +916,9 @@ local function UpdateResourceBar()
 						barBorderColor = specSettings.colors.bar.borderSteadyFocus
 					end
 				end
-
-				local passiveValue = 0
-				--[[if specSettings.colors.bar.showPassive then
-					if specSettings.generation.enabled then
-						if specSettings.generation.mode == "time" then
-							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
-						else
-							passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
-						end
-					end
-				end
-
-				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
-					castingBarValue = currentResource + snapshotData.casting.resourceFinal
-				else
-					castingBarValue = currentResource
-				end
-				passiveBarValue = castingBarValue + passiveValue]]
 				
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
-				--[[if castingBarValue < currentResource then --Using a spender
-					if -snapshotData.casting.resourceFinal > passiveValue then
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.passive
-						passiveBarColor = specSettings.colors.bar.spending
-					else
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.spending
-						passiveBarColor = specSettings.colors.bar.passive
-					end
-				else]]
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
-					castingBarColor = specSettings.colors.bar.casting
-					passiveBarColor = specSettings.colors.bar.passive
-				--end
-
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					if resourceFrame.thresholds[thresholdId] == nil then
@@ -1662,16 +1085,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)				
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
@@ -1686,10 +1100,8 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 				refreshText = true
-				local passiveBarValue = 0
-				local castingBarValue = 0
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
 
@@ -1699,60 +1111,9 @@ local function UpdateResourceBar()
 				end
 
 				local barBorderColor = specSettings.colors.bar.border
-				--[[if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
-					barBorderColor = specSettings.colors.bar.borderOvercap
-
-					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true
-						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
-					end
-				else
-					snapshotData.audio.overcapCue = false
-				end]]
-
-				local passiveValue = 0
-				--[[if specSettings.colors.bar.showPassive then
-					if specSettings.generation.enabled then
-						if specSettings.generation.mode == "time" then
-							passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
-						else
-							passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
-						end
-					end
-				end
-
-				if TRB.Data.snapshotData.casting.resourceFinal ~= 0 and specSettings.colors.bar.showCasting then
-					castingBarValue = currentResource + snapshotData.casting.resourceFinal
-				else
-					castingBarValue = currentResource
-				end
-				passiveBarValue = castingBarValue + passiveValue]]
 				
-				local castingBarColor = specSettings.colors.bar.casting
-				local passiveBarColor = specSettings.colors.bar.passive
-				--[[if castingBarValue < currentResource then --Using a spender
-					if -snapshotData.casting.resourceFinal > passiveValue then
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", castingFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", passiveFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.passive
-						passiveBarColor = specSettings.colors.bar.spending
-					else
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, castingBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, currentResource)
-						castingBarColor = specSettings.colors.bar.spending
-						passiveBarColor = specSettings.colors.bar.passive
-					end
-				else]]
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "passive", passiveFrame, passiveBarValue)
-					TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "casting", castingFrame, castingBarValue)
-					castingBarColor = specSettings.colors.bar.casting
-					passiveBarColor = specSettings.colors.bar.passive
-				--end
-
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					if resourceFrame.thresholds[thresholdId] == nil then
@@ -1801,25 +1162,8 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
-				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Data.character.inCombat then
-					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-						snapshotData.audio.overcapCue = true
-						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
-					end
-				else
-					snapshotData.audio.overcapCue = false
-				end
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				if specSettings.colors.endCap["base"].enabled and specSettings.colors.endCap["base"].useBorderColor then
-					if specSettings.colors.endCap["base"].useBorderColorExceptDefault and barBorderColor == specSettings.colors.bar.border then
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, specSettings.colors.endCap["base"].color, true)
-					else
-						TRB.Functions.Color:SetThresholdColor(resourceFrame.endCap, barBorderColor, true)
-					end
-				end
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(castingFrame, "casting", castingBarColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(passiveFrame, "passive", passiveBarColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 		end
@@ -1850,7 +1194,6 @@ local function SwitchSpec()
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
-		--targetData:AddSpellTracking(spells.serpentSting)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_BeastMastery
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.beastMastery.settings)
@@ -1882,7 +1225,6 @@ local function SwitchSpec()
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
-		--targetData:AddSpellTracking(spells.serpentSting)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Marksmanship
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.marksmanship.settings)
@@ -1920,7 +1262,6 @@ local function SwitchSpec()
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
-		--targetData:AddSpellTracking(spells.serpentSting)
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.survival.settings)
@@ -2179,26 +1520,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		--[[elseif var == "$steadyFocusTime" then
 			if snapshots[spells.steadyFocus.id].buff.isActive then
 				valid = true
-			end
-		elseif var == "$lockAndLoadTime" then
-			if snapshots[spells.lockAndLoad.id].buff.isActive then
-				valid = true
 			end]]
 		end
 	elseif TRB.Data.character.specId == 3 then --Survivial
-		--[[if var == "$wildfireBombCharges" then
-			if snapshots[spells.wildfireBomb.id].cooldown:IsUsable() then
-				valid = true
-			end
-		elseif var == "$totsTime" then
-			if snapshots[spells.tipOfTheSpear.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$totsStacks" then
-			if snapshots[spells.tipOfTheSpear.id].buff.applications > 0 then
-				valid = true
-			end
-		end]]
 	end
 
 	if var == "$resource" or var == "$focus" then
@@ -2207,65 +1531,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif var == "$resourceMax" or var == "$focusMax" then
 		valid = true
-	--[[elseif var == "$resourceTotal" or var == "$focusTotal" then
-		if snapshotData.attributes.resource > 0 or
-			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
-			then
-			valid = true
-		end
-	elseif var == "$resourcePlusCasting" or var == "$focusPlusCasting" then
-		if snapshotData.attributes.resource > 0 or
-			(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
-			valid = true
-		end
-	elseif var == "$overcap" or var == "$focusOvercap" or var == "$resourceOvercap" then
-		local threshold = ((snapshotData.attributes.resource / TRB.Data.resourceFactor) + snapshotData.casting.resourceFinal)
-		if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) <= threshold then
-			return true
-		elseif settings.overcap.mode == "fixed" and settings.overcap.fixed <= threshold then
-			return true
-		end
-	elseif var == "$resourcePlusPassive" or var == "$focusPlusPassive" then
-		if snapshotData.attributes.resource > 0 then
-			valid = true
-		end]]
+
 	elseif var == "$casting" then
 		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
 			valid = true
 		end
-	--[[elseif var == "$passive" then
-		if settings.generation.enabled then
-			if snapshotData.attributes.resource < TRB.Data.character.maxResource and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			elseif TRB.Data.character.specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
-				valid = true
-			end
-		end
-	elseif var == "$regen" or var == "$regenFocus" or var == "$focusRegen" then
-		if settings.generation.enabled and
-			snapshotData.attributes.resource < TRB.Data.character.maxResource and
-			((settings.generation.mode == "time" and settings.generation.time > 0) or
-			(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-			valid = true
-		end
-	elseif var == "$ssCount" then
-		if snapshotData.targetData.count[spells.serpentSting.id] > 0 then
-			valid = true
-		end
-	elseif var == "$ssTime" then
-		if not UnitIsDeadOrGhost("target") and
-			UnitCanAttack("player", "target") and
-			target ~= nil and
-			target.spells[spells.serpentSting.id] ~= nil and
-			target.spells[spells.serpentSting.id].remainingTime > 0 then
-			valid = true
-		end
-	elseif var == "$serpentSting" then
-		if talents:IsTalentActive(spells.serpentSting) then
-			valid = true
-		end]]
 	end
 
 	return valid

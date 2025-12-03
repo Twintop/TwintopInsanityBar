@@ -8,7 +8,6 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local passiveFrame = TRB.Frames.passiveFrame
 
 TRB.Options.Warrior = {}
 TRB.Options.Warrior.Arms = {}
@@ -82,7 +81,7 @@ local function ArmsLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
+			text="{$casting}[$casting + ]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -160,7 +159,7 @@ local function ArmsLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$passive}[$passive+]$rage",
+			text="{$casting}[#casting$casting+]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -256,11 +255,6 @@ local function ArmsLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -281,40 +275,15 @@ local function ArmsLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FFEA3C53"
 				},
-				overcap = {
-					color = "FF800000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFC21807",
-				borderOvercap="FF800000",
 				background="66000000",
 				base="FFFF0000",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FFEA3C53",
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true
 			},
 			threshold = {
 				under = {
@@ -331,15 +300,6 @@ local function ArmsLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -354,12 +314,6 @@ local function ArmsLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			suddenDeath={
 				name = L["WarriorAudioSuddenDeathProc"],
 				enabled=false,
@@ -374,10 +328,6 @@ local function ArmsLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true
 		}
 	}
@@ -450,7 +400,7 @@ local function FuryLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]{$passive}[$passive + ]$rage",
+			text="{$casting}[$casting + ]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -612,11 +562,6 @@ local function FuryLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -637,41 +582,16 @@ local function FuryLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FFEA3C53"
 				},
-				overcap = {
-					color = "FF800000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFC21807",
-				borderOvercap="FF800000",
 				background="66000000",
 				base="FFFF0000",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FFEA3C53",
 				enrage="FFFFCC55",
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true
 			},
 			threshold = {
 				under = {
@@ -688,15 +608,6 @@ local function FuryLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -711,12 +622,6 @@ local function FuryLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			suddenDeath={
 				name = L["WarriorAudioSuddenDeathProc"],
 				enabled=false,
@@ -731,10 +636,6 @@ local function FuryLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true
 		}
 	}
@@ -860,7 +761,7 @@ local function ProtectionLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
+			text="{$casting}[$casting + ]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -943,7 +844,7 @@ local function ProtectionLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$passive}[$passive+]$rage",
+			text="{$casting}[#casting$casting+]$rage",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -1038,11 +939,6 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -1074,40 +970,15 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FFEA3C53"
 				},
-				overcap = {
-					color = "FF800000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
 				}
 			},
 			bar = {
 				border="FFC21807",
-				borderOvercap="FF800000",
 				background="66000000",
 				base="FFFF0000",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FFEA3C53",
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FFC21807",
@@ -1140,15 +1011,6 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -1163,12 +1025,6 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			suddenDeath={
 				name = L["WarriorAudioSuddenDeathProc"],
 				enabled=false,
@@ -1183,10 +1039,6 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -1348,37 +1200,14 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
-
-	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
 
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 1, 1, yCoord)
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], ARMS_MAX_RAGE)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], 1, ARMS_MAX_RAGE)
@@ -1590,12 +1419,6 @@ local function ArmsConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.overcaprageText = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.overcaprageText
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1608,21 +1431,9 @@ local function ArmsConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["WarriorCheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
-	
-	local dotVariables = "$deepWoundsCount/$deepWoundsTime, $rendCount/$rendTime"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 1, 1, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
-
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 1, yCoord)
 
+	--[[
 	title = L["WarriorRageDecimalPrecision"]
 	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.precision.resource, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
@@ -1632,7 +1443,7 @@ local function ArmsConstructFontAndTextPanel(parent)
 		self.EditBox:SetText(value)
 		spec.precision.resource = value
 		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)
+	end)]]
 end
 
 local function ArmsConstructAudioAndTrackingPanel(parent)
@@ -1656,9 +1467,7 @@ local function ArmsConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceRage"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceRage"]))
-
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "suddenDeath", spec, classId, specId, yCoord, L["WarriorAudioCheckboxSuddenDeath"], L["WarriorAudioCheckboxSuddenDeathTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "suddenDeath", spec, classId, specId, yCoord, L["WarriorAudioCheckboxSuddenDeath"], L["WarriorAudioCheckboxSuddenDeathTooltip"])
 end
 
 local function ArmsConstructBarTextDisplayPanel(parent, cache)
@@ -1917,37 +1726,14 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)
-
-	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
 
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 1, 2, yCoord)
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], FURY_MAX_RAGE)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], 1, FURY_MAX_RAGE)
@@ -2125,12 +1911,6 @@ local function FuryConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.overcaprageText = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.overcaprageText
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2143,19 +1923,9 @@ local function FuryConstructFontAndTextPanel(parent)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
 
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["WarriorCheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 2, yCoord)
 
-	title = L["WarriorRageDecimalPrecision"]
+	--[[title = L["WarriorRageDecimalPrecision"]
 	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.precision.resource, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
@@ -2164,7 +1934,7 @@ local function FuryConstructFontAndTextPanel(parent)
 		self.EditBox:SetText(value)
 		spec.precision.resource = value
 		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)
+	end)]]
 end
 
 local function FuryConstructAudioAndTrackingPanel(parent)
@@ -2187,8 +1957,6 @@ local function FuryConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceRage"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceRage"]))
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "suddenDeath", spec, classId, specId, yCoord, L["WarriorAudioCheckboxSuddenDeath"], L["WarriorAudioCheckboxSuddenDeathTooltip"])
 end
@@ -2425,58 +2193,12 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
 
-	--[[
-	yCoord = yCoord - 30
-	controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerMetamorphosis"], spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.metamorphosis
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosis")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_EndOfMetamorphosisCheckbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfMetamorphosis
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionCheckboxEndOfMetamorphosis"])
-	f.tooltip = L["WarriorProtectionCheckboxEndOfMetamorphosisTooltip"]
-	f:SetChecked(spec.endOfMetamorphosis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfMetamorphosis.enabled = self:GetChecked()
-	end)
-
-	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.metamorphosisEnding
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
-	end)
-	]]
-
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 1, 3, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], true, false)
@@ -2512,9 +2234,6 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 	end)
 	
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], PROTECTION_MAX_RAGE)
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], 1, PROTECTION_MAX_RAGE)
 end
@@ -2724,12 +2443,6 @@ local function ProtectionConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2741,16 +2454,6 @@ local function ProtectionConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
-
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["WarriorProtectionCheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)]]
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 3, yCoord)
 
@@ -2786,8 +2489,6 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceRage"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceRage"]))
 end
 
 local function ProtectionConstructBarTextDisplayPanel(parent, cache)

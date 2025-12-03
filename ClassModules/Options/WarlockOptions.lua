@@ -8,9 +8,6 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local castingFrame = TRB.Frames.castingFrame
-
-local passiveFrame = TRB.Frames.passiveFrame
 
 TRB.Options.Warlock = {}
 TRB.Options.Warlock.Affliction = {}
@@ -202,8 +199,6 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true,
 		},
-		passiveGeneration = {
-		},
 		colors={
 			text = {
 				current = {
@@ -215,27 +210,11 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FF8080FF"
 				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
-				}
 			},
 			bar={
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
 				nightfall = {
 					color = "FF00D9FF",
 					enabled = true,
@@ -248,8 +227,6 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 					color = "FFFF0000",
 					enabled = true
 				},
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FF4749B5",
@@ -267,31 +244,6 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 					color = "FF00C9B4",
 					enabled = true,
 				},
-			},
-			threshold = {
-				under = {
-					color = "FFFFFFFF"
-				},
-				over = {
-					color = "FF00FF00"
-				},
-				unusable = {
-					color = "FFFF0000"
-				},
-				outOfRange = {
-					color = "FF440000",
-					enabled = true,
-					show = true
-				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -332,10 +284,6 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -539,8 +487,6 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true,
 		},
-		passiveGeneration = {
-		},
 		colors={
 			text = {
 				current = {
@@ -552,33 +498,15 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FF8080FF"
 				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
-				}
 			},
 			bar={
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
 				demonicCore = {
 					color = "FFFF9900",
 					enabled = true,
 				},
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FF4749B5",
@@ -587,31 +515,6 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false,
-			},
-			threshold = {
-				under = {
-					color = "FFFFFFFF"
-				},
-				over = {
-					color = "FF00FF00"
-				},
-				unusable = {
-					color = "FFFF0000"
-				},
-				outOfRange = {
-					color = "FF440000",
-					enabled = true,
-					show = true
-				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -638,10 +541,6 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -864,8 +763,6 @@ local function DestructionLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true,
 		},
-		passiveGeneration = {
-		},
 		colors={
 			text = {
 				current = {
@@ -877,29 +774,11 @@ local function DestructionLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FF8080FF"
 				},
-				dots = {
-					options = {
-						enabled=true,
-					},
-					up = {
-						color = "FFFFFFFF"
-					},
-					down = {
-						color = "FFFF0000"
-					},
-					pandemic = {
-						color = "FFFFFF00"
-					}
-				}
 			},
 			bar={
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FF4749B5",
@@ -924,15 +803,6 @@ local function DestructionLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -955,10 +825,6 @@ local function DestructionLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -1142,9 +1008,6 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
 
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 9, 1, yCoord)
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], false)
 	
@@ -1325,9 +1188,6 @@ local function AfflictionConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
-	
-	local dotVariables = "$agonyCount/$agonyStacks/$agonyTime, $corruptionCount/$corruptionTime, $hauntCount/$hauntTime, $unstableAffliction"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, 9, 1, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 1, yCoord)
 end

@@ -8,8 +8,6 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 local barContainerFrame = TRB.Frames.barContainerFrame
-local castingFrame = TRB.Frames.castingFrame
-local passiveFrame = TRB.Frames.passiveFrame
 
 TRB.Options.Monk = {}
 TRB.Options.Monk.Brewmaster = {}
@@ -81,7 +79,7 @@ local function BrewmasterLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive + ]$energy",
+			text="$energy",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -222,11 +220,6 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -258,10 +251,6 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FFD59900"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
@@ -269,15 +258,8 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			},
 			bar = {
 				border="FFFFD300",
-				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FFFFFF00",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FF9F4500",
-				overcapEnabled=true,
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FF00FF98",
@@ -301,15 +283,6 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -324,12 +297,6 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			}
 		},
 		textures = {
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -338,10 +305,6 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -416,7 +379,7 @@ local function MistweaverLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
+			text="{$casting}[#casting$casting + ]$mana/$manaMax $manaPercent%",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -494,7 +457,7 @@ local function MistweaverLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
+			text="{$casting}[#casting$casting+]$mana/$manaMax $manaPercent%",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -596,10 +559,6 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
 		},
-		passiveGeneration = {
-			innervate = true,
-			manaTideTotem = true
-		},
 		colors={
 			text = {
 				current = {
@@ -616,16 +575,6 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				innervate="FF00FF00",
-				potionOfChilledClarity="FF9EC51E",
-				spending="FFFFFFFF",
-				passive="FF8080FF",
-				innervateBorderChange=true,
-				potionOfChilledClarityBorderChange=true,
-				manaTea = {
-					color = "FF00FFFF",
-					enabled = true
-				},
 				vivaciousVivification = {
 					color = "FF00FFBB",
 					enabled = true
@@ -642,33 +591,6 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 					color = "FF00FFBB",
 					enabled = true
 				},
-				showPassive=true,
-				showCasting=true
-			},
-			threshold = {
-				over = {
-					color = "FF00FF00"
-				},
-				unusable = {
-					color = "FFFF0000"
-				},
-				passive = {
-					color = "FF8080FF"
-				},
-				outOfRange = {
-					color = "FF440000",
-					enabled = true,
-					show = true
-				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -697,10 +619,6 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true
 		}
 	}
@@ -768,7 +686,7 @@ local function WindwalkerLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$passive}[$passive + ]$energy",
+			text="$energy",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -930,11 +848,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			neverShow=false,
 			dragonriding=true
 		},
-		overcap={
-			mode="relative",
-			relative=0,
-			fixed=100
-		},
 		bar = {
 			width=555,
 			height=34,
@@ -966,10 +879,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				passive = {
 					color = "FFD59900"
 				},
-				overcap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
@@ -977,14 +886,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			},
 			bar = {
 				border="FFFFD300",
-				borderOvercap="FFFF0000",
 				borderChiJi="FF00FF00",
 				background="66000000",
 				base="FFFFFF00",
-				casting="FFFFFFFF",
-				spending="FF555555",
-				passive="FF9F4500",
-				overcapEnabled=true,
 				heartOfTheJadeSerpentReady = {
 					color = "FF008461",
 					enabled = true
@@ -993,8 +897,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 					color = "FF00FFBB",
 					enabled = true
 				},
-				showPassive=true,
-				showCasting=true
 			},
 			comboPoints = {
 				border="FF00FF98",
@@ -1019,15 +921,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
-			},
-			endCap = {
-				base = {
-					color = "FFFFFFFF",
-					enabled = false,
-					width = 2,
-					useBorderColor = false,
-					useBorderColorExceptDefault = false
-				}
 			}
 		},
 		displayText={
@@ -1042,12 +935,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			barText = {}
 		},
 		audio = {
-			overcap={
-				name = L["Overcap"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			danceOfChiJi={
 				name = L["MonkWindwalkerAudioDanceOfChiJi"],
 				enabled=false,
@@ -1062,10 +949,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-			passiveBarName="Blizzard",
-			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-			castingBarName="Blizzard",
 			textureLock=true,
 			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 			comboPointsBackgroundName="Blizzard Tooltip",
@@ -1203,49 +1086,11 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
-	--[[yCoord = yCoord - 30
-	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.casting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 2)
-	end)
-
-	controls.checkBoxes.showCastingColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Checkbox_ShowCastingColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingColor
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EnergyShowCastingBar"])
-	f.tooltip = L["EnergyShowCastingBarTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
-	end)
-
-	controls.checkBoxes.showPassiveColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Checkbox_ShowPassiveColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveColor
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EnergyShowPassiveBar"])
-	f.tooltip = L["EnergyShowPassiveBarTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)]]
-
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], false, false)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceStagger"])
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
@@ -1340,76 +1185,6 @@ local function BrewmasterConstructAudioAndTrackingPanel(parent)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, 10, 1, yCoord, L["Overcap"], L["OvercapAudioTooltip"])
-	
-	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyGenerationTitle"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_trackEnergyRegen_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackEnergyRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["TrackEnergyRegen"])
-	f.tooltip = L["TrackEnergyRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["TrackEnergyRegenGCDs"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = L["TrackEnergyRegenGCDsTooltip"]
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	local title = L["TrackEnergyRegenEnergyGCDs"]
-	controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.gcds = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["TrackEnergyRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = L["TrackEnergyRegenTimeTooltip"]
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["TrackEnergyRegenEnergyTime"]
-	controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = controls
 end
 
 local function BrewmasterConstructBarTextDisplayPanel(parent, cache)
@@ -1678,49 +1453,12 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "vivaciousVivification")
 	end)
 
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.spending
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame)
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 10, 2, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], false, true)
@@ -1888,32 +1626,6 @@ local function MistweaverConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--[[yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
-	
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.innervateRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackInnervate"])
-	f.tooltip = L["HealerCheckboxTrackInnervateTooltip"]
-	f:SetChecked(spec.passiveGeneration.innervate)
-	f:SetScript("OnClick", function(self, ...)
-		spec.passiveGeneration.innervate = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.manaTideTotemRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_ManaTideTotemPassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.manaTideTotemRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackManaTideTotem"])
-	f.tooltip = L["HealerCheckboxTrackManaTideTotemTooltip"]
-	f:SetChecked(spec.passiveGeneration.manaTideTotem)
-	f:SetScript("OnClick", function(self, ...)
-		spec.passiveGeneration.manaTideTotem = self:GetChecked()
-	end)]]
 end
 
 local function MistweaverConstructBarTextDisplayPanel(parent, cache)
@@ -2146,49 +1858,12 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showCastingBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
-	f.tooltip = L["ShowCastingBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showCasting)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showCasting = self:GetChecked()
-	end)
-
-	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.casting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame)
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showPassiveBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
-	f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
-	f:SetChecked(spec.colors.bar.showPassive)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.showPassive = self:GetChecked()
-	end)
-
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame)
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, 10, 3, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, false)
@@ -2281,9 +1956,6 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
@@ -2447,12 +2119,6 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	--[[controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)]]
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2464,16 +2130,6 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
-
-	--[[controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["CheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)]]
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 3, yCoord)
 end
@@ -2501,8 +2157,6 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "overcap", spec, classId, specId, yCoord, string.format(L["OvercapAudioCheckbox"], L["ResourceEnergy"]), string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceEnergy"]))
 
 	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
 

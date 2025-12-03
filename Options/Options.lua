@@ -50,17 +50,6 @@ local function ConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 80
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, nil, nil, yCoord, true, L["ResourceComboPoints"])
-
-	--[[
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false)
-
-	yCoord = yCoord - 100
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
-	]]
-
-	--yCoord = yCoord - 40
-	--yCoord = TRB.Functions.OptionsUi:GenerateEndCapOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
 local function ConstructThresholdPanel(parent)
@@ -145,12 +134,6 @@ local function ConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.overcap
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-	end)
-
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -162,20 +145,7 @@ local function ConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
 	end)
-
-	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.overcapTextEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = L["GlobalCheckboxThresholdOvercapTooltip"]
-	f:SetChecked(spec.colors.text.overcap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.text.overcap.enabled = self:GetChecked()
-	end)
 	
-	local dotVariables = "e.g. $swpTime/$swpCount"
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultDotOptions(parent, controls, spec, nil, nil, yCoord, L["DotChangeColorCheckbox"], string.format(L["DotChangeColorCheckboxTooltip"], dotVariables))
-
 	local title = ""
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, nil, nil, yCoord)
 
@@ -416,8 +386,6 @@ local function ConstructMiscellaneousPanel(parent)
 		TRB.Frames.barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		---@type Frame[]
 		local textFrames = TRB.Frames.textFrames
 		local entries = TRB.Functions.Table:Length(textFrames)

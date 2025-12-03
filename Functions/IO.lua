@@ -17,7 +17,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.displayBar = settings.displayBar
 		configuration.textures = settings.textures
 		configuration.colors.bar = settings.colors.bar
-		configuration.overcap = settings.overcap
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
@@ -237,7 +236,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 2 then -- Paladin
 			if specId == 1 then -- Holy
-				configuration.passiveGeneration = settings.passiveGeneration
 			elseif specId == 2 then -- Protection
 			elseif specId == 3 then -- Retribution
 			end
@@ -257,15 +255,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline
-				configuration.passiveGeneration = settings.passiveGeneration
-				configuration.shadowfiend = settings.shadowfiend
 			elseif specId == 2 then -- Holy
-				configuration.passiveGeneration = settings.passiveGeneration
-				configuration.shadowfiend = settings.shadowfiend
 			elseif specId == 3 then -- Shadow
-				configuration.mindbender = settings.mindbender
-				configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
-				configuration.voidTendrilTracker = settings.voidTendrilTracker
 			end
 		elseif classId == 6 then -- Death Knight
 			if specId == 1 then -- Blood
@@ -276,7 +267,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Elemental
 			elseif specId == 2 then -- Enhancement
 			elseif specId == 3 then -- Restoration
-				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		elseif classId == 8 then -- Mage
 			if specId == 1 then -- Arcane
@@ -285,12 +275,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
-				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		elseif classId == 10 then -- Monk
 			if specId == 1 then -- Brewmaster
 			elseif specId == 2 then -- Mistweaver
-				configuration.passiveGeneration = settings.passiveGeneration
 			elseif specId == 3 then -- Windwalker
 			end
 		elseif classId == 11 then -- Druid
@@ -298,7 +286,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Feral
 			elseif specId == 3 then -- Guardian
 			elseif specId == 4 then -- Restoration
-				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		elseif classId == 12 then -- Demon Hunter
 			if specId == 1 then -- Havoc
@@ -308,7 +295,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
 			elseif specId == 2 then -- Preservation
-				configuration.passiveGeneration = settings.passiveGeneration
 			elseif specId == 3 then -- Augmentation
 			end
 		end

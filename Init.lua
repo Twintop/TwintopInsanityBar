@@ -82,17 +82,12 @@ TRB.Data.constants = {
 	frameNames = {
 		container = "Container",
 		resource = "Resource",
-		casting = "Casting",
-		passive = "Passive",
 		border = "Border",
 	},
 	frameLevels = {
 		barContainer = 0,
-		barPassive = 80,
-		barCasting = 90,
 		barResource = 100,
 		barBorder = 201,
-		endCap = 110,
 		cpContainer = 0,
 		cpResource = 300,
 		cpBorder = 301,
@@ -203,18 +198,10 @@ TRB.Frames.barContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame", U
 ---@type Frame
 TRB.Frames.resourceFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource", TRB.Frames.barContainerFrame, "BackdropTemplate")
 ---@type Frame
-TRB.Frames.castingFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Casting", TRB.Frames.barContainerFrame, "BackdropTemplate")
----@type Frame
-TRB.Frames.passiveFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Passive", TRB.Frames.barContainerFrame, "BackdropTemplate")
----@type Frame
 TRB.Frames.barBorderFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Border", TRB.Frames.barContainerFrame, "BackdropTemplate")
 
 ---@diagnostic disable-next-line: inject-field
-TRB.Frames.passiveFrame.thresholds = {}
----@diagnostic disable-next-line: inject-field
 TRB.Frames.resourceFrame.thresholds = {}
----@diagnostic disable-next-line: inject-field
-TRB.Frames.resourceFrame.endCap = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 
 TRB.Frames.textFrames = {}
 

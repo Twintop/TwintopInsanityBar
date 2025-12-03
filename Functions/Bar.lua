@@ -145,8 +145,6 @@ function TRB.Functions.Bar:SetHeight(settings)
 	TRB.Frames.barContainerFrame:SetHeight(value - (settings.bar.border * 2))
 	TRB.Frames.barBorderFrame:SetHeight(settings.bar.height)
 	TRB.Frames.resourceFrame:SetHeight(value - (settings.bar.border * 2))
-	TRB.Frames.castingFrame:SetHeight(value - (settings.bar.border * 2))
-	TRB.Frames.passiveFrame:SetHeight(value - (settings.bar.border * 2))
 	TRB.Functions.Threshold:RedrawThresholdLines()
 end
 
@@ -156,8 +154,6 @@ function TRB.Functions.Bar:SetWidth(settings)
 	TRB.Frames.barContainerFrame:SetWidth(value - (settings.bar.border * 2))
 	TRB.Frames.barBorderFrame:SetWidth(settings.bar.width)
 	TRB.Frames.resourceFrame:SetWidth(value - (settings.bar.border * 2))
-	TRB.Frames.castingFrame:SetWidth(value - (settings.bar.border * 2))
-	TRB.Frames.passiveFrame:SetWidth(value - (settings.bar.border * 2))
 	TRB.Functions.Bar:SetMinMax(settings)
 end
 
@@ -253,23 +249,6 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 			if factor ~= math.huge and max ~= math.huge then
 				bar:SetValue(math.min(scaledValue, max))
 			end
-
-			local endCapKey = key
-			if key == "resource" then
-				endCapKey = "base"
-			end
-
-			if bar.endCap ~= nil and settings.colors.endCap ~= nil and settings.colors.endCap[endCapKey] ~= nil and settings.colors.endCap[endCapKey].enabled then
-				local ecWidth = settings.colors.endCap[endCapKey].width
-				if scaledValue < ecWidth then
-					ecWidth = scaledValue
-				end
-
-				if TRB.Data.cache.values.bar[key].endCapWidth ~= ecWidth then
-					bar.endCap:SetWidth(ecWidth)
-				end
-				TRB.Functions.Threshold:RepositionThreshold(settings, "endCap" .. endCapKey, bar.endCap, true, bar, value, maxResource, false)
-			end
 		end
 
 		TRB.Data.cache.values.bar[key].value = value
@@ -303,8 +282,6 @@ function TRB.Functions.Bar:SetMinMax(settings)
 		end
 
 		TRB.Frames.resourceFrame:SetMinMaxValues(0, max)-- settings.bar.width)
-		TRB.Frames.castingFrame:SetMinMaxValues(0, max)-- settings.bar.width)
-		TRB.Frames.passiveFrame:SetMinMaxValues(0, max)-- settings.bar.width)
 		if TRB.Frames.resource2Frames ~= nil and TRB.Data.resource2 ~= "CUSTOM" then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
@@ -517,18 +494,10 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 
 	if false and TRB.Data.settings.core.smoothBarValueUpdates then --and not settings.bar.pinToPersonalResourceDisplay then
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame, 3, 0.2)
-		TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.endCap, 3, 0.1)
-		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame, 3, 0.2)
-		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.passiveFrame, 3, 0.2)
 
 		if TRB.Frames.resourceFrame.thresholds ~= nil and #TRB.Frames.resourceFrame.thresholds > 0 then
 			for x = 1, #TRB.Frames.resourceFrame.thresholds do
 				TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.thresholds[x], 3, 0.2)
-			end
-		end		
-		if TRB.Frames.passiveFrame.thresholds ~= nil and #TRB.Frames.passiveFrame.thresholds > 0 then
-			for x = 1, #TRB.Frames.passiveFrame.thresholds do
-				TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.passiveFrame.thresholds[x], 3, 0.2)
 			end
 		end
 		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
@@ -554,17 +523,9 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 		end
 	else
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.resourceFrame)
-		TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.resourceFrame.endCap)
-		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.castingFrame)
-		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.passiveFrame)
 		if TRB.Frames.resourceFrame.thresholds ~= nil and #TRB.Frames.resourceFrame.thresholds > 0 then
 			for x = 1, #TRB.Frames.resourceFrame.thresholds do
 				TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.resourceFrame.thresholds[x])
-			end
-		end		
-		if TRB.Frames.passiveFrame.thresholds ~= nil and #TRB.Frames.passiveFrame.thresholds > 0 then
-			for x = 1, #TRB.Frames.passiveFrame.thresholds do
-				TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.passiveFrame.thresholds[x])
 			end
 		end
 		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
@@ -599,8 +560,6 @@ function TRB.Functions.Bar:Construct(settings)
 	if settings ~= nil and settings.bar ~= nil then
 		local barContainerFrame = TRB.Frames.barContainerFrame
 		local resourceFrame = TRB.Frames.resourceFrame
-		local castingFrame = TRB.Frames.castingFrame
-		local passiveFrame = TRB.Frames.passiveFrame
 		local barBorderFrame = TRB.Frames.barBorderFrame
 
 		barContainerFrame:Show()
@@ -685,28 +644,6 @@ function TRB.Functions.Bar:Construct(settings)
 		resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.base, true))
 		resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		resourceFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barResource)
-
-		TRB.Functions.Threshold:ResetEndCap(resourceFrame, settings, "base")
-
-		castingFrame:Show()
-		castingFrame:SetMinMaxValues(0, settings.bar.width)
-		castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
-		castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-		castingFrame:SetStatusBarTexture(settings.textures.castingBar)
-		castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.casting, true))
-		castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		castingFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barCasting)
-
-		passiveFrame:Show()
-		passiveFrame:SetMinMaxValues(0, settings.bar.width)
-		passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
-		passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-		passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
-		passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.passive, true))
-		passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		passiveFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barPassive)
 
 		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
