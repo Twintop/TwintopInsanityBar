@@ -185,8 +185,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
     self.soulOfTheForest = TRB.Classes.SpellBase:New({
         id = 114107,
         modifier = {
-            wrath = 0.5,
-            starfire = 0.5
+            wrath = 0.4,
+            starfire = 0.4
         },
         isTalent = true
     })
@@ -309,7 +309,6 @@ end
 ---@field public incarnationAvatarOfAshamane TRB.Classes.SpellBase
 ---@field public circleOfLifeAndDeath TRB.Classes.SpellBase
 ---@field public apexPredatorsCraving TRB.Classes.SpellBase
----@field public predatorRevealed TRB.Classes.SpellBase
 ---@field public rake TRB.Classes.SpellComboPointThreshold
 ---@field public thrash TRB.Classes.SpellComboPointThreshold
 ---@field public rip TRB.Classes.SpellComboPointThreshold
@@ -509,9 +508,12 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.berserk = TRB.Classes.SpellBase:New({
         id = 106951,
+        castId = 106951,
         isTalent = true,
         energizeId = 343216,
-        tickRate = 1.5
+        tickRate = 1.5,
+        duration = 15,
+        offset = 0
     })
     self.brutalSlash = TRB.Classes.SpellComboPointThreshold:New({
         id = 202028,
@@ -547,7 +549,13 @@ function TRB.Classes.Druid.FeralSpells:New()
         hasCooldown = true
     })
     self.incarnationAvatarOfAshamane = TRB.Classes.SpellBase:New({
-        id = 102543
+        id = 102543,
+        castId = 102558,
+        castId2 = 102543,
+        isTalent = true,
+        tickRate = 1.5,
+        duration = 20,
+        offset = 0.5
     })
     self.circleOfLifeAndDeath = TRB.Classes.SpellBase:New({
         id = 391969,
@@ -557,14 +565,6 @@ function TRB.Classes.Druid.FeralSpells:New()
     self.apexPredatorsCraving = TRB.Classes.SpellBase:New({
         id = 391882
     })
-    -- T30 4P
-    self.predatorRevealed = TRB.Classes.SpellBase:New({
-        id = 408468,
-        energizeId = 411344,
-        tickRate = 2.0,
-        spellKey = "predatorRevealed"
-    })
-
     -- Druid of the Claw
     self.ravage = TRB.Classes.SpellComboPointThreshold:New({
         id = 441591,

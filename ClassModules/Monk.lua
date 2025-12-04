@@ -213,7 +213,7 @@ local function FillSpellData_Brewmaster()
 		{ variable = "$casting", description = L["MonkBrewmasterBarTextVariable_casting"], printInSettings = true, color = false },
 
 		{ variable = "$stagger", description = L["MonkBrewmasterBarTextVariable_stagger"], printInSettings = true, color = false },
-		--{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false },
+		{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false },
 	}
 end
 
@@ -402,13 +402,6 @@ local function ConstructResourceBar(settings)
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Frames.resource2ContainerFrame:Show()
-		for thresholdId = 1, 7 do-- TRB.Data.character.maxResource2-1 do
-			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
-			end
-			TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
-			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
-		end
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -449,9 +442,18 @@ local function RefreshLookupData_Brewmaster()
 	--$casting
 	local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, snapshotData.casting.resourceFinal)
 
-	local stagger = snapshotData.attributes.stagger or 0
-	--local _staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.maxHealth
-	--local staggerPercent = string.format("%.1f%", _staggerPercent * 100)
+	--$stagger and $staggerPercent
+	local _stagger = snapshotData.attributes.stagger or 0
+	local _staggerPercent = snapshotData.attributes.staggerPercent or 0
+	local staggerColor = specSettings.colors.comboPoints.base
+	if _staggerPercent >= STAGGER_STATES.RED.threshold then
+		staggerColor = specSettings.colors.comboPoints.staggerHeavy
+	elseif _staggerPercent >= STAGGER_STATES.YELLOW.threshold then
+		staggerColor = specSettings.colors.comboPoints.staggerMedium
+	end
+
+	local stagger = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
+	local staggerPercent = string.format("|c%s%.1f|r", staggerColor, _staggerPercent * 100)
 
 	----------------------------
 
@@ -462,7 +464,7 @@ local function RefreshLookupData_Brewmaster()
 	lookup["$energyMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingEnergy
 	lookup["$stagger"] = stagger
-	--lookup["$staggerPercent"] = staggerPercent
+	lookup["$staggerPercent"] = staggerPercent
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -471,8 +473,8 @@ local function RefreshLookupData_Brewmaster()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$stagger"] = stagger
-	--lookupLogic["$staggerPercent"] = _staggerPercent
+	lookupLogic["$stagger"] = _stagger
+	lookupLogic["$staggerPercent"] = _staggerPercent
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -660,8 +662,9 @@ local function UpdateSnapshot_Brewmaster()
 
 	snapshotData.attributes.maxHealth = UnitHealthMax("player")
 	snapshotData.attributes.stagger = UnitStagger("player")
+	snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.maxHealth
 
-	if previousMaxHealth ~= snapshotData.attributes.maxHealth or TRB.Data.snapshotData.attributes.colorCurve == nil then
+	--[[if previousMaxHealth ~= snapshotData.attributes.maxHealth or TRB.Data.snapshotData.attributes.colorCurve == nil then
 		local specSettings = TRB.Data.settings.monk.brewmaster
 		local curve = TRB.Data.snapshotData.attributes.colorCurve or C_CurveUtil.CreateColorCurve()
 		curve:SetType(Enum.LuaCurveType.Step)
@@ -672,7 +675,7 @@ local function UpdateSnapshot_Brewmaster()
 		curve:AddPoint(STAGGER_STATES.YELLOW.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerMedium, true))) -- Medium stagger at 30%
 		curve:AddPoint(STAGGER_STATES.RED.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerHeavy, true))) -- Heavy stagger at 60%
 		TRB.Data.snapshotData.attributes.colorCurve = curve
-	end
+	end]]
 end
 
 local function UpdateSnapshot_Mistweaver()
@@ -735,7 +738,13 @@ local function UpdateResourceBar()
 				--local curveColor = UnitHealthPercentColor("player", TRB.Data.snapshotData.attributes.colorCurve)
 				--TRB.Functions.Color:SetStatusBarVertexColor(TRB.Frames.resource2Frames[1].resourceFrame, nil, curveColor:GetRGBA())
 
-				TRB.Functions.Color:SetStatusBarVertexColor(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
+				if snapshotData.attributes.staggerPercent >= STAGGER_STATES.RED.threshold then
+					cpColor = specSettings.colors.comboPoints.staggerHeavy
+				elseif snapshotData.attributes.staggerPercent >= STAGGER_STATES.YELLOW.threshold then
+					cpColor = specSettings.colors.comboPoints.staggerMedium
+				end
+
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
 				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
 
@@ -884,27 +893,8 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-
-				local current = snapshotData.attributes.resource2
 				
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
-
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
-				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
-				for x = 1, TRB.Data.character.maxResource2-1 do
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
-					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
-					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
-				end
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
-
-				--[[for x = 1, TRB.Data.character.maxResource2 do
+				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
 					local cpBR = cpBackgroundRed
@@ -925,7 +915,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end]]
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -985,15 +975,6 @@ local function SwitchSpec()
 		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
 		lookup["#manaTea"] = spells.manaTea.icon
 		lookup["#sheilunsGift"] = spells.sheilunsGift.icon
-		lookup["#innervate"] = spells.innervate.icon
-		lookup["#mtt"] = spells.manaTideTotem.icon
-		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-		lookup["#amp"] = spells.algariManaPotionRank1.icon
-		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
-		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
-		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
-		lookup["#pocc"] = spells.potionOfChilledClarity.icon
-		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1313,6 +1294,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$stagger" then
 			if snapshotData.attributes.stagger ~= nil and snapshotData.attributes.stagger > 0 then
+				valid = true
+			end
+		elseif var == "$staggerPercent" then
+			if snapshotData.attributes.staggerPercent ~= nil and snapshotData.attributes.staggerPercent > 0 then
 				valid = true
 			end
 		end

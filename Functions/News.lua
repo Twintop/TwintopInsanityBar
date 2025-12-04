@@ -17,10 +17,79 @@ local content = [====[
 - Clean up dead code from specializations.
 - Remove features that won't be returning due to API limitations: Overcap, End Cap, Casting Bar, Passive Bar, Regen, DoT tracking, potions, passive thresholds.
 - Removed backward compatability with older versions of the Bar from as far back as 7.3.5.
+- Restore smooth bar update functionality using Blizzard's built-in methods.
 
 ### Localization
 
 - Cleared existing Google Translated localizations as most of them are invalid or missing.
+
+## Demon Hunter
+### [#46](#46) Havoc
+
+- Update Blind Fury to show generation of 30 per second.
+
+## Druid
+### [#468](#468) Balance
+
+- Update Soul of the Forest's modifier to 40%.
+
+### [#469](#469) Feral
+
+- Restore original Combo Point UI implementation.
+- Implement tracking of Berserk and Incarnation: Avatar of Ashamane.
+- Fix Berserk's passive Combo Point generation.
+
+## Evoker
+
+- Restore original Essence implementation.
+- Fix Essence passive generation.
+
+## Mage
+### [#502](#502) Arcane
+
+- Change Arcane Charges UI implementation to match other original Combo Point/Essence/Chi/etc. UI implementations.
+
+## Monk
+### [#494](#494) Brewmaster
+
+- Enhance Stagger tracking to color the bar, `$stagger`, and `$staggerPercent` based on current Stagger level.
+- Format Stagger numbers using Blizzard's built-in large number abbreviations.
+
+## [#478](#478) Windwalker
+
+- Restore original Chi UI implementation.
+
+## Paladin
+### [#479](#479) Holy
+
+- Restore original Holy Power UI implementation.
+
+### [#497](#497) Protection and [#498](#498) Retribution
+
+- Change Holy Power UI implementation to match other original Combo Point/Essence/Chi/etc. UI implementations.
+
+## Priest
+### [#463](#463) Shadow
+
+- Update Mind Flay (2) and Halo (5) casted Insanity generation.
+
+## Rogue
+
+- Restore original Combo Point UI implementation.
+
+## Warlock
+### [#486](#486) Affliction
+
+- Restore original Soul Shards UI implementation.
+
+### [#495](#495) Demonology
+
+- Change Soul Shards UI implementation to match other original Combo Point/Essence/Chi/etc. UI implementations.
+
+### [#496](#496) Destruction
+
+- Change Soul Shards UI implementation to match other original Combo Point/Essence/Chi/etc. UI implementations.
+- Update Soul Shard bar text to show one decimal place.
 
 --- 
 

@@ -712,26 +712,16 @@ end
 ---@field public shadowWordPain TRB.Classes.SpellBase
 ---@field public tentacleSlam TRB.Classes.SpellBase
 ---@field public maddeningTentacles TRB.Classes.SpellBase
---[[---@field public shadowfiend TRB.Classes.SpellBase
----@field public twistOfFate TRB.Classes.SpellBase
+--[[
 ---@field public powerSurge TRB.Classes.SpellBase
----@field public shadowyApparition TRB.Classes.SpellBase
----@field public auspiciousSpirits TRB.Classes.SpellBase
 ---@field public misery TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
 ---@field public shatteredPsyche TRB.Classes.SpellBase
----@field public mindbender TRB.Classes.SpellBase
----@field public idolOfCthun TRB.Classes.SpellBase
----@field public idolOfCthun_Tendril TRB.Classes.SpellBase
----@field public idolOfCthun_Lasher TRB.Classes.SpellBase
----@field public lashOfInsanity_Tendril TRB.Classes.SpellBase
----@field public lashOfInsanity_Lasher TRB.Classes.SpellBase
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
 ---@field public horrificVisions TRB.Classes.SpellBase
 ---@field public subservientShadows TRB.Classes.SpellBase
----@field public depthOfShadows TRB.Classes.SpellBase
----@field public voidwraith TRB.Classes.SpellBase]]
+---@field public depthOfShadows TRB.Classes.SpellBase]]
 ---@field public mindDevourer TRB.Classes.SpellBase
 ---@field public shadowWordMadness TRB.Classes.SpellThreshold
 ---@field public shadowWordMadness2 TRB.Classes.SpellThreshold
@@ -766,7 +756,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	-- Shadow Baseline Abilities
 	self.mindFlay = TRB.Classes.SpellBase:New({
 		id = 15407,
-		resource = 3,
+		resource = 2,
 		isTalent = false,
 		baseline = true
 	})
@@ -923,38 +913,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		isTalent = true,
 		modPercent = 1.2
 	})
-	self.mindbender = TRB.Classes.SpellBase:New({
-		id = 200174,
-		iconName = "spell_shadow_soulleech_3",
-		energizeId = 200010,
-		resource = 2,
-		isTalent = true
-	})
-	self.idolOfCthun = TRB.Classes.SpellBase:New({
-		id = 377349,
-	})
-	self.idolOfCthun_Tendril = TRB.Classes.SpellBase:New({
-		id = 377355,
-		tickId = 193473,
-	})
-	self.idolOfCthun_Lasher = TRB.Classes.SpellBase:New({
-		id = 377357,
-		tickId = 394979,
-	})
-	self.lashOfInsanity_Tendril = TRB.Classes.SpellBase:New({
-		id = 344838,
-		resource = 1,
-		duration = 15,
-		ticks = 10,
-		tickDuration = 1.5
-	})
-	self.lashOfInsanity_Lasher = TRB.Classes.SpellBase:New({
-		id = 344838, --Doesn't actually exist / unused?
-		resource = 1,
-		duration = 15,
-		ticks = 10,
-		tickDuration = 1.5
-	})
 	self.idolOfYoggSaron = TRB.Classes.SpellBase:New({
 		id = 373276,
 		talentId = 373273,
@@ -989,7 +947,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.halo = TRB.Classes.SpellBase:New({
 		id = 120644,
 		isTalent = true,
-		resource = 10
+		resource = 5
 	})
 	self.manifestedPower = TRB.Classes.SpellBase:New({
 		id = 453783,

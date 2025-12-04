@@ -577,7 +577,7 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				border="FFA330C9",
 				background="66000000",
 				base="FFC942FD",
-				voidMetamorphosis = "FF67F100",
+				metamorphosis = "FF67F100",
 				metamorphosisEnding="FFFF0000",
 			},
 			comboPoints = {
@@ -711,7 +711,7 @@ local function DevourerLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="",--{$ttd}[TTD: $ttd]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",

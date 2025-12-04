@@ -31,12 +31,6 @@ local function CalculateManaGain(mana, isPotion)
 
 	local modifier = 1.0
 
-	if isPotion then
-		if TRB.Data.character.items.alchemyStone then
-			modifier = modifier * spells.alchemistStone.attributes.resourcePercent
-		end
-	end
-
 	return mana * modifier
 end
 
@@ -663,10 +657,8 @@ local function UpdateCastingResourceFinal_Restoration()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-	local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 	-- Do nothing for now
-	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
+	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class
@@ -1312,6 +1304,8 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Maelstrom, false)
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "enhancement"
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		local maxComboPoints = 10
 		if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
@@ -1323,7 +1317,6 @@ function TRB.Functions.Class:CheckCharacter()
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
-		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 	end
 end
 

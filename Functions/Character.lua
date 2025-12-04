@@ -526,8 +526,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 
 ---@diagnostic disable-next-line: missing-fields
 	specCache.settings.colors.threshold = {}
-	for key, _ in pairs(spec.colors.threshold) do
-		specCache.settings.colors.threshold[key] = spec.colors.threshold[key]
+	if spec.colors.threshold ~= nil then
+		for key, _ in pairs(spec.colors.threshold) do
+			specCache.settings.colors.threshold[key] = spec.colors.threshold[key]
+		end
 	end
 
 	if s.thresholdColors then
@@ -557,9 +559,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			specCache.settings.thresholds.icons = spec.thresholds.icons
 		end
 
-		for key, _ in pairs(spec.thresholds.thresholdDictionary) do
-			specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
+		if spec.thresholds ~= nil and spec.thresholds.thresholdDictionary ~= nil then
+			for key, _ in pairs(spec.thresholds.thresholdDictionary) do
+				specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
+			end
 		end
+		
 		if isHealer then
 			if s.thresholdPotions then
 				specCache.settings.thresholds.potionCooldown = core.thresholds.potionCooldown

@@ -376,14 +376,6 @@ local function ConstructResourceBar(settings)
 		end
 		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
 	end
-	
-	for thresholdId = 1, 5 do-- TRB.Data.character.maxResource2-1 do
-		if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
-			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
-		end
-		TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
-		TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
-	end
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		TRB.Functions.Bar:Construct(settings)
@@ -609,7 +601,7 @@ local function RefreshLookupData_Destruction()
 	local targetData = snapshotData.targetData
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified
-	local normalizedSoulShards = snapshotData.attributes.resource2
+	local normalizedSoulShards = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -633,7 +625,7 @@ local function RefreshLookupData_Destruction()
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
 
 	--$soulShards
-	local soulShards = string.format("%.0f", normalizedSoulShards)
+	local soulShards = string.format("%.1f", normalizedSoulShards)
 	--$soulShardsMax
 	local soulShardsMax = string.format("%.0f", TRB.Data.character.maxResource2)
 
@@ -757,29 +749,8 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
-				local current = snapshotData.attributes.resource2
-				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
-
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
-				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
-				for x = 1, TRB.Data.character.maxResource2-1 do
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
-					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
-					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
-				end
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				
-				--[[
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local normalizedResource2 = snapshotData.attributes.resource2 / TRB.Data.resource2Factor
+				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
@@ -817,7 +788,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end]]
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -846,25 +817,30 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
-				local current = snapshotData.attributes.resource2
-				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
+				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
+				for x = 1, TRB.Data.character.maxResource2 do
+					local cpBorderColor = specSettings.colors.comboPoints.border
+					local cpColor = specSettings.colors.comboPoints.base
+					local cpBR = cpBackgroundRed
+					local cpBG = cpBackgroundGreen
+					local cpBB = cpBackgroundBlue
 
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
-				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)
-				for x = 1, TRB.Data.character.maxResource2-1 do
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
-					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
-					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
+					if normalizedResource2 >= x then
+						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+							cpColor = specSettings.colors.comboPoints.penultimate
+						elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+							cpColor = specSettings.colors.comboPoints.final
+						end
+					else
+						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+					end
+
+					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
+					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
+					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -892,34 +868,35 @@ local function UpdateResourceBar()
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
-
-				local current = snapshotData.attributes.resource2Modified
-				local max = TRB.Data.character.maxResource2Modified
-
+				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
+				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
+				for x = 1, TRB.Data.character.maxResource2 do
+					local cpBorderColor = specSettings.colors.comboPoints.border
+					local cpColor = specSettings.colors.comboPoints.base
+					local cpBR = cpBackgroundRed
+					local cpBG = cpBackgroundGreen
+					local cpBB = cpBackgroundBlue
 
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, max)
-				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, max)
-				
-				-- Thresholds for shards (every 10 fragments)
-				local shardCount = max / 10
-				for x = 1, shardCount - 1 do
-					if TRB.Frames.resource2Frames[1].containerFrame.thresholds[x] == nil then
-						TRB.Frames.resource2Frames[1].containerFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
+					if normalizedResource2 >= x then
+						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+							cpColor = specSettings.colors.comboPoints.penultimate
+						elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+							cpColor = specSettings.colors.comboPoints.final
+						end
+					elseif normalizedResource2 >= (x - 1) then
+						-- Partial fill
+						local partialValue = normalizedResource2 - (x - 1)
+						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, partialValue, 1)
+					else
+						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 					end
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
-					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
-					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x * 10, max)
+
+					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
+					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
+					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
-				
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1169,7 +1146,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.className = "warlock"
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource, true)
 	TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", TRB.Data.resource, false)
-	TRB.Data.character.maxResource2 = 1
+	TRB.Data.character.maxResource2 = UnitPowerMax("player", TRB.Data.resource2, false)
 	TRB.Data.character.maxResource2Modified = UnitPowerMax("player", TRB.Data.resource2, true)
 	TRB.Data.resource2 = Enum.PowerType.SoulShards
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2, false)

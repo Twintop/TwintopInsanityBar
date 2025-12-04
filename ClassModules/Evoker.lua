@@ -225,7 +225,7 @@ local function FillSpellData_Devastation()
 		
 		{ variable = "$essence", description = L["EvokerDevastationBarTextVariable_essence"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		--{ variable = "$essenceRegenTime", description = L["EvokerDevastationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
+		{ variable = "$essenceRegenTime", description = L["EvokerDevastationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerDevastationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 	}
@@ -250,13 +250,6 @@ local function FillSpellData_Preservation()
 		{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
 
 		{ variable = "#temporalBurst", icon = spells.temporalBurst.icon, description = spells.temporalBurst.name, printInSettings = true },
-
-		{ variable = "#amp", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = true },
-		{ variable = "#algariManaPotion", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = false },
-		{ variable = "#pocc", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = true },
-		{ variable = "#potionOfChilledClarity", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = false },
-		{ variable = "#poff", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = true },
-		{ variable = "#slumberingSoulSerum", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = true },
 	}
 	specCache.preservation.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -300,7 +293,7 @@ local function FillSpellData_Preservation()
 					
 		{ variable = "$essence", description = L["EvokerPreservationBarTextVariable_essence"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		--{ variable = "$essenceRegenTime", description = L["EvokerPreservationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
+		{ variable = "$essenceRegenTime", description = L["EvokerPreservationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerPreservationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 	}
@@ -364,7 +357,7 @@ local function FillSpellData_Augmentation()
 		
 		{ variable = "$essence", description = L["EvokerAugmentationBarTextVariable_essence"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		--{ variable = "$essenceRegenTime", description = L["EvokerAugmentationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
+		{ variable = "$essenceRegenTime", description = L["EvokerAugmentationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerAugmentationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 	}
@@ -400,14 +393,6 @@ end
 local function ConstructResourceBar(settings)
 	for _, v in pairs(resourceFrame.thresholds) do
 		v:Hide();
-	end
-
-	for thresholdId = 1, 5 do-- TRB.Data.character.maxResource2-1 do
-		if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
-			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
-		end
-		TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
-		TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
 	end
 
 	for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
@@ -453,11 +438,11 @@ local function RefreshLookupData_Devastation()
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 	
 	--$essenceRegenTime
-	--[[local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 		_essenceRegenTime = 0
 	end
-	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)]]
+	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 	----------------------------
 
@@ -467,7 +452,7 @@ local function RefreshLookupData_Devastation()
 	lookup["$resourceMax"] = manaMax
 	lookup["$resource"] = currentMana
 	lookup["$essence"] = snapshotData.attributes.resource2
-	--lookup["$essenceRegenTime"] = essenceRegenTime
+	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$essenceMax"] = TRB.Data.character.maxResource
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -480,7 +465,7 @@ local function RefreshLookupData_Devastation()
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
-	--lookupLogic["$essenceRegenTime"] = _essenceRegenTime
+	lookupLogic["$essenceRegenTime"] = _essenceRegenTime
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -525,11 +510,11 @@ local function RefreshLookupData_Preservation()
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
 	--$essenceRegenTime
-	--[[local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 		_essenceRegenTime = 0
 	end
-	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)]]
+	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 	----------
 
@@ -542,7 +527,7 @@ local function RefreshLookupData_Preservation()
 	lookup["$manaPercent"] = manaPercent
 	lookup["$casting"] = castingMana
 	lookup["$essence"] = snapshotData.attributes.resource2
-	--lookup["$essenceRegenTime"] = essenceRegenTime
+	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$essenceMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -557,7 +542,7 @@ local function RefreshLookupData_Preservation()
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
-	--lookupLogic["$essenceRegenTime"] = _essenceRegenTime
+	lookupLogic["$essenceRegenTime"] = _essenceRegenTime
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -589,11 +574,11 @@ local function RefreshLookupData_Augmentation()
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$essenceRegenTime
-	--[[local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 		_essenceRegenTime = 0
 	end
-	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)]]
+	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 	----------------------------
 
@@ -603,7 +588,7 @@ local function RefreshLookupData_Augmentation()
 	lookup["$resourceMax"] = manaMax
 	lookup["$resource"] = currentMana
 	lookup["$essence"] = snapshotData.attributes.resource
-	--lookup["$essenceRegenTime"] = essenceRegenTime
+	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$essenceMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -616,7 +601,7 @@ local function RefreshLookupData_Augmentation()
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
-	--lookupLogic["$essenceRegenTime"] = _essenceRegenTime
+	lookupLogic["$essenceRegenTime"] = _essenceRegenTime
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -742,27 +727,6 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)			
 
-				local current = snapshotData.attributes.resource2
-				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
-
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
-				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
-				for x = 1, TRB.Data.character.maxResource2-1 do
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
-					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
-					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
-				end
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
-
-				--[[
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
@@ -788,7 +752,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end]]
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -839,28 +803,8 @@ local function UpdateResourceBar()
 				
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
-				
-				local current = snapshotData.attributes.resource2
-				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
 
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
-				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
-				for x = 1, TRB.Data.character.maxResource2-1 do
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
-					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
-					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
-				end
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				
-				--[[local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
@@ -886,7 +830,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end]]
+				end
 			end
 
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -940,27 +884,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 
-				local current = snapshotData.attributes.resource2
-				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
-
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
-				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
-				for x = 1, TRB.Data.character.maxResource2-1 do
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
-					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
-					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
-				end
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
-
-				--[[local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
@@ -984,7 +908,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end]]
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1051,12 +975,6 @@ local function SwitchSpec()
 		lookup["#eb"] = spells.essenceBurst.icon
 		lookup["#temporalBurst"] = spells.temporalBurst.icon
 		lookup["#essenceBurst"] = spells.essenceBurst.icon
-		lookup["#amp"] = spells.algariManaPotionRank1.icon
-		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
-		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
-		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
-		lookup["#pocc"] = spells.potionOfChilledClarity.icon
-		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1246,7 +1164,6 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 		TRB.Data.character.specName = "preservation"
-		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "augmentation"
@@ -1374,10 +1291,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		valid = true
 	elseif var == "$comboPoints" or var == "$essence" then
 		valid = true
-	--[[elseif var == "$essenceRegenTime" then
+	elseif var == "$essenceRegenTime" then
 		if snapshotData.attributes.resource2 < TRB.Data.character.maxResource2 then
 			valid = true
-		end]]
+		end
 	elseif var == "$comboPointsMax"or var == "$essenceMax" then
 		valid = true
 	end

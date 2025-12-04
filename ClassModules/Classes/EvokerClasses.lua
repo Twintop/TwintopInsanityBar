@@ -34,7 +34,6 @@ end
 
 
 ---@class TRB.Classes.Evoker.PreservationSpells : TRB.Classes.Healer.HealerSpells
---[[---@field public emeraldCommunion TRB.Classes.SpellBase]]
 ---@field public essenceBurst TRB.Classes.SpellBase
 TRB.Classes.Evoker.PreservationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Evoker.PreservationSpells.__index = TRB.Classes.Evoker.PreservationSpells
@@ -45,16 +44,7 @@ function TRB.Classes.Evoker.PreservationSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Evoker.PreservationSpells) --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	-- Evoker Class Talents		
 	
-	-- Preservation Spec Talents			
-	--TODO: Make this a proper threshold, like Shadowfiend
-	--[[self.emeraldCommunion = TRB.Classes.SpellBase:New({
-		id = 370960,
-		duration = 5.0,
-		resourcePerTick = 0.02,
-		tickRate = 1,
-		isTalent = true,
-		isHasted = true
-	})]]
+	-- Preservation Spec Talents
 	self.essenceBurst = TRB.Classes.SpellBase:New({
 		id = 369299,
 		isBuff = true

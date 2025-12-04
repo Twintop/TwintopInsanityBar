@@ -20,7 +20,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = {}
 local function EvokerLoadExtraBarTextSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		--[[{
+		{
 			enabled = true,
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			useDefaultFontFace = false,
@@ -157,7 +157,7 @@ local function EvokerLoadExtraBarTextSettings()
 			useDefaultFontSize = false,
 			fontFaceName = "Friz Quadrata TT",
 			useDefaultFontColor = false,
-		}]]
+		}
 	}
 
 	return textSettings
@@ -1810,12 +1810,6 @@ local function PreservationConstructThresholdPanel(parent)
 	controls.buttons.exportButton_Evoker_Preservation_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 13, 2, false, true, false, false, false, false)
 	end)
-
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 13, 2, yCoord)
-
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 13, 2, yCoord, true)
-
-	yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 13, 2, yCoord)
 end
 
 local function PreservationConstructFontAndTextPanel(parent)

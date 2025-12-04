@@ -38,7 +38,7 @@ Currently supported specs:
 - Druid - Balance, Feral, Guardian, Restoration
 - Evoker - Devastation, Preservation, Augmentation
 - Hunter - Beast Mastery, Marksmanship, Survival
-- Mage - None (yet!)
+- Mage - Arcane, Fire, Frost
 - Monk - Brewmaster, Mistweaver, Windwalker
 - Priest - Discipline, Holy, Shadow
 - Paladin - Holy, Protection, Retribution
@@ -60,10 +60,6 @@ Currently supported specs:
 - Shaman - Elemental, Enhancement (Experimental/Minimal), Restoration
 - Warlock - Affliction
 - Warrior - Arms, Fury
-
-#### Classic (Mists of Pandaria)
-
-- None (yet!)
 
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
 

@@ -295,19 +295,6 @@ end
 
 
 ---@class TRB.Classes.Healer.HealerSpells : TRB.Classes.SpecializationSpellsBase
----@field public alchemistStone TRB.Classes.SpellBase
----@field public innervate TRB.Classes.SpellBase
----@field public manaTideTotem TRB.Classes.SpellBase
----@field public potionOfChilledClarity TRB.Classes.SpellBase
----@field public algariManaPotionRank1 TRB.Classes.SpellThreshold
----@field public algariManaPotionRank2 TRB.Classes.SpellThreshold
----@field public algariManaPotionRank3 TRB.Classes.SpellThreshold
----@field public cavedwellersDelightRank1 TRB.Classes.SpellThreshold
----@field public cavedwellersDelightRank2 TRB.Classes.SpellThreshold
----@field public cavedwellersDelightRank3 TRB.Classes.SpellThreshold
----@field public slumberingSoulSerumRank1 TRB.Classes.SpellThreshold
----@field public slumberingSoulSerumRank2 TRB.Classes.SpellThreshold
----@field public slumberingSoulSerumRank3 TRB.Classes.SpellThreshold
 TRB.Classes.Healer.HealerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Healer.HealerSpells.__index = TRB.Classes.Healer.HealerSpells
 
@@ -316,6 +303,7 @@ function TRB.Classes.Healer.HealerSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), {__index = TRB.Classes.Healer.HealerSpells})
 	
+	--[[
 	-- External mana
 	self.innervate = TRB.Classes.SpellBase:New({
 		id = 29166,
@@ -513,7 +501,7 @@ function TRB.Classes.Healer.HealerSpells:New()
 			end
 			return false
 		end
-	})
+	})]]
 	
 	return self
 end

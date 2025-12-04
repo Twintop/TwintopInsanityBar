@@ -784,12 +784,9 @@ local function FeralLoadDefaultSettings(includeBarText)
 				base="FFFFFF00",
 				penultimate="FFFF9900",
 				final="FFFF0000",
-				predatorRevealed="FF009900",
 				sameColor=false,
 				consistentUnfilledColor = false,
-				spec={
-					predatorRevealedColor = true
-				}
+				generation = true
 			},
 			threshold = {
 				under = {
@@ -1024,14 +1021,15 @@ local function GuardianLoadDefaultSettings(includeBarText)
 			resource = 0
 		},
 		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
+			properties = {
+				width = 2,
+				overlapBorder=true
+			},
 			icons = {
 				showCooldown=true,
 				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
+				relativeTo = "TOP",
+				relativeToName = L["PositionAbove"],
 				enabled=true,
 				desaturated=true,
 				xPos=0,
@@ -1040,9 +1038,6 @@ local function GuardianLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
-				--[[abilityName = {
-					enabled = true,
-				},]]
 			}
 		},
 		maxResource = {
@@ -2154,12 +2149,13 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "maxBite")
 	end)
 
+	--[[
 	yCoord = yCoord - 30
 	controls.colors.apexPredator = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerApexPredatorsCraving"], spec.colors.bar.apexPredator, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.apexPredator
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apexPredator")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -2229,23 +2225,6 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.t30ComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_comboPointsT30", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.t30ComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxEnablePredatorRevealed"])
-	f.tooltip = L["DruidFeralCheckboxEnablePredatorRevealedTooltip"]
-	f:SetChecked(spec.colors.comboPoints.spec.predatorRevealedColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.spec.predatorRevealedColor = self:GetChecked()
-	end)
-
-	controls.colors.comboPoints.predatorRevealed = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerPredatorRevealed"], spec.colors.comboPoints.predatorRevealed, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.predatorRevealed
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "predatorRevealed")
 	end)
 
 	yCoord = yCoord - 30
@@ -3297,17 +3276,6 @@ local function RestorationConstructThresholdPanel(parent)
 	local controls = interfaceSettingsFrame.controls.restoration
 	local yCoord = 5
 	local f = nil
-
-	--[[controls.buttons.exportButton_Druid_Restoration_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
-	controls.buttons.exportButton_Druid_Restoration_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 4, false, true, false, false, false, false)
-	end)
-
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 11, 4, yCoord)
-
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 4, yCoord, true)
-
-	yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 11, 4, yCoord)]]
 end
 
 local function RestorationConstructFontAndTextPanel(parent)

@@ -32,13 +32,6 @@ local function CalculateManaGain(mana, isPotion)
 
 	local modifier = 1.0
 
-	if isPotion then
-		if TRB.Data.character.items.alchemyStone then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
-			modifier = modifier * spells.alchemistStone.attributes.resourcePercent
-		end
-	end
-
 	return mana * modifier
 end
 
@@ -187,13 +180,6 @@ local function FillSpecializationCache()
 	specCache.feral.snapshotData.snapshots[spells.bloodtalons.id] = TRB.Classes.Snapshot:New(spells.bloodtalons)
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.apexPredatorsCraving.id] = TRB.Classes.Snapshot:New(spells.apexPredatorsCraving)
-	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.predatorRevealed.id] = TRB.Classes.Snapshot:New(spells.predatorRevealed, {
-		lastTick = nil,
-		nextTick = nil,
-		untilNextTick = 0,
-		ticks = 0
-	})
 	-- Druid of the Claw
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.ravage.id] = TRB.Classes.Snapshot:New(spells.ravage)
@@ -440,7 +426,6 @@ local function FillSpellData_Feral()
 		{ variable = "#lunarInspiration", icon = spells.lunarInspiration.icon, description = spells.lunarInspiration.name, printInSettings = true },
 		{ variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
 		{ variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
-		{ variable = "#predatorRevealed", icon = spells.predatorRevealed.icon, description = spells.predatorRevealed.name, printInSettings = true },
 		{ variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
 		{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
 		{ variable = "#stealth", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = false },
@@ -506,7 +491,7 @@ local function FillSpellData_Feral()
 		{ variable = "$bloodtalonsTime", description = L["DruidFeralBarTextVariable_bloodtalonsTime"], printInSettings = true, color = false },
 		
 		{ variable = "$clearcastingStacks", description = L["DruidFeralBarTextVariable_clearcastingStacks"], printInSettings = true, color = false },
-		{ variable = "$clearcastingTime", description = L["DruidFeralBarTextVariable_clearcastingTime"], printInSettings = true, color = false },
+		{ variable = "$clearcastingTime", description = L["DruidFeralBarTextVariable_clearcastingTime"], printInSettings = true, color = false },]]
 		
 		{ variable = "$berserkTime", description = L["DruidFeralBarTextVariable_berserkTime"], printInSettings = true, color = false },
 		{ variable = "$incarnationTime", description = "", printInSettings = false, color = false },
@@ -514,17 +499,12 @@ local function FillSpellData_Feral()
 		{ variable = "$incarnationTickTime", description = L["DruidFeralBarTextVariable_incarnationTickTime"], printInSettings = true, color = false },
 		{ variable = "$incarnationNextCp", description = L["DruidFeralBarTextVariable_incarnationNextCp"], printInSettings = true, color = false },
 
-		{ variable = "$suddenAmbushTime", description = L["DruidFeralBarTextVariable_suddenAmbushTime"], printInSettings = true, color = false },
+		--[[{ variable = "$suddenAmbushTime", description = L["DruidFeralBarTextVariable_suddenAmbushTime"], printInSettings = true, color = false },
 		
 		{ variable = "$apexPredatorsCravingTime", description = L["DruidFeralBarTextVariable_apexPredatorsCravingTime"], printInSettings = true, color = false },
 		
 		{ variable = "$tigersFuryTime", description = L["DruidFeralBarTextVariable_tigersFuryTime"], printInSettings = true, color = false },
-		{ variable = "$tigersFuryCooldownTime", description = L["DruidFeralBarTextVariable_tigersFuryCooldownTime"], printInSettings = true, color = false },
-
-		{ variable = "$predatorRevealedTime", description = L["DruidFeralBarTextVariable_predatorRevealedTime"], printInSettings = true, color = false },
-		{ variable = "$predatorRevealedTicks", description = L["DruidFeralBarTextVariable_predatorRevealedTicks"], printInSettings = true, color = false },
-		{ variable = "$predatorRevealedTickTime", description = L["DruidFeralBarTextVariable_predatorRevealedTickTime"], printInSettings = true, color = false },
-		{ variable = "$predatorRevealedNextCp", description = L["DruidFeralBarTextVariable_predatorRevealedNextCp"], printInSettings = true, color = false },]]
+		{ variable = "$tigersFuryCooldownTime", description = L["DruidFeralBarTextVariable_tigersFuryCooldownTime"], printInSettings = true, color = false },]]
 	}
 end
 
@@ -603,16 +583,6 @@ local function FillSpellData_Restoration()
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#incarnation", icon = spells.incarnationTreeOfLife.icon, description = spells.incarnationTreeOfLife.name, printInSettings = true },
 		{ variable = "#reforestation", icon = spells.reforestation.icon, description = spells.reforestation.name, printInSettings = true },
-
-		{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
-		{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
-
-		{ variable = "#amp", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = true },
-		{ variable = "#algariManaPotion", icon = spells.algariManaPotionRank1.icon, description = spells.algariManaPotionRank1.name, printInSettings = false },			
-		{ variable = "#pocc", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = true },
-		{ variable = "#potionOfChilledClarity", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = false },
-		{ variable = "#poff", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = true },
-		{ variable = "#slumberingSoulSerum", icon = spells.slumberingSoulSerumRank1.icon, description = spells.slumberingSoulSerumRank1.name, printInSettings = true },
 	}
 	specCache.restoration.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -731,13 +701,6 @@ local function ConstructResourceBar(settings)
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Frames.resource2ContainerFrame:Show()
-		for thresholdId = 1, 5 do-- TRB.Data.character.maxResource2-1 do
-			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
-			end
-			TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
-			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Hide()
-		end
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 4 then
@@ -748,7 +711,6 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Bar:Construct(settings)
 end
 
---[[
 local function GetBerserkRemainingTime()
 	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
 	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
@@ -757,7 +719,7 @@ local function GetBerserkRemainingTime()
 	else
 		return snapshotData.snapshots[spells.berserk.id].cooldown.remaining
 	end
-end]]
+end
 
 local function GetEclipseRemainingTime()
 	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.BalanceSpells]
@@ -1039,10 +1001,10 @@ local function RefreshLookupData_Feral()
 
 	--$clearcastingTime
 	local _clearcastingTime = snapshotData.snapshots[spells.clearcasting.id].buff:GetRemainingTime(currentTime)
-	local clearcastingTime = TRB.Functions.BarText:TimerPrecision(_clearcastingTime)
+	local clearcastingTime = TRB.Functions.BarText:TimerPrecision(_clearcastingTime)]]
 
 	--$berserkTime (and $incarnationTime)
-	local _berserkTime = 0-- GetBerserkRemainingTime()
+	local _berserkTime = GetBerserkRemainingTime()
 	local berserkTime = TRB.Functions.BarText:TimerPrecision(_berserkTime)
 
 	--$incarnationTicks 
@@ -1052,40 +1014,21 @@ local function RefreshLookupData_Feral()
 	local _incarnationTickTime = snapshotData.snapshots[spells.berserk.id].attributes.untilNextTick
 	local incarnationTickTime = TRB.Functions.BarText:TimerPrecision(_incarnationTickTime)
 
-	--$apexPredatorsCravingTime
+	--[[--$apexPredatorsCravingTime
 	local _apexPredatorsCravingTime = snapshotData.snapshots[spells.apexPredatorsCraving.id].buff:GetRemainingTime(currentTime)
-	local apexPredatorsCravingTime = TRB.Functions.BarText:TimerPrecision(_apexPredatorsCravingTime)
-	
-	--$predatorRevealedTime
-	local _predatorRevealedTime = snapshotData.snapshots[spells.predatorRevealed.id].buff:GetRemainingTime(currentTime)
-	local predatorRevealedTime = TRB.Functions.BarText:TimerPrecision(_predatorRevealedTime)
-
-	--$predatorRevealedTicks 
-	local _predatorRevealedTicks = snapshotData.snapshots[spells.predatorRevealed.id].attributes.ticks
-	
-	--$predatorRevealedTickTime
-	local _predatorRevealedTickTime = snapshotData.snapshots[spells.predatorRevealed.id].attributes.untilNextTick
-	local predatorRevealedTickTime = TRB.Functions.BarText:TimerPrecision(_predatorRevealedTickTime)
-
+	local apexPredatorsCravingTime = TRB.Functions.BarText:TimerPrecision(_apexPredatorsCravingTime)]]
 	--$incarnationNextCp
 	local incarnationNextCp = 0
-	
-	--$predatorRevealedNextCp
-	local predatorRevealedNextCp = 0
 
-	for x = 1, TRB.Data.character.maxResource2 do
+		for x = 1, TRB.Data.character.maxResource2 do
 		if snapshotData.attributes.resource2 < x then
-			if incarnationNextCp == 0 and _incarnationTicks > 0 and (_incarnationTickTime <= _predatorRevealedTickTime or predatorRevealedNextCp > 0 or _predatorRevealedTicks == 0) then
+			if incarnationNextCp == 0 and _incarnationTicks > 0 then
 				incarnationNextCp = x
-			elseif _predatorRevealedTickTime > 0 and predatorRevealedNextCp == 0 then
-				predatorRevealedNextCp = x
 			end
 		end
 	end
 
 	----------------------------
-
-	]]
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1096,6 +1039,11 @@ local function RefreshLookupData_Feral()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$inStealth"] = ""
+	lookup["$berserkTime"] = berserkTime
+	lookup["$incarnationTime"] = berserkTime
+	lookup["$incarnationTicks"] = _incarnationTicks
+	lookup["$incarnationTickTime"] = incarnationTickTime
+	lookup["$incarnationNextCp"] = incarnationNextCp
 	--[[
 	lookup["$lunarInspiration"] = ""
 	lookup["$brutalSlashCharges"] = brutalSlashCharges
@@ -1106,18 +1054,9 @@ local function RefreshLookupData_Feral()
 	lookup["$suddenAmbushTime"] = suddenAmbushTime
 	lookup["$clearcastingStacks"] = clearcastingStacks
 	lookup["$clearcastingTime"] = clearcastingTime
-	lookup["$berserkTime"] = berserkTime
-	lookup["$incarnationTime"] = berserkTime
-	lookup["$incarnationTicks"] = _incarnationTicks
-	lookup["$incarnationTickTime"] = incarnationTickTime
-	lookup["$incarnationNextCp"] = incarnationNextCp
 	lookup["$apexPredatorsCravingTime"] = apexPredatorsCravingTime
 	lookup["$tigersFuryTime"] = tigersFuryTime
-	lookup["$tigersFuryCooldownTime"] = tigersFuryCooldownTime
-	lookup["$predatorRevealedTime"] = predatorRevealedTime
-	lookup["$predatorRevealedTicks"] = _predatorRevealedTicks
-	lookup["$predatorRevealedTickTime"] = predatorRevealedTickTime
-	lookup["$predatorRevealedNextCp"] = predatorRevealedNextCp]]
+	lookup["$tigersFuryCooldownTime"] = tigersFuryCooldownTime]]
 	TRB.Data.lookup = lookup
 	
 
@@ -1130,6 +1069,11 @@ local function RefreshLookupData_Feral()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$inStealth"] = IsStealthed()
+	lookupLogic["$berserkTime"] = _berserkTime
+	lookupLogic["$incarnationTime"] = _berserkTime
+	lookupLogic["$incarnationTicks"] = _incarnationTicks
+	lookupLogic["$incarnationTickTime"] = _incarnationTickTime
+	lookupLogic["$incarnationNextCp"] = incarnationNextCp
 	--[[
 	lookupLogic["$brutalSlashCharges"] = brutalSlashCharges
 	lookupLogic["$brutalSlashCooldown"] = _brutalSlashCooldown
@@ -1139,18 +1083,9 @@ local function RefreshLookupData_Feral()
 	lookupLogic["$suddenAmbushTime"] = _suddenAmbushTime
 	lookupLogic["$clearcastingStacks"] = clearcastingStacks
 	lookupLogic["$clearcastingTime"] = _clearcastingTime
-	lookupLogic["$berserkTime"] = _berserkTime
-	lookupLogic["$incarnationTime"] = _berserkTime
-	lookupLogic["$incarnationTicks"] = _incarnationTicks
-	lookupLogic["$incarnationTickTime"] = _incarnationTickTime
-	lookupLogic["$incarnationNextCp"] = incarnationNextCp
 	lookupLogic["$apexPredatorsCravingTime"] = _apexPredatorsCravingTime
 	lookupLogic["$tigersFuryTime"] = _tigersFuryTime
-	lookupLogic["$tigersFuryCooldownTime"] = _tigersFuryCooldownTime
-	lookupLogic["$predatorRevealedTime"] = _predatorRevealedTime
-	lookupLogic["$predatorRevealedTicks"] = _predatorRevealedTicks
-	lookupLogic["$predatorRevealedTickTime"] = _predatorRevealedTickTime
-	lookupLogic["$predatorRevealedNextCp"] = predatorRevealedNextCp]]
+	lookupLogic["$tigersFuryCooldownTime"] = _tigersFuryCooldownTime]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1378,6 +1313,16 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
+				local spells = spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.berserk.castId then
+				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration, currentTime)
+			elseif spellId == spells.incarnationAvatarOfAshamane.castId or spellId == spells.incarnationAvatarOfAshamane.attributes.castId2 then
+				snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:InitializeCustom(spells.incarnationAvatarOfAshamane.duration, currentTime)
+			end
+		end
 	elseif TRB.Data.character.specId == 4 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
@@ -1404,11 +1349,13 @@ end
 ---@param cpSnapshot TRB.Classes.Snapshot
 local function CalculateIncomingComboPointsForEffect(spell, buffSnapshot, cpSnapshot)
 	local currentTime = GetTime()
+	buffSnapshot.buff:GetRemainingTime(currentTime)
 	local remainingTime = buffSnapshot.buff.remaining
 
 	if remainingTime > 0 then
-		local untilNextTick = spell:GetTickRate() - (currentTime - (cpSnapshot.attributes.lastTick or currentTime))
-		local totalCps = TRB.Functions.Number:RoundTo(remainingTime / spell:GetTickRate(), 0, "ceil", true) or 0
+		local offset = spell.attributes.offset or 0
+		local totalCps = TRB.Functions.Number:RoundTo((remainingTime - offset) / spell:GetTickRate(), 0, "ceil", true) or 0
+		local untilNextTick = remainingTime - offset - (spell:GetTickRate() * math.max(0, totalCps - 1))-- - (currentTime - (cpSnapshot.attributes.lastTick or currentTime))
 
 		if buffSnapshot.buff.endTime < currentTime then
 			totalCps = 1
@@ -1421,26 +1368,15 @@ local function CalculateIncomingComboPointsForEffect(spell, buffSnapshot, cpSnap
 		cpSnapshot.attributes.ticks = totalCps
 		cpSnapshot.attributes.nextTick = currentTime + untilNextTick
 		cpSnapshot.attributes.untilNextTick = untilNextTick
-	elseif cpSnapshot.attributes.lastTick ~= nil and buffSnapshot.buff.endTime ~= nil then
-		if (currentTime - buffSnapshot.buff.endTime) < 0.2 then
-			cpSnapshot.attributes.lastTick = nil
-			cpSnapshot.attributes.ticks = 0
-			cpSnapshot.attributes.nextTick = nil
-			cpSnapshot.attributes.untilNextTick = 0
-		end
+		cpSnapshot.attributes.tickRate = spell:GetTickRate()
 	else
 		buffSnapshot.buff:Reset()
 		cpSnapshot.attributes.lastTick = nil
 		cpSnapshot.attributes.ticks = 0
 		cpSnapshot.attributes.nextTick = nil
 		cpSnapshot.attributes.untilNextTick = 0
+		cpSnapshot.attributes.tickRate = spell:GetTickRate()
 	end
-end
-
-local function UpdatePredatorRevealed()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-	local predatorRevealed = TRB.Data.snapshotData.snapshots[spells.predatorRevealed.id] --[[@as TRB.Classes.Snapshot]]
-	CalculateIncomingComboPointsForEffect(spells.predatorRevealed, predatorRevealed, predatorRevealed)
 end
 
 local function UpdateBerserkIncomingComboPoints()
@@ -1448,7 +1384,7 @@ local function UpdateBerserkIncomingComboPoints()
 	local berserk = TRB.Data.snapshotData.snapshots[spells.berserk.id] --[[@as TRB.Classes.Snapshot]]
 	local incarnationAvatarOfAshamane = TRB.Data.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id] --[[@as TRB.Classes.Snapshot]]
 	if incarnationAvatarOfAshamane.buff.isActive then
-		CalculateIncomingComboPointsForEffect(spells.berserk, incarnationAvatarOfAshamane, berserk)
+		CalculateIncomingComboPointsForEffect(spells.incarnationAvatarOfAshamane, incarnationAvatarOfAshamane, berserk)
 	else
 		CalculateIncomingComboPointsForEffect(spells.berserk, berserk, berserk)
 	end
@@ -1494,8 +1430,7 @@ end
 
 local function UpdateSnapshot_Feral()
 	UpdateSnapshot()
-	--UpdateBerserkIncomingComboPoints()
-	--UpdatePredatorRevealed()
+	UpdateBerserkIncomingComboPoints()
 	
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -1988,9 +1923,9 @@ local function UpdateResourceBar()
 					barColor = specSettings.colors.bar.clearcasting
 				end
 
-				--[[if snapshotData.attributes.resource2 == 5 and currentResource >= spells.ferociousBiteMaximum:GetPrimaryResourceCost() then
+				if snapshotData.attributes.resource2 == 5 and spells.ferociousBiteMaximum:IsUsable() then-- currentResource >= spells.ferociousBiteMaximum:GetPrimaryResourceCost() then
 					barColor = specSettings.colors.bar.maxBite
-				end]]
+				end
 
 				if snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
 					barColor = specSettings.colors.bar.apexPredator
@@ -2006,38 +1941,13 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
-
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				local berserkTotalCps = snapshots[spells.berserk.id].attributes.ticks
-				local berserkNextTick = spells.berserk:GetTickRate() - snapshots[spells.berserk.id].attributes.untilNextTick
+				local berserkNextTick = snapshots[spells.berserk.id].attributes.tickRate - snapshots[spells.berserk.id].attributes.untilNextTick
 
-				local prTime = snapshots[spells.predatorRevealed.id].buff.remaining
-				local prTotalCps = snapshots[spells.predatorRevealed.id].attributes.ticks
-				local prNextTick = spells.predatorRevealed:GetTickRate() - snapshots[spells.predatorRevealed.id].attributes.untilNextTick
-
-				local prTickShown = 0
 				local berserkTickShown = 0
 
-				local current = snapshotData.attributes.resource2
-				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
-
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, TRB.Data.character.maxResource2)
-				TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint1", TRB.Frames.resource2Frames[1].resourceFrame, current, TRB.Data.character.maxResource2)-- max)
-				for x = 1, TRB.Data.character.maxResource2-1 do
-					TRB.Frames.resource2Frames[1].containerFrame.thresholds[x]:Show()
-					TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], cpBorderColor, true)
-					TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[x], true, TRB.Frames.resource2Frames[1].containerFrame, x, TRB.Data.character.maxResource2)
-				end
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
-
-				--[[for x = 1, TRB.Data.character.maxResource2 do
+				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
 					local cpBR = cpBackgroundRed
@@ -2052,35 +1962,11 @@ local function UpdateResourceBar()
 							cpColor = specSettings.colors.comboPoints.final
 						end
 					else
-						if specSettings.colors.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 and (snapshots[spells.berserk.id].attributes.untilNextTick <= snapshots[spells.predatorRevealed.id].attributes.untilNextTick or prTickShown > 0 or prTotalCps == 0) then
+						if specSettings.colors.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 then
 							TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, berserkNextTick * 1000, spells.berserk:GetTickRate() * 1000)
 							berserkTickShown = 1
 
 							if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-								cpColor = specSettings.colors.comboPoints.penultimate
-							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-								cpColor = specSettings.colors.comboPoints.final
-							end
-						elseif specSettings.colors.comboPoints.generation and prTime ~= nil and prTime > 0 and x <= (snapshotData.attributes.resource2 + prTotalCps) then
-							if x == snapshotData.attributes.resource2 + berserkTickShown + 1 then
-								TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, spells.predatorRevealed:GetTickRate() * 1000)
-							else
-								TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-							end
-
-							prTickShown = prTickShown + 1
-
-							if specSettings.colors.comboPoints.spec.predatorRevealedColor and x > snapshotData.attributes.resource2 and x <= (snapshotData.attributes.resource2 + prTotalCps) then
-								cpBorderColor = specSettings.colors.comboPoints.predatorRevealed
-
-								if specSettings.comboPoints.sameColor ~= true then
-									cpColor = specSettings.colors.comboPoints.predatorRevealed
-								end
-
-								if not specSettings.colors.comboPoints.consistentUnfilledColor then
-									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.predatorRevealed, true)
-								end
-							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
@@ -2093,7 +1979,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
-				end]]
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -2268,7 +2154,6 @@ local function SwitchSpec()
 		lookup["#lunarInspiration"] = spells.lunarInspiration.icon
 		lookup["#maim"] = spells.maim.icon
 		lookup["#moonfire"] = spells.moonfire.icon
-		lookup["#predatorRevealed"] = spells.predatorRevealed.icon
 		lookup["#primalWrath"] = spells.primalWrath.icon
 		lookup["#prowl"] = spells.prowl.icon
 		lookup["#stealth"] = spells.prowl.icon
@@ -2329,15 +2214,6 @@ local function SwitchSpec()
 		lookup["#efflorescence"] = spells.efflorescence.icon
 		lookup["#incarnation"] = spells.incarnationTreeOfLife.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
-		lookup["#innervate"] = spells.innervate.icon
-		lookup["#mtt"] = spells.manaTideTotem.icon
-		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-		lookup["#amp"] = spells.algariManaPotionRank1.icon
-		lookup["#algariManaPotion"] = spells.algariManaPotionRank1.icon
-		lookup["#poff"] = spells.slumberingSoulSerumRank1.icon
-		lookup["#slumberingSoulSerum"] = spells.slumberingSoulSerumRank1.icon
-		lookup["#pocc"] = spells.potionOfChilledClarity.icon
-		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 		lookup["#reforestation"] = spells.reforestation.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
@@ -2543,7 +2419,6 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "restoration"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
-		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
 		if sharedSettings ~= nil then
@@ -2624,11 +2499,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if sharedSettings.displayBar.neverShow == true then
 				TRB.Frames.barContainerFrame:Hide()
 				TRB.Functions.BarText:Hide(sharedSettings)
-
 			else
 				TRB.Frames.barContainerFrame:Show()
 				TRB.Functions.BarText:Show(sharedSettings)
-
 			end
 		end
 	elseif TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 or TRB.Data.character.specId == 4 then
@@ -2845,11 +2718,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$clearcastingTime" then
 			if snapshots[spells.clearcasting.id].buff.isActive then
 				valid = true
-			end
+			end]]
 		elseif var == "$berserkTime" or var == "$incarnationTime" then
-			--if GetBerserkRemainingTime() > 0 then
-			--	valid = true
-			--end
+			if GetBerserkRemainingTime() > 0 then
+				valid = true
+			end
 		elseif var == "$incarnationTicks" then
 			if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
 				valid = true
@@ -2862,7 +2735,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$apexPredatorsCravingTime" then
+		--[[elseif var == "$apexPredatorsCravingTime" then
 			if snapshots[spells.apexPredatorsCraving.id].buff.isActive then
 				valid = true
 			end
@@ -2872,22 +2745,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$tigersFuryCooldownTime" then
 			if snapshots[spells.tigersFury.id].cooldown:IsUnusable() then
-				valid = true
-			end
-		elseif var == "$predatorRevealedTime" then
-			if snapshots[spells.predatorRevealed.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$predatorRevealedTicks" then
-			if snapshots[spells.predatorRevealed.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$predatorRevealedTickTime" then
-			if snapshots[spells.predatorRevealed.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$predatorRevealedNextCp" then
-			if snapshots[spells.predatorRevealed.id].buff.isActive then
 				valid = true
 			end]]
 		elseif var == "$inStealth" then

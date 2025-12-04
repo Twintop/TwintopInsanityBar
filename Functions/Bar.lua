@@ -10,14 +10,6 @@ local function GetComboPointNodeWidth(settings)
 	if settings.comboPoints ~= nil and TRB.Data.character.maxResource2 ~= nil and TRB.Data.character.maxResource2 > 0 then
 		if settings.comboPoints.fullWidth then
 			local nodes = TRB.Data.character.maxResource2
-			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-				TRB.Data.resource2 == Enum.PowerType.Chi or
-				TRB.Data.resource2 == Enum.PowerType.HolyPower or
-				TRB.Data.resource2 == Enum.PowerType.Essence or
-				TRB.Data.resource2 == Enum.PowerType.SoulShards or
-				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
-				nodes = 1
-			end
 			local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2
 			local width = ((settings.bar.width - ((nodes - 1) * (nodeSpacing - settings.comboPoints.border * 2))) / nodes)
 			return width
@@ -234,7 +226,11 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 		local barMaxValueIsSecret = issecretvalue(max)
 
 		if barMaxValueIsSecret or valueIsSecret or maxResourceIsSecret then
-			bar:SetValue(value)
+			if TRB.Data.settings.core.smoothBarValueUpdates then
+				bar:SetValue(value, Enum.StatusBarInterpolation.ExponentialEaseOut)
+			else
+				bar:SetValue(value, Enum.StatusBarInterpolation.Immediate)
+			end
 		else
 			maxResource = maxResource or 1
 			value = value or 0
@@ -247,7 +243,11 @@ function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
 
 			local scaledValue = value * factor
 			if factor ~= math.huge and max ~= math.huge then
-				bar:SetValue(math.min(scaledValue, max))
+				if TRB.Data.settings.core.smoothBarValueUpdates then
+					bar:SetValue(math.min(scaledValue, max), Enum.StatusBarInterpolation.ExponentialEaseOut)
+				else
+					bar:SetValue(math.min(scaledValue, max), Enum.StatusBarInterpolation.Immediate)
+				end
 			end
 		end
 
@@ -289,16 +289,7 @@ function TRB.Functions.Bar:SetMinMax(settings)
 
 			if nodes == nil or nodes == 0 then
 				nodes = length
-			end
-			
-			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-				TRB.Data.resource2 == Enum.PowerType.Chi or
-				TRB.Data.resource2 == Enum.PowerType.HolyPower or
-				TRB.Data.resource2 == Enum.PowerType.Essence or
-				TRB.Data.resource2 == Enum.PowerType.SoulShards or
-				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
-				nodes = 1
-			end
+			end			
 
 			for x = 1, math.min(nodes, 10) do
 				TRB.Frames.resource2Frames[x].resourceFrame:SetMinMaxValues(0, nodeWidth)
@@ -340,15 +331,6 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 
 		if nodes == nil then
 			nodes = length
-		end
-		
-		if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-			TRB.Data.resource2 == Enum.PowerType.Chi or
-			TRB.Data.resource2 == Enum.PowerType.HolyPower or
-			TRB.Data.resource2 == Enum.PowerType.Essence or
-			TRB.Data.resource2 == Enum.PowerType.SoulShards or
-			TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
-			nodes = 1
 		end
 	
 		local nodeWidth = settings.comboPoints.width
@@ -492,61 +474,16 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 		settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 	end
 
-	if false and TRB.Data.settings.core.smoothBarValueUpdates then --and not settings.bar.pinToPersonalResourceDisplay then
-		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame, 3, 0.2)
-
+	if TRB.Data.settings.core.smoothBarValueUpdates then --and not settings.bar.pinToPersonalResourceDisplay then
 		if TRB.Frames.resourceFrame.thresholds ~= nil and #TRB.Frames.resourceFrame.thresholds > 0 then
 			for x = 1, #TRB.Frames.resourceFrame.thresholds do
 				TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.thresholds[x], 3, 0.2)
 			end
 		end
-		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
-			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-			local nodes = TRB.Data.character.maxResource2
-
-			if nodes == nil or nodes == 0 then
-				nodes = length
-			end
-
-			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-				TRB.Data.resource2 == Enum.PowerType.Chi or
-				TRB.Data.resource2 == Enum.PowerType.HolyPower or
-				TRB.Data.resource2 == Enum.PowerType.Essence or
-				TRB.Data.resource2 == Enum.PowerType.SoulShards or
-				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
-				nodes = 1
-			end
-
-			for x = 1, length do
-				TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resource2Frames[x].resourceFrame, 3, 0.2)
-			end
-		end
 	else
-		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.resourceFrame)
 		if TRB.Frames.resourceFrame.thresholds ~= nil and #TRB.Frames.resourceFrame.thresholds > 0 then
 			for x = 1, #TRB.Frames.resourceFrame.thresholds do
 				TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.resourceFrame.thresholds[x])
-			end
-		end
-		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
-			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-			local nodes = TRB.Data.character.maxResource2
-
-			if nodes == nil or nodes == 0 then
-				nodes = length
-			end
-
-			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-				TRB.Data.resource2 == Enum.PowerType.Chi or
-				TRB.Data.resource2 == Enum.PowerType.HolyPower or
-				TRB.Data.resource2 == Enum.PowerType.Essence or
-				TRB.Data.resource2 == Enum.PowerType.SoulShards or
-				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
-				nodes = 1
-			end
-
-			for x = 1, length do
-				TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.resource2Frames[x].resourceFrame)
 			end
 		end
 	end
@@ -653,15 +590,6 @@ function TRB.Functions.Bar:Construct(settings)
 				nodes = length
 			end
 
-			if TRB.Data.resource2 == Enum.PowerType.ComboPoints or
-				TRB.Data.resource2 == Enum.PowerType.Chi or
-				TRB.Data.resource2 == Enum.PowerType.HolyPower or
-				TRB.Data.resource2 == Enum.PowerType.Essence or
-				TRB.Data.resource2 == Enum.PowerType.SoulShards or
-				TRB.Data.resource2 == Enum.PowerType.ArcaneCharges then
-				nodes = 1
-			end
-
 			local nodeWidth = settings.comboPoints.width
 
 			for x = 1, length do
@@ -716,6 +644,7 @@ function TRB.Functions.Bar:Construct(settings)
 		TRB.Functions.Bar:UpdateSmoothBar(settings)
 
 		TRB.Functions.BarText:CreateBarTextFrames()
+		TRB.Functions.BarText:Hide(settings)
 		TRB.Functions.Class:HideResourceBar()
 	end
 end
