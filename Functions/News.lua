@@ -55,7 +55,7 @@ local content = [====[
 - Enhance Stagger tracking to color the bar, `$stagger`, and `$staggerPercent` based on current Stagger level.
 - Format Stagger numbers using Blizzard's built-in large number abbreviations.
 
-## [#478](#478) Windwalker
+### [#478](#478) Windwalker
 
 - Restore original Chi UI implementation.
 
