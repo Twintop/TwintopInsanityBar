@@ -24,7 +24,7 @@ local content = [====[
 - Cleared existing Google Translated localizations as most of them are invalid or missing.
 
 ## Demon Hunter
-### [#46](#46) Havoc
+### [#466](#466) Havoc
 
 - Update Blind Fury to show generation of 30 per second.
 
