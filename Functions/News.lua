@@ -16,6 +16,15 @@ local content = [====[
 
 - Add a way to track custom fixed-duration cooldowns.
 
+## Druid
+### [#468](#468) Balance
+
+- Remove Whirling Stars modifiers.
+
+### [#493](#493) Guardian
+
+
+
 ## Monk
 ### [#494](#494) Brewmaster
 

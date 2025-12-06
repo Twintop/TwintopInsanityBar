@@ -1300,15 +1300,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.snapshots[spells.eclipseLunar.id].buff:InitializeCustom(spells.eclipseLunar.duration, currentTime)
 			elseif spellId == spells.celestialAlignment.castId or spellId == spells.celestialAlignment.talentId then
 				local duration = spells.celestialAlignment.duration
-				if talents:IsTalentActive(spells.whirlingStars) then
-					duration = duration * spells.whirlingStars.attributes.durationMod
-				end
+
 				snapshotData.snapshots[spells.celestialAlignment.id].buff:InitializeCustom(duration, currentTime)
 			elseif spellId == spells.incarnationChosenOfElune.castId or spellId == spells.incarnationChosenOfElune.id then
 				local duration = spells.incarnationChosenOfElune.duration
-				if talents:IsTalentActive(spells.whirlingStars) then
-					duration = duration * spells.whirlingStars.attributes.durationMod
-				end
+
 				snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:InitializeCustom(duration, currentTime)
 			end
 		end

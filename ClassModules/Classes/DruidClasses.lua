@@ -17,7 +17,6 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public eclipseSolar TRB.Classes.SpellBase
 ---@field public eclipseLunar TRB.Classes.SpellBase
 ---@field public celestialAlignment TRB.Classes.SpellBase
----@field public whirlingStars TRB.Classes.SpellBase
 ---@field public incarnationChosenOfElune TRB.Classes.SpellBase
 ---@field public naturesBalance TRB.Classes.SpellBase
 ---@field public stellarFlare TRB.Classes.SpellBase
@@ -146,11 +145,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         castId = 383410,
         isTalent = true,
         duration = 15
-    })
-    self.whirlingStars = TRB.Classes.SpellBase:New({
-        id = 468743,
-        isTalent = true,
-        durationMod = 0.8
     })
 
     self.naturesBalance = TRB.Classes.SpellBase:New({
