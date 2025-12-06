@@ -94,6 +94,7 @@ end
 ---@field public ticks integer? # How many ticks this spell have at the beginning.
 ---@field public tickRate number? # How many seconds between ticks.
 ---@field public resourcePerTick number? # How many resources are generated per tick.
+---@field public cooldown number? # How many seconds the cooldown lasts as an unhasted value.
 ---@field public isHasted boolean? # Does this spell's cooldown, tick rate, etc. benefit from haste?
 ---@field public isBuff boolean? # Is this spell a buff?
 ---@field public isFriend boolean? # Is this an effect that happens to friendly targets?
@@ -160,6 +161,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 			(key == "ticks"								and type(value) == "number" and tonumber(value, 10) ~= nil) or
 			(key == "tickRate"							and type(value) == "number") or
 			(key == "resourcePerTick"					and type(value) == "number") or
+			(key == "cooldown"							and type(value) == "number") or
 			(key == "isHasted"							and type(value) == "boolean") or
 			(key == "isBuff"							and type(value) == "boolean") or
 			(key == "isFriend"							and type(value) == "boolean") or

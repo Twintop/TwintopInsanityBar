@@ -11,12 +11,27 @@ local content = [====[
 
 --- 
 
+# 12.0.0.0-beta01 (2025-12-07)
+## General
+
+- Add a way to track custom fixed-duration cooldowns.
+
+## Monk
+### [#494](#494) Brewmaster
+
+- Add customization options for Stagger bar colors.
+- Add threshold lines for Energy consuming abilities.
+- Add support for Jade Flash causing Crackling Jade Lightning to have a cooldown.
+- Add Stagger Bar default text.
+
+---
+
 # 12.0.0.0-alpha16 (2025-12-05)
 ## General
 
 - Clean up dead code from specializations.
 - Remove features that won't be returning due to API limitations: Overcap, End Cap, Casting Bar, Passive Bar, Regen, DoT tracking, potions, passive thresholds.
-- Removed backward compatability with older versions of the Bar from as far back as 7.3.5.
+- Removed backward compatibility with older versions of the Bar from as far back as 7.3.5.
 - Restore smooth bar update functionality using Blizzard's built-in methods.
 
 ### Localization

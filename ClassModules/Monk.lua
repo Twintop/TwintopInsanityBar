@@ -53,6 +53,17 @@ local function FillSpecializationCache()
 	---@diagnostic disable-next-line: assign-type-mismatch
 	local spells = specCache.brewmaster.spellsData.spells
 
+	---@type TRB.Classes.Snapshot
+	specCache.brewmaster.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
+	---@type TRB.Classes.Snapshot
+	specCache.brewmaster.snapshotData.snapshots[spells.expelHarm.id] = TRB.Classes.Snapshot:New(spells.expelHarm)
+	---@type TRB.Classes.Snapshot
+	specCache.brewmaster.snapshotData.snapshots[spells.paralysis.id] = TRB.Classes.Snapshot:New(spells.paralysis)
+	---@type TRB.Classes.Snapshot
+	specCache.brewmaster.snapshotData.snapshots[spells.cracklingJadeLightning.id] = TRB.Classes.Snapshot:New(spells.cracklingJadeLightning)
+	---@type TRB.Classes.Snapshot
+	specCache.brewmaster.snapshotData.snapshots[spells.kegSmash.id] = TRB.Classes.Snapshot:New(spells.kegSmash)
+
 	specCache.brewmaster.snapshotData.attributes.resourceRegen = 0
 	specCache.brewmaster.snapshotData.audio = {
 	}
@@ -135,7 +146,6 @@ local function FillSpecializationCache()
 
 	specCache.windwalker.snapshotData.attributes.resourceRegen = 0
 	specCache.windwalker.snapshotData.audio = {
-		playedDanceOfChiJiCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
@@ -620,6 +630,34 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 1 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+		if event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.expelHarm.castId then
+				local cooldown = spells.expelHarm.cooldown
+
+				snapshotData.snapshots[spells.expelHarm.id].cooldown:InitializeCustom(currentTime, cooldown)
+			elseif spellId == spells.paralysis.castId then
+				local cooldown = spells.paralysis.cooldown
+
+				if talents:IsTalentActive(spells.ancientArts) then
+					cooldown = cooldown + spells.ancientArts.attributes.cooldownMod
+				end
+
+				snapshotData.snapshots[spells.paralysis.id].cooldown:InitializeCustom(currentTime, cooldown)
+			elseif spellId == spells.detox.castId then -- This doesn't actually trigger a CD if it doesn't dispel anything, but we have no way of knowing that here
+				local cooldown = spells.detox.cooldown
+
+				snapshotData.snapshots[spells.detox.id].cooldown:InitializeCustom(currentTime, cooldown)
+			end
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+			if spellId == spells.cracklingJadeLightning.castId then
+				if talents:IsTalentActive(spells.jadeFlash) then
+					local cooldown = spells.jadeFlash.cooldown
+
+					snapshotData.snapshots[spells.cracklingJadeLightning.id].cooldown:InitializeCustom(currentTime, cooldown)
+				end
+			end
+		end
 	elseif TRB.Data.character.specId == 2 then
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
@@ -655,27 +693,19 @@ local function UpdateSnapshot()
 end
 
 local function UpdateSnapshot_Brewmaster()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
 	UpdateSnapshot()
-	
-	local previousMaxHealth = snapshotData.attributes.maxHealth
 
 	snapshotData.attributes.maxHealth = UnitHealthMax("player")
 	snapshotData.attributes.stagger = UnitStagger("player")
 	snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.maxHealth
 
-	--[[if previousMaxHealth ~= snapshotData.attributes.maxHealth or TRB.Data.snapshotData.attributes.colorCurve == nil then
-		local specSettings = TRB.Data.settings.monk.brewmaster
-		local curve = TRB.Data.snapshotData.attributes.colorCurve or C_CurveUtil.CreateColorCurve()
-		curve:SetType(Enum.LuaCurveType.Step)
-		curve:ClearPoints()
-		curve:AddPoint(0, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.base, true))) -- Light stagger at 0
-		--curve:AddPoint(snapshotData.attributes.maxHealth * STAGGER_STATES.YELLOW.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerMedium, true))) -- Medium stagger at 30%
-		--curve:AddPoint(snapshotData.attributes.maxHealth * STAGGER_STATES.RED.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerHeavy, true))) -- Heavy stagger at 60%
-		curve:AddPoint(STAGGER_STATES.YELLOW.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerMedium, true))) -- Medium stagger at 30%
-		curve:AddPoint(STAGGER_STATES.RED.threshold, CreateColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.staggerHeavy, true))) -- Heavy stagger at 60%
-		TRB.Data.snapshotData.attributes.colorCurve = curve
-	end]]
+	snapshots[spells.expelHarm.id].cooldown:GetRemainingTime()
+	snapshots[spells.detox.id].cooldown:GetRemainingTime()
+	snapshots[spells.paralysis.id].cooldown:GetRemainingTime()
+	snapshots[spells.cracklingJadeLightning.id].cooldown:GetRemainingTime()
 end
 
 local function UpdateSnapshot_Mistweaver()
@@ -715,6 +745,53 @@ local function UpdateResourceBar()
 				
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 
+				local pairOffset = 0
+				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
+					if resourceFrame.thresholds[thresholdId] == nil then
+						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
+					pairOffset = (thresholdId - 1) * 3
+					local resourceAmount = spell:GetPrimaryResourceCost()
+					local isUsable = spell:IsUsable()
+					local showThreshold = true
+					local thresholdColor = specCacheSettings.colors.threshold.over.color
+					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+					local snapshot = snapshots[spell.id]
+
+					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+					elseif resourceAmount == 0 then
+						showThreshold = false
+					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+						showThreshold = false
+					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+						showThreshold = false
+					elseif spell.hasCooldown then
+						if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+							thresholdColor = specCacheSettings.colors.threshold.unusable.color
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+						elseif isUsable then-- currentResource >= resourceAmount then
+							thresholdColor = specCacheSettings.colors.threshold.over.color
+						else
+							thresholdColor = specCacheSettings.colors.threshold.under.color
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
+					else -- This is an active/available/normal spell threshold
+						if isUsable then-- currentResource >= resourceAmount then
+							thresholdColor = specCacheSettings.colors.threshold.over.color
+						else
+							thresholdColor = specCacheSettings.colors.threshold.under.color
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
+					end
+
+					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
+						showThreshold = false
+					end
+
+					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+				end
+
 				local barBorderColor = specSettings.colors.bar.border
 
 				barContainerFrame:SetAlpha(1.0)
@@ -734,9 +811,6 @@ local function UpdateResourceBar()
 				local cpBR = cpBackgroundRed
 				local cpBG = cpBackgroundGreen
 				local cpBB = cpBackgroundBlue
-				
-				--local curveColor = UnitHealthPercentColor("player", TRB.Data.snapshotData.attributes.colorCurve)
-				--TRB.Functions.Color:SetStatusBarVertexColor(TRB.Frames.resource2Frames[1].resourceFrame, nil, curveColor:GetRGBA())
 
 				if snapshotData.attributes.staggerPercent >= STAGGER_STATES.RED.threshold then
 					cpColor = specSettings.colors.comboPoints.staggerHeavy
@@ -1170,9 +1244,8 @@ function TRB.Functions.Class:CheckCharacter()
 	
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "brewmaster"
-		TRB.Data.character.maxResource = 100
-		TRB.Data.character.resourceTypeName = "ENERGY"
-		TRB.Data.character.resourceType = Enum.PowerType.Energy
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy, true)
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Energy, false)
 
 		local maxComboPoints = 1
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings

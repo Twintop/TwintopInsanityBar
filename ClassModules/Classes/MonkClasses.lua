@@ -60,6 +60,130 @@ function TRB.Classes.Monk.ManaTea:GetMaxManaReturn()
 end
 
 
+---@class TRB.Classes.Monk.BrewmasterSpells : TRB.Classes.SpecializationSpellsBase
+--Baseline
+---@field public cracklingJadeLightning TRB.Classes.SpellThreshold
+---@field public expelHarm TRB.Classes.SpellThreshold
+---@field public spinningCraneKick TRB.Classes.SpellThreshold
+---@field public tigerPalm TRB.Classes.SpellThreshold
+---@field public vivify TRB.Classes.SpellThreshold
+--Class Talents
+---@field public ancientArts TRB.Classes.SpellBase
+---@field public detox TRB.Classes.SpellThreshold
+---@field public disable TRB.Classes.SpellThreshold
+---@field public paralysis TRB.Classes.SpellThreshold
+---@field public soothingMist TRB.Classes.SpellThreshold
+--Spec Talents
+---@field public jadeFlash TRB.Classes.SpellBase
+---@field public kegSmash TRB.Classes.SpellThreshold
+TRB.Classes.Monk.BrewmasterSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Monk.BrewmasterSpells.__index = TRB.Classes.Monk.BrewmasterSpells
+
+function TRB.Classes.Monk.BrewmasterSpells:New()
+	---@type TRB.Classes.SpecializationSpellsBase
+	local base = TRB.Classes.SpecializationSpellsBase
+	self = setmetatable(base:New(), TRB.Classes.Monk.BrewmasterSpells) --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+
+	-- Baseline Abilities
+	self.cracklingJadeLightning = TRB.Classes.SpellThreshold:New({
+		id = 117952,
+		castId = 117952,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "cracklingJadeLightning",
+		isTalent = false,
+		baseline = true,
+		hasCooldown = true
+	})
+	self.expelHarm = TRB.Classes.SpellComboPointThreshold:New({
+		id = 322101,
+		castId = 322101,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "expelHarm",
+		hasCooldown = true,
+		cooldown = 5,
+		isTalent = false,
+		baseline = true,
+		rangeCheck = false
+	})
+	self.spinningCraneKick = TRB.Classes.SpellThreshold:New({
+		id = 322729,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "spinningCraneKick",
+		isTalent = false,
+		baseline = true
+	})
+	self.tigerPalm = TRB.Classes.SpellComboPointThreshold:New({
+		id = 100780,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "tigerPalm",
+		isTalent = false,
+		baseline = true
+	})
+	self.vivify = TRB.Classes.SpellThreshold:New({
+		id = 116670,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "vivify",
+		isTalent = false,
+		baseline = true,
+		rangeCheck = false
+	})
+
+	-- Monk Class Talents
+	self.detox = TRB.Classes.SpellThreshold:New({
+		id = 218164,
+		castId = 218164,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "detox",
+		hasCooldown = true,
+		cooldown = 8,
+		isTalent = true,
+		rangeCheck = false
+	})
+	self.disable = TRB.Classes.SpellThreshold:New({
+		id = 116095,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "disable",
+		hasCooldown = false,
+		isTalent = true
+	})
+	self.paralysis = TRB.Classes.SpellThreshold:New({
+		id = 115078,
+		castId = 115078,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "paralysis",
+		hasCooldown = true,
+		cooldown = 45,
+		isTalent = true,
+	})
+	self.ancientArts = TRB.Classes.SpellBase:New({
+		id = 344359,
+		cooldownMod = -15,
+		isTalent = true,
+	})
+	self.soothingMist = TRB.Classes.SpellThreshold:New({
+		id = 115175,
+		primaryResourceType = Enum.PowerType.Mana,
+		settingKey = "soothingMist",
+		isTalent = true,
+	})
+
+	-- Brewmaster Spec Talents
+	self.kegSmash = TRB.Classes.SpellThreshold:New({
+		id = 121253,
+		primaryResourceType = Enum.PowerType.Energy,
+		settingKey = "kegSmash",
+		isTalent = true,
+	})
+	self.jadeFlash = TRB.Classes.SpellBase:New({
+		id = 1262334,
+		isTalent = true,
+		cooldown = 60
+	})
+
+	return self
+end
+
+
 ---@class TRB.Classes.Monk.MistweaverSpells : TRB.Classes.Healer.HealerSpells
 ---@field public soothingMist TRB.Classes.SpellBase
 ---@field public vivaciousVivification TRB.Classes.SpellBase
@@ -156,8 +280,8 @@ end
 
 
 ---@class TRB.Classes.Monk.WindwalkerSpells : TRB.Classes.SpecializationSpellsBase
+---@field public ancientArts TRB.Classes.SpellBase
 ---@field public touchOfDeath TRB.Classes.SpellBase
----@field public paralysisRank2 TRB.Classes.SpellBase
 ---@field public strikeOfTheWindlord TRB.Classes.SpellBase
 ---@field public danceOfChiJi TRB.Classes.SpellBase
 ---@field public combatWisdom TRB.Classes.SpellBase
@@ -172,6 +296,7 @@ end
 ---@field public detox TRB.Classes.SpellThreshold
 ---@field public disable TRB.Classes.SpellThreshold
 ---@field public paralysis TRB.Classes.SpellThreshold
+---@field public soothingMist TRB.Classes.SpellThreshold
 ---@field public expelHarm TRB.Classes.SpellComboPointThreshold
 ---@field public tigerPalm TRB.Classes.SpellComboPointThreshold
 TRB.Classes.Monk.WindwalkerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -273,7 +398,7 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		cooldown = 45,
 		isTalent = true,
 	})
-	self.paralysisRank2 = TRB.Classes.SpellBase:New({
+	self.ancientArts = TRB.Classes.SpellBase:New({
 		id = 344359,
 		cooldownMod = -15,
 		isTalent = true,
@@ -312,21 +437,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		talentId = 450615,
 		isTalent = true
 	})
-
-	return self
-end
-
-
----@class TRB.Classes.Monk.BrewmasterSpells : TRB.Classes.SpecializationSpellsBase
-TRB.Classes.Monk.BrewmasterSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Monk.BrewmasterSpells.__index = TRB.Classes.Monk.BrewmasterSpells
-
-function TRB.Classes.Monk.BrewmasterSpells:New()
-	---@type TRB.Classes.SpecializationSpellsBase
-	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.Monk.BrewmasterSpells) --[[@as TRB.Classes.Monk.BrewmasterSpells]]
-
-	-- Spells can be added here in the future
 
 	return self
 end

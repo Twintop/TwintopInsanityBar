@@ -94,7 +94,30 @@ local function BrewmasterLoadDefaultBarTextSimpleSettings()
 				relativeToFrame = "Resource",
 				relativeToFrameName = L["MainResourceBar"]
 			}
-		}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="$stagger",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Stagger",
+				relativeToFrameName = L["ComboPoint_1"]
+			}
+		},
 	}
 
 	return textSettings
@@ -111,7 +134,7 @@ local function BrewmasterLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$ttd}[||nTTD: $ttd]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -172,7 +195,30 @@ local function BrewmasterLoadDefaultBarTextAdvancedSettings()
 				relativeToFrame = "Resource",
 				relativeToFrameName = L["MainResourceBar"]
 			}
-		}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="$stagger",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Stagger",
+				relativeToFrameName = L["ComboPoint_1"]
+			}
+		},
 	}
 
 	return textSettings
@@ -202,6 +248,36 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
+				cracklingJadeLightning = {
+					enabled = false,
+				},
+				expelHarm = {
+					enabled = true,
+				},
+				spinningCraneKick = {
+					enabled = true,
+				},
+				tigerPalm = {
+					enabled = true,
+				},
+				vivify = {
+					enabled = false,
+				},
+				detox = {
+					enabled = false,
+				},
+				disable = {
+					enabled = false,
+				},
+				paralysis = {
+					enabled = false,
+				},
+				soothingMist = {
+					enabled = false,
+				},
+				kegSmash = {
+					enabled = true,
+				}
 			}
 		},
 		generation = {
@@ -266,7 +342,8 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 				background="66000000",
 				base="FF85FF85", -- staggerLight				
 				staggerMedium="FFFFFAB8",
-				staggerHeavy="FFFF6B6B"
+				staggerHeavy="FFFF6B6B",
+				enabled=true
 			},
 			threshold = {
 				under = {
@@ -483,66 +560,6 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 		precision = {
 			secondary = 2,
 			resource = 0
-		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-				algariManaPotionRank1 = {
-					enabled = false,
-				},
-				algariManaPotionRank2 = {
-					enabled = false,
-				},
-				algariManaPotionRank3 = {
-					enabled = true,
-				},
-				cavedwellersDelightRank1 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank2 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank3 = {
-					enabled = true,
-				},
-				slumberingSoulSerumRank1 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank2 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank3 = {
-					enabled = true,
-				},
-				cannibalize = {
-					enabled = false,
-					cooldown = false
-				},
-				manaTeaCharges = {
-					enabled = true
-				},
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},
 		},
 		displayBar = {
 			alwaysShow=false,
@@ -999,7 +1016,7 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			TRB.Data.settings.monk.Brewmaster = BrewmasterLoadDefaultSettings(true)
+			TRB.Data.settings.monk.brewmaster = BrewmasterLoadDefaultSettings(true)
 			C_UI.Reload()
 		end,
 		timeout = 0,
@@ -1074,23 +1091,81 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 1, true, false, false, false, false, false)
 	end)
 
-	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], L["ResourceStagger"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, true, L["ResourceStagger"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
+
+	yCoord = yCoord - 30
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
+	end)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], false, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceStagger"])
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkBrewmasterStaggerColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	--[[controls.checkBoxes.staggerComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_staggerComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.staggerComboPointEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterCheckboxEnableStagger"])
+	f.tooltip = L["MonkBrewmasterCheckboxEnableStaggerTooltip"]
+	f:SetChecked(spec.colors.comboPoints.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.enabled = self:GetChecked()
+		if TRB.Data.character.classId == 10 and TRB.Data.character.specId == 1 then
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.brewmaster.settings)
+		end
+	end)]]
+
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorStaggerLight"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.base
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+
+	controls.colors.comboPoints.staggerMedium = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorStaggerMedium"], spec.colors.comboPoints.staggerMedium, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.staggerMedium
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "staggerMedium")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.staggerHeavy = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorStaggerHeavy"], spec.colors.comboPoints.staggerHeavy, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.staggerHeavy
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "staggerHeavy")
+	end)
+
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorStaggerBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+	end)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
@@ -1112,6 +1187,131 @@ local function BrewmasterConstructThresholdPanel(parent)
 	controls.buttons.exportButton_Monk_Brewmaster_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 10, 1, false, true, false, false, false, false)
 	end)
+
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
+
+	controls.colors.threshold = {}
+
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord
+
+	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryBuildersLabel"], 5, yCoord, 110, 20)
+	yCoord = yCoord - 20
+	controls.checkBoxes.expelHarmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_expelHarm", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.expelHarmThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxExpelHarm"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxExpelHarmTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.expelHarm.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.expelHarm.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.kegSmashThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_kegSmash", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.kegSmashThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxKegSmash"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxKegSmashTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.kegSmash.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.kegSmash.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.spinningCraneKickThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_spinningCraneKick", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.spinningCraneKickThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxSpinningCraneKick"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxSpinningCraneKickTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.spinningCraneKick.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.spinningCraneKick.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.tigerPalmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_tigerPalm", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.tigerPalmThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxTigerPalm"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxTigerPalmTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.tigerPalm.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.tigerPalm.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], oUi.xCoord2, yCoord2, 110, 20)
+	yCoord2 = yCoord2 - 20
+
+	controls.checkBoxes.cracklingJadeLightningThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_cracklingJadeLightning", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cracklingJadeLightningThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxCracklingJadeLightning"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxCracklingJadeLightningTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.cracklingJadeLightning.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.cracklingJadeLightning.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.detoxThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_detox", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.detoxThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxDetox"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxDetoxTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.detox.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.detox.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.disableThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_disable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.disableThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxDisable"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxDisableTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.disable.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.disable.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.paralysisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_paralysis", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.paralysisThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxParalysis"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxParalysisTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.paralysis.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.paralysis.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.soothingMistThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_soothingMist", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.soothingMistThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxSoothingMist"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxSoothingMistTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.soothingMist.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.soothingMist.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.vivifyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_vivify", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.vivifyThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxVivify"])
+	f.tooltip = L["MonkBrewmasterThresholdCheckboxVivifyTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.vivify.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.vivify.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord2
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 1, yCoord)
 
@@ -1920,7 +2120,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
-	yCoord = yCoord - 30		
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)

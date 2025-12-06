@@ -536,6 +536,7 @@ end
 ---@field public charges integer
 ---@field public maxCharges integer
 ---@field public castCount integer
+---@field private isCustom boolean
 ---@field private retryForceTime number?
 ---@field private parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotCooldown = {}
@@ -564,6 +565,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.castCount = 0
 	self.maxCharges = 0
 	self.retryForceTime = nil
+	self.isCustom = false
 end
 
 ---Computes the time remaining on the Snapshot
@@ -616,6 +618,16 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 	end
 end
 
+---Initializes the cooldown information for the snapshot with custom startTime and duration values
+---@param startTime number
+---@param duration number
+function TRB.Classes.SnapshotCooldown:InitializeCustom(startTime, duration)
+	self.startTime = startTime
+	self.duration = duration
+	self.isCustom = true
+	self:GetRemainingTime()
+end
+
 ---Initializes the cooldown information for the snapshot by forcing a refresh and a retry on the next frame, if needed
 function TRB.Classes.SnapshotCooldown:Initialize()
 	self:Refresh(true, true)
@@ -625,7 +637,7 @@ end
 ---@param force boolean? # Force refresh of the value even if other interal logic would prevent it from doing so
 ---@param retryForce boolean? # Allow the cooldown to retry a force on the next call to Refresh()
 function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
-	if self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.parent.spell.hasCastCount or self.onCooldown) then
+	if not self.isCustom and self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.parent.spell.hasCastCount or self.onCooldown) then
 		local startTime = nil
 		local duration = 0
 		if self.parent.spell.hasCharges == true then
