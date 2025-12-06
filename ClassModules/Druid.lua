@@ -209,8 +209,14 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Druid.GuardianSpells
 	specCache.guardian.spellsData.spells = TRB.Classes.Druid.GuardianSpells:New()
-	--local spells = specCache.guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
-	
+	local spells = specCache.guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	---@type TRB.Classes.Snapshot
+	specCache.guardian.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
+	---@type TRB.Classes.Snapshot
+	specCache.guardian.snapshotData.snapshots[spells.berserk.id] = TRB.Classes.Snapshot:New(spells.berserk)
+	---@type TRB.Classes.Snapshot
+	specCache.guardian.snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id] = TRB.Classes.Snapshot:New(spells.incarnationGuardianOfUrsoc)
+
 	specCache.guardian.snapshotData.audio = {
 	}
 
@@ -561,6 +567,9 @@ local function FillSpellData_Guardian()
 		{ variable = "$rageMax", description = L["BarTextVariableResourceMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["BarTextVariableCasting"], printInSettings = true, color = false },
+		
+		{ variable = "$berserkTime", description = L["DruidGuardianBarTextVariable_berserkTime"], printInSettings = true, color = false },
+		{ variable = "$incarnationTime", description = "", printInSettings = false, color = false },
 	}
 end
 
@@ -1128,14 +1137,27 @@ local function RefreshLookupData_Guardian()
 	--$casting
 	local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 
+	
+	--$berserkTime (and $incarnationTime)
+	local berserkSnapshotBuff = snapshotData.snapshots[spells.berserk.id].buff
+
+	if not berserkSnapshotBuff.isActive then
+		berserkSnapshotBuff = snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id].buff
+	end
+
+	local _berserkTime = berserkSnapshotBuff:GetRemainingTime(currentTime)
+	local berserkTime = TRB.Functions.BarText:TimerPrecision(_berserkTime)
+
 	----------
+
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resource"] = currentRage
 	lookup["$rage"] = currentRage
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$rageMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingRage
-
+	lookup["$berserkTime"] = berserkTime
+	lookup["$incarnationTime"] = berserkTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1144,6 +1166,9 @@ local function RefreshLookupData_Guardian()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$rageMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+	lookupLogic["$berserkTime"] = _berserkTime
+	lookupLogic["$incarnationTime"] = _berserkTime
+	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Restoration()
@@ -1319,6 +1344,19 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:InitializeCustom(spells.incarnationAvatarOfAshamane.duration, currentTime)
 			end
 		end
+	elseif TRB.Data.character.specId == 3 then
+				local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.berserk.castId then
+				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration, currentTime)
+			elseif spellId == spells.incarnationGuardianOfUrsoc.castId then
+				snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id].buff:InitializeCustom(spells.incarnationGuardianOfUrsoc.duration, currentTime)
+			end
+		elseif event == "SPELL_UPDATE_ICON" then
+
+		end
 	elseif TRB.Data.character.specId == 4 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
@@ -1468,6 +1506,8 @@ local function UpdateSnapshot_Guardian()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 
+	snapshotData.snapshots[spells.berserk.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id].buff:GetRemainingTime(currentTime)
 	-- Add any Guardian-specific snapshot updates here when spells are defined
 end
 
@@ -1994,9 +2034,99 @@ local function UpdateResourceBar()
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
 				local currentResource = snapshotData.attributes.resource
 
+				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
+				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
+					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
+				end
+
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 
+				local pairOffset = 0
+				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
+					if resourceFrame.thresholds[thresholdId] == nil then
+						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
+					pairOffset = (thresholdId - 1) * 3
+					local resourceAmount = spell:GetPrimaryResourceCost()
+					local isUsable = spell:IsUsable()
+					local showThreshold = true
+					local thresholdColor = specCacheSettings.colors.threshold.over.color
+					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+					local snapshot = snapshots[spell.id]
+
+					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						if spell.id == spells.maul.id then
+							if talents:IsTalentActive(spells.raze) then
+								showThreshold = false
+							elseif talents:IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif isUsable then-- currentResource >= resourceAmount then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
+						end
+					elseif resourceAmount == 0 then
+						showThreshold = false
+					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+						showThreshold = false
+					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+						showThreshold = false
+					elseif spell.hasCooldown then
+						if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+							thresholdColor = specCacheSettings.colors.threshold.unusable.color
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+						elseif isUsable then-- currentResource >= resourceAmount then
+							thresholdColor = specCacheSettings.colors.threshold.over.color
+						else
+							thresholdColor = specCacheSettings.colors.threshold.under.color
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
+					else -- This is an active/available/normal spell threshold
+						if isUsable then-- currentResource >= resourceAmount then
+							thresholdColor = specCacheSettings.colors.threshold.over.color
+						else
+							thresholdColor = specCacheSettings.colors.threshold.under.color
+							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						end
+					end
+
+					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
+						showThreshold = false
+					end
+
+					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+				end
+
 				local barColor = specSettings.colors.bar.base
+				if snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive then
+					local snapshotBuff = snapshots[spells.berserk.id].buff
+
+					if not snapshotBuff.isActive then
+						snapshotBuff = snapshots[spells.incarnationGuardianOfUrsoc.id].buff
+					end
+
+					local timeThreshold = 0
+					local useEndOfBerserkColor = false
+
+					if specSettings.endOfBerserk.enabled then
+						useEndOfBerserkColor = true
+						if specSettings.endOfBerserk.mode == "gcd" then
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							timeThreshold = gcd * specSettings.endOfBerserk.gcdsMax
+						elseif specSettings.endOfBerserk.mode == "time" then
+							timeThreshold = specSettings.endOfBerserk.timeMax
+						end
+					end
+
+					if useEndOfBerserkColor and snapshotBuff.remaining <= timeThreshold then
+						barColor = specSettings.colors.bar.berserkEnd.color
+					else
+						barColor = specSettings.colors.bar.berserk.color
+					end
+				end
 				
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", specSettings.colors.bar.border)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
@@ -2757,6 +2887,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		elseif var == "$casting" then
 			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
+		elseif var == "$berserkTime" or var == "$incarnationTime" then
+			if snapshotData.snapshots[spells.berserk.id].buff.isActive or snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive then
 				valid = true
 			end
 		end

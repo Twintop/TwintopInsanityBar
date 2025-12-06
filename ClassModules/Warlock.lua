@@ -323,8 +323,6 @@ local function FillSpellData_Destruction()
 		{ variable = "$versatility", description = L["BarTextVariableVersatility"], printInSettings = true, color = false },
 		{ variable = "$versatilityPercent", description = L["BarTextVariableVersatility"], printInSettings = false, color = false },
 		{ variable = "$versatilityRating", description = L["BarTextVariableVersatilityRating"], printInSettings = true, color = false },
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true },
 		
 		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false },

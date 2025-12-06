@@ -37,7 +37,6 @@ end
 local function FillSpecializationCache()
 	-- Elemental
 	Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,

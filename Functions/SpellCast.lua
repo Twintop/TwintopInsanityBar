@@ -42,6 +42,8 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId)
 	elseif event == "UNIT_MODEL_CHANGED" then
 		-- Some forms change the unit model. We can use this to detect loss or gain of a proc
 		TRB.Functions.Class:SpellCast(event, 0)
+	elseif event == "SPELL_UPDATE_ICON" then
+		TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
@@ -61,6 +63,7 @@ function TRB.Functions.SpellCast:EnableSpellCast()
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
 	spellCastFrame:RegisterEvent("UNIT_MODEL_CHANGED")
+	spellCastFrame:RegisterEvent("SPELL_UPDATE_ICON")
 end
 
 function TRB.Functions.SpellCast:DisableSpellCast()

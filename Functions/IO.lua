@@ -118,6 +118,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 					configuration.comboPoints = settings.comboPoints
 				elseif specId == 3 then -- Guardian
 					-- No special bar display configuration for Guardian
+					configuration.endOfBerserk = settings.endOfBerserk
 				elseif specId == 4 then -- Restoration
 					configuration.endOfIncarnation = settings.endOfIncarnation
 				end

@@ -115,7 +115,7 @@ local function BalanceLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="$haste% ($gcd)",--#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount     {$talentStellarFlare}[          ]{$ttd}[TTD: $ttd]",
+			text="$haste% ($gcd)",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -885,7 +885,7 @@ local function GuardianLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="{$berserkTime}[$berserkTime sec]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -940,7 +940,7 @@ local function GuardianLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="$haste% ($gcd)||n{$ttd}[TTD: $ttd]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -963,7 +963,7 @@ local function GuardianLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="{$berserkTime}[$berserkTime]",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -1010,12 +1010,6 @@ end
 local function GuardianLoadDefaultSettings(includeBarText)
 	local settings = {
 		enabled = true,
-		ttd = {
-			enabled = true,
-			mode = "gcd",
-			gcdsMax = 4.5,
-			gcdsTime = 10
-		},
 		precision = {
 			secondary = 2,
 			resource = 0
@@ -1038,6 +1032,18 @@ local function GuardianLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
+				ironfur = {
+					enabled = true,
+				},
+				maul = {
+					enabled = true,
+				},
+				raze = {
+					enabled = true,
+				},
+				frenziedRegeneration = {
+					enabled = true,
+				}
 			}
 		},
 		maxResource = {
@@ -1059,6 +1065,12 @@ local function GuardianLoadDefaultSettings(includeBarText)
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
 		},
+		endOfBerserk = {
+			enabled=true,
+			mode="gcd",
+			gcdsMax=2,
+			timeMax=3.0
+		},
 		colors = {
 			text = {
 				current = {
@@ -1078,7 +1090,13 @@ local function GuardianLoadDefaultSettings(includeBarText)
 			bar = {
 				border="FFC21807",
 				background="66000000",
-				base="FFFF0000"
+				base="FFFF0000",
+				berserk = {
+					color = "FFFFCC55",
+				},
+				berserkEnd = {
+					color = "FFFF5555",
+				},
 			},
 			threshold = {
 				under = {
@@ -2672,7 +2690,7 @@ local function GuardianConstructResetDefaultsPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.guardian
-	local yCoord = 5
+	local yCoord = 5	
 
 	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_Reset"] = {
 		text = string.format(L["ResetBarDialog"], L["DruidGuardianFull"]),
@@ -2751,6 +2769,7 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	local controls = interfaceSettingsFrame.controls.guardian
 	local yCoord = 5
 	local f = nil
+	local title = ""
 
 	controls.buttons.exportButton_Druid_Guardian_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Druid_Guardian_BarDisplay:SetScript("OnClick", function(self, ...)
@@ -2766,7 +2785,31 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil)
 
 	yCoord = yCoord - 70
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])	
+
+	yCoord = yCoord - 30
+	controls.colors.incarnation = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianColorPickerIncarnation"], spec.colors.bar.berserk.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.incarnation
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "incarnation")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.endOfBerserk = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_endOfBerserk_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.endOfBerserk
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianCheckboxBerserkEnd"])
+	f.tooltip = L["DruidGuardianCheckboxBerserkEndTooltip"]
+	f:SetChecked(spec.endOfBerserk.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.endOfBerserk.enabled = self:GetChecked()
+	end)
+
+	controls.colors.berserkEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianColorPickerBerserkEnd"], spec.colors.bar.berserkEnd.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.berserkEnd
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "berserkEnd")
+	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -2777,6 +2820,59 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], false, false)
+	
+	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidGuardianEndOfBerserkConfigurationHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+	controls.checkBoxes.endOfBerserkModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_EOI_M_GCD", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfBerserkModeGCDs
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianCheckboxBerserkGcds"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.endOfBerserk.mode == "gcd" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfBerserkModeGCDs:SetChecked(true)
+		controls.checkBoxes.endOfBerserkModeTime:SetChecked(false)
+		spec.endOfBerserk.mode = "gcd"
+	end)
+
+	title = L["DruidGuardianBerserkGcds"]
+	controls.endOfBerserkGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfBerserk.gcdsMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfBerserkGCDs:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.endOfBerserk.gcdsMax = value
+	end)
+
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.endOfBerserkModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_EOI_M_TIME", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfBerserkModeTime
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianCheckboxBerserkTime"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.endOfBerserk.mode == "time" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfBerserkModeGCDs:SetChecked(false)
+		controls.checkBoxes.endOfBerserkModeTime:SetChecked(true)
+		spec.endOfBerserk.mode = "time"
+	end)
+
+	title = L["DruidGuardianBerserkTime"]
+	controls.endOfBerserkTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfBerserk.timeMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfBerserkTime:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.endOfBerserk.timeMax = value
+	end)
+
 
 	yCoord = yCoord - 25
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], 1, GUARDIAN_MAX_RAGE)
@@ -2803,33 +2899,57 @@ local function GuardianConstructThresholdPanel(parent)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 3, false, true, false, false, false, false)
 	end)
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 40
-	controls.checkBoxes.thresholdsSetDefaultColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_thresholdsSetDefaultColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdsSetDefaultColor
+	controls.colors.threshold = {}
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.frenziedRegenerationThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Threshold_Option_frenziedRegeneration", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.frenziedRegenerationThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdSetDefaultColor"])
-	f.tooltip = L["ThresholdSetDefaultColorTooltip"]
-	f:SetChecked(true)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianThresholdCheckboxFrenziedRegeneration"])
+	f.tooltip = L["DruidGuardianThresholdCheckboxFrenziedRegenerationTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.frenziedRegeneration.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.frenziedRegeneration.enabled = self:GetChecked()
+	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.thresholdsSetCooldownColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_thresholdsSetCooldownColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdsSetCooldownColor
+	controls.checkBoxes.ironfurThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Threshold_Option_ironfur", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ironfurThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdSetCooldownColor"])
-	f.tooltip = L["ThresholdSetCooldownColorTooltip"]
-	f:SetChecked(false)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.thresholdsSetOutOfRangeColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_thresholdsSetOutOfRangeColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdsSetOutOfRangeColor
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdSetOutOfRangeColor"])
-	f.tooltip = L["ThresholdSetOutOfRangeColorTooltip"]
-	f:SetChecked(true)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianThresholdCheckboxIronfur"])
+	f.tooltip = L["DruidGuardianThresholdCheckboxIronfurTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.ironfur.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.ironfur.enabled = self:GetChecked()
+	end)
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 25
+	controls.checkBoxes.maulThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Threshold_Option_maul", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.maulThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianThresholdCheckboxMaulRaze"])
+	f.tooltip = L["DruidGuardianThresholdCheckboxMaulRazeTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.maul.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.maul.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.raze.enabled = self:GetChecked()
+	end)
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+		--[[{
+			name = "special",
+			hasEnabledCheckbox = true,
+			colorLocalization = L["DruidGuardianThresholdSpecial"],
+			enabledCheckboxLocalization = L["DruidGuardianThresholdSpecialEnabled"],
+			enabledCheckboxTooltipLocalization = L["DruidGuardianThresholdSpecialEnabledTooltip"]
+		}]]
+	}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], true, true, true, true, custom)
+
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 3, yCoord)
 end
 

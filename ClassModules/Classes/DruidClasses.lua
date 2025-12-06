@@ -610,6 +610,12 @@ end
 
 
 ---@class TRB.Classes.Druid.GuardianSpells : TRB.Classes.SpecializationSpellsBase
+---@field public berserk TRB.Classes.SpellBase
+---@field public incarnationGuardianOfUrsoc TRB.Classes.SpellBase
+---@field public frenziedRegeneration TRB.Classes.SpellThreshold
+---@field public ironfur TRB.Classes.SpellThreshold
+---@field public maul TRB.Classes.SpellThreshold
+---@field public raze TRB.Classes.SpellThreshold
 TRB.Classes.Druid.GuardianSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Druid.GuardianSpells.__index = TRB.Classes.Druid.GuardianSpells
 
@@ -618,7 +624,56 @@ function TRB.Classes.Druid.GuardianSpells:New()
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), {__index = TRB.Classes.Druid.GuardianSpells})
 
-    -- Guardian spell definitions will be added here
+    
+    self.frenziedRegeneration = TRB.Classes.SpellThreshold:New({
+        id = 22842,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "frenziedRegeneration",
+        hasCooldown = true,
+		rangeCheck = false
+    })
+    self.ironfur = TRB.Classes.SpellThreshold:New({
+        id = 192081,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "ironfur",
+		rangeCheck = false
+    })
+    self.maul = TRB.Classes.SpellThreshold:New({
+        id = 6807,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "maul",
+        isSnowflake = true
+    })
+    self.raze = TRB.Classes.SpellThreshold:New({
+        id = 400254,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "raze"
+    })
+    self.ravage = TRB.Classes.SpellBase:New({--Threshold:New({
+        id = 441583,
+        buffId = 441585,
+        talentId = 441583,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "ravage",
+        isSnowflake = true
+    })
+    self.berserk = TRB.Classes.SpellBase:New({
+        id = 50334,
+        castId = 50334,
+        isTalent = true,
+        duration = 15
+    })
+    self.incarnationGuardianOfUrsoc = TRB.Classes.SpellBase:New({
+        id = 102558,
+        castId = 102558,
+        isTalent = true,
+        duration = 30
+    })
 
     return self
 end

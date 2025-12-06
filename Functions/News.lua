@@ -23,7 +23,8 @@ local content = [====[
 
 ### [#493](#493) Guardian
 
-
+- Add threshold lines for Rage consuming abilities.
+- Add support for Berserk and Incarnation: Guardian of Ursoc to trigger a bar color change and have bar text to show the remaining duration.
 
 ## Monk
 ### [#494](#494) Brewmaster

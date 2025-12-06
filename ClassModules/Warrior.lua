@@ -298,10 +298,7 @@ local function FillSpellData_Fury()
 		{ variable = "$bladestormRage", description = L["WarriorFuryBarTextVariable_bladestormRage"], printInSettings = true, color = false },
 
 		{ variable = "$whirlwindTime", description = L["WarriorFuryBarTextVariable_whirlwindTime"], printInSettings = true, color = false },
-		{ variable = "$whirlwindStacks", description = L["WarriorFuryBarTextVariable_whirlwindStacks"], printInSettings = true, color = false },
-		
-		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
-		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }]]
+		{ variable = "$whirlwindStacks", description = L["WarriorFuryBarTextVariable_whirlwindStacks"], printInSettings = true, color = false }]]
 	}
 end
 
