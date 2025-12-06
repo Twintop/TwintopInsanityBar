@@ -162,9 +162,11 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 	})
 	self.soothingMist = TRB.Classes.SpellThreshold:New({
 		id = 115175,
-		primaryResourceType = Enum.PowerType.Mana,
+		primaryResourceType = Enum.PowerType.Energy,
+		primaryResourceTypeProperty = "costPerSec",
 		settingKey = "soothingMist",
 		isTalent = true,
+		rangeCheck = false
 	})
 
 	-- Brewmaster Spec Talents
@@ -281,7 +283,6 @@ end
 
 ---@class TRB.Classes.Monk.WindwalkerSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public ancientArts TRB.Classes.SpellBase
----@field public touchOfDeath TRB.Classes.SpellBase
 ---@field public strikeOfTheWindlord TRB.Classes.SpellBase
 ---@field public danceOfChiJi TRB.Classes.SpellBase
 ---@field public combatWisdom TRB.Classes.SpellBase
@@ -330,7 +331,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		cooldown = 15,
 		isTalent = false,
 		baseline = true,
-		isSnowflake = true
+		isSnowflake = true,
+		rangeCheck = false
 	})
 	self.spinningCraneKick = TRB.Classes.SpellComboPoint:New({
 		id = 101546,
@@ -346,19 +348,13 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		isTalent = false,
 		baseline = true
 	})
-	self.touchOfDeath = TRB.Classes.SpellBase:New({
-		id = 322109,
-		healthPercent = 0.35,
-		eliteHealthPercent = 0.15,
-		isTalent = false,
-		baseline = true
-	})
 	self.vivify = TRB.Classes.SpellThreshold:New({
 		id = 116670,
 		primaryResourceType = Enum.PowerType.Energy,
 		settingKey = "vivify",
 		isTalent = false,
-		baseline = true
+		baseline = true,
+		rangeCheck = false
 	})
 
 	-- Windwalker Spec Baseline Abilities
@@ -381,7 +377,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		hasCooldown = true,
 		cooldown = 8,
 		isTalent = true,
-		baseline = true -- TODO: Check this in a future build
 	})
 	self.disable = TRB.Classes.SpellThreshold:New({
 		id = 116095,
@@ -402,6 +397,14 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		id = 344359,
 		cooldownMod = -15,
 		isTalent = true,
+	})
+	self.soothingMist = TRB.Classes.SpellThreshold:New({
+		id = 115175,
+		primaryResourceType = Enum.PowerType.Energy,
+		primaryResourceTypeProperty = "costPerSec",
+		settingKey = "soothingMist",
+		isTalent = true,
+		rangeCheck = false
 	})
 
 	-- Windwalker Spec Talent Abilities

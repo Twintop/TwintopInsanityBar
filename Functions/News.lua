@@ -24,6 +24,10 @@ local content = [====[
 - Add support for Jade Flash causing Crackling Jade Lightning to have a cooldown.
 - Add Stagger Bar default text.
 
+### [#478](#478) Windwalker
+
+- Add Soothing Mist as a threshold line. Disabled by default.
+
 ---
 
 # 12.0.0.0-alpha16 (2025-12-05)

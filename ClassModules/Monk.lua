@@ -323,7 +323,6 @@ local function FillSpellData_Windwalker()
 		{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
 		{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
 		{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
-		{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
 		{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
 	}
 	specCache.windwalker.barTextVariables.values = {
@@ -1091,7 +1090,6 @@ local function SwitchSpec()
 		lookup["#sck"] = spells.spinningCraneKick.icon
 		lookup["#strikeOfTheWindlord"] = spells.strikeOfTheWindlord.icon
 		lookup["#tigerPalm"] = spells.tigerPalm.icon
-		lookup["#touchOfDeath"] = spells.touchOfDeath.icon
 		lookup["#vivify"] = spells.vivify.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}

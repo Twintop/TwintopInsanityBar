@@ -847,6 +847,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				paralysis = {
 					enabled = false,
 				},
+				soothingMist = {
+					enabled = false,
+				},
 			}
 		},
 		generation = {
@@ -1311,7 +1314,7 @@ local function BrewmasterConstructThresholdPanel(parent)
 
 	yCoord = yCoord2
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 1, yCoord)
 
@@ -2247,6 +2250,17 @@ local function WindwalkerConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.paralysis.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.paralysis.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
+	controls.checkBoxes.soothingMistThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_soothingMist", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.soothingMistThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxSoothingMist"])
+	f.tooltip = L["MonkWindwalkerThresholdCheckboxSoothingMistTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.soothingMist.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.soothingMist.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
