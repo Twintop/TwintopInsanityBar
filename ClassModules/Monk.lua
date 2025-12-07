@@ -634,7 +634,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			if spellId == spells.expelHarm.castId then
 				local cooldown = spells.expelHarm.cooldown
 
-				snapshotData.snapshots[spells.expelHarm.id].cooldown:InitializeCustom(currentTime, cooldown)
+				snapshotData.snapshots[spells.expelHarm.id].cooldown:InitializeCustom(cooldown, currentTime)
 			elseif spellId == spells.paralysis.castId then
 				local cooldown = spells.paralysis.cooldown
 
@@ -642,18 +642,18 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					cooldown = cooldown + spells.ancientArts.attributes.cooldownMod
 				end
 
-				snapshotData.snapshots[spells.paralysis.id].cooldown:InitializeCustom(currentTime, cooldown)
+				snapshotData.snapshots[spells.paralysis.id].cooldown:InitializeCustom(cooldown, currentTime)
 			elseif spellId == spells.detox.castId then -- This doesn't actually trigger a CD if it doesn't dispel anything, but we have no way of knowing that here
 				local cooldown = spells.detox.cooldown
 
-				snapshotData.snapshots[spells.detox.id].cooldown:InitializeCustom(currentTime, cooldown)
+				snapshotData.snapshots[spells.detox.id].cooldown:InitializeCustom(cooldown, currentTime)
 			end
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if spellId == spells.cracklingJadeLightning.castId then
 				if talents:IsTalentActive(spells.jadeFlash) then
 					local cooldown = spells.jadeFlash.cooldown
 
-					snapshotData.snapshots[spells.cracklingJadeLightning.id].cooldown:InitializeCustom(currentTime, cooldown)
+					snapshotData.snapshots[spells.cracklingJadeLightning.id].cooldown:InitializeCustom(cooldown, currentTime)
 				end
 			end
 		end
@@ -735,7 +735,7 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
-				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -872,7 +872,7 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then

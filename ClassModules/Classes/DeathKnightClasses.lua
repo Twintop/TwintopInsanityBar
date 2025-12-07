@@ -6,52 +6,111 @@ end
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.DeathKnight = TRB.Classes.DeathKnight or {}
 
+---@class TRB.Classes.DeathKnight.DeathKnightBaseSpells : TRB.Classes.SpecializationSpellsBase
+---@field deathCoil TRB.Classes.SpellThreshold
+---@field deathStrike TRB.Classes.SpellThreshold
+TRB.Classes.DeathKnight.DeathKnightBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.DeathKnight.DeathKnightBaseSpells.__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells
 
----@class TRB.Classes.DeathKnight.BloodSpells : TRB.Classes.SpecializationSpellsBase
-TRB.Classes.DeathKnight.BloodSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.DeathKnight.BloodSpells.__index = TRB.Classes.DeathKnight.BloodSpells
-
-function TRB.Classes.DeathKnight.BloodSpells:New()
+function TRB.Classes.DeathKnight.DeathKnightBaseSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.DeathKnight.BloodSpells) --[[@as TRB.Classes.DeathKnight.BloodSpells]]
-    -- Death Knight Class Baseline Abilities
+    self = setmetatable(TRB.Classes.SpecializationSpellsBase:New(), TRB.Classes.DeathKnight.DeathKnightBaseSpells) --[[@as TRB.Classes.DeathKnight.DeathKnightBaseSpells]]
 
-    -- Blood Baseline Abilities
-    self.infusionOfLight = TRB.Classes.SpellBase:New({
-        id = 54149,
+    -- Baseline
+    self.deathCoil = TRB.Classes.SpellThreshold:New({
+        id = 47541,
+        primaryResourceType = Enum.PowerType.RunicPower,
+        settingKey = "deathCoil",
         isTalent = false,
         baseline = true
     })
+
+    -- Class Talents
+    self.deathStrike = TRB.Classes.SpellThreshold:New({
+        id = 49998,
+        primaryResourceType = Enum.PowerType.RunicPower,
+        settingKey = "deathStrike",
+        isTalent = true
+    })
+
+    return self
+end
+
+---@class TRB.Classes.DeathKnight.BloodSpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
+---@field raiseAlly TRB.Classes.SpellThreshold
+TRB.Classes.DeathKnight.BloodSpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
+TRB.Classes.DeathKnight.BloodSpells.__index = TRB.Classes.DeathKnight.BloodSpells
+
+function TRB.Classes.DeathKnight.BloodSpells:New()
+    ---@type TRB.Classes.DeathKnight.DeathKnightBaseSpells
+    local base = TRB.Classes.DeathKnight.DeathKnightBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.DeathKnight.BloodSpells) --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+    -- Death Knight Class Baseline Abilities
+    self.raiseAlly = TRB.Classes.SpellThreshold:New({
+        id = 61999,
+        primaryResourceType = Enum.PowerType.RunicPower,
+        settingKey = "raiseAlly",
+        isTalent = false,
+        baseline = true
+    })
+
+    -- Blood Baseline Abilities
 
     -- Death Knight Class Talents
     
     -- Blood Spec Talents
 
+    self.deathStrike.baseline = true
     return self
 end
 
 
----@class TRB.Classes.DeathKnight.FrostSpells : TRB.Classes.SpecializationSpellsBase
-TRB.Classes.DeathKnight.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+---@class TRB.Classes.DeathKnight.FrostSpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
+---@field breathOfSindragosa TRB.Classes.SpellThreshold
+---@field frostStrike TRB.Classes.SpellThreshold
+---@field glacialAdvance TRB.Classes.SpellThreshold
+TRB.Classes.DeathKnight.FrostSpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.FrostSpells.__index = TRB.Classes.DeathKnight.FrostSpells
 
 function TRB.Classes.DeathKnight.FrostSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
+    ---@type TRB.Classes.DeathKnight.DeathKnightBaseSpells
+    local base = TRB.Classes.DeathKnight.DeathKnightBaseSpells
     self = setmetatable(base:New(), TRB.Classes.DeathKnight.FrostSpells) --[[@as TRB.Classes.DeathKnight.FrostSpells]]
-    
+
+    self.breathOfSindragosa = TRB.Classes.SpellThreshold:New({
+        id = 1249658,
+        castId = 1249658,
+        primaryResourceType = Enum.PowerType.RunicPower,
+        settingKey = "breathOfSindragosa",
+        isTalent = true,
+        rangeCheck = false,
+        hasCooldown = true,
+        cooldown = 90
+    })
+    self.frostStrike = TRB.Classes.SpellThreshold:New({
+        id = 49143,
+        primaryResourceType = Enum.PowerType.RunicPower,
+        settingKey = "frostStrike",
+        isTalent = true
+    })
+    self.glacialAdvance = TRB.Classes.SpellThreshold:New({
+        id = 194913,
+        primaryResourceType = Enum.PowerType.RunicPower,
+        settingKey = "glacialAdvance",
+        isTalent = true
+    })
+
     return self
 end
 
 
----@class TRB.Classes.DeathKnight.UnholySpells : TRB.Classes.SpecializationSpellsBase
-TRB.Classes.DeathKnight.UnholySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+---@class TRB.Classes.DeathKnight.UnholySpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
+TRB.Classes.DeathKnight.UnholySpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.UnholySpells.__index = TRB.Classes.DeathKnight.UnholySpells
 
 function TRB.Classes.DeathKnight.UnholySpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
+    ---@type TRB.Classes.DeathKnight.DeathKnightBaseSpells
+    local base = TRB.Classes.DeathKnight.DeathKnightBaseSpells
     self = setmetatable(base:New(), TRB.Classes.DeathKnight.UnholySpells) --[[@as TRB.Classes.DeathKnight.UnholySpells]]
    
     return self

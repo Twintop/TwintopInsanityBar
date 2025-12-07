@@ -619,10 +619,10 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 end
 
 ---Initializes the cooldown information for the snapshot with custom startTime and duration values
----@param startTime number
 ---@param duration number
-function TRB.Classes.SnapshotCooldown:InitializeCustom(startTime, duration)
-	self.startTime = startTime
+---@param startTime? number
+function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime)
+	self.startTime = startTime or GetTime()
 	self.duration = duration
 	self.isCustom = true
 	self:GetRemainingTime()

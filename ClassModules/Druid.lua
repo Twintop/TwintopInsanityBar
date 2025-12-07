@@ -1345,7 +1345,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
-				local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
@@ -1540,7 +1540,7 @@ local function UpdateResourceBar()
 				local flashBar = false
 				local barBorderColor = specSettings.colors.bar.border
 
-				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -1781,7 +1781,7 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-				local currentResource = snapshotData.attributes.resource -- snapshotData.attributes.resource / TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then

@@ -357,6 +357,15 @@ local function BloodLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
+				deathCoil = {
+					enabled = true
+				},
+				deathStrike = {
+					enabled = true
+				},
+				raiseAlly = {
+					enabled = true
+				}
 			}
 		},
 		maxResource = {
@@ -661,6 +670,21 @@ local function FrostLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
+				deathCoil = {
+					enabled = true
+				},
+				deathStrike = {
+					enabled = true
+				},
+				breathOfSindragosa = {
+					enabled = true
+				},
+				frostStrike = {
+					enabled = true
+				},
+				glacialAdvance = {
+					enabled = true
+				}
 			}
 		},
 		maxResource = {
