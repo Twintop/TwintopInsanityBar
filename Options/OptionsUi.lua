@@ -548,6 +548,16 @@ function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, he
 	return f
 end
 
+---Builds a Label object for the Options UI
+---@param parent frame
+---@param text string
+---@param posX number
+---@param posY number
+---@param width number
+---@param height number
+---@param fontObject Font?
+---@param hAlign string?
+---@return table|Frame
 function TRB.Functions.OptionsUi:BuildLabel(parent, text, posX, posY, width, height, fontObject, hAlign)
 	if fontObject == nil then
 		fontObject = GameFontNormal

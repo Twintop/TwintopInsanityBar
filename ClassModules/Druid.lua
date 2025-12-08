@@ -158,6 +158,8 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.feralFrenzy.id] = TRB.Classes.Snapshot:New(spells.feralFrenzy)
 	---@type TRB.Classes.Snapshot
+	specCache.feral.snapshotData.snapshots[spells.franticFrenzy.id] = TRB.Classes.Snapshot:New(spells.franticFrenzy)
+	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.clearcasting.id] = TRB.Classes.Snapshot:New(spells.clearcasting)
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.tigersFury.id] = TRB.Classes.Snapshot:New(spells.tigersFury)
@@ -182,7 +184,7 @@ local function FillSpecializationCache()
 	specCache.feral.snapshotData.snapshots[spells.apexPredatorsCraving.id] = TRB.Classes.Snapshot:New(spells.apexPredatorsCraving)
 	-- Druid of the Claw
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.ravage.id] = TRB.Classes.Snapshot:New(spells.ravage)
+	specCache.feral.snapshotData.snapshots[spells.ravageMinimum.id] = TRB.Classes.Snapshot:New(spells.ravageMinimum)
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 
@@ -426,7 +428,7 @@ local function FillSpellData_Feral()
 		{ variable = "#catForm", icon = spells.catForm.icon, description = spells.catForm.name, printInSettings = true },
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
-		{ variable = "#ferociousBite", icon = spells.ferociousBite.icon, description = spells.ferociousBite.name, printInSettings = true },
+		{ variable = "#ferociousBite", icon = spells.ferociousBiteMinimum.icon, description = spells.ferociousBiteMinimum.name, printInSettings = true },
 		{ variable = "#incarnation", icon = spells.incarnationAvatarOfAshamane.icon, description = spells.incarnationAvatarOfAshamane.name, printInSettings = true },
 		{ variable = "#incarnationAvatarOfAshamane", icon = spells.incarnationAvatarOfAshamane.icon, description = spells.incarnationAvatarOfAshamane.name, printInSettings = false },
 		{ variable = "#lunarInspiration", icon = spells.lunarInspiration.icon, description = spells.lunarInspiration.name, printInSettings = true },
@@ -436,13 +438,12 @@ local function FillSpellData_Feral()
 		{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
 		{ variable = "#stealth", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = false },
 		{ variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
-		{ variable = "#ravage", icon = spells.ravage.icon, description = spells.ravage.name, printInSettings = true },
+		{ variable = "#ravage", icon = spells.ravageMinimum.icon, description = spells.ravageMinimum.name, printInSettings = true },
 		{ variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
 		{ variable = "#shadowmeld", icon = spells.shadowmeld.icon, description = spells.shadowmeld.name, printInSettings = true },
 		{ variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
 		{ variable = "#suddenAmbush", icon = spells.suddenAmbush.icon, description = spells.suddenAmbush.name, printInSettings = true },
 		{ variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
-		{ variable = "#thrash", icon = spells.thrash.icon, description = spells.thrash.name, printInSettings = true },
 		{ variable = "#tigersFury", icon = spells.tigersFury.icon, description = spells.tigersFury.name, printInSettings = true },
 	}
 	specCache.feral.barTextVariables.values = {
@@ -1823,18 +1824,9 @@ local function UpdateResourceBar()
 							thresholdColor = specCacheSettings.colors.threshold.over.color
 						end
 					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-						if spell.id == spells.ferociousBite.id then
-							if snapshots[spells.ravage.id].buff.isActive then
+						if spell.id == spells.ferociousBiteMinimum.id then
+							if snapshots[spells.ravageMinimum.id].buff.isActive then
 								showThreshold = false
-							elseif spell.id == spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
-								--resourceAmount = math.min(math.max(resourceAmount, currentResource), spells.ferociousBiteMaximum:GetPrimaryResourceCost())
-								
-								if isUsable then--currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
-									thresholdColor = specCacheSettings.colors.threshold.over.color
-								else
-									thresholdColor = specCacheSettings.colors.threshold.under.color
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
 							elseif spell.id == spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
 								if isUsable then--currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1850,18 +1842,9 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
-						elseif spell.id == spells.ravage.id then
-							if not snapshots[spells.ravage.id].buff.isActive then
+						elseif spell.id == spells.ravageMinimum.id then
+							if not snapshots[spells.ravageMinimum.id].buff.isActive then
 								showThreshold = false
-							elseif spell.id == spells.ravage.id and spell.settingKey == "ravage" then
-								--resourceAmount = math.min(math.max(resourceAmount, currentResource), spells.ravageMaximum:GetPrimaryResourceCost())
-								
-								if isUsable then--currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
-									thresholdColor = specCacheSettings.colors.threshold.over.color
-								else
-									thresholdColor = specCacheSettings.colors.threshold.under.color
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
 							elseif spell.id == spells.ravageMinimum.id and spell.settingKey == "ravageMinimum" then
 								if isUsable then--currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1919,6 +1902,32 @@ local function UpdateResourceBar()
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
+						elseif spell.id == spells.feralFrenzy.id then
+							if talents:IsTalentActive(spells.franticFrenzy) then
+								showThreshold = false
+							elseif snapshots[spell.id].cooldown:IsUnusable() then
+								thresholdColor = specCacheSettings.colors.threshold.unusable.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+							elseif isUsable then-- currentResource >= resourceAmount then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
+						elseif spell.id == spells.franticFrenzy.id then
+							if not talents:IsTalentActive(spells.franticFrenzy) then
+								showThreshold = false
+							elseif snapshots[spell.id].cooldown:IsUnusable() then
+								thresholdColor = specCacheSettings.colors.threshold.unusable.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+							elseif isUsable then-- currentResource >= resourceAmount then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
+						else
+							showThreshold = false
 						end
 					elseif resourceAmount == 0 then
 						showThreshold = false
@@ -2274,7 +2283,7 @@ local function SwitchSpec()
 		lookup["#catForm"] = spells.catForm.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
 		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
-		lookup["#ferociousBite"] = spells.ferociousBite.icon
+		lookup["#ferociousBite"] = spells.ferociousBiteMinimum.icon
 		lookup["#incarnation"] = spells.incarnationAvatarOfAshamane.icon
 		lookup["#incarnationAvatarOfAshamane"] = spells.incarnationAvatarOfAshamane.icon
 		lookup["#lunarInspiration"] = spells.lunarInspiration.icon
@@ -2284,13 +2293,12 @@ local function SwitchSpec()
 		lookup["#prowl"] = spells.prowl.icon
 		lookup["#stealth"] = spells.prowl.icon
 		lookup["#rake"] = spells.rake.icon
-		lookup["#ravage"] = spells.ravage.icon
+		lookup["#ravage"] = spells.ravageMinimum.icon
 		lookup["#rip"] = spells.rip.icon
 		lookup["#shadowmeld"] = spells.shadowmeld.icon
 		lookup["#shred"] = spells.shred.icon
 		lookup["#suddenAmbush"] = spells.suddenAmbush.icon
 		lookup["#swipe"] = spells.swipe.icon
-		lookup["#thrash"] = spells.thrash.icon
 		lookup["#tigersFury"] = spells.tigersFury.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}

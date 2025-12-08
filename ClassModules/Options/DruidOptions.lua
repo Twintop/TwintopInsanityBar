@@ -565,7 +565,7 @@ local function FeralLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="#rake $rakeCount    #thrash $thrashCount||n#rip $ripCount    {$lunarInspiration}[#moonfire $moonfireCount]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -660,62 +660,53 @@ local function FeralLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			specProperties = {
-				bleedColors=true,
+            thresholdDictionary = {
+			brutalSlash = {
+				enabled = true,
 			},
-			thresholdDictionary = {
-				rake = {
+				feralFrenzy = {
 					enabled = true,
 				},
-				thrash = {
+				franticFrenzy = {
 					enabled = true,
 				},
-				swipe = {
-					enabled = false,
-				},
-				rip = {
-					enabled = true,
-				},
-				maim = {
-					enabled = false,
-				},
-				ferociousBite = {
+				ferociousBiteMaximum = {
 					enabled = true,
 				},
 				ferociousBiteMinimum = {
 					enabled = false,
 				},
-				ferociousBiteMaximum = {
-					enabled = true,
+				frenziedRegeneration = {
+					enabled = false,
 				},
-				shred = {
+				maim = {
+					enabled = false,
+				},
+				moonfire = {
 					enabled = true,
 				},
 				primalWrath = {
 					enabled = true,
 				},
-				moonfire = {
+				rake = {
 					enabled = true,
 				},
-				brutalSlash = {
-					enabled = true,
-				},
-				feralFrenzy = {
-					enabled = true,
-				},
-				ravage = {
+				ravageMaximum = {
 					enabled = true,
 				},
 				ravageMinimum = {
 					enabled = false,
 				},
-				ravageMaximum = {
+				rip = {
 					enabled = true,
 				},
-				frenziedRegeneration = {
+				shred = {
+					enabled = true,
+				},
+				swipe = {
 					enabled = false,
-				}
-			}
+				},
+            }
 		},
 		generation = {
 			mode="gcd",
@@ -2314,6 +2305,7 @@ local function FeralConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.feralFrenzy.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.feralFrenzy.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.franticFrenzy.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2361,32 +2353,12 @@ local function FeralConstructThresholdPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.thrashThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_thrash", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thrashThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxThrash"])
-	f.tooltip = L["DruidFeralThresholdCheckboxThrashTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.thrash.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.thrash.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 
 
 	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], oUi.xCoord2, yCoord2, 110, 20)
 	yCoord2 = yCoord2 - 20
 
-	controls.checkBoxes.ferociousBiteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBite", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ferociousBiteThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxFerociousBite"])
-	f.tooltip = L["DruidFeralThresholdCheckboxFerociousBiteTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.ferociousBite.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.ferociousBite.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.ravage.enabled = self:GetChecked()
-	end)
+	controls.labels.ferociousBite = TRB.Functions.OptionsUi:BuildLabel(parent, L["DruidFeralThresholdCheckboxFerociousBite"], oUi.xCoord2, yCoord2, 110, 20, GameFontWhite)
 
 	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.ferociousBiteMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBiteMinimum", parent, "ChatConfigCheckButtonTemplate")
@@ -2459,18 +2431,6 @@ local function FeralConstructThresholdPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.thresholdBleedColors = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdBleedColors", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thresholdBleedColors
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralThresholdCheckboxBleedColor"])
-	f.tooltip = L["DruidFeralThresholdCheckboxBleedColorTooltip"]
-	f:SetChecked(spec.thresholds.specProperties.bleedColors)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.specProperties.bleedColors = self:GetChecked()
-		TRB.Functions.Threshold:RedrawThresholdLines()
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 2, yCoord)
 end

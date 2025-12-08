@@ -293,7 +293,6 @@ end
 ---@field public sunfire TRB.Classes.SpellBase
 ---@field public prowl TRB.Classes.SpellBase
 ---@field public tigersFury TRB.Classes.SpellBase
----@field public momentOfClarity TRB.Classes.SpellBase
 ---@field public clearcasting TRB.Classes.SpellBase
 ---@field public lunarInspiration TRB.Classes.SpellBase
 ---@field public suddenAmbush TRB.Classes.SpellBase
@@ -304,10 +303,8 @@ end
 ---@field public circleOfLifeAndDeath TRB.Classes.SpellBase
 ---@field public apexPredatorsCraving TRB.Classes.SpellBase
 ---@field public rake TRB.Classes.SpellComboPointThreshold
----@field public thrash TRB.Classes.SpellComboPointThreshold
 ---@field public rip TRB.Classes.SpellComboPointThreshold
 ---@field public maim TRB.Classes.SpellComboPointThreshold
----@field public ferociousBite TRB.Classes.SpellComboPointThreshold
 ---@field public ferociousBiteMinimum TRB.Classes.SpellComboPointThreshold
 ---@field public ferociousBiteMaximum TRB.Classes.SpellComboPointThreshold
 ---@field public shred TRB.Classes.SpellComboPointThreshold
@@ -316,7 +313,7 @@ end
 ---@field public moonfire TRB.Classes.SpellComboPointThreshold
 ---@field public brutalSlash TRB.Classes.SpellComboPointThreshold
 ---@field public feralFrenzy TRB.Classes.SpellComboPointThreshold
----@field public ravage TRB.Classes.SpellComboPointThreshold
+---@field public franticFrenzy TRB.Classes.SpellComboPointThreshold
 ---@field public ravageMinimum TRB.Classes.SpellComboPointThreshold
 ---@field public ravageMaximum TRB.Classes.SpellComboPointThreshold
 ---@field public frenziedRegeneration TRB.Classes.SpellComboPointThreshold
@@ -351,22 +348,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         baseDuration = 15,
         bonuses = {
             stealth = true,
-            tigersFury = true
-        },
-        isTalent = true,
-        baseline = true
-    })
-    self.thrash = TRB.Classes.SpellComboPointThreshold:New({
-        id = 106830,
-        debuffId = 405233,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 1,
-        settingKey = "thrash",
-        hasSnapshot = true,
-        pandemic = true,
-        baseDuration = 15,
-        bonuses = {
-            momentOfClarity = true,
             tigersFury = true
         },
         isTalent = true,
@@ -412,13 +393,6 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
 
     -- Feral Spec Baseline Abilities
-    self.ferociousBite = TRB.Classes.SpellComboPointThreshold:New({
-        id = 22568,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPoints = true,
-        settingKey = "ferociousBite",
-        isSnowflake = true -- Really between 25-50 energy
-    })
     self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
         primaryResourceType = Enum.PowerType.Energy,
@@ -461,11 +435,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 5217,
         modifier = 1.15,
         hasCooldown = true,
-        isTalent = true
-    })
-    self.momentOfClarity = TRB.Classes.SpellBase:New({
-        id = 236068,
-        modifier = 1.15,
         isTalent = true
     })
     self.clearcasting = TRB.Classes.SpellBase:New({
@@ -540,7 +509,18 @@ function TRB.Classes.Druid.FeralSpells:New()
         comboPointsGenerated = 5,
         settingKey = "feralFrenzy",
         isTalent = true,
-        hasCooldown = true
+        hasCooldown = true,
+        isSnowflake = true
+    })
+    self.franticFrenzy = TRB.Classes.SpellComboPointThreshold:New({
+        id = 1243807,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPointsGenerated = 5,
+        settingKey = "franticFrenzy",
+        isTalent = true,
+        hasCooldown = true,
+        isSnowflake = true,
+        rangeCheck = false
     })
     self.incarnationAvatarOfAshamane = TRB.Classes.SpellBase:New({
         id = 102543,
@@ -560,16 +540,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 391882
     })
     -- Druid of the Claw
-    self.ravage = TRB.Classes.SpellComboPointThreshold:New({
-        id = 441591,
-        buffId = 441585,
-        talentId = 441583,
-        isTalent = true,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPoints = true,
-        settingKey = "ravage",
-        isSnowflake = true -- Really between 25-50 energy
-    })
     self.ravageMinimum = TRB.Classes.SpellComboPointThreshold:New({
         id = 441591,
         buffId = 441585,

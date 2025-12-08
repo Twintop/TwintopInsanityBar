@@ -25,6 +25,11 @@ local content = [====[
 
 - Add threshold lines for abilities that require Runic Power: Death Coil, Death Strike, and Raise Ally.
 
+## Druid
+### [#469](#469) Feral
+
+- Add threshold line support for Frantic Frenzy; remove Thrash.
+
 ---
 
 # 12.0.0.0-beta01 (2025-12-07)
