@@ -761,16 +761,6 @@ local function UpdateResourceBar()
 				
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 				
-				--[[local targetUnitHealth
-				if target ~= nil then
-					targetUnitHealth = target:GetHealthPercent()
-				end]]
-				
-				--[[local healthMinimum = spells.execute.attributes.healthMinimum
-				if talents:IsTalentActive(spells.massacre) then
-					healthMinimum = spells.massacre.attributes.healthMinimum
-				end]]
-				
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					if resourceFrame.thresholds[thresholdId] == nil then
@@ -786,23 +776,6 @@ local function UpdateResourceBar()
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.executeMinimum.id then--spells.execute.id then
-							--[[if snapshots[spells.suddenDeath.id].buff.isActive then
-								--We only show the maximum value when this proc occurs. Current and minimum thresholds being in their expected place don't matter.
-								resourceAmount = spells.executeMaximum:GetPrimaryResourceCost()
-							elseif spell.settingKey == "execute" then
-								resourceAmount = math.min(math.max(resourceAmount, currentResource), spells.executeMaximum:GetPrimaryResourceCost())
-							end]]
-							
-							--[[if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
-								showThreshold = false
-							elseif snapshots[spells.suddenDeath.id].buff.isActive then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							elseif targetUnitHealth >= healthMinimum then
-								showThreshold = false
-							elseif isUsable then-- currentResource >= resourceAmount then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							else]]
-							
 							if isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
@@ -911,16 +884,6 @@ local function UpdateResourceBar()
 				end
 				
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-				
-				--[[local targetUnitHealth
-				if target ~= nil then
-					targetUnitHealth = target:GetHealthPercent()
-				end]]
-									
-				--[[local healthMinimum = spells.execute.attributes.healthMinimum
-				if talents:IsTalentActive(spells.massacre) then
-					healthMinimum = spells.massacre.attributes.healthMinimum
-				end]]
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -940,28 +903,14 @@ local function UpdateResourceBar()
 							if talents:IsTalentActive(spells.improvedExecute) then
 								showThreshold = false
 							else
-								--[[if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
-									showThreshold = false
-								elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
-									showThreshold = false
-								elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
-									showThreshold = false
-								elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
-									showThreshold = false
-								else]]
-									if spell.settingKey == "execute" then
-										resourceAmount = math.min(math.max(resourceAmount, currentResource), spells.executeMaximum:GetPrimaryResourceCost())
-									end
-
-									--[[if snapshots[spell.id].cooldown:IsUnusable() then
-										thresholdColor = specCacheSettings.colors.threshold.unusable.color
-									else]]if isUsable then-- currentResource >= resourceAmount then
-										thresholdColor = specCacheSettings.colors.threshold.over.color
-									else
-										thresholdColor = specCacheSettings.colors.threshold.under.color
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								--end
+								--[[if snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specCacheSettings.colors.threshold.unusable.color
+								else]]if isUsable then-- currentResource >= resourceAmount then
+									thresholdColor = specCacheSettings.colors.threshold.over.color
+								else
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
 							end
 						elseif spell.id == spells.thunderClap.id then
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -1045,16 +994,6 @@ local function UpdateResourceBar()
 				end
 				
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-				
-				--[[local targetUnitHealth
-				if target ~= nil then
-					targetUnitHealth = target:GetHealthPercent()
-				end
-				
-				local healthMinimum = spells.execute.attributes.healthMinimum
-				if talents:IsTalentActive(spells.massacre) then
-					healthMinimum = spells.massacre.attributes.healthMinimum
-				end]]
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1074,22 +1013,11 @@ local function UpdateResourceBar()
 						showThreshold = false
 					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.executeMinimum.id then
-							--[[if snapshots[spells.suddenDeath.id].buff.isActive then
-								--We only show the maximum value when this proc occurs. Current and minimum thresholds being in their expected place don't matter.
-								resourceAmount = spells.executeMaximum:GetPrimaryResourceCost()
-							elseif spell.settingKey == "execute" then
-								resourceAmount = math.min(math.max(resourceAmount, currentResource), spells.executeMaximum:GetPrimaryResourceCost())
-							end]]
-							
-							--[[if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
-								showThreshold = false
-							elseif snapshots[spells.suddenDeath.id].buff.isActive then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							elseif targetUnitHealth >= healthMinimum then
-								showThreshold = false
-							else]]if isUsable then-- currentResource >= resourceAmount then
+							if isUsable then-- currentResource >= resourceAmount then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
+								showThreshold = false
+								-- NOTE: Only show if we can use it. Revisit this later in beta
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
@@ -1113,13 +1041,6 @@ local function UpdateResourceBar()
 							thresholdColor = specCacheSettings.colors.threshold.under.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
-					end
-
-					if 	spell:Is("TRB.Classes.SpellComboPointThreshold") and
-						spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and
-						snapshotData.attributes.resource2 == 0 then
-							thresholdColor = specCacheSettings.colors.threshold.unusable.color
-							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 					end
 					
 					if resourceAmount >= maxPrimaryBarResourceUnnormalized then

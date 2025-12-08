@@ -7,10 +7,6 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Warrior = TRB.Classes.Warrior or {}
 
 ---@class TRB.Classes.Warrior.WarriorBaseSpells : TRB.Classes.SpecializationSpellsBase
---[[---@field public massacre TRB.Classes.SpellBase
----@field public ravager TRB.Classes.SpellBase
----@field public suddenDeath TRB.Classes.SpellBase -- Implemented by specializations
----@field public execute TRB.Classes.SpellThreshold -- Implemented by specializations]]
 ---@field public executeMinimum TRB.Classes.SpellThreshold -- Implemented by specializations
 ---@field public executeMaximum TRB.Classes.SpellThreshold -- Implemented by specializations
 ---@field public hamstring TRB.Classes.SpellThreshold
@@ -40,20 +36,6 @@ function TRB.Classes.Warrior.WarriorBaseSpells:New()
 		isTalent = true,
 		hasCooldown = true
 	})
-	--[[self.massacre = TRB.Classes.SpellBase:New({
-		id = 206315,
-		isTalent = true,
-		healthMinimum = 0.35
-	})
-	self.ravager = TRB.Classes.SpellBase:New({
-		id = 228920,
-		hasTicks = true,
-		tickRate = 2,
-		duration = 12,
-		resourcePerTick = 10,
-		energizeId = 334934,
-		isHasted = true
-	})]]
 	self.shieldBlock = TRB.Classes.SpellThreshold:New({
 		id = 2565,
 		castId = 2565,
@@ -71,10 +53,6 @@ function TRB.Classes.Warrior.WarriorBaseSpells:New()
 end
 
 ---@class TRB.Classes.Warrior.ArmsSpells : TRB.Classes.Warrior.WarriorBaseSpells
---[[---@field public charge TRB.Classes.SpellBase
----@field public deepWounds TRB.Classes.SpellBase
----@field public bloodletting TRB.Classes.SpellBase
----@field public stormOfSwords TRB.Classes.SpellBase]]
 ---@field public improvedExecute TRB.Classes.SpellBase
 ---@field public slam TRB.Classes.SpellThreshold
 ---@field public whirlwind TRB.Classes.SpellThreshold
@@ -92,23 +70,6 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 	local base = TRB.Classes.Warrior.WarriorBaseSpells
 	self = setmetatable(base:New(), TRB.Classes.Warrior.ArmsSpells) --[[@as TRB.Classes.Warrior.ArmsSpells]]
 	--Warrior Class Baseline Abilities
-	--[[self.charge = TRB.Classes.SpellBase:New({
-		id = 100,
-		resource = 20,
-		isTalent = false,
-		baseline = true,
-	})
-	self.execute = TRB.Classes.SpellThreshold:New({
-		id = 163201,
-		healthMinimum = 0.2,
-		primaryResourceType = Enum.PowerType.Rage,
-		primaryResourceTypeProperty = "minCost",
-		settingKey = "execute",
-		isTalent = false,
-		baseline = true,
-		hasCooldown = true,
-		isSnowflake = true
-	})]]
 	self.executeMinimum = TRB.Classes.SpellThreshold:New({
 		id = 163201,
 		healthMinimum = 0.2,
@@ -149,12 +110,6 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 	})
 
 	-- Arms Baseline Abilities
-	--[[self.deepWounds = TRB.Classes.SpellBase:New({
-		id = 262115,
-		baseDuration = 10,
-		pandemic = true,
-		pandemicTime = 3 --Refreshes add 12sec, capping at 15? --10 * 0.3				
-	})]]
 
 	-- Warrior Class Talents
 	self.impendingVictory = TRB.Classes.SpellThreshold:New({
@@ -213,32 +168,6 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		duration = 11,
 		rangeCheck = false
 	})
-	--[[self.suddenDeath = TRB.Classes.SpellBase:New({
-		id = 52437,
-		talentId = 29725,
-		isTalent = true
-	})
-	self.massacre = TRB.Classes.SpellBase:New({
-		id = 206315,
-		isTalent = true,
-		healthMinimum = 0.35
-	})
-	self.bloodletting = TRB.Classes.SpellBase:New({
-		id = 383154,
-		pandemicModifier = 6,
-		isTalent = true
-	})
-	self.stormOfSwords = TRB.Classes.SpellBase:New({
-		id = 439601,
-		talentId = 385512,
-		isTalent = true
-	})
-	-- TODO: Implement with color change when targeting enemy with debuff
-	self.executionersPrecision = TRB.Classes.SpellBase:New({
-		id = 439601,
-		talentId = 386634,
-		isTalent = true
-	})]]
 
 	return self
 end
@@ -386,7 +315,6 @@ function TRB.Classes.Warrior.FurySpells:New()
 end
 
 ---@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
---[[---@field public deepWounds TRB.Classes.SpellBase]]
 ---@field public ignorePain TRB.Classes.SpellThreshold
 ---@field public rend TRB.Classes.SpellThreshold
 ---@field public revenge TRB.Classes.SpellThreshold
@@ -400,16 +328,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 	local base = TRB.Classes.Warrior.WarriorBaseSpells
 	self = setmetatable(base:New(), TRB.Classes.Warrior.ProtectionSpells) --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 	--Warrior base abilities	
-	--[[self.execute = TRB.Classes.SpellThreshold:New({
-		id = 163201,
-		healthMinimum = 0.2,
-		primaryResourceType = Enum.PowerType.Rage,
-		primaryResourceTypeProperty = "minCost",
-		settingKey = "execute",
-		isTalent = false,
-		baseline = true,
-		isSnowflake = true
-	})]]
+
 	self.executeMinimum = TRB.Classes.SpellThreshold:New({
 		id = 163201,
 		healthMinimum = 0.2,
@@ -446,7 +365,6 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		settingKey = "whirlwind",
 		isTalent = false,
 		baseline = true,
-		isSnowflake = true,
 		rangeCheck = false
 	})
 
@@ -456,12 +374,6 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		talentId = 29725,
 		isTalent = true
 	})
-	--[[self.deepWounds = TRB.Classes.SpellBase:New({
-		id = 115767,
-		baseDuration = 10,
-		pandemic = true,
-		pandemicTime = 3 --Refreshes add 12sec, capping at 15? --10 * 0.3				
-	})]]
 	self.ignorePain = TRB.Classes.SpellThreshold:New({
 		id = 190456,
 		castId = 190456,

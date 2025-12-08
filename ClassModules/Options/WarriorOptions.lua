@@ -204,9 +204,6 @@ local function ArmsLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
-				execute = {
-					enabled = true,
-				},
 				executeMinimum = {
 					enabled = true,
 				},
@@ -229,7 +226,7 @@ local function ArmsLoadDefaultSettings(includeBarText)
 					enabled = true,
 				},
 				thunderClap = {
-					enabled = true,
+					enabled = false,
 				},
 				mortalStrike = {
 					enabled = true,
@@ -523,9 +520,6 @@ local function FuryLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
-				execute = {
-					enabled = true,
-				},
 				executeMinimum = {
 					enabled = true,
 				},
@@ -894,9 +888,6 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
-				execute = {
-					enabled = true,
-				},
 				executeMinimum = {
 					enabled = true,
 				},
@@ -1248,15 +1239,7 @@ local function ArmsConstructThresholdPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecute"])
-	f.tooltip = L["WarriorArmsThresholdExecuteTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.execute.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.execute.enabled = self:GetChecked()
-	end)
+	controls.execute = TRB.Functions.OptionsUi:BuildLabel(parent, L["WarriorArmsThresholdExecute"], 5, yCoord, 350, 20, GameFontWhite)
 
 	yCoord = yCoord - 25
 	controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
@@ -1761,16 +1744,7 @@ local function FuryConstructThresholdPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 30
-
-	controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdExecute"])
-	f.tooltip = L["WarriorFuryThresholdExecuteTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.execute.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.execute.enabled = self:GetChecked()
-	end)
+	controls.execute = TRB.Functions.OptionsUi:BuildLabel(parent, L["WarriorFuryThresholdExecute"], 5, yCoord, 350, 20, GameFontWhite)
 
 	yCoord = yCoord - 25
 	controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
@@ -2260,16 +2234,7 @@ local function ProtectionConstructThresholdPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 30
-
-	controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdExecute"])
-	f.tooltip = L["WarriorProtectionThresholdExecuteTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.execute.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.execute.enabled = self:GetChecked()
-	end)
+	controls.execute = TRB.Functions.OptionsUi:BuildLabel(parent, L["WarriorProtectionThresholdExecute"], 5, yCoord, 350, 20, GameFontWhite)
 	
 	yCoord = yCoord - 25
 	controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")

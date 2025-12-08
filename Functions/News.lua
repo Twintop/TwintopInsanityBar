@@ -30,6 +30,10 @@ local content = [====[
 
 - Add threshold line support for Frantic Frenzy; remove Thrash.
 
+## Warrior
+
+- Clean up Execute threshold lines and logic to display it.
+
 ---
 
 # 12.0.0.0-beta01 (2025-12-07)
