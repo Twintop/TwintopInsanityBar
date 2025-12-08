@@ -11,6 +11,22 @@ local content = [====[
 
 --- 
 
+# 12.0.0.0-beta02 (2025-12-08)
+## Death Knight
+### [#499](#499) Blood
+
+- Add threshold lines for abilities that require Runic Power: Death Coil, Death Strike, and Raise Ally.
+
+### [#500](#500) Frost
+
+- Add threshold lines for abilities that require Runic Power: Breath of Sindragosa, Death Coil, Death Strike, Frost Strike, and Glacial Advance.
+
+### [#501](#501) Unholy
+
+- Add threshold lines for abilities that require Runic Power: Death Coil, Death Strike, and Raise Ally.
+
+---
+
 # 12.0.0.0-beta01 (2025-12-07)
 ## General
 
