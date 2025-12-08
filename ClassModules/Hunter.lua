@@ -67,6 +67,8 @@ local function FillSpecializationCache()
 	specCache.beastMastery.snapshotData.snapshots[spells.direBeastHawk.id] = TRB.Classes.Snapshot:New(spells.direBeastHawk)
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.deathblow.id] = TRB.Classes.Snapshot:New(spells.deathblow)
+	---@type TRB.Classes.Snapshot
+	specCache.beastMastery.snapshotData.snapshots[spells.wildThrash.id] = TRB.Classes.Snapshot:New(spells.wildThrash)
 
 	specCache.beastMastery.barTextVariables = {
 		icons = {},
@@ -114,8 +116,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.burstingShot.id] = TRB.Classes.Snapshot:New(spells.burstingShot)
-	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.deathblow.id] = TRB.Classes.Snapshot:New(spells.deathblow)
@@ -155,6 +155,8 @@ local function FillSpecializationCache()
 	specCache.survival.snapshotData.snapshots[spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(spells.wildfireBomb)
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.tipOfTheSpear.id] = TRB.Classes.Snapshot:New(spells.tipOfTheSpear)
+	---@type TRB.Classes.Snapshot
+	specCache.survival.snapshotData.snapshots[spells.boomstick.id] = TRB.Classes.Snapshot:New(spells.boomstick)
 	
 
 	specCache.survival.barTextVariables = {
@@ -247,7 +249,6 @@ local function FillSpellData_Marksmanship()
 
 		{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = spells.aimedShot.name, printInSettings = true },
 		{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
-		{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = spells.burstingShot.name, printInSettings = true },
 		{ variable = "#killShot", icon = spells.killShot.icon, description = spells.killShot.name, printInSettings = true },
 		{ variable = "#lockAndLoad", icon = spells.lockAndLoad.icon, description = spells.lockAndLoad.name, printInSettings = true },
 		{ variable = "#multiShot", icon = spells.multiShot.icon, description = spells.multiShot.name, printInSettings = true },
@@ -322,7 +323,6 @@ local function FillSpellData_Survival()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-		{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
 		{ variable = "#harpoon", icon = spells.harpoon.icon, description = spells.harpoon.name, printInSettings = true },
 		{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
 		{ variable = "#raptorStrike", icon = spells.raptorStrike.icon, description = spells.raptorStrike.name, printInSettings = true },
@@ -659,6 +659,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.bestialWrath.castId then
 				--snapshotData.snapshots[spells.bestialWrath.id].buff:InitializeCustom(spells.bestialWrath.duration, currentTime)
+			elseif spellId == spells.wildThrash.castId then
+				snapshotData.snapshots[spells.wildThrash.id].cooldown:InitializeCustom(spells.wildThrash.cooldown, currentTime)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -699,9 +701,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 		if event == "UNIT_SPELLCAST_START" then
-			if spellId == spells.steadyShot.id then
-				FillSnapshotDataCasting(spells.steadyShot)
-			elseif spellId == spells.scareBeast.id then
+			if spellId == spells.scareBeast.id then
 				FillSnapshotDataCasting(spells.scareBeast)
 			elseif spellId == spells.revivePet.id then
 				FillSnapshotDataCasting(spells.revivePet)
@@ -965,11 +965,6 @@ local function UpdateResourceBar()
 								snapshotData.audio.playedAimedShotCue = true
 							end
 						elseif spell.id == spells.killShot.id and not talents:IsTalentActive(spells.blackArrow) then
-							--[[local targetUnitHealth
-							if target ~= nil then
-								targetUnitHealth = target:GetHealthPercent()
-							end]]
-
 							if snapshots[spells.deathblow.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -991,16 +986,13 @@ local function UpdateResourceBar()
 									PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
 								end
 							else
+								-- Hide the threshold if we can't use it
+								showThreshold = false
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								snapshotData.audio.playedKillShotCue = false
 							end
-						elseif spell.id == spells.blackArrow.id and talents:IsTalentActive(spells.blackArrow) then
-							--[[local targetUnitHealth
-							if target ~= nil then
-								targetUnitHealth = target:GetHealthPercent()
-							end]]
-					
+						elseif spell.id == spells.blackArrow.id and talents:IsTalentActive(spells.blackArrow) then			
 							if snapshots[spells.deathblow.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -1022,6 +1014,8 @@ local function UpdateResourceBar()
 								end
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
+								-- Hide the threshold if we can't use it
+								showThreshold = false
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								snapshotData.audio.playedKillShotCue = false
@@ -1233,7 +1227,6 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#aimedShot"] = spells.aimedShot.icon
 		lookup["#arcaneShot"] = spells.arcaneShot.icon
-		lookup["#burstingShot"] = spells.burstingShot.icon
 		lookup["#killShot"] = spells.killShot.icon
 		lookup["#lockAndLoad"] = spells.lockAndLoad.icon
 		lookup["#multiShot"] = spells.multiShot.icon
@@ -1268,7 +1261,6 @@ local function SwitchSpec()
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#arcaneShot"] = spells.arcaneShot.icon
 		lookup["#harpoon"] = spells.harpoon.icon
 		lookup["#killCommand"] = spells.killCommand.icon
 		lookup["#raptorStrike"] = spells.raptorStrike.icon

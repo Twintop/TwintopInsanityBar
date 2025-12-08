@@ -30,6 +30,21 @@ local content = [====[
 
 - Add threshold line support for Frantic Frenzy; remove Thrash.
 
+## Hunter
+### [#474](#474) Beast Mastery
+
+- Add threshold line support for Wild Thrash.
+
+### [#475](#475) Marksmanship
+
+- Remove Bursting Shot and associated threshold line.
+
+### [#476](#476) Survival
+
+- Add threshold line support for Boomstick and Hatchet Toss.
+- Remove threshold lines for Arcane Shot and Wildfire Bomb.
+- Remove Steady Shot.
+
 ## Warrior
 
 - Clean up Execute threshold lines and logic to display it.
