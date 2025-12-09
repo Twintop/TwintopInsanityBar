@@ -582,7 +582,7 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			thresholdDictionary = {
-				-- Rogue
+			-- Rogue
 				ambush = {
 					enabled = true,
 				},
@@ -595,51 +595,47 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				distract = {
 					enabled = false,
 				},
-				kidneyShot = {
-					enabled = false,
-				},
-				sliceAndDice = {
+				echoingReprimand = {
 					enabled = true,
 				},
 				feint = {
 					enabled = true,
 				},
-				-- Rogue Talents
-				shiv = {
+				gouge = {
+					enabled = false,
+				},
+				kidneyShot = {
 					enabled = false,
 				},
 				sap = {
 					enabled = false,
 				},
-				gouge = {
+				shiv = {
 					enabled = false,
 				},
-				echoingReprimand = {
+				sinisterStrike = {
+					enabled = true,
+				},
+				sliceAndDice = {
 					enabled = true,
 				},
 				-- Outlaw
 				betweenTheEyes = {
 					enabled = true,
 				},
+				bladeFlurry = {
+					enabled = true,
+				},
 				dispatch = {
+					enabled = true,
+				},
+				killingSpree = {
 					enabled = true,
 				},
 				pistolShot = {
 					enabled = true,
 				},
-				sinisterStrike = {
-					enabled = true,
-				},
-				bladeFlurry = {
-					enabled = true,
-				},
 				rollTheBones = {
-					enabled = true,
-				},
-				ghostlyStrike = {
-					enabled = true,
-				},
-				killingSpree = {
 					enabled = true,
 				},
 				-- PvP					
@@ -2243,17 +2239,6 @@ local function OutlawConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.cheapShot.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.cheapShot.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.ghostlyStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_ghostlyStrike", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ghostlyStrikeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdGhostlyStrike"])
-	f.tooltip = L["RogueOutlawThresholdGhostlyStrikeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.ghostlyStrike.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.ghostlyStrike.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

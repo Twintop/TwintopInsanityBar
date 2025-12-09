@@ -145,8 +145,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.bladeRush.id] = TRB.Classes.Snapshot:New(spells.bladeRush)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.ghostlyStrike.id] = TRB.Classes.Snapshot:New(spells.ghostlyStrike)
-	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.opportunity.id] = TRB.Classes.Snapshot:New(spells.opportunity)
@@ -411,7 +409,6 @@ local function FillSpellData_Outlaw()
 		{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
 		{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#ghostlyStrike", icon = spells.ghostlyStrike.icon, description = spells.ghostlyStrike.name, printInSettings = true },
 		{ variable = "#grandMelee", icon = spells.grandMelee.icon, description = spells.grandMelee.name, printInSettings = true },
 		{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
 		{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
@@ -1067,7 +1064,6 @@ local function UpdateSnapshot_Outlaw()
 	snapshots[spells.bladeRush.id].cooldown:Refresh()
 	snapshots[spells.bladeFlurry.id].cooldown:Refresh()
 	snapshots[spells.betweenTheEyes.id].cooldown:Refresh()
-	snapshots[spells.ghostlyStrike.id].cooldown:Refresh()
 	snapshots[spells.rollTheBones.id].cooldown:Refresh()]]
 end
 
@@ -1952,7 +1948,6 @@ local function SwitchSpec()
 		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
 		lookup["#cp"] = spells.cripplingPoison.icon
 		lookup["#dismantle"] = spells.dismantle.icon
-		lookup["#ghostlyStrike"] = spells.ghostlyStrike.icon
 		lookup["#grandMelee"] = spells.grandMelee.icon
 		lookup["#numbingPoison"] = spells.numbingPoison.icon
 		lookup["#np"] = spells.numbingPoison.icon

@@ -366,7 +366,6 @@ end
 ---@field public dispatch TRB.Classes.SpellComboPointThreshold
 ---@field public pistolShot TRB.Classes.SpellComboPointThreshold
 ---@field public sinisterStrike TRB.Classes.SpellComboPointThreshold
----@field public ghostlyStrike TRB.Classes.SpellComboPointThreshold
 ---@field public coupDeGrace TRB.Classes.SpellComboPointThreshold
 TRB.Classes.Rogue.OutlawSpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
 TRB.Classes.Rogue.OutlawSpells.__index = TRB.Classes.Rogue.OutlawSpells
@@ -482,16 +481,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         id = 381982,
         duration = 5
     })
-    self.ghostlyStrike = TRB.Classes.SpellComboPointThreshold:New({
-        id = 196937,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 1,
-        settingKey = "ghostlyStrike",
-        hasCooldown = true,
-        isTalent = true,
-        cooldown = 35,
-        restlessBlades = true
-    })
     self.bladeRush = TRB.Classes.SpellBase:New({
         id = 271877,
         isTalent = true,
@@ -515,7 +504,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         hasCooldown = true,
         isTalent = true,
         cooldown = 90,
-        restlessBlades = true
+        restlessBlades = true,
+        rangeCheck = false
     })
     self.floatLikeAButterfly = TRB.Classes.SpellBase:New({
         id = 354897,
