@@ -132,7 +132,7 @@ local function AssassinationLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="",--{$sadTime}[#sad $sadTime #sad]|n{$blindsideTime}[#blindside $blindsideTime #blindside]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -213,29 +213,28 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				distract = {
 					enabled = false,
 				},
-				kidneyShot = {
-					enabled = false,
-				},
-				sliceAndDice = {
-					enabled = true,
-				},
 				feint = {
 					enabled = true,
 				},
-				-- Rogue Talents
-				shiv = {
+				gouge = {
+					enabled = false,
+				},
+				kidneyShot = {
 					enabled = false,
 				},
 				sap = {
 					enabled = false,
 				},
-				gouge = {
+				shiv = {
 					enabled = false,
 				},
-				echoingReprimand = {
+				sliceAndDice = {
 					enabled = true,
 				},
 				-- Assassination
+				crimsonTempest = {
+					enabled = true,
+				},
 				envenom = {
 					enabled = true,
 				},
@@ -245,6 +244,9 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				garrote = {
 					enabled = true,
 				},
+				kingsbane = {
+					enabled = true,
+				},
 				mutilate = {
 					enabled = true,
 				},
@@ -252,16 +254,6 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 					enabled = false,
 				},
 				rupture = {
-					enabled = true,
-				},
-				-- Assassination Talents
-				crimsonTempest = {
-					enabled = true,
-				},
-				serratedBoneSpike = {
-					enabled = true,
-				},
-				kingsbane = {
 					enabled = true,
 				},
 				-- PvP					
@@ -340,12 +332,8 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				echoingReprimand="FF68CCEF",
-				serratedBoneSpike="FF40BF40",
 				sameColor=false,
 				consistentUnfilledColor = false,
-				spec={
-					serratedBoneSpikeColor = true
-				}
 			},
 			threshold = {
 				under = {
@@ -1399,12 +1387,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
-	controls.colors.comboPoints.serratedBoneSpike = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueAssassinationColorPickerSerratedBoneSpike"], spec.colors.comboPoints.serratedBoneSpike, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.serratedBoneSpike
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "serratedBoneSpike")
-	end)
-
 	yCoord = yCoord - 30
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.sameColorComboPoint
@@ -1431,17 +1413,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.serratedBoneSpikeComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSerratedBoneSpikeColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.serratedBoneSpikeComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueColorPickerSeratedBoneSpike"])
-	f.tooltip = L["RogueColorPickerSeratedBoneSpikeTooltip"]
-	f:SetChecked(spec.colors.comboPoints.spec.serratedBoneSpikeColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.spec.serratedBoneSpikeColor = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 40
@@ -1495,7 +1466,19 @@ local function AssassinationConstructThresholdPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.cheapShot.enabled = self:GetChecked()
 	end)
+
 	yCoord = yCoord - 25
+	controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.crimsonTempestThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonTempest"])
+	f.tooltip = L["RogueAssassinationThresholdCrimsonTempestTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonTempest.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.crimsonTempest.enabled = self:GetChecked()
+	end)
+
+	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.fanOfKnivesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_fanOfKnives", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.fanOfKnivesThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1600,18 +1583,6 @@ local function AssassinationConstructThresholdPanel(parent)
 	
 	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], oUi.xCoord2, yCoord2, 110, 20)
 	yCoord2 = yCoord2 - 20
-
-	controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.crimsonTempestThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonTempest"])
-	f.tooltip = L["RogueAssassinationThresholdCrimsonTempestTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonTempest.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.crimsonTempest.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.envenomThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)

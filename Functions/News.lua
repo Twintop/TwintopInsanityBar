@@ -11,6 +11,18 @@ local content = [====[
 
 --- 
 
+# 12.0.0.0-beta03 (2025-12-10)
+## Rogue
+
+- Disable Charged Combo Points due to API limitations. These should return in a future update once the API allows for it.
+
+### [#480](#480) Assassination
+
+- Update Crimson Tempest threshold line to not require Combo Points to show as usable.
+- Remove Echoing Reprimand.
+
+---
+
 # 12.0.0.0-beta02 (2025-12-09)
 ## Death Knight
 ### [#499](#499) Blood

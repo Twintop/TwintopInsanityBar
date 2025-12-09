@@ -196,7 +196,6 @@ end
 ---@field public internalBleeding TRB.Classes.SpellBase
 ---@field public improvedGarrote TRB.Classes.SpellBase
 ---@field public blindside TRB.Classes.SpellBase
----@field public serratedBoneSpike TRB.Classes.SpellBase
 ---@field public ambush TRB.Classes.SpellComboPointThreshold
 ---@field public envenom TRB.Classes.SpellComboPointThreshold
 ---@field public fanOfKnives TRB.Classes.SpellComboPointThreshold
@@ -302,9 +301,9 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         isTalent = true
     })
     self.crimsonTempest = TRB.Classes.SpellComboPointThreshold:New({
-        id = 121411,
+        id = 1247227,
         primaryResourceType = Enum.PowerType.Energy,
-        comboPoints = true,
+        comboPointsGenerated = 1,
         settingKey = "crimsonTempest",
         pandemicTimes = {
             6 * 0.3, -- 0 CP, show same as if we had 1
@@ -329,12 +328,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     self.blindside = TRB.Classes.SpellBase:New({
         id = 121153,
         duration = 10,
-        isTalent = true
-    })
-    self.serratedBoneSpike = TRB.Classes.SpellComboPointThreshold:New({
-        id = 455366,
-        talentId = 455352,
-        debuffId = 394036,
         isTalent = true
     })
     self.kingsbane = TRB.Classes.SpellComboPointThreshold:New({

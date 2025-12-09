@@ -115,7 +115,7 @@ local function BrewmasterLoadDefaultBarTextSimpleSettings()
 				relativeTo = "CENTER",
 				relativeToName = L["PositionCenter"],
 				relativeToFrame = "Stagger",
-				relativeToFrameName = L["ComboPoint_1"]
+				relativeToFrameName = L["Stagger"]
 			}
 		},
 	}

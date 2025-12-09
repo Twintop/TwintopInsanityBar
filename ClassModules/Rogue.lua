@@ -77,8 +77,6 @@ local function FillSpecializationCache()
 		isActiveStealth = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(spells.serratedBoneSpike, nil, "always")
-	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.kingsbane.id] = TRB.Classes.Snapshot:New(spells.kingsbane)
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
@@ -331,7 +329,6 @@ local function FillSpellData_Assassination()
 		{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-		{ variable = "#serratedBoneSpike", icon = spells.serratedBoneSpike.icon, description = spells.serratedBoneSpike.name, printInSettings = true },
 		{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
 		{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 		{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
@@ -1267,16 +1264,10 @@ local function UpdateResourceBar()
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
-				
-				local sbsCp = 0
-				
-				if specSettings.colors.comboPoints.spec.serratedBoneSpikeColor and talents:IsTalentActive(spells.serratedBoneSpike) and snapshotData.targetData.currentTargetGuid ~= nil and snapshots[spells.serratedBoneSpike.id].buff.applications > 0 then
-					sbsCp = 1 + snapshotData.targetData.count[spells.serratedBoneSpike.debuffId]
-				end
 
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = {} --GetUnitChargedPowerPoints("player")
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
@@ -1294,15 +1285,6 @@ local function UpdateResourceBar()
 						end
 					else
 						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-					end
-
-					if x <= sbsCp then
-						sbs = true
-						cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
-						cpColor = specSettings.colors.comboPoints.serratedBoneSpike
-						if not specSettings.colors.comboPoints.consistentUnfilledColor then
-							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.serratedBoneSpike, true)
-						end
 					end
 
 					if charged ~= nil then
@@ -1558,7 +1540,7 @@ local function UpdateResourceBar()
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = {}-- GetUnitChargedPowerPoints("player")
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
@@ -1827,7 +1809,7 @@ local function UpdateResourceBar()
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = {}-- GetUnitChargedPowerPoints("player")
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
@@ -1930,7 +1912,6 @@ local function SwitchSpec()
 		lookup["#rupture"] = spells.rupture.icon
 		lookup["#sad"] = spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
-		lookup["#serratedBoneSpike"] = spells.serratedBoneSpike.icon
 		lookup["#stealth"] = spells.stealth.icon
 		lookup["#woundPoison"] = spells.woundPoison.icon
 		lookup["#wp"] = spells.woundPoison.icon
@@ -1941,9 +1922,6 @@ local function SwitchSpec()
 			talents = specCache.assassination.talents
 			TRB.Data.barConstructedForSpec = "assassination"
 			ConstructResourceBar(specCache.assassination.settings)
-			if talents:IsTalentActive(spells.serratedBoneSpike) then
-				TRB.Data.snapshotData.snapshots[spells.serratedBoneSpike.id].buff:Initialize()
-			end
 		end
 	elseif TRB.Data.character.specId == 2 then
 		specCache.outlaw.talents:GetTalents()
@@ -2269,10 +2247,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		-- Other abilities
 		if var == "$blindsideTime" then
 			if snapshots[spells.blindside.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$sbsCount" or var == "$serratedBoneSpikeCount" then
-			if snapshotData.targetData.count[spells.serratedBoneSpike.debuffId] > 0 then
 				valid = true
 			end
 		end]]
