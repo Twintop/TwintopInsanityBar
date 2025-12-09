@@ -550,12 +550,10 @@ end
 ---@field public eviscerate TRB.Classes.SpellComboPointThreshold
 ---@field public backstab TRB.Classes.SpellComboPointThreshold
 ---@field public blackPowder TRB.Classes.SpellComboPointThreshold
----@field public rupture TRB.Classes.SpellComboPointThreshold
 ---@field public shadowstrike TRB.Classes.SpellComboPointThreshold
 ---@field public shurikenStorm TRB.Classes.SpellComboPointThreshold
 ---@field public shurikenToss TRB.Classes.SpellComboPointThreshold
 ---@field public secretTechnique TRB.Classes.SpellComboPointThreshold
----@field public shurikenTornado TRB.Classes.SpellComboPointThreshold
 ---@field public goremawsBite TRB.Classes.SpellComboPointThreshold
 ---@field public killingSpree TRB.Classes.SpellComboPointThreshold
 TRB.Classes.Rogue.SubtletySpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
@@ -589,24 +587,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         settingKey = "blackPowder",
-        baseline = true,
-        isSnowflake = true
-    })
-    self.rupture = TRB.Classes.SpellComboPointThreshold:New({
-        id = 1943,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPoints = true,
-        settingKey = "rupture",
-        pandemicTimes = {
-            8 * 0.3, -- 0 CP, show same as if we had 1
-            8 * 0.3,
-            12 * 0.3,
-            16 * 0.3,
-            20 * 0.3,
-            24 * 0.3,
-            28 * 0.3,
-            32 * 0.3,
-        },
         baseline = true,
         isSnowflake = true
     })
@@ -665,15 +645,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPoints = true,
         settingKey = "secretTechnique",
         hasCooldown = true,
-        isTalent = true
-    })
-    self.shurikenTornado = TRB.Classes.SpellComboPointThreshold:New({
-        id = 277925,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 1,
-        settingKey = "shurikenTornado",
-        hasCooldown = true,
-        isTalent = true
+        baseline = true
     })
     self.goremawsBite = TRB.Classes.SpellComboPointThreshold:New({
         id = 426593,

@@ -259,8 +259,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.shadowBlades.id] = TRB.Classes.Snapshot:New(spells.shadowBlades)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shurikenTornado.id] = TRB.Classes.Snapshot:New(spells.shurikenTornado)
-	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
@@ -521,7 +519,6 @@ local function FillSpellData_Subtlety()
 		{ variable = "#flagellation", icon = spells.flagellation.icon, description = spells.flagellation.name, printInSettings = true },
 		{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
 		{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
-		{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 		{ variable = "#shadowTechniques", icon = spells.shadowTechniques.icon, description = spells.shadowTechniques.name, printInSettings = true },
@@ -1081,8 +1078,7 @@ local function UpdateSnapshot_Subtlety()
 	snapshots[spells.symbolsOfDeath.id].buff:GetRemainingTime(currentTime)
 	
 	snapshots[spells.goremawsBite.id].cooldown:Refresh()
-	snapshots[spells.secretTechnique.id].cooldown:Refresh()
-	snapshots[spells.shurikenTornado.id].cooldown:Refresh()]]
+	snapshots[spells.secretTechnique.id].cooldown:Refresh()]]
 end
 
 local function UpdateResourceBar()
@@ -1719,16 +1715,6 @@ local function UpdateResourceBar()
 									thresholdColor = specCacheSettings.colors.threshold.under.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
-							elseif spell.id == spells.rupture.id then
-								if specCacheSettings.colors.threshold.special.enabled and snapshots[spells.finalityRupture.id].buff.isActive then
-									thresholdColor = specCacheSettings.colors.threshold.special.color
-									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								elseif isUsable then-- currentResource >= resourceAmount then
-									thresholdColor = specCacheSettings.colors.threshold.over.color
-								else
-									thresholdColor = specCacheSettings.colors.threshold.under.color
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
 							end
 						elseif resourceAmount == 0 then
 							showThreshold = false
@@ -1994,7 +1980,6 @@ local function SwitchSpec()
 		lookup["#flagellation"] = spells.flagellation.icon
 		lookup["#numbingPoison"] = spells.numbingPoison.icon
 		lookup["#np"] = spells.numbingPoison.icon
-		lookup["#rupture"] = spells.rupture.icon
 		lookup["#sad"] = spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
 		lookup["#sod"] = spells.symbolsOfDeath.icon

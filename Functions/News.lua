@@ -25,6 +25,9 @@ local content = [====[
 
 - Remove Ghostly Strike.
 
+## [#482](#482) Subtlety
+
+- Remove Shuriken Tornado threshold line.
 
 ---
 

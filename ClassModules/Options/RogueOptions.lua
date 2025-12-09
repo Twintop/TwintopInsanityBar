@@ -595,9 +595,6 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				distract = {
 					enabled = false,
 				},
-				echoingReprimand = {
-					enabled = true,
-				},
 				feint = {
 					enabled = true,
 				},
@@ -884,7 +881,7 @@ local function SubtletyLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="",--#shadowTechniques $shadowTechniquesCount	#rupture $ruptureCount {$ruptureTime}[ $ruptureTime]",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -907,7 +904,7 @@ local function SubtletyLoadDefaultBarTextAdvancedSettings()
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="",--{$sadTime}[#sad $sadTime #sad]|n{$sodTime}[#sod $sodTime #sod] ",
+			text="",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "CENTER",
@@ -977,9 +974,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			thresholdDictionary = {
 				-- Rogue
 				-- Technically a Rogue ability but missing from Assassination and Outlaw
-				eviscerate = {
-					enabled = true,
-				},
 				cheapShot = {
 					enabled = false,
 				},
@@ -989,26 +983,25 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				distract = {
 					enabled = false,
 				},
-				kidneyShot = {
-					enabled = false,
-				},
-				sliceAndDice = {
+				eviscerate = {
 					enabled = true,
 				},
 				feint = {
 					enabled = true,
 				},
-				-- Rogue Talents
-				shiv = {
+				gouge = {
+					enabled = false,
+				},
+				kidneyShot = {
 					enabled = false,
 				},
 				sap = {
 					enabled = false,
 				},
-				gouge = {
+				shiv = {
 					enabled = false,
 				},
-				echoingReprimand = {
+				sliceAndDice = {
 					enabled = true,
 				},
 				-- Subtlety
@@ -1018,7 +1011,13 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				blackPowder = {
 					enabled = true,
 				},
-				rupture = {
+				gloomblade = {
+					enabled = true,
+				},
+				goremawsBite = {
+					enabled = true,
+				},
+				secretTechnique = {
 					enabled = true,
 				},
 				shadowstrike = {
@@ -1028,18 +1027,6 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 					enabled = true,
 				},
 				shurikenToss = {
-					enabled = true,
-				},
-				gloomblade = {
-					enabled = true,
-				},
-				secretTechnique = {
-					enabled = true,
-				},
-				shurikenTornado = {
-					enabled = true,
-				},
-				goremawsBite = {
 					enabled = true,
 				},
 				-- PvP					
@@ -3075,17 +3062,6 @@ local function SubtletyConstructThresholdPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.shurikenTornadoThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shurikenTornado", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.shurikenTornadoThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShurikenTornado"])
-	f.tooltip = L["RogueSubtletyThresholdShurikenTornadoTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.shurikenTornado.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.shurikenTornado.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.shurikenTossThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shurikenToss", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.shurikenTossThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -3166,17 +3142,6 @@ local function SubtletyConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.sliceAndDice.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.sliceAndDice.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ruptureThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdRupture"])
-	f.tooltip = L["RogueSubtletyThresholdRuptureTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.rupture.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.rupture.enabled = self:GetChecked()
 	end)
 
 	yCoord2 = yCoord2 - 25
