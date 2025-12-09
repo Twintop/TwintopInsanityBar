@@ -25,11 +25,11 @@ local content = [====[
 - Update Crimson Tempest threshold line to not require Combo Points to show as usable.
 - Remove Echoing Reprimand.
 
-## [#481](#481) Outlaw
+### [#481](#481) Outlaw
 
 - Remove Ghostly Strike.
 
-## [#482](#482) Subtlety
+### [#482](#482) Subtlety
 
 - Remove Shuriken Tornado threshold line.
 
