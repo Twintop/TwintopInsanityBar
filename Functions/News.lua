@@ -12,6 +12,10 @@ local content = [====[
 --- 
 
 # 12.0.0.0-beta03 (2025-12-10)
+## General
+
+- Target both 12.0.0 (PTR) and 12.0.1 (Beta).
+
 ## Rogue
 
 - Disable Charged Combo Points due to API limitations. These should return in a future update once the API allows for it.
