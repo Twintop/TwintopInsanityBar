@@ -1584,9 +1584,9 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.checkBoxes.dragonridingEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_DragonridingEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dragonridingEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-70)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["ShowBarDragonriding"], flashAlphaNameShort))
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarDragonriding"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format(L["ShowBarDragonridingTooltip"], flashAlphaName)
+	f.tooltip = L["ShowBarDragonridingTooltip"]
 	f:SetChecked(spec.displayBar.dragonriding)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.dragonriding = self:GetChecked()
