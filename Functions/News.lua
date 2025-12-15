@@ -11,6 +11,13 @@ local content = [====[
 
 --- 
 
+# 12.0.0.0-beta04 (2025-12-16)
+## Rogue
+
+- Re-enabled Charged Combo Points now that API limitations have been resolved.
+
+---
+
 # 12.0.0.0-beta03 (2025-12-10)
 ## General
 

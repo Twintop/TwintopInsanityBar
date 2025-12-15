@@ -1259,7 +1259,7 @@ local function UpdateResourceBar()
 
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-				local charged = {} --GetUnitChargedPowerPoints("player")
+				local charged = GetUnitChargedPowerPoints("player")
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
@@ -1532,7 +1532,7 @@ local function UpdateResourceBar()
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-				local charged = {}-- GetUnitChargedPowerPoints("player")
+				local charged = GetUnitChargedPowerPoints("player")
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
@@ -1791,7 +1791,7 @@ local function UpdateResourceBar()
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-				local charged = {}-- GetUnitChargedPowerPoints("player")
+				local charged = GetUnitChargedPowerPoints("player")
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border
