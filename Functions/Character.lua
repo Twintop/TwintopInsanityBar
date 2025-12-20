@@ -613,7 +613,7 @@ function TRB.Functions.Character:IsComboPointUser()
 		(classId == 4) or -- Rogue
 		(classId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
 		(classId == 6) or -- Death Knight
-		--(classId == 7 and specId == 2) or -- Enhancement Shaman
+		(classId == 7 and specId == 2) or -- Enhancement Shaman
 		(classId == 8 and specId == 1) or -- Arcane Mage
 		(classId == 9) or -- Warlock
 		(classId == 10 and (specId == 1 or specId == 3)) or -- Brewmaster or Windwalker Monk
