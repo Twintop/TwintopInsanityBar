@@ -24,9 +24,9 @@ local specCache = {
 }
 TRB.Data.specCache = specCache
 
-local function CalculateRunicPowerGain(runicpower)
+local function CalculateRunicPowerGain(runicPower)
 	local modifier = 1.0
-	return runicpower * modifier
+	return runicPower * modifier
 end
 
 local function CreateRune()
@@ -230,9 +230,9 @@ local function FillSpellData_Blood()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$runicPower", description = L["DeathKnightBloodBarTextVariable_runicpower"], printInSettings = true, color = false },
+		{ variable = "$runicPower", description = L["DeathKnightBloodBarTextVariable_runicPower"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$runicPowerMax", description = L["DeathKnightBloodBarTextVariable_runicpowerMax"], printInSettings = true, color = false },
+		{ variable = "$runicPowerMax", description = L["DeathKnightBloodBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DeathKnightBloodBarTextVariable_casting"], printInSettings = true, color = false },
 
@@ -301,9 +301,9 @@ local function FillSpellData_Frost()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicpower"], printInSettings = true, color = false },
+		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicpowerMax"], printInSettings = true, color = false },
+		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DeathKnightBarTextVariable_casting"], printInSettings = true, color = false },
 
@@ -372,9 +372,9 @@ local function FillSpellData_Unholy()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$runicPower", description = L["DeathKnightBloodBarTextVariable_runicpower"], printInSettings = true, color = false },
+		{ variable = "$runicPower", description = L["DeathKnightBloodBarTextVariable_runicPower"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$runicPowerMax", description = L["DeathKnightBloodBarTextVariable_runicpowerMax"], printInSettings = true, color = false },
+		{ variable = "$runicPowerMax", description = L["DeathKnightBloodBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DeathKnightBloodBarTextVariable_casting"], printInSettings = true, color = false },
 
@@ -460,14 +460,14 @@ local function RefreshLookupData_Blood()
 	local castingRunicPowerColor = TRB.Data.settings.deathknight.blood.colors.text.casting.color
 
 	--$runicPower
-	local runicpowerPrecision = TRB.Data.settings.deathknight.frost.runicpowerPrecision or 1
-	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicpowerPrecision, "floor", true))
+	local runicPowerPrecision = TRB.Data.settings.deathknight.frost.runicPowerPrecision or 1
+	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicPowerPrecision, "floor", true))
 	--$casting
 	local _castingRunicPower = snapshotData.casting.resourceFinal
-	local castingRunicPower = string.format("|c%s%s|r", castingRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingRunicPower, runicpowerPrecision, "floor", true))
+	local castingRunicPower = string.format("|c%s%s|r", castingRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingRunicPower, runicPowerPrecision, "floor", true))
 	
 	--$runicPowerMax
-	local runicpowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicpowerPrecision, "floor", true))
+	local runicPowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicPowerPrecision, "floor", true))
 	
 	local runes = TRB.Data.character.runes
 	--$runeXTime
@@ -499,8 +499,8 @@ local function RefreshLookupData_Blood()
 	local lookup = TRB.Data.lookup or {}
 	lookup["$runicPower"] = currentRunicPower
 	lookup["$resource"] = currentRunicPower
-	lookup["$runicPowerMax"] = runicpowerMax
-	lookup["$resourceMax"] = runicpowerMax
+	lookup["$runicPowerMax"] = runicPowerMax
+	lookup["$resourceMax"] = runicPowerMax
 	lookup["$casting"] = castingRunicPower
 	lookup["$rune1Time"] = rune1Time
 	lookup["$rune2Time"] = rune2Time
@@ -552,14 +552,14 @@ local function RefreshLookupData_Frost()
 	local castingRunicPowerColor = TRB.Data.settings.deathknight.frost.colors.text.casting.color
 
 	--$runicPower
-	local runicpowerPrecision = TRB.Data.settings.deathknight.frost.runicpowerPrecision or 1
-	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicpowerPrecision, "floor", true))
+	local runicPowerPrecision = TRB.Data.settings.deathknight.frost.runicPowerPrecision or 1
+	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicPowerPrecision, "floor", true))
 	--$casting
 	local _castingRunicPower = snapshotData.casting.resourceFinal
-	local castingRunicPower = string.format("|c%s%s|r", castingRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingRunicPower, runicpowerPrecision, "floor", true))
+	local castingRunicPower = string.format("|c%s%s|r", castingRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingRunicPower, runicPowerPrecision, "floor", true))
 	
 	--$runicPowerMax
-	local runicpowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicpowerPrecision, "floor", true))
+	local runicPowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicPowerPrecision, "floor", true))
 	
 	local runes = TRB.Data.character.runes
 	--$runeXTime
@@ -591,8 +591,8 @@ local function RefreshLookupData_Frost()
 	local lookup = TRB.Data.lookup or {}
 	lookup["$runicPower"] = currentRunicPower
 	lookup["$resource"] = currentRunicPower
-	lookup["$runicPowerMax"] = runicpowerMax
-	lookup["$resourceMax"] = runicpowerMax
+	lookup["$runicPowerMax"] = runicPowerMax
+	lookup["$resourceMax"] = runicPowerMax
 	lookup["$casting"] = castingRunicPower
 	lookup["$rune1Time"] = rune1Time
 	lookup["$rune2Time"] = rune2Time
@@ -644,14 +644,14 @@ local function RefreshLookupData_Unholy()
 	local castingRunicPowerColor = TRB.Data.settings.deathknight.unholy.colors.text.casting.color
 
 	--$runicPower
-	local runicpowerPrecision = TRB.Data.settings.deathknight.frost.runicpowerPrecision or 1
-	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicpowerPrecision, "floor", true))
+	local runicPowerPrecision = TRB.Data.settings.deathknight.frost.runicPowerPrecision or 1
+	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicPowerPrecision, "floor", true))
 	--$casting
 	local _castingRunicPower = snapshotData.casting.resourceFinal
-	local castingRunicPower = string.format("|c%s%s|r", castingRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingRunicPower, runicpowerPrecision, "floor", true))
+	local castingRunicPower = string.format("|c%s%s|r", castingRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingRunicPower, runicPowerPrecision, "floor", true))
 	
 	--$runicPowerMax
-	local runicpowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicpowerPrecision, "floor", true))
+	local runicPowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicPowerPrecision, "floor", true))
 	
 	local runes = TRB.Data.character.runes
 	--$runeXTime
@@ -683,8 +683,8 @@ local function RefreshLookupData_Unholy()
 	local lookup = TRB.Data.lookup or {}
 	lookup["$runicPower"] = currentRunicPower
 	lookup["$resource"] = currentRunicPower
-	lookup["$runicPowerMax"] = runicpowerMax
-	lookup["$resourceMax"] = runicpowerMax
+	lookup["$runicPowerMax"] = runicPowerMax
+	lookup["$resourceMax"] = runicPowerMax
 	lookup["$casting"] = castingRunicPower
 	lookup["$rune1Time"] = rune1Time
 	lookup["$rune2Time"] = rune2Time
@@ -726,8 +726,8 @@ end
 local function FillSnapshotDataCasting(spell)
 	local currentTime = GetTime()
 	TRB.Data.snapshotData.casting.startTime = currentTime
-	TRB.Data.snapshotData.casting.resourceRaw = spell.runicpower
-	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.runicpower)
+	TRB.Data.snapshotData.casting.resourceRaw = spell.runicPower
+	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.runicPower)
 	TRB.Data.snapshotData.casting.spellId = spell.id
 	TRB.Data.snapshotData.casting.icon = spell.icon
 end

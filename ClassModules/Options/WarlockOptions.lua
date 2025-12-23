@@ -1911,28 +1911,6 @@ local function DestructionConstructBarColorsAndBehaviorPanel(parent)
 	end)
 end
 
-local function DestructionConstructThresholdPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local spec = TRB.Data.settings.warlock.destruction
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
-	local yCoord = 5
-	local f = nil
-
-	controls.buttons.exportButton_Warlock_Destruction_Threshold = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThreshold"], 400, yCoord-5, 225, 20)
-	controls.buttons.exportButton_Warlock_Destruction_Threshold:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixThreshold"] .. ".", 9, 3, false, true, false, false, false, false)
-	end)
-
-	--yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "threshold")
-
-	--yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "threshold")
-end
-
 local function DestructionConstructFontAndTextPanel(parent)
 	if parent == nil then
 		return
