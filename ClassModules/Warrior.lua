@@ -294,7 +294,7 @@ local function FillSpellData_Fury()
 		{ variable = "$ravagerTicks", description = L["WarriorFuryBarTextVariable_ravagerTicks"], printInSettings = true, color = false },
 		{ variable = "$ravagerRage", description = L["WarriorFuryBarTextVariable_ravagerRage"], printInSettings = true, color = false },
 		
-		{ variable = "$bladestormTicks", description = L["WarriorFuryBarTextVariable_bladestormicks"], printInSettings = true, color = false },
+		{ variable = "$bladestormTicks", description = L["WarriorFuryBarTextVariable_bladestormTicks"], printInSettings = true, color = false },
 		{ variable = "$bladestormRage", description = L["WarriorFuryBarTextVariable_bladestormRage"], printInSettings = true, color = false },
 
 		{ variable = "$whirlwindTime", description = L["WarriorFuryBarTextVariable_whirlwindTime"], printInSettings = true, color = false },

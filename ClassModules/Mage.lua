@@ -169,13 +169,13 @@ local function FillSpellData_Arcane()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$mana", description = L["MageArcaneBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageArcaneBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["MageArcaneBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MageArcaneBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
 					
 		{ variable = "$arcaneCharges", description = L["MageArcaneBarTextVariable_arcaneCharges"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
@@ -231,13 +231,13 @@ local function FillSpellData_Fire()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$mana", description = L["MageArcaneBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageArcaneBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["MageArcaneBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MageArcaneBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
 	}
 end
 
@@ -288,13 +288,13 @@ local function FillSpellData_Frost()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$mana", description = L["MageArcaneBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageArcaneBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["MageArcaneBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MageArcaneBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
 	}
 end
 

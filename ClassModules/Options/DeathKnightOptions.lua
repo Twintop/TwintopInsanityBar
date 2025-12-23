@@ -1393,29 +1393,16 @@ local function BloodConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 6, 1, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["RunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RunicPowerColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
-
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RunicPowerColorPickerCastingRunicPower"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.casting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
-	end)
-
-	--[[yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RunicPowerColorPickerPassiveRunicPower"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-	end)]]
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 1, yCoord)
 end
@@ -1825,29 +1812,16 @@ local function FrostConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 6, 2, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightFrostRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightFrostColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
-
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightFrostColorPickerCastingRunicPower"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.casting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
-	end)
-
-	--[[yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightFrostColorPickerPassiveRunicPower"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-	end)]]
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 2, yCoord)
 end
@@ -2228,21 +2202,15 @@ local function UnholyConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 6, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightUnholyRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightUnholyColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
-	end)
-
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightUnholyColorPickerCastingRunicPower"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.casting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 3, yCoord)

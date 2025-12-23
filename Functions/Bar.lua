@@ -290,7 +290,7 @@ function TRB.Functions.Bar:SetMinMax(settings)
 
 				if nodes == nil or nodes == 0 then
 					nodes = length
-				end			
+				end
 
 				for x = 1, math.min(nodes, 10) do
 					TRB.Frames.resource2Frames[x].resourceFrame:SetMinMaxValues(0, nodeWidth)
