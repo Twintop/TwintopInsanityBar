@@ -12,9 +12,22 @@ local content = [====[
 --- 
 
 # 12.0.0.0-beta04 (2025-12-16)
+## General
+
+- Update implementation for specs that use Mana% to match Blizzard's API changes.
+
+### Localization
+
+- Re-add the Google Translated localizations with updated strings.
+
 ## Rogue
 
 - Re-enabled Charged Combo Points now that API limitations have been resolved.
+
+## Shaman
+### [#484](#484) Enhancement
+
+- Re-enabled Maelstrom Weapon tracking via the Combo Points UX and bar text variables on PTR (12.0.0). For Beta (12.0.1), the UX is still disabled due to different API implementations available. Once the build updates past *64914* it will be re-enabled.
 
 ---
 

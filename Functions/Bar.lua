@@ -283,16 +283,18 @@ function TRB.Functions.Bar:SetMinMax(settings)
 
 		TRB.Frames.resourceFrame:SetMinMaxValues(0, max)-- settings.bar.width)
 		if TRB.Frames.resource2Frames ~= nil and TRB.Data.resource2 ~= "CUSTOM" then
-			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-			local nodes = TRB.Data.character.maxResource2
-			local nodeWidth = GetComboPointNodeWidth(settings)
+			if TRB.Data.character.classId ~= 7 or (TRB.Data.character.classId == 7 and TRB.Details.addonData.build ~= "64914") then -- Enhancement Shaman
+				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
+				local nodes = TRB.Data.character.maxResource2
+				local nodeWidth = GetComboPointNodeWidth(settings)
 
-			if nodes == nil or nodes == 0 then
-				nodes = length
-			end			
+				if nodes == nil or nodes == 0 then
+					nodes = length
+				end			
 
-			for x = 1, math.min(nodes, 10) do
-				TRB.Frames.resource2Frames[x].resourceFrame:SetMinMaxValues(0, nodeWidth)
+				for x = 1, math.min(nodes, 10) do
+					TRB.Frames.resource2Frames[x].resourceFrame:SetMinMaxValues(0, nodeWidth)
+				end
 			end
 		end
 	end

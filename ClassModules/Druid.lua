@@ -1206,7 +1206,7 @@ local function RefreshLookupData_Restoration()
 		maxResource = 1
 	end]]
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, true)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
 	--$efflorescenceTime

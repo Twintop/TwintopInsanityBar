@@ -400,8 +400,11 @@ local function ConstructResourceBar(settings)
 	if TRB.Data.character.specId == 1 then
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 2 then
-		TRB.Frames.resource2ContainerFrame:Show()
-		TRB.Frames.resource2ContainerFrame:Hide()
+		if TRB.Details.addonData.build ~= "64914" then
+			TRB.Frames.resource2ContainerFrame:Show()
+		else
+			TRB.Frames.resource2ContainerFrame:Hide()
+		end
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Frames.resource2ContainerFrame:Hide()
 	end
@@ -592,7 +595,7 @@ local function RefreshLookupData_Restoration()
 		maxResource = 1
 	end]]
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, true)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
 	--$ascendanceTime
@@ -982,28 +985,30 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
+				if TRB.Details.addonData.build ~= "64914" then
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					for x = 1, TRB.Data.character.maxResource2 do
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
+						local cpBR = cpBackgroundRed
+						local cpBG = cpBackgroundGreen
+						local cpBB = cpBackgroundBlue
 
-					if snapshotData.attributes.resource2 >= x then
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-						if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-							cpColor = specSettings.colors.comboPoints.penultimate
-						elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-							cpColor = specSettings.colors.comboPoints.final
+						if snapshotData.attributes.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
+							end
+						else
+							TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end
-					else
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						
+						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
+						TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
+						TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
 					end
-					
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
-					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
 			end
 		end
@@ -1305,10 +1310,13 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "enhancement"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
-		local maxComboPoints = 10
-		if maxComboPoints ~= TRB.Data.character.maxResource2 then
-			TRB.Data.character.maxResource2 = maxComboPoints
-			TRB.Functions.Bar:SetPosition(TRB.Data.settings.shaman.enhancement, TRB.Frames.barContainerFrame)
+		
+		if TRB.Details.addonData.build ~= "64914" then
+			local maxComboPoints = 10
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+				TRB.Functions.Bar:SetPosition(TRB.Data.settings.shaman.enhancement, TRB.Frames.barContainerFrame)
+			end
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
@@ -1332,9 +1340,14 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
-		TRB.Data.resource2 = "SPELL"
-		TRB.Data.resource2Id = 344179
-		TRB.Data.resource2Factor = 1
+		if TRB.Details.addonData.build ~= "64914" then
+			TRB.Data.resource2 = "SPELL"
+			TRB.Data.resource2Id = 344179
+			TRB.Data.resource2Factor = 1
+		else
+			TRB.Data.resource2 = nil
+			TRB.Data.resource2Id = nil
+		end
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
 		TRB.Data.specSupported = true
@@ -1447,11 +1460,15 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$resource" or var == "$mana" then
 			valid = true
 		elseif var == "$resourceMax" or var == "$manaMax" then
-			valid = true
-		--[[elseif var == "$comboPoints" or var == "$maelstromWeapon" then
-			valid = true
+			valid = true		
+		elseif var == "$comboPoints" or var == "$maelstromWeapon" then
+			if TRB.Details.addonData.build ~= "64914" then
+				valid = true
+			end
 		elseif var == "$comboPointsMax"or var == "$maelstromWeaponMax" then
-			valid = true]]
+			if TRB.Details.addonData.build ~= "64914" then
+				valid = true
+			end
 		elseif var == "$ascendanceTime" then
 			if snapshots[spells.ascendance.id].buff.isActive then
 				valid = true

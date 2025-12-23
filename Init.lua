@@ -27,7 +27,8 @@ local addonData = {
 	loaded = false,
 	registered = false,
 	libs = {},
-	toc = select(4, GetBuildInfo())
+	toc = select(4, GetBuildInfo()),
+	build = select(2, GetBuildInfo()),
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 addonData.libs.SharedMedia:Register("sound", L["LSMSoundWilhelmScream"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
@@ -228,12 +229,15 @@ if 	TRB.Data.character.classId == 1 or -- Protection Warrior
 	TRB.Frames.resource2Frames = {}
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	
-	for x = 1, 10 do
-		TRB.Frames.resource2Frames[x] = {}
-		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", "TwintopResourceBarFrame_ComboPoint_"..x, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
-		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
-		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
-		TRB.Frames.resource2Frames[x].containerFrame.thresholds = {}
+	if TRB.Data.character.classId ~= 7 or (TRB.Data.character.classId == 7 and TRB.Details.addonData.build ~= "64914") then -- Enhancement Shaman
+		for x = 1, 10 do
+			TRB.Frames.resource2Frames[x] = {}
+			TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", "TwintopResourceBarFrame_ComboPoint_"..x, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
+			TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
+			TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
+			TRB.Frames.resource2Frames[x].containerFrame.thresholds = {}
+		end
+
 	end
 end
 
