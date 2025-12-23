@@ -11,7 +11,7 @@ local content = [====[
 
 --- 
 
-# 12.0.0.0-beta04 (2025-12-16)
+# 12.0.0.0-beta04 (2025-12-24)
 ## General
 
 - Update implementation for specs that use Mana% to match Blizzard's API changes.
