@@ -661,6 +661,19 @@ end
 -- Initialize parallel storage for new bar system
 TRB.Frames.barGroups = TRB.Frames.barGroups or {}
 
+---Destroys existing bar groups before creating new ones
+---Call this when switching specs to prevent orphaned frames
+function TRB.Functions.Bar:DestroyBarGroups()
+	if TRB.Frames.barGroups then
+		for key, group in pairs(TRB.Frames.barGroups) do
+			if group and group.Destroy then
+				group:Destroy()
+			end
+		end
+		TRB.Frames.barGroups = nil
+	end
+end
+
 ---Constructs bar groups using the new OOP system
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>

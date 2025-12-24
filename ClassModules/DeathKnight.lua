@@ -185,6 +185,14 @@ end
 
 local function Setup_Blood()
 	TRB.Functions.Character:FillSpecializationCacheSettings("deathknight", "blood", true)
+	
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+	
+	-- Create bar groups for Blood using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(1, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Blood()
@@ -255,6 +263,14 @@ end
 
 local function Setup_Frost()
 	TRB.Functions.Character:FillSpecializationCacheSettings("deathknight", "frost")
+	
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+	
+	-- Create bar groups for Frost using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(2, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Frost()
@@ -325,6 +341,14 @@ end
 
 local function Setup_Unholy()
 	TRB.Functions.Character:FillSpecializationCacheSettings("deathknight", "unholy")
+	
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+	
+	-- Create bar groups for Unholy using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(3, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Unholy()
@@ -437,10 +461,28 @@ local function ConstructResourceBar(settings)
 			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 		end
 		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+		
+		-- Register threshold with new bar system if available
+		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+			local primaryNode = TRB.Frames.barGroups.primary:GetNode(1)
+			if primaryNode then
+				primaryNode:RegisterThreshold(TRB.Frames.resourceFrame.thresholds[thresholdId])
+			end
+		end
 	end
 	
 	TRB.Frames.resource2ContainerFrame:Show()
 	TRB.Functions.Class:CheckCharacter()
+	
+	-- New bar system construction (parallel, does not affect legacy system)
+	-- Bar groups are created but not synced to legacy frame references to avoid interference
+	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- NOTE: Do NOT call SyncLegacyFrameReferences here - it overwrites the original frame references
+		-- and breaks the legacy system. Frame syncing will be done in a later phase.
+	end
+	
+	-- Legacy construction (required for bar to display)
 	TRB.Functions.Bar:Construct(settings)
 end
 
@@ -799,6 +841,8 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 	local runes = TRB.Data.character.runes
+	local barGroups = TRB.Frames.barGroups
+	
 	for x = 1, TRB.Data.character.maxResource2 do
 		local rune = runes[x]
 		local cpBorderColor = specSettings.colors.comboPoints.border
@@ -807,15 +851,28 @@ local function UpdateRunes(specSettings, specCacheSettings)
 		local cpBG = cpBackgroundGreen
 		local cpBB = cpBackgroundBlue
 
+		-- Legacy system (always run - this is what displays the runes)
 		TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, rune.percentage, 1)
 
 		if not rune.ready then
 			cpColor = specSettings.colors.comboPoints.cooldown
 		end
 		
+		-- Legacy system (colors)
 		TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 		TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 		TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
+		
+		-- New bar system (parallel, for testing - these frames are not visible yet)
+		if barGroups and barGroups.runes then
+			local runeNode = barGroups.runes:GetNode(x)
+			if runeNode then
+				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "rune_new" .. x, runeNode, rune.percentage, 1)
+				runeNode:SetBorderColor(cpBorderColor)
+				runeNode:SetColor(cpColor)
+				runeNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+			end
+		end
 	end
 end
 
@@ -848,8 +905,22 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
+				-- Legacy system (always run - this is what displays the bar)
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				barContainerFrame:SetAlpha(1.0)
+				
+				-- New bar system (parallel, for testing - these frames are not visible yet)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -897,9 +968,6 @@ local function UpdateResourceBar()
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
-
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 								
 				UpdateRunes(specSettings, specCacheSettings)
 			end
@@ -927,8 +995,22 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
+				-- Legacy system (always run - this is what displays the bar)
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				barContainerFrame:SetAlpha(1.0)
+				
+				-- New bar system (parallel, for testing - these frames are not visible yet)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -976,9 +1058,6 @@ local function UpdateResourceBar()
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
-
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 								
 				UpdateRunes(specSettings, specCacheSettings)
 			end
@@ -1005,8 +1084,22 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
+				-- Legacy system (always run - this is what displays the bar)
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
+				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				barContainerFrame:SetAlpha(1.0)
+				
+				-- New bar system (parallel, for testing - these frames are not visible yet)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1054,9 +1147,6 @@ local function UpdateResourceBar()
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
-
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 								
 				UpdateRunes(specSettings, specCacheSettings)
 			end

@@ -122,23 +122,11 @@ local function FillSpecializationCache()
 	}
 end
 
--- Helper function to destroy existing bar groups before creating new ones
-local function DestroyBarGroups()
-	if TRB.Frames.barGroups then
-		for key, group in pairs(TRB.Frames.barGroups) do
-			if group and group.Destroy then
-				group:Destroy()
-			end
-		end
-		TRB.Frames.barGroups = nil
-	end
-end
-
 local function Setup_Arcane()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "arcane", true)
 	
 	-- Destroy existing bar groups before creating new ones
-	DestroyBarGroups()
+	TRB.Functions.Bar:DestroyBarGroups()
 	
 	-- Create bar groups for Arcane using new OOP system
 	if TRB.Frames.barContainerFrame then
@@ -208,7 +196,7 @@ local function Setup_Fire()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "fire")
 	
 	-- Destroy existing bar groups before creating new ones
-	DestroyBarGroups()
+	TRB.Functions.Bar:DestroyBarGroups()
 	
 	-- Create bar groups for Fire using new OOP system
 	if TRB.Frames.barContainerFrame then
@@ -273,7 +261,7 @@ local function Setup_Frost()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "frost")
 	
 	-- Destroy existing bar groups before creating new ones
-	DestroyBarGroups()
+	TRB.Functions.Bar:DestroyBarGroups()
 	
 	-- Create bar groups for Frost using new OOP system
 	if TRB.Frames.barContainerFrame then

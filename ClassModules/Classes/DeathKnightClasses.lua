@@ -124,3 +124,62 @@ function TRB.Classes.DeathKnight.UnholySpells:New()
 
     return self
 end
+
+
+--[[
+    BarGroups Factory for Death Knight
+    Creates the appropriate BarGroup instances for each Death Knight specialization.
+    
+    All specs: Primary bar (N=1) for Runic Power + Runes (N=6)
+]]
+
+---@class TRB.Classes.DeathKnight.BarGroupsFactory
+TRB.Classes.DeathKnight.BarGroupsFactory = {}
+TRB.Classes.DeathKnight.BarGroupsFactory.__index = TRB.Classes.DeathKnight.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Death Knight specialization
+---@param specId integer # 1=Blood, 2=Frost, 3=Unholy
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    -- All Death Knight specs have the same bar structure:
+    -- Primary Runic Power bar (1 node) + Runes (6 nodes)
+
+    -- Primary Runic Power bar (1 node)
+    barGroups.primary = TRB.Classes.BarGroup:New(
+        parentFrame,
+        "TwintopResourceBarFrame",
+        1,
+        true -- isPrimary
+    )
+
+    -- Runes (6 nodes for all specs)
+    barGroups.runes = TRB.Classes.BarGroup:New(
+        parentFrame,
+        "TwintopResourceBarFrame_ComboPoint",
+        6,
+        false -- not primary
+    )
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
+    -- All Death Knight specs have the same configuration
+    return {
+        primary = {
+            maxNodes = 1,
+            isPrimary = true
+        },
+        runes = {
+            maxNodes = 6,
+            isPrimary = false,
+            resourceType = "Runes"
+        }
+    }
+end
