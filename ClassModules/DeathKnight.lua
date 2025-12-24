@@ -864,8 +864,8 @@ local function UpdateRunes(specSettings, specCacheSettings)
 		TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
 		
 		-- New bar system (parallel, for testing - these frames are not visible yet)
-		if barGroups and barGroups.runes then
-			local runeNode = barGroups.runes:GetNode(x)
+		if barGroups and barGroups.secondary then
+			local runeNode = barGroups.secondary:GetNode(x)
 			if runeNode then
 				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "rune_new" .. x, runeNode, rune.percentage, 1)
 				runeNode:SetBorderColor(cpBorderColor)

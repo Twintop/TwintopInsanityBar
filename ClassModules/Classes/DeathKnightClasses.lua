@@ -156,7 +156,7 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFr
     )
 
     -- Runes (6 nodes for all specs)
-    barGroups.runes = TRB.Classes.BarGroup:New(
+    barGroups.secondary = TRB.Classes.BarGroup:New(
         parentFrame,
         "TwintopResourceBarFrame_ComboPoint",
         6,
@@ -176,7 +176,7 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
             maxNodes = 1,
             isPrimary = true
         },
-        runes = {
+        secondary = {
             maxNodes = 6,
             isPrimary = false,
             resourceType = "Runes"

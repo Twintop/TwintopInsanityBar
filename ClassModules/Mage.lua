@@ -667,7 +667,7 @@ local function UpdateResourceBar()
 					if snapshotData.attributes.resource2 >= x then
 						-- Legacy system (always run)
 						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-						
+					
 						if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 							cpColor = specSettings.colors.comboPoints.penultimate
 						elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
@@ -675,8 +675,8 @@ local function UpdateResourceBar()
 						end
 						
 						-- New bar system (parallel)
-						if barGroups and barGroups.arcaneCharges then
-							local chargeNode = barGroups.arcaneCharges:GetNode(x)
+						if barGroups and barGroups.secondary then
+							local chargeNode = barGroups.secondary:GetNode(x)
 							if chargeNode then
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint_new" .. x, chargeNode, 1, 1)
 							end
@@ -686,8 +686,8 @@ local function UpdateResourceBar()
 						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						
 						-- New bar system (parallel)
-						if barGroups and barGroups.arcaneCharges then
-							local chargeNode = barGroups.arcaneCharges:GetNode(x)
+						if barGroups and barGroups.secondary then
+							local chargeNode = barGroups.secondary:GetNode(x)
 							if chargeNode then
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint_new" .. x, chargeNode, 0, 1)
 							end
@@ -700,8 +700,8 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
 					
 					-- New bar system (parallel for colors)
-					if barGroups and barGroups.arcaneCharges then
-						local chargeNode = barGroups.arcaneCharges:GetNode(x)
+					if barGroups and barGroups.secondary then
+						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
 							chargeNode:SetBorderColor(cpBorderColor)
 							chargeNode:SetColor(cpColor)

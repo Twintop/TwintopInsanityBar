@@ -204,6 +204,14 @@ end
 
 local function Setup_Havoc()
 	TRB.Functions.Character:FillSpecializationCacheSettings("demonhunter", "havoc")
+
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+
+	-- Create bar groups for Havoc using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(1, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Havoc()
@@ -287,6 +295,14 @@ end
 
 local function Setup_Vengeance()
 	TRB.Functions.Character:FillSpecializationCacheSettings("demonhunter", "vengeance")
+
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+
+	-- Create bar groups for Vengeance using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(2, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Vengeance()
@@ -361,6 +377,14 @@ end
 
 local function Setup_Devourer()
 	TRB.Functions.Character:FillSpecializationCacheSettings("demonhunter", "devourer")
+
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+
+	-- Create bar groups for Devourer using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(3, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Devourer()
@@ -441,7 +465,7 @@ end
 
 local function ConstructResourceBar(settings)
 	for _, v in pairs(resourceFrame.thresholds) do
-		v:Hide();
+		v:Hide()
 	end
 	
 	for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
@@ -449,17 +473,32 @@ local function ConstructResourceBar(settings)
 			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 		end
 		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+
+		-- Register threshold with new bar system if available
+		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+			local primaryNode = TRB.Frames.barGroups.primary:GetNode(1)
+			if primaryNode then
+				primaryNode:RegisterThreshold(TRB.Frames.resourceFrame.thresholds[thresholdId])
+			end
+		end
 	end
 
-	if TRB.Data.character.specId == 1 then
+	if TRB.Data.character.specId == 1 then -- Havoc
 		TRB.Frames.resource2ContainerFrame:Hide()
-	elseif TRB.Data.character.specId == 2 then
+	elseif TRB.Data.character.specId == 2 then -- Vengeance
 		TRB.Frames.resource2ContainerFrame:Show()
-	elseif TRB.Data.character.specId == 3 then
+	elseif TRB.Data.character.specId == 3 then -- Devourer
 		TRB.Frames.resource2ContainerFrame:Show()
 	end
 
 	TRB.Functions.Class:CheckCharacter()
+
+	-- New bar system construction (parallel, does not affect legacy system)
+	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+	end
+
+	-- Legacy construction (required for bar to display)
 	TRB.Functions.Bar:Construct(settings)
 end
 
@@ -942,6 +981,17 @@ local function UpdateResourceBar()
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+
+				-- New bar system (parallel, for testing)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1060,6 +1110,17 @@ local function UpdateResourceBar()
 
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+
+				-- New bar system (parallel, for testing)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
 				
 				--[[local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
@@ -1201,6 +1262,18 @@ local function UpdateResourceBar()
 				barContainerFrame:SetAlpha(1.0)
 
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+
+				-- New bar system - Primary bar (parallel)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
+
 				--TODO: remove this since we're updating it above in UpdateDevourer() ?
 				local blizzSfBar = _G["DemonHunterSoulFragmentsBar"]
 				local min, max = blizzSfBar:GetMinMaxValues()
@@ -1229,6 +1302,18 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
 				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
+
+				-- New bar system - Soul Fragments (parallel, percentage-based)
+				if barGroups and barGroups.secondary then
+					local sfNode = barGroups.secondary:GetNode(1)
+					if sfNode then
+						-- Pass current and max directly, let SetBarNodeValue handle it like legacy system
+						TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary_new", sfNode, current, max)
+						sfNode:SetBorderColor(cpBorderColor)
+						sfNode:SetColor(cpColor)
+						sfNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+					end
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

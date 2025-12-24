@@ -742,9 +742,9 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
 	end
 
-	-- Configure secondary bar groups (combo points, arcane charges, etc.)
-	if barGroups.arcaneCharges and settings.comboPoints then
-		self:ConstructSecondaryBarGroup(settings, barGroups.primary, barGroups.arcaneCharges)
+	-- Configure secondary bar groups (combo points, arcane charges, runes, etc.)
+	if barGroups.secondary and settings.comboPoints then
+		self:ConstructSecondaryBarGroup(settings, barGroups.primary, barGroups.secondary)
 	end
 end
 
@@ -893,13 +893,13 @@ function TRB.Functions.Bar:SyncLegacyFrameReferences(barGroups)
 		end
 	end
 
-	-- Sync secondary bar frames (arcane charges, combo points, etc.)
-	if barGroups.arcaneCharges then
-		TRB.Frames.resource2ContainerFrame = barGroups.arcaneCharges:GetContainerFrame()
+	-- Sync secondary bar frames (combo points, arcane charges, runes, etc.)
+	if barGroups.secondary then
+		TRB.Frames.resource2ContainerFrame = barGroups.secondary:GetContainerFrame()
 		TRB.Frames.resource2Frames = TRB.Frames.resource2Frames or {}
 
-		for i = 1, barGroups.arcaneCharges.maxNodes do
-			local node = barGroups.arcaneCharges:GetNode(i)
+		for i = 1, barGroups.secondary.maxNodes do
+			local node = barGroups.secondary:GetNode(i)
 			if node then
 				TRB.Frames.resource2Frames[i] = TRB.Frames.resource2Frames[i] or {}
 				TRB.Frames.resource2Frames[i].containerFrame = node:GetContainerFrame()

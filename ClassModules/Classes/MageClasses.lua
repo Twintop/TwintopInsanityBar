@@ -83,7 +83,7 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         )
 
         -- Arcane Charges (4 nodes)
-        barGroups.arcaneCharges = TRB.Classes.BarGroup:New(
+        barGroups.secondary = TRB.Classes.BarGroup:New(
             parentFrame,
             "TwintopResourceBarFrame_ComboPoint",
             4,
@@ -122,7 +122,7 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = true
             },
-            arcaneCharges = {
+            secondary = {
                 maxNodes = 4,
                 isPrimary = false,
                 resourceType = "ArcaneCharges"

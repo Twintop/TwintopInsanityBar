@@ -423,3 +423,118 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 
 	return self
 end
+
+
+--[[
+    BarGroups Factory for Demon Hunter
+    Creates the appropriate BarGroup instances for each Demon Hunter specialization.
+    
+    Havoc (specId=1): Primary bar (N=1) only - no secondary resource
+    Vengeance (specId=2): Primary bar (N=1) + Soul Fragments (N=5, currently disabled)
+    Devourer (specId=3): Primary bar (N=1) + Soul Fragments (N=1, percentage-based from Blizzard UI)
+]]
+
+---@class TRB.Classes.DemonHunter.BarGroupsFactory
+TRB.Classes.DemonHunter.BarGroupsFactory = {}
+TRB.Classes.DemonHunter.BarGroupsFactory.__index = TRB.Classes.DemonHunter.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Demon Hunter specialization
+---@param specId integer # 1=Havoc, 2=Vengeance, 3=Devourer
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    if specId == 1 then -- Havoc
+        -- Primary fury bar only (no secondary resource)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+    elseif specId == 2 then -- Vengeance
+        -- Primary fury bar
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+        -- Soul Fragments (5 nodes) - currently disabled in legacy system
+        -- Uncomment when Soul Fragments tracking is re-enabled
+        --[[
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame_ComboPoint",
+            5,
+            false -- not primary
+        )
+        ]]
+
+    elseif specId == 3 then -- Devourer
+        -- Primary fury bar
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+        -- Soul Fragments (single percentage bar from Blizzard UI)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame_ComboPoint",
+            1,
+            false -- not primary
+        )
+    end
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
+    if specId == 1 then -- Havoc
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    elseif specId == 2 then -- Vengeance
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+            -- Soul Fragments disabled
+            --[[
+            secondary = {
+                maxNodes = 5,
+                isPrimary = false,
+                resourceType = "SoulFragments"
+            }
+            ]]
+        }
+    elseif specId == 3 then -- Devourer
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            },
+            secondary = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "SoulFragments",
+                fillType = "percentage" -- 0.0 to 1.0 based on Blizzard bar value
+            }
+        }
+    end
+
+    return {}
+end
