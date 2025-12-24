@@ -122,8 +122,28 @@ local function FillSpecializationCache()
 	}
 end
 
+-- Helper function to destroy existing bar groups before creating new ones
+local function DestroyBarGroups()
+	if TRB.Frames.barGroups then
+		for key, group in pairs(TRB.Frames.barGroups) do
+			if group and group.Destroy then
+				group:Destroy()
+			end
+		end
+		TRB.Frames.barGroups = nil
+	end
+end
+
 local function Setup_Arcane()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "arcane", true)
+	
+	-- Destroy existing bar groups before creating new ones
+	DestroyBarGroups()
+	
+	-- Create bar groups for Arcane using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(1, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Arcane()
@@ -186,6 +206,14 @@ end
 
 local function Setup_Fire()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "fire")
+	
+	-- Destroy existing bar groups before creating new ones
+	DestroyBarGroups()
+	
+	-- Create bar groups for Fire using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(2, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Fire()
@@ -243,6 +271,14 @@ end
 
 local function Setup_Frost()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "frost")
+	
+	-- Destroy existing bar groups before creating new ones
+	DestroyBarGroups()
+	
+	-- Create bar groups for Frost using new OOP system
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(3, TRB.Frames.barContainerFrame)
+	end
 end
 
 local function FillSpellData_Frost()
@@ -342,6 +378,14 @@ local function ConstructResourceBar(settings)
 			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 		end
 		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+		
+		-- Register threshold with new bar system if available
+		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+			local primaryNode = TRB.Frames.barGroups.primary:GetNode(1)
+			if primaryNode then
+				primaryNode:RegisterThreshold(TRB.Frames.resourceFrame.thresholds[thresholdId])
+			end
+		end
 	end
 
 	if TRB.Data.character.specId == 1 then
@@ -351,6 +395,16 @@ local function ConstructResourceBar(settings)
 	end
 
 	TRB.Functions.Class:CheckCharacter()
+	
+	-- New bar system construction (parallel, does not affect legacy system)
+	-- Bar groups are created but not synced to legacy frame references to avoid interference
+	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- NOTE: Do NOT call SyncLegacyFrameReferences here - it overwrites the original frame references
+		-- and breaks the legacy system. Frame syncing will be done in a later phase.
+	end
+	
+	-- Legacy construction (required for bar to display)
 	TRB.Functions.Bar:Construct(settings)
 end
 
@@ -595,13 +649,23 @@ local function UpdateResourceBar()
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
-
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-
 				local barColor = specSettings.colors.bar.base
 
+				-- Legacy system (always run - this is what displays the bar)
+				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+
+				-- New bar system (parallel, for testing - these frames are not visible yet)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
@@ -613,19 +677,49 @@ local function UpdateResourceBar()
 					local cpBB = cpBackgroundBlue
 
 					if snapshotData.attributes.resource2 >= x then
+						-- Legacy system (always run)
 						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						
 						if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 							cpColor = specSettings.colors.comboPoints.penultimate
 						elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 							cpColor = specSettings.colors.comboPoints.final
 						end
+						
+						-- New bar system (parallel)
+						if barGroups and barGroups.arcaneCharges then
+							local chargeNode = barGroups.arcaneCharges:GetNode(x)
+							if chargeNode then
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint_new" .. x, chargeNode, 1, 1)
+							end
+						end
 					else
+						-- Legacy system (always run)
 						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						
+						-- New bar system (parallel)
+						if barGroups and barGroups.arcaneCharges then
+							local chargeNode = barGroups.arcaneCharges:GetNode(x)
+							if chargeNode then
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint_new" .. x, chargeNode, 0, 1)
+							end
+						end
 					end
 					
+					-- Legacy system (always run for colors)
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
 					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
+					
+					-- New bar system (parallel for colors)
+					if barGroups and barGroups.arcaneCharges then
+						local chargeNode = barGroups.arcaneCharges:GetNode(x)
+						if chargeNode then
+							chargeNode:SetBorderColor(cpBorderColor)
+							chargeNode:SetColor(cpColor)
+							chargeNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+						end
+					end
 				end
 			end
 
@@ -649,12 +743,22 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
+				-- Legacy system (always run - this is what displays the bar)
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-
 				barContainerFrame:SetAlpha(1.0)
-
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+
+				-- New bar system (parallel, for testing - these frames are not visible yet)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -676,12 +780,22 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
+				-- Legacy system (always run - this is what displays the bar)
 				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-
 				barContainerFrame:SetAlpha(1.0)
-
 				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
 				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
+
+				-- New bar system (parallel, for testing - these frames are not visible yet)
+				local barGroups = TRB.Frames.barGroups
+				if barGroups and barGroups.primary then
+					local primaryNode = barGroups.primary:GetNode(1)
+					if primaryNode then
+						TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource_new", primaryNode, currentResource)
+						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetColor(barColor)
+					end
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

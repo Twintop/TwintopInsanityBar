@@ -650,3 +650,309 @@ function TRB.Functions.Bar:Construct(settings)
 		TRB.Functions.Class:HideResourceBar()
 	end
 end
+
+
+--[[
+	New OOP-based Bar System
+	These functions work with TRB.Classes.BarGroup and TRB.Classes.BarNode
+	to provide a parallel, object-oriented bar construction system.
+]]
+
+-- Initialize parallel storage for new bar system
+TRB.Frames.barGroups = TRB.Frames.barGroups or {}
+
+---Constructs bar groups using the new OOP system
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
+	if settings == nil or settings.bar == nil or barGroups == nil then
+		return
+	end
+
+	local strata = TRB.Data.settings.core.strata.level
+	local frameLevels = TRB.Data.constants.frameLevels
+
+	-- Configure the primary bar group
+	if barGroups.primary then
+		local primary = barGroups.primary
+		local primaryNode = primary:GetNode(1)
+
+		if primaryNode then
+			-- Set frame strata
+			primary:SetFrameStrata(strata)
+
+			-- Set dimensions
+			primaryNode:SetDimensions(settings.bar.width, settings.bar.height, settings.bar.border)
+
+			-- Set textures
+			primaryNode:SetTextures(
+				settings.textures.resourceBar,
+				settings.textures.border,
+				settings.textures.background
+			)
+
+			-- Set frame levels
+			primaryNode:SetFrameLevels(
+				frameLevels.barContainer,
+				frameLevels.barBorder,
+				frameLevels.barResource
+			)
+
+			-- Set colors
+			primaryNode:SetColor(settings.colors.bar.base)
+			primaryNode:SetBorderColor(settings.colors.bar.border)
+			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background)
+
+			-- Position the resource frame
+			primaryNode:PositionResourceFrame()
+
+			-- Set min/max values
+			local max = TRB.Data.character.maxResource or settings.bar.width
+			if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
+				max = math.min(settings.maxResource.value * TRB.Data.resourceFactor, TRB.Data.character.maxResource or max)
+			end
+			primaryNode:SetMinMax(0, max)
+
+			-- Enable drag and drop
+			primary:SetDragAndDrop(settings.bar.dragAndDrop, settings)
+
+			-- Show the primary bar
+			primary:Show()
+			primaryNode:Show()
+		end
+
+		-- Position the primary group
+		primary.containerFrame:ClearAllPoints()
+		primary.containerFrame:SetPoint("CENTER", UIParent)
+		primary.containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+		primary.containerFrame:SetWidth(settings.bar.width - (settings.bar.border * 2))
+		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
+	end
+
+	-- Configure secondary bar groups (combo points, arcane charges, etc.)
+	if barGroups.arcaneCharges and settings.comboPoints then
+		self:ConstructSecondaryBarGroup(settings, barGroups.primary, barGroups.arcaneCharges)
+	end
+end
+
+---Constructs a secondary bar group (combo points, arcane charges, etc.)
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param primaryGroup TRB.Classes.BarGroup
+---@param secondaryGroup TRB.Classes.BarGroup
+function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup)
+	if settings.comboPoints == nil then
+		return
+	end
+
+	local strata = TRB.Data.settings.core.strata.level
+	local frameLevels = TRB.Data.constants.frameLevels
+	local nodes = TRB.Data.character.maxResource2 or secondaryGroup.maxNodes
+
+	-- Set node count based on max resource
+	secondaryGroup:SetNodeCount(nodes)
+
+	-- Set layout parameters
+	secondaryGroup:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+
+	-- Set frame strata
+	secondaryGroup:SetFrameStrata(strata)
+
+	-- Calculate positioning
+	local primaryContainer = primaryGroup:GetContainerFrame()
+	local setPoint = "BOTTOM"
+	local setPointRelativeTo = "TOP"
+	local topBottom = "TOP"
+	local leftCenterRight = "CENTER"
+
+	if settings.comboPoints.relativeTo == "TOPLEFT" then
+		setPoint = "BOTTOMLEFT"
+		setPointRelativeTo = "TOPLEFT"
+		leftCenterRight = "LEFT"
+	elseif settings.comboPoints.relativeTo == "TOP" then
+		setPoint = "BOTTOM"
+		setPointRelativeTo = "TOP"
+	elseif settings.comboPoints.relativeTo == "TOPRIGHT" then
+		setPoint = "BOTTOMRIGHT"
+		setPointRelativeTo = "TOPRIGHT"
+		leftCenterRight = "RIGHT"
+	elseif settings.comboPoints.relativeTo == "BOTTOMLEFT" then
+		setPoint = "TOPLEFT"
+		setPointRelativeTo = "BOTTOMLEFT"
+		topBottom = "BOTTOM"
+		leftCenterRight = "LEFT"
+	elseif settings.comboPoints.relativeTo == "BOTTOM" then
+		setPoint = "TOP"
+		setPointRelativeTo = "BOTTOM"
+		topBottom = "BOTTOM"
+	elseif settings.comboPoints.relativeTo == "BOTTOMRIGHT" then
+		setPoint = "TOPRIGHT"
+		setPointRelativeTo = "BOTTOMRIGHT"
+		topBottom = "BOTTOM"
+		leftCenterRight = "RIGHT"
+	end
+
+	local xPos, yPos
+
+	if settings.comboPoints.fullWidth then
+		xPos = 0
+		if topBottom == "BOTTOM" then
+			setPoint = "TOP"
+			setPointRelativeTo = "BOTTOM"
+		else
+			setPoint = "BOTTOM"
+			setPointRelativeTo = "TOP"
+		end
+		leftCenterRight = "CENTER"
+	else
+		if leftCenterRight == "LEFT" then
+			xPos = -settings.bar.border + settings.comboPoints.xPos
+		elseif leftCenterRight == "RIGHT" then
+			xPos = settings.bar.border + settings.comboPoints.xPos
+		else
+			xPos = settings.comboPoints.xPos
+		end
+	end
+
+	if topBottom == "BOTTOM" then
+		yPos = -settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
+	else
+		yPos = settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
+	end
+
+	-- Position the secondary container
+	secondaryGroup.containerFrame:ClearAllPoints()
+	secondaryGroup.containerFrame:SetPoint(setPoint, primaryContainer, setPointRelativeTo, xPos, yPos)
+	secondaryGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
+
+	-- Apply layout to nodes
+	secondaryGroup:ApplyLayout(
+		settings.bar.width,
+		settings.comboPoints.width,
+		settings.comboPoints.height,
+		settings.comboPoints.border
+	)
+
+	-- Set textures and colors for all nodes
+	for i = 1, secondaryGroup.maxNodes do
+		local node = secondaryGroup:GetNode(i)
+		if node then
+			node:SetTextures(
+				settings.textures.comboPointsBar,
+				settings.textures.comboPointsBorder,
+				settings.textures.comboPointsBackground
+			)
+			node:SetFrameLevels(
+				frameLevels.cpContainer,
+				frameLevels.cpBorder,
+				frameLevels.cpResource
+			)
+			node:SetBorderColor(settings.colors.comboPoints.border)
+			node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
+			node:SetColor(settings.colors.comboPoints.base)
+			node:SetMinMax(0, 1)
+		end
+	end
+
+	-- Show the group and active nodes
+	secondaryGroup:Show()
+	secondaryGroup:ShowNodes(nodes)
+end
+
+---Synchronizes legacy frame references to point to the new BarGroup frames
+---This maintains backward compatibility with existing code that uses TRB.Frames.resourceFrame, etc.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:SyncLegacyFrameReferences(barGroups)
+	if barGroups == nil then
+		return
+	end
+
+	-- Sync primary bar frames
+	if barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			-- Point legacy references to the new frames
+			TRB.Frames.barContainerFrame = barGroups.primary:GetContainerFrame()
+			TRB.Frames.resourceFrame = primaryNode:GetResourceFrame()
+			TRB.Frames.barBorderFrame = primaryNode:GetBorderFrame()
+
+			-- Also update the module-level variables (for files that cached them)
+			-- Note: This won't update local variables in other files, but will update global references
+		end
+	end
+
+	-- Sync secondary bar frames (arcane charges, combo points, etc.)
+	if barGroups.arcaneCharges then
+		TRB.Frames.resource2ContainerFrame = barGroups.arcaneCharges:GetContainerFrame()
+		TRB.Frames.resource2Frames = TRB.Frames.resource2Frames or {}
+
+		for i = 1, barGroups.arcaneCharges.maxNodes do
+			local node = barGroups.arcaneCharges:GetNode(i)
+			if node then
+				TRB.Frames.resource2Frames[i] = TRB.Frames.resource2Frames[i] or {}
+				TRB.Frames.resource2Frames[i].containerFrame = node:GetContainerFrame()
+				TRB.Frames.resource2Frames[i].borderFrame = node:GetBorderFrame()
+				TRB.Frames.resource2Frames[i].resourceFrame = node:GetResourceFrame()
+			end
+		end
+	end
+end
+
+---Updates the value on a BarNode using the standard caching mechanism
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param key string
+---@param node TRB.Classes.BarNode
+---@param value number
+---@param maxResource number?
+function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResource)
+	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
+	local valueIsSecret = issecretvalue(value)
+	local maxResourceIsSecret = maxResource and issecretvalue(maxResource) or false
+
+	if not valueIsSecret and not maxResourceIsSecret and 
+	   TRB.Data.cache.values.bar[key].value == value and 
+	   TRB.Data.cache.values.bar[key].maxResource == maxResource then
+		return
+	end
+
+	if settings ~= nil and settings.bar ~= nil and node ~= nil then
+		local _, max = node:GetMinMax()
+		local barMaxValueIsSecret = issecretvalue(max)
+
+		if barMaxValueIsSecret or valueIsSecret or maxResourceIsSecret then
+			node:SetValue(value)
+		else
+			maxResource = maxResource or 1
+			value = value or 0
+
+			local factor = max / maxResource
+
+			if maxResource == 0 then
+				factor = max / 1
+			end
+
+			local scaledValue = value * factor
+			if factor ~= math.huge and max ~= math.huge then
+				node:SetValue(math.min(scaledValue, max))
+			end
+		end
+
+		TRB.Data.cache.values.bar[key].value = value
+		TRB.Data.cache.values.bar[key].maxResource = maxResource
+	end
+end
+
+---Sets the primary value on a BarNode
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param key string
+---@param node TRB.Classes.BarNode
+---@param value number
+function TRB.Functions.Bar:SetBarNodePrimaryValue(settings, key, node, value)
+	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
+		if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
+			TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, math.min(settings.maxResource.value * TRB.Data.resourceFactor, TRB.Data.character.maxResource))
+		else
+			TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, TRB.Data.character.maxResource)
+		end
+	end
+end
+

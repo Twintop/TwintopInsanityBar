@@ -80,6 +80,7 @@ Classes\TimeToDie.lua
 Classes\Target.lua
 Classes\Spell.lua
 Classes\Talent.lua
+Classes\Bar.lua
 
 Classes\Settings.lua
 Classes\SpecCache.lua

@@ -51,3 +51,98 @@ function TRB.Classes.Mage.FrostSpells:New()
    
     return self
 end
+
+
+--[[
+    BarGroups Factory for Mage
+    Creates the appropriate BarGroup instances for each Mage specialization.
+    
+    Arcane: Primary bar (N=1) + Arcane Charges (N=4)
+    Fire: Primary bar (N=1) only
+    Frost: Primary bar (N=1) only
+]]
+
+---@class TRB.Classes.Mage.BarGroupsFactory
+TRB.Classes.Mage.BarGroupsFactory = {}
+TRB.Classes.Mage.BarGroupsFactory.__index = TRB.Classes.Mage.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Mage specialization
+---@param specId integer # 1=Arcane, 2=Fire, 3=Frost
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    if specId == 1 then -- Arcane
+        -- Primary mana bar (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+        -- Arcane Charges (4 nodes)
+        barGroups.arcaneCharges = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame_ComboPoint",
+            4,
+            false -- not primary
+        )
+
+    elseif specId == 2 then -- Fire
+        -- Primary mana bar only (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+    elseif specId == 3 then -- Frost
+        -- Primary mana bar only (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            parentFrame,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+    end
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
+    if specId == 1 then -- Arcane
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            },
+            arcaneCharges = {
+                maxNodes = 4,
+                isPrimary = false,
+                resourceType = "ArcaneCharges"
+            }
+        }
+    elseif specId == 2 then -- Fire
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    elseif specId == 3 then -- Frost
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    end
+
+    return {}
+end
