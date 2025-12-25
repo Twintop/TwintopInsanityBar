@@ -170,6 +170,12 @@ end
 
 local function Setup_Brewmaster()
 	TRB.Functions.Character:FillSpecializationCacheSettings("monk", "brewmaster")
+	
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+	
+	-- Create bar groups for Brewmaster using new OOP system
+	TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(1)
 end
 
 local function FillSpellData_Brewmaster()
@@ -229,6 +235,12 @@ end
 
 local function Setup_Mistweaver()
 	TRB.Functions.Character:FillSpecializationCacheSettings("monk", "mistweaver", true)
+	
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+	
+	-- Create bar groups for Mistweaver using new OOP system
+	TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(2)
 end
 
 local function FillSpellData_Mistweaver()
@@ -291,6 +303,12 @@ end
 
 local function Setup_Windwalker()
 	TRB.Functions.Character:FillSpecializationCacheSettings("monk", "windwalker")
+	
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+	
+	-- Create bar groups for Windwalker using new OOP system
+	TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(3)
 end
 
 local function FillSpellData_Windwalker()
@@ -387,34 +405,119 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	for _, v in pairs(resourceFrame.thresholds) do
-		v:Hide();
-	end
+	local barGroups = TRB.Frames.barGroups
 
-	for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
-		if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-		end
-		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
-	end
-
-	if TRB.Data.character.specId == 1 then
-		TRB.Frames.resource2ContainerFrame:Show()
-		for thresholdId = 1, 2 do
-			if TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] == nil then
-				TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resource2Frames[1].containerFrame)
+	-- Create thresholds on the primary BarNode
+	if barGroups and barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			primaryNode:ClearThresholds()
+			for _ = 1, #TRB.Data.cache.thresholdSpells do
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
+				primaryNode:RegisterThreshold(thresholdFrame)
 			end
-			TRB.Functions.Threshold:ResetThresholdLineComboPoint(TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId], settings)
-			TRB.Frames.resource2Frames[1].containerFrame.thresholds[thresholdId]:Show()
 		end
-	elseif TRB.Data.character.specId == 2 then
+
+		TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
+	end
+
+	-- Handle secondary bar based on spec
+	if barGroups and barGroups.secondary then
+		if TRB.Data.character.specId == 1 then -- Brewmaster uses Stagger bar with thresholds
+			local maxStaggerNodes = 1
+			TRB.Data.character.maxResource2 = maxStaggerNodes
+			
+			-- Set the node count and layout for Stagger bar
+			barGroups.secondary:SetNodeCount(maxStaggerNodes)
+			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+			barGroups.secondary:Show()
+			
+			-- Apply layout to position the Stagger bar correctly
+			barGroups.secondary:ApplyLayout(
+				settings.bar.width,
+				settings.comboPoints.width,
+				settings.comboPoints.height,
+				settings.comboPoints.border
+			)
+			
+			-- Set up the Stagger bar node with textures and colors
+			local frameLevels = TRB.Data.constants.frameLevels
+			local staggerNode = barGroups.secondary:GetNode(1)
+			if staggerNode then
+				staggerNode:SetTextures(
+					settings.textures.comboPointsBar,
+					settings.textures.comboPointsBorder,
+					settings.textures.comboPointsBackground
+				)
+				staggerNode:SetBorderColor(settings.colors.comboPoints.border)
+				staggerNode:SetBackgroundColorFromString(settings.colors.comboPoints.background)
+				staggerNode:SetColor(settings.colors.comboPoints.base)
+				staggerNode:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+				
+				-- Create thresholds on the Stagger bar (for Medium and Heavy Stagger thresholds)
+				staggerNode:ClearThresholds()
+				for _ = 1, 2 do
+					local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetResourceFrame())
+					TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
+					staggerNode:RegisterThreshold(thresholdFrame)
+				end
+			end
+
+		elseif TRB.Data.character.specId == 3 then -- Windwalker uses Chi
+			local maxChi = TRB.Data.character.maxResource2
+			if maxChi == nil or maxChi == 0 then
+				maxChi = barGroups.secondary.maxNodes or 5
+			end
+			TRB.Data.character.maxResource2 = maxChi
+			
+			-- Set the node count and layout for Chi
+			barGroups.secondary:SetNodeCount(maxChi)
+			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+			barGroups.secondary:Show()
+			
+			-- Apply layout to position all Chi nodes correctly
+			barGroups.secondary:ApplyLayout(
+				settings.bar.width,
+				settings.comboPoints.width,
+				settings.comboPoints.height,
+				settings.comboPoints.border
+			)
+			
+			-- Set up Chi nodes with textures and colors
+			local frameLevels = TRB.Data.constants.frameLevels
+			for i = 1, maxChi do
+				local node = barGroups.secondary:GetNode(i)
+				if node then
+					node:SetTextures(
+						settings.textures.comboPointsBar,
+						settings.textures.comboPointsBorder,
+						settings.textures.comboPointsBackground
+					)
+					node:SetMinMax(0, 1)
+					node:SetBorderColor(settings.colors.comboPoints.border)
+					node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
+					node:SetColor(settings.colors.comboPoints.base)
+					node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+				end
+			end
+		else
+			barGroups.secondary:Hide()
+		end
+	end
+
+	-- Ensure legacy frames aren't displayed for this class module
+	if TRB.Frames.resource2ContainerFrame then
 		TRB.Frames.resource2ContainerFrame:Hide()
-	elseif TRB.Data.character.specId == 3 then
-		TRB.Frames.resource2ContainerFrame:Show()
+	end
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barContainerFrame:Hide()
 	end
 
 	TRB.Functions.Class:CheckCharacter()
-	TRB.Functions.Bar:Construct(settings)
+	-- Make sure bar visibility and bar text are updated immediately.
+	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 local function RefreshLookupData_Brewmaster()
@@ -722,16 +825,20 @@ local function UpdateResourceBar()
 	local classSettings = TRB.Data.settings.monk
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
+	local barGroups = TRB.Frames.barGroups
+	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 	
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.brewmaster
 		local specCacheSettings = TRB.Data.specCache.brewmaster.settings
 		UpdateSnapshot_Brewmaster()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
+
+		if barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
+		end
+		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
-
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
@@ -742,120 +849,144 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 				
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				if primaryNode then
+					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					
+					local thresholds = primaryNode:GetThresholds()
+					local nodeResourceFrame = primaryNode:GetResourceFrame()
 
-				local pairOffset = 0
-				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
-					if resourceFrame.thresholds[thresholdId] == nil then
-						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-					end
-					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
-					local showThreshold = true
-					local thresholdColor = specCacheSettings.colors.threshold.over.color
-					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-					local snapshot = snapshots[spell.id]
-
-					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-					elseif resourceAmount == 0 then
-						showThreshold = false
-					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-						showThreshold = false
-					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
-						showThreshold = false
-					elseif spell.hasCooldown then
-						if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
-							thresholdColor = specCacheSettings.colors.threshold.unusable.color
-							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-						elseif isUsable then-- currentResource >= resourceAmount then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+					local pairOffset = 0
+					for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
+						-- Create threshold on-demand if missing
+						if thresholds[thresholdId] == nil then
+							local thresholdFrame = CreateFrame("Frame", nil, nodeResourceFrame)
+							TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, specCacheSettings, true)
+							primaryNode:RegisterThreshold(thresholdFrame)
+							thresholds = primaryNode:GetThresholds()
 						end
-					else -- This is an active/available/normal spell threshold
-						if isUsable then-- currentResource >= resourceAmount then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						pairOffset = (thresholdId - 1) * 3
+						local resourceAmount = spell:GetPrimaryResourceCost()
+						local isUsable = spell:IsUsable()
+						local showThreshold = true
+						local thresholdColor = specCacheSettings.colors.threshold.over.color
+						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+						local snapshot = snapshots[spell.id]
+
+						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						elseif resourceAmount == 0 then
+							showThreshold = false
+						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+							showThreshold = false
+						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+							showThreshold = false
+						elseif spell.hasCooldown then
+							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+								thresholdColor = specCacheSettings.colors.threshold.unusable.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
+						else -- This is an active/available/normal spell threshold
+							if isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
 						end
+
+						if resourceAmount >= maxPrimaryBarResourceUnnormalized then
+							showThreshold = false
+						end
+
+						local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					end
 
-					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
-						showThreshold = false
-					end
+					local barBorderColor = specSettings.colors.bar.border
+					local barColor = specSettings.colors.bar.base
 
-					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					primaryNode:SetBorderColor(barBorderColor)
+					primaryNode:SetColor(barColor)
 				end
-
-				local barBorderColor = specSettings.colors.bar.border
-
-				barContainerFrame:SetAlpha(1.0)
-
-				local barColor = specSettings.colors.bar.base
-
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
-				TRB.Frames.resource2Frames[1].resourceFrame:SetMinMaxValues(0, snapshotData.attributes.maxHealth)
-				TRB.Frames.resource2Frames[1].resourceFrame:SetValue(snapshotData.attributes.stagger)
+				-- Update Stagger bar using BarNodes
+				if barGroups and barGroups.secondary then
+					local staggerNode = barGroups.secondary:GetNode(1)
+					if staggerNode then
+						-- Set Stagger bar value as percentage of max health
+						staggerNode:SetMinMax(0, snapshotData.attributes.maxHealth)
+						staggerNode:SetValue(snapshotData.attributes.stagger)
 
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
+						local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
 
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
+						if snapshotData.attributes.staggerPercent >= STAGGER_STATES.RED.threshold then
+							cpColor = specSettings.colors.comboPoints.staggerHeavy
+						elseif snapshotData.attributes.staggerPercent >= STAGGER_STATES.YELLOW.threshold then
+							cpColor = specSettings.colors.comboPoints.staggerMedium
+						end
 
-				if snapshotData.attributes.staggerPercent >= STAGGER_STATES.RED.threshold then
-					cpColor = specSettings.colors.comboPoints.staggerHeavy
-				elseif snapshotData.attributes.staggerPercent >= STAGGER_STATES.YELLOW.threshold then
-					cpColor = specSettings.colors.comboPoints.staggerMedium
+						staggerNode:SetColor(cpColor)
+						staggerNode:SetBorderColor(cpBorderColor)
+						staggerNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+
+						-- Update Stagger thresholds on the BarNode
+						local staggerThresholds = staggerNode:GetThresholds()
+						local staggerResourceFrame = staggerNode:GetResourceFrame()
+
+						-- Medium Stagger threshold
+						if staggerThresholds[1] then
+							TRB.Functions.Color:SetThresholdColor(staggerThresholds[1], specSettings.colors.comboPoints.staggerMedium, true)
+							TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", staggerThresholds[1], true, staggerNode:GetContainerFrame(), STAGGER_STATES.YELLOW.threshold * snapshotData.attributes.maxHealth, snapshotData.attributes.maxHealth)
+						end
+
+						-- Heavy Stagger threshold
+						if staggerThresholds[2] then
+							TRB.Functions.Color:SetThresholdColor(staggerThresholds[2], specSettings.colors.comboPoints.staggerHeavy, true)
+							TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold2", staggerThresholds[2], true, staggerNode:GetContainerFrame(), STAGGER_STATES.RED.threshold * snapshotData.attributes.maxHealth, snapshotData.attributes.maxHealth)
+						end
+					end
 				end
-
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[1].resourceFrame, "comboPoint1", cpColor)
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[1].borderFrame, "comboPoint1", cpBorderColor)
-				TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[1].containerFrame, "comboPoint1", cpBR, cpBG, cpBB, cpBackgroundAlpha)
-
-				-- Medium Stagger
-				TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[1], specSettings.colors.comboPoints.staggerMedium, true)
-				TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[1], true, TRB.Frames.resource2Frames[1].containerFrame, STAGGER_STATES.YELLOW.threshold * snapshotData.attributes.maxHealth, snapshotData.attributes.maxHealth)
-
-				-- High Stagger
-				TRB.Functions.Color:SetThresholdColor(TRB.Frames.resource2Frames[1].containerFrame.thresholds[2], specSettings.colors.comboPoints.staggerHeavy, true)
-				TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", TRB.Frames.resource2Frames[1].containerFrame.thresholds[2], true, TRB.Frames.resource2Frames[1].containerFrame, STAGGER_STATES.RED.threshold * snapshotData.attributes.maxHealth, snapshotData.attributes.maxHealth)
 			end
-			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.mistweaver
 		local specCacheSettings = TRB.Data.specCache.mistweaver.settings
 		UpdateSnapshot_Mistweaver()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
-		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
 
+		if barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
+		end
+		TRB.Functions.Bar:HideResourceBar()
+
+		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
-				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-				local barBorderColor = specSettings.colors.bar.border
+				local currentResource = snapshotData.attributes.resourceModified
 
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				if primaryNode then
+					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-				local affectingCombat = TRB.Data.character.inCombat
-				local barColor = specSettings.colors.bar.base
+					local affectingCombat = TRB.Data.character.inCombat
+					local barColor = specSettings.colors.bar.base
+					local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.vivaciousVivification.enabled and affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive then
-					barColor = specSettings.colors.bar.vivaciousVivification.color
+					if specSettings.colors.bar.vivaciousVivification.enabled and affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive then
+						barColor = specSettings.colors.bar.vivaciousVivification.color
+					end
+
+					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					primaryNode:SetBorderColor(barBorderColor)
+					primaryNode:SetColor(barColor)
 				end
-
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 			end
 
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -864,11 +995,13 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.windwalker
 		local specCacheSettings = TRB.Data.specCache.windwalker.settings
 		UpdateSnapshot_Windwalker()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
+
+		if barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
+		end
+		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
-
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
@@ -879,92 +1012,100 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
+				if primaryNode then
+					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-				local pairOffset = 0
-				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
-					if resourceFrame.thresholds[thresholdId] == nil then
-						resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-					end
-					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
-					local showThreshold = true
-					local thresholdColor = specCacheSettings.colors.threshold.over.color
-					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-					local snapshot = snapshots[spell.id]
+					local thresholds = primaryNode:GetThresholds()
+					local nodeResourceFrame = primaryNode:GetResourceFrame()
 
-					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-						if spell.id == spells.expelHarm.id then
-							if talents:IsTalentActive(spells.combatWisdom) then
-								showThreshold = false
-							elseif snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+					local pairOffset = 0
+					for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
+						-- Create threshold on-demand if missing
+						if thresholds[thresholdId] == nil then
+							local thresholdFrame = CreateFrame("Frame", nil, nodeResourceFrame)
+							TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, specCacheSettings, true)
+							primaryNode:RegisterThreshold(thresholdFrame)
+							thresholds = primaryNode:GetThresholds()
+						end
+						pairOffset = (thresholdId - 1) * 3
+						local resourceAmount = spell:GetPrimaryResourceCost()
+						local isUsable = spell:IsUsable()
+						local showThreshold = true
+						local thresholdColor = specCacheSettings.colors.threshold.over.color
+						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+						local snapshot = snapshots[spell.id]
+
+						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+							if spell.id == spells.expelHarm.id then
+								if talents:IsTalentActive(spells.combatWisdom) then
+									showThreshold = false
+								elseif snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specCacheSettings.colors.threshold.unusable.color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif isUsable then
+									thresholdColor = specCacheSettings.colors.threshold.over.color
+								else
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
+						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+							showThreshold = false
+						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+							showThreshold = false
+						elseif spell.hasCooldown then
+							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif isUsable then-- currentResource >= resourceAmount then
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
+						else -- This is an active/available/normal spell threshold
+							if isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						end
-					elseif resourceAmount == 0 then
-						showThreshold = false
-					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-						showThreshold = false
-					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
-						showThreshold = false
-					elseif spell.hasCooldown then
-						if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+
+						if spell:Is("TRB.Classes.SpellComboPointThreshold") and
+							spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true
+							and snapshotData.attributes.resource2 == 0 then
 							thresholdColor = specCacheSettings.colors.threshold.unusable.color
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-						elseif isUsable then-- currentResource >= resourceAmount then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
-					else -- This is an active/available/normal spell threshold
-						if isUsable then-- currentResource >= resourceAmount then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+						
+						if resourceAmount >= maxPrimaryBarResourceUnnormalized then
+							showThreshold = false
 						end
+
+						local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					end
 
-					if  spell:Is("TRB.Classes.SpellComboPointThreshold") and
-						spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true
-						and snapshotData.attributes.resource2 == 0 then
-						thresholdColor = specCacheSettings.colors.threshold.unusable.color
-						frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-					end
-					
-					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
-						showThreshold = false
+					local barColor = specSettings.colors.bar.base
+					local barBorderColor = specSettings.colors.bar.border
+
+					if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable() and TRB.Data.character.inCombat then
+						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
+					elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
+						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
+					elseif snapshots[spells.danceOfChiJi.id].buff.isActive then
+						barBorderColor = specSettings.colors.bar.borderChiJi
 					end
 
-					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, resourceFrame.thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					primaryNode:SetBorderColor(barBorderColor)
+					primaryNode:SetColor(barColor)
 				end
-
-				local barColor = specSettings.colors.bar.base
-
-				local barBorderColor = specSettings.colors.bar.border
-
-				if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable() and TRB.Data.character.inCombat then
-					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
-				elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
-				elseif snapshots[spells.danceOfChiJi.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.borderChiJi
-				end
-
-				barContainerFrame:SetAlpha(1.0)
-
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 				
+				-- Update Chi using BarNodes
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				
 				for x = 1, TRB.Data.character.maxResource2 do
@@ -974,20 +1115,25 @@ local function UpdateResourceBar()
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
 
-					if snapshotData.attributes.resource2 >= x then
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-						if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-							cpColor = specSettings.colors.comboPoints.penultimate
-						elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-							cpColor = specSettings.colors.comboPoints.final
+					if barGroups and barGroups.secondary then
+						local chiNode = barGroups.secondary:GetNode(x)
+						if chiNode then
+							if snapshotData.attributes.resource2 >= x then
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 1, 1)
+								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+									cpColor = specSettings.colors.comboPoints.penultimate
+								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+									cpColor = specSettings.colors.comboPoints.final
+								end
+							else
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 0, 1)
+							end
+							
+							chiNode:SetBorderColor(cpBorderColor)
+							chiNode:SetColor(cpColor)
+							chiNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 						end
-					else
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 					end
-					
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
-					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
 			end
 		end
@@ -1027,6 +1173,10 @@ local function SwitchSpec()
 
 		if TRB.Data.barConstructedForSpec ~= "brewmaster" then
 			talents = specCache.brewmaster.talents
+			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
+			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
+			-- snapshot data to be initialized.
+			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "brewmaster"
 			ConstructResourceBar(specCache.brewmaster.settings)
 		end
@@ -1053,6 +1203,10 @@ local function SwitchSpec()
 
 		if TRB.Data.barConstructedForSpec ~= "mistweaver" then
 			talents = specCache.mistweaver.talents
+			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
+			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
+			-- snapshot data to be initialized.
+			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "mistweaver"
 			ConstructResourceBar(specCache.mistweaver.settings)
 		end
@@ -1096,6 +1250,10 @@ local function SwitchSpec()
 
 		if TRB.Data.barConstructedForSpec ~= "windwalker" then
 			talents = specCache.windwalker.talents
+			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
+			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
+			-- snapshot data to be initialized.
+			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "windwalker"
 			ConstructResourceBar(specCache.windwalker.settings)
 		end
@@ -1107,7 +1265,11 @@ local function SwitchSpec()
 		TRB.Functions.Aura:ClearAuraInstanceIds()
 	end
 
-	TRB.Functions.Class:EventRegistration()
+	-- EventRegistration is now called inside each spec block before ConstructResourceBar
+	-- This ensures snapshot data is populated before the bar is rendered
+	if TRB.Data.barConstructedForSpec == nil then
+		TRB.Functions.Class:EventRegistration()
+	end
 
 	C_Timer.After(0, function()
 		C_Timer.After(0.05, function()
@@ -1239,6 +1401,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.className = "monk"
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 	local maxComboPoints = 0
+	local barGroups = TRB.Frames.barGroups
 	
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "brewmaster"
@@ -1251,7 +1414,9 @@ function TRB.Functions.Class:CheckCharacter()
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+				if barGroups and barGroups.primary then
+					TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
+				end
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -1270,7 +1435,9 @@ function TRB.Functions.Class:CheckCharacter()
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+				if barGroups and barGroups.primary then
+					TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
+				end
 			end
 		end
 	end	
@@ -1306,26 +1473,72 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
+	local barGroups = TRB.Frames.barGroups
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-		local notZeroShowValue = TRB.Data.character.maxResource
-		local notZeroShowValueComboPoints = 0
-		local includeComboPoints = false
-		if TRB.Data.character.specId == 3 then
-			includeComboPoints = true
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-			if talents ~= nil and talents:IsTalentActive(spells.combatWisdom) then
-				notZeroShowValueComboPoints = 2
-			end
-		end
 		local sharedSettings
 		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 		end
 
-		TRB.Functions.Bar:HideResourceBarGeneric(sharedSettings, force, notZeroShowValue, includeComboPoints, notZeroShowValueComboPoints)
+		if sharedSettings ~= nil then
+			local affectingCombat = TRB.Data.character.inCombat
+			if not TRB.Data.specSupported or force or
+				(TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding) or
+				((not affectingCombat) and (not UnitInVehicle("player")) and (not sharedSettings.displayBar.alwaysShow)) then
+				if barGroups and barGroups.primary then
+					barGroups.primary:Hide()
+				end
+				if barGroups and barGroups.secondary then
+					barGroups.secondary:Hide()
+				end
+				TRB.Functions.BarText:Hide(sharedSettings)
+				snapshotData.attributes.isTracking = false
+			else
+				snapshotData.attributes.isTracking = true
+				if sharedSettings.displayBar.neverShow == true then
+					if barGroups and barGroups.primary then
+						barGroups.primary:Hide()
+					end
+					if barGroups and barGroups.secondary then
+						barGroups.secondary:Hide()
+					end
+					TRB.Functions.BarText:Hide(sharedSettings)
+				else
+					if barGroups and barGroups.primary then
+						barGroups.primary:Show()
+					end
+					if barGroups and barGroups.secondary then
+						if TRB.Data.character.specId == 1 then -- Brewmaster uses Stagger bar
+							barGroups.secondary:Show()
+							barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+						elseif TRB.Data.character.specId == 3 then -- Windwalker uses Chi
+							barGroups.secondary:Show()
+							barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+						else
+							barGroups.secondary:Hide()
+						end
+					end
+					TRB.Functions.BarText:Show(sharedSettings)
+				end
+			end
+		else
+			if barGroups and barGroups.primary then
+				barGroups.primary:Hide()
+			end
+			if barGroups and barGroups.secondary then
+				barGroups.secondary:Hide()
+			end
+			TRB.Functions.BarText:Hide(sharedSettings)
+			snapshotData.attributes.isTracking = false
+		end
 	else
-		TRB.Frames.barContainerFrame:Hide()
+		if barGroups and barGroups.primary then
+			barGroups.primary:Hide()
+		end
+		if barGroups and barGroups.secondary then
+			barGroups.secondary:Hide()
+		end
 		snapshotData.attributes.isTracking = false
 	end
 end
@@ -1410,6 +1623,32 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+	local barGroups = TRB.Frames.barGroups
+	if not (barGroups and barGroups.primary) then
+		return nil, true
+	end
+
+	local normalizedRelativeFrame = string.gsub(relativeToFrame or "", "_", "")
+	if normalizedRelativeFrame == "Resource" or normalizedRelativeFrame == "ResourceBar" then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			return primaryNode:GetResourceFrame(), true
+		end
+		return nil, true
+	end
+
+	-- Handle secondary resources (Stagger for Brewmaster, Chi for Windwalker)
+	local comboPointPrefix = "ComboPoint"
+	if string.sub(normalizedRelativeFrame, 1, string.len(comboPointPrefix)) == comboPointPrefix then
+		local comboPoint = tonumber(string.sub(normalizedRelativeFrame, string.len(comboPointPrefix) + 1))
+		if comboPoint and barGroups.secondary then
+			local cpNode = barGroups.secondary:GetNode(comboPoint)
+			if cpNode then
+				return cpNode:GetResourceFrame(), true
+			end
+		end
+	end
+
 	return nil, true
 end
 

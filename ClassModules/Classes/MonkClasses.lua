@@ -443,3 +443,110 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 
 	return self
 end
+
+
+--[[
+    BarGroups Factory for Monk
+    Creates the appropriate BarGroup instances for each Monk specialization.
+    
+    Brewmaster: Primary bar (N=1) + Stagger bar (N=1 with thresholds)
+    Mistweaver: Primary bar (N=1) only
+    Windwalker: Primary bar (N=1) + Chi (N=5-6)
+]]
+
+---@class TRB.Classes.Monk.BarGroupsFactory
+TRB.Classes.Monk.BarGroupsFactory = {}
+TRB.Classes.Monk.BarGroupsFactory.__index = TRB.Classes.Monk.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Monk specialization
+---@param specId integer # 1=Brewmaster, 2=Mistweaver, 3=Windwalker
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(specId)
+    local barGroups = {}
+
+    if specId == 1 then -- Brewmaster
+        -- Primary Energy bar (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+        -- Stagger bar (1 node with thresholds)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            barGroups.primary:GetContainerFrame(),
+            "TwintopResourceBarFrame_ComboPoint",
+            1,
+            false -- not primary
+        )
+
+    elseif specId == 2 then -- Mistweaver
+        -- Primary Mana bar only (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+    elseif specId == 3 then -- Windwalker
+        -- Primary Energy bar (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+        -- Chi (5 nodes by default, can be 6 with talents)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            barGroups.primary:GetContainerFrame(),
+            "TwintopResourceBarFrame_ComboPoint",
+            5,
+            false -- not primary
+        )
+    end
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
+    if specId == 1 then -- Brewmaster
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            },
+            secondary = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Stagger"
+            }
+        }
+    elseif specId == 2 then -- Mistweaver
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    elseif specId == 3 then -- Windwalker
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            },
+            secondary = {
+                maxNodes = 5,
+                isPrimary = false,
+                resourceType = "Chi"
+            }
+        }
+    end
+
+    return {}
+end
