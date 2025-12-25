@@ -258,18 +258,38 @@ function TRB.Classes.BarNode:GetBorderFrame()
 	return self.borderFrame
 end
 
----Registers a threshold frame with this node
----@param thresholdFrame Frame
-function TRB.Classes.BarNode:RegisterThreshold(thresholdFrame)
-	table.insert(self.thresholds, thresholdFrame)
+---Registers a threshold frame with this node, or creates one at the specified index
+---@param thresholdFrameOrIndex Frame|integer # Either a Frame to register, or an index to create a new threshold at
+---@return Frame # The registered or created threshold frame
+function TRB.Classes.BarNode:RegisterThreshold(thresholdFrameOrIndex)
+	local thresholdFrame
+	local index
+
+	if type(thresholdFrameOrIndex) == "number" then
+		-- Create a new threshold frame at the specified index
+		index = thresholdFrameOrIndex
+		if self.thresholds[index] then
+			return self.thresholds[index]
+		end
+		thresholdFrame = CreateFrame("Frame", nil, self.resourceFrame)
+	else
+		-- Use the provided frame
+		thresholdFrame = thresholdFrameOrIndex
+		index = #self.thresholds + 1
+	end
+
+	self.thresholds[index] = thresholdFrame
 	-- Keep resourceFrame.thresholds in sync for compatibility
 	self.resourceFrame.thresholds = self.thresholds
+	return thresholdFrame
 end
 
 ---Clears all registered thresholds
 function TRB.Classes.BarNode:ClearThresholds()
-	for _, threshold in ipairs(self.thresholds) do
-		threshold:Hide()
+	for i, threshold in pairs(self.thresholds) do
+		if threshold and type(threshold) ~= "number" and threshold.Hide then
+			threshold:Hide()
+		end
 	end
 	self.thresholds = {}
 	self.resourceFrame.thresholds = self.thresholds
@@ -361,6 +381,39 @@ end
 ---@param count integer
 function TRB.Classes.BarGroup:SetNodeCount(count)
 	self.nodeCount = math.min(count, self.maxNodes)
+end
+
+---Dynamically adjusts the maximum number of nodes in the group.
+---Creates new nodes if needed, hides extras if shrinking.
+---@param newMaxNodes integer # The new maximum number of nodes
+function TRB.Classes.BarGroup:SetMaxNodes(newMaxNodes)
+	if newMaxNodes == self.maxNodes then
+		return
+	end
+
+	if newMaxNodes > self.maxNodes then
+		-- Create additional nodes
+		for i = self.maxNodes + 1, newMaxNodes do
+			local nodeName = self.name
+			if newMaxNodes > 1 then
+				nodeName = self.name .. "_Node"
+			end
+			self.nodes[i] = TRB.Classes.BarNode:New(self.containerFrame, nodeName, i)
+		end
+	else
+		-- Hide and optionally destroy extra nodes
+		for i = newMaxNodes + 1, self.maxNodes do
+			if self.nodes[i] then
+				self.nodes[i]:Hide()
+			end
+		end
+	end
+
+	self.maxNodes = newMaxNodes
+	-- Adjust nodeCount if it exceeds the new max
+	if self.nodeCount > self.maxNodes then
+		self.nodeCount = self.maxNodes
+	end
 end
 
 ---Gets a node by index

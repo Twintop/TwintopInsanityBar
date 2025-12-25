@@ -471,6 +471,9 @@ local function ConstructResourceBar(settings)
 			end
 			TRB.Data.character.maxResource2 = maxChi
 			
+			-- Ensure we have enough nodes for the max chi
+			barGroups.secondary:SetMaxNodes(maxChi)
+			
 			-- Set the node count and layout for Chi
 			barGroups.secondary:SetNodeCount(maxChi)
 			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
@@ -1437,6 +1440,35 @@ function TRB.Functions.Class:CheckCharacter()
 				TRB.Data.character.maxResource2 = maxComboPoints
 				if barGroups and barGroups.primary then
 					TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
+				end
+				-- Rebuild secondary bar layout when chi count changes
+				if barGroups and barGroups.secondary then
+					barGroups.secondary:SetMaxNodes(maxComboPoints)
+					barGroups.secondary:SetNodeCount(maxComboPoints)
+					barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
+					barGroups.secondary:ApplyLayout(
+						sharedSettings.bar.width,
+						sharedSettings.comboPoints.width,
+						sharedSettings.comboPoints.height,
+						sharedSettings.comboPoints.border
+					)
+					-- Apply textures and colors to any newly created nodes
+					local frameLevels = TRB.Data.constants.frameLevels
+					for i = 1, maxComboPoints do
+						local node = barGroups.secondary:GetNode(i)
+						if node then
+							node:SetTextures(
+								sharedSettings.textures.comboPointsBar,
+								sharedSettings.textures.comboPointsBorder,
+								sharedSettings.textures.comboPointsBackground
+							)
+							node:SetMinMax(0, 1)
+							node:SetBorderColor(sharedSettings.colors.comboPoints.border)
+							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background)
+							node:SetColor(sharedSettings.colors.comboPoints.base)
+							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+						end
+					end
 				end
 			end
 		end

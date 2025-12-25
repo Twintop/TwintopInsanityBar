@@ -752,6 +752,9 @@ local function ConstructResourceBar(settings)
 		if TRB.Data.character.specId == 2 then
 			local maxComboPoints = TRB.Data.character.maxResource2 or 5
 			
+			-- Ensure we have enough nodes for the max combo points
+			barGroups.secondary:SetMaxNodes(maxComboPoints)
+			
 			-- Ensure secondary group knows the correct node count
 			barGroups.secondary:SetNodeCount(maxComboPoints)
 			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
@@ -2662,12 +2665,44 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Energy, false)
 		local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local barGroups = TRB.Frames.barGroups
 
 		if sharedSettings ~= nil then
-			--if maxComboPoints ~= TRB.Data.character.maxResource2 then
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
-			--end
+				if barGroups and barGroups.primary then
+					TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
+				end
+				-- Rebuild secondary bar layout when combo point count changes
+				if barGroups and barGroups.secondary then
+					barGroups.secondary:SetMaxNodes(maxComboPoints)
+					barGroups.secondary:SetNodeCount(maxComboPoints)
+					barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
+					barGroups.secondary:ApplyLayout(
+						sharedSettings.bar.width,
+						sharedSettings.comboPoints.width,
+						sharedSettings.comboPoints.height,
+						sharedSettings.comboPoints.border
+					)
+					-- Apply textures and colors to any newly created nodes
+					local frameLevels = TRB.Data.constants.frameLevels
+					for i = 1, maxComboPoints do
+						local node = barGroups.secondary:GetNode(i)
+						if node then
+							node:SetTextures(
+								sharedSettings.textures.comboPointsBar,
+								sharedSettings.textures.comboPointsBorder,
+								sharedSettings.textures.comboPointsBackground
+							)
+							node:SetMinMax(0, 1)
+							node:SetBorderColor(sharedSettings.colors.comboPoints.border)
+							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background)
+							node:SetColor(sharedSettings.colors.comboPoints.base)
+							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+						end
+					end
+				end
+			end
 		end
 
 		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then

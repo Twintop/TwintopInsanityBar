@@ -701,3 +701,60 @@ function TRB.Classes.Rogue.SubtletySpells:New()
        
     return self
 end
+
+
+--[[
+    BarGroups Factory for Rogue
+    Creates the appropriate BarGroup instances for each Rogue specialization.
+    
+    All Rogue specs use:
+    - Primary bar (N=1): Energy
+    - Secondary bar (N=5-7): Combo Points
+]]
+
+---@class TRB.Classes.Rogue.BarGroupsFactory
+TRB.Classes.Rogue.BarGroupsFactory = {}
+TRB.Classes.Rogue.BarGroupsFactory.__index = TRB.Classes.Rogue.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Rogue specialization
+---@param specId integer # 1=Assassination, 2=Outlaw, 3=Subtlety
+---@param parentFrame Frame # The parent frame for the primary bar group (typically UIParent)
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    -- Primary Energy bar (1 node) - all specs
+    barGroups.primary = TRB.Classes.BarGroup:New(
+        parentFrame,
+        "TwintopResourceBarFrame",
+        1,
+        true -- isPrimary
+    )
+
+    -- Combo Points (5 nodes by default, can be up to 7 with talents) - all specs
+    barGroups.secondary = TRB.Classes.BarGroup:New(
+        barGroups.primary:GetContainerFrame(),
+        "TwintopResourceBarFrame_ComboPoint",
+        5,
+        false -- not primary
+    )
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Rogue.BarGroupsFactory:GetSpecConfiguration(specId)
+    return {
+        primary = {
+            maxNodes = 1,
+            isPrimary = true
+        },
+        secondary = {
+            maxNodes = 7, -- Max possible with talents
+            isPrimary = false,
+            resourceType = "ComboPoints"
+        }
+    }
+end
