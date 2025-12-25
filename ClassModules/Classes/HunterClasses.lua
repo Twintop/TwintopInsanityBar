@@ -391,3 +391,50 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
 
     return self
 end
+
+
+--[[
+    BarGroups Factory for Hunter
+    Creates the appropriate BarGroup instances for each Hunter specialization.
+    
+    Beast Mastery: Primary bar (N=1) only
+    Marksmanship: Primary bar (N=1) only
+    Survival: Primary bar (N=1) only
+    
+    Note: Hunters do not have a secondary resource display (no combo points, runes, etc.)
+]]
+
+---@class TRB.Classes.Hunter.BarGroupsFactory
+TRB.Classes.Hunter.BarGroupsFactory = {}
+TRB.Classes.Hunter.BarGroupsFactory.__index = TRB.Classes.Hunter.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Hunter specialization
+---@param specId integer # 1=Beast Mastery, 2=Marksmanship, 3=Survival
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    -- All Hunter specs only have a primary Focus bar (1 node), no secondary resource
+    barGroups.primary = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame",
+        1,
+        true -- isPrimary
+    )
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Hunter.BarGroupsFactory:GetSpecConfiguration(specId)
+    -- All Hunter specs have the same configuration: primary bar only
+    return {
+        primary = {
+            maxNodes = 1,
+            isPrimary = true
+        }
+    }
+end
