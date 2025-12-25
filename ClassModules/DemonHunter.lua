@@ -45,9 +45,7 @@ local function FillSpecializationCache()
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
-		className = "demonhunter",
 		specId = 1,
-		specName = "havoc",
 		maxResource = 120,
 		effects = {
 		},
@@ -130,9 +128,7 @@ local function FillSpecializationCache()
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
-		className = "demonhunter",
 		specId = 2,
-		specName = "vengeance",
 		maxResource = 120,
 		effects = {
 		},
@@ -182,9 +178,7 @@ local function FillSpecializationCache()
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
-		className = "demonhunter",
 		specId = 3,
-		specName = "devourer",
 		maxResource = 120,
 		effects = {
 		},

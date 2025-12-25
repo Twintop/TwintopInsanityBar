@@ -721,3 +721,113 @@ function TRB.Classes.Druid.RestorationSpells:New()
 
     return self
 end
+
+--[[
+    BarGroups Factory for Druid
+    Creates the appropriate BarGroup instances for each Druid specialization.
+    
+    Balance: Primary bar (N=1) only
+    Feral: Primary bar (N=1) + Combo Points (N=5, can be 6 with talents)
+    Guardian: Primary bar (N=1) only
+    Restoration: Primary bar (N=1) only
+]]
+
+---@class TRB.Classes.Druid.BarGroupsFactory
+TRB.Classes.Druid.BarGroupsFactory = {}
+TRB.Classes.Druid.BarGroupsFactory.__index = TRB.Classes.Druid.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Druid specialization
+---@param specId integer # 1=Balance, 2=Feral, 3=Guardian, 4=Restoration
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
+    local barGroups = {}
+
+    if specId == 1 then -- Balance
+        -- Primary Astral Power bar only (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+    elseif specId == 2 then -- Feral
+        -- Primary Energy bar (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+        -- Combo Points (5 nodes by default, can be 6 with talents)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            barGroups.primary:GetContainerFrame(),
+            "TwintopResourceBarFrame_ComboPoint",
+            5,
+            false -- not primary
+        )
+
+    elseif specId == 3 then -- Guardian
+        -- Primary Rage bar only (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+    elseif specId == 4 then -- Restoration
+        -- Primary Mana bar only (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+    end
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
+    if specId == 1 then -- Balance
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    elseif specId == 2 then -- Feral
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            },
+            secondary = {
+                maxNodes = 5,
+                isPrimary = false,
+                resourceType = "ComboPoints"
+            }
+        }
+    elseif specId == 3 then -- Guardian
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    elseif specId == 4 then -- Restoration
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    end
+
+    return {}
+end
