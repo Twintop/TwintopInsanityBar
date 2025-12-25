@@ -1043,6 +1043,12 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		local textFrames = TRB.Frames.textFrames
 		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		local entries = #displayText.barText
+		-- Ensure frames exist before trying to update them.
+		-- This used to be guaranteed by the legacy bar constructor; the OOP bar system must do this too.
+		if textFrames == nil or textFrames[1] == nil then
+			TRB.Functions.BarText:CreateBarTextFrames()
+			textFrames = TRB.Frames.textFrames
+		end
 		for i = 1, entries do
 			if displayText.barText[i].enabled then
 				local e = displayText.barText[i]
@@ -1062,14 +1068,25 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				local returnText = GetReturnText(barText)
 
 				--if TRB.Data.cache.values.frame["textFrames" .. i].text ~= returnText then
-					pcall(TryUpdateText, textFrames[i],  returnText)
+					if textFrames ~= nil and textFrames[i] ~= nil then
+						pcall(TryUpdateText, textFrames[i],  returnText)
+					else
+						-- Frame list is out of sync; rebuild and try once.
+						TRB.Functions.BarText:CreateBarTextFrames()
+						textFrames = TRB.Frames.textFrames
+						if textFrames ~= nil and textFrames[i] ~= nil then
+							pcall(TryUpdateText, textFrames[i],  returnText)
+						end
+					end
 					--TryUpdateText(textFrames[i], returnText)
 					TRB.Data.cache.values.frame["textFrames" .. i].text = returnText
 				--end
 				
 				if TRB.Data.cache.values.frame["textFrames" .. i].level ~= TRB.Data.settings.core.strata.level then
-					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+					if textFrames ~= nil and textFrames[i] ~= nil then
+						textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+						textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+					end
 					TRB.Data.cache.values.frame["textFrames" .. i].level = TRB.Data.settings.core.strata.level
 				end
 			end

@@ -445,10 +445,12 @@ TRB.Classes.DemonHunter.BarGroupsFactory.__index = TRB.Classes.DemonHunter.BarGr
 function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
+    -- Primary bar groups are parented directly to UIParent for proper positioning
+    -- Secondary bar groups are parented to the primary's container frame
     if specId == 1 then -- Havoc
         -- Primary fury bar only (no secondary resource)
         barGroups.primary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            UIParent,
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
@@ -457,7 +459,7 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFr
     elseif specId == 2 then -- Vengeance
         -- Primary fury bar
         barGroups.primary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            UIParent,
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
@@ -477,15 +479,16 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFr
     elseif specId == 3 then -- Devourer
         -- Primary fury bar
         barGroups.primary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            UIParent,
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
         )
 
         -- Soul Fragments (single percentage bar from Blizzard UI)
+        -- Secondary bars are parented to the primary's container
         barGroups.secondary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            barGroups.primary:GetContainerFrame(),
             "TwintopResourceBarFrame_ComboPoint",
             1,
             false -- not primary

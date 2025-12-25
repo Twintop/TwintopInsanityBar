@@ -286,13 +286,14 @@ end
 
 ---Positions the resource frame within the container
 function TRB.Classes.BarNode:PositionResourceFrame()
+	-- Position the resource bar within the BarNode's container
 	self.resourceFrame:ClearAllPoints()
 	self.resourceFrame:SetPoint("LEFT", self.containerFrame, "LEFT", 0, 0)
 	self.resourceFrame:SetPoint("RIGHT", self.containerFrame, "RIGHT", 0, 0)
 
+	-- Position the border centered on the container
 	self.borderFrame:ClearAllPoints()
-	self.borderFrame:SetPoint("CENTER", self.containerFrame)
-	self.borderFrame:SetPoint("CENTER", 0, 0)
+	self.borderFrame:SetPoint("CENTER", self.containerFrame, "CENTER", 0, 0)
 end
 
 
@@ -330,7 +331,7 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 
 	self.name = name or "TwintopResourceBarFrame"
 	self.maxNodes = maxNodes or 1
-	self.nodeCount = maxNodes
+	self.nodeCount = self.maxNodes
 	self.nodes = {}
 	self.spacing = 0
 	self.fullWidth = false
@@ -414,7 +415,9 @@ end
 ---@param border number?
 function TRB.Classes.BarGroup:SetDimensions(width, height, border)
 	for i = 1, self.maxNodes do
-		self.nodes[i]:SetDimensions(width, height, border)
+		if self.nodes[i] then
+			self.nodes[i]:SetDimensions(width, height, border)
+		end
 	end
 end
 
@@ -424,9 +427,11 @@ end
 ---@param backgroundColor string
 function TRB.Classes.BarGroup:SetAllNodeColors(baseColor, borderColor, backgroundColor)
 	for i = 1, self.maxNodes do
-		self.nodes[i]:SetColor(baseColor)
-		self.nodes[i]:SetBorderColor(borderColor)
-		self.nodes[i]:SetBackgroundColorFromString(backgroundColor)
+		if self.nodes[i] then
+			self.nodes[i]:SetColor(baseColor)
+			self.nodes[i]:SetBorderColor(borderColor)
+			self.nodes[i]:SetBackgroundColorFromString(backgroundColor)
+		end
 	end
 end
 
@@ -436,7 +441,9 @@ end
 ---@param bgTexture string
 function TRB.Classes.BarGroup:SetAllNodeTextures(barTexture, borderTexture, bgTexture)
 	for i = 1, self.maxNodes do
-		self.nodes[i]:SetTextures(barTexture, borderTexture, bgTexture)
+		if self.nodes[i] then
+			self.nodes[i]:SetTextures(barTexture, borderTexture, bgTexture)
+		end
 	end
 end
 
@@ -445,7 +452,9 @@ end
 function TRB.Classes.BarGroup:SetFrameStrata(strata)
 	self.containerFrame:SetFrameStrata(strata)
 	for i = 1, self.maxNodes do
-		self.nodes[i]:SetFrameStrata(strata)
+		if self.nodes[i] then
+			self.nodes[i]:SetFrameStrata(strata)
+		end
 	end
 end
 
@@ -454,10 +463,12 @@ end
 function TRB.Classes.BarGroup:ShowNodes(count)
 	count = count or self.nodeCount
 	for i = 1, self.maxNodes do
-		if i <= count then
-			self.nodes[i]:Show()
-		else
-			self.nodes[i]:Hide()
+		if self.nodes[i] then
+			if i <= count then
+				self.nodes[i]:Show()
+			else
+				self.nodes[i]:Hide()
+			end
 		end
 	end
 end
@@ -465,7 +476,9 @@ end
 ---Hides all nodes
 function TRB.Classes.BarGroup:HideAllNodes()
 	for i = 1, self.maxNodes do
-		self.nodes[i]:Hide()
+		if self.nodes[i] then
+			self.nodes[i]:Hide()
+		end
 	end
 end
 
@@ -528,19 +541,24 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 	-- Position each node
 	for i = 1, self.maxNodes do
 		local node = self.nodes[i]
-		if i <= self.nodeCount then
-			node:SetDimensions(actualNodeWidth, nodeHeight, border)
-			node:PositionResourceFrame()
+		if node then
+			if i <= self.nodeCount then
+				node:SetDimensions(actualNodeWidth, nodeHeight, border)
+				node:PositionResourceFrame()
 
-			node.containerFrame:ClearAllPoints()
-			if i == 1 then
-				node.containerFrame:SetPoint("TOPLEFT", self.containerFrame, "TOPLEFT", border, 0)
+				node.containerFrame:ClearAllPoints()
+				if i == 1 then
+					node.containerFrame:SetPoint("TOPLEFT", self.containerFrame, "TOPLEFT", border, 0)
+				else
+					local prevNode = self.nodes[i-1]
+					if prevNode then
+						node.containerFrame:SetPoint("LEFT", prevNode.containerFrame, "RIGHT", nodeSpacing, 0)
+					end
+				end
+				node:Show()
 			else
-				node.containerFrame:SetPoint("LEFT", self.nodes[i-1].containerFrame, "RIGHT", nodeSpacing, 0)
+				node:Hide()
 			end
-			node:Show()
-		else
-			node:Hide()
 		end
 	end
 end

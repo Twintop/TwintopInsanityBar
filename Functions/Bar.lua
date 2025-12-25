@@ -682,6 +682,24 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		return
 	end
 
+	self:ApplyBarGroupsLayout(settings, barGroups)
+	self:ApplyBarGroupsAppearance(settings, barGroups)
+
+	-- Create bar text frames (essential for bar text display)
+	TRB.Functions.BarText:CreateBarTextFrames()
+	TRB.Functions.BarText:Hide(settings)
+	TRB.Functions.Class:HideResourceBar()
+end
+
+---Applies size/position/layout updates to existing bar groups (OOP system only).
+---This is safe to call from Options UI sliders for live updates.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
+	if settings == nil or settings.bar == nil or barGroups == nil then
+		return
+	end
+
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
 
@@ -690,19 +708,19 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		local primary = barGroups.primary
 		local primaryNode = primary:GetNode(1)
 
+		-- First, position and size the group container (parent of nodes)
+		-- This must be done BEFORE positioning child nodes
+		primary.containerFrame:ClearAllPoints()
+		primary.containerFrame:SetPoint("CENTER", UIParent, "CENTER", settings.bar.xPos, settings.bar.yPos)
+		primary.containerFrame:SetWidth(settings.bar.width - (settings.bar.border * 2))
+		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
+
 		if primaryNode then
 			-- Set frame strata
 			primary:SetFrameStrata(strata)
 
-			-- Set dimensions
+			-- Set dimensions (stores values and sizes border/resource frames)
 			primaryNode:SetDimensions(settings.bar.width, settings.bar.height, settings.bar.border)
-
-			-- Set textures
-			primaryNode:SetTextures(
-				settings.textures.resourceBar,
-				settings.textures.border,
-				settings.textures.background
-			)
 
 			-- Set frame levels
 			primaryNode:SetFrameLevels(
@@ -711,12 +729,14 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 				frameLevels.barResource
 			)
 
-			-- Set colors
-			primaryNode:SetColor(settings.colors.bar.base)
-			primaryNode:SetBorderColor(settings.colors.bar.border)
-			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background)
+			-- Primary node should fill the primary group container
+			local primaryNodeContainer = primaryNode:GetContainerFrame()
+			if primaryNodeContainer then
+				primaryNodeContainer:ClearAllPoints()
+				primaryNodeContainer:SetAllPoints(primary.containerFrame)
+			end
 
-			-- Position the resource frame
+			-- Position the resource/border frames within the node container
 			primaryNode:PositionResourceFrame()
 
 			-- Set min/max values
@@ -729,22 +749,84 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 			-- Enable drag and drop
 			primary:SetDragAndDrop(settings.bar.dragAndDrop, settings)
 
-			-- Show the primary bar
+			-- Show the primary bar (now parented directly to UIParent)
 			primary:Show()
 			primaryNode:Show()
 		end
-
-		-- Position the primary group
-		primary.containerFrame:ClearAllPoints()
-		primary.containerFrame:SetPoint("CENTER", UIParent)
-		primary.containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
-		primary.containerFrame:SetWidth(settings.bar.width - (settings.bar.border * 2))
-		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
 	end
 
 	-- Configure secondary bar groups (combo points, arcane charges, runes, etc.)
 	if barGroups.secondary and settings.comboPoints then
-		self:ConstructSecondaryBarGroup(settings, barGroups.primary, barGroups.secondary)
+		self:ConstructSecondaryBarGroup(settings, barGroups.primary, barGroups.secondary, false)
+		-- Demon Hunter Devourer: secondary is a true 0..50 bar, and values may be "secret".
+		-- Keep the node min/max in that range so SetValue() works without scaling/clamping.
+		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 then
+			local sfNode = barGroups.secondary:GetNode(1)
+			if sfNode then
+				sfNode:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
+			end
+		end
+	end
+end
+
+---Applies textures/colors to existing bar groups (OOP system only).
+---This is intentionally separate from layout so moving/resizing doesn't inadvertently reset bar colors.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
+	if settings == nil or settings.bar == nil or barGroups == nil then
+		return
+	end
+
+	local frameLevels = TRB.Data.constants.frameLevels
+
+	if barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			primaryNode:SetTextures(
+				settings.textures.resourceBar,
+				settings.textures.border,
+				settings.textures.background
+			)
+			primaryNode:SetColor(settings.colors.bar.base)
+			primaryNode:SetBorderColor(settings.colors.bar.border)
+			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background)
+			primaryNode:SetFrameLevels(
+				frameLevels.barContainer,
+				frameLevels.barBorder,
+				frameLevels.barResource
+			)
+		end
+	end
+
+	if barGroups.secondary and settings.comboPoints then
+		local isDevourer = TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3
+		for i = 1, barGroups.secondary.maxNodes do
+			local node = barGroups.secondary:GetNode(i)
+			if node then
+				node:SetTextures(
+					settings.textures.comboPointsBar,
+					settings.textures.comboPointsBorder,
+					settings.textures.comboPointsBackground
+				)
+
+				-- Secondary node min/max belongs with appearance (initial construct / appearance updates),
+				-- not with layout (move/resize), to avoid clamping current values.
+				if isDevourer and i == 1 then
+					node:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
+				else
+					node:SetMinMax(0, 1)
+				end
+				node:SetBorderColor(settings.colors.comboPoints.border)
+				node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
+				node:SetColor(settings.colors.comboPoints.base)
+				node:SetFrameLevels(
+					frameLevels.cpContainer,
+					frameLevels.cpBorder,
+					frameLevels.cpResource
+				)
+			end
+		end
 	end
 end
 
@@ -752,14 +834,28 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param primaryGroup TRB.Classes.BarGroup
 ---@param secondaryGroup TRB.Classes.BarGroup
-function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup)
+---@param applyAppearance boolean?
+function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance)
 	if settings.comboPoints == nil then
+		return
+	end
+
+	if applyAppearance == nil then
+		applyAppearance = true
+	end
+
+	-- Verify the secondary group has valid nodes (not destroyed)
+	if secondaryGroup.nodes == nil or secondaryGroup:GetNode(1) == nil then
 		return
 	end
 
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
-	local nodes = TRB.Data.character.maxResource2 or secondaryGroup.maxNodes
+	local nodes = TRB.Data.character.maxResource2
+	if nodes == nil or nodes == 0 then
+		nodes = secondaryGroup.maxNodes or 1
+	end
+	nodes = math.min(nodes, secondaryGroup.maxNodes or nodes)
 
 	-- Set node count based on max resource
 	secondaryGroup:SetNodeCount(nodes)
@@ -845,69 +941,35 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 		settings.comboPoints.border
 	)
 
-	-- Set textures and colors for all nodes
-	for i = 1, secondaryGroup.maxNodes do
-		local node = secondaryGroup:GetNode(i)
-		if node then
-			node:SetTextures(
-				settings.textures.comboPointsBar,
-				settings.textures.comboPointsBorder,
-				settings.textures.comboPointsBackground
-			)
-			node:SetFrameLevels(
-				frameLevels.cpContainer,
-				frameLevels.cpBorder,
-				frameLevels.cpResource
-			)
-			node:SetBorderColor(settings.colors.comboPoints.border)
-			node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-			node:SetColor(settings.colors.comboPoints.base)
-			node:SetMinMax(0, 1)
+	-- Apply appearance only when requested
+	if applyAppearance then
+		for i = 1, secondaryGroup.maxNodes do
+			local node = secondaryGroup:GetNode(i)
+			if node then
+				node:SetTextures(
+					settings.textures.comboPointsBar,
+					settings.textures.comboPointsBorder,
+					settings.textures.comboPointsBackground
+				)
+
+				-- Default secondary nodes are 0..1 for point-style resources.
+				-- (Devourer overrides to 0..50 elsewhere.)
+				node:SetMinMax(0, 1)
+				node:SetFrameLevels(
+					frameLevels.cpContainer,
+					frameLevels.cpBorder,
+					frameLevels.cpResource
+				)
+				node:SetBorderColor(settings.colors.comboPoints.border)
+				node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
+				node:SetColor(settings.colors.comboPoints.base)
+			end
 		end
 	end
 
 	-- Show the group and active nodes
 	secondaryGroup:Show()
 	secondaryGroup:ShowNodes(nodes)
-end
-
----Synchronizes legacy frame references to point to the new BarGroup frames
----This maintains backward compatibility with existing code that uses TRB.Frames.resourceFrame, etc.
----@param barGroups table<string, TRB.Classes.BarGroup>
-function TRB.Functions.Bar:SyncLegacyFrameReferences(barGroups)
-	if barGroups == nil then
-		return
-	end
-
-	-- Sync primary bar frames
-	if barGroups.primary then
-		local primaryNode = barGroups.primary:GetNode(1)
-		if primaryNode then
-			-- Point legacy references to the new frames
-			TRB.Frames.barContainerFrame = barGroups.primary:GetContainerFrame()
-			TRB.Frames.resourceFrame = primaryNode:GetResourceFrame()
-			TRB.Frames.barBorderFrame = primaryNode:GetBorderFrame()
-
-			-- Also update the module-level variables (for files that cached them)
-			-- Note: This won't update local variables in other files, but will update global references
-		end
-	end
-
-	-- Sync secondary bar frames (combo points, arcane charges, runes, etc.)
-	if barGroups.secondary then
-		TRB.Frames.resource2ContainerFrame = barGroups.secondary:GetContainerFrame()
-		TRB.Frames.resource2Frames = TRB.Frames.resource2Frames or {}
-
-		for i = 1, barGroups.secondary.maxNodes do
-			local node = barGroups.secondary:GetNode(i)
-			if node then
-				TRB.Frames.resource2Frames[i] = TRB.Frames.resource2Frames[i] or {}
-				TRB.Frames.resource2Frames[i].containerFrame = node:GetContainerFrame()
-				TRB.Frames.resource2Frames[i].borderFrame = node:GetBorderFrame()
-				TRB.Frames.resource2Frames[i].resourceFrame = node:GetResourceFrame()
-			end
-		end
-	end
 end
 
 ---Updates the value on a BarNode using the standard caching mechanism

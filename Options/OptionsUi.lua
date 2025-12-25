@@ -821,36 +821,10 @@ end
 
 local function AdjustBarBorder()
 	local specCacheEntry = TRB.Data.specCache[TRB.Data.character.specName].settings
-	TRB.Frames.barContainerFrame:SetWidth(specCacheEntry.bar.width - (specCacheEntry.bar.border * 2))
-	TRB.Frames.barContainerFrame:SetHeight(specCacheEntry.bar.height - (specCacheEntry.bar.border * 2))
-	TRB.Frames.barBorderFrame:SetWidth(specCacheEntry.bar.width)
-	TRB.Frames.barBorderFrame:SetHeight(specCacheEntry.bar.height)
-	if specCacheEntry.bar.border < 1 then
-		TRB.Frames.barBorderFrame:SetBackdrop({
-			edgeFile = specCacheEntry.textures.border,
-			tile = true,
-			tileSize = 4,
-			edgeSize = 1,
-			insets = {0, 0, 0, 0}
-		})
-		TRB.Frames.barBorderFrame:Hide()
-	else
-		TRB.Frames.barBorderFrame:SetBackdrop({
-			edgeFile = specCacheEntry.textures.border,
-			tile = true,
-			tileSize = 4,
-			edgeSize = specCacheEntry.bar.border,
-			insets = {0, 0, 0, 0}
-		})
-		TRB.Frames.barBorderFrame:Show()
+	if TRB.Frames.barGroups ~= nil then
+		TRB.Functions.Bar:ApplyBarGroupsLayout(specCacheEntry, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(specCacheEntry, TRB.Frames.barGroups)
 	end
-	TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-	TRB.Frames.barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specCacheEntry.colors.bar.border, true))
-
-	TRB.Functions.Bar:SetMinMax(specCacheEntry)
-	TRB.Functions.Bar:SetHeight(specCacheEntry)
-	TRB.Functions.Bar:SetPosition(specCacheEntry, TRB.Frames.barContainerFrame)
-	TRB.Functions.Bar:SetMinMax(specCacheEntry)
 end
 
 function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
@@ -880,17 +854,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Data.settings.core.global[lowerClassName][specName].bar = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 
-			TRB.Functions.Bar:SetHeight(TRB.Data.specCache[specName].settings)
-			TRB.Functions.Bar:SetWidth(TRB.Data.specCache[specName].settings)
-			
-			TRB.Frames.barContainerFrame:ClearAllPoints()
-			TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
-			TRB.Frames.barContainerFrame:SetPoint("CENTER", TRB.Data.specCache[specName].settings.bar.xPos, TRB.Data.specCache[specName].settings.bar.yPos)
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[specName].settings, TRB.Frames.barContainerFrame)
-			
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[specName].settings)
-
-			AdjustBarBorder()
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end)
 	end
 
@@ -909,9 +875,17 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetWidth(TRB.Data.specCache[TRB.Data.character.specName].settings)
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+			if TRB.Data.character.className == "demonhunter" then
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					C_Timer.After(0, function()
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end)
+				end
+			end
 		end
 	end)
 
@@ -930,8 +904,17 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.borderWidth.EditBox:SetText(tostring(borderSize))
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetHeight(TRB.Data.specCache[TRB.Data.character.specName].settings)
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+			if TRB.Data.character.className == "demonhunter" then
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					C_Timer.After(0, function()
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end)
+				end
+			end
 		end
 	end)
 
@@ -944,10 +927,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		spec.bar.xPos = value
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Frames.barContainerFrame:ClearAllPoints()
-			TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
-			TRB.Frames.barContainerFrame:SetPoint("CENTER", TRB.Data.specCache[TRB.Data.character.specName].settings.bar.xPos, TRB.Data.specCache[TRB.Data.character.specName].settings.bar.yPos)
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end)
 
@@ -959,10 +941,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		spec.bar.yPos = value
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Frames.barContainerFrame:ClearAllPoints()
-			TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
-			TRB.Frames.barContainerFrame:SetPoint("CENTER", TRB.Data.specCache[TRB.Data.character.specName].settings.bar.xPos, TRB.Data.specCache[TRB.Data.character.specName].settings.bar.yPos)
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end)
 
@@ -976,6 +957,14 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			AdjustBarBorder()
+			if TRB.Data.character.className == "demonhunter" then
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					C_Timer.After(0, function()
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end)
+				end
+			end
 		end
 
 		local minsliderWidth = math.max((spec.bar.border)*2+1, 120)
@@ -1001,10 +990,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		spec.bar.dragAndDrop = self:GetChecked()
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			--TRB.Frames.barContainerFrame:SetMovable((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
-			--TRB.Frames.barContainerFrame:EnableMouse((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
-			TRB.Frames.barContainerFrame:SetMovable(TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
-			TRB.Frames.barContainerFrame:EnableMouse(TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
+			if TRB.Frames.barGroups ~= nil and TRB.Frames.barGroups.primary ~= nil then
+				TRB.Frames.barGroups.primary:SetDragAndDrop(TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop, TRB.Data.specCache[TRB.Data.character.specName].settings)
+			end
 		end
 	end)
 
@@ -1072,9 +1060,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].comboPoints = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[specName].settings, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[specName].settings)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end)
 	end
 
@@ -1098,8 +1086,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end)
 
@@ -1122,8 +1111,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end)
 
@@ -1136,7 +1126,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		spec.comboPoints.xPos = value
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end)
 
@@ -1148,7 +1140,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		spec.comboPoints.yPos = value
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end)
 
@@ -1161,8 +1155,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		spec.comboPoints.border = value
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 
 		local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
@@ -1183,8 +1178,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		spec.comboPoints.spacing = value
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end)
 
@@ -1226,7 +1222,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		comboPointsRelativeTo:SetDefaultText(spec.comboPoints.relativeToName)
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end
 
@@ -1250,8 +1248,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		spec.comboPoints.fullWidth = self:GetChecked()
 		
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
 		end
 	end)
 
@@ -1280,7 +1279,16 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 	end
 	
 	TRB.Functions.Character:ResetCaches()
-	TRB.Functions.Bar:Construct()
+	if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	else
+		TRB.Functions.Bar:Construct()
+	end
 end
 
 function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString)
@@ -1316,7 +1324,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			TRB.Data.settings.core.global[lowerClassName][specName].textures = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.Character:ResetCaches()
-			TRB.Functions.Bar:Construct()
+			if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+				local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			else
+				TRB.Functions.Bar:Construct()
+			end
 		end)
 	end
 	
@@ -1363,7 +1380,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				end
 
 				TRB.Functions.Character:ResetCaches()
-				TRB.Functions.Bar:Construct()
+				if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				else
+					TRB.Functions.Bar:Construct()
+				end
 			end
 		end)
 	end
@@ -1384,7 +1410,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end
 
 			TRB.Functions.Character:ResetCaches()
-			TRB.Functions.Bar:Construct()
+			if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+				local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			else
+				TRB.Functions.Bar:Construct()
+			end
 		end)
 	
 	
@@ -1422,7 +1457,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				end
 				
 				TRB.Functions.Character:ResetCaches()
-				TRB.Functions.Bar:Construct()
+				if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				else
+					TRB.Functions.Bar:Construct()
+				end
 			end)
 
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"],
@@ -1439,7 +1483,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				end
 				
 				TRB.Functions.Character:ResetCaches()
-				TRB.Functions.Bar:Construct()
+				if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				else
+					TRB.Functions.Bar:Construct()
+				end
 			end)
 
 		yCoord = yCoord - 60
@@ -1989,7 +2042,12 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
+		local barFrame = nil
+		if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+			local node = TRB.Frames.barGroups.primary:GetNode(1)
+			barFrame = node and node.GetResourceFrame and node:GetResourceFrame() or nil
+		end
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
 	end)
 
 	return yCoord
@@ -2006,7 +2064,12 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BorderColorBase"], spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame)
+		local borderFrame = barBorderFrame
+		if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+			local node = TRB.Frames.barGroups.primary:GetNode(1)
+			borderFrame = node and node.GetBorderFrame and node:GetBorderFrame() or borderFrame
+		end
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
 	end)
 
 	if isHealer then
@@ -2046,7 +2109,15 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 			if classId == nil then
 				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
 			end
-			TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[specNameInner].settings)
+			if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+				local settings = TRB.Data.specCache[specNameInner].settings
+				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			else
+				TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[specNameInner].settings)
+			end
 		end
 	end)
 
