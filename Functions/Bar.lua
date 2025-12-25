@@ -756,6 +756,14 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			-- Show the primary bar (now parented directly to UIParent)
 			primary:Show()
 			primaryNode:Show()
+
+			-- Redraw thresholds to match new bar dimensions
+			local thresholds = primaryNode:GetThresholds()
+			if thresholds and #thresholds > 0 then
+				for _, threshold in ipairs(thresholds) do
+					TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
+				end
+			end
 		end
 	end
 

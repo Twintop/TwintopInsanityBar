@@ -856,6 +856,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 			end
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -883,6 +884,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 			end
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -910,6 +912,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 			end
 
 			TRB.Functions.Character:ResetCaches()

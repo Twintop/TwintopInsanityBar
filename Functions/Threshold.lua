@@ -243,12 +243,27 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 	end
 
 	local settings = TRB.Data.specCache[TRB.Data.barConstructedForSpec].settings
-	local resourceFrame = TRB.Frames.resourceFrame
 
-	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
-	if entries > 0 then
-		for x = 1, entries do
-			TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
+	-- Try BarGroups system first (new OOP system)
+	local barGroups = TRB.Frames.barGroups
+	if barGroups and barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			local thresholds = primaryNode:GetThresholds()
+			if thresholds and #thresholds > 0 then
+				for _, threshold in ipairs(thresholds) do
+					TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
+				end
+			end
+		end
+	else
+		-- Fall back to legacy system
+		local resourceFrame = TRB.Frames.resourceFrame
+		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
+		if entries > 0 then
+			for x = 1, entries do
+				TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
+			end
 		end
 	end
 
