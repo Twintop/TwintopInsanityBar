@@ -6,10 +6,6 @@ end
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 
-local barContainerFrame = TRB.Frames.barContainerFrame
-local resourceFrame = TRB.Frames.resourceFrame
-local barBorderFrame = TRB.Frames.barBorderFrame
-
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local talents --[[@as TRB.Classes.Talents]]
@@ -170,6 +166,12 @@ end
 
 local function Setup_Devastation()
 	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "devastation")
+
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+
+	-- Create bar groups for Devastation using new OOP system
+	TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(1)
 end
 
 local function FillSpellData_Devastation()
@@ -233,6 +235,12 @@ end
 
 local function Setup_Preservation()
 	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "preservation", true)
+
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+
+	-- Create bar groups for Preservation using new OOP system
+	TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(2)
 end
 
 local function FillSpellData_Preservation()
@@ -301,6 +309,12 @@ end
 
 local function Setup_Augmentation()
 	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "augmentation")
+
+	-- Destroy existing bar groups before creating new ones
+	TRB.Functions.Bar:DestroyBarGroups()
+
+	-- Create bar groups for Augmentation using new OOP system
+	TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(3)
 end
 
 local function FillSpellData_Augmentation()
@@ -391,26 +405,39 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	for _, v in pairs(resourceFrame.thresholds) do
-		v:Hide();
+	local barGroups = TRB.Frames.barGroups
+
+	-- Hide legacy frames (we're using BarNodes now)
+	if TRB.Frames.resource2ContainerFrame then
+		TRB.Frames.resource2ContainerFrame:Hide()
+	end
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barContainerFrame:Hide()
 	end
 
-	for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
-		if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
-			TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+	-- Construct thresholds on the BarNode (new system)
+	if barGroups and barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			primaryNode:ClearThresholds()
+			for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
+				primaryNode:RegisterThreshold(thresholdFrame)
+			end
 		end
-		TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+
+		TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	end
 
-	if TRB.Data.character.specId == 1 then
-	elseif TRB.Data.character.specId == 2 then
-	elseif TRB.Data.character.specId == 3 then
+	-- Configure secondary bar for Essence (all specs)
+	if barGroups and barGroups.secondary then
+		barGroups.secondary:Show()
+		barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2 or 5)
 	end
-
-	TRB.Frames.resource2ContainerFrame:Show()
 
 	TRB.Functions.Class:CheckCharacter()
-	TRB.Functions.Bar:Construct(settings)
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 local function RefreshLookupData_Devastation()
@@ -665,6 +692,43 @@ local function UpdateSnapshot_Augmentation()
 	local currentTime = GetTime()
 end
 
+---Updates Essence bar nodes with current values and colors
+---@param specSettings table # The spec-specific settings
+---@param specCacheSettings table # The spec cache settings
+local function UpdateEssence(specSettings, specCacheSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+	local barGroups = TRB.Frames.barGroups
+
+	for x = 1, TRB.Data.character.maxResource2 do
+		local cpBorderColor = specSettings.colors.comboPoints.border
+		local cpColor = specSettings.colors.comboPoints.base
+
+		local essenceValue = 0
+		if snapshotData.attributes.resource2 >= x then
+			essenceValue = 1000
+			-- Color logic for penultimate/final
+			if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+				cpColor = specSettings.colors.comboPoints.penultimate
+			elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2) or x == TRB.Data.character.maxResource2 then
+				cpColor = specSettings.colors.comboPoints.final
+			end
+		elseif snapshotData.attributes.resource2 + 1 == x then
+			essenceValue = snapshotData.attributes.essencePartial or UnitPartialPower("player", Enum.PowerType.Essence)
+		end
+
+		if barGroups and barGroups.secondary then
+			local essenceNode = barGroups.secondary:GetNode(x)
+			if essenceNode then
+				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "essence" .. x, essenceNode, essenceValue, 1000)
+				essenceNode:SetBorderColor(cpBorderColor)
+				essenceNode:SetColor(cpColor)
+				essenceNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+			end
+		end
+	end
+end
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -672,28 +736,33 @@ local function UpdateResourceBar()
 	local classSettings = TRB.Data.settings.evoker
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
+	local barGroups = TRB.Frames.barGroups
+	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.devastation
 		local specCacheSettings = TRB.Data.specCache.devastation.settings
 		UpdateSnapshot_Devastation()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
+
+		if barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
+		end
+		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
-
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
-				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-
-				barContainerFrame:SetAlpha(1.0)
+				if primaryNode then
+					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				end
 
 				if snapshots[spells.essenceBurst.id].buff.isActive then
 					if snapshots[spells.essenceBurst.id].buff.applications == 1 then
@@ -719,40 +788,16 @@ local function UpdateResourceBar()
 					end
 				end
 
-
 				if target ~= nil and target.spells[spells.meltArmor.id].active and specSettings.colors.bar.meltArmor.enabled then
 					barColor = specSettings.colors.bar.meltArmor.color
 				end
-				
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)			
 
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
-
-					if snapshotData.attributes.resource2 >= x then
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-						if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-							cpColor = specSettings.colors.comboPoints.penultimate
-						elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-							cpColor = specSettings.colors.comboPoints.final
-						end
-					elseif snapshotData.attributes.resource2+1 == x then
-						local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
-					else
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-					end
-
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
-					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				if primaryNode then
+					primaryNode:SetBorderColor(barBorderColor)
+					primaryNode:SetColor(barColor)
 				end
+
+				UpdateEssence(specSettings, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -760,14 +805,17 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.preservation
 		local specCacheSettings = TRB.Data.specCache.preservation.settings
 		UpdateSnapshot_Preservation()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
-		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
 
+		if barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
+		end
+		TRB.Functions.Bar:HideResourceBar()
+
+		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
-				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified
 				local barBorderColor = specSettings.colors.bar.border
 
 				if snapshots[spells.essenceBurst.id].buff.isActive then
@@ -794,43 +842,18 @@ local function UpdateResourceBar()
 					end
 				end
 
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-				
 				local barColor = specSettings.colors.bar.base
 				if specSettings.colors.bar.temporalBurst.enabled and snapshots[spells.temporalBurst.id].buff.isActive then
 					barColor = specSettings.colors.bar.temporalBurst.color
 				end
-				
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
 
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-
-				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
-
-					if snapshotData.attributes.resource2 >= x then
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-						if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-							cpColor = specSettings.colors.comboPoints.penultimate
-						elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-							cpColor = specSettings.colors.comboPoints.final
-						end
-					elseif snapshotData.attributes.resource2+1 == x then
-						local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
-					else
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-					end
-					
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
-					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				if primaryNode then
+					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					primaryNode:SetBorderColor(barBorderColor)
+					primaryNode:SetColor(barColor)
 				end
+
+				UpdateEssence(specSettings, specCacheSettings)
 			end
 
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -839,23 +862,26 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.augmentation
 		local specCacheSettings = TRB.Data.specCache.augmentation.settings
 		UpdateSnapshot_Augmentation()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, TRB.Frames.barContainerFrame)
+
+		if barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
+		end
+		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
-
 			if specSettings.displayBar.neverShow == false then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
-				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
+				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
-				TRB.Functions.Bar:SetPrimaryValue(specCacheSettings, "resource", resourceFrame, currentResource)
-
-				barContainerFrame:SetAlpha(1.0)
+				if primaryNode then
+					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				end
 
 				if snapshots[spells.essenceBurst.id].buff.isActive then
 					if snapshots[spells.essenceBurst.id].buff.applications == 1 then
@@ -881,34 +907,12 @@ local function UpdateResourceBar()
 					end
 				end
 
-				TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(barBorderFrame, "bar", barBorderColor)
-				TRB.Functions.Color:SetStatusBarColorFromRGBAString(resourceFrame, "resource", barColor)
-
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
-
-					if snapshotData.attributes.resource2 >= x then
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-						if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-							cpColor = specSettings.colors.comboPoints.penultimate
-						elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-							cpColor = specSettings.colors.comboPoints.final
-						end
-					elseif snapshotData.attributes.resource2+1 == x then
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, snapshotData.attributes.essencePartial, 1000)
-					else
-						TRB.Functions.Bar:SetValue(specCacheSettings, "comboPoint" .. x, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-					end
-					
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(TRB.Frames.resource2Frames[x].borderFrame, "comboPoint" .. x, cpBorderColor)
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(TRB.Frames.resource2Frames[x].resourceFrame, "comboPoint" .. x, cpColor)
-					TRB.Functions.Color:SetBackdropColor(TRB.Frames.resource2Frames[x].containerFrame, "comboPoint" .. x, cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				if primaryNode then
+					primaryNode:SetBorderColor(barBorderColor)
+					primaryNode:SetColor(barColor)
 				end
+
+				UpdateEssence(specSettings, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -953,6 +957,7 @@ local function SwitchSpec()
 
 		if TRB.Data.barConstructedForSpec ~= "devastation" then
 			talents = specCache.devastation.talents
+			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "devastation"
 			ConstructResourceBar(specCache.devastation.settings)
 		end
@@ -980,6 +985,7 @@ local function SwitchSpec()
 
 		if TRB.Data.barConstructedForSpec ~= "preservation" then
 			talents = specCache.devastation.talents
+			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "preservation"
 			ConstructResourceBar(specCache.preservation.settings)
 		end
@@ -1008,6 +1014,7 @@ local function SwitchSpec()
 
 		if TRB.Data.barConstructedForSpec ~= "augmentation" then
 			talents = specCache.augmentation.talents
+			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "augmentation"
 			ConstructResourceBar(specCache.augmentation.settings)
 		end
@@ -1032,12 +1039,12 @@ local function SwitchSpec()
 	end)
 end
 
-resourceFrame:RegisterEvent("ADDON_LOADED")
-resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
-resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
-resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+TRB.Frames.resourceFrame:RegisterEvent("ADDON_LOADED")
+TRB.Frames.resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+TRB.Frames.resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+TRB.Frames.resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+TRB.Frames.resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
+TRB.Frames.resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -1173,7 +1180,9 @@ function TRB.Functions.Class:CheckCharacter()
 	if sharedSettings ~= nil then
 		--if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
-			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+			if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
+			end
 		--end
 	end
 end
@@ -1210,18 +1219,68 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
+	local barGroups = TRB.Frames.barGroups
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-		local notZeroShowValue = TRB.Data.character.maxResource
-		local notZeroShowValueComboPoints = TRB.Data.character.maxResource2
 		local sharedSettings
 		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 		end
 
-		TRB.Functions.Bar:HideResourceBarGeneric(sharedSettings, force, notZeroShowValue, true, notZeroShowValueComboPoints)
+		if sharedSettings ~= nil then
+			local affectingCombat = TRB.Data.character.inCombat
+			if not TRB.Data.specSupported or force or
+				(TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding) or
+				((not affectingCombat) and (not UnitInVehicle("player")) and (not sharedSettings.displayBar.alwaysShow)) then
+				-- HIDE using barGroups
+				if barGroups and barGroups.primary then
+					barGroups.primary:Hide()
+				end
+				if barGroups and barGroups.secondary then
+					barGroups.secondary:Hide()
+				end
+				TRB.Functions.BarText:Hide(sharedSettings)
+				snapshotData.attributes.isTracking = false
+			else
+				snapshotData.attributes.isTracking = true
+				if sharedSettings.displayBar.neverShow == true then
+					if barGroups and barGroups.primary then
+						barGroups.primary:Hide()
+					end
+					if barGroups and barGroups.secondary then
+						barGroups.secondary:Hide()
+					end
+					TRB.Functions.BarText:Hide(sharedSettings)
+				else
+					-- SHOW using barGroups
+					if barGroups and barGroups.primary then
+						barGroups.primary:Show()
+					end
+					if barGroups and barGroups.secondary then
+						barGroups.secondary:Show()
+						barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+					end
+					TRB.Functions.BarText:Show(sharedSettings)
+				end
+			end
+		else
+			-- No settings - hide everything
+			if barGroups and barGroups.primary then
+				barGroups.primary:Hide()
+			end
+			if barGroups and barGroups.secondary then
+				barGroups.secondary:Hide()
+			end
+			snapshotData.attributes.isTracking = false
+		end
 	else
-		TRB.Frames.barContainerFrame:Hide()
+		-- Unsupported spec - hide everything
+		if barGroups and barGroups.primary then
+			barGroups.primary:Hide()
+		end
+		if barGroups and barGroups.secondary then
+			barGroups.secondary:Hide()
+		end
 		snapshotData.attributes.isTracking = false
 	end
 end
@@ -1303,6 +1362,29 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+	local barGroups = TRB.Frames.barGroups
+	if relativeToFrame ~= nil then
+		relativeToFrame = string.gsub(relativeToFrame, "_", "")
+	end
+	if relativeToFrame == "ResourceBar" or relativeToFrame == "Resource" then
+		if barGroups and barGroups.primary then
+			local primaryNode = barGroups.primary:GetNode(1)
+			if primaryNode then
+				return primaryNode:GetResourceFrame(), true
+			end
+		end
+	elseif relativeToFrame ~= nil then
+		local comboPointIndex = string.match(relativeToFrame, "^ComboPoint(%d+)$")
+		if comboPointIndex ~= nil then
+			local index = tonumber(comboPointIndex)
+			if index ~= nil and barGroups and barGroups.secondary then
+				local essenceNode = barGroups.secondary:GetNode(index)
+				if essenceNode then
+					return essenceNode:GetResourceFrame(), true
+				end
+			end
+		end
+	end
 	return nil, true
 end
 

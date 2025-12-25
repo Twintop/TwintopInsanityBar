@@ -91,3 +91,66 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 	})
 	return self
 end
+
+
+--[[
+    BarGroups Factory for Evoker
+    Creates the appropriate BarGroup instances for each Evoker specialization.
+    
+    All specs use Mana as primary resource and Essence as secondary resource.
+    Devastation: Primary bar (N=1) + Essence (N=5-6)
+    Preservation: Primary bar (N=1) + Essence (N=5-6)
+    Augmentation: Primary bar (N=1) + Essence (N=5-6)
+]]
+
+---@class TRB.Classes.Evoker.BarGroupsFactory
+TRB.Classes.Evoker.BarGroupsFactory = {}
+TRB.Classes.Evoker.BarGroupsFactory.__index = TRB.Classes.Evoker.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Evoker specialization
+---@param specId integer # 1=Devastation, 2=Preservation, 3=Augmentation
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(specId)
+    local barGroups = {}
+
+    -- All Evoker specs have the same bar structure:
+    -- Primary Mana bar (1 node) + Essence (up to 6 nodes)
+
+    -- Primary Mana bar (1 node)
+    -- Primary bar groups are parented directly to UIParent for proper positioning
+    barGroups.primary = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame",
+        1,
+        true -- isPrimary
+    )
+
+    -- Essence (up to 6 nodes for all specs)
+    -- Secondary bars are parented to the primary's container
+    barGroups.secondary = TRB.Classes.BarGroup:New(
+        barGroups.primary:GetContainerFrame(),
+        "TwintopResourceBarFrame_ComboPoint",
+        6,
+        false -- not primary
+    )
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Evoker.BarGroupsFactory:GetSpecConfiguration(specId)
+    -- All Evoker specs have the same configuration
+    return {
+        primary = {
+            maxNodes = 1,
+            isPrimary = true
+        },
+        secondary = {
+            maxNodes = 6,
+            isPrimary = false,
+            resourceType = "Essence"
+        }
+    }
+end
