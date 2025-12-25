@@ -57,3 +57,60 @@ function TRB.Classes.Paladin.RetributionSpells:New()
    
     return self
 end
+
+
+--[[
+    BarGroups Factory for Paladin
+    Creates the appropriate BarGroup instances for each Paladin specialization.
+    
+    Holy: Primary bar (N=1) + Holy Power (N=5)
+    Protection: Primary bar (N=1) + Holy Power (N=5)
+    Retribution: Primary bar (N=1) + Holy Power (N=5)
+]]
+
+---@class TRB.Classes.Paladin.BarGroupsFactory
+TRB.Classes.Paladin.BarGroupsFactory = {}
+TRB.Classes.Paladin.BarGroupsFactory.__index = TRB.Classes.Paladin.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Paladin specialization
+---@param specId integer # 1=Holy, 2=Protection, 3=Retribution
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    -- Primary mana bar (1 node) - all specs use mana
+    barGroups.primary = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame",
+        1,
+        true -- isPrimary
+    )
+
+    -- Holy Power (5 nodes) - all Paladin specs use Holy Power
+    barGroups.secondary = TRB.Classes.BarGroup:New(
+        barGroups.primary:GetContainerFrame(),
+        "TwintopResourceBarFrame_ComboPoint",
+        5,
+        false -- not primary
+    )
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Paladin.BarGroupsFactory:GetSpecConfiguration(specId)
+    return {
+        primary = {
+            maxNodes = 1,
+            isPrimary = true
+        },
+        secondary = {
+            maxNodes = 5,
+            isPrimary = false,
+            resourceType = "HolyPower"
+        }
+    }
+end
