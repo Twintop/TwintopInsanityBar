@@ -878,7 +878,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 			end
-			if TRB.Data.character.className == "demonhunter" then
+			if TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight" then
 				TRB.Functions.Character:ResetCaches()
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 					C_Timer.After(0, function()
@@ -907,7 +907,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 			end
-			if TRB.Data.character.className == "demonhunter" then
+			if TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight" then
 				TRB.Functions.Character:ResetCaches()
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 					C_Timer.After(0, function()
@@ -957,7 +957,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			AdjustBarBorder()
-			if TRB.Data.character.className == "demonhunter" then
+			if TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight" then
 				TRB.Functions.Character:ResetCaches()
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 					C_Timer.After(0, function()
@@ -1279,7 +1279,7 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 	end
 	
 	TRB.Functions.Character:ResetCaches()
-	if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+	if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups ~= nil then
 		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
@@ -1324,7 +1324,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			TRB.Data.settings.core.global[lowerClassName][specName].textures = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+			if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups ~= nil then
 				local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
@@ -1380,7 +1380,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				end
 
 				TRB.Functions.Character:ResetCaches()
-				if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+				if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups ~= nil then
 					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
@@ -1410,7 +1410,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end
 
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+			if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups ~= nil then
 				local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
@@ -1457,7 +1457,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				end
 				
 				TRB.Functions.Character:ResetCaches()
-				if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+				if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups ~= nil then
 					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
@@ -1483,7 +1483,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				end
 				
 				TRB.Functions.Character:ResetCaches()
-				if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+				if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups ~= nil then
 					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
@@ -2043,7 +2043,7 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	f = controls.colors.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		local barFrame = nil
-		if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+		if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
 			barFrame = node and node.GetResourceFrame and node:GetResourceFrame() or nil
 		end
@@ -2065,7 +2065,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 	f = controls.colors.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		local borderFrame = barBorderFrame
-		if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+		if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
 			borderFrame = node and node.GetBorderFrame and node:GetBorderFrame() or borderFrame
 		end
@@ -2109,7 +2109,7 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 			if classId == nil then
 				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
 			end
-			if TRB.Data.character.className == "demonhunter" and TRB.Frames.barGroups ~= nil then
+			if (TRB.Data.character.className == "demonhunter" or TRB.Data.character.className == "deathknight") and TRB.Frames.barGroups ~= nil then
 				local settings = TRB.Data.specCache[specNameInner].settings
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then

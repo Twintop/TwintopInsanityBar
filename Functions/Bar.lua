@@ -682,6 +682,10 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		return
 	end
 
+	-- Clear color caches to ensure fresh application on bar construction
+	TRB.Data.cache.colors.border = {}
+	TRB.Data.cache.colors.backdrop = {}
+
 	self:ApplyBarGroupsLayout(settings, barGroups)
 	self:ApplyBarGroupsAppearance(settings, barGroups)
 

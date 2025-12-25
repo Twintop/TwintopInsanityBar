@@ -148,16 +148,18 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFr
     -- Primary Runic Power bar (1 node) + Runes (6 nodes)
 
     -- Primary Runic Power bar (1 node)
+    -- Primary bar groups are parented directly to UIParent for proper positioning
     barGroups.primary = TRB.Classes.BarGroup:New(
-        parentFrame,
+        UIParent,
         "TwintopResourceBarFrame",
         1,
         true -- isPrimary
     )
 
     -- Runes (6 nodes for all specs)
+    -- Secondary bars are parented to the primary's container
     barGroups.secondary = TRB.Classes.BarGroup:New(
-        parentFrame,
+        barGroups.primary:GetContainerFrame(),
         "TwintopResourceBarFrame_ComboPoint",
         6,
         false -- not primary

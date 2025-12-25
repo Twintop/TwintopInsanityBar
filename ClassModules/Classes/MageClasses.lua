@@ -76,7 +76,7 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     if specId == 1 then -- Arcane
         -- Primary mana bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            UIParent,
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
@@ -84,7 +84,7 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
 
         -- Arcane Charges (4 nodes)
         barGroups.secondary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            barGroups.primary:GetContainerFrame(),
             "TwintopResourceBarFrame_ComboPoint",
             4,
             false -- not primary
@@ -93,7 +93,7 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     elseif specId == 2 then -- Fire
         -- Primary mana bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            UIParent,
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
@@ -102,7 +102,7 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     elseif specId == 3 then -- Frost
         -- Primary mana bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            UIParent,
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary

@@ -33,6 +33,12 @@ function TRB.Classes.BarNode:New(parent, name, index)
 
 	self.index = index or 1
 	self.name = name or "TwintopResourceBarFrame"
+	
+	-- Include index in name for unique cache keys when index > 0
+	if index and index > 0 then
+		self.name = self.name .. "_" .. index
+	end
+	
 	self.thresholds = {}
 	self.width = 100
 	self.height = 20
@@ -41,25 +47,16 @@ function TRB.Classes.BarNode:New(parent, name, index)
 
 	-- Create container frame
 	local containerName = self.name .. "_Container"
-	if index and index > 0 then
-		containerName = self.name .. "_" .. index .. "_Container"
-	end
 	self.containerFrame = CreateFrame("Frame", containerName, parent, "BackdropTemplate")
 	self.containerFrame:SetFrameStrata("BACKGROUND")
 
 	-- Create border frame
 	local borderName = self.name .. "_Border"
-	if index and index > 0 then
-		borderName = self.name .. "_" .. index .. "_Border"
-	end
 	self.borderFrame = CreateFrame("StatusBar", borderName, self.containerFrame, "BackdropTemplate")
 	self.borderFrame:SetFrameStrata("BACKGROUND")
 
 	-- Create resource frame (the actual status bar)
 	local resourceName = self.name .. "_Resource"
-	if index and index > 0 then
-		resourceName = self.name .. "_" .. index .. "_Resource"
-	end
 	self.resourceFrame = CreateFrame("StatusBar", resourceName, self.containerFrame, "BackdropTemplate")
 	self.resourceFrame:SetFrameStrata("BACKGROUND")
 
