@@ -1035,3 +1035,85 @@ function TRB.Classes.Priest.ShadowSpells:New()
 
 	return self
 end
+
+
+--[[
+    BarGroups Factory for Priest
+    Creates the appropriate BarGroup instances for each Priest specialization.
+    
+    Discipline: Primary bar (N=1) only
+    Holy: Primary bar (N=1) only
+    Shadow: Primary bar (N=1) only
+]]
+
+---@class TRB.Classes.Priest.BarGroupsFactory
+TRB.Classes.Priest.BarGroupsFactory = {}
+TRB.Classes.Priest.BarGroupsFactory.__index = TRB.Classes.Priest.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Priest specialization
+---@param specId integer # 1=Discipline, 2=Holy, 3=Shadow
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    if specId == 1 then -- Discipline
+        -- Primary mana bar (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+    elseif specId == 2 then -- Holy
+        -- Primary mana bar (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+    elseif specId == 3 then -- Shadow
+        -- Primary insanity bar (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+    end
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
+    if specId == 1 then -- Discipline
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    elseif specId == 2 then -- Holy
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    elseif specId == 3 then -- Shadow
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    end
+
+    return {}
+end
