@@ -188,7 +188,7 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 		This is done to maintain backward compatability for how threshold line stacking used to work before this change.
 	]]
 	
-	threshold:SetWidth(settings.comboPoints.border * 2)
+	threshold:SetWidth(settings.thresholds.properties.width)
 	threshold:SetHeight(settings.comboPoints.height)
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
@@ -246,13 +246,31 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 
 	-- Try BarGroups system first (new OOP system)
 	local barGroups = TRB.Frames.barGroups
-	if barGroups and barGroups.primary then
-		local primaryNode = barGroups.primary:GetNode(1)
-		if primaryNode then
-			local thresholds = primaryNode:GetThresholds()
-			if thresholds and #thresholds > 0 then
-				for _, threshold in ipairs(thresholds) do
-					TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
+	if barGroups then
+		-- Redraw primary bar thresholds
+		if barGroups.primary then
+			local primaryNode = barGroups.primary:GetNode(1)
+			if primaryNode then
+				local thresholds = primaryNode:GetThresholds()
+				if thresholds and #thresholds > 0 then
+					for _, threshold in ipairs(thresholds) do
+						TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
+					end
+				end
+			end
+		end
+
+		-- Redraw secondary bar thresholds (e.g., Stagger for Brewmaster)
+		if barGroups.secondary then
+			for i = 1, barGroups.secondary.maxNodes do
+				local node = barGroups.secondary:GetNode(i)
+				if node then
+					local thresholds = node:GetThresholds()
+					if thresholds and #thresholds > 0 then
+						for _, threshold in ipairs(thresholds) do
+							TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings)
+						end
+					end
 				end
 			end
 		end

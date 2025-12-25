@@ -778,6 +778,19 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 				sfNode:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
 			end
 		end
+
+		-- Redraw thresholds on secondary nodes to match new bar dimensions
+		for i = 1, barGroups.secondary.maxNodes do
+			local node = barGroups.secondary:GetNode(i)
+			if node then
+				local thresholds = node:GetThresholds()
+				if thresholds and #thresholds > 0 then
+					for _, threshold in ipairs(thresholds) do
+						TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings)
+					end
+				end
+			end
+		end
 	end
 end
 
@@ -789,6 +802,10 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	if settings == nil or settings.bar == nil or barGroups == nil then
 		return
 	end
+
+	-- Clear color caches to ensure colors are re-applied after ApplyBackdrop resets frames
+	TRB.Data.cache.colors.border = {}
+	TRB.Data.cache.colors.backdrop = {}
 
 	local frameLevels = TRB.Data.constants.frameLevels
 
