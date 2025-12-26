@@ -10,7 +10,7 @@ local instanceDifficulty = 0
 local instanceId = 0
 local locale = "enUS"
 
-local ttdEventFrame = CreateFrame("Frame", "TwintopResourceBar_TtdEventFrame", TRB.Frames.barContainerFrame)
+local ttdEventFrame = CreateFrame("Frame", "TwintopResourceBar_TtdEventFrame", UIParent)
 ttdEventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, ...)
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
         if arg3 == 210385 then
@@ -42,7 +42,7 @@ ttdEventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, ...)
 end)
 
 -- Reset any values we may have triggered previously whenever a loading screen occurs
-local ttdPlayerEnteringWorldFrame = CreateFrame("Frame", "TwintopResourceBar_TtdPlayerEnteringWorldFrame", TRB.Frames.barContainerFrame)
+local ttdPlayerEnteringWorldFrame = CreateFrame("Frame", "TwintopResourceBar_TtdPlayerEnteringWorldFrame", UIParent)
 ttdPlayerEnteringWorldFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 ttdPlayerEnteringWorldFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then

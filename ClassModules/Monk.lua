@@ -6,11 +6,9 @@ end
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 
-local barContainerFrame = TRB.Frames.barContainerFrame
-local resourceFrame = TRB.Frames.resourceFrame
-local barBorderFrame = TRB.Frames.barBorderFrame
-
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
+
+local eventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -507,14 +505,6 @@ local function ConstructResourceBar(settings)
 		else
 			barGroups.secondary:Hide()
 		end
-	end
-
-	-- Ensure legacy frames aren't displayed for this class module
-	if TRB.Frames.resource2ContainerFrame then
-		TRB.Frames.resource2ContainerFrame:Hide()
-	end
-	if TRB.Frames.barContainerFrame then
-		TRB.Frames.barContainerFrame:Hide()
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -1285,12 +1275,12 @@ local function SwitchSpec()
 	end)
 end
 
-resourceFrame:RegisterEvent("ADDON_LOADED")
-resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
-resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
-resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+eventFrame:RegisterEvent("ADDON_LOADED")
+eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
+eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end

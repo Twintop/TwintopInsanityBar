@@ -353,6 +353,39 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 	end
 end
 
+---Gets the primary bar's container frame for use in color picker callbacks
+---@return Frame|nil
+function TRB.Functions.OptionsUi:GetPrimaryBackdropFrame()
+	local barGroups = TRB.Frames.barGroups
+	if barGroups and barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			return primaryNode:GetContainerFrame()
+		end
+	end
+	return nil
+end
+
+---Gets all secondary bar container frames (combo points, etc.) for use in color picker callbacks
+---@return table<number, Frame>
+function TRB.Functions.OptionsUi:GetSecondaryBackdropFrames()
+	local frames = {}
+	local barGroups = TRB.Frames.barGroups
+	if barGroups and barGroups.secondary then
+		local nodeCount = barGroups.secondary:GetNodeCount()
+		for i = 1, nodeCount do
+			local node = barGroups.secondary:GetNode(i)
+			if node then
+				local containerFrame = node:GetContainerFrame()
+				if containerFrame then
+					table.insert(frames, containerFrame)
+				end
+			end
+		end
+	end
+	return frames
+end
+
 function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key], true)
@@ -360,10 +393,17 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorC
 			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
 			colorTable[key] = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
-		
+
 			if frame ~= nil then
 				if frameType == "backdrop" then
-					TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
+					-- Handle both single frame and array of frames
+					if type(frame) == "table" and frame[1] ~= nil then
+						for _, f in ipairs(frame) do
+							TRB.Functions.Color:SetBackdropColor(f, nil, r_1, g_1, b_1, a_1)
+						end
+					else
+						TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
+					end
 				elseif frameType == "border" then
 					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key])
 				elseif frameType == "bar" then
@@ -999,30 +1039,6 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			end
 		end
 	end)
-
-	--[[
-	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
-
-	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.pinToPRD
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PinToPRDEnabled"])
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["PinToPRDTooltip"]
-	f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
-	f:SetScript("OnClick", function(self, ...)
-		spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
-
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
-
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			TRB.Functions.Bar:UpdateSmoothBar()
-			TRB.Frames.barContainerFrame:SetMovable((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
-			TRB.Frames.barContainerFrame:EnableMouse((not TRB.Data.specCache[TRB.Data.character.specName].settings.bar.pinToPersonalResourceDisplay) and TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop)
-			TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
-		end
-	end)
-	]]
 
 	yCoord = yCoord - 30
 

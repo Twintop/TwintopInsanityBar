@@ -274,15 +274,6 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 				end
 			end
 		end
-	else
-		-- Fall back to legacy system
-		local resourceFrame = TRB.Frames.resourceFrame
-		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
-		if entries > 0 then
-			for x = 1, entries do
-				TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
-			end
-		end
 	end
 
 	TRB.Data.cache.values.threshold = {}

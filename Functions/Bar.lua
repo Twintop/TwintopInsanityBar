@@ -74,49 +74,6 @@ function TRB.Functions.Bar:HideResourceBar(force)
 	TRB.Functions.Class:HideResourceBar(force)
 end
 
----Shows or hides the resource bar based on general/generic logic.
----Most classes will use this, the exception being Druids because of Balance with Nature's Balance.
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param force boolean
----@param notZeroShowValue number
----@param includeComboPoints boolean?
----@param notZeroShowValueComboPoints number?
-function TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, includeComboPoints, notZeroShowValueComboPoints)
-	---@type TRB.Classes.SnapshotData
-	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	if settings ~= nil then
-		local affectingCombat = TRB.Data.character.inCombat
-		if not TRB.Data.specSupported or force or
-			(TRB.Data.character.advancedFlight and not settings.displayBar.dragonriding) or
-			((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not settings.displayBar.alwaysShow)) and (
-					(not settings.displayBar.notZeroShow) --[[or
-					(settings.displayBar.notZeroShow and (snapshotData.attributes.resource / TRB.Data.resourceFactor) == notZeroShowValue and
-						(includeComboPoints ~= true or (includeComboPoints and (snapshotData.attributes.resource2 / TRB.Data.resource2Factor) == notZeroShowValueComboPoints))
-					)
-				)]]
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			TRB.Functions.BarText:Hide(settings)
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if settings.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Functions.BarText:Hide(settings)
-			else
-				TRB.Frames.barContainerFrame:Show()
-				TRB.Functions.BarText:Show(settings)
-			end
-		end
-	else
-		TRB.Frames.barContainerFrame:Hide()
-		TRB.Functions.BarText:Hide(settings)
-		snapshotData.attributes.isTracking = false
-	end
-end
-
 function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)
 	if alphaOffset > 1.0 then
 		alphaOffset = 1.0
@@ -129,24 +86,6 @@ function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)
 	end
 	
 	frame:SetAlpha(((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime() / flashPeriod)))) + alphaOffset)
-end
-
-function TRB.Functions.Bar:SetHeight(settings)
-	local value = settings.bar.height
-
-	TRB.Frames.barContainerFrame:SetHeight(value - (settings.bar.border * 2))
-	TRB.Frames.barBorderFrame:SetHeight(settings.bar.height)
-	TRB.Frames.resourceFrame:SetHeight(value - (settings.bar.border * 2))
-	TRB.Functions.Threshold:RedrawThresholdLines()
-end
-
-function TRB.Functions.Bar:SetWidth(settings)
-	local value = settings.bar.width
-
-	TRB.Frames.barContainerFrame:SetWidth(value - (settings.bar.border * 2))
-	TRB.Frames.barBorderFrame:SetWidth(settings.bar.width)
-	TRB.Frames.resourceFrame:SetWidth(value - (settings.bar.border * 2))
-	TRB.Functions.Bar:SetMinMax(settings)
 end
 
 function TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
@@ -178,7 +117,17 @@ function TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 end
 
 function TRB.Functions.Bar:GetPosition(settings)
-	local _, _, relativePoint, xOfs, yOfs = TRB.Frames.barContainerFrame:GetPoint()
+	-- Use BarGroups system if available
+	local containerFrame
+	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+		containerFrame = TRB.Frames.barGroups.primary:GetContainerFrame()
+	end
+
+	if not containerFrame then
+		return
+	end
+
+	local _, _, relativePoint, xOfs, yOfs = containerFrame:GetPoint()
 
 	if relativePoint == "CENTER" then
 		--No action needed.
@@ -271,35 +220,6 @@ function TRB.Functions.Bar:SetPrimaryValue(settings, key, bar, value)
 	end
 end
 
----Sets the minimum and maximum values for all bars
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
-function TRB.Functions.Bar:SetMinMax(settings)
-	if settings ~= nil and settings.bar ~= nil then
-		local max = TRB.Data.character.maxResource
-
-		if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
-			max = math.min(settings.maxResource.value * TRB.Data.resourceFactor, TRB.Data.character.maxResource)
-		end
-
-		TRB.Frames.resourceFrame:SetMinMaxValues(0, max)-- settings.bar.width)
-		if TRB.Frames.resource2Frames ~= nil and TRB.Data.resource2 ~= "CUSTOM" then
-			if TRB.Data.character.classId ~= 7 or (TRB.Data.character.classId == 7 and TRB.Details.addonData.build ~= "64914") then -- Enhancement Shaman
-				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-				local nodes = TRB.Data.character.maxResource2
-				local nodeWidth = GetComboPointNodeWidth(settings)
-
-				if nodes == nil or nodes == 0 then
-					nodes = length
-				end
-
-				for x = 1, math.min(nodes, 10) do
-					TRB.Frames.resource2Frames[x].resourceFrame:SetMinMaxValues(0, nodeWidth)
-				end
-			end
-		end
-	end
-end
-
 ---Sets the positioning of the `containerFrame` with respect to the Personal Resource Display
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param containerFrame frame
@@ -318,339 +238,18 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		return
 	end
 
-	--[[if settings.bar.pinToPersonalResourceDisplay then
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(settings, containerFrame)
-	else]]
-		containerFrame:ClearAllPoints()
-		containerFrame:SetPoint("CENTER", UIParent)
-		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
-	--end
-
-	if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
-		local containerFrame2 = TRB.Frames.resource2ContainerFrame
-		local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-		local nodes = TRB.Data.character.maxResource2 or 1
-
-		if nodes == nil then
-			nodes = length
-		end
-	
-		local nodeWidth = settings.comboPoints.width
-		local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2
-		local xPos
-		local yPos
-		local totalWidth = nodes * settings.comboPoints.width + (nodes-1) * settings.comboPoints.spacing
-		local setPoint = "BOTTOM"
-		local setPointRelativeTo = "TOP"
-		local topBottom = "TOP"
-		local leftCenterRight = "CENTER"
-		
-		if settings.comboPoints.relativeTo == "TOPLEFT" then
-			setPoint = "BOTTOMLEFT"
-			setPointRelativeTo = "TOPLEFT"
-			leftCenterRight = "LEFT"
-		elseif settings.comboPoints.relativeTo == "TOP" then
-			setPoint = "BOTTOM"
-			setPointRelativeTo = "TOP"
-		elseif settings.comboPoints.relativeTo == "TOPRIGHT" then
-			setPoint = "BOTTOMRIGHT"
-			setPointRelativeTo = "TOPRIGHT"
-			leftCenterRight = "RIGHT"
-		elseif settings.comboPoints.relativeTo == "BOTTOMLEFT" then
-			setPoint = "TOPLEFT"
-			setPointRelativeTo = "BOTTOMLEFT"
-			topBottom = "BOTTOM"
-			leftCenterRight = "LEFT"
-		elseif settings.comboPoints.relativeTo == "BOTTOM" then
-			setPoint = "TOP"
-			setPointRelativeTo = "BOTTOM"
-			topBottom = "BOTTOM"
-		elseif settings.comboPoints.relativeTo == "BOTTOMRIGHT" then
-			setPoint = "TOPRIGHT"
-			setPointRelativeTo = "BOTTOMRIGHT"
-			topBottom = "BOTTOM"
-			leftCenterRight = "RIGHT"
-		end
-
-		if settings.comboPoints.fullWidth then
-			nodeWidth = GetComboPointNodeWidth(settings)
-
-			xPos = 0
-			totalWidth = settings.bar.width
-
-			if topBottom == "BOTTOM" then
-				setPoint = "TOP"
-				setPointRelativeTo = "BOTTOM"
-			else
-				setPoint = "BOTTOM"
-				setPointRelativeTo = "TOP"
-			end
-			leftCenterRight = "CENTER"
-		else
-			if leftCenterRight == "LEFT" then
-				xPos = -settings.bar.border + settings.comboPoints.xPos
-			elseif leftCenterRight == "RIGHT" then
-				xPos = settings.bar.border + settings.comboPoints.xPos
-			else
-				xPos = settings.comboPoints.xPos
-			end
-		end
-
-		if topBottom == "BOTTOM" then
-			yPos = -settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
-		else
-			yPos = settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
-		end
-
-		containerFrame2:Show()
-		containerFrame2:SetWidth(totalWidth)
-		containerFrame2:SetHeight(settings.comboPoints.height)
-		containerFrame2:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		containerFrame2:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
-		containerFrame2:ClearAllPoints()
-		containerFrame2:SetPoint(setPoint, containerFrame, setPointRelativeTo, xPos, yPos)
-
-		for x = 1, length do
-			local container = TRB.Frames.resource2Frames[x].containerFrame
-			local border = TRB.Frames.resource2Frames[x].borderFrame
-			local resource = TRB.Frames.resource2Frames[x].resourceFrame
-
-			if x <= nodes then
-				container:Show()
-				container:SetWidth(nodeWidth-(settings.comboPoints.border*2))
-				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
-				container:ClearAllPoints()
-				
-				if x == 1 then
-					container:SetPoint("TOPLEFT", containerFrame2, "TOPLEFT", settings.comboPoints.border, 0)
-				else
-					container:SetPoint("LEFT", TRB.Frames.resource2Frames[x-1].containerFrame, "RIGHT", nodeSpacing, 0)
-				end
-			
-				if settings.comboPoints.border < 1 then
-					border:Show()
-					border.backdropInfo = {
-						edgeFile = settings.textures.comboPointsBorder,
-						tile = true,
-						tileSize = 4,
-						edgeSize = 1,
-						insets = {0, 0, 0, 0}
-					}
-					border:ApplyBackdrop()
-					border:Hide()
-				else
-					border:Show()
-					border.backdropInfo = {
-						edgeFile = settings.textures.comboPointsBorder,
-						tile = true,
-						tileSize = 4,
-						edgeSize = settings.comboPoints.border,
-						insets = {0, 0, 0, 0}
-					}
-					border:ApplyBackdrop()
-				end
-				border:SetBackdropColor(0, 0, 0, 0)
-				border:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.border, true))
-
-				border:SetWidth(nodeWidth)
-				border:SetHeight(settings.comboPoints.height)
-				
-				resource:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
-						
-				container:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
-				border:SetFrameLevel(TRB.Data.constants.frameLevels.cpBorder)
-				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpResource)
-			else
-				container:Hide()
-			end
-		end
-	end
+	containerFrame:ClearAllPoints()
+	containerFrame:SetPoint("CENTER", UIParent)
+	containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
 
 	TRB.Functions.Threshold:RedrawThresholdLines()
-	TRB.Functions.Bar:SetMinMax(settings)
 end
 
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.Bar:UpdateSmoothBar(settings)
-	if settings == nil and TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-		settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-	end
-
-	if TRB.Data.settings.core.smoothBarValueUpdates then --and not settings.bar.pinToPersonalResourceDisplay then
-		if TRB.Frames.resourceFrame.thresholds ~= nil and #TRB.Frames.resourceFrame.thresholds > 0 then
-			for x = 1, #TRB.Frames.resourceFrame.thresholds do
-				TRB.Details.addonData.libs.LibSmoothMove:SmoothMove(TRB.Frames.resourceFrame.thresholds[x], 3, 0.2)
-			end
-		end
-	else
-		if TRB.Frames.resourceFrame.thresholds ~= nil and #TRB.Frames.resourceFrame.thresholds > 0 then
-			for x = 1, #TRB.Frames.resourceFrame.thresholds do
-				TRB.Details.addonData.libs.LibSmoothMove:Reset(TRB.Frames.resourceFrame.thresholds[x])
-			end
-		end
-	end
+	-- BarNodes system handles smooth bar updates internally via TRB.Classes.BarNode
+	-- This function is kept for API compatibility but is now a no-op
 end
-
-function TRB.Functions.Bar:Construct(settings)
-	if settings == nil and TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-		settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-	end
-
-	if settings ~= nil and settings.bar ~= nil then
-		local barContainerFrame = TRB.Frames.barContainerFrame
-		local resourceFrame = TRB.Frames.resourceFrame
-		local barBorderFrame = TRB.Frames.barBorderFrame
-
-		barContainerFrame:Show()
-		barContainerFrame:SetBackdrop({
-			bgFile = settings.textures.background,
-			tile = true,
-			tileSize = settings.bar.width,
-			edgeSize = 1,
-			insets = {0, 0, 0, 0}
-		})
-		barContainerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.background, true))
-		barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-		barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		barContainerFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barContainer)
-
-		barContainerFrame:SetScript("OnMouseDown", function(self, button)
-			if button == "LeftButton" and not self.isMoving and settings.bar.dragAndDrop then
-				self:StartMoving()
-				self.isMoving = true
-			end
-		end)
-
-		barContainerFrame:SetScript("OnMouseUp", function(self, button)
-			if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
-				self:StopMovingOrSizing()
-				TRB.Functions.Bar:GetPosition(settings)
-				self.isMoving = false
-			end
-		end)
-
-		barContainerFrame:SetMovable(settings.bar.dragAndDrop)
-		barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
-
-		barContainerFrame:SetScript("OnHide", function(self)
-			if self.isMoving then
-				self:StopMovingOrSizing()
-				TRB.Functions.Bar:GetPosition(settings)
-				self.isMoving = false
-			end
-		end)
-
-		if settings.bar.border < 1 then
-			barBorderFrame:Show()
-			barBorderFrame.backdropInfo = {
-				edgeFile = settings.textures.border,
-				tile = true,
-				tileSize = 4,
-				edgeSize = 1,
-				insets = {0, 0, 0, 0}
-			}
-			barBorderFrame:ApplyBackdrop()
-			barBorderFrame:Hide()
-		else
-			barBorderFrame:Show()
-			barBorderFrame.backdropInfo = {
-				edgeFile = settings.textures.border,
-				tile = true,
-				tileSize = 4,
-				edgeSize = settings.bar.border,
-				insets = {0, 0, 0, 0}
-			}
-			barBorderFrame:ApplyBackdrop()
-		end
-
-		barBorderFrame:ClearAllPoints()
-		barBorderFrame:SetPoint("CENTER", barContainerFrame)
-		barBorderFrame:SetPoint("CENTER", 0, 0)
-		barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-		barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.border, true))
-		barBorderFrame:SetWidth(settings.bar.width)
-		barBorderFrame:SetHeight(settings.bar.height)
-		barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		barBorderFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barBorder)
-
-		resourceFrame:Show()
-		resourceFrame:SetMinMaxValues(0, settings.bar.width)
-		resourceFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-		resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
-		resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-		resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
-		resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.base, true))
-		resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		resourceFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barResource)
-
-		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
-			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
-			local nodes = TRB.Data.character.maxResource2
-
-			if nodes == nil or nodes == 0 then
-				nodes = length
-			end
-
-			local nodeWidth = settings.comboPoints.width
-
-			for x = 1, length do
-				local container = TRB.Frames.resource2Frames[x].containerFrame
-				local border = TRB.Frames.resource2Frames[x].borderFrame
-				local resource = TRB.Frames.resource2Frames[x].resourceFrame
-
-				container:Show()
-				container:SetBackdrop({
-					bgFile = settings.textures.comboPointsBackground,
-					tile = true,
-					tileSize = nodeWidth,
-					edgeSize = 1,
-					insets = {0, 0, 0, 0}
-				})
-				
-				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
-				container:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				container:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
-		
-				border:ClearAllPoints()
-				border:SetPoint("CENTER", container)
-				border:SetPoint("CENTER", 0, 0)
-				border:SetBackdropColor(0, 0, 0, 0)
-				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				border:SetFrameLevel(TRB.Data.constants.frameLevels.cpBorder)
-		
-				resource:Show()
-				resource:SetMinMaxValues(0, 1)
-				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
-				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
-				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
-				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpResource)
-
-				if x > nodes then
-					container:Hide()
-				else
-					container:Show()
-				end
-			end
-		else
-			if TRB.Frames.resource2ContainerFrame ~= nil then
-				TRB.Frames.resource2ContainerFrame:Hide()
-			end
-		end
-
-		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-
-		TRB.Functions.Bar:SetMinMax(settings)
-
-		TRB.Functions.Bar:UpdateSmoothBar(settings)
-
-		TRB.Functions.BarText:CreateBarTextFrames()
-		TRB.Functions.BarText:Hide(settings)
-		TRB.Functions.Class:HideResourceBar()
-	end
-end
-
 
 --[[
 	New OOP-based Bar System

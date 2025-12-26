@@ -378,9 +378,17 @@ local function ConstructMiscellaneousPanel(parent)
 		end
 		strataDropdown:SetDefaultText(TRB.Data.settings.core.strata.name)
 
-		TRB.Frames.barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		-- Apply strata to BarGroups if available
+		local barGroups = TRB.Frames.barGroups
+		if barGroups then
+			if barGroups.primary then
+				barGroups.primary:GetContainerFrame():SetFrameStrata(TRB.Data.settings.core.strata.level)
+			end
+			if barGroups.secondary then
+				barGroups.secondary:GetContainerFrame():SetFrameStrata(TRB.Data.settings.core.strata.level)
+			end
+		end
+
 		---@type Frame[]
 		local textFrames = TRB.Frames.textFrames
 		local entries = TRB.Functions.Table:Length(textFrames)

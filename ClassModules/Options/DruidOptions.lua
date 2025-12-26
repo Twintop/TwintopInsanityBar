@@ -7,8 +7,6 @@ local L = TRB.Localization
 
 local oUi = TRB.Data.constants.optionsUi
 
-local barContainerFrame = TRB.Frames.barContainerFrame
-
 TRB.Options.Druid = {}
 TRB.Options.Druid.Balance = {}
 TRB.Options.Druid.Feral = {}
@@ -1642,7 +1640,7 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1735,10 +1733,19 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.starfall.enabled = self:GetChecked()
 
-		if spec.thresholds.thresholdDictionary.starfall.enabled then
-			TRB.Frames.resourceFrame.thresholds[4]:Show()
-		else
-			TRB.Frames.resourceFrame.thresholds[4]:Hide()
+		local barGroups = TRB.Frames.barGroups
+		if barGroups and barGroups.primary then
+			local primaryNode = barGroups.primary:GetNode(1)
+			if primaryNode then
+				local thresholds = primaryNode:GetThresholds()
+				if thresholds and thresholds[4] then
+					if spec.thresholds.thresholdDictionary.starfall.enabled then
+						thresholds[4]:Show()
+					else
+						thresholds[4]:Hide()
+					end
+				end
+			end
 		end
 	end)
 
@@ -1752,10 +1759,19 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.starsurge.enabled = self:GetChecked()
 
-		if spec.thresholds.thresholdDictionary.starsurge.enabled then
-			TRB.Frames.resourceFrame.thresholds[1]:Show()
-		else
-			TRB.Frames.resourceFrame.thresholds[1]:Hide()
+		local barGroups = TRB.Frames.barGroups
+		if barGroups and barGroups.primary then
+			local primaryNode = barGroups.primary:GetNode(1)
+			if primaryNode then
+				local thresholds = primaryNode:GetThresholds()
+				if thresholds and thresholds[1] then
+					if spec.thresholds.thresholdDictionary.starsurge.enabled then
+						thresholds[1]:Show()
+					else
+						thresholds[1]:Hide()
+					end
+				end
+			end
 		end
 	end)
 
@@ -2170,7 +2186,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 	
 	yCoord = yCoord - 40
@@ -2250,7 +2266,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 40
@@ -2775,7 +2791,7 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -3286,7 +3302,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40

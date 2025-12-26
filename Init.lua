@@ -190,16 +190,6 @@ TRB.Data.sanityCheckValues = {
 -- Frames
 TRB.Frames = {}
 
----@type Frame
-TRB.Frames.barContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame", UIParent, "BackdropTemplate")
----@type Frame
-TRB.Frames.resourceFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource", TRB.Frames.barContainerFrame, "BackdropTemplate")
----@type Frame
-TRB.Frames.barBorderFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Border", TRB.Frames.barContainerFrame, "BackdropTemplate")
-
----@diagnostic disable-next-line: inject-field
-TRB.Frames.resourceFrame.thresholds = {}
-
 TRB.Frames.textFrames = {}
 
 TRB.Frames.targetsTimerFrame = CreateFrame("Frame")
@@ -210,36 +200,6 @@ TRB.Frames.timerFrame = CreateFrame("Frame")
 TRB.Frames.timerFrame.sinceLastUpdate = 0
 TRB.Frames.timerFrame.ttdSinceLastUpdate = 0
 TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
-
--- For the following specs, we need to have a secondary bar/bars created
--- We're going to make these as StatusBars so we can use them for Death Knight runes in the future
-if 	TRB.Data.character.classId == 1 or -- Protection Warrior
-	TRB.Data.character.classId == 2 or -- Paladin
-	TRB.Data.character.classId == 4 or -- Rogue
-	TRB.Data.character.classId == 5 or -- Discipline or Holy Priest
-	TRB.Data.character.classId == 6 or -- Death Knight
-	TRB.Data.character.classId == 7 or -- Enhancement Shaman
-	TRB.Data.character.classId == 8 or -- Arcane Mage
-	TRB.Data.character.classId == 9 or -- Warlock
-	TRB.Data.character.classId == 10 or -- Windwalker Monk
-	TRB.Data.character.classId == 11 or -- Feral Druid
-	TRB.Data.character.classId == 12 or -- Vengeance or Devourer Demon Hunter
-	TRB.Data.character.classId == 13 -- Evoker
-	then
-	TRB.Frames.resource2Frames = {}
-	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
-	
-	if TRB.Data.character.classId ~= 7 or (TRB.Data.character.classId == 7 and TRB.Details.addonData.build ~= "64914") then -- Enhancement Shaman
-		for x = 1, 10 do
-			TRB.Frames.resource2Frames[x] = {}
-			TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", "TwintopResourceBarFrame_ComboPoint_"..x, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
-			TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
-			TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
-			TRB.Frames.resource2Frames[x].containerFrame.thresholds = {}
-		end
-
-	end
-end
 
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	local currentTime = GetTime()
@@ -282,7 +242,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", TRB.Frames.barContainerFrame)
+TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", UIParent)
 TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_REGEN_DISABLED" then
 		TRB.Data.character.inCombat = true

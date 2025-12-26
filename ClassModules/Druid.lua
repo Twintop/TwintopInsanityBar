@@ -6,11 +6,9 @@ end
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 
-local barContainerFrame = TRB.Frames.barContainerFrame
-local resourceFrame = TRB.Frames.resourceFrame
-local barBorderFrame = TRB.Frames.barBorderFrame
-
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
+
+local eventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -788,14 +786,6 @@ local function ConstructResourceBar(settings)
 		else
 			barGroups.secondary:Hide()
 		end
-	end
-
-	-- Ensure legacy frames aren't displayed for this class module
-	if TRB.Frames.resource2ContainerFrame then
-		TRB.Frames.resource2ContainerFrame:Hide()
-	end
-	if TRB.Frames.barContainerFrame then
-		TRB.Frames.barContainerFrame:Hide()
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -2516,12 +2506,12 @@ local function SwitchSpec()
 	end)
 end
 
-resourceFrame:RegisterEvent("ADDON_LOADED")
-resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
-resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
-resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+eventFrame:RegisterEvent("ADDON_LOADED")
+eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
+eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -2645,6 +2635,8 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "druid"
 
+	local barGroups = TRB.Frames.barGroups
+
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "balance"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower, true)
@@ -2654,10 +2646,9 @@ function TRB.Functions.Class:CheckCharacter()
 		--TRB.Data.snapshotData.snapshots[TRB.Data.spellsData.spells.moonkinForm.id].buff:Initialize(nil, true)
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
-		if sharedSettings ~= nil then
-			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+		if sharedSettings ~= nil and barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
 		end
-		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		TRB.Data.character.specName = "feral"
@@ -2665,7 +2656,6 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Energy, false)
 		local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
-		local barGroups = TRB.Frames.barGroups
 
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
@@ -2714,10 +2704,9 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Rage, false)
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
-		if sharedSettings ~= nil then
-			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+		if sharedSettings ~= nil and barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
 		end
-		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif TRB.Data.character.specId == 4 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
@@ -2725,10 +2714,9 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
-		if sharedSettings ~= nil then
-			TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barContainerFrame)
+		if sharedSettings ~= nil and barGroups and barGroups.primary then
+			TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
 		end
-		TRB.Frames.resource2ContainerFrame:Hide()
 	end
 end
 

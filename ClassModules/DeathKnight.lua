@@ -8,6 +8,8 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
+local eventFrame = CreateFrame("Frame")
+
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
@@ -470,14 +472,6 @@ local function ConstructResourceBar(settings)
 				runeNode:SetMinMax(0, 1)
 			end
 		end
-	end
-
-	-- Ensure legacy frames aren't displayed for this class module
-	if TRB.Frames.resource2ContainerFrame then
-		TRB.Frames.resource2ContainerFrame:Hide()
-	end
-	if TRB.Frames.barContainerFrame then
-		TRB.Frames.barContainerFrame:Hide()
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -1082,12 +1076,12 @@ local function SwitchSpec()
 	end)
 end
 
-TRB.Frames.resourceFrame:RegisterEvent("ADDON_LOADED")
-TRB.Frames.resourceFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
-TRB.Frames.resourceFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-TRB.Frames.resourceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-TRB.Frames.resourceFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
-TRB.Frames.resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+eventFrame:RegisterEvent("ADDON_LOADED")
+eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
+eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end

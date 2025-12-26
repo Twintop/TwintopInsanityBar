@@ -24,7 +24,15 @@ TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.l
 --TODO: Move this somewhere else.
 --This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
 function TRB.Functions.Class:HideResourceBar(force)
-	TRB.Frames.barContainerFrame:Hide()
+	local barGroups = TRB.Frames.barGroups
+	if barGroups then
+		if barGroups.primary then
+			barGroups.primary:Hide()
+		end
+		if barGroups.secondary then
+			barGroups.secondary:Hide()
+		end
+	end
 end
 
 --TODO: Move this somewhere else.
@@ -683,10 +691,10 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 end
 
 function TRB.Functions.Character:EventRegistration()
-	local barContainerFrame = TRB.Frames.barContainerFrame
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
+	local barGroups = TRB.Frames.barGroups
 
 	if TRB.Data.specSupported then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -735,7 +743,14 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.Character:DisableCharacterChange()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Details.addonData.registered = false
-		barContainerFrame:Hide()
+		if barGroups then
+			if barGroups.primary then
+				barGroups.primary:Hide()
+			end
+			if barGroups.secondary then
+				barGroups.secondary:Hide()
+			end
+		end
 	end
 
 	TRB.Functions.Bar:HideResourceBar()
