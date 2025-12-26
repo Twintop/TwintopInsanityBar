@@ -156,3 +156,61 @@ function TRB.Classes.Warlock.DestructionSpells:New()
 
     return self
 end
+
+
+--[[
+    BarGroups Factory for Warlock
+    Creates the appropriate BarGroup instances for each Warlock specialization.
+    
+    All specs use Soul Shards as secondary resource:
+    Affliction: Primary bar (N=1) + Soul Shards (N=5) - binary fill
+    Demonology: Primary bar (N=1) + Soul Shards (N=5) - binary fill
+    Destruction: Primary bar (N=1) + Soul Shards (N=5) - percentage fill (partial shards)
+]]
+
+---@class TRB.Classes.Warlock.BarGroupsFactory
+TRB.Classes.Warlock.BarGroupsFactory = {}
+TRB.Classes.Warlock.BarGroupsFactory.__index = TRB.Classes.Warlock.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Warlock specialization
+---@param specId integer # 1=Affliction, 2=Demonology, 3=Destruction
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    -- Primary mana bar (1 node)
+    barGroups.primary = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame",
+        1,
+        true -- isPrimary
+    )
+
+    -- Soul Shards (5 nodes) - all specs use secondary resource
+    barGroups.secondary = TRB.Classes.BarGroup:New(
+        barGroups.primary:GetContainerFrame(),
+        "TwintopResourceBarFrame_ComboPoint",
+        5,
+        false -- not primary
+    )
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Warlock.BarGroupsFactory:GetSpecConfiguration(specId)
+    return {
+        primary = {
+            maxNodes = 1,
+            isPrimary = true
+        },
+        secondary = {
+            maxNodes = 5,
+            isPrimary = false,
+            resourceType = "SoulShards"
+        }
+    }
+end
