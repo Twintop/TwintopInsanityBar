@@ -408,3 +408,72 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 
 	return self
 end
+
+
+--[[
+    BarGroups Factory for Warrior
+    Creates the appropriate BarGroup instances for each Warrior specialization.
+    
+    Arms: Primary bar (N=1) only
+    Fury: Primary bar (N=1) only
+    Protection: Primary bar (N=1) + Defensive Buffs (N=2) for Shield Block and Ignore Pain
+]]
+
+---@class TRB.Classes.Warrior.BarGroupsFactory
+TRB.Classes.Warrior.BarGroupsFactory = {}
+TRB.Classes.Warrior.BarGroupsFactory.__index = TRB.Classes.Warrior.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Warrior specialization
+---@param specId integer # 1=Arms, 2=Fury, 3=Protection
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    -- Primary Rage bar (1 node) - all specs
+    -- Primary bar groups are parented directly to UIParent for proper positioning
+    barGroups.primary = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame",
+        1,
+        true -- isPrimary
+    )
+
+    -- Protection has secondary bar for defensive buffs (Shield Block + Ignore Pain)
+    if specId == 3 then
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            barGroups.primary:GetContainerFrame(),
+            "TwintopResourceBarFrame_ComboPoint",
+            2, -- Shield Block and Ignore Pain
+            false -- not primary
+        )
+    end
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
+    if specId == 3 then -- Protection
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            },
+            secondary = {
+                maxNodes = 2,
+                isPrimary = false,
+                resourceType = "DefensiveBuffs"
+            }
+        }
+    else -- Arms and Fury
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    end
+end
