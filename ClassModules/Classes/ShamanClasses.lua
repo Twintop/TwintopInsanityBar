@@ -252,3 +252,97 @@ function TRB.Classes.Shaman.RestorationSpells:New()
 
     return self
 end
+
+
+--[[
+    BarGroups Factory for Shaman
+    Creates the appropriate BarGroup instances for each Shaman specialization.
+    
+    Elemental: Primary bar (N=1) only
+    Enhancement: Primary bar (N=1) + Maelstrom Weapon (N=10)
+    Restoration: Primary bar (N=1) only
+]]
+
+---@class TRB.Classes.Shaman.BarGroupsFactory
+TRB.Classes.Shaman.BarGroupsFactory = {}
+TRB.Classes.Shaman.BarGroupsFactory.__index = TRB.Classes.Shaman.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Shaman specialization
+---@param specId integer # 1=Elemental, 2=Enhancement, 3=Restoration
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(specId)
+    local barGroups = {}
+
+    if specId == 1 then -- Elemental
+        -- Primary Maelstrom bar only (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+    elseif specId == 2 then -- Enhancement
+        -- Primary mana bar (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+
+        -- Maelstrom Weapon stacks (10 nodes)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            barGroups.primary:GetContainerFrame(),
+            "TwintopResourceBarFrame_ComboPoint",
+            10,
+            false -- not primary
+        )
+
+    elseif specId == 3 then -- Restoration
+        -- Primary mana bar only (1 node)
+        barGroups.primary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame",
+            1,
+            true -- isPrimary
+        )
+    end
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
+    if specId == 1 then -- Elemental
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    elseif specId == 2 then -- Enhancement
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            },
+            secondary = {
+                maxNodes = 10,
+                isPrimary = false,
+                resourceType = "MaelstromWeapon"
+            }
+        }
+    elseif specId == 3 then -- Restoration
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            }
+        }
+    end
+
+    return {}
+end
