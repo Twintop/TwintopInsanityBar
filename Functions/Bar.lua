@@ -156,69 +156,7 @@ function TRB.Functions.Bar:GetPosition(settings)
 	TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 end
 
----Sets the values for a resource bar
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param key string
----@param bar frame
----@param value number
----@param maxResource number
-function TRB.Functions.Bar:SetValue(settings, key, bar, value, maxResource)
-	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
-	local valueIsSecret = issecretvalue(value)
-	local maxResourceIsSecret = issecretvalue(maxResource)
-	if not valueIsSecret and not maxResourceIsSecret and TRB.Data.cache.values.bar[key].value == value and TRB.Data.cache.values.bar[key].maxResource == maxResource then
-		return
-	end
-	
-	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
-		local _, max = bar:GetMinMaxValues()
-		local barMaxValueIsSecret = issecretvalue(max)
 
-		if barMaxValueIsSecret or valueIsSecret or maxResourceIsSecret then
-			if TRB.Data.settings.core.smoothBarValueUpdates then
-				bar:SetValue(value, Enum.StatusBarInterpolation.ExponentialEaseOut)
-			else
-				bar:SetValue(value, Enum.StatusBarInterpolation.Immediate)
-			end
-		else
-			maxResource = maxResource or 1
-			value = value or 0
-
-			local factor = max / maxResource
-
-			if maxResource == 0 then
-				factor = max / 1
-			end
-
-			local scaledValue = value * factor
-			if factor ~= math.huge and max ~= math.huge then
-				if TRB.Data.settings.core.smoothBarValueUpdates then
-					bar:SetValue(math.min(scaledValue, max), Enum.StatusBarInterpolation.ExponentialEaseOut)
-				else
-					bar:SetValue(math.min(scaledValue, max), Enum.StatusBarInterpolation.Immediate)
-				end
-			end
-		end
-
-		TRB.Data.cache.values.bar[key].value = value
-		TRB.Data.cache.values.bar[key].maxResource = maxResource
-	end
-end
-
----Sets the value for a primary resource bar
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param key string
----@param bar frame
----@param value number
-function TRB.Functions.Bar:SetPrimaryValue(settings, key, bar, value)
-	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
-		if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
-			TRB.Functions.Bar:SetValue(settings, key, bar, value, math.min(settings.maxResource.value * TRB.Data.resourceFactor, TRB.Data.character.maxResource))
-		else
-			TRB.Functions.Bar:SetValue(settings, key, bar, value, TRB.Data.character.maxResource)
-		end
-	end
-end
 
 ---Sets the positioning of the `containerFrame` with respect to the Personal Resource Display
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -245,11 +183,6 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	TRB.Functions.Threshold:RedrawThresholdLines()
 end
 
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
-function TRB.Functions.Bar:UpdateSmoothBar(settings)
-	-- BarNodes system handles smooth bar updates internally via TRB.Classes.BarNode
-	-- This function is kept for API compatibility but is now a no-op
-end
 
 --[[
 	New OOP-based Bar System

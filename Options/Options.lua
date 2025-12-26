@@ -181,7 +181,6 @@ local function ConstructMiscellaneousPanel(parent)
 	f:SetChecked(TRB.Data.settings.core.smoothBarValueUpdates)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.smoothBarValueUpdates = self:GetChecked()
-		TRB.Functions.Bar:UpdateSmoothBar()
 	end)
 
 	yCoord = yCoord - 30
