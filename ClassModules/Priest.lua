@@ -1713,7 +1713,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Discipline
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.discipline.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.discipline)
 
 		local lookup = TRB.Data.lookup or {}
 		--[[lookup["#atonement"] = spells.atonement.icon
@@ -1747,7 +1746,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.holy.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#flashHeal"] = spells.flashHeal.icon
@@ -1794,7 +1792,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Shadow
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.shadow.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
 
 		local lookup = {}
 		lookup["#mb"] = spells.mindBlast.icon

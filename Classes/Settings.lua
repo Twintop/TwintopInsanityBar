@@ -32,7 +32,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public reactionTime number
 ---@field public smoothBarValueUpdates boolean
 ---@field public news table
----@field public ttd table
 ---@field public strata table
 ---@field public timers table
 ---@field public thresholds table

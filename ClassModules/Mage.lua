@@ -786,7 +786,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Arcane
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.arcane.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.mage.arcane)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -812,7 +811,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Fire
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.fire.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.mage.fire)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -838,7 +836,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Frost
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.frost.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.mage.frost)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1034,21 +1031,18 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.mage.arcane then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.mage.arcane)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.ArcaneCharges
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.mage.fire then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.mage.fire)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.mage.frost then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.mage.frost)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1

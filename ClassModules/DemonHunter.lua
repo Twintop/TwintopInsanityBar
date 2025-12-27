@@ -1280,7 +1280,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.havoc.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
@@ -1325,7 +1324,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Vengeance
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.vengeance.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.vengeance)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
@@ -1359,7 +1357,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devourer
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.devourer.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.devourer)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
@@ -1562,7 +1559,6 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.demonhunter.havoc == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1
@@ -1570,7 +1566,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = nil
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.demonhunter.vengeance == true then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.vengeance)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1
@@ -1580,7 +1575,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Id = spells.soulFragments.id
 		TRB.Data.resource2Factor = 1]]
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.demonhunter.devourer == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.devourer)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1

@@ -1022,7 +1022,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Affliction
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.affliction.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.affliction)
 		--[[
 		targetData:AddSpellTracking(spells.shadowEmbraceShadowBolt)
 		targetData:AddSpellTracking(spells.shadowEmbraceDrainSoul)]]
@@ -1064,7 +1063,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Demonology
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.demonology.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.demonology)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1091,7 +1089,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Destruction
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.destruction.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.destruction)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup

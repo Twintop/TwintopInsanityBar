@@ -922,62 +922,20 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookup["||r"] = string.format("%s", "|r")
 	lookup["%%"] = "%"
 
-	--$ttd
-	local _ttd = 0
-	local ttd = "--"
-	local ttdTotalSeconds = "0"
-
-	if target ~= nil and target.timeToDie.time ~= 0 then
-		local ttdMinutes = math.floor(target.timeToDie.time / 60)
-		local ttdSeconds = target.timeToDie.time % 60
-		_ttd = target.timeToDie.time
-		ttdTotalSeconds = string.format("%s", TRB.Functions.Number:RoundTo(target.timeToDie.time, TRB.Data.settings.core.ttd.precision or 1, "floor"))
-		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
-	end
-
 	--#castingIcon
 	local castingIcon = snapshotData.casting.icon or ""
 	local castingAmount = snapshotData.casting.resourceFinal or 0
 
 	lookup["$inCombat"] = tostring(TRB.Data.character.inCombat)
 	lookup["#casting"] = castingIcon
-	lookup["$ttd"] = ttd
-	lookup["$ttdSeconds"] = ttdTotalSeconds
 
-
-	lookupLogic["$ttd"] = _ttd
-	lookupLogic["$ttdSeconds"] = _ttd
 	lookupLogic["$inCombat"] = tostring(TRB.Data.character.inCombat)
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
-	
-	Global_TwintopResourceBar.ttd = Global_TwintopResourceBar.ttd or {}
-	Global_TwintopResourceBar.ttd.ttd = ttd or "--"
-	Global_TwintopResourceBar.ttd.seconds = ttdTotalSeconds or 0
 
 	Global_TwintopResourceBar.resource = Global_TwintopResourceBar.resource or {}
 	Global_TwintopResourceBar.resource.resource = snapshotData.attributes.resource-- or 0
 	Global_TwintopResourceBar.resource.casting = castingAmount
-end
-
----Checks if Time to Die (TTD) is used at all by display text within the settings provided
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
-function TRB.Functions.BarText:IsTtdActive(settings)
-	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-	local found = false
-	if settings ~= nil and settings.displayText ~= nil then
-		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
-		local entries = TRB.Functions.Table:Length(displayText.barText)
-		if entries > 0 then
-			for i = 1, entries do
-				if string.find(displayText.barText[i].text, "$ttd") then
-					found = true
-					break
-				end
-			end
-		end
-	end
-	targetData.ttdIsActive = found
 end
 
 ---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
@@ -1015,11 +973,6 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		valid = true
 	elseif var == "$stam" or var == "$stamina" then
 		valid = true
-	elseif var == "$ttd" or var == "$ttdSeconds" then
-		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-		if targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and targetData.targets[targetData.currentTargetGuid] ~= nil and targetData.targets[targetData.currentTargetGuid].timeToDie.time > 0 then
-			valid = true
-		end
 	elseif var == "$inCombat" then
 		if TRB.Data.character.inCombat then
 			valid = true

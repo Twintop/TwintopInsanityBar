@@ -76,7 +76,6 @@ Localization\LocalizationPost.lua
 
 Classes\CombatLog.lua
 Classes\Snapshot.lua
-Classes\TimeToDie.lua
 Classes\Target.lua
 Classes\Spell.lua
 Classes\Talent.lua
@@ -119,7 +118,6 @@ Functions\String.lua
 Functions\Table.lua
 Functions\Talent.lua
 Functions\Threshold.lua
-Functions\TimeToDie.lua
 
 Options\OptionsUi.lua
 Options\Options.lua

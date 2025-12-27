@@ -951,7 +951,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.devastation.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#eb"] = spells.essenceBurst.icon
@@ -979,7 +978,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.preservation.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#eb"] = spells.essenceBurst.icon
@@ -1007,7 +1005,6 @@ local function SwitchSpec()
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Augmentation
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.augmentation.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#eb"] = spells.essenceBurst.icon
@@ -1194,21 +1191,18 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.Essence
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.Essence
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1

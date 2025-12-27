@@ -1195,7 +1195,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Arms
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.arms.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
 		
 		local lookup = TRB.Data.lookup or {}
 		lookup["#cleave"] = spells.cleave.icon
@@ -1223,7 +1222,6 @@ local function SwitchSpec()
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Fury
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.fury.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
 		
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
@@ -1261,7 +1259,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Protection
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.protection.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.protection)
 		
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ignorePain"] = spells.ignorePain.icon
@@ -1450,17 +1447,14 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
 		TRB.Data.specSupported = true
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.warrior.fury == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
 		TRB.Data.specSupported = true
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.warrior.protection == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.protection)
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
 		TRB.Data.specSupported = true

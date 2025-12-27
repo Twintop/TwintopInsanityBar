@@ -852,7 +852,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.holy.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.paladin.holy)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -878,7 +877,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Protection
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.protection.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.paladin.protection)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -904,7 +902,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Retribution
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.retribution.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.paladin.retribution)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1082,21 +1079,18 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.paladin.holy then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.paladin.holy)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.HolyPower
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.paladin.protection then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.paladin.protection)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.HolyPower
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.paladin.retribution then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.paladin.retribution)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1

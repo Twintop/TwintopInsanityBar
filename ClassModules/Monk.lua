@@ -1172,7 +1172,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Brewmaster
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.brewmaster.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.brewmaster)
 
 		TRB.Data.lookup = {}
 		TRB.Data.lookupLogic = {}
@@ -1198,7 +1197,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Mistweaver
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.mistweaver.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.mistweaver)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
@@ -1229,7 +1227,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Windwalker
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.windwalker.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.windwalker)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#blackoutKick"] = spells.blackoutKick.icon
@@ -1480,19 +1477,16 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.monk.brewmaster then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.brewmaster)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.mistweaver)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.windwalker)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy
 		TRB.Data.resourceFactor = 1

@@ -184,61 +184,6 @@ local function ConstructMiscellaneousPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["TTD"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 50
-
-	title = L["SamplingRate"]
-	controls.ttdSamplingRate = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.core.ttd.sampleRate, 0.05, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		else
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		end
-
-		self.EditBox:SetText(value)
-		TRB.Data.settings.core.ttd.sampleRate = value
-	end)
-
-	title = L["SampleSize"]
-	controls.ttdSampleSize = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 1000, TRB.Data.settings.core.ttd.numEntries, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		self.EditBox:SetText(value)
-		TRB.Data.settings.core.ttd.numEntries = value
-	end)
-
-	yCoord = yCoord - 60
-	title = L["TTDPrecision"]
-	controls.ttdPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.ttd.precision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.ttdPrecision:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		end
-
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		TRB.Data.settings.core.ttd.precision = value
-	end)
-
-	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50

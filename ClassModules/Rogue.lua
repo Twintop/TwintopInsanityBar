@@ -2022,7 +2022,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Assassination
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.assassination.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.assassination)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#amplifyingPoison"] = spells.amplifyingPoison.icon
@@ -2071,7 +2070,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Outlaw
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.outlaw.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.outlaw)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#adrenalineRush"] = spells.adrenalineRush.icon
@@ -2126,7 +2124,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Subtlety
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.subtlety.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.subtlety)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
@@ -2348,13 +2345,10 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.rogue.assassination == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.assassination)
 		TRB.Data.specSupported = true
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.rogue.outlaw == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.outlaw)
 		TRB.Data.specSupported = true
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.rogue.subtlety == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.subtlety)
 		TRB.Data.specSupported = true
 	else
 		TRB.Data.specSupported = false

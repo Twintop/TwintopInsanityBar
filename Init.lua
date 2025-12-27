@@ -198,13 +198,11 @@ TRB.Frames.targetsTimerFrame.sinceLastUpdate = 0
 ---@class Frame
 TRB.Frames.timerFrame = CreateFrame("Frame")
 TRB.Frames.timerFrame.sinceLastUpdate = 0
-TRB.Frames.timerFrame.ttdSinceLastUpdate = 0
 TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
-	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
 
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
@@ -227,13 +225,6 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 
 			if isDead and targetData.targets[targetData.currentTargetGuid] ~= nil then
 				targetData:Remove(guid)
-			elseif not isDead and guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
-				targetData:InitializeTarget(guid)
-				local target = targetData.targets[targetData.currentTargetGuid]
-				if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then
-					target.timeToDie:Update(currentTime)
-					self.ttdSinceLastUpdate = 0
-				end
 			end
 		end
 		

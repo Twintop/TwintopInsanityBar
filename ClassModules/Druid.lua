@@ -2340,7 +2340,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Balance
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.balance.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#wrath"] = spells.wrath.icon
@@ -2398,7 +2397,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Feral
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.feral.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.feral)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
@@ -2451,7 +2449,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Guardian
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.guardian)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.guardian)
 
 		TRB.Data.lookup = {}
 		TRB.Data.lookupLogic = {}
@@ -2478,7 +2475,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.restoration)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.restoration)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#efflorescence"] = spells.efflorescence.icon
@@ -2736,7 +2732,6 @@ end
 function TRB.Functions.Class:EventRegistration()
 	local primaryResourceToken
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.LunarPower
 		TRB.Data.resourceFactor = 10
@@ -2744,7 +2739,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = nil
 		primaryResourceToken = "LUNAR_POWER"
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.feral)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy
 		TRB.Data.resourceFactor = 1
@@ -2752,7 +2746,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = 1
 		primaryResourceToken = "ENERGY"
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.druid.guardian == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.guardian)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
@@ -2760,7 +2753,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = nil
 		primaryResourceToken = "RAGE"
 	elseif TRB.Data.character.specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.restoration)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1

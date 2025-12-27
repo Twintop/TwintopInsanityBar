@@ -1249,7 +1249,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_BeastMastery
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.beastMastery.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#beastCleave"] = spells.beastCleave.icon
@@ -1283,7 +1282,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Marksmanship
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.marksmanship.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#aimedShot"] = spells.aimedShot.icon
@@ -1322,7 +1320,6 @@ local function SwitchSpec()
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.survival.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#harpoon"] = spells.harpoon.icon
@@ -1501,17 +1498,14 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.hunter.beastMastery == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Focus
 		TRB.Data.resourceFactor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.hunter.marksmanship == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Focus
 		TRB.Data.resourceFactor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.hunter.survival == true then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Focus
 		TRB.Data.resourceFactor = 1

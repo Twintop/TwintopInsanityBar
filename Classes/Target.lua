@@ -7,7 +7,6 @@ TRB.Classes = TRB.Classes or {}
 ---@field public targets table<string, TRB.Classes.Target>
 ---@field public auraInstanceIds table<integer, TRB.Classes.Target>
 ---@field public currentTargetGuid string?
----@field public ttdIsActive boolean
 ---@field public count table
 ---@field public custom table
 ---@field public trackedSpells table<integer, TRB.Classes.TargetSpell>
@@ -22,7 +21,6 @@ function TRB.Classes.TargetData:New()
     ---@type table<string, TRB.Classes.Target>
     self.targets = {}
     self.currentTargetGuid = nil
-    self.ttdIsActive = false
     self.count = {}
     self.custom = {}
     ---@type table<integer, TRB.Classes.TargetSpell>
@@ -248,7 +246,6 @@ end
 
 ---@class TRB.Classes.Target
 ---@field public guid string
----@field public timeToDie TRB.Classes.TimeToDie
 ---@field public lastUpdate number?
 ---@field public spells table<integer, TRB.Classes.TargetSpell>
 ---@field public auraInstanceIds table<integer, TRB.Classes.TargetSpell>
@@ -267,7 +264,6 @@ function TRB.Classes.Target:New(guid, isFriend)
     local self = {}
     setmetatable(self, TRB.Classes.Target)
     self.guid = guid
-    self.timeToDie = TRB.Classes.TimeToDie:New(guid)
     self.lastUpdate = GetTime()
     self.spells = {}
     self.auraInstanceIds = {}

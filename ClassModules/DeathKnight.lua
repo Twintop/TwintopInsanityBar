@@ -1156,7 +1156,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Blood
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.blood.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.deathknight.blood)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1179,7 +1178,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Frost
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.frost.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.deathknight.frost)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1202,7 +1200,6 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Unholy
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.unholy.settings)
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.deathknight.unholy)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1375,21 +1372,18 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.deathknight.blood then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.deathknight.blood)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.RunicPower
 		TRB.Data.resourceFactor = 10
 		TRB.Data.resource2 = Enum.PowerType.Runes
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.deathknight.frost then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.deathknight.frost)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.RunicPower
 		TRB.Data.resourceFactor = 10
 		TRB.Data.resource2 = Enum.PowerType.Runes
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.deathknight.unholy then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.deathknight.unholy)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.RunicPower
 		TRB.Data.resourceFactor = 10

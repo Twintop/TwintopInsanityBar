@@ -29,11 +29,6 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				enabled = true,
 				lastUpdate = ""
 			},
-			ttd = {
-				sampleRate = 0.2,
-				numEntries = 50,
-				precision = 1
-			},
 			audio = {
 				channel = {
 					name = L["AudioChannelMaster"],

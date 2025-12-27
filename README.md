@@ -65,7 +65,6 @@ This is a fully customizable resource bar for multiple classes and specs to use 
 
 - Full color, font, and texture customization of every part of the bar to make it suit your UI or make certain situations stand out.
 - Audio and visual cues for when important spells (e.g. Devouring Plague, Earth Shock) can be cast.
-- Time To Die of enemies you've targeted
 - Spell icons for your current casting spell and many others that are related to your primary resource or for tracking.
 
 Spec specific features included for Shadow Priests:
@@ -79,7 +78,6 @@ Bar text can be configured to show the following data in whatever format you'd l
 - Current resource, mas resource, resource from Hardcasting a spell, resources incoming from Passive Sources (e.g. Auspicious Spirits, Shadowfiend/Mindbender, Death and Madness, and Eternal Call to the Void procs)
 - Current Haste%, GCD, Crit%, Mastery%
 - Number of Damage over Time spells out on targets
-- Time To Die of enemies you've targeted
 - Spell icons for your current casting spell and many others that are related to Insanity or tracking.
 
 Found an issue? Report it on GitHub [https://github.com/Twintop/TwintopInsanityBar/issues/](https://github.com/Twintop/TwintopInsanityBar/issues/) or in Discord [https://discord.gg/eThqxM78xm](https://discord.gg/eThqxM78xm)
