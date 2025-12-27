@@ -2142,9 +2142,6 @@ local function UpdateResourceBar()
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
-		if TRB.Data.character.maxResource2 == nil then
-			return
-		end
 		local specSettings = classSettings.guardian
 		local specCacheSettings = TRB.Data.specCache.guardian.settings
 		UpdateSnapshot_Guardian()
@@ -2754,7 +2751,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = Enum.PowerType.ComboPoints
 		TRB.Data.resource2Factor = 1
 		primaryResourceToken = "ENERGY"
-	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.druid.balance == true then
+	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.druid.guardian == true then
 		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.guardian)
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Rage
