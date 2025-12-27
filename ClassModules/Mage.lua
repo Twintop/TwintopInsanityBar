@@ -658,14 +658,18 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdatePrimary(specCacheSettings, currentResource, barBorderColor, barColor)
-		TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-		primaryNode:SetBorderColor(barBorderColor)
-		primaryNode:SetColor(barColor)
-		barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+	if TRB.Data.character.maxResource == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resourceModified == nil then
+		return
 	end
 
 	if TRB.Data.character.specId == 1 then
+		if TRB.Data.character.maxResource2 == nil then
+			return
+		end
 		local specSettings = classSettings.arcane
 		local specCacheSettings = TRB.Data.specCache.arcane.settings
 		UpdateSnapshot_Arcane()
@@ -677,7 +681,11 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 				local barBorderColor = specSettings.colors.bar.border
 				local barColor = specSettings.colors.bar.base
-				UpdatePrimary(specCacheSettings, currentResource, barBorderColor, barColor)
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 
 				local currentCharges = snapshotData.attributes.resource2 or 0
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -708,8 +716,8 @@ local function UpdateResourceBar()
 					end
 				end
 			end
-			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fire
 		local specCacheSettings = TRB.Data.specCache.fire.settings
@@ -722,7 +730,11 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
-				UpdatePrimary(specCacheSettings, currentResource, barBorderColor, barColor)
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -738,7 +750,11 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
-				UpdatePrimary(specCacheSettings, currentResource, barBorderColor, barColor)
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

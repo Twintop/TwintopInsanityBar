@@ -1391,6 +1391,14 @@ local function UpdateResourceBar()
 		return
 	end
 
+	if TRB.Data.character.maxResource == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resourceModified == nil then
+		return
+	end
+
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		local specSettings = classSettings.discipline
@@ -1441,6 +1449,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1517,6 +1526,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1670,6 +1680,7 @@ local function UpdateResourceBar()
 				
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 		end
 

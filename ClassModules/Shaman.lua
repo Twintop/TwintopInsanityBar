@@ -860,6 +860,14 @@ local function UpdateResourceBar()
 		return
 	end
 
+	if TRB.Data.character.maxResource == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resource == nil then
+		return
+	end
+
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.elemental
 		local specCacheSettings = TRB.Data.specCache.elemental.settings
@@ -1009,10 +1017,14 @@ local function UpdateResourceBar()
 
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
+		if TRB.Data.character.maxResource2 == nil then
+			return
+		end
 		local specSettings = classSettings.enhancement
 		local specCacheSettings = TRB.Data.specCache.enhancement.settings
 		UpdateSnapshot_Enhancement()
@@ -1061,6 +1073,7 @@ local function UpdateResourceBar()
 
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				
 				-- Update Maelstrom Weapon stacks using BarNodes
 				if TRB.Details.addonData.build ~= "64914" and barGroups.secondary then
@@ -1136,6 +1149,7 @@ local function UpdateResourceBar()
 
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

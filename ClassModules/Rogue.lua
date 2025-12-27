@@ -1163,6 +1163,14 @@ local function UpdateResourceBar()
 	local barGroups = TRB.Frames.barGroups
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 
+	if TRB.Data.character.maxResource == nil or TRB.Data.character.maxResource2 == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resource == nil or snapshotData.attributes.resource2 == nil then
+		return
+	end
+
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.assassination
 		local specCacheSettings = TRB.Data.specCache.assassination.settings
@@ -1346,6 +1354,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -1641,6 +1650,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -1690,9 +1700,6 @@ local function UpdateResourceBar()
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
-	--------------------------------------------------------------------------
-	-- Subtlety
-	--------------------------------------------------------------------------
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.subtlety
 		local specCacheSettings = TRB.Data.specCache.subtlety.settings
@@ -1924,6 +1931,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)

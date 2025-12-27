@@ -733,6 +733,14 @@ local function UpdateResourceBar()
 	local barGroups = TRB.Frames.barGroups
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 
+	if TRB.Data.character.maxResource == nil or TRB.Data.character.maxResource2 == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resourceModified == nil or snapshotData.attributes.resource2 == nil then
+		return
+	end
+
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.devastation
 		local specCacheSettings = TRB.Data.specCache.devastation.settings
@@ -789,6 +797,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 
 				UpdateEssence(specSettings, specCacheSettings)
@@ -845,6 +854,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 
 				UpdateEssence(specSettings, specCacheSettings)
@@ -904,6 +914,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 
 				UpdateEssence(specSettings, specCacheSettings)

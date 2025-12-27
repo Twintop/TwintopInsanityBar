@@ -389,6 +389,11 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			end
 		end
 	end
+
+	-- Trigger resource bar updates to ensure all colors are applied from current spec settings
+	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
 end
 
 ---Constructs a secondary bar group (combo points, arcane charges, etc.)

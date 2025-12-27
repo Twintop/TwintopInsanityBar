@@ -340,14 +340,36 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 		
 			if frame ~= nil then
 				if frameType == "backdrop" then
-					TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
+					-- Handle both single frame and array of frames
+					if type(frame) == "table" and frame[1] ~= nil then
+						for _, f in ipairs(frame) do
+							TRB.Functions.Color:SetBackdropColor(f, nil, r_1, g_1, b_1, a_1)
+						end
+					else
+						TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
+					end
 				elseif frameType == "border" then
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key].color)
+					-- Handle both single frame and array of frames
+					if type(frame) == "table" and frame[1] ~= nil then
+						for _, f in ipairs(frame) do
+							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, colorTable[key].color)
+						end
+					else
+						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key].color)
+					end
 				elseif frameType == "bar" then
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key].color)
 				elseif frameType == "threshold" then
 					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key].color, true, classId, specId)
 				end
+			end
+
+			-- Clear color caches and trigger resource bar update to apply correct spec colors
+			TRB.Data.cache.colors.backdrop = {}
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.bar = {}
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end
@@ -405,12 +427,27 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorC
 						TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
 					end
 				elseif frameType == "border" then
-					TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key])
+					-- Handle both single frame and array of frames
+					if type(frame) == "table" and frame[1] ~= nil then
+						for _, f in ipairs(frame) do
+							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, colorTable[key])
+						end
+					else
+						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key])
+					end
 				elseif frameType == "bar" then
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key])
 				elseif frameType == "threshold" then
 					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key], true, classId, specId)
 				end
+			end
+
+			-- Clear color caches and trigger resource bar update to apply correct spec colors
+			TRB.Data.cache.colors.backdrop = {}
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.bar = {}
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end

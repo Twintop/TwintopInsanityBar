@@ -1607,6 +1607,14 @@ local function UpdateResourceBar()
 		return
 	end
 
+	if TRB.Data.character.maxResource == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resource == nil then
+		return
+	end
+
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.balance
 		local specCacheSettings = TRB.Data.specCache.balance.settings
@@ -1850,6 +1858,7 @@ local function UpdateResourceBar()
 				
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 
 				if flashBar then
@@ -1859,6 +1868,9 @@ local function UpdateResourceBar()
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
+		if TRB.Data.character.maxResource2 == nil then
+			return
+		end
 		local specSettings = classSettings.feral
 		local specCacheSettings = TRB.Data.specCache.feral.settings
 		UpdateSnapshot_Feral()
@@ -2080,6 +2092,7 @@ local function UpdateResourceBar()
 
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				local berserkTotalCps = snapshots[spells.berserk.id].attributes.ticks
@@ -2129,6 +2142,9 @@ local function UpdateResourceBar()
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
+		if TRB.Data.character.maxResource2 == nil then
+			return
+		end
 		local specSettings = classSettings.guardian
 		local specCacheSettings = TRB.Data.specCache.guardian.settings
 		UpdateSnapshot_Guardian()
@@ -2245,11 +2261,11 @@ local function UpdateResourceBar()
 				
 				primaryNode:SetBorderColor(specSettings.colors.bar.border)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
-
-			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 4 then
 		local specSettings = classSettings.restoration
 		local specCacheSettings = TRB.Data.specCache.restoration.settings
@@ -2294,9 +2310,9 @@ local function UpdateResourceBar()
 	
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
-	
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
 	end

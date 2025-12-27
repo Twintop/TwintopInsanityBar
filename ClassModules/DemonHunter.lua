@@ -846,14 +846,6 @@ local function UpdateSnapshot_Devourer()
 	local blizzSfBar = _G["DemonHunterSoulFragmentsBar"]
 	if blizzSfBar ~= nil then
 		local sfCurrent = blizzSfBar:GetValue()
-		-- Store even if it's a secret value; we only avoid doing math/comparisons on secret values.
-		sfCurrent = sfCurrent or 0
-		if not issecretvalue(sfCurrent) then
-			-- Some builds report 0-100; normalize to 0-50.
-			if sfCurrent > 50 and sfCurrent <= 100 then
-				sfCurrent = (sfCurrent / 100) * 50
-			end
-		end
 		snapshotData.attributes.resource2 = sfCurrent
 	end
 end
@@ -868,6 +860,14 @@ local function UpdateResourceBar()
 
 	local barGroups = TRB.Frames.barGroups
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
+
+	if TRB.Data.character.maxResource == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resource == nil then
+		return
+	end
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.havoc
@@ -991,6 +991,7 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 			end
 		end
@@ -1108,6 +1109,7 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 			end
 		end
@@ -1212,10 +1214,11 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 
 					-- Soul Fragments bar (Devourer fixed max)
 					local current = snapshotData.attributes.resource2 or 0
-					local max = TRB.Data.character.maxResource2Value or 50
+					local max = 50
 					local sfScaleValid = true
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -1228,6 +1231,7 @@ local function UpdateResourceBar()
 						cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
 					elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
 						cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
+						max = 30
 					end
 
 					local cpBR = cpBackgroundRed
@@ -1306,6 +1310,7 @@ local function SwitchSpec()
 		if TRB.Data.barConstructedForSpec ~= "havoc" then
 			talents = specCache.havoc.talents
 			TRB.Data.barConstructedForSpec = "havoc"
+			TRB.Functions.Class:EventRegistration()
 			ConstructResourceBar(specCache.havoc.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -1339,6 +1344,7 @@ local function SwitchSpec()
 		if TRB.Data.barConstructedForSpec ~= "vengeance" then
 			talents = specCache.vengeance.talents
 			TRB.Data.barConstructedForSpec = "vengeance"
+			TRB.Functions.Class:EventRegistration()
 			ConstructResourceBar(specCache.vengeance.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -1367,6 +1373,7 @@ local function SwitchSpec()
 		if TRB.Data.barConstructedForSpec ~= "devourer" then
 			talents = specCache.devourer.talents
 			TRB.Data.barConstructedForSpec = "devourer"
+			TRB.Functions.Class:EventRegistration()
 			ConstructResourceBar(specCache.devourer.settings)
 		end
 	else

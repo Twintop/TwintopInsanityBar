@@ -820,6 +820,14 @@ local function UpdateResourceBar()
 	local snapshots = snapshotData.snapshots
 	local barGroups = TRB.Frames.barGroups
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
+
+	if TRB.Data.character.maxResource == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resource == nil then
+		return
+	end
 	
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.brewmaster
@@ -905,6 +913,7 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 				
 				-- Update Stagger bar using BarNodes
@@ -979,12 +988,15 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 			end
-
-			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
+		if TRB.Data.character.maxResource2 == nil then
+			return
+		end
 		local specSettings = classSettings.windwalker
 		local specCacheSettings = TRB.Data.specCache.windwalker.settings
 		UpdateSnapshot_Windwalker()
@@ -1096,6 +1108,7 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
 				
 				-- Update Chi using BarNodes

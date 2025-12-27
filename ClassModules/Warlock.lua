@@ -776,11 +776,12 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdatePrimary(specCacheSettings, currentResource, barBorderColor, barColor)
-		TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-		primaryNode:SetBorderColor(barBorderColor)
-		primaryNode:SetColor(barColor)
-		barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+	if TRB.Data.character.maxResource == nil or TRB.Data.character.maxResource2 == nil then
+		return
+	end
+
+	if snapshotData.attributes == nil or snapshotData.attributes.resourceModified == nil or snapshotData.attributes.resource2Modified == nil then
+		return
 	end
 
 	local function UpdateSoulShards(specSettings, specCacheSettings, normalizedResource2)
@@ -936,7 +937,11 @@ local function UpdateResourceBar()
 					end
 				end
 
-				UpdatePrimary(specCacheSettings, currentResource, barBorderColor, barColor)
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 				UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, spells)
 			end
@@ -955,7 +960,11 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
-				UpdatePrimary(specCacheSettings, currentResource, barBorderColor, barColor)
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 				UpdateSoulShards(specSettings, specCacheSettings, normalizedResource2)
 			end
@@ -974,7 +983,11 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
-				UpdatePrimary(specCacheSettings, currentResource, barBorderColor, barColor)
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 				UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
 			end
