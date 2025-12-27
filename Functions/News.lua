@@ -14,9 +14,9 @@ local content = [====[
 # 12.0.0.0-beta05 (2025-12-27)
 ## General
 
-- Completely rebuild the way bars are constructed, controlled, and rendered to allow for more flexibility and future features. Stay tuned!
-- Remove Time To Die (TTD) tracking due to API limitations around target health. RIP.
-- Fix an issue with Mana% being 1/100th the expected value.
+- [#297 - REFACTOR](#297) Completely rebuild the way bars are constructed, controlled, and rendered to allow for more flexibility and future features. Stay tuned!
+- [#468 - REMOVE](#468) Remove Time To Die (TTD) tracking due to API limitations around target health. RIP.
+- [#468 - FIX](#468) Fix an issue with Mana% being 1/100th the expected value.
 
 --- 
 
