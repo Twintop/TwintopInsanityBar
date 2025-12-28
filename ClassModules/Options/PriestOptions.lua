@@ -310,10 +310,9 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 			},
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -785,10 +784,9 @@ local function HolyLoadDefaultSettings(includeBarText)
 			},
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -1230,10 +1228,9 @@ local function ShadowLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,

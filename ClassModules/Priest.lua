@@ -1407,7 +1407,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
@@ -1462,7 +1462,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
@@ -1540,7 +1540,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
 
@@ -2093,29 +2093,36 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 		if sharedSettings ~= nil then
 			local affectingCombat = TRB.Data.character.inCombat
-			if not TRB.Data.specSupported or force or
-				(TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding) or
-				((not affectingCombat) and (not UnitInVehicle("player")) and (not sharedSettings.displayBar.alwaysShow)) then
-				-- HIDE using barGroups
-				if barGroups and barGroups.primary then
+			local inVehicle = UnitInVehicle("player")
+			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
+
+			-- Determine primary bar visibility independently
+			-- Priest has no secondary bar
+			local showPrimary = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.primary == "always" then
+					showPrimary = true
+				elseif sharedSettings.displayBar.primary == "combat" then
+					showPrimary = affectingCombat or inVehicle
+				end
+				-- "never" means showPrimary stays false
+			end
+
+			-- Apply primary bar visibility
+			if barGroups and barGroups.primary then
+				if showPrimary then
+					barGroups.primary:Show()
+				else
 					barGroups.primary:Hide()
 				end
-				TRB.Functions.BarText:Hide(sharedSettings)
-				snapshotData.attributes.isTracking = false
+			end
+
+			-- Track if the bar is showing
+			snapshotData.attributes.isTracking = showPrimary
+			if snapshotData.attributes.isTracking then
+				TRB.Functions.BarText:Show(sharedSettings)
 			else
-				snapshotData.attributes.isTracking = true
-				if sharedSettings.displayBar.neverShow == true then
-					if barGroups and barGroups.primary then
-						barGroups.primary:Hide()
-					end
-					TRB.Functions.BarText:Hide(sharedSettings)
-				else
-					-- SHOW using barGroups
-					if barGroups and barGroups.primary then
-						barGroups.primary:Show()
-					end
-					TRB.Functions.BarText:Show(sharedSettings)
-				end
+				TRB.Functions.BarText:Hide(sharedSettings)
 			end
 		else
 			-- No settings - hide everything

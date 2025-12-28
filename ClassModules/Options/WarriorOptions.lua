@@ -245,10 +245,9 @@ local function ArmsLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -549,10 +548,9 @@ local function FuryLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -923,10 +921,9 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -2160,7 +2157,7 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 3, yCoord, true, L["ResourceWarriorDefensives"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, true, L["ResourceWarriorDefensives"])
 
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])

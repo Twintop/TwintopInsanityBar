@@ -83,8 +83,9 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         )
 
         -- Arcane Charges (4 nodes)
+        -- Secondary bars are parented to UIParent for independent visibility
         barGroups.secondary = TRB.Classes.BarGroup:New(
-            barGroups.primary:GetContainerFrame(),
+            UIParent,
             "TwintopResourceBarFrame_ComboPoint",
             4,
             false -- not primary

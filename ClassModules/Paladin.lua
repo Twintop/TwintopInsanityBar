@@ -768,7 +768,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barBorderColor = specSettings.colors.bar.border
@@ -778,6 +778,10 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+			end
+
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 		end
@@ -789,7 +793,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base
@@ -799,6 +803,10 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+			end
+
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 		end
@@ -810,7 +818,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base
@@ -820,6 +828,10 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+			end
+
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 		end
@@ -1116,37 +1128,57 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 		if sharedSettings ~= nil then
 			local affectingCombat = TRB.Data.character.inCombat
-			if not TRB.Data.specSupported or force or
-				(TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding) or
-				((not affectingCombat) and (not UnitInVehicle("player")) and (not sharedSettings.displayBar.alwaysShow)) then
-				if barGroups and barGroups.primary then
+			local inVehicle = UnitInVehicle("player")
+			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
+
+			-- Determine primary bar visibility independently
+			local showPrimary = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.primary == "always" then
+					showPrimary = true
+				elseif sharedSettings.displayBar.primary == "combat" then
+					showPrimary = affectingCombat or inVehicle
+				end
+				-- "never" means showPrimary stays false
+			end
+
+			-- Determine secondary bar visibility independently
+			-- All Paladin specs use the secondary (Holy Power) bar
+			local showSecondary = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.secondary == "always" then
+					showSecondary = true
+				elseif sharedSettings.displayBar.secondary == "combat" then
+					showSecondary = affectingCombat or inVehicle
+				end
+				-- "never" means showSecondary stays false
+			end
+
+			-- Apply primary bar visibility
+			if barGroups and barGroups.primary then
+				if showPrimary then
+					barGroups.primary:Show()
+				else
 					barGroups.primary:Hide()
 				end
-				if barGroups and barGroups.secondary then
+			end
+
+			-- Apply secondary bar visibility
+			if barGroups and barGroups.secondary then
+				if showSecondary then
+					barGroups.secondary:Show()
+					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+				else
 					barGroups.secondary:Hide()
 				end
-				TRB.Functions.BarText:Hide(sharedSettings)
-				snapshotData.attributes.isTracking = false
+			end
+
+			-- Track if either bar is showing
+			snapshotData.attributes.isTracking = showPrimary or showSecondary
+			if snapshotData.attributes.isTracking then
+				TRB.Functions.BarText:Show(sharedSettings)
 			else
-				snapshotData.attributes.isTracking = true
-				if sharedSettings.displayBar.neverShow == true then
-					if barGroups and barGroups.primary then
-						barGroups.primary:Hide()
-					end
-					if barGroups and barGroups.secondary then
-						barGroups.secondary:Hide()
-					end
-					TRB.Functions.BarText:Hide(sharedSettings)
-				else
-					if barGroups and barGroups.primary then
-						barGroups.primary:Show()
-					end
-					if barGroups and barGroups.secondary then
-						barGroups.secondary:Show()
-						barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
-					end
-					TRB.Functions.BarText:Show(sharedSettings)
-				end
+				TRB.Functions.BarText:Hide(sharedSettings)
 			end
 		else
 			if barGroups and barGroups.primary then

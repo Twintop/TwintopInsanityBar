@@ -274,10 +274,9 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -657,10 +656,9 @@ local function OutlawLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -1051,10 +1049,9 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -1294,7 +1291,7 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 1, yCoord, true, L["ResourceComboPoints"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"])
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
@@ -2055,7 +2052,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 2, yCoord, true, L["ResourceComboPoints"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"])
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
@@ -2833,7 +2830,7 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 3, yCoord, true, L["ResourceComboPoints"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"])
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])

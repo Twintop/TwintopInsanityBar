@@ -117,7 +117,8 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		primaryResourceType = Enum.PowerType.Energy,
 		settingKey = "tigerPalm",
 		isTalent = false,
-		baseline = true
+		baseline = true,
+		rangeCheck = false
 	})
 	self.vivify = TRB.Classes.SpellThreshold:New({
 		id = 116670,
@@ -474,8 +475,9 @@ function TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(specId)
         )
 
         -- Stagger bar (1 node with thresholds)
+        -- Secondary bars are parented to UIParent for independent visibility
         barGroups.secondary = TRB.Classes.BarGroup:New(
-            barGroups.primary:GetContainerFrame(),
+            UIParent,
             "TwintopResourceBarFrame_ComboPoint",
             1,
             false -- not primary
@@ -500,8 +502,9 @@ function TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(specId)
         )
 
         -- Chi (5 nodes by default, can be 6 with talents)
+        -- Secondary bars are parented to UIParent for independent visibility
         barGroups.secondary = TRB.Classes.BarGroup:New(
-            barGroups.primary:GetContainerFrame(),
+            UIParent,
             "TwintopResourceBarFrame_ComboPoint",
             5,
             false -- not primary

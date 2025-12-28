@@ -1577,7 +1577,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort)
+function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort, includeSecondaryVisibility, secondaryResourceString)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
@@ -1610,88 +1610,90 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 
 	yCoord = yCoord - 40
 
-	controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_AlwaysShow", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.alwaysShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarAlways"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f:SetChecked(spec.displayBar.alwaysShow)
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.alwaysShow:SetChecked(true)
-		controls.checkBoxes.notZeroShow:SetChecked(false)
-		controls.checkBoxes.combatShow:SetChecked(false)
-		controls.checkBoxes.neverShow:SetChecked(false)
-		spec.displayBar.alwaysShow = true
-		spec.displayBar.notZeroShow = false
-		spec.displayBar.neverShow = false
-		TRB.Functions.Bar:HideResourceBar()
-	end)
+	-- Bar visibility options mapping
+	local visibilityOptions = {
+		[L["ShowBarVisibilityAlways"]] = "always",
+		[L["ShowBarVisibilityCombat"]] = "combat",
+		[L["ShowBarVisibilityNever"]] = "never"
+	}
+	local visibilityOptionsList = {
+		L["ShowBarVisibilityAlways"],
+		L["ShowBarVisibilityCombat"],
+		L["ShowBarVisibilityNever"]
+	}
 
-	controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_NotZeroShow", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.notZeroShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-15)
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-
-	if showWhenCategory == "notFull" then
-		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["ShowBarNotZeroNotFull"], primaryResourceString))
-	elseif showWhenCategory == "balance" then
-		getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarNotZeroBalance"])
-	else
-		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["ShowBarNotZero"], primaryResourceString))
+	-- Get display name for current value
+	local function GetVisibilityDisplayName(value)
+		for displayName, enumValue in pairs(visibilityOptions) do
+			if enumValue == value then
+				return displayName
+			end
+		end
+		return L["ShowBarVisibilityCombat"] -- Default fallback
 	end
 
-	f:SetChecked(spec.displayBar.notZeroShow)
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.alwaysShow:SetChecked(false)
-		controls.checkBoxes.notZeroShow:SetChecked(true)
-		controls.checkBoxes.combatShow:SetChecked(false)
-		controls.checkBoxes.neverShow:SetChecked(false)
-		spec.displayBar.alwaysShow = false
-		spec.displayBar.notZeroShow = true
-		spec.displayBar.neverShow = false
-		TRB.Functions.Bar:HideResourceBar()
-	end)
+	-- Primary bar visibility dropdown
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown.primaryVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_PrimaryVisibility", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown.primaryVisibility:SetWidth(oUi.sliderWidth)
+	controls.dropDown.primaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShowBarVisibilityPrimary"], oUi.xCoord, yCoord)
+	controls.dropDown.primaryVisibility.label.font:SetFontObject(GameFontNormal)
 
-	controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_CombatShow", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.combatShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarCombat"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow) and (not spec.displayBar.neverShow))
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.alwaysShow:SetChecked(false)
-		controls.checkBoxes.notZeroShow:SetChecked(false)
-		controls.checkBoxes.combatShow:SetChecked(true)
-		controls.checkBoxes.neverShow:SetChecked(false)
-		spec.displayBar.alwaysShow = false
-		spec.displayBar.notZeroShow = false
-		spec.displayBar.neverShow = false
-		TRB.Functions.Bar:HideResourceBar()
-	end)
+	local function PrimaryVisibilityIsSelected(value)
+		return value == spec.displayBar.primary
+	end
 
-	controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_NeverShow", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.neverShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarNever"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f:SetChecked(spec.displayBar.neverShow)
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.alwaysShow:SetChecked(false)
-		controls.checkBoxes.notZeroShow:SetChecked(false)
-		controls.checkBoxes.combatShow:SetChecked(false)
-		controls.checkBoxes.neverShow:SetChecked(true)
-		spec.displayBar.alwaysShow = false
-		spec.displayBar.notZeroShow = false
-		spec.displayBar.neverShow = true
+	local function PrimaryVisibilitySetSelected(newValue)
+		spec.displayBar.primary = newValue
+		controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
 		TRB.Functions.Bar:HideResourceBar()
-	end)
-		
-	local yCoord2 = yCoord
+	end
+
+	local function PrimaryVisibilityGenerator(dropdown, rootDescription)
+		for _, displayName in ipairs(visibilityOptionsList) do
+			rootDescription:CreateRadio(displayName, PrimaryVisibilityIsSelected, PrimaryVisibilitySetSelected, visibilityOptions[displayName])
+		end
+	end
+
+	controls.dropDown.primaryVisibility:SetupMenu(PrimaryVisibilityGenerator)
+	controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary))
+	controls.dropDown.primaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	-- Secondary bar visibility dropdown (only if includeSecondaryVisibility is true)
+	if includeSecondaryVisibility then
+		local secondaryLabel = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"])
+		controls.dropDown.secondaryVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SecondaryVisibility", parent, "WowStyle1DropdownTemplate")
+		controls.dropDown.secondaryVisibility:SetWidth(oUi.sliderWidth)
+		controls.dropDown.secondaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, secondaryLabel, oUi.xCoord2, yCoord)
+		controls.dropDown.secondaryVisibility.label.font:SetFontObject(GameFontNormal)
+
+		local function SecondaryVisibilityIsSelected(value)
+			return value == spec.displayBar.secondary
+		end
+
+		local function SecondaryVisibilitySetSelected(newValue)
+			spec.displayBar.secondary = newValue
+			controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+			TRB.Functions.Bar:HideResourceBar()
+		end
+
+		local function SecondaryVisibilityGenerator(dropdown, rootDescription)
+			for _, displayName in ipairs(visibilityOptionsList) do
+				rootDescription:CreateRadio(displayName, SecondaryVisibilityIsSelected, SecondaryVisibilitySetSelected, visibilityOptions[displayName])
+			end
+		end
+
+		controls.dropDown.secondaryVisibility:SetupMenu(SecondaryVisibilityGenerator)
+		controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.secondary))
+		controls.dropDown.secondaryVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+	end
+
+	local yCoord2 = yCoord - 50
 
 	if includeFlashAlpha then
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord2)
 		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["FlashBar"], flashAlphaNameShort))
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = string.format(L["FlashBarTooltip"], flashAlphaName)
@@ -1699,21 +1701,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.flashEnabled = self:GetChecked()
 		end)
-		yCoord2 = yCoord2-20
 	end
-
-	--[[
-	controls.checkBoxes.dragonridingEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_DragonridingEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dragonridingEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-70)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarDragonriding"])
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["ShowBarDragonridingTooltip"]
-	f:SetChecked(spec.displayBar.dragonriding)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayBar.dragonriding = self:GetChecked()
-	end)
-	]]
 
 	return yCoord
 end

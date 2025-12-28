@@ -462,10 +462,10 @@ local function ConstructResourceBar(settings)
 	end
 
 	-- Death Knight always uses the secondary bar for runes (always 6)
+	-- Set up structure, but let HideResourceBar() determine visibility
 	if barGroups and barGroups.secondary then
 		local maxRunes = TRB.Data.character.maxResource2 or 6
-		barGroups.secondary:Show()
-		barGroups.secondary:ShowNodes(maxRunes)
+		barGroups.secondary:SetNodeCount(maxRunes)
 		for x = 1, maxRunes do
 			local runeNode = barGroups.secondary:GetNode(x)
 			if runeNode then
@@ -475,6 +475,9 @@ local function ConstructResourceBar(settings)
 	end
 
 	TRB.Functions.Class:CheckCharacter()
+	-- Make sure bar visibility and bar text are updated immediately.
+	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 local function RefreshLookupData_Blood()
@@ -892,7 +895,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
 				local barColor = specSettings.colors.bar.base
@@ -961,7 +964,10 @@ local function UpdateResourceBar()
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
+			end
 
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
 				UpdateRunes(specSettings, specCacheSettings)
 			end
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -973,7 +979,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
 				local barColor = specSettings.colors.bar.base
@@ -1042,7 +1048,10 @@ local function UpdateResourceBar()
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
+			end
 
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
 				UpdateRunes(specSettings, specCacheSettings)
 			end
 		end
@@ -1054,7 +1063,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
 				local barColor = specSettings.colors.bar.base
@@ -1123,7 +1132,10 @@ local function UpdateResourceBar()
 					local isDrawn = TRB.Functions.Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
 					TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
+			end
 
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
 				UpdateRunes(specSettings, specCacheSettings)
 			end
 		end
@@ -1402,8 +1414,6 @@ function TRB.Functions.Class:HideResourceBar(force)
 	local barGroups = TRB.Frames.barGroups
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-		local notZeroShowValue = TRB.Data.character.maxResource
-		local notZeroShowValueComboPoints = 0
 		local sharedSettings
 		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
@@ -1411,39 +1421,56 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 		if sharedSettings ~= nil then
 			local affectingCombat = TRB.Data.character.inCombat
-			if not TRB.Data.specSupported or force or
-				(TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding) or
-				((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not sharedSettings.displayBar.alwaysShow))) then
-				if barGroups and barGroups.primary then
+			local inVehicle = UnitInVehicle("player")
+			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
+
+			-- Determine primary bar visibility independently
+			local showPrimary = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.primary == "always" then
+					showPrimary = true
+				elseif sharedSettings.displayBar.primary == "combat" then
+					showPrimary = affectingCombat or inVehicle
+				end
+				-- "never" means showPrimary stays false
+			end
+
+			-- Determine secondary bar visibility independently
+			local showSecondary = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.secondary == "always" then
+					showSecondary = true
+				elseif sharedSettings.displayBar.secondary == "combat" then
+					showSecondary = affectingCombat or inVehicle
+				end
+				-- "never" means showSecondary stays false
+			end
+
+			-- Apply primary bar visibility
+			if barGroups and barGroups.primary then
+				if showPrimary then
+					barGroups.primary:Show()
+				else
 					barGroups.primary:Hide()
 				end
-				if barGroups and barGroups.secondary then
+			end
+
+			-- Apply secondary bar visibility
+			if barGroups and barGroups.secondary then
+				if showSecondary then
+					barGroups.secondary:Show()
+					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+				else
 					barGroups.secondary:Hide()
 				end
-				TRB.Functions.BarText:Hide(sharedSettings)
-				snapshotData.attributes.isTracking = false
+			end
+
+			-- Track if either bar is showing
+			snapshotData.attributes.isTracking = showPrimary or showSecondary
+			if snapshotData.attributes.isTracking then
+				TRB.Functions.BarText:Show(sharedSettings)
 			else
-				snapshotData.attributes.isTracking = true
-				if sharedSettings.displayBar.neverShow == true then
-					if barGroups and barGroups.primary then
-						barGroups.primary:Hide()
-					end
-					if barGroups and barGroups.secondary then
-						barGroups.secondary:Hide()
-					end
-					TRB.Functions.BarText:Hide(sharedSettings)
-				else
-					if barGroups and barGroups.primary then
-						barGroups.primary:Show()
-					end
-					if barGroups and barGroups.secondary then
-						barGroups.secondary:Show()
-						barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
-					end
-					TRB.Functions.BarText:Show(sharedSettings)
-				end
+				TRB.Functions.BarText:Hide(sharedSettings)
 			end
 		else
 			if barGroups and barGroups.primary then

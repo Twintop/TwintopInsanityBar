@@ -230,10 +230,9 @@ local function HavocLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		endOfMetamorphosis = {
 			enabled=true,
@@ -524,10 +523,9 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		endOfMetamorphosis = {
 			enabled=true,
@@ -810,10 +808,9 @@ local function DevourerLoadDefaultSettings(includeBarText)
 			enabled = false
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		endOfMetamorphosis = {
 			enabled=true,
@@ -2112,7 +2109,7 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 3, yCoord, true, L["ResourceSoulFragments"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"])
 
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])

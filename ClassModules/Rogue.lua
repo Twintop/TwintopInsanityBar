@@ -1182,7 +1182,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1356,7 +1356,10 @@ local function UpdateResourceBar()
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
+			end
 
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 				local charged = GetUnitChargedPowerPoints("player")
@@ -1390,7 +1393,7 @@ local function UpdateResourceBar()
 										if not sbs then
 											cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
 										end
-					
+				
 										if not specSettings.colors.comboPoints.consistentUnfilledColor then
 											cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 										end
@@ -1418,7 +1421,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1652,7 +1655,10 @@ local function UpdateResourceBar()
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
-				
+			end
+
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 				local charged = GetUnitChargedPowerPoints("player")
@@ -1683,7 +1689,7 @@ local function UpdateResourceBar()
 									if charged[y] == x then
 										cpColor = specSettings.colors.comboPoints.echoingReprimand
 										cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
-					
+				
 										if not specSettings.colors.comboPoints.consistentUnfilledColor then
 											cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 										end
@@ -1710,7 +1716,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1933,7 +1939,11 @@ local function UpdateResourceBar()
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
-				
+			end
+
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 				local charged = GetUnitChargedPowerPoints("player")
@@ -2377,40 +2387,58 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 		if sharedSettings ~= nil then
 			local affectingCombat = TRB.Data.character.inCombat
-			if not TRB.Data.specSupported or force or
-				(TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding) or
-				((not affectingCombat) and (not UnitInVehicle("player")) and (not sharedSettings.displayBar.alwaysShow)) then
-				-- HIDE using barGroups
-				if barGroups and barGroups.primary then
+			local inVehicle = UnitInVehicle("player")
+			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
+
+			-- Determine primary bar visibility independently
+			local showPrimary = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.primary == "always" then
+					showPrimary = true
+				elseif sharedSettings.displayBar.primary == "combat" then
+					showPrimary = affectingCombat or inVehicle
+				end
+				-- "never" means showPrimary stays false
+			end
+
+			-- Determine secondary bar visibility independently
+			-- All Rogue specs use the secondary (Combo Points) bar
+			local showSecondary = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.secondary == "always" then
+					showSecondary = true
+				elseif sharedSettings.displayBar.secondary == "combat" then
+					showSecondary = affectingCombat or inVehicle
+				end
+				-- "never" means showSecondary stays false
+			end
+
+			-- Apply primary bar visibility
+			if barGroups and barGroups.primary then
+				if showPrimary then
+					barGroups.primary:Show()
+				else
 					barGroups.primary:Hide()
 				end
-				if barGroups and barGroups.secondary then
+			end
+
+			-- Apply secondary bar visibility
+			if barGroups and barGroups.secondary then
+				if showSecondary then
+					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxResource2)
+					barGroups.secondary:Show()
+					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+				else
 					barGroups.secondary:Hide()
 				end
-				TRB.Functions.BarText:Hide(sharedSettings)
-				snapshotData.attributes.isTracking = false
+			end
+
+			-- Track if either bar is showing
+			snapshotData.attributes.isTracking = showPrimary or showSecondary
+			if snapshotData.attributes.isTracking then
+				TRB.Functions.BarText:Show(sharedSettings)
 			else
-				snapshotData.attributes.isTracking = true
-				if sharedSettings.displayBar.neverShow == true then
-					if barGroups and barGroups.primary then
-						barGroups.primary:Hide()
-					end
-					if barGroups and barGroups.secondary then
-						barGroups.secondary:Hide()
-					end
-					TRB.Functions.BarText:Hide(sharedSettings)
-				else
-					-- SHOW using barGroups
-					if barGroups and barGroups.primary then
-						barGroups.primary:Show()
-					end
-					if barGroups and barGroups.secondary then
-						barGroups.secondary:SetMaxNodes(TRB.Data.character.maxResource2)
-						barGroups.secondary:Show()
-						barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
-					end
-					TRB.Functions.BarText:Show(sharedSettings)
-				end
+				TRB.Functions.BarText:Hide(sharedSettings)
 			end
 		else
 			-- No settings - hide everything

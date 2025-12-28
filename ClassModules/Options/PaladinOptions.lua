@@ -229,10 +229,9 @@ local function HolyLoadDefaultSettings(includeBarText)
 			},
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -524,10 +523,9 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 			},
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -792,10 +790,9 @@ local function RetributionLoadDefaultSettings(includeBarText)
 			},
 		},
 		displayBar = {
-			alwaysShow=false,
-			notZeroShow=true,
-			neverShow=false,
-			dragonriding=true
+			primary = "combat",
+			secondary = "combat",
+			dragonriding = true
 		},
 		bar = {
 			width=555,
@@ -1021,7 +1018,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 2, 1, yCoord, true, L["ResourceHolyPower"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"])
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"])
@@ -1431,7 +1428,7 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 2, 2, yCoord, true, L["ResourceHolyPower"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"])
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"])
@@ -1812,7 +1809,7 @@ local function RetributionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 2, 3, yCoord, true, L["ResourceHolyPower"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"])
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"])

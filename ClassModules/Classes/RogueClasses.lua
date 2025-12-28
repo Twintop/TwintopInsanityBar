@@ -732,8 +732,9 @@ function TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     )
 
     -- Combo Points (5 nodes by default, can be up to 7 with talents) - all specs
+    -- Secondary bars are parented to UIParent for independent visibility
     barGroups.secondary = TRB.Classes.BarGroup:New(
-        barGroups.primary:GetContainerFrame(),
+        UIParent,
         "TwintopResourceBarFrame_ComboPoint",
         5,
         false -- not primary

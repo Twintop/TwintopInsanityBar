@@ -488,8 +488,9 @@ local function ConstructResourceBar(settings)
 		end
 	elseif TRB.Data.character.specId == 3 then -- Devourer - has secondary bar (Soul Fragments percentage)
 		if barGroups and barGroups.secondary then
-			barGroups.secondary:Show()
-			barGroups.secondary:ShowNodes(1)
+			-- Set up the secondary bar structure, but don't show it yet
+			-- HideResourceBar() will determine visibility based on settings
+			barGroups.secondary:SetNodeCount(1)
 			local sfNode = barGroups.secondary:GetNode(1)
 			if sfNode then
 				sfNode:SetMinMax(0, 50)
@@ -498,6 +499,9 @@ local function ConstructResourceBar(settings)
 	end
 
 	TRB.Functions.Class:CheckCharacter()
+	-- Make sure bar visibility and bar text are updated immediately.
+	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 local function RefreshLookupData_Havoc()
@@ -881,7 +885,7 @@ local function UpdateResourceBar()
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
 
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
@@ -1008,7 +1012,7 @@ local function UpdateResourceBar()
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
 
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
@@ -1126,7 +1130,7 @@ local function UpdateResourceBar()
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
 
-			if specSettings.displayBar.neverShow == false then
+			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 				local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
@@ -1215,38 +1219,41 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				end
+			end
 
-					-- Soul Fragments bar (Devourer fixed max)
-					local current = snapshotData.attributes.resource2 or 0
-					local max = 50
-					local sfScaleValid = true
-					
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
+			if specSettings.displayBar.secondary ~= "never" then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+				-- Soul Fragments bar (Devourer fixed max)
+				local current = snapshotData.attributes.resource2 or 0
+				local max = 50
+				local sfScaleValid = true
+				
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border
+				local cpColor = specSettings.colors.comboPoints.base
 
-					local metaUsable = spells.metamorphosis:IsUsable()
+				local metaUsable = spells.metamorphosis:IsUsable()
 
-					if specSettings.colors.comboPoints.voidMetamorphosisReady.enabled and not snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
-						cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
-					elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
-						cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
-						max = 30
-					end
+				if specSettings.colors.comboPoints.voidMetamorphosisReady.enabled and not snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
+					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
+				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
+					cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
+					max = 30
+				end
 
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
+				local cpBR = cpBackgroundRed
+				local cpBG = cpBackgroundGreen
+				local cpBB = cpBackgroundBlue
 
-					-- Update secondary bar (Soul Fragments)
-					if barGroups.secondary then
-						local sfNode = barGroups.secondary:GetNode(1)
-						if sfNode and sfScaleValid then
-							TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary", sfNode, current, max)
-							sfNode:SetBorderColor(cpBorderColor)
-							sfNode:SetColor(cpColor)
-							sfNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-						end
+				-- Update secondary bar (Soul Fragments)
+				if barGroups.secondary then
+					local sfNode = barGroups.secondary:GetNode(1)
+					if sfNode and sfScaleValid then
+						TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary", sfNode, current, max)
+						sfNode:SetBorderColor(cpBorderColor)
+						sfNode:SetColor(cpColor)
+						sfNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 					end
 				end
 			end
@@ -1594,51 +1601,63 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		local notZeroShowValue = 0
 		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 		end
 
 		if sharedSettings ~= nil then
 			local affectingCombat = TRB.Data.character.inCombat
-			if not TRB.Data.specSupported or force or
-				(TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding) or
-				((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not sharedSettings.displayBar.alwaysShow))) then
-				if barGroups and barGroups.primary then
+			local inVehicle = UnitInVehicle("player")
+			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
+
+			-- Determine primary bar visibility independently
+			local showPrimary = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.primary == "always" then
+					showPrimary = true
+				elseif sharedSettings.displayBar.primary == "combat" then
+					showPrimary = affectingCombat or inVehicle
+				end
+				-- "never" means showPrimary stays false
+			end
+
+			-- Determine secondary bar visibility independently
+			-- Only Devourer (specId == 3) uses the secondary (Soul Fragments) bar
+			local showSecondary = false
+			if not forceHideAll and TRB.Data.character.specId == 3 then
+				if sharedSettings.displayBar.secondary == "always" then
+					showSecondary = true
+				elseif sharedSettings.displayBar.secondary == "combat" then
+					showSecondary = affectingCombat or inVehicle
+				end
+				-- "never" means showSecondary stays false
+			end
+
+			-- Apply primary bar visibility
+			if barGroups and barGroups.primary then
+				if showPrimary then
+					barGroups.primary:Show()
+				else
 					barGroups.primary:Hide()
 				end
-				if barGroups and barGroups.secondary then
+			end
+
+			-- Apply secondary bar visibility
+			if barGroups and barGroups.secondary then
+				if showSecondary then
+					barGroups.secondary:Show()
+					barGroups.secondary:ShowNodes(1)
+				else
 					barGroups.secondary:Hide()
 				end
-				TRB.Functions.BarText:Hide(sharedSettings)
-				snapshotData.attributes.isTracking = false
+			end
+
+			-- Track if either bar is showing
+			snapshotData.attributes.isTracking = showPrimary or showSecondary
+			if snapshotData.attributes.isTracking then
+				TRB.Functions.BarText:Show(sharedSettings)
 			else
-				snapshotData.attributes.isTracking = true
-				if sharedSettings.displayBar.neverShow == true then
-					if barGroups and barGroups.primary then
-						barGroups.primary:Hide()
-					end
-					if barGroups and barGroups.secondary then
-						barGroups.secondary:Hide()
-					end
-					TRB.Functions.BarText:Hide(sharedSettings)
-				else
-					if barGroups and barGroups.primary then
-						barGroups.primary:Show()
-					end
-					-- Only Devourer uses the secondary (Soul Fragments) bar.
-					if barGroups and barGroups.secondary then
-						if TRB.Data.character.specId == 3 then
-							barGroups.secondary:Show()
-							barGroups.secondary:ShowNodes(1)
-						else
-							barGroups.secondary:Hide()
-						end
-					end
-					TRB.Functions.BarText:Show(sharedSettings)
-				end
+				TRB.Functions.BarText:Hide(sharedSettings)
 			end
 		else
 			if barGroups and barGroups.primary then

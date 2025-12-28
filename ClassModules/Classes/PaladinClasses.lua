@@ -88,8 +88,9 @@ function TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     )
 
     -- Holy Power (5 nodes) - all Paladin specs use Holy Power
+    -- Secondary bars are parented to UIParent for independent visibility
     barGroups.secondary = TRB.Classes.BarGroup:New(
-        barGroups.primary:GetContainerFrame(),
+        UIParent,
         "TwintopResourceBarFrame_ComboPoint",
         5,
         false -- not primary

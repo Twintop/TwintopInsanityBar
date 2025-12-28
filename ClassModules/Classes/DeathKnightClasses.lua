@@ -157,9 +157,9 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFr
     )
 
     -- Runes (6 nodes for all specs)
-    -- Secondary bars are parented to the primary's container
+    -- Secondary bars are parented to UIParent for independent visibility
     barGroups.secondary = TRB.Classes.BarGroup:New(
-        barGroups.primary:GetContainerFrame(),
+        UIParent,
         "TwintopResourceBarFrame_ComboPoint",
         6,
         false -- not primary

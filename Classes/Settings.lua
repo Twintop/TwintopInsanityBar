@@ -163,3 +163,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public mode string --Really should make this an enum of gcd/seconds (and swings for Shadowfiend?)
 ---@field public gcdsMax number
 ---@field public timeMax number
+
+---@alias trbBarVisibility
+---| '"always"' # Always show the bar
+---| '"combat"' # Only show the bar in combat
+---| '"never"' # Never show the bar

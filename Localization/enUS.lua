@@ -1659,3 +1659,10 @@ L["DeathKnightRunesColorPickerCooldown"] = "Rune"
 L["MageArcaneChargesColorPickerBackground"] = "Unfilled Arcane Charge background"
 L["MageArcaneChargesColorPickerFinal"] = "Final Arcane Charge"
 L["MageArcaneChargesColorPickerPenultimate"] = "Penultimate Arcane Charge"
+
+-- Bar Visibility Dropdown Options
+L["ShowBarVisibilityPrimary"] = "Primary Bar Visibility"
+L["ShowBarVisibilitySecondary"] = "%s Visibility"
+L["ShowBarVisibilityAlways"] = "Always"
+L["ShowBarVisibilityCombat"] = "In Combat"
+L["ShowBarVisibilityNever"] = "Never"

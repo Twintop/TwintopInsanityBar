@@ -486,9 +486,9 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFr
         )
 
         -- Soul Fragments (single percentage bar from Blizzard UI)
-        -- Secondary bars are parented to the primary's container
+        -- Secondary bars are parented to UIParent for independent visibility
         barGroups.secondary = TRB.Classes.BarGroup:New(
-            barGroups.primary:GetContainerFrame(),
+            UIParent,
             "TwintopResourceBarFrame_ComboPoint",
             1,
             false -- not primary

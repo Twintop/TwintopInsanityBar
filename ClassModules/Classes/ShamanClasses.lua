@@ -292,8 +292,9 @@ function TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(specId)
         )
 
         -- Maelstrom Weapon stacks (10 nodes)
+        -- Secondary bars are parented to UIParent for independent visibility
         barGroups.secondary = TRB.Classes.BarGroup:New(
-            barGroups.primary:GetContainerFrame(),
+            UIParent,
             "TwintopResourceBarFrame_ComboPoint",
             10,
             false -- not primary

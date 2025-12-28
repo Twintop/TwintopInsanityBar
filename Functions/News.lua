@@ -9,6 +9,13 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon is still underway! If you have any interest in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
+---
+
+# 12.0.0.0-beta06 (2025-12-29)
+## General
+
+- [#195 - NEW](#195) Allow primary and secondary bars to be independently shown either Always, In Combat, or Never.
+
 --- 
 
 # 12.0.0.0-beta05 (2025-12-27)

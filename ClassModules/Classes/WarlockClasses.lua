@@ -188,8 +188,9 @@ function TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     )
 
     -- Soul Shards (5 nodes) - all specs use secondary resource
+    -- Secondary bars are parented to UIParent for independent visibility
     barGroups.secondary = TRB.Classes.BarGroup:New(
-        barGroups.primary:GetContainerFrame(),
+        UIParent,
         "TwintopResourceBarFrame_ComboPoint",
         5,
         false -- not primary

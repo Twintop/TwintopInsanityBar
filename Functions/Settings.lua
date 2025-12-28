@@ -98,9 +98,8 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				},
 			},
 			displayBar = {
-				alwaysShow = false,
-				notZeroShow = true,
-				neverShow = false,
+				primary = "combat",
+				secondary = "combat",
 				dragonriding = true
 			},
 			bar = {
@@ -411,7 +410,52 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 end
 
 function TRB.Functions.Settings:PortForwardSettings()
-	-- Placeholder for future settings porting logic	
+	-- Migrate displayBar settings from old boolean format to new enum format
+	local function MigrateDisplayBar(displayBar)
+		if displayBar == nil then
+			return
+		end
+		-- Check if already migrated (has primary key instead of alwaysShow)
+		if displayBar.primary ~= nil then
+			return
+		end
+		-- Migrate old format to new format
+		---@type trbBarVisibility
+		local primaryValue = "combat"
+		if displayBar.alwaysShow == true then
+			primaryValue = "always"
+		elseif displayBar.neverShow == true then
+			primaryValue = "never"
+		end
+		-- Set new values
+		displayBar.primary = primaryValue
+		displayBar.secondary = "combat"
+		-- Remove old keys
+		displayBar.alwaysShow = nil
+		displayBar.notZeroShow = nil
+		displayBar.neverShow = nil
+	end
+
+	-- Migrate core settings
+	if TRB.Data.settings and TRB.Data.settings.core and TRB.Data.settings.core.displayBar then
+		MigrateDisplayBar(TRB.Data.settings.core.displayBar)
+	end
+
+	-- Migrate all class/spec settings
+	local classes = {
+		"deathknight", "demonhunter", "druid", "evoker", "hunter",
+		"mage", "monk", "paladin", "priest", "rogue",
+		"shaman", "warlock", "warrior"
+	}
+	for _, className in ipairs(classes) do
+		if TRB.Data.settings and TRB.Data.settings[className] then
+			for specName, specSettings in pairs(TRB.Data.settings[className]) do
+				if specSettings and specSettings.displayBar then
+					MigrateDisplayBar(specSettings.displayBar)
+				end
+			end
+		end
+	end
 end
 
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
