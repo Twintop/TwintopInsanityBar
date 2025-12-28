@@ -1496,9 +1496,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		end
 	elseif var == "$resource" or var == "$mana" then
-		if snapshotData.attributes.resource > 0 then
-			valid = true
-		end
+		-- Do not compare snapshotData.attributes.resource as it may be a secret value
+		valid = false
+	elseif var == "$resourcePercent" or var == "$manaPercent" then
+		-- Do not compare resource percent as it may be a secret value
+		valid = false
 	elseif var == "$resourceMax" or var == "$manaMax" then
 		valid = true
 	elseif var == "$comboPoints" or var == "$soulShards" then

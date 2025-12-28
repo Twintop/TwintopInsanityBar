@@ -1620,9 +1620,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	if var == "$resource" or var == "$focus" then
-		if snapshotData.attributes.resource > 0 then
-			valid = true
-		end
+		-- Do not compare snapshotData.attributes.resource as it may be a secret value
+		valid = false
 	elseif var == "$resourceMax" or var == "$focusMax" then
 		valid = true
 

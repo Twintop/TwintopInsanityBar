@@ -2913,9 +2913,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$resource" or var == "$astralPower" then
-			if snapshotData.attributes.resource > 0 then
-				valid = true
-			end
+			-- Do not compare snapshotData.attributes.resource as it may be a secret value
+			valid = false
 		elseif var == "$resourceMax" or var == "$astralPowerMax" then
 			valid = true
 		elseif var == "$casting" then
@@ -3000,9 +2999,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif TRB.Data.character.specId == 2 then -- Feral
 		if var == "$resource" or var == "$energy" then
-			if snapshotData.attributes.resource > 0 then
-				valid = true
-			end
+			-- Do not compare snapshotData.attributes.resource as it may be a secret value
+			valid = false
 		elseif var == "$resourceMax" or var == "$energyMax" then
 			valid = true
 		elseif var == "$comboPoints" then
@@ -3087,9 +3085,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif TRB.Data.character.specId == 3 then -- Guardian
 		if var == "$resource" or var == "$rage" then
-			if snapshotData.attributes.resource > 0 then
-				valid = true
-			end
+			-- Do not compare snapshotData.attributes.resource as it may be a secret value
+			valid = false
 		elseif var == "$resourceMax" or var == "$rageMax" then
 			valid = true
 		elseif var == "$casting" then
@@ -3103,11 +3100,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif TRB.Data.character.specId == 4 then --Restoration
 		if var == "$resource" or var == "$mana" then
-			valid = true
+			valid = false
 		elseif var == "$resourceMax" or var == "$manaMax" then
 			valid = true
 		elseif var == "$resourcePercent" or var == "$manaPercent" then
-			valid = true
+			-- Do not compare resource percent as it may be a secret value
+			valid = false
 		elseif var == "$casting" then
 			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
 				valid = true

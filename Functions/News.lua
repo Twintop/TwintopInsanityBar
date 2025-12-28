@@ -15,6 +15,7 @@ local content = [====[
 ## General
 
 - [#195 - NEW](#195) Allow primary and secondary bars to be independently shown either Always, In Combat, or Never.
+- (FIX) For Bar Text variables that are based on `secret` values, always return false for a validity check to avoid Lua errors.
 
 --- 
 

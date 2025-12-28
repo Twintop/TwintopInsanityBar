@@ -1724,9 +1724,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		end
 	elseif var == "$resource" or var == "$fury" then
-		if normalizedResource > 0 then
-			valid = true
-		end
+		-- Do not compare resource as it may be a secret value
+		valid = false
 	elseif var == "$resourceMax" or var == "$furyMax" then
 		valid = true
 	elseif var == "$casting" then

@@ -1388,7 +1388,7 @@ local function BloodConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 6, 1, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 1, yCoord)
 	

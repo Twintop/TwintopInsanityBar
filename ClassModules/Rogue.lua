@@ -2565,9 +2565,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
 	if var == "$resource" or var == "$energy" then
-		if snapshotData.attributes.resource > 0 then
-			valid = true
-		end
+		-- Do not compare snapshotData.attributes.resource as it may be a secret value
+		valid = false
 	elseif var == "$resourceMax" or var == "$energyMax" then
 		valid = true	
 	elseif var == "$casting" then

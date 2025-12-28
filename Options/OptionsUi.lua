@@ -1585,31 +1585,8 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 
 	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
 
-	if includeFlashAlpha then
-		yCoord = yCoord - 50
-		title = string.format(L["FlashAlpha"], flashAlphaName)
-		controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			self.EditBox:SetText(value)
-			spec.colors.bar.flashAlpha = value
-		end)
-
-		title = string.format(L["FlashPeriod"], flashAlphaName)
-		controls.flashPeriod = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			self.EditBox:SetText(value)
-			spec.colors.bar.flashPeriod = value
-		end)
-	end
-
-	yCoord = yCoord - 40
-
+	yCoord = yCoord - 30
+	
 	-- Bar visibility options mapping
 	local visibilityOptions = {
 		[L["ShowBarVisibilityAlways"]] = "always",
@@ -1633,10 +1610,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	end
 
 	-- Primary bar visibility dropdown
+	local primaryLabel = string.format(L["ShowBarVisibilityPrimary"], primaryResourceString or L["ResourceMana"])
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown.primaryVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_PrimaryVisibility", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown.primaryVisibility:SetWidth(oUi.sliderWidth)
-	controls.dropDown.primaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShowBarVisibilityPrimary"], oUi.xCoord, yCoord)
+	controls.dropDown.primaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, primaryLabel, oUi.xCoord, yCoord)
 	controls.dropDown.primaryVisibility.label.font:SetFontObject(GameFontNormal)
 
 	local function PrimaryVisibilityIsSelected(value)
@@ -1688,7 +1666,31 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown.secondaryVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
 	end
 
-	local yCoord2 = yCoord - 50
+	if includeFlashAlpha then
+		yCoord = yCoord - 90
+		title = string.format(L["FlashAlpha"], flashAlphaName)
+		controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			spec.colors.bar.flashAlpha = value
+		end)
+
+		title = string.format(L["FlashPeriod"], flashAlphaName)
+		controls.flashPeriod = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			spec.colors.bar.flashPeriod = value
+		end)
+		yCoord = yCoord - 10
+	end
+
+	local yCoord2 = yCoord - 40
 
 	if includeFlashAlpha then
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
