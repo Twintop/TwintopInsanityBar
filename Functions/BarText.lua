@@ -1005,22 +1005,34 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		for i = 1, entries do
 			if displayText.barText[i].enabled then
 				local e = displayText.barText[i]
-				local color = e.color
 				
-				if e.useDefaultFontColor then
-					color = displayText.default.color
+				-- Check if the target frame is visible before doing expensive text processing
+				local _, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
+				
+				-- UIParent-attached bar text is always considered visible
+				if e.position.relativeToFrame == "UIParent" then
+					isVisible = true
 				end
-
-				local barText = {
-					text = e.text,
-					color = string.format("|c%s", color)
-				}
-
+				
 				TRB.Data.cache.values.frame["textFrames" .. i] = TRB.Data.cache.values.frame["textFrames" .. i] or {}
+				
+				-- Skip expensive text processing if the target bar is not visible
+				if not isEnabled or not isVisible then
+					TRB.Data.cache.values.frame["textFrames" .. i].text = ""
+				else
+					local color = e.color
+					
+					if e.useDefaultFontColor then
+						color = displayText.default.color
+					end
 
-				local returnText = GetReturnText(barText)
+					local barText = {
+						text = e.text,
+						color = string.format("|c%s", color)
+					}
 
-				--if TRB.Data.cache.values.frame["textFrames" .. i].text ~= returnText then
+					local returnText = GetReturnText(barText)
+
 					if textFrames ~= nil and textFrames[i] ~= nil then
 						pcall(TryUpdateText, textFrames[i],  returnText)
 					else
@@ -1031,9 +1043,8 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							pcall(TryUpdateText, textFrames[i],  returnText)
 						end
 					end
-					--TryUpdateText(textFrames[i], returnText)
 					TRB.Data.cache.values.frame["textFrames" .. i].text = returnText
-				--end
+				end
 				
 				if TRB.Data.cache.values.frame["textFrames" .. i].level ~= TRB.Data.settings.core.strata.level then
 					if textFrames ~= nil and textFrames[i] ~= nil then
@@ -1089,7 +1100,8 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 				relativeToFrame = UIParent
 			elseif e.position.relativeToFrame == "AllComboPoints" then
 			else
-				relativeToFrame, isEnabled = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
+				-- Capture isVisible but don't use it for frame creation - parenting needs the frame regardless
+				relativeToFrame, isEnabled, _ = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
 
 				if relativeToFrame == nil and isEnabled then
 					relativeToFrame = _G["TwintopResourceBarFrame_"..e.position.relativeToFrame]
@@ -1192,11 +1204,22 @@ function TRB.Functions.BarText:Show(settings)
 	local entries = TRB.Functions.Table:Length(displayText.barText)
 	if entries > 0 then
 		for i = 1, entries do
-			local _, isEnabled = TRB.Functions.Class:GetBarTextFrame(displayText.barText[i].position.relativeToFrame)
-			if displayText.barText[i].enabled and isEnabled and textFrames[i] ~= nil then
+			local e = displayText.barText[i]
+			local _, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
+			
+			-- UIParent-attached bar text is always considered visible
+			if e.position.relativeToFrame == "UIParent" then
+				isVisible = true
+			end
+			
+			if e.enabled and isEnabled and isVisible and textFrames[i] ~= nil then
 				textFrames[i]:Show()
 				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Show()
+			elseif textFrames[i] ~= nil then
+				textFrames[i]:Hide()
+				---@diagnostic disable-next-line: undefined-field
+				textFrames[i].font:Hide()
 			end
 		end
 	end

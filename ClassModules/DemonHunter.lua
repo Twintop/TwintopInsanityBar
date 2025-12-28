@@ -1738,6 +1738,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	return valid
 end
 
+---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.
+---@param relativeToFrame string
+---@return Frame? # Relative to Frame
+---@return boolean # Is Enabled?
+---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	local barGroups = TRB.Frames.barGroups
 	if relativeToFrame ~= nil then
@@ -1747,18 +1752,22 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		if barGroups and barGroups.primary then
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
-				return primaryNode:GetResourceFrame(), true
+				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
+				return primaryNode:GetResourceFrame(), true, isVisible
 			end
 		end
+		return nil, true, false
 	elseif relativeToFrame == "ComboPoint1" then
 		if barGroups and barGroups.secondary then
 			local secondaryNode = barGroups.secondary:GetNode(1)
 			if secondaryNode then
-				return secondaryNode:GetResourceFrame(), true
+				local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
+				return secondaryNode:GetResourceFrame(), true, isVisible
 			end
 		end
+		return nil, true, false
 	end
-	return nil, true
+	return nil, true, false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
