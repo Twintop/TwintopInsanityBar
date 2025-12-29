@@ -204,4 +204,6 @@ if locale == "enGB" then
     L["WarriorProtectionHeaderDefensiveColors"] = "Defensive Bar Colours"
     L["WarriorProtectionTextColorsHeader"] = "Rage Text Colours"
     L["WarriorProtectionCheckboxThresholdOverTooltip"] = "This will change the Rage text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+    L["DruidGuardianCheckboxBerserkEnd"] = "Change bar colour at the end of Berserk"
+    L["DruidGuardianCheckboxBerserkEndTooltip"] = "Changes the bar colour when Berserk is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 end
