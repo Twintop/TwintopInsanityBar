@@ -491,9 +491,22 @@ local function ConstructResourceBar(settings)
 		if barGroups and barGroups.secondary then
 			barGroups.secondary:Hide()
 		end
-	elseif TRB.Data.character.specId == 2 then -- Vengeance - no secondary bar (soul fragments disabled)
+	elseif TRB.Data.character.specId == 2 then -- Vengeance - Soul Fragments bar with threshold dividers
 		if barGroups and barGroups.secondary then
-			barGroups.secondary:Hide()
+			-- Set up the secondary bar structure with 1 node
+			barGroups.secondary:SetNodeCount(1)
+			local sfNode = barGroups.secondary:GetNode(1)
+			if sfNode then
+				sfNode:SetMinMax(0, 6) -- 0-6 Soul Fragments
+				
+				-- Create 5 threshold dividers to create 6 segments
+				sfNode:ClearThresholds()
+				for thresholdId = 1, 5 do
+					local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetResourceFrame())
+					TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
+					sfNode:RegisterThreshold(thresholdFrame)
+				end
+			end
 		end
 	elseif TRB.Data.character.specId == 3 then -- Devourer - has secondary bar (Soul Fragments percentage)
 		if barGroups and barGroups.secondary then
@@ -629,10 +642,13 @@ local function RefreshLookupData_Vengeance()
 	lookup["$metamorphosisTime"] = metamorphosisTime
 	lookup["$voidMetaTime"] = metamorphosisTime
 	lookup["$voidMetamorphosisTime"] = metamorphosisTime
-	--lookup["$soulFragments"] = snapshotData.attributes.resource2
-	--lookup["$comboPoints"] = snapshotData.attributes.resource2
-	--lookup["$soulFragmentsMax"] = TRB.Data.character.maxResource2
-	--lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	--$soulFragments
+	local _soulFragments = snapshotData.attributes.resource2 or 0
+	local soulFragments = string.format("%s", _soulFragments)
+	lookup["$soulFragments"] = soulFragments
+	lookup["$comboPoints"] = soulFragments
+	lookup["$soulFragmentsMax"] = TRB.Data.character.maxResource2Value or 6
+	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Value or 6
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -645,10 +661,10 @@ local function RefreshLookupData_Vengeance()
 	lookupLogic["$metamorphosisTime"] = _metamorphosisTime
 	lookupLogic["$voidMetaTime"] = _metamorphosisTime
 	lookupLogic["$voidMetamorphosisTime"] = _metamorphosisTime
-	--lookupLogic["$soulFragments"] = snapshotData.attributes.resource2
-	--lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	--lookupLogic["$soulFragmentsMax"] = TRB.Data.character.maxResource2
-	--lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookupLogic["$soulFragments"] = _soulFragments
+	lookupLogic["$comboPoints"] = _soulFragments
+	lookupLogic["$soulFragmentsMax"] = TRB.Data.character.maxResource2Value or 5
+	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Value or 5
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -844,6 +860,16 @@ end
 
 local function UpdateSnapshot_Vengeance()
 	UpdateSnapshot()
+	
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	
+	-- Vengeance Soul Fragments max is 6
+	TRB.Data.character.maxResource2Value = 6
+
+	-- Get Soul Fragment count via Spirit Bomb's GetSpellCastCount (returns 0-5)
+	local soulFragments = C_Spell.GetSpellCastCount(spells.spiritBomb.id) or 0
+	snapshotData.attributes.resource2 = soulFragments
 end
 
 local function UpdateSnapshot_Devourer()
@@ -1090,12 +1116,7 @@ local function UpdateResourceBar()
 							end
 						end
 
-						if spell:Is("TRB.Classes.SpellComboPointThreshold") and
-							spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and
-							snapshotData.attributes.resource2 == 0 then
-								thresholdColor = specCacheSettings.colors.threshold.unusable.color
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-						end
+						-- Note: Cannot check resource2 == 0 for Spirit Bomb as Soul Fragments are now a secret value
 						
 						if resourceAmount >= maxPrimaryBarResourceUnnormalized then
 							showThreshold = false
@@ -1135,6 +1156,38 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				end
+			end
+
+			if specSettings.displayBar.secondary ~= "never" then
+				refreshText = true
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+				-- Soul Fragments bar (Vengeance, 0-5 fragments)
+				local current = snapshotData.attributes.resource2 or 0
+				local max = TRB.Data.character.maxResource2Value or 6
+				
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border
+				local cpColor = specSettings.colors.comboPoints.base
+
+				-- Update secondary bar (Soul Fragments with threshold dividers)
+				if barGroups.secondary then
+					local sfNode = barGroups.secondary:GetNode(1)
+					if sfNode then
+						TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary", sfNode, current, max)
+						sfNode:SetBorderColor(cpBorderColor)
+						sfNode:SetColor(cpColor)
+						sfNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+						
+						-- Position 5 threshold dividers at 1, 2, 3, 4, 5 to create 6 segments
+						local thresholds = sfNode:GetThresholds()
+						local sfResourceFrame = sfNode:GetResourceFrame()
+						for thresholdId = 1, 5 do
+							if thresholds[thresholdId] then
+								TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "soulFragment" .. thresholdId, thresholds[thresholdId], true, sfResourceFrame, thresholdId, max)
+							end
+						end
+					end
 				end
 			end
 
@@ -1579,7 +1632,10 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 		TRB.Data.character.specName = "vengeance"
-		--[[local maxComboPoints = spells.soulFragments.attributes.maxResource
+		
+		-- Soul Fragments: 1 node with 5 thresholds, max 6 fragments
+		local maxComboPoints = 1
+		TRB.Data.character.maxResource2Value = 6
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
 		if sharedSettings ~= nil then
@@ -1589,7 +1645,7 @@ function TRB.Functions.Class:CheckCharacter()
 					TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, TRB.Frames.barGroups)
 				end
 			end
-		end]]
+		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 		TRB.Data.character.specName = "devourer"
@@ -1621,11 +1677,10 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1
-		TRB.Data.resource2 = nil
-		TRB.Data.resource2Factor = nil
-		--[[TRB.Data.resource2 = "SPELL"
-		TRB.Data.resource2Id = spells.soulFragments.id
-		TRB.Data.resource2Factor = 1]]
+		-- Soul Fragments retrieved via C_Spell.GetSpellCastCount(spiritBomb.id)
+		TRB.Data.resource2 = "CUSTOM"
+		TRB.Data.resource2Id = spells.spiritBomb.id
+		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.demonhunter.devourer == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
@@ -1667,9 +1722,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Determine secondary bar visibility independently
-			-- Only Devourer (specId == 3) uses the secondary (Soul Fragments) bar
+			-- Vengeance (specId == 2) and Devourer (specId == 3) use the secondary (Soul Fragments) bar
 			local showSecondary = false
-			if not forceHideAll and TRB.Data.character.specId == 3 then
+			if not forceHideAll and (TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3) then
 				if sharedSettings.displayBar.secondary == "always" then
 					showSecondary = true
 				elseif sharedSettings.displayBar.secondary == "combat" then

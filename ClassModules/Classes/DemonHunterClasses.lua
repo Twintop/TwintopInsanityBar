@@ -430,7 +430,7 @@ end
     Creates the appropriate BarGroup instances for each Demon Hunter specialization.
     
     Havoc (specId=1): Primary bar (N=1) only - no secondary resource
-    Vengeance (specId=2): Primary bar (N=1) + Soul Fragments (N=5, currently disabled)
+    Vengeance (specId=2): Primary bar (N=1) + Soul Fragments (N=1 with 5 threshold dividers, 0-6 discrete fragments via GetSpellCastCount)
     Devourer (specId=3): Primary bar (N=1) + Soul Fragments (N=1, percentage-based from Blizzard UI)
 ]]
 
@@ -473,16 +473,14 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFr
             true -- isPrimary
         )
 
-        -- Soul Fragments (5 nodes) - currently disabled in legacy system
-        -- Uncomment when Soul Fragments tracking is re-enabled
-        --[[
+        -- Soul Fragments (single bar with 5 threshold dividers creating 6 segments)
+        -- Uses C_Spell.GetSpellCastCount(spiritBomb.id) to get fragment count (0-5)
         barGroups.secondary = TRB.Classes.BarGroup:New(
-            parentFrame,
+            UIParent,
             "TwintopResourceBarFrame_ComboPoint",
-            5,
+            1,
             false -- not primary
         )
-        ]]
 
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
@@ -544,14 +542,13 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = true
             },
-            -- Soul Fragments disabled
-            --[[
             secondary = {
-                maxNodes = 5,
+                maxNodes = 1,
                 isPrimary = false,
-                resourceType = "SoulFragments"
+                resourceType = "SoulFragments",
+                thresholdCount = 5, -- 5 dividers create 6 segments (0-5 Soul Fragments)
+                fillType = "discrete" -- Fills left-to-right based on fragment count
             },
-            ]]
             health = {
                 maxNodes = 1,
                 isPrimary = false,
