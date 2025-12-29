@@ -14,7 +14,13 @@ local content = [====[
 # 12.0.0.0-beta07 (2025-12-30)
 ## General
 
-- [#505 - NEW](#505) Add 
+- [#505 - NEW](#505) Add an optional player health bar, including new bar text variables `$health`, `$healthMax`, and `$healthPercent`.
+- (UPDATED) Modify the layout of the Textures section in the Options UI to group like textures together for easier navigation.
+
+## Demon Hunter
+### [#467](#467) Vengeance
+
+- Re-enable Soul Fragment tracking. The bar now tracks Soul Fragments with a workaround using threshold lines due to API limitations.
 
 ---
 
