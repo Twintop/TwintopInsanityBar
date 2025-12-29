@@ -373,6 +373,7 @@ local function BloodLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -393,6 +394,17 @@ local function BloodLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
 			fullWidth=true,
 		},
 		colors={
@@ -418,6 +430,11 @@ local function BloodLoadDefaultSettings(includeBarText)
 				base="FFC41E3A",
 				cooldown="FFCCCCCC",
 				sortRunes = true
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -467,6 +484,12 @@ local function BloodLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -691,6 +714,7 @@ local function FrostLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -711,6 +735,17 @@ local function FrostLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
 			fullWidth=true,
 		},
 		colors={
@@ -736,6 +771,11 @@ local function FrostLoadDefaultSettings(includeBarText)
 				base="FF368BC1",
 				cooldown="FFCCCCCC",
 				sortRunes = true
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -785,6 +825,12 @@ local function FrostLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -1002,6 +1048,7 @@ local function UnholyLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -1022,6 +1069,17 @@ local function UnholyLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
 			fullWidth=true,
 		},
 		colors={
@@ -1047,6 +1105,11 @@ local function UnholyLoadDefaultSettings(includeBarText)
 				base="FFA6FF49",
 				cooldown="FFCCCCCC",
 				sortRunes = true
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -1096,6 +1159,12 @@ local function UnholyLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -1247,7 +1316,7 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
@@ -1643,7 +1712,7 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 2, yCoord, true, L["ResourceRunes"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
@@ -2061,7 +2130,7 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 3, yCoord, true, L["ResourceRunes"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])

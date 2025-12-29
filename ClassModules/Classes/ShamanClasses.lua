@@ -282,6 +282,14 @@ function TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(specId)
             true -- isPrimary
         )
 
+        -- Health bar
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Enhancement
         -- Primary mana bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -300,6 +308,14 @@ function TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(specId)
             false -- not primary
         )
 
+        -- Health bar
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 3 then -- Restoration
         -- Primary mana bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -307,6 +323,14 @@ function TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(specId)
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Health bar
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
         )
     end
 
@@ -322,6 +346,11 @@ function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 2 then -- Enhancement
@@ -334,6 +363,11 @@ function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 10,
                 isPrimary = false,
                 resourceType = "MaelstromWeapon"
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 3 then -- Restoration
@@ -341,6 +375,11 @@ function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     end

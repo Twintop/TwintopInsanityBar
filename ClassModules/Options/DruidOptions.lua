@@ -228,6 +228,7 @@ local function BalanceLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		endOfEclipse = {
@@ -245,6 +246,17 @@ local function BalanceLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
 		},
 		colors = {
 			text = {
@@ -275,6 +287,11 @@ local function BalanceLoadDefaultSettings(includeBarText)
 				flashPeriod=0.5,
 				flashEnabled=true,
 				flashSsEnabled=true,
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -331,7 +348,13 @@ local function BalanceLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -740,6 +763,17 @@ local function FeralLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true
 		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
+		},
 		colors = {
 			text = {
 				current = {
@@ -764,6 +798,11 @@ local function FeralLoadDefaultSettings(includeBarText)
 				clearcasting="FF4A95CE",
 				maxBite="FF009900",
 				apexPredator="FFE75480"
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			comboPoints = {
 				border="FFFF7C0A",
@@ -825,6 +864,12 @@ local function FeralLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 	
@@ -1040,6 +1085,7 @@ local function GuardianLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -1050,6 +1096,17 @@ local function GuardianLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
 		},
 		endOfBerserk = {
 			enabled=true,
@@ -1083,6 +1140,11 @@ local function GuardianLoadDefaultSettings(includeBarText)
 				berserkEnd = {
 					color = "FFFF5555",
 				},
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -1121,7 +1183,13 @@ local function GuardianLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -1350,6 +1418,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -1360,6 +1429,17 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
 		},
 		endOfIncarnation = {
 			enabled=true,
@@ -1387,6 +1467,11 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				clearcasting="FF4A95CE",
 				incarnation="FF005500",
 				incarnationEnd="FFDD5500"
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				over = {
@@ -1423,7 +1508,13 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -1573,7 +1664,7 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true)
 
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
@@ -2151,7 +2242,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
 
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
@@ -2754,7 +2845,7 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 3, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 70
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])	
@@ -3250,7 +3341,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 4, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 
 
 	yCoord = yCoord - 100

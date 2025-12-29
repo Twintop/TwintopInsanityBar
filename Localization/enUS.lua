@@ -1693,3 +1693,11 @@ L["DruidGuardianCheckboxBerserkGcds"] = "GCDs until Berserk ends"
 L["DruidGuardianCheckboxBerserkTime"] = "Time until Berserk ends"
 L["DruidGuardianColorPickerBerserkEnd"] = "Rage when Berserk is ending (as configured)"
 L["DruidGuardianEndOfBerserkConfigurationHeader"] = "End of Berserk Configuration"
+
+-- Health Bar
+L["HealthBar"] = "Health Bar"
+L["ResourceHealth"] = "Health"
+L["ShowBarVisibilityHealth"] = "Health Bar Visibility"
+L["BarTextVariable_health"] = "Current health"
+L["BarTextVariable_healthMax"] = "Maximum health"
+L["BarTextVariable_healthPercent"] = "Current health percentage"

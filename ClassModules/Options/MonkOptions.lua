@@ -291,6 +291,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -342,6 +343,11 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 				staggerHeavy="FFFF6B6B",
 				enabled=true
 			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -386,6 +392,12 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -561,6 +573,7 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -571,6 +584,17 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
 		},
 		colors={
 			text = {
@@ -604,6 +628,11 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 					color = "FF00FFBB",
 					enabled = true
 				},
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -632,7 +661,13 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -861,6 +896,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -881,6 +917,17 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
 			fullWidth=true,
 		},
 		colors = {
@@ -920,6 +967,11 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -971,6 +1023,12 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -1098,7 +1156,7 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, true, L["ResourceStagger"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, true, L["ResourceStagger"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, true, L["ResourceStagger"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
@@ -1629,7 +1687,7 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 2, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
@@ -2045,7 +2103,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, L["ResourceChi"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceChi"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceChi"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])

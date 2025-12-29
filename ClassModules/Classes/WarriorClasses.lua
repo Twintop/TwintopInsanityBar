@@ -450,6 +450,14 @@ function TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         )
     end
 
+    -- Health bar (1 node) - all specs
+    barGroups.health = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame_Health",
+        1,
+        false -- not primary
+    )
+
     return barGroups
 end
 
@@ -467,6 +475,11 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 2,
                 isPrimary = false,
                 resourceType = "DefensiveBuffs"
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     else -- Arms and Fury
@@ -474,6 +487,11 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     end

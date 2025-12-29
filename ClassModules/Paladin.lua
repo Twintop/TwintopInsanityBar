@@ -180,6 +180,10 @@ local function FillSpellData_Holy()
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 		
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
+
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
 		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
@@ -248,6 +252,10 @@ local function FillSpellData_Protection()
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 		
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
+
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
 		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
@@ -1154,6 +1162,17 @@ function TRB.Functions.Class:HideResourceBar(force)
 				-- "never" means showSecondary stays false
 			end
 
+			-- Determine health bar visibility independently
+			local showHealth = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.health == "always" then
+					showHealth = true
+				elseif sharedSettings.displayBar.health == "combat" then
+					showHealth = affectingCombat or inVehicle
+				end
+				-- "never" means showHealth stays false
+			end
+
 			-- Apply primary bar visibility
 			if barGroups and barGroups.primary then
 				if showPrimary then
@@ -1173,8 +1192,18 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 			end
 
-			-- Track if either bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary
+			-- Apply health bar visibility
+			if barGroups and barGroups.health then
+				if showHealth then
+					barGroups.health:Show()
+					barGroups.health:ShowNodes(1)
+				else
+					barGroups.health:Hide()
+				end
+			end
+
+			-- Track if any bar is showing
+			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -1187,6 +1216,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if barGroups and barGroups.secondary then
 				barGroups.secondary:Hide()
 			end
+			if barGroups and barGroups.health then
+				barGroups.health:Hide()
+			end
 			TRB.Functions.BarText:Hide(sharedSettings)
 			snapshotData.attributes.isTracking = false
 		end
@@ -1196,6 +1228,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 		if barGroups and barGroups.secondary then
 			barGroups.secondary:Hide()
+		end
+		if barGroups and barGroups.health then
+			barGroups.health:Hide()
 		end
 		snapshotData.attributes.isTracking = false
 	end
@@ -1246,6 +1281,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		valid = true
 	elseif var == "$comboPointsMax"or var == "$holyPowerMax" then
 		valid = true
+	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" then
+		valid = true
 	end
 
 	return valid
@@ -1268,6 +1305,17 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		if primaryNode then
 			local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
 			return primaryNode:GetResourceFrame(), true, isVisible
+		end
+		return nil, true, false
+	end
+
+	if normalizedRelativeFrame == "HealthBar" then
+		if barGroups and barGroups.health then
+			local healthNode = barGroups.health:GetNode(1)
+			if healthNode then
+				local isVisible = barGroups.health.isVisible and healthNode.isVisible
+				return healthNode:GetResourceFrame(), true, isVisible
+			end
 		end
 		return nil, true, false
 	end

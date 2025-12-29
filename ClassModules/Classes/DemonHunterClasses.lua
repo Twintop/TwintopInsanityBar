@@ -456,6 +456,14 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFr
             true -- isPrimary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Vengeance
         -- Primary fury bar
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -476,6 +484,14 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFr
         )
         ]]
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 3 then -- Devourer
         -- Primary fury bar
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -493,6 +509,14 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFr
             1,
             false -- not primary
         )
+
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
     end
 
     return barGroups
@@ -507,6 +531,11 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 2 then -- Vengeance
@@ -514,15 +543,20 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
-            }
+            },
             -- Soul Fragments disabled
             --[[
             secondary = {
                 maxNodes = 5,
                 isPrimary = false,
                 resourceType = "SoulFragments"
-            }
+            },
             ]]
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
+            }
         }
     elseif specId == 3 then -- Devourer
         return {
@@ -535,6 +569,11 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
                 isPrimary = false,
                 resourceType = "SoulFragments",
                 fillType = "percentage" -- 0.0 to 1.0 based on Blizzard bar value
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     end

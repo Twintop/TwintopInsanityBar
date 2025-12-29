@@ -89,6 +89,13 @@ local function UpdateResourceValues()
 	end
 end
 
+local function UpdateHealthValues()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	snapshotData.attributes.health = UnitHealth("player", true)
+	snapshotData.attributes.healthMax = UnitHealthMax("player")
+	snapshotData.attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
+end
+
 ---Handles some change with the character's status
 ---@param self any
 ---@param event string
@@ -98,6 +105,11 @@ local function CharacterChange(self, event, ...)
 		local unitTarget, powerType = ...
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			UpdateResourceValues()
+		end
+	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then
+		local unitTarget = ...
+		if unitTarget == "player" then
+			UpdateHealthValues()
 		end
 	elseif event == "UNIT_STATS" then
 		if unitTarget == "player" then
@@ -134,6 +146,8 @@ characterChangeFrame:SetScript("OnEvent", CharacterChange)
 function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+	characterChangeFrame:RegisterEvent("UNIT_HEALTH")
+	characterChangeFrame:RegisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:RegisterEvent("UNIT_STATS")
 	characterChangeFrame:RegisterEvent("COMBAT_RATING_UPDATE")
 	characterChangeFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -147,6 +161,8 @@ end
 function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+	characterChangeFrame:UnregisterEvent("UNIT_HEALTH")
+	characterChangeFrame:UnregisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_STATS")
 	characterChangeFrame:UnregisterEvent("COMBAT_RATING_UPDATE")
 	characterChangeFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -517,7 +533,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		bar = spec.colors.bar,
 ---@diagnostic disable-next-line: missing-fields
 		threshold = {},
-		comboPoints = spec.colors.comboPoints
+		comboPoints = spec.colors.comboPoints,
+		healthBar = spec.colors.healthBar
 	}
 
 	if s.textColors then
@@ -613,6 +630,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	specCache.settings.displayBar = spec.displayBar
 	specCache.settings.audio = spec.audio
 	specCache.settings.maxResource = spec.maxResource
+	specCache.settings.healthBar = spec.healthBar
 end
 
 function TRB.Functions.Character:IsComboPointUser()
@@ -723,6 +741,7 @@ function TRB.Functions.Character:EventRegistration()
 			end
 		end
 		UpdateResourceValues()
+		UpdateHealthValues()
 		TRB.Functions.Class:CheckCharacter()
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")

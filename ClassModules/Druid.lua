@@ -359,6 +359,10 @@ local function FillSpellData_Balance()
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 		
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
+		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
 		{ variable = "$astralPower", description = L["DruidBalanceBarTextVariable_astralPower"], printInSettings = true, color = false },
@@ -486,6 +490,10 @@ local function FillSpellData_Feral()
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 		
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
+		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 
@@ -577,6 +585,10 @@ local function FillSpellData_Guardian()
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 		
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
+		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
 		{ variable = "$rage", description = L["DruidGuardianBatTextVariable_rage"], printInSettings = true, color = false },
@@ -644,6 +656,10 @@ local function FillSpellData_Restoration()
 		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
+		
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
@@ -1865,6 +1881,19 @@ local function UpdateResourceBar()
 					TRB.Functions.Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 				end
 			end
+
+			-- Health bar update
+			if specSettings.displayBar.health ~= "never" then
+				refreshText = true
+				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+				if healthNode then
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColor(specSettings.colors.healthBar.bar)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
+				end
+			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
@@ -2143,6 +2172,19 @@ local function UpdateResourceBar()
 					end
 				end
 			end
+
+			-- Health bar update
+			if specSettings.displayBar.health ~= "never" then
+				refreshText = true
+				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+				if healthNode then
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColor(specSettings.colors.healthBar.bar)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
+				end
+			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
@@ -2265,6 +2307,19 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
+
+			-- Health bar update
+			if specSettings.displayBar.health ~= "never" then
+				refreshText = true
+				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+				if healthNode then
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColor(specSettings.colors.healthBar.bar)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
+				end
+			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 4 then
@@ -2314,6 +2369,20 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
+
+			-- Health bar update
+			if specSettings.displayBar.health ~= "never" then
+				refreshText = true
+				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+				if healthNode then
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColor(specSettings.colors.healthBar.bar)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
+				end
+			end
+
 			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
 	end
@@ -2810,6 +2879,17 @@ function TRB.Functions.Class:HideResourceBar(force)
 				-- "never" means showSecondary stays false
 			end
 
+			-- Determine health bar visibility independently
+			local showHealth = false
+			if not forceHideAll then
+				if sharedSettings.displayBar.health == "always" then
+					showHealth = true
+				elseif sharedSettings.displayBar.health == "combat" then
+					showHealth = affectingCombat or inVehicle
+				end
+				-- "never" means showHealth stays false
+			end
+
 			-- Apply primary bar visibility
 			if barGroups and barGroups.primary then
 				if showPrimary then
@@ -2829,8 +2909,18 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 			end
 
-			-- Track if either bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary
+			-- Apply health bar visibility
+			if barGroups and barGroups.health then
+				if showHealth then
+					barGroups.health:Show()
+					barGroups.health:ShowNodes(1)
+				else
+					barGroups.health:Hide()
+				end
+			end
+
+			-- Track if any bar is showing
+			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -2843,6 +2933,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if barGroups and barGroups.secondary then
 				barGroups.secondary:Hide()
 			end
+			if barGroups and barGroups.health then
+				barGroups.health:Hide()
+			end
 			TRB.Functions.BarText:Hide(sharedSettings)
 			snapshotData.attributes.isTracking = false
 		end
@@ -2853,6 +2946,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 		if barGroups and barGroups.secondary then
 			barGroups.secondary:Hide()
 		end
+		if barGroups and barGroups.health then
+			barGroups.health:Hide()
+		end
 		snapshotData.attributes.isTracking = false
 	end
 end
@@ -2860,6 +2956,12 @@ end
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 	if valid then
+		return valid
+	end
+
+	-- Health variables are valid for all specs
+	if var == "$health" or var == "$healthMax" or var == "$healthPercent" then
+		valid = true
 		return valid
 	end
 
@@ -3143,6 +3245,17 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		if primaryNode then
 			local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
 			return primaryNode:GetResourceFrame(), true, isVisible
+		end
+		return nil, true, false
+	end
+
+	if normalizedRelativeFrame == "HealthBar" then
+		if barGroups and barGroups.health then
+			local healthNode = barGroups.health:GetNode(1)
+			if healthNode then
+				local isVisible = barGroups.health.isVisible and healthNode.isVisible
+				return healthNode:GetResourceFrame(), true, isVisible
+			end
 		end
 		return nil, true, false
 	end

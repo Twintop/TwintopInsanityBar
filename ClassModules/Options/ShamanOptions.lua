@@ -219,6 +219,7 @@ local function ElementalLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		endOfAscendance = {
@@ -235,6 +236,15 @@ local function ElementalLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			relativeTo="BOTTOM",
+			relativeToName=L["PositionBelowMiddle"]
 		},
 		colors = {
 			text = {
@@ -267,7 +277,7 @@ local function ElementalLoadDefaultSettings(includeBarText)
 					enabled = true
 				},
 			},
-			threshold = {
+				threshold = {
 				under = {
 					color = "FFFFFFFF"
 				},
@@ -283,6 +293,11 @@ local function ElementalLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -311,7 +326,13 @@ local function ElementalLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -493,6 +514,7 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -503,6 +525,15 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 			border=1,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			relativeTo="BOTTOM",
+			relativeToName=L["PositionBelowMiddle"]
 		},
 		comboPoints = {
 			width=25,
@@ -563,6 +594,11 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 					enabled = true,
 					show = true
 				}
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -592,6 +628,12 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -821,6 +863,7 @@ local function RestorationLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -831,6 +874,15 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			relativeTo="BOTTOM",
+			relativeToName=L["PositionBelowMiddle"]
 		},
 		endOfAscendance = {
 			enabled=true,
@@ -856,6 +908,11 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				base="FF0000FF",
 				inAscendance="FFFA8128",
 				inAscendance1GCD="FFFF0000",
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -884,7 +941,13 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -1013,7 +1076,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", true, L["ShamanElementalEarthShockElementalBlast"], L["ShamanElementalEarthShockElementalBlastAbbreviation"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", true, L["ShamanElementalEarthShockElementalBlast"], L["ShamanElementalEarthShockElementalBlastAbbreviation"], false, nil, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
@@ -1505,7 +1568,7 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 2, yCoord, true, L["ResourceMaelstromWeapon"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceMaelstromWeapon"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceMaelstromWeapon"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
@@ -1952,7 +2015,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 3, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])

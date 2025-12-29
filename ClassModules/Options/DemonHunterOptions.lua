@@ -232,6 +232,7 @@ local function HavocLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		endOfMetamorphosis = {
@@ -248,6 +249,17 @@ local function HavocLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
 		},
 		colors = {
 			text = {
@@ -271,6 +283,11 @@ local function HavocLoadDefaultSettings(includeBarText)
 				base="FFC942FD",
 				metamorphosis="FF67F100",
 				metamorphosisEnding="FFFF0000"
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -313,7 +330,13 @@ local function HavocLoadDefaultSettings(includeBarText)
 			borderName="1 Pixel",
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
-			textureLock=true
+			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -525,6 +548,7 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		endOfMetamorphosis = {
@@ -551,6 +575,17 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
 			fullWidth=true,
 		},
 		colors = {
@@ -583,6 +618,11 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -632,6 +672,12 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -810,6 +856,7 @@ local function DevourerLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		endOfMetamorphosis = {
@@ -836,6 +883,17 @@ local function DevourerLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
 			fullWidth=true,
 		},
 		colors = {
@@ -878,6 +936,11 @@ local function DevourerLoadDefaultSettings(includeBarText)
 					color = "FF431863",
 					enabled = true
 				},
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -927,6 +990,12 @@ local function DevourerLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -1054,7 +1123,7 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 1, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
@@ -1575,7 +1644,7 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord)--, true, L["ResourceSoulFragments"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
@@ -2109,7 +2178,7 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 3, yCoord, true, L["ResourceSoulFragments"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
 
 	yCoord = yCoord - 100
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])

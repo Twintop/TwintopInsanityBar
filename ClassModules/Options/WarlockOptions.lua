@@ -174,6 +174,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -184,6 +185,15 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			border=2,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			relativeTo="BOTTOM",
+			relativeToName=L["PositionBelowMiddle"]
 		},
 		comboPoints = {
 			width=25,
@@ -225,7 +235,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 					enabled = true
 				},
 			},
-			comboPoints = {
+				comboPoints = {
 				border="FF4749B5",
 				background="66000000",
 				base="FF8788EE",
@@ -241,6 +251,11 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 					color = "FF00C9B4",
 					enabled = true,
 				},
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -288,6 +303,12 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -461,6 +482,7 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -471,6 +493,15 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 			border=2,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			relativeTo="BOTTOM",
+			relativeToName=L["PositionBelowMiddle"]
 		},
 		comboPoints = {
 			width=25,
@@ -511,6 +542,11 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false,
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -544,6 +580,12 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		},
 		thresholds = {
 			width = 2,
@@ -736,6 +778,7 @@ local function DestructionLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -746,6 +789,15 @@ local function DestructionLoadDefaultSettings(includeBarText)
 			border=2,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			relativeTo="BOTTOM",
+			relativeToName=L["PositionBelowMiddle"]
 		},
 		comboPoints = {
 			width=25,
@@ -782,6 +834,11 @@ local function DestructionLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false,
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			},
 			threshold = {
 				under = {
@@ -827,6 +884,12 @@ local function DestructionLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		},
 		thresholds = {
 			width = 2,
@@ -974,7 +1037,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 1, yCoord, true, L["ResourceSoulShards"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
@@ -1368,7 +1431,7 @@ local function DemonologyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 2, yCoord, true, L["ResourceSoulShards"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"])
@@ -1838,7 +1901,7 @@ local function DestructionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 3, yCoord, true, L["ResourceSoulShards"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"])

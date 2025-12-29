@@ -198,6 +198,7 @@ local function ArcaneLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -218,6 +219,17 @@ local function ArcaneLoadDefaultSettings(includeBarText)
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
+			fullWidth=true,
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
 			fullWidth=true,
 		},
 		colors={
@@ -244,6 +256,11 @@ local function ArcaneLoadDefaultSettings(includeBarText)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=true
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -273,6 +290,12 @@ local function ArcaneLoadDefaultSettings(includeBarText)
 			comboPointsBorderName="1 Pixel",
 			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
 			comboPointsBarName="Blizzard",
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -466,6 +489,7 @@ local function FireLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -476,6 +500,17 @@ local function FireLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
 		},
 		colors={
 			text = {
@@ -493,6 +528,11 @@ local function FireLoadDefaultSettings(includeBarText)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -516,6 +556,12 @@ local function FireLoadDefaultSettings(includeBarText)
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
 			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -708,6 +754,7 @@ local function FrostLoadDefaultSettings(includeBarText)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = {
@@ -718,6 +765,17 @@ local function FrostLoadDefaultSettings(includeBarText)
 			border=4,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false
+		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
 		},
 		colors={
 			text = {
@@ -735,6 +793,11 @@ local function FrostLoadDefaultSettings(includeBarText)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
+			},
+			healthBar = {
+				bar="FF1EFF00",
+				border="FF1EFF00",
+				background="66000000"
 			}
 		},
 		displayText={
@@ -758,6 +821,12 @@ local function FrostLoadDefaultSettings(includeBarText)
 			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
 			resourceBarName="Blizzard",
 			textureLock=true,
+			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+			healthBackgroundName="Blizzard Tooltip",
+			healthBorder="Interface\\Buttons\\WHITE8X8",
+			healthBorderName="1 Pixel",
+			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+			healthBarName="Blizzard",
 		}
 	}
 
@@ -909,7 +978,7 @@ local function ArcaneConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 1, yCoord, true, L["ResourceArcaneCharges"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceArcaneCharges"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceArcaneCharges"], true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"])
@@ -1270,7 +1339,7 @@ local function FireConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 2, yCoord)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"])
@@ -1583,7 +1652,7 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 3, yCoord)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"])

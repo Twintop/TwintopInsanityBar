@@ -196,6 +196,14 @@ function TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         false -- not primary
     )
 
+    -- Health bar
+    barGroups.health = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame_Health",
+        1,
+        false -- not primary
+    )
+
     return barGroups
 end
 
@@ -212,6 +220,11 @@ function TRB.Classes.Warlock.BarGroupsFactory:GetSpecConfiguration(specId)
             maxNodes = 5,
             isPrimary = false,
             resourceType = "SoulShards"
+        },
+        health = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "Health"
         }
     }
 end

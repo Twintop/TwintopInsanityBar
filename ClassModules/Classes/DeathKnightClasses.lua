@@ -165,6 +165,14 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFr
         false -- not primary
     )
 
+    -- Health bar (1 node)
+    barGroups.health = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame_Health",
+        1,
+        false -- not primary
+    )
+
     return barGroups
 end
 
@@ -182,6 +190,11 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
             maxNodes = 6,
             isPrimary = false,
             resourceType = "Runes"
+        },
+        health = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "Health"
         }
     }
 end

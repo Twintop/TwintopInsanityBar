@@ -423,6 +423,14 @@ function TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         true -- isPrimary
     )
 
+    -- Health bar (1 node)
+    barGroups.health = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame_Health",
+        1,
+        false -- not primary
+    )
+
     return barGroups
 end
 
@@ -430,11 +438,16 @@ end
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
 function TRB.Classes.Hunter.BarGroupsFactory:GetSpecConfiguration(specId)
-    -- All Hunter specs have the same configuration: primary bar only
+    -- All Hunter specs have the same configuration: primary bar and health bar
     return {
         primary = {
             maxNodes = 1,
             isPrimary = true
+        },
+        health = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "Health"
         }
     }
 end

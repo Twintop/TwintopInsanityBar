@@ -483,6 +483,14 @@ function TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(specId)
             false -- not primary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Mistweaver
         -- Primary Mana bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -490,6 +498,14 @@ function TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(specId)
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
         )
 
     elseif specId == 3 then -- Windwalker
@@ -507,6 +523,14 @@ function TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(specId)
             UIParent,
             "TwintopResourceBarFrame_ComboPoint",
             5,
+            false -- not primary
+        )
+
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
             false -- not primary
         )
     end
@@ -528,6 +552,11 @@ function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = false,
                 resourceType = "Stagger"
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 2 then -- Mistweaver
@@ -535,6 +564,11 @@ function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 3 then -- Windwalker
@@ -547,6 +581,11 @@ function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 5,
                 isPrimary = false,
                 resourceType = "Chi"
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     end

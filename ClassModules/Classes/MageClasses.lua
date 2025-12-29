@@ -91,6 +91,14 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             false -- not primary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Fire
         -- Primary mana bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -100,6 +108,14 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             true -- isPrimary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 3 then -- Frost
         -- Primary mana bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -107,6 +123,14 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
         )
     end
 
@@ -127,6 +151,11 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 4,
                 isPrimary = false,
                 resourceType = "ArcaneCharges"
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 2 then -- Fire
@@ -134,6 +163,11 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 3 then -- Frost
@@ -141,6 +175,11 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     end

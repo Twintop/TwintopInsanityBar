@@ -1066,6 +1066,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             true -- isPrimary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Holy
         -- Primary mana bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -1075,6 +1083,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             true -- isPrimary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 3 then -- Shadow
         -- Primary insanity bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -1082,6 +1098,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
         )
     end
 
@@ -1097,6 +1121,11 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 2 then -- Holy
@@ -1104,6 +1133,11 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 3 then -- Shadow
@@ -1111,6 +1145,11 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     end

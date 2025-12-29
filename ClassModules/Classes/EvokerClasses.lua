@@ -114,7 +114,7 @@ function TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(specId)
     local barGroups = {}
 
     -- All Evoker specs have the same bar structure:
-    -- Primary Mana bar (1 node) + Essence (up to 6 nodes)
+    -- Primary Mana bar (1 node) + Essence (up to 6 nodes) + Health (1 node)
 
     -- Primary Mana bar (1 node)
     -- Primary bar groups are parented directly to UIParent for proper positioning
@@ -131,6 +131,14 @@ function TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(specId)
         UIParent,
         "TwintopResourceBarFrame_ComboPoint",
         6,
+        false -- not primary
+    )
+
+    -- Health bar (1 node)
+    barGroups.health = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame_Health",
+        1,
         false -- not primary
     )
 
@@ -151,6 +159,11 @@ function TRB.Classes.Evoker.BarGroupsFactory:GetSpecConfiguration(specId)
             maxNodes = 6,
             isPrimary = false,
             resourceType = "Essence"
+        },
+        health = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "Health"
         }
     }
 end

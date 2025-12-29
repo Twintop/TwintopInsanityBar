@@ -324,6 +324,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			end
 		end
 	end
+
+	-- Configure health bar group
+	if barGroups.health and settings.healthBar then
+		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, false)
+	end
 end
 
 ---Applies textures/colors to existing bar groups (OOP system only).
@@ -387,6 +392,26 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 					frameLevels.cpResource
 				)
 			end
+		end
+	end
+
+	-- Apply health bar appearance
+	if barGroups.health and settings.healthBar and settings.colors.healthBar then
+		local healthNode = barGroups.health:GetNode(1)
+		if healthNode then
+			healthNode:SetTextures(
+				settings.textures.healthBar,
+				settings.textures.healthBorder,
+				settings.textures.healthBackground
+			)
+			healthNode:SetBorderColor(settings.colors.healthBar.border)
+			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background)
+			healthNode:SetColor(settings.colors.healthBar.bar)
+			healthNode:SetFrameLevels(
+				frameLevels.cpContainer,
+				frameLevels.cpBorder,
+				frameLevels.cpResource
+			)
 		end
 	end
 
@@ -536,6 +561,153 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 	-- Show the group and active nodes
 	secondaryGroup:Show()
 	secondaryGroup:ShowNodes(nodes)
+end
+
+---Constructs a health bar group
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param primaryGroup TRB.Classes.BarGroup
+---@param healthGroup TRB.Classes.BarGroup
+---@param applyAppearance boolean?
+function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healthGroup, applyAppearance)
+	if settings.healthBar == nil then
+		return
+	end
+
+	if applyAppearance == nil then
+		applyAppearance = true
+	end
+
+	-- Verify the health group has valid nodes (not destroyed)
+	if healthGroup.nodes == nil or healthGroup:GetNode(1) == nil then
+		return
+	end
+
+	local strata = TRB.Data.settings.core.strata.level
+	local frameLevels = TRB.Data.constants.frameLevels
+
+	-- Set node count (health bar always has 1 node)
+	healthGroup:SetNodeCount(1)
+
+	-- Set layout parameters
+	healthGroup:SetLayout(settings.healthBar.spacing or 0, settings.healthBar.fullWidth, "HORIZONTAL")
+
+	-- Set frame strata
+	healthGroup:SetFrameStrata(strata)
+
+	-- Calculate positioning
+	local primaryContainer = primaryGroup:GetContainerFrame()
+	local setPoint = "TOP"
+	local setPointRelativeTo = "BOTTOM"
+	local topBottom = "BOTTOM"
+	local leftCenterRight = "CENTER"
+
+	if settings.healthBar.relativeTo == "TOPLEFT" then
+		setPoint = "BOTTOMLEFT"
+		setPointRelativeTo = "TOPLEFT"
+		topBottom = "TOP"
+		leftCenterRight = "LEFT"
+	elseif settings.healthBar.relativeTo == "TOP" then
+		setPoint = "BOTTOM"
+		setPointRelativeTo = "TOP"
+		topBottom = "TOP"
+	elseif settings.healthBar.relativeTo == "TOPRIGHT" then
+		setPoint = "BOTTOMRIGHT"
+		setPointRelativeTo = "TOPRIGHT"
+		topBottom = "TOP"
+		leftCenterRight = "RIGHT"
+	elseif settings.healthBar.relativeTo == "BOTTOMLEFT" then
+		setPoint = "TOPLEFT"
+		setPointRelativeTo = "BOTTOMLEFT"
+		topBottom = "BOTTOM"
+		leftCenterRight = "LEFT"
+	elseif settings.healthBar.relativeTo == "BOTTOM" then
+		setPoint = "TOP"
+		setPointRelativeTo = "BOTTOM"
+		topBottom = "BOTTOM"
+	elseif settings.healthBar.relativeTo == "BOTTOMRIGHT" then
+		setPoint = "TOPRIGHT"
+		setPointRelativeTo = "BOTTOMRIGHT"
+		topBottom = "BOTTOM"
+		leftCenterRight = "RIGHT"
+	end
+
+	local xPos, yPos
+	local healthWidth = settings.healthBar.width
+	local healthHeight = settings.healthBar.height
+	local healthBorder = settings.healthBar.border
+
+	if settings.healthBar.fullWidth then
+		xPos = 0
+		healthWidth = settings.bar.width
+		if topBottom == "BOTTOM" then
+			setPoint = "TOP"
+			setPointRelativeTo = "BOTTOM"
+		else
+			setPoint = "BOTTOM"
+			setPointRelativeTo = "TOP"
+		end
+		leftCenterRight = "CENTER"
+	else
+		if leftCenterRight == "LEFT" then
+			xPos = -settings.bar.border + settings.healthBar.xPos
+		elseif leftCenterRight == "RIGHT" then
+			xPos = settings.bar.border + settings.healthBar.xPos
+		else
+			xPos = settings.healthBar.xPos
+		end
+	end
+
+	if topBottom == "BOTTOM" then
+		yPos = -settings.bar.border + settings.healthBar.yPos - healthBorder
+	else
+		yPos = settings.bar.border + settings.healthBar.yPos + healthBorder
+	end
+
+	-- Position the health container
+	healthGroup.containerFrame:ClearAllPoints()
+	healthGroup.containerFrame:SetPoint(setPoint, primaryContainer, setPointRelativeTo, xPos, yPos)
+	healthGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
+	healthGroup.containerFrame:SetWidth(healthWidth)
+	healthGroup.containerFrame:SetHeight(healthHeight)
+
+	-- Configure the health node
+	local healthNode = healthGroup:GetNode(1)
+	if healthNode then
+		healthNode:SetDimensions(healthWidth, healthHeight, healthBorder)
+		healthNode:SetFrameLevels(
+			frameLevels.cpContainer,
+			frameLevels.cpBorder,
+			frameLevels.cpResource
+		)
+
+		-- Position node within container
+		local nodeContainer = healthNode:GetContainerFrame()
+		if nodeContainer then
+			nodeContainer:ClearAllPoints()
+			nodeContainer:SetAllPoints(healthGroup.containerFrame)
+		end
+		healthNode:PositionResourceFrame()
+
+		-- Set min/max for health (0 to max health)
+		local maxHealth = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
+		healthNode:SetMinMax(0, maxHealth)
+
+		-- Apply appearance only when requested
+		if applyAppearance and settings.colors.healthBar then
+			healthNode:SetTextures(
+				settings.textures.healthBar,
+				settings.textures.healthBorder,
+				settings.textures.healthBackground
+			)
+			healthNode:SetBorderColor(settings.colors.healthBar.border)
+			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background)
+			healthNode:SetColor(settings.colors.healthBar.bar)
+		end
+	end
+
+	-- Show the group and node
+	healthGroup:Show()
+	healthGroup:ShowNodes(1)
 end
 
 ---Updates the value on a BarNode using the standard caching mechanism

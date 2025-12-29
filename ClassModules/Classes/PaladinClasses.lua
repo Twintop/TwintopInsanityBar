@@ -96,6 +96,14 @@ function TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         false -- not primary
     )
 
+    -- Health bar (1 node)
+    barGroups.health = TRB.Classes.BarGroup:New(
+        parentFrame or UIParent,
+        "TwintopResourceBarFrame_Health",
+        1,
+        false -- not primary
+    )
+
     return barGroups
 end
 
@@ -112,6 +120,11 @@ function TRB.Classes.Paladin.BarGroupsFactory:GetSpecConfiguration(specId)
             maxNodes = 5,
             isPrimary = false,
             resourceType = "HolyPower"
+        },
+        health = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "Health"
         }
     }
 end

@@ -740,6 +740,14 @@ function TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         false -- not primary
     )
 
+    -- Health bar (1 node)
+    barGroups.health = TRB.Classes.BarGroup:New(
+        parentFrame or UIParent,
+        "TwintopResourceBarFrame_Health",
+        1,
+        false -- not primary
+    )
+
     return barGroups
 end
 
@@ -756,6 +764,11 @@ function TRB.Classes.Rogue.BarGroupsFactory:GetSpecConfiguration(specId)
             maxNodes = 7, -- Max possible with talents
             isPrimary = false,
             resourceType = "ComboPoints"
+        },
+        health = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "Health"
         }
     }
 end

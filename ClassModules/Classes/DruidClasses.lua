@@ -751,6 +751,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             true -- isPrimary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Feral
         -- Primary Energy bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -769,6 +777,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             false -- not primary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 3 then -- Guardian
         -- Primary Rage bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -778,6 +794,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             true -- isPrimary
         )
 
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 4 then -- Restoration
         -- Primary Mana bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -785,6 +809,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Health bar (1 node)
+        barGroups.health = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Health",
+            1,
+            false -- not primary
         )
     end
 
@@ -800,6 +832,11 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 2 then -- Feral
@@ -812,6 +849,11 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 5,
                 isPrimary = false,
                 resourceType = "ComboPoints"
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 3 then -- Guardian
@@ -819,6 +861,11 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     elseif specId == 4 then -- Restoration
@@ -826,6 +873,11 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
             }
         }
     end

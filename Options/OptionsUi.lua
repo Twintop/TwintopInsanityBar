@@ -1577,7 +1577,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort, includeSecondaryVisibility, secondaryResourceString)
+function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
@@ -1664,6 +1664,36 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown.secondaryVisibility:SetupMenu(SecondaryVisibilityGenerator)
 		controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.secondary))
 		controls.dropDown.secondaryVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+	end
+
+	-- Health bar visibility dropdown (only if includeHealthVisibility is true)
+	if includeHealthVisibility and spec.displayBar.health ~= nil then
+		yCoord = yCoord - 70
+		local healthLabel = L["ShowBarVisibilityHealth"]
+		controls.dropDown.healthVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_HealthVisibility", parent, "WowStyle1DropdownTemplate")
+		controls.dropDown.healthVisibility:SetWidth(oUi.sliderWidth)
+		controls.dropDown.healthVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, healthLabel, oUi.xCoord, yCoord)
+		controls.dropDown.healthVisibility.label.font:SetFontObject(GameFontNormal)
+
+		local function HealthVisibilityIsSelected(value)
+			return value == spec.displayBar.health
+		end
+
+		local function HealthVisibilitySetSelected(newValue)
+			spec.displayBar.health = newValue
+			controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+			TRB.Functions.Bar:HideResourceBar()
+		end
+
+		local function HealthVisibilityGenerator(dropdown, rootDescription)
+			for _, displayName in ipairs(visibilityOptionsList) do
+				rootDescription:CreateRadio(displayName, HealthVisibilityIsSelected, HealthVisibilitySetSelected, visibilityOptions[displayName])
+			end
+		end
+
+		controls.dropDown.healthVisibility:SetupMenu(HealthVisibilityGenerator)
+		controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health))
+		controls.dropDown.healthVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
 	end
 
 	if includeFlashAlpha then
@@ -2773,6 +2803,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		relativeToFrame[L["Essence4"]] = "ComboPoint_4"
 		relativeToFrame[L["Essence5"]] = "ComboPoint_5"
 		relativeToFrame[L["Essence6"]] = "ComboPoint_6"
+		relativeToFrame[L["HealthBar"]] = "HealthBar"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["Essence1"],
@@ -2781,6 +2812,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Essence4"],
 			L["Essence5"],
 			L["Essence6"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	end
