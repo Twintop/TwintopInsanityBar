@@ -184,6 +184,12 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				comboPointsBorderName = "1 Pixel",
 				comboPointsBar = "Interface\\TargetingFrame\\UI-StatusBar",
 				comboPointsBarName = "Blizzard",
+				healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				healthBackgroundName="Blizzard Tooltip",
+				healthBorder="Interface\\Buttons\\WHITE8X8",
+				healthBorderName="1 Pixel",
+				healthBar="Interface\\TargetingFrame\\UI-StatusBar",
+				healthBarName="Blizzard",
 			},
 			displayText={
 				default = {

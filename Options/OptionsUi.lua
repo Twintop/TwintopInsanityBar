@@ -1082,13 +1082,17 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString)
+function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString, includeSpacing)
 	if primaryResourceString == nil then
 		primaryResourceString = L["ResourceEnergy"]
 	end
 	
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]
+	end
+
+	if includeSpacing == nil then
+		includeSpacing = true
 	end
 
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
@@ -1238,20 +1242,22 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		controls.comboPointWidth.MinLabel:SetText(tostring(minsliderWidth))
 	end)
 
-	title = secondaryResourceString .. " Spacing"
-	controls.comboPointSpacing = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
-								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.comboPoints.spacing = value
+	if includeSpacing then
+		title = secondaryResourceString .. " Spacing"
+		controls.comboPointSpacing = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			spec.comboPoints.spacing = value
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				end
 			end
-		end
-	end)
+		end)
+	end
 
 	yCoord = yCoord - 40
 
@@ -1345,6 +1351,10 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 			textures.comboPointsBarName = newName
 			DropdownSetupMenuWrapper(controls.comboPointsBar)
 		end
+
+		textures.healthBar = newValue
+		textures.healthBarName = newName
+		DropdownSetupMenuWrapper(controls.healthBar)
 	end
 	
 	TRB.Functions.Character:ResetCaches()
@@ -1414,6 +1424,26 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints)
 	end
 
+	local function RefreshBar()
+		TRB.Functions.Character:ResetCaches()
+		if TRB.Frames.barGroups ~= nil then
+			local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		else
+			TRB.Functions.Bar:Construct()
+		end
+	end
+
+	-- ===== BAR TEXTURES SUBSECTION =====
+	controls.barTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BarTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+
+	yCoord = yCoord - 20
+
+	-- Row 1: Primary Bar (left), Secondary Bar (right, if applicable)
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			StatusbarSetValue("resource", newValue)
@@ -1424,47 +1454,24 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			function(newValue)
 				StatusbarSetValue("comboPoints", newValue)
 			end)
-	--end	
-		controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		f:SetChecked(spec.textures.textureLock)
-		getglobal(f:GetName() .. 'Text'):SetText(L["UseSameTexture"])
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = L["UseSameTextureTooltip"]
-
-		f:SetScript("OnClick", function(self, ...)
-			spec.textures.textureLock = self:GetChecked()
-			if spec.textures.textureLock then
-				if includeComboPoints then
-					spec.textures.comboPointsBar = spec.textures.resourceBar
-					spec.textures.comboPointsBarName = spec.textures.resourceBarName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBar)
-					spec.textures.comboPointsBorder = spec.textures.border
-					spec.textures.comboPointsBorderName = spec.textures.borderName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
-					spec.textures.comboPointsBackground = spec.textures.background
-					spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-				end
-
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-						TRB.Functions.Class:TriggerResourceBarUpdates()
-					end
-				else
-					TRB.Functions.Bar:Construct()
-				end
-			end
-		end)
 	end
 
 	yCoord = yCoord - 60
 
+	-- Row 2: Health Bar (left)
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "healthBar", L["HealthBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			StatusbarSetValue("health", newValue)
+		end)
+
+	yCoord = yCoord - 70
+
+	-- ===== BORDER TEXTURES SUBSECTION =====
+	controls.borderTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BorderTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+
+	yCoord = yCoord - 20
+
+	-- Row 1: Primary Border (left), Secondary Border (right, if applicable)
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"],
 		function(newValue)
 			local newName = borderPairsByName[newValue]
@@ -1472,48 +1479,23 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.borderName = newName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.border)
 	
-			if includeComboPoints and spec.textures.textureLock then
-				spec.textures.comboPointsBorder = newValue
-				spec.textures.comboPointsBorderName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+			if spec.textures.textureLock then
+				if includeComboPoints then
+					spec.textures.comboPointsBorder = newValue
+					spec.textures.comboPointsBorderName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+				end
+				spec.textures.healthBorder = newValue
+				spec.textures.healthBorderName = newName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
 			end
 
-			TRB.Functions.Character:ResetCaches()
-			if TRB.Frames.barGroups ~= nil then
-				local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
-			else
-				TRB.Functions.Bar:Construct()
-			end
-		end)
-	
-	
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"],
-	-- Implement the function to change the texture
-		function (newValue)
-			local newName = backgroundPairsByName[newValue]
-			spec.textures.background = newValue
-			spec.textures.backgroundName = newName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.background)
-			
-			if includeComboPoints and spec.textures.textureLock then
-				spec.textures.comboPointsBackground = newValue
-				spec.textures.comboPointsBackgroundName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-			end
-			
-			TRB.Functions.Character:ResetCaches()
-			TRB.Functions.Bar:Construct()
+			RefreshBar()
 		end)
 
 	if includeComboPoints then
-		yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"],
-			function (newValue)
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"],
+			function(newValue)
 				local newName = borderPairsByName[newValue]
 				spec.textures.comboPointsBorder = newValue
 				spec.textures.comboPointsBorderName = newName
@@ -1523,23 +1505,71 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					spec.textures.border = newValue
 					spec.textures.borderName = newName
 					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
+					spec.textures.healthBorder = newValue
+					spec.textures.healthBorderName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
 				end
-				
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-						TRB.Functions.Class:TriggerResourceBarUpdates()
-					end
-				else
-					TRB.Functions.Bar:Construct()
-				end
-			end)
 
+				RefreshBar()
+			end)
+	end
+
+	yCoord = yCoord - 60
+
+	-- Row 2: Health Border (left)
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "healthBorder", L["HealthBorderTexture"], L["BorderTextures"],
+		function(newValue)
+			local newName = borderPairsByName[newValue]
+			spec.textures.healthBorder = newValue
+			spec.textures.healthBorderName = newName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
+
+			if spec.textures.textureLock then
+				spec.textures.border = newValue
+				spec.textures.borderName = newName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.border)
+				if includeComboPoints then
+					spec.textures.comboPointsBorder = newValue
+					spec.textures.comboPointsBorderName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+				end
+			end
+
+			RefreshBar()
+		end)
+
+	yCoord = yCoord - 70
+
+	-- ===== BACKGROUND TEXTURES SUBSECTION =====
+	controls.backgroundTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BackgroundTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+
+	yCoord = yCoord - 20
+
+	-- Row 1: Primary Background (left), Secondary Background (right, if applicable)
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"],
+		function(newValue)
+			local newName = backgroundPairsByName[newValue]
+			spec.textures.background = newValue
+			spec.textures.backgroundName = newName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.background)
+			
+			if spec.textures.textureLock then
+				if includeComboPoints then
+					spec.textures.comboPointsBackground = newValue
+					spec.textures.comboPointsBackgroundName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+				end
+				spec.textures.healthBackground = newValue
+				spec.textures.healthBackgroundName = newName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
+			end
+			
+			RefreshBar()
+		end)
+
+	if includeComboPoints then
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"],
-			function (newValue)
+			function(newValue)
 				local newName = backgroundPairsByName[newValue]
 				spec.textures.comboPointsBackground = newValue
 				spec.textures.comboPointsBackgroundName = newName
@@ -1549,30 +1579,86 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					spec.textures.background = newValue
 					spec.textures.backgroundName = newName
 					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
+					spec.textures.healthBackground = newValue
+					spec.textures.healthBackgroundName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
 				end
 				
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-						TRB.Functions.Class:TriggerResourceBarUpdates()
-					end
-				else
-					TRB.Functions.Bar:Construct()
-				end
+				RefreshBar()
 			end)
-
-		yCoord = yCoord - 60
-		f = controls.checkBoxes.textureLock
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["TextureLock"])
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = L["TextureLockTooltip"]
-	else
-		yCoord = yCoord - 30
 	end
+
+	yCoord = yCoord - 60
+
+	-- Row 2: Health Background (left)
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "healthBackground", L["HealthBackgroundTexture"], L["BackgroundTextures"],
+		function(newValue)
+			local newName = backgroundPairsByName[newValue]
+			spec.textures.healthBackground = newValue
+			spec.textures.healthBackgroundName = newName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
+			
+			if spec.textures.textureLock then
+				spec.textures.background = newValue
+				spec.textures.backgroundName = newName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.background)
+				if includeComboPoints then
+					spec.textures.comboPointsBackground = newValue
+					spec.textures.comboPointsBackgroundName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+				end
+			end
+			
+			RefreshBar()
+		end)
+
+	yCoord = yCoord - 70
+
+	-- ===== TEXTURE LOCK CHECKBOX =====
+	controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.textureLock
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetChecked(spec.textures.textureLock)
+	getglobal(f:GetName() .. 'Text'):SetText(L["TextureLock"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["TextureLockTooltip"]
+
+	f:SetScript("OnClick", function(self, ...)
+		spec.textures.textureLock = self:GetChecked()
+		if spec.textures.textureLock then
+			-- Sync bar textures
+			if includeComboPoints then
+				spec.textures.comboPointsBar = spec.textures.resourceBar
+				spec.textures.comboPointsBarName = spec.textures.resourceBarName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBar)
+			end
+			spec.textures.healthBar = spec.textures.resourceBar
+			spec.textures.healthBarName = spec.textures.resourceBarName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBar)
+
+			-- Sync border textures
+			if includeComboPoints then
+				spec.textures.comboPointsBorder = spec.textures.border
+				spec.textures.comboPointsBorderName = spec.textures.borderName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+			end
+			spec.textures.healthBorder = spec.textures.border
+			spec.textures.healthBorderName = spec.textures.borderName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
+
+			-- Sync background textures
+			if includeComboPoints then
+				spec.textures.comboPointsBackground = spec.textures.background
+				spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+			end
+			spec.textures.healthBackground = spec.textures.background
+			spec.textures.healthBackgroundName = spec.textures.backgroundName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
+
+			RefreshBar()
+		end
+	end)
 
 	return yCoord
 end

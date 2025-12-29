@@ -1701,3 +1701,11 @@ L["ShowBarVisibilityHealth"] = "Health Bar Visibility"
 L["BarTextVariable_health"] = "Current health"
 L["BarTextVariable_healthMax"] = "Maximum health"
 L["BarTextVariable_healthPercent"] = "Current health percentage"
+
+-- Texture Section Headers
+L["BarTexturesSectionHeader"] = "Bar Textures"
+L["BorderTexturesSectionHeader"] = "Border Textures"
+L["BackgroundTexturesSectionHeader"] = "Background Textures"
+L["HealthBarTexture"] = "Health Bar Texture"
+L["HealthBorderTexture"] = "Health Border Texture"
+L["HealthBackgroundTexture"] = "Health Background (Empty Bar) Texture"
