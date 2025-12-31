@@ -314,6 +314,17 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth=true,
 		},
+		healthBar = {
+			width=555,
+			height=16,
+			xPos=0,
+			yPos=-4,
+			border=2,
+			spacing=0,
+			relativeTo="BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth=true,
+		},
 		colors = {
 			text = {
 				current = {
