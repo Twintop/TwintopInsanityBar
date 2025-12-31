@@ -94,6 +94,15 @@ local function UpdateHealthValues()
 	snapshotData.attributes.health = UnitHealth("player", true)
 	snapshotData.attributes.healthMax = UnitHealthMax("player")
 	snapshotData.attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
+
+	local curve = C_CurveUtil.CreateColorCurve()
+	curve:SetType(Enum.LuaCurveType.Step)
+	curve:AddPoint(0.0, CreateColor(1, 0, 0, 1))
+	curve:AddPoint(0.3, CreateColor(1, 1, 0, 1))
+	curve:AddPoint(0.7, CreateColor(0, 1, 0, 1))
+	local hpColor = UnitHealthPercent("player", true, curve)
+
+	snapshotData.attributes.healthColor = hpColor
 end
 
 ---Handles some change with the character's status

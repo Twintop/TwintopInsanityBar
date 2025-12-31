@@ -828,9 +828,9 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	end
 
 	--$health, $healthMax, $healthPercent - always update these since health changes frequently
-	local healthRaw = snapshotData.attributes.health or UnitHealth("player", true)
-	local healthMaxRaw = snapshotData.attributes.healthMax or UnitHealthMax("player")
-	local healthPercentRaw = snapshotData.attributes.healthPercent or UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
+	local healthRaw = snapshotData.attributes.health-- or UnitHealth("player", true)
+	local healthMaxRaw = snapshotData.attributes.healthMax-- or UnitHealthMax("player")
+	local healthPercentRaw = snapshotData.attributes.healthPercent-- or UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
 
 	local health = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthRaw))
 	local healthMax = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthMaxRaw))

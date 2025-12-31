@@ -150,7 +150,7 @@ function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 
 	if key == nil then
 		changed = true
-	else
+	elseif not issecretvalue(r) then
 		if TRB.Data.cache.colors.bar[key] == nil then
 			TRB.Data.cache.colors.bar[key] = {
 				r = r,
@@ -166,6 +166,8 @@ function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.bar[key].a = a
 			changed = true
 		end
+	else
+		changed = true
 	end
 	
 	if changed then

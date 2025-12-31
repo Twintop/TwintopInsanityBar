@@ -101,6 +101,15 @@ function TRB.Classes.BarNode:SetColor(colorString)
 	TRB.Functions.Color:SetStatusBarColorFromRGBAString(self.resourceFrame, self.name .. "_resource", colorString)
 end
 
+---Sets the color of the resource bar
+---@param colorResult LuaCurveEvaluatedResult
+function TRB.Classes.BarNode:SetColorCurve(colorResult)
+	if colorResult == nil then
+		return
+	end
+	self.resourceFrame:GetStatusBarTexture():SetVertexColor(colorResult:GetRGBA())
+end
+
 ---Sets the border color
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBorderColor(colorString)

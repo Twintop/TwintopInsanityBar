@@ -1032,15 +1032,13 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 
-			-- Update health bar if visible
-			if specSettings.displayBar.health ~= nil and specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
-					local currentHealth = snapshotData.attributes.health or UnitHealth("player", true)
-					local maxHealth = snapshotData.attributes.maxHealth or UnitHealthMax("player")
-					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "health", healthNode, currentHealth, maxHealth)
-					healthNode:SetColorFromString(specSettings.colors.healthBar.bar)
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
 					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
 				end
@@ -1135,15 +1133,13 @@ local function UpdateResourceBar()
 				end
 			end
 
-			-- Update health bar if visible
-			if specSettings.displayBar.health ~= nil and specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
-					local currentHealth = snapshotData.attributes.health or UnitHealth("player", true)
-					local maxHealth = snapshotData.attributes.maxHealth or UnitHealthMax("player")
-					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "health", healthNode, currentHealth, maxHealth)
-					healthNode:SetColorFromString(specSettings.colors.healthBar.bar)
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
 					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
 				end
@@ -1195,15 +1191,13 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 
-			-- Update health bar if visible
-			if specSettings.displayBar.health ~= nil and specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
-					local currentHealth = snapshotData.attributes.health or UnitHealth("player", true)
-					local maxHealth = snapshotData.attributes.maxHealth or UnitHealthMax("player")
-					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "health", healthNode, currentHealth, maxHealth)
-					healthNode:SetColorFromString(specSettings.colors.healthBar.bar)
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
 					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
 				end
