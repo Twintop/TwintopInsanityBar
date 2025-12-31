@@ -414,9 +414,12 @@ local function DevastationLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -792,9 +795,12 @@ local function PreservationLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			}
 		},
 		displayText={
@@ -1110,9 +1116,12 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -1420,6 +1429,9 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)		
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 1, yCoord)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
 end
@@ -1856,6 +1868,9 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 2, yCoord)
 end
 
 local function PreservationConstructThresholdPanel(parent)
@@ -2310,6 +2325,9 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 3, yCoord)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
 end

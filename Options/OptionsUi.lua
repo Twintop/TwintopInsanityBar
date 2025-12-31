@@ -105,6 +105,20 @@ local function DropdownSetupMenuWrapper(control)
 end
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
+
+---comment
+---@param parent Frame
+---@param title string
+---@param minValue number
+---@param maxValue number
+---@param defaultValue number
+---@param stepValue number
+---@param numDecimalPlaces integer
+---@param sizeX number
+---@param sizeY number
+---@param posX number
+---@param posY number
+---@return table|BackdropTemplate|Slider
 function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
 ---@diagnostic disable-next-line: inject-field
@@ -361,7 +375,9 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key].color)
 				elseif frameType == "threshold" then
 					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key].color, true, classId, specId)
-				end
+				end			
+			elseif frameType == "health" then
+				TRB.Functions.Character:UpdateHealthValues()
 			end
 
 			-- Clear color caches and trigger resource bar update to apply correct spec colors
@@ -406,6 +422,19 @@ function TRB.Functions.OptionsUi:GetSecondaryBackdropFrames()
 		end
 	end
 	return frames
+end
+
+---Gets the health bar's container frame for use in color picker callbacks
+---@return Frame|nil
+function TRB.Functions.OptionsUi:GetHealthBackdropFrame()
+	local barGroups = TRB.Frames.barGroups
+	if barGroups and barGroups.health then
+		local healthNode = barGroups.health:GetNode(1)
+		if healthNode then
+			return healthNode:GetContainerFrame()
+		end
+	end
+	return nil
 end
 
 function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
@@ -1311,23 +1340,25 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	end
 	comboPointsRelativeTo:SetupMenu(RelativeToGenerator)
 	comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		
-	controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.comboPointsFullWidth
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], secondaryResourceString))
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], secondaryResourceString, secondaryResourceString, secondaryResourceString)
-	f:SetChecked(spec.comboPoints.fullWidth)
-	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.fullWidth = self:GetChecked()
-		
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+	
+	if includeSpacing then
+		controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.comboPointsFullWidth
+		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], secondaryResourceString))
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], secondaryResourceString, secondaryResourceString, secondaryResourceString)
+		f:SetChecked(spec.comboPoints.fullWidth)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.fullWidth = self:GetChecked()
+			
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				end
 			end
-		end
-	end)
+		end)
+	end
 
 	return yCoord
 end
@@ -2253,6 +2284,289 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 	return yCoord
 end
 
+function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, classId, specId, yCoord)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+
+	controls.healthBarColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarColorHeader"], oUi.xCoord, yCoord)
+
+	-- Color Transition Type dropdown
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 30
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown.healthColorCurveType = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_HealthColorCurveType", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown.healthColorCurveType:SetWidth(oUi.sliderWidth)
+	controls.dropDown.healthColorCurveType.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarColorType"], oUi.xCoord, yCoord)
+	controls.dropDown.healthColorCurveType.label.font:SetFontObject(GameFontNormal)
+
+	local function ColorCurveTypeIsSelected(value)
+		return value == spec.colors.healthBar.type
+	end
+
+	local function ColorCurveTypeGetDisplayName(value)
+		if value == "step" then
+			return L["HealthBarColorTypeStep"]
+		elseif value == "linear" then
+			return L["HealthBarColorTypeLinear"]
+		else
+			return L["HealthBarColorTypeNone"]
+		end
+	end
+
+	local function ColorCurveTypeSetSelected(newValue)
+		spec.colors.healthBar.type = newValue
+		controls.dropDown.healthColorCurveType:SetDefaultText(ColorCurveTypeGetDisplayName(newValue))
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:UpdateHealthValues()
+	end
+
+	local function ColorCurveTypeGenerator(dropdown, rootDescription)
+		rootDescription:CreateRadio(L["HealthBarColorTypeStep"], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
+		rootDescription:CreateRadio(L["HealthBarColorTypeLinear"], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
+		rootDescription:CreateRadio(L["HealthBarColorTypeNone"], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "none")
+	end
+
+	controls.dropDown.healthColorCurveType:SetupMenu(ColorCurveTypeGenerator)
+	controls.dropDown.healthColorCurveType:SetDefaultText(ColorCurveTypeGetDisplayName(spec.colors.healthBar.type))
+	controls.dropDown.healthColorCurveType:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+
+	-- Medium Health Threshold Slider
+	yCoord = yCoord - 80
+	controls.healthThresholdMedium = TRB.Functions.OptionsUi:BuildSlider(parent, L["HealthBarThresholdMedium"], 0, 1, spec.colors.healthBar.medium.threshold, 0.01, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.healthThresholdMedium.tooltip = L["HealthBarThresholdMediumTooltip"]
+	controls.healthThresholdMedium:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.colors.healthBar.medium.threshold = value
+
+		if spec.colors.healthBar.high.threshold < spec.colors.healthBar.medium.threshold then
+			spec.colors.healthBar.medium.threshold = spec.colors.healthBar.high.threshold
+			controls.healthThresholdMedium.EditBox:SetText(spec.colors.healthBar.medium.threshold)
+			controls.healthThresholdMedium:SetValue(spec.colors.healthBar.medium.threshold)
+		end
+
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:UpdateHealthValues()
+	end)
+
+	-- High Health Threshold Slider
+	yCoord = yCoord - 60
+	controls.healthThresholdHigh = TRB.Functions.OptionsUi:BuildSlider(parent, L["HealthBarThresholdHigh"], 0, 1, spec.colors.healthBar.high.threshold, 0.01, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.healthThresholdHigh.tooltip = L["HealthBarThresholdHighTooltip"]
+	controls.healthThresholdHigh:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.colors.healthBar.high.threshold = value
+
+		if spec.colors.healthBar.high.threshold < spec.colors.healthBar.medium.threshold then
+			spec.colors.healthBar.high.threshold = spec.colors.healthBar.medium.threshold
+			controls.healthThresholdHigh.EditBox:SetText(spec.colors.healthBar.high.threshold)
+			controls.healthThresholdHigh:SetValue(spec.colors.healthBar.high.threshold)
+		end
+
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:UpdateHealthValues()
+	end)
+
+	
+	-- Low Health Color
+	controls.colors = controls.colors or {}
+	controls.colors.healthBar = controls.colors.healthBar or {}
+	controls.colors.healthBar.low = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarColorLow"], spec.colors.healthBar.low.color, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.healthBar.low
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors.healthBar, "low", "health")
+	end)
+
+	-- Medium Health Color
+	yCoord2 = yCoord2 - 30
+	controls.colors.healthBar.medium = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarColorMedium"], spec.colors.healthBar.medium.color, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.healthBar.medium
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors.healthBar, "medium", "health")
+	end)
+
+	-- High Health Color
+	yCoord2 = yCoord2 - 30
+	controls.colors.healthBar.high = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarColorHigh"], spec.colors.healthBar.high.color, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.healthBar.high
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors.healthBar, "high", "health")
+	end)
+	
+	yCoord2 = yCoord2 - 30
+
+	controls.colors.healthColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHealthBarBorder"], spec.colors.healthBar.border, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.healthColorBorder
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.healthBar, controls.colors, "border", "border", TRB.Functions.OptionsUi:GetHealthBackdropFrame())
+	end)
+	
+	yCoord2 = yCoord2 - 30
+
+	controls.colors.healthColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.healthBar.background, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.healthColorBackground
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.healthBar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetHealthBackdropFrame())
+	end)
+
+	yCoord = yCoord2 - 20
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls, spec, classId, specId, yCoord)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+
+	controls.staggerBarColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerBarColorHeader"], oUi.xCoord, yCoord)
+
+	-- Color Transition Type dropdown
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 30
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown.staggerColorCurveType = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_StaggerColorCurveType", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown.staggerColorCurveType:SetWidth(oUi.sliderWidth)
+	controls.dropDown.staggerColorCurveType.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerBarColorType"], oUi.xCoord, yCoord)
+	controls.dropDown.staggerColorCurveType.label.font:SetFontObject(GameFontNormal)
+
+	local function StaggerColorCurveTypeIsSelected(value)
+		return value == spec.colors.comboPoints.type
+	end
+
+	local function StaggerColorCurveTypeGetDisplayName(value)
+		if value == "step" then
+			return L["StaggerBarColorTypeStep"]
+		elseif value == "linear" then
+			return L["StaggerBarColorTypeLinear"]
+		else
+			return L["StaggerBarColorTypeNone"]
+		end
+	end
+
+	local function StaggerColorCurveTypeSetSelected(newValue)
+		spec.colors.comboPoints.type = newValue
+		controls.dropDown.staggerColorCurveType:SetDefaultText(StaggerColorCurveTypeGetDisplayName(newValue))
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+
+	local function StaggerColorCurveTypeGenerator(dropdown, rootDescription)
+		rootDescription:CreateRadio(L["StaggerBarColorTypeStep"], StaggerColorCurveTypeIsSelected, StaggerColorCurveTypeSetSelected, "step")
+		rootDescription:CreateRadio(L["StaggerBarColorTypeLinear"], StaggerColorCurveTypeIsSelected, StaggerColorCurveTypeSetSelected, "linear")
+		rootDescription:CreateRadio(L["StaggerBarColorTypeNone"], StaggerColorCurveTypeIsSelected, StaggerColorCurveTypeSetSelected, "none")
+	end
+
+	controls.dropDown.staggerColorCurveType:SetupMenu(StaggerColorCurveTypeGenerator)
+	controls.dropDown.staggerColorCurveType:SetDefaultText(StaggerColorCurveTypeGetDisplayName(spec.colors.comboPoints.type))
+	controls.dropDown.staggerColorCurveType:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+
+	-- Medium Stagger Threshold Slider
+	yCoord = yCoord - 80
+	controls.staggerThresholdMedium = TRB.Functions.OptionsUi:BuildSlider(parent, L["StaggerBarThresholdMedium"], 0, 1, spec.colors.comboPoints.medium.threshold, 0.01, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.staggerThresholdMedium.tooltip = L["StaggerBarThresholdMediumTooltip"]
+	controls.staggerThresholdMedium:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.colors.comboPoints.medium.threshold = value
+
+		if spec.colors.comboPoints.heavy.threshold < spec.colors.comboPoints.medium.threshold then
+			spec.colors.comboPoints.medium.threshold = spec.colors.comboPoints.heavy.threshold
+			controls.staggerThresholdMedium.EditBox:SetText(spec.colors.comboPoints.medium.threshold)
+			controls.staggerThresholdMedium:SetValue(spec.colors.comboPoints.medium.threshold)
+		end
+
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	-- Heavy Stagger Threshold Slider
+	yCoord = yCoord - 60
+	controls.staggerThresholdHeavy = TRB.Functions.OptionsUi:BuildSlider(parent, L["StaggerBarThresholdHeavy"], 0, 1, spec.colors.comboPoints.heavy.threshold, 0.01, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.staggerThresholdHeavy.tooltip = L["StaggerBarThresholdHeavyTooltip"]
+	controls.staggerThresholdHeavy:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.colors.comboPoints.heavy.threshold = value
+
+		if spec.colors.comboPoints.heavy.threshold < spec.colors.comboPoints.medium.threshold then
+			spec.colors.comboPoints.heavy.threshold = spec.colors.comboPoints.medium.threshold
+			controls.staggerThresholdHeavy.EditBox:SetText(spec.colors.comboPoints.heavy.threshold)
+			controls.staggerThresholdHeavy:SetValue(spec.colors.comboPoints.heavy.threshold)
+		end
+
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	
+	-- Light Stagger Color
+	controls.colors = controls.colors or {}
+	controls.colors.comboPoints = controls.colors.comboPoints or {}
+	controls.colors.comboPoints.light = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorLight"], spec.colors.comboPoints.light.color, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.comboPoints.light
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "light", "stagger")
+	end)
+
+	-- Medium Stagger Color
+	yCoord2 = yCoord2 - 30
+	controls.colors.comboPoints.medium = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorMedium"], spec.colors.comboPoints.medium.color, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.comboPoints.medium
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "medium", "stagger")
+	end)
+
+	-- Heavy Stagger Color
+	yCoord2 = yCoord2 - 30
+	controls.colors.comboPoints.heavy = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorHeavy"], spec.colors.comboPoints.heavy.color, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.comboPoints.heavy
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "heavy", "stagger")
+	end)
+	
+	yCoord2 = yCoord2 - 30
+
+	controls.colors.staggerColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.staggerColorBorder
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors, "border", "border", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
+	
+	yCoord2 = yCoord2 - 30
+
+	controls.colors.staggerColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord2)
+	f = controls.colors.staggerColorBackground
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = yCoord2 - 20
+
+	return yCoord
+end
+
 function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, primaryResourceMin, primaryResourceMax)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -2643,9 +2957,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local relativeToFrame = {}
 	relativeToFrame[L["MainResourceBar"]] = "Resource"
 	relativeToFrame[L["Screen"]] = "UIParent"
+	relativeToFrame[L["HealthBar"]] = "HealthBar"
 	local relativeToFrameList = {
 		L["MainResourceBar"],
-		L["Screen"]
+		L["Screen"],
+		L["HealthBar"],
 	}
 	
 	if (classId == 1 and specId == 3) then -- Protection Warrior
@@ -2889,7 +3205,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		relativeToFrame[L["Essence4"]] = "ComboPoint_4"
 		relativeToFrame[L["Essence5"]] = "ComboPoint_5"
 		relativeToFrame[L["Essence6"]] = "ComboPoint_6"
-		relativeToFrame[L["HealthBar"]] = "HealthBar"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["Essence1"],
@@ -2898,7 +3213,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Essence4"],
 			L["Essence5"],
 			L["Essence6"],
-			L["HealthBar"],
 			L["Screen"],
 		}
 	end

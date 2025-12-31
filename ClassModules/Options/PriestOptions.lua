@@ -384,9 +384,12 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				powerWordRadianceEnabled = true
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			}
 		},
 		displayText={
@@ -918,9 +921,12 @@ local function HolyLoadDefaultSettings(includeBarText)
 				}
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			}
 		},
 		displayText={
@@ -1375,9 +1381,12 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				}
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			}
 		},
 		displayText={
@@ -1663,6 +1672,9 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)]]
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 1, yCoord)
 end
 
 local function DisciplineConstructThresholdPanel(parent)
@@ -2316,6 +2328,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 		self.EditBox:SetText(value)
 		spec.endOfApotheosis.timeMax = value
 	end)]]
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 2, yCoord)
 end
 
 local function HolyConstructThresholdPanel(parent)
@@ -2800,6 +2815,10 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "mindDevourer")
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 3, yCoord)
+
 	--[[
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderEndOfVoidformConfiguration"], oUi.xCoord, yCoord)
@@ -2853,6 +2872,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfVoidform.timeMax = value
 	end)
 	]]
+
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], 1, SHADOW_MAX_INSANITY)
 end

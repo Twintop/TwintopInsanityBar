@@ -295,9 +295,12 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				}
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			}
 		},
 		displayText={
@@ -596,9 +599,12 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 				}
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			}
 		},
 		displayText={
@@ -910,9 +916,12 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				inAscendance1GCD="FFFF0000",
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			}
 		},
 		displayText={
@@ -1138,6 +1147,9 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "primalFracture")
 	end)]]
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 1, yCoord)
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
@@ -1656,6 +1668,9 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 2, yCoord)
+
+	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
@@ -2053,6 +2068,9 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], false, true)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 3, yCoord)
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)

@@ -289,9 +289,12 @@ local function BalanceLoadDefaultSettings(includeBarText)
 				flashSsEnabled=true,
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -800,9 +803,12 @@ local function FeralLoadDefaultSettings(includeBarText)
 				apexPredator="FFE75480"
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			comboPoints = {
 				border="FFFF7C0A",
@@ -1142,9 +1148,12 @@ local function GuardianLoadDefaultSettings(includeBarText)
 				},
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -1469,9 +1478,12 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				incarnationEnd="FFDD5500"
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				over = {
@@ -1732,6 +1744,12 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], true, false)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarOptions(parent, controls, spec, 11, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 1, yCoord)
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceHeaderEndOfEclipseConfiguration"], oUi.xCoord, yCoord)
@@ -2357,6 +2375,9 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 2, yCoord)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 1, FERAL_MAX_ENERGY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
@@ -2883,7 +2904,10 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], false, false)
-	
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 3, yCoord)
+
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidGuardianEndOfBerserkConfigurationHeader"], oUi.xCoord, yCoord)
 
@@ -2935,7 +2959,6 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 		self.EditBox:SetText(value)
 		spec.endOfBerserk.timeMax = value
 	end)
-
 
 	yCoord = yCoord - 25
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], 1, GUARDIAN_MAX_RAGE)
@@ -3394,6 +3417,9 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], false, true)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 4, yCoord)
 	
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidRestorationEndOfIncarnationConfigurationHeader"], oUi.xCoord, yCoord)

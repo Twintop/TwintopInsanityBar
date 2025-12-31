@@ -89,20 +89,98 @@ local function UpdateResourceValues()
 	end
 end
 
-local function UpdateHealthValues()
+function TRB.Functions.Character:UpdateHealthValues()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.health = UnitHealth("player", true)
 	snapshotData.attributes.healthMax = UnitHealthMax("player")
 	snapshotData.attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
 
-	local curve = C_CurveUtil.CreateColorCurve()
-	curve:SetType(Enum.LuaCurveType.Step)
-	curve:AddPoint(0.0, CreateColor(1, 0, 0, 1))
-	curve:AddPoint(0.3, CreateColor(1, 1, 0, 1))
-	curve:AddPoint(0.7, CreateColor(0, 1, 0, 1))
-	local hpColor = UnitHealthPercent("player", true, curve)
+	-- Get configurable color curve settings from spec settings
+	local healthBarSettings = nil
+	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.specName then
+		local specCache = TRB.Data.specCache[TRB.Data.character.specName]
+		if specCache and specCache.settings and specCache.settings.colors then
+			healthBarSettings = specCache.settings.colors.healthBar
+		end
+	end
 
-	snapshotData.attributes.healthColor = hpColor
+	if healthBarSettings == nil then
+		return
+	end
+
+	-- Use configurable settings or defaults
+	local curveType = Enum.LuaCurveType.Step
+
+	if healthBarSettings then
+		local highR, highG, highB, highA = 0, 1, 0, 1
+		local highThreshold = 0.7
+		-- High health color and threshold
+		if healthBarSettings.high then
+			if healthBarSettings.high.color then
+				highR, highG, highB, highA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.high.color, true)
+			end
+			if healthBarSettings.high.threshold then
+				highThreshold = healthBarSettings.high.threshold
+			end
+		end
+
+		-- Curve type
+		if healthBarSettings.type == "linear" then
+			curveType = Enum.LuaCurveType.Linear
+		elseif healthBarSettings.type == "step" then
+			curveType = Enum.LuaCurveType.Step
+		else
+			curveType = nil
+		end
+
+		local curve = C_CurveUtil.CreateColorCurve()
+
+		if curveType == nil then
+			curve:SetType(Enum.LuaCurveType.Step)
+			curve:AddPoint(0, CreateColor(highR, highG, highB, highA))
+		else
+			local lowThreshold = 0.0
+			local lowR, lowG, lowB, lowA = 1, 0, 0, 1
+			local mediumThreshold = 0.3
+			local mediumR, mediumG, mediumB, mediumA = 1, 1, 0, 1
+
+			-- Low health color and threshold
+			if healthBarSettings.low then
+				if healthBarSettings.low.color then
+					lowR, lowG, lowB, lowA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.low.color, true)
+				end
+				if healthBarSettings.low.threshold then
+					lowThreshold = healthBarSettings.low.threshold
+				end
+			end
+
+			-- Medium health color and threshold
+			if healthBarSettings.medium then
+				if healthBarSettings.medium.color then
+					mediumR, mediumG, mediumB, mediumA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.medium.color, true)
+				end
+				if healthBarSettings.medium.threshold then
+					mediumThreshold = healthBarSettings.medium.threshold
+				end
+			end
+
+			if mediumThreshold >= highThreshold then
+				mediumThreshold = highThreshold - 0.000001
+			end
+
+			if lowThreshold >= mediumThreshold then
+				lowThreshold = mediumThreshold - 0.000001
+			end
+
+			curve:SetType(curveType)
+			curve:AddPoint(lowThreshold, CreateColor(lowR, lowG, lowB, lowA))
+			curve:AddPoint(mediumThreshold, CreateColor(mediumR, mediumG, mediumB, mediumA))
+			curve:AddPoint(highThreshold, CreateColor(highR, highG, highB, highA))
+		end
+		local hpColor = UnitHealthPercent("player", true, curve)
+
+		snapshotData.attributes.healthColor = hpColor
+	end
 end
 
 ---Handles some change with the character's status
@@ -118,7 +196,7 @@ local function CharacterChange(self, event, ...)
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then
 		local unitTarget = ...
 		if unitTarget == "player" then
-			UpdateHealthValues()
+			TRB.Functions.Character:UpdateHealthValues()
 		end
 	elseif event == "UNIT_STATS" then
 		if unitTarget == "player" then
@@ -750,7 +828,7 @@ function TRB.Functions.Character:EventRegistration()
 			end
 		end
 		UpdateResourceValues()
-		UpdateHealthValues()
+		TRB.Functions.Character:UpdateHealthValues()
 		TRB.Functions.Class:CheckCharacter()
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")

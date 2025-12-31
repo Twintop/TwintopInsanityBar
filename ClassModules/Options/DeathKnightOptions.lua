@@ -432,9 +432,12 @@ local function BloodLoadDefaultSettings(includeBarText)
 				sortRunes = true
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -773,9 +776,12 @@ local function FrostLoadDefaultSettings(includeBarText)
 				sortRunes = true
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -1107,9 +1113,12 @@ local function UnholyLoadDefaultSettings(includeBarText)
 				sortRunes = true
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -1371,6 +1380,9 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], 1, BLOOD_MAX_RUNIC_POWER)
@@ -1767,6 +1779,9 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 2, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], 1, FROST_MAX_RUNIC_POWER)
@@ -2179,6 +2194,9 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 3, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], 1, UNHOLY_MAX_RUNIC_POWER)

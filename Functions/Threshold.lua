@@ -201,8 +201,15 @@ end
 
 function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
 	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
+		-- Hide the threshold line if showThreshold is false
+		if thresholdLine and not showThreshold then
+			thresholdLine:Hide()
+		end
 		return
 	end
+
+	-- Show the threshold line since showThreshold is true
+	thresholdLine:Show()
 
 	if growRight == nil then
 		growRight = true

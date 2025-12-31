@@ -689,8 +689,8 @@ function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healt
 		healthNode:PositionResourceFrame()
 
 		-- Set min/max for health (0 to max health)
-		local maxHealth = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
-		healthNode:SetMinMax(0, maxHealth)
+		local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
+		healthNode:SetMinMax(0, healthMax)
 
 		-- Apply appearance only when requested
 		if applyAppearance and settings.colors.healthBar then

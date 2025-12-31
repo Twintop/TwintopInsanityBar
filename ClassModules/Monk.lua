@@ -562,11 +562,12 @@ local function RefreshLookupData_Brewmaster()
 	--$stagger and $staggerPercent
 	local _stagger = snapshotData.attributes.stagger or 0
 	local _staggerPercent = snapshotData.attributes.staggerPercent or 0
-	local staggerColor = specSettings.colors.comboPoints.base
-	if _staggerPercent >= STAGGER_STATES.RED.threshold then
-		staggerColor = specSettings.colors.comboPoints.staggerHeavy
-	elseif _staggerPercent >= STAGGER_STATES.YELLOW.threshold then
-		staggerColor = specSettings.colors.comboPoints.staggerMedium
+
+	-- Get stagger color from ColorCurve result
+	local staggerColor = specSettings.colors.comboPoints.light.color
+	if snapshotData.attributes.staggerColor then
+		local r, g, b, a = snapshotData.attributes.staggerColor:GetRGBA()
+		staggerColor = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	end
 
 	local stagger = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
@@ -799,6 +800,99 @@ local function UpdateSnapshot()
 	--local currentTime = GetTime()
 end
 
+---Updates the stagger color curve based on current stagger percentage and configured thresholds
+local function UpdateStaggerColor()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+	-- Get configurable color curve settings from spec settings
+	local staggerBarSettings = nil
+	if TRB.Data.specCache and TRB.Data.specCache.brewmaster then
+		local specCache = TRB.Data.specCache.brewmaster
+		if specCache and specCache.settings and specCache.settings.colors then
+			staggerBarSettings = specCache.settings.colors.comboPoints
+		end
+	end
+
+	if staggerBarSettings == nil then
+		return
+	end
+
+	-- Use configurable settings or defaults
+	local curveType = Enum.LuaCurveType.Step
+
+	local lightThreshold = 0.0
+	local lightR, lightG, lightB, lightA = 0.52, 1, 0.52, 1 -- default green for light stagger
+
+	-- Light stagger color and threshold
+	if staggerBarSettings.light then
+		if staggerBarSettings.light.color then
+			lightR, lightG, lightB, lightA = TRB.Functions.Color:GetRGBAFromString(staggerBarSettings.light.color, true)
+		end
+		if staggerBarSettings.light.threshold then
+			lightThreshold = staggerBarSettings.light.threshold
+		end
+	end
+
+	local heavyR, heavyG, heavyB, heavyA = 1, 0.42, 0.42, 1 -- default red-ish for heavy stagger
+	local heavyThreshold = 0.6
+	-- Heavy stagger color and threshold
+	if staggerBarSettings.heavy then
+		if staggerBarSettings.heavy.color then
+			heavyR, heavyG, heavyB, heavyA = TRB.Functions.Color:GetRGBAFromString(staggerBarSettings.heavy.color, true)
+		end
+		if staggerBarSettings.heavy.threshold then
+			heavyThreshold = staggerBarSettings.heavy.threshold
+		end
+	end
+
+	-- Curve type
+	if staggerBarSettings.type == "linear" then
+		curveType = Enum.LuaCurveType.Linear
+	elseif staggerBarSettings.type == "step" then
+		curveType = Enum.LuaCurveType.Step
+	else
+		curveType = nil
+	end
+
+	local curve = C_CurveUtil.CreateColorCurve()
+
+	if curveType == nil then
+		curve:SetType(Enum.LuaCurveType.Step)
+		curve:AddPoint(0, CreateColor(lightR, lightG, lightB, lightA))
+	else
+		local mediumThreshold = 0.3
+		local mediumR, mediumG, mediumB, mediumA = 1, 0.98, 0.72, 1 -- default yellow for medium stagger
+
+		-- Medium stagger color and threshold
+		if staggerBarSettings.medium then
+			if staggerBarSettings.medium.color then
+				mediumR, mediumG, mediumB, mediumA = TRB.Functions.Color:GetRGBAFromString(staggerBarSettings.medium.color, true)
+			end
+			if staggerBarSettings.medium.threshold then
+				mediumThreshold = staggerBarSettings.medium.threshold
+			end
+		end
+
+		if mediumThreshold >= heavyThreshold then
+			mediumThreshold = heavyThreshold - 0.000001
+		end
+
+		if lightThreshold >= mediumThreshold then
+			lightThreshold = mediumThreshold - 0.000001
+		end
+
+		curve:SetType(curveType)
+		curve:AddPoint(lightThreshold, CreateColor(lightR, lightG, lightB, lightA))
+		curve:AddPoint(mediumThreshold, CreateColor(mediumR, mediumG, mediumB, mediumA))
+		curve:AddPoint(heavyThreshold, CreateColor(heavyR, heavyG, heavyB, heavyA))
+	end
+
+	-- Evaluate the curve at current stagger percent
+	local staggerPercent = snapshotData.attributes.staggerPercent or 0
+	local staggerColor = curve:Evaluate(staggerPercent)
+	snapshotData.attributes.staggerColor = staggerColor
+end
+
 local function UpdateSnapshot_Brewmaster()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -807,6 +901,7 @@ local function UpdateSnapshot_Brewmaster()
 
 	snapshotData.attributes.stagger = UnitStagger("player")
 	snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.healthMax
+	UpdateStaggerColor()
 
 	snapshots[spells.expelHarm.id].cooldown:GetRemainingTime()
 	snapshots[spells.detox.id].cooldown:GetRemainingTime()
@@ -935,37 +1030,37 @@ local function UpdateResourceBar()
 					local staggerNode = barGroups.secondary:GetNode(1)
 					if staggerNode then
 						-- Set Stagger bar value as percentage of max health
-						staggerNode:SetMinMax(0, snapshotData.attributes.maxHealth)
+						staggerNode:SetMinMax(0, snapshotData.attributes.healthMax)
 						staggerNode:SetValue(snapshotData.attributes.stagger)
 
 						local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 						local cpBorderColor = specSettings.colors.comboPoints.border
-						local cpColor = specSettings.colors.comboPoints.base
 
-						if snapshotData.attributes.staggerPercent >= STAGGER_STATES.RED.threshold then
-							cpColor = specSettings.colors.comboPoints.staggerHeavy
-						elseif snapshotData.attributes.staggerPercent >= STAGGER_STATES.YELLOW.threshold then
-							cpColor = specSettings.colors.comboPoints.staggerMedium
-						end
-
-						staggerNode:SetColor(cpColor)
+						-- Use ColorCurve for stagger bar fill color
+						staggerNode:SetColorCurve(snapshotData.attributes.staggerColor)
 						staggerNode:SetBorderColor(cpBorderColor)
 						staggerNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 
-						-- Update Stagger thresholds on the BarNode
+						-- Update Stagger thresholds on the BarNode (use discrete colors, configurable positions)
 						local staggerThresholds = staggerNode:GetThresholds()
 						local staggerResourceFrame = staggerNode:GetResourceFrame()
 
-						-- Medium Stagger threshold
+						-- Medium Stagger threshold (configurable position, discrete color)
 						if staggerThresholds[1] then
-							TRB.Functions.Color:SetThresholdColor(staggerThresholds[1], specSettings.colors.comboPoints.staggerMedium, true)
-							TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", staggerThresholds[1], true, staggerNode:GetContainerFrame(), STAGGER_STATES.YELLOW.threshold * snapshotData.attributes.maxHealth, snapshotData.attributes.maxHealth)
+							local mediumThreshold = specSettings.colors.comboPoints.medium and specSettings.colors.comboPoints.medium.threshold or 0.30
+							local mediumColor = specSettings.colors.comboPoints.medium and specSettings.colors.comboPoints.medium.color or "FFFFFAB8"
+							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled or false
+							TRB.Functions.Color:SetThresholdColor(staggerThresholds[1], mediumColor, true)
+							TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetContainerFrame(), mediumThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax)
 						end
 
-						-- Heavy Stagger threshold
+						-- Heavy Stagger threshold (configurable position, discrete color)
 						if staggerThresholds[2] then
-							TRB.Functions.Color:SetThresholdColor(staggerThresholds[2], specSettings.colors.comboPoints.staggerHeavy, true)
-							TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold2", staggerThresholds[2], true, staggerNode:GetContainerFrame(), STAGGER_STATES.RED.threshold * snapshotData.attributes.maxHealth, snapshotData.attributes.maxHealth)
+							local heavyThreshold = specSettings.colors.comboPoints.heavy and specSettings.colors.comboPoints.heavy.threshold or 0.60
+							local heavyColor = specSettings.colors.comboPoints.heavy and specSettings.colors.comboPoints.heavy.color or "FFFF6B6B"
+							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled or false
+							TRB.Functions.Color:SetThresholdColor(staggerThresholds[2], heavyColor, true)
+							TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetContainerFrame(), heavyThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax)
 						end
 					end
 				end

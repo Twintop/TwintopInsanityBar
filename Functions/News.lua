@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 12.0.0.0-beta07 (2025-12-30)
+# 12.0.0.0-beta07 (2026-01-01)
 ## General
 
 - [#505 - NEW](#505) Add an optional player health bar, including new bar text variables `$health`, `$healthMax`, and `$healthPercent`.
@@ -21,6 +21,13 @@ local content = [====[
 ### [#467](#467) Vengeance
 
 - Re-enable Soul Fragment tracking. The bar now tracks Soul Fragments with a workaround using threshold lines due to API limitations.
+
+## Monk
+### [#494](#494) Brewmaster
+
+- Change Stagger tracking to use ColorCurve.
+- Add a way to change thresholds for Medium and Heavy Stagger.
+- Add threshold line toggles for Medium and Heavy Stagger levels.
 
 ---
 

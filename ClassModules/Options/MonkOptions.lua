@@ -276,6 +276,14 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 				kegSmash = {
 					enabled = true,
 				}
+			},
+			stagger = {
+				medium = {
+					enabled = true,
+				},
+				heavy = {
+					enabled = true,
+				}
 			}
 		},
 		generation = {
@@ -349,15 +357,18 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			comboPoints = {
 				border="FF00FF98",
 				background="66000000",
-				base="FF85FF85", -- staggerLight				
-				staggerMedium="FFFFFAB8",
-				staggerHeavy="FFFF6B6B",
-				enabled=true
+				type = "step",
+				light = { color = "FF85FF85", threshold = 0.0 },
+				medium = { color = "FFFFFAB8", threshold = 0.30 },
+				heavy = { color = "FFFF6B6B", threshold = 0.60 }
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -641,9 +652,12 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				},
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			}
 		},
 		displayText={
@@ -980,9 +994,12 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				sameColor=false
 			},
 			healthBar = {
-				bar="FF1EFF00",
-				border="FF1EFF00",
-				background="66000000"
+				border="FF008800",
+				background="66000000",
+				type = "step",
+				low = { color = "FFFF0000", threshold = 0.0 },
+				medium = { color = "FFFFFF00", threshold = 0.30 },
+				high = { color = "FF00FF00", threshold = 0.70 }
 			},
 			threshold = {
 				under = {
@@ -1167,7 +1184,7 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, true, L["ResourceStagger"])
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, true, L["ResourceStagger"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, true, L["ResourceStagger"], false)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
@@ -1183,56 +1200,10 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], false, false)
 
 	yCoord = yCoord - 40
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkBrewmasterStaggerColorsHeader"], oUi.xCoord, yCoord)
-	controls.colors.comboPoints = {}
+	yCoord = TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls, spec, 10, 1, yCoord)
 
-	yCoord = yCoord - 30
-	--[[controls.checkBoxes.staggerComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_staggerComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.staggerComboPointEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterCheckboxEnableStagger"])
-	f.tooltip = L["MonkBrewmasterCheckboxEnableStaggerTooltip"]
-	f:SetChecked(spec.colors.comboPoints.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.enabled = self:GetChecked()
-		if TRB.Data.character.classId == 10 and TRB.Data.character.specId == 1 then
-			TRB.Functions.Character:ResetCaches()
-			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.brewmaster.settings)
-		end
-	end)]]
-
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorStaggerLight"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
-	end)
-
-	controls.colors.comboPoints.staggerMedium = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorStaggerMedium"], spec.colors.comboPoints.staggerMedium, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.staggerMedium
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "staggerMedium")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.staggerHeavy = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorStaggerHeavy"], spec.colors.comboPoints.staggerHeavy, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.comboPoints.staggerHeavy
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "staggerHeavy")
-	end)
-
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorStaggerBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.border
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.comboPoints.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
@@ -1377,6 +1348,37 @@ local function BrewmasterConstructThresholdPanel(parent)
 	end)
 
 	yCoord = yCoord2
+
+	-- Stagger Levels section
+	yCoord = yCoord - 40
+	controls.staggerLevelsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerLevelsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.staggerMediumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_staggerMedium", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.staggerMediumThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["StaggerLevelMediumCheckbox"])
+	f.tooltip = L["StaggerLevelMediumTooltip"]
+	f:SetChecked(spec.thresholds.stagger.medium.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.stagger.medium.enabled = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	controls.checkBoxes.staggerHeavyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_staggerHeavy", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.staggerHeavyThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["StaggerLevelHeavyCheckbox"])
+	f.tooltip = L["StaggerLevelHeavyTooltip"]
+	f:SetChecked(spec.thresholds.stagger.heavy.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.stagger.heavy.enabled = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
@@ -1797,6 +1799,9 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
 	end)]]
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 2, yCoord)
 end
 
 local function MistweaverConstructThresholdPanel(parent)
@@ -2217,6 +2222,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 3, yCoord)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
