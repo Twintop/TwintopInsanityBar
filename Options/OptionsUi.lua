@@ -884,9 +884,13 @@ function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, c
 
 				local bgTexture = button:AttachTexture()
 				bgTexture:SetTexture(v[2])
+				bgTexture:SetDrawLayer("BACKGROUND")
 				bgTexture:SetPoint("LEFT", button.fontString, "LEFT")
 				bgTexture:SetPoint("RIGHT", rightTexture, "LEFT")
 				bgTexture:SetSize(button.fontString:GetUnboundedStringWidth(), 16)
+
+				-- Ensure text is drawn on top of the texture
+				fontString:SetDrawLayer("OVERLAY")
 
 				-- Manual calculation required to accomodate aligned text.
 				local pad = 0
