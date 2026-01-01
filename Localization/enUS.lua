@@ -1750,3 +1750,5 @@ L["StaggerLevelHeavyTooltip"] = "Show a threshold line on the Stagger bar at the
 L["HealthBar"] = "Health Bar"
 L["HealthBarPositionAndSize"] = "Health Bar Position and Size"
 L["CheckboxUseGlobalTooltip_HealthBar"] = "When checked, the global settings for the Health Bar size and position will be used."
+
+L["LSMStatusBarClean"] = "TRB: Clean"
