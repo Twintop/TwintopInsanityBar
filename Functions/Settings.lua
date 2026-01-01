@@ -8,13 +8,15 @@ local specGlobalDefaults = {
 	--specEnable = false,
 	bar = false,
 	comboPoints = false,
+	healthBar = false,
 	thresholdIcons = false,
 	thresholdHealers = false,
 	thresholdPotions = false,
-	--displayBar = false,
+	displayBar = false,
 	displayText = false,
 	textColors = false,
 	thresholdColors = false,
+	healthBarColors = false,
 	precision = false,
 	textures = false
 }
@@ -100,6 +102,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 			displayBar = {
 				primary = "combat",
 				secondary = "combat",
+				health = "combat",
 				dragonriding = true
 			},
 			bar = {
@@ -121,6 +124,16 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				relativeTo = "TOP",
 				relativeToName = L["PositionAboveMiddle"],
 				fullWidth = false,
+			},
+			healthBar = {
+				width = 555,
+				height = 16,
+				xPos = 0,
+				yPos = -4,
+				border = 2,
+				relativeTo = "BOTTOM",
+				relativeToName = L["PositionBelowMiddle"],
+				fullWidth = true,
 			},
 			precision = {
 				secondary = 2,
@@ -148,6 +161,14 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 						color = "FF00FF00",
 						enabled = false
 					},
+				},
+				healthBar = {
+					border = { color = "FF008800" },
+					background = { color = "66000000" },
+					type = "step",
+					low = { color = "FFFF0000", threshold = 0.0 },
+					medium = { color = "FFFFFF00", threshold = 0.30 },
+					high = { color = "FF00FF00", threshold = 0.70 }
 				},
 				threshold = {
 					under = {

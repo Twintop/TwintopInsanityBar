@@ -384,8 +384,8 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				powerWordRadianceEnabled = true
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -921,8 +921,8 @@ local function HolyLoadDefaultSettings(includeBarText)
 				}
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -1381,8 +1381,8 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				}
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -1561,6 +1561,9 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 
 	--yCoord = yCoord - 30
 	--yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], L["PriestDisciplinePowerWords"])
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord)--, true, L["PriestDisciplinePowerWords"])
@@ -1996,6 +1999,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 
 	--yCoord = yCoord - 30
 	--yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], L["PriestHolyHolyWords"])
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord)--, true, L["PriestHolyHolyWords"])
@@ -2672,6 +2678,9 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false)

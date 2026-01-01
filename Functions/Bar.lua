@@ -404,8 +404,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				settings.textures.healthBorder,
 				settings.textures.healthBackground
 			)
-			healthNode:SetBorderColor(settings.colors.healthBar.border)
-			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background)
+			healthNode:SetBorderColor(settings.colors.healthBar.border.color)
+			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
 			healthNode:SetColor(settings.colors.healthBar.bar)
 			healthNode:SetFrameLevels(
 				frameLevels.cpContainer,
@@ -421,13 +421,26 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	end
 end
 
----Constructs a secondary bar group (combo points, arcane charges, etc.)
+---Configuration for constructing an anchored bar group
+---@class TRB.Classes.AnchoredBarGroupConfig
+---@field public settingsKey string # Key to read from settings (e.g., "comboPoints", "healthBar")
+---@field public colorsKey string # Key to read from settings.colors (e.g., "comboPoints", "healthBar")
+---@field public nodeCount integer? # Fixed node count, or nil to use TRB.Data.character.maxResource2
+---@field public useApplyLayout boolean # If true, use group:ApplyLayout(); if false, size single node directly
+---@field public defaultAnchorAbove boolean # If true, default anchor is TOP; if false, default is BOTTOM
+---@field public textures { bar: string, border: string, background: string } # Texture setting keys
+---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
+---@field public minMaxMode string # "discrete" (0-1), "health" (0-maxHealth), or "custom"
+
+---Constructs an anchored bar group (combo points, health bar, etc.)
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param primaryGroup TRB.Classes.BarGroup
----@param secondaryGroup TRB.Classes.BarGroup
+---@param anchorGroup TRB.Classes.BarGroup # The group to anchor to (usually primary)
+---@param targetGroup TRB.Classes.BarGroup # The group being constructed
+---@param config TRB.Classes.AnchoredBarGroupConfig # Configuration for this bar group type
 ---@param applyAppearance boolean?
-function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance)
-	if settings.comboPoints == nil then
+function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targetGroup, config, applyAppearance)
+	local groupSettings = settings[config.settingsKey]
+	if groupSettings == nil then
 		return
 	end
 
@@ -435,66 +448,92 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 		applyAppearance = true
 	end
 
-	-- Verify the secondary group has valid nodes (not destroyed)
-	if secondaryGroup.nodes == nil or secondaryGroup:GetNode(1) == nil then
+	-- Verify the target group has valid nodes (not destroyed)
+	if targetGroup.nodes == nil or targetGroup:GetNode(1) == nil then
 		return
 	end
 
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
-	local nodes = TRB.Data.character.maxResource2
-	if nodes == nil or nodes == 0 then
-		nodes = secondaryGroup.maxNodes or 1
-	end
-	nodes = math.min(nodes, secondaryGroup.maxNodes or nodes)
 
-	-- Set node count based on max resource
-	secondaryGroup:SetNodeCount(nodes)
+	-- Determine node count
+	local nodes
+	if config.nodeCount ~= nil then
+		nodes = config.nodeCount
+	else
+		nodes = TRB.Data.character.maxResource2
+		if nodes == nil or nodes == 0 then
+			nodes = targetGroup.maxNodes or 1
+		end
+		nodes = math.min(nodes, targetGroup.maxNodes or nodes)
+	end
+
+	-- Set node count
+	targetGroup:SetNodeCount(nodes)
 
 	-- Set layout parameters
-	secondaryGroup:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+	targetGroup:SetLayout(groupSettings.spacing or 0, groupSettings.fullWidth, "HORIZONTAL")
 
 	-- Set frame strata
-	secondaryGroup:SetFrameStrata(strata)
+	targetGroup:SetFrameStrata(strata)
 
-	-- Calculate positioning
-	local primaryContainer = primaryGroup:GetContainerFrame()
-	local setPoint = "BOTTOM"
-	local setPointRelativeTo = "TOP"
-	local topBottom = "TOP"
-	local leftCenterRight = "CENTER"
+	-- Calculate positioning based on relativeTo setting
+	local anchorContainer = anchorGroup:GetContainerFrame()
+	local setPoint, setPointRelativeTo, topBottom, leftCenterRight
 
-	if settings.comboPoints.relativeTo == "TOPLEFT" then
-		setPoint = "BOTTOMLEFT"
-		setPointRelativeTo = "TOPLEFT"
-		leftCenterRight = "LEFT"
-	elseif settings.comboPoints.relativeTo == "TOP" then
+	-- Set defaults based on config
+	if config.defaultAnchorAbove then
 		setPoint = "BOTTOM"
 		setPointRelativeTo = "TOP"
-	elseif settings.comboPoints.relativeTo == "TOPRIGHT" then
+		topBottom = "TOP"
+	else
+		setPoint = "TOP"
+		setPointRelativeTo = "BOTTOM"
+		topBottom = "BOTTOM"
+	end
+	leftCenterRight = "CENTER"
+
+	-- Override based on relativeTo setting
+	if groupSettings.relativeTo == "TOPLEFT" then
+		setPoint = "BOTTOMLEFT"
+		setPointRelativeTo = "TOPLEFT"
+		topBottom = "TOP"
+		leftCenterRight = "LEFT"
+	elseif groupSettings.relativeTo == "TOP" then
+		setPoint = "BOTTOM"
+		setPointRelativeTo = "TOP"
+		topBottom = "TOP"
+	elseif groupSettings.relativeTo == "TOPRIGHT" then
 		setPoint = "BOTTOMRIGHT"
 		setPointRelativeTo = "TOPRIGHT"
+		topBottom = "TOP"
 		leftCenterRight = "RIGHT"
-	elseif settings.comboPoints.relativeTo == "BOTTOMLEFT" then
+	elseif groupSettings.relativeTo == "BOTTOMLEFT" then
 		setPoint = "TOPLEFT"
 		setPointRelativeTo = "BOTTOMLEFT"
 		topBottom = "BOTTOM"
 		leftCenterRight = "LEFT"
-	elseif settings.comboPoints.relativeTo == "BOTTOM" then
+	elseif groupSettings.relativeTo == "BOTTOM" then
 		setPoint = "TOP"
 		setPointRelativeTo = "BOTTOM"
 		topBottom = "BOTTOM"
-	elseif settings.comboPoints.relativeTo == "BOTTOMRIGHT" then
+	elseif groupSettings.relativeTo == "BOTTOMRIGHT" then
 		setPoint = "TOPRIGHT"
 		setPointRelativeTo = "BOTTOMRIGHT"
 		topBottom = "BOTTOM"
 		leftCenterRight = "RIGHT"
 	end
 
+	-- Calculate dimensions (may be overridden by fullWidth)
+	local groupWidth = groupSettings.width
+	local groupHeight = groupSettings.height
+	local groupBorder = groupSettings.border
+
 	local xPos, yPos
 
-	if settings.comboPoints.fullWidth then
+	if groupSettings.fullWidth then
 		xPos = 0
+		groupWidth = settings.bar.width
 		if topBottom == "BOTTOM" then
 			setPoint = "TOP"
 			setPointRelativeTo = "BOTTOM"
@@ -505,62 +544,146 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 		leftCenterRight = "CENTER"
 	else
 		if leftCenterRight == "LEFT" then
-			xPos = -settings.bar.border + settings.comboPoints.xPos
+			xPos = -settings.bar.border + groupSettings.xPos
 		elseif leftCenterRight == "RIGHT" then
-			xPos = settings.bar.border + settings.comboPoints.xPos
+			xPos = settings.bar.border + groupSettings.xPos
 		else
-			xPos = settings.comboPoints.xPos
+			xPos = groupSettings.xPos
 		end
 	end
 
 	if topBottom == "BOTTOM" then
-		yPos = -settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
+		yPos = -settings.bar.border + groupSettings.yPos
 	else
-		yPos = settings.bar.border + settings.comboPoints.yPos - settings.comboPoints.border
+		yPos = settings.bar.border + groupSettings.yPos - 1
 	end
 
-	-- Position the secondary container
-	secondaryGroup.containerFrame:ClearAllPoints()
-	secondaryGroup.containerFrame:SetPoint(setPoint, primaryContainer, setPointRelativeTo, xPos, yPos)
-	secondaryGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
+	-- Position the target container
+	targetGroup.containerFrame:ClearAllPoints()
+	targetGroup.containerFrame:SetPoint(setPoint, anchorContainer, setPointRelativeTo, xPos, yPos)
+	targetGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
 
-	-- Apply layout to nodes
-	secondaryGroup:ApplyLayout(
-		settings.bar.width,
-		settings.comboPoints.width,
-		settings.comboPoints.height,
-		settings.comboPoints.border
-	)
+	-- Apply layout or size directly based on config
+	if config.useApplyLayout then
+		-- Multi-node layout (combo points, runes, etc.)
+		targetGroup:ApplyLayout(
+			settings.bar.width,
+			groupSettings.width,
+			groupSettings.height,
+			groupSettings.border
+		)
+	else
+		-- Single-node direct sizing (health bar, etc.)
+		targetGroup.containerFrame:SetWidth(groupWidth)
+		targetGroup.containerFrame:SetHeight(groupHeight)
+
+		local singleNode = targetGroup:GetNode(1)
+		if singleNode then
+			singleNode:SetDimensions(groupWidth, groupHeight, groupBorder)
+			singleNode:SetFrameLevels(
+				frameLevels.cpContainer,
+				frameLevels.cpBorder,
+				frameLevels.cpResource
+			)
+
+			-- Position node within container
+			local nodeContainer = singleNode:GetContainerFrame()
+			if nodeContainer then
+				nodeContainer:ClearAllPoints()
+				nodeContainer:SetAllPoints(targetGroup.containerFrame)
+			end
+			singleNode:PositionResourceFrame()
+
+			-- Set min/max based on mode
+			if config.minMaxMode == "health" then
+				local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
+				singleNode:SetMinMax(0, healthMax)
+			elseif config.minMaxMode == "discrete" then
+				singleNode:SetMinMax(0, 1)
+			end
+			-- "custom" mode leaves min/max to be set externally
+		end
+	end
 
 	-- Apply appearance only when requested
 	if applyAppearance then
-		for i = 1, secondaryGroup.maxNodes do
-			local node = secondaryGroup:GetNode(i)
-			if node then
-				node:SetTextures(
-					settings.textures.comboPointsBar,
-					settings.textures.comboPointsBorder,
-					settings.textures.comboPointsBackground
-				)
+		local colorSettings = settings.colors[config.colorsKey]
+		if colorSettings then
+			for i = 1, nodes do
+				local node = targetGroup:GetNode(i)
+				if node then
+					node:SetTextures(
+						settings.textures[config.textures.bar],
+						settings.textures[config.textures.border],
+						settings.textures[config.textures.background]
+					)
 
-				-- Default secondary nodes are 0..1 for point-style resources.
-				-- (Devourer overrides to 0..50 elsewhere.)
-				node:SetMinMax(0, 1)
-				node:SetFrameLevels(
-					frameLevels.cpContainer,
-					frameLevels.cpBorder,
-					frameLevels.cpResource
-				)
-				node:SetBorderColor(settings.colors.comboPoints.border)
-				node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-				node:SetColor(settings.colors.comboPoints.base)
+					-- Set min/max for multi-node layouts
+					if config.useApplyLayout then
+						node:SetMinMax(0, 1)
+					end
+
+					node:SetFrameLevels(
+						frameLevels.cpContainer,
+						frameLevels.cpBorder,
+						frameLevels.cpResource
+					)
+
+					-- Handle color values that may be strings or tables with .color property
+					local borderColor = colorSettings[config.colors.border]
+					if type(borderColor) == "table" then
+						borderColor = borderColor.color
+					end
+					node:SetBorderColor(borderColor)
+
+					local backgroundColor = colorSettings[config.colors.background]
+					if type(backgroundColor) == "table" then
+						backgroundColor = backgroundColor.color
+					end
+					node:SetBackgroundColorFromString(backgroundColor)
+
+					local barColor = colorSettings[config.colors.bar]
+					if type(barColor) == "table" then
+						barColor = barColor.color
+					end
+					node:SetColor(barColor)
+				end
 			end
 		end
 	end
 
 	-- Show the group and active nodes
-	secondaryGroup:Show()
-	secondaryGroup:ShowNodes(nodes)
+	targetGroup:Show()
+	targetGroup:ShowNodes(nodes)
+end
+
+---Constructs a secondary bar group (combo points, arcane charges, etc.)
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param primaryGroup TRB.Classes.BarGroup
+---@param secondaryGroup TRB.Classes.BarGroup
+---@param applyAppearance boolean?
+function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance)
+	---@type TRB.Classes.AnchoredBarGroupConfig
+	local config = {
+		settingsKey = "comboPoints",
+		colorsKey = "comboPoints",
+		nodeCount = nil, -- Dynamic based on maxResource2
+		useApplyLayout = true,
+		defaultAnchorAbove = true,
+		textures = {
+			bar = "comboPointsBar",
+			border = "comboPointsBorder",
+			background = "comboPointsBackground"
+		},
+		colors = {
+			border = "border",
+			background = "background",
+			bar = "base"
+		},
+		minMaxMode = "discrete"
+	}
+
+	self:ConstructAnchoredBarGroup(settings, primaryGroup, secondaryGroup, config, applyAppearance)
 end
 
 ---Constructs a health bar group
@@ -569,145 +692,27 @@ end
 ---@param healthGroup TRB.Classes.BarGroup
 ---@param applyAppearance boolean?
 function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healthGroup, applyAppearance)
-	if settings.healthBar == nil then
-		return
-	end
+	---@type TRB.Classes.AnchoredBarGroupConfig
+	local config = {
+		settingsKey = "healthBar",
+		colorsKey = "healthBar",
+		nodeCount = 1, -- Health bar always has 1 node
+		useApplyLayout = false,
+		defaultAnchorAbove = false,
+		textures = {
+			bar = "healthBar",
+			border = "healthBorder",
+			background = "healthBackground"
+		},
+		colors = {
+			border = "border",
+			background = "background",
+			bar = "bar"
+		},
+		minMaxMode = "health"
+	}
 
-	if applyAppearance == nil then
-		applyAppearance = true
-	end
-
-	-- Verify the health group has valid nodes (not destroyed)
-	if healthGroup.nodes == nil or healthGroup:GetNode(1) == nil then
-		return
-	end
-
-	local strata = TRB.Data.settings.core.strata.level
-	local frameLevels = TRB.Data.constants.frameLevels
-
-	-- Set node count (health bar always has 1 node)
-	healthGroup:SetNodeCount(1)
-
-	-- Set layout parameters
-	healthGroup:SetLayout(settings.healthBar.spacing or 0, settings.healthBar.fullWidth, "HORIZONTAL")
-
-	-- Set frame strata
-	healthGroup:SetFrameStrata(strata)
-
-	-- Calculate positioning
-	local primaryContainer = primaryGroup:GetContainerFrame()
-	local setPoint = "TOP"
-	local setPointRelativeTo = "BOTTOM"
-	local topBottom = "BOTTOM"
-	local leftCenterRight = "CENTER"
-
-	if settings.healthBar.relativeTo == "TOPLEFT" then
-		setPoint = "BOTTOMLEFT"
-		setPointRelativeTo = "TOPLEFT"
-		topBottom = "TOP"
-		leftCenterRight = "LEFT"
-	elseif settings.healthBar.relativeTo == "TOP" then
-		setPoint = "BOTTOM"
-		setPointRelativeTo = "TOP"
-		topBottom = "TOP"
-	elseif settings.healthBar.relativeTo == "TOPRIGHT" then
-		setPoint = "BOTTOMRIGHT"
-		setPointRelativeTo = "TOPRIGHT"
-		topBottom = "TOP"
-		leftCenterRight = "RIGHT"
-	elseif settings.healthBar.relativeTo == "BOTTOMLEFT" then
-		setPoint = "TOPLEFT"
-		setPointRelativeTo = "BOTTOMLEFT"
-		topBottom = "BOTTOM"
-		leftCenterRight = "LEFT"
-	elseif settings.healthBar.relativeTo == "BOTTOM" then
-		setPoint = "TOP"
-		setPointRelativeTo = "BOTTOM"
-		topBottom = "BOTTOM"
-	elseif settings.healthBar.relativeTo == "BOTTOMRIGHT" then
-		setPoint = "TOPRIGHT"
-		setPointRelativeTo = "BOTTOMRIGHT"
-		topBottom = "BOTTOM"
-		leftCenterRight = "RIGHT"
-	end
-
-	local xPos, yPos
-	local healthWidth = settings.healthBar.width
-	local healthHeight = settings.healthBar.height
-	local healthBorder = settings.healthBar.border
-
-	if settings.healthBar.fullWidth then
-		xPos = 0
-		healthWidth = settings.bar.width
-		if topBottom == "BOTTOM" then
-			setPoint = "TOP"
-			setPointRelativeTo = "BOTTOM"
-		else
-			setPoint = "BOTTOM"
-			setPointRelativeTo = "TOP"
-		end
-		leftCenterRight = "CENTER"
-	else
-		if leftCenterRight == "LEFT" then
-			xPos = -settings.bar.border + settings.healthBar.xPos
-		elseif leftCenterRight == "RIGHT" then
-			xPos = settings.bar.border + settings.healthBar.xPos
-		else
-			xPos = settings.healthBar.xPos
-		end
-	end
-
-	if topBottom == "BOTTOM" then
-		yPos = -settings.bar.border + settings.healthBar.yPos - healthBorder
-	else
-		yPos = settings.bar.border + settings.healthBar.yPos + healthBorder
-	end
-
-	-- Position the health container
-	healthGroup.containerFrame:ClearAllPoints()
-	healthGroup.containerFrame:SetPoint(setPoint, primaryContainer, setPointRelativeTo, xPos, yPos)
-	healthGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
-	healthGroup.containerFrame:SetWidth(healthWidth)
-	healthGroup.containerFrame:SetHeight(healthHeight)
-
-	-- Configure the health node
-	local healthNode = healthGroup:GetNode(1)
-	if healthNode then
-		healthNode:SetDimensions(healthWidth, healthHeight, healthBorder)
-		healthNode:SetFrameLevels(
-			frameLevels.cpContainer,
-			frameLevels.cpBorder,
-			frameLevels.cpResource
-		)
-
-		-- Position node within container
-		local nodeContainer = healthNode:GetContainerFrame()
-		if nodeContainer then
-			nodeContainer:ClearAllPoints()
-			nodeContainer:SetAllPoints(healthGroup.containerFrame)
-		end
-		healthNode:PositionResourceFrame()
-
-		-- Set min/max for health (0 to max health)
-		local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
-		healthNode:SetMinMax(0, healthMax)
-
-		-- Apply appearance only when requested
-		if applyAppearance and settings.colors.healthBar then
-			healthNode:SetTextures(
-				settings.textures.healthBar,
-				settings.textures.healthBorder,
-				settings.textures.healthBackground
-			)
-			healthNode:SetBorderColor(settings.colors.healthBar.border)
-			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background)
-			healthNode:SetColor(settings.colors.healthBar.bar)
-		end
-	end
-
-	-- Show the group and node
-	healthGroup:Show()
-	healthGroup:ShowNodes(1)
+	self:ConstructAnchoredBarGroup(settings, primaryGroup, healthGroup, config, applyAppearance)
 end
 
 ---Updates the value on a BarNode using the standard caching mechanism

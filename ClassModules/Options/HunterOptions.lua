@@ -293,8 +293,8 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 				}
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -647,8 +647,8 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 				flashEnabled=true,
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -998,8 +998,8 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				flashEnabled=true,
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -1191,6 +1191,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
@@ -1716,6 +1719,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 2, yCoord, false)
@@ -2397,6 +2403,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, false)

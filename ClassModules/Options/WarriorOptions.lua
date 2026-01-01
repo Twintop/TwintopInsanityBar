@@ -290,8 +290,8 @@ local function ArmsLoadDefaultSettings(includeBarText)
 				base="FFFF0000",
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -618,8 +618,8 @@ local function FuryLoadDefaultSettings(includeBarText)
 				enrage="FFFFCC55",
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -1041,8 +1041,8 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 				}
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -1247,6 +1247,9 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 1, yCoord, false)
@@ -1763,6 +1766,9 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord)
 
 	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
+
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -2230,6 +2236,9 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], L["ResourceWarriorDefensives"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 3, yCoord, true, L["ResourceWarriorDefensives"])

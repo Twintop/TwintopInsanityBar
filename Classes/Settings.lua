@@ -6,18 +6,23 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.SpecializationGlobalEnabled
 ---@field public bar boolean
 ---@field public comboPoints boolean
+---@field public healthBar boolean
 ---@field public thresholdIcons boolean
 ---@field public thresholdHealers boolean
 ---@field public thresholdPotions boolean
----@field public precision boolean
+---@field public displayBar boolean
 ---@field public displayText boolean
 ---@field public textColors boolean
 ---@field public thresholdColors boolean
+---@field public healthBarColors boolean
+---@field public precision boolean
+---@field public textures boolean
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Casses.Settings.Bar
 ---@field public colors TRB.Classes.Settings.Colors
 ---@field public comboPoints TRB.Casses.Settings.ComboPoints
+---@field public healthBar TRB.Casses.Settings.HealthBar
 ---@field public displayBar table?
 ---@field public displayText TRB.Classes.Settings.DisplayText
 ---@field public textures table?
@@ -75,6 +80,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.ColorShowEntry : TRB.Classes.Settings.ColorEnabledEntry
 
+---@class TRB.Classes.Settings.ColorThresholdEntry : TRB.Classes.Settings.ColorEntry
+---@field public threshold number
+
 ---@class TRB.Classes.Settings.TextColors
 ---@field public current TRB.Classes.Settings.ColorEnabledEntry
 ---@field public casting TRB.Classes.Settings.ColorEnabledEntry
@@ -93,10 +101,19 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public over TRB.Classes.Settings.ColorEntry
 ---@field public unusable TRB.Classes.Settings.ColorEntry
 
+---@class TRB.Classes.Settings.HealthBarColors
+---@field public border string
+---@field public background string
+---@field public type trbBarColorType
+---@field public low TRB.Classes.Settings.ColorThresholdEntry
+---@field public medium TRB.Classes.Settings.ColorThresholdEntry
+---@field public high TRB.Classes.Settings.ColorThresholdEntry
+
 ---@class TRB.Classes.Settings.Colors
 ---@field public text TRB.Classes.Settings.TextColors
 ---@field public bar table
 ---@field public comboPoints table
+---@field public healthBar TRB.Classes.Settings.HealthBarColors
 ---@field public threshold TRB.Classes.Settings.ThresholdColors|{ [string]: TRB.Classes.Settings.ColorEnabledEntry }
 
 ---@class TRB.Classes.Settings.ColorsCore : TRB.Classes.Settings.Colors
@@ -118,6 +135,16 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public yPos number
 ---@field public border integer
 ---@field public spacing integer
+---@field public relativeTo string
+---@field public relativeToName string
+---@field public fullWidth boolean
+
+---@class TRB.Casses.Settings.HealthBar
+---@field public width number
+---@field public height number
+---@field public xPos number
+---@field public yPos number
+---@field public border integer
 ---@field public relativeTo string
 ---@field public relativeToName string
 ---@field public fullWidth boolean
@@ -168,3 +195,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---| '"always"' # Always show the bar
 ---| '"combat"' # Only show the bar in combat
 ---| '"never"' # Never show the bar
+
+---@alias trbBarColorType
+---| '"step"' # Step colors
+---| '"linear"' # Linear colors
+---| '"none"' # Only use a single color

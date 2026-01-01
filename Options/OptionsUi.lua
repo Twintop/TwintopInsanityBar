@@ -156,6 +156,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	---@diagnostic disable-next-line: redundant-parameter
 	f.MinLabel:SetWordWrap(false)
 	f.MinLabel:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 0, -1)
+---@diagnostic disable-next-line: param-type-mismatch
 	f.MinLabel:SetText(minValue)
 	---@diagnostic disable-next-line: inject-field
 	f.MaxLabel = f:CreateFontString(nil, "OVERLAY")
@@ -164,6 +165,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	---@diagnostic disable-next-line: redundant-parameter
 	f.MaxLabel:SetWordWrap(false)
 	f.MaxLabel:SetPoint("TOPRIGHT", f, "BOTTOMRIGHT", 0, -1)
+---@diagnostic disable-next-line: param-type-mismatch
 	f.MaxLabel:SetText(maxValue)
 	---@diagnostic disable-next-line: inject-field
 	f.Title = f:CreateFontString(nil, "OVERLAY")
@@ -263,6 +265,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	end)
 
 	f:SetValue(defaultValue)
+---@diagnostic disable-next-line: param-type-mismatch
 	eb:SetText(defaultValue)
 	eb:SetCursorPosition(0)
 
@@ -1341,24 +1344,249 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	comboPointsRelativeTo:SetupMenu(RelativeToGenerator)
 	comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	
-	if includeSpacing then
-		controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.comboPointsFullWidth
-		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
-		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], secondaryResourceString))
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], secondaryResourceString, secondaryResourceString, secondaryResourceString)
-		f:SetChecked(spec.comboPoints.fullWidth)
+	controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.comboPointsFullWidth
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], secondaryResourceString))
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], secondaryResourceString, secondaryResourceString, secondaryResourceString)
+	f:SetChecked(spec.comboPoints.fullWidth)
+	f:SetScript("OnClick", function(self, ...)
+		spec.comboPoints.fullWidth = self:GetChecked()
+		
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end
+	end)
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString)
+	if primaryResourceString == nil then
+		primaryResourceString = L["ResourceMana"]
+	end
+
+	local healthBarResourceString = L["HealthBar"]
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+
+	local f = nil
+
+	local title = ""
+
+	local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+
+	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
+
+	controls.healthBarPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarPositionAndSize"], oUi.xCoord, yCoord)
+
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalHealthBar = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_healthBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalHealthBar
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_HealthBar"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].healthBar)
 		f:SetScript("OnClick", function(self, ...)
-			spec.comboPoints.fullWidth = self:GetChecked()
-			
-			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				end
+			TRB.Data.settings.core.global[lowerClassName][specName].healthBar = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+			TRB.Functions.Character:ResetCaches()
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				C_Timer.After(0, function()
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end)
 			end
 		end)
 	end
+
+	yCoord = yCoord - 40
+	title = string.format(L["SecondaryWidth"], healthBarResourceString)
+	controls.healthBarWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth, 0, "floor"), spec.healthBar.width, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.healthBarWidth:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.healthBar.width = value
+
+		local maxBorderSize = math.min(math.floor(spec.healthBar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.healthBar.width / TRB.Data.constants.borderWidthFactor))
+		local borderSize = spec.healthBar.border
+	
+		if maxBorderSize < borderSize then
+			maxBorderSize = borderSize
+		end
+
+		controls.healthBarBorderWidth:SetMinMaxValues(0, maxBorderSize)
+		controls.healthBarBorderWidth.MaxLabel:SetText(maxBorderSize)
+		controls.healthBarBorderWidth.EditBox:SetText(borderSize)
+
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end
+	end)
+
+	title = string.format(L["SecondaryHeight"], healthBarResourceString)
+	controls.healthBarHeight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.healthBar.height, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.healthBarHeight:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.healthBar.height = value
+
+		local maxBorderSize = math.min(math.floor(spec.healthBar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+		local borderSize = spec.healthBar.border
+	
+		if maxBorderSize < borderSize then
+			maxBorderSize = borderSize
+		end
+
+		controls.healthBarBorderWidth:SetMinMaxValues(0, maxBorderSize)
+		controls.healthBarBorderWidth.MaxLabel:SetText(maxBorderSize)
+		controls.healthBarBorderWidth.EditBox:SetText(borderSize)
+
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end
+	end)
+
+	title = string.format(L["SecondaryHorizontalPosition"], healthBarResourceString)
+	yCoord = yCoord - 60
+	controls.healthBarHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.healthBar.xPos, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.healthBarHorizontal:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.healthBar.xPos = value
+
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end
+	end)
+
+	title = string.format(L["SecondaryVerticalPosition"], healthBarResourceString)
+	controls.healthBarVertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.healthBar.yPos, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.healthBarVertical:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.healthBar.yPos = value
+
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end
+	end)
+
+	title = string.format(L["SecondaryBorderWidth"], healthBarResourceString)
+	yCoord = yCoord - 60
+	controls.healthBarBorderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec.healthBar.border, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.healthBarBorderWidth:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.healthBar.border = value
+
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end
+
+		local minsliderWidth = math.max(spec.healthBar.border*2, 1)
+		local minsliderHeight = math.max(spec.healthBar.border*2, 1)
+
+		local scValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
+		controls.healthBarHeight:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
+		controls.healthBarHeight.MinLabel:SetText(tostring(minsliderHeight))
+		controls.healthBarWidth:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
+		controls.healthBarWidth.MinLabel:SetText(tostring(minsliderWidth))
+	end)
+
+	yCoord = yCoord - 40
+
+	local healthBarRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_healthBarRelativeTo", parent, "WowStyle1DropdownTemplate")
+	healthBarRelativeTo:SetWidth(oUi.sliderWidth)
+	healthBarRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], healthBarResourceString, primaryResourceString), oUi.xCoord, yCoord)
+	healthBarRelativeTo.label.font:SetFontObject(GameFontNormal)
+	
+	local relativeTo = {}
+	relativeTo[L["PositionAboveLeft"]] = "TOPLEFT"
+	relativeTo[L["PositionAboveMiddle"]] = "TOP"
+	relativeTo[L["PositionAboveRight"]] = "TOPRIGHT"
+	relativeTo[L["PositionBelowLeft"]] = "BOTTOMLEFT"
+	relativeTo[L["PositionBelowMiddle"]] = "BOTTOM"
+	relativeTo[L["PositionBelowRight"]] = "BOTTOMRIGHT"
+	local relativeToList = {
+		L["PositionAboveLeft"],
+		L["PositionAboveMiddle"],
+		L["PositionAboveRight"],
+		L["PositionBelowLeft"],
+		L["PositionBelowMiddle"],
+		L["PositionBelowRight"]
+	}
+
+	local function RelativeToIsSelected(value)
+		return value == spec.healthBar.relativeTo
+	end
+	
+	local function RelativeToSetSelected(newValue)
+		spec.healthBar.relativeTo = newValue
+		
+		for k, v in pairs(relativeTo) do
+			if v == newValue then
+				spec.healthBar.relativeToName = k
+			end
+		end
+		healthBarRelativeTo:SetDefaultText(spec.healthBar.relativeToName)
+
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end
+	end
+
+	local function RelativeToGenerator(dropdown, rootDescription)
+		for k, v in pairs(relativeToList) do
+			rootDescription:CreateRadio(v, RelativeToIsSelected, RelativeToSetSelected, relativeTo[v])
+		end
+		rootDescription:SetScrollMode(400)
+	end
+	healthBarRelativeTo:SetupMenu(RelativeToGenerator)
+	healthBarRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	
+	controls.checkBoxes.healthBarFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_healthBarFullWidth", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.healthBarFullWidth
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], healthBarResourceString))
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], healthBarResourceString, healthBarResourceString, healthBarResourceString)
+	f:SetChecked(spec.healthBar.fullWidth)
+	f:SetScript("OnClick", function(self, ...)
+		spec.healthBar.fullWidth = self:GetChecked()
+		
+		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end
+	end)
 
 	return yCoord
 end
@@ -2408,18 +2636,18 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	
 	yCoord2 = yCoord2 - 30
 
-	controls.colors.healthColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHealthBarBorder"], spec.colors.healthBar.border, 300, 25, oUi.xCoord2, yCoord2)
+	controls.colors.healthColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHealthBarBorder"], spec.colors.healthBar.border.color, 300, 25, oUi.xCoord2, yCoord2)
 	f = controls.colors.healthColorBorder
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.healthBar, controls.colors, "border", "border", TRB.Functions.OptionsUi:GetHealthBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "border", "health")
 	end)
 	
 	yCoord2 = yCoord2 - 30
 
-	controls.colors.healthColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.healthBar.background, 300, 25, oUi.xCoord2, yCoord2)
+	controls.colors.healthColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.healthBar.background.color, 300, 25, oUi.xCoord2, yCoord2)
 	f = controls.colors.healthColorBackground
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.healthBar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetHealthBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "background", "health")
 	end)
 
 	yCoord = yCoord2 - 20

@@ -253,8 +253,8 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				},
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -547,8 +547,8 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 				sameColor=false,
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -842,8 +842,8 @@ local function DestructionLoadDefaultSettings(includeBarText)
 				sameColor=false,
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -1041,6 +1041,9 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], L["ResourceSoulShards"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 1, yCoord, true, L["ResourceSoulShards"])
@@ -1438,6 +1441,9 @@ local function DemonologyConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], L["ResourceSoulShards"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 2, yCoord, true, L["ResourceSoulShards"])
@@ -1911,6 +1917,9 @@ local function DestructionConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], L["ResourceSoulShards"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 3, yCoord, true, L["ResourceSoulShards"])

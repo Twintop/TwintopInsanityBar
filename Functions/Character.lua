@@ -547,10 +547,12 @@ end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
 ---@param className string # Class name
+---| '"deathknight"' # Death Knight
 ---| '"demonhunter"' # Demon Hunter
 ---| '"druid"' # Druid 
 ---| '"evoker"' # Evoker
 ---| '"hunter"' # Hunter
+---| '"mage"' # Mage
 ---| '"monk"' # Monk
 ---| '"paladin' # Paladin
 ---| '"priest"' # Priest
@@ -559,11 +561,15 @@ end
 ---| '"warlock' # Warlock
 ---| '"warrior"' # Warrior
 ---@param specName string
+---| '"blood"' # Blood (Death Knight)
+---| '"frost"' # Frost (Death Knight, Mage)
+---| '"unholy"' # Unholy (Death Knight)
 ---| '"havoc"' # Havoc (Demon Hunter)
 ---| '"vengeance"' # Vengeance (Demon Hunter)
 ---| '"devourer"' # Devourer (Demon Hunter)
 ---| '"balance"' # Balance (Druid)
 ---| '"feral"' # Feral (Druid)
+---| '"guardian"' # Guardian (Druid)
 ---| '"restoration"' # Restoration (Druid, Shaman)
 ---| '"devastation"' # Devastation (Evoker)
 ---| '"preservation"' # Preservation (Evoker)
@@ -571,6 +577,12 @@ end
 ---| '"beastMastery"' # Beast Mastery (Hunter)
 ---| '"marksmanship"' # Marksmanship (Hunter)
 ---| '"survival"' # Survival (Hunter)
+---| '"arcane"' # Arcane (Mage)
+---| '"fire"' # Fire (Mage)
+---| '"brewmaster"' # Brewmaster (Monk)
+---| '"mistweaver"' # Mistweaver (Monk)
+---| '"windwalker"' # Windwalker (Monk)
+---| '"retribution"' # Retribution (Paladin)
 ---| '"discipline"' # Discipline (Priest)
 ---| '"holy"' # Holy (Paladin, Priest)
 ---| '"shadow"' # Shadow (Priest)
@@ -580,9 +592,11 @@ end
 ---| '"elemental"' # Elemental (Shaman)
 ---| '"enhancement"' # Enhancement (Shaman)
 ---| '"affliction"' # Affliction (Warlock)
+---| '"demonology"' # Demonology (Warlock)
+---| '"destruction"' # Destruction (Warlock)
 ---| '"arms"' # Arms (Warrior)
 ---| '"fury"' # Fury (Warrior)
----| '"protection"'
+---| '"protection"' # Protection (Paladin, Warrior)
 ---@param isHealer boolean
 function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName, isHealer)
 	local specCache = TRB.Data.specCache[specName] --[[@as TRB.Classes.SpecCache]]
@@ -601,6 +615,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.comboPoints = core.comboPoints
 	else
 		specCache.settings.comboPoints = spec.comboPoints
+	end
+
+	if s.healthBar then
+		specCache.settings.healthBar = core.healthBar
+	else
+		specCache.settings.healthBar = spec.healthBar
 	end
 
 ---@diagnostic disable-next-line: missing-fields
@@ -648,8 +668,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 
 	if s.thresholdColors then
 		if isHealer then
-			specCache.settings.colors.threshold.over = core.colors.thresholdHealers.over
-			specCache.settings.colors.threshold.unusable = core.colors.thresholdHealers.unusable
 		else
 			specCache.settings.colors.threshold.over = core.colors.threshold.over
 			specCache.settings.colors.threshold.under = core.colors.threshold.under
@@ -657,6 +675,22 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			specCache.settings.colors.threshold.special = core.colors.threshold.special
 			specCache.settings.colors.threshold.outOfRange = core.colors.threshold.outOfRange
 		end
+	end
+
+	if s.healthBarColors then
+		specCache.settings.colors.healthBar.border = core.colors.healthBar.border
+		specCache.settings.colors.healthBar.background = core.colors.healthBar.background
+		specCache.settings.colors.healthBar.high = core.colors.healthBar.high
+		specCache.settings.colors.healthBar.medium = core.colors.healthBar.medium
+		specCache.settings.colors.healthBar.low = core.colors.healthBar.low
+		specCache.settings.colors.healthBar.type = core.colors.healthBar.type
+	else
+		specCache.settings.colors.healthBar.border = spec.colors.healthBar.border
+		specCache.settings.colors.healthBar.background = spec.colors.healthBar.background
+		specCache.settings.colors.healthBar.high = spec.colors.healthBar.high
+		specCache.settings.colors.healthBar.medium = spec.colors.healthBar.medium
+		specCache.settings.colors.healthBar.low = spec.colors.healthBar.low
+		specCache.settings.colors.healthBar.type = spec.colors.healthBar.type
 	end
 
 	if spec.thresholds ~= nil then
@@ -680,7 +714,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 		
 		if isHealer then
-			if s.thresholdPotions then
+			--[[if s.thresholdPotions then
 				specCache.settings.thresholds.potionCooldown = core.thresholds.potionCooldown
 			else
 				specCache.settings.thresholds.potionCooldown = spec.thresholds.potionCooldown
@@ -690,7 +724,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				for key, _ in pairs(core.thresholds.thresholdDictionaryHealers) do
 					specCache.settings.thresholds.thresholdDictionary[key] = core.thresholds.thresholdDictionaryHealers[key]
 				end
-			end
+			end]]
 		end
 	else
 		specCache.settings.thresholds = {
@@ -713,11 +747,16 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.textures = spec.textures
 	end
 
-	--NYI	
-	specCache.settings.displayBar = spec.displayBar
+	if s.displayBar then
+		specCache.settings.displayBar = core.displayBar
+	else
+		specCache.settings.displayBar = spec.displayBar
+	end
+
+	--NYI
 	specCache.settings.audio = spec.audio
 	specCache.settings.maxResource = spec.maxResource
-	specCache.settings.healthBar = spec.healthBar
+
 end
 
 function TRB.Functions.Character:IsComboPointUser()

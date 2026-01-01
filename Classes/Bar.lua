@@ -75,8 +75,10 @@ function TRB.Classes.BarNode:SetValue(value, smooth)
 	end
 
 	if smooth then
+---@diagnostic disable-next-line: redundant-parameter
 		self.resourceFrame:SetValue(value, Enum.StatusBarInterpolation.ExponentialEaseOut)
 	else
+---@diagnostic disable-next-line: redundant-parameter
 		self.resourceFrame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	end
 end
@@ -102,6 +104,7 @@ function TRB.Classes.BarNode:SetColor(colorString)
 end
 
 ---Sets the color of the resource bar
+---@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult
 function TRB.Classes.BarNode:SetColorCurve(colorResult)
 	if colorResult == nil then
@@ -181,6 +184,7 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 
 	-- Set border texture
 	if self.border < 1 then
+---@diagnostic disable-next-line: inject-field
 		self.borderFrame.backdropInfo = {
 			edgeFile = borderTexture,
 			tile = true,
@@ -191,6 +195,7 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 		self.borderFrame:ApplyBackdrop()
 		self.borderFrame:Hide()
 	else
+---@diagnostic disable-next-line: inject-field
 		self.borderFrame.backdropInfo = {
 			edgeFile = borderTexture,
 			tile = true,
@@ -289,6 +294,7 @@ function TRB.Classes.BarNode:RegisterThreshold(thresholdFrameOrIndex)
 
 	self.thresholds[index] = thresholdFrame
 	-- Keep resourceFrame.thresholds in sync for compatibility
+---@diagnostic disable-next-line: inject-field
 	self.resourceFrame.thresholds = self.thresholds
 	return thresholdFrame
 end
@@ -301,6 +307,7 @@ function TRB.Classes.BarNode:ClearThresholds()
 		end
 	end
 	self.thresholds = {}
+---@diagnostic disable-next-line: inject-field
 	self.resourceFrame.thresholds = self.thresholds
 end
 

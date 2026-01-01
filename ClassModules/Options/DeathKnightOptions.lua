@@ -432,8 +432,8 @@ local function BloodLoadDefaultSettings(includeBarText)
 				sortRunes = true
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -776,8 +776,8 @@ local function FrostLoadDefaultSettings(includeBarText)
 				sortRunes = true
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -1113,8 +1113,8 @@ local function UnholyLoadDefaultSettings(includeBarText)
 				sortRunes = true
 			},
 			healthBar = {
-				border="FF008800",
-				background="66000000",
+				border = { color = "FF008800" },
+				background = { color = "66000000" },
 				type = "step",
 				low = { color = "FFFF0000", threshold = 0.0 },
 				medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -1320,6 +1320,9 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"])
@@ -1719,6 +1722,9 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 2, yCoord, true, L["ResourceRunes"])
@@ -2140,6 +2146,9 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 3, yCoord, true, L["ResourceRunes"])

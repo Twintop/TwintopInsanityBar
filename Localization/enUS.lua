@@ -1745,3 +1745,8 @@ L["StaggerLevelMediumCheckbox"] = "Medium Stagger"
 L["StaggerLevelMediumTooltip"] = "Show a threshold line on the Stagger bar at the Medium Stagger level."
 L["StaggerLevelHeavyCheckbox"] = "Heavy Stagger"
 L["StaggerLevelHeavyTooltip"] = "Show a threshold line on the Stagger bar at the Heavy Stagger level."
+
+-- Health Bar Position and Size
+L["HealthBar"] = "Health Bar"
+L["HealthBarPositionAndSize"] = "Health Bar Position and Size"
+L["CheckboxUseGlobalTooltip_HealthBar"] = "When checked, the global settings for the Health Bar size and position will be used."

@@ -1073,8 +1073,8 @@ local function UpdateResourceBar()
 					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
 					healthNode:SetValue(snapshotData.attributes.health or 0)
 					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
-					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border.color)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
 		end
@@ -1120,8 +1120,8 @@ local function UpdateResourceBar()
 					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
 					healthNode:SetValue(snapshotData.attributes.health or 0)
 					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
-					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border.color)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
 		end
@@ -1286,8 +1286,8 @@ local function UpdateResourceBar()
 					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
 					healthNode:SetValue(snapshotData.attributes.health or 0)
 					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specSettings.colors.healthBar.border)
-					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border.color)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
 		end
