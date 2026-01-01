@@ -31,43 +31,20 @@ local function BrewmasterLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
-			text="",
+			text="$staggerPercent%",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
+			fontSize=14,
 			color = "FFFFFFFF",
 			position = {
 				xPos = 2,
 				yPos = 0,
 				relativeTo = "LEFT",
 				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
+				relativeToFrame = "ComboPoint_1",
+				relativeToFrameName = L["Stagger"]
 			}
 		},
 		{
@@ -77,150 +54,29 @@ local function BrewmasterLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="$energy",
+			text="$stagger",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=18,
+			fontSize=14,
 			color = "FFFFFFFF",
 			position = {
 				xPos = -2,
 				yPos = 0,
 				relativeTo = "RIGHT",
 				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="$stagger",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Stagger",
+				relativeToFrame = "ComboPoint_1",
 				relativeToFrameName = L["Stagger"]
 			}
 		},
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.Monk.BrewmasterLoadDefaultBarTextSimpleSettings = BrewmasterLoadDefaultBarTextSimpleSettings
-
-local function BrewmasterLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=22,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="$stagger",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Stagger",
-				relativeToFrameName = L["Stagger"]
-			}
-		},
-	}
-
-	return textSettings
-end
 
 local function BrewmasterLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -302,37 +158,9 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		comboPoints = {
-			width=25,
-			height=13,
-			xPos=0,
-			yPos=4,
-			border=1,
-			spacing=14,
-			relativeTo="TOP",
-			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		colors = {
 			text = {
 				current = {
@@ -362,14 +190,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 				medium = { color = "FFFFFAB8", threshold = 0.30 },
 				heavy = { color = "FFFF6B6B", threshold = 0.60 }
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			},
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -400,27 +221,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 		},
 		audio = {
 		},
-		textures = {
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			comboPointsBackgroundName="Blizzard Tooltip",
-			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
-			comboPointsBorderName="1 Pixel",
-			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
-			comboPointsBarName="Blizzard",
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -434,157 +235,13 @@ end
 local function MistweaverLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting + ]$mana/$manaMax $manaPercent%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings = MistweaverLoadDefaultBarTextSimpleSettings
-
-local function MistweaverLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",--{$potionCooldown}[#slumberingSoulSerum $potionCooldown] ",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]$mana/$manaMax $manaPercent%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	return textSettings
-end
 
 local function MistweaverLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -598,26 +255,8 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		colors={
 			text = {
 				current = {
@@ -630,7 +269,7 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 					color = "FF8080FF"
 				}
 			},
-			bar={
+			bar = {
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
@@ -651,14 +290,7 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 					enabled = true
 				},
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			}
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
 		displayText={
 			default = {
@@ -679,21 +311,7 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
-		textures={
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(),
 	}
 
 	if includeBarText then
@@ -706,157 +324,13 @@ end
 local function WindwalkerLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$danceOfChiJiTime}[$danceOfChiJiTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="$energy",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.Monk.WindwalkerLoadDefaultBarTextSimpleSettings = WindwalkerLoadDefaultBarTextSimpleSettings
-
-local function WindwalkerLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$danceOfChiJiTime}[$danceOfChiJiTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=22,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	return textSettings
-end
 
 local function WindwalkerLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -924,37 +398,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		comboPoints = {
-			width=25,
-			height=13,
-			xPos=0,
-			yPos=4,
-			border=1,
-			spacing=14,
-			relativeTo="TOP",
-			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		colors = {
 			text = {
 				current = {
@@ -993,14 +439,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				final="FFFF0000",
 				sameColor=false
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			},
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -1037,27 +476,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundAirHorn"]
 			},
 		},
-		textures = {
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			comboPointsBackgroundName="Blizzard Tooltip",
-			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
-			comboPointsBorderName="1 Pixel",
-			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
-			comboPointsBarName="Blizzard",
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -1121,19 +540,6 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["MonkBrewmasterFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = BrewmasterLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -1152,11 +558,6 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextAdvanced")
-	end)
 end
 
 local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
@@ -1386,8 +787,6 @@ local function BrewmasterConstructThresholdPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 1, yCoord)
-
-	controls.colors.threshold = {}
 end
 
 local function BrewmasterConstructFontAndTextPanel(parent)
@@ -1616,34 +1015,6 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["MonkMistweaverFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = MistweaverLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-	--[[
-	StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextNarrowAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["MonkMistweaverFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = MistweaverLoadDefaultBarTextNarrowAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-	]]
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -1662,20 +1033,6 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	--[[
-	controls.resetButton2 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedNarrow"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton2:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextNarrowAdvanced")
-	end)
-	]]
-
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextAdvanced")
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver = controls
 end
 
 local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
@@ -2057,19 +1414,6 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["MonkWindwalkerFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = WindwalkerLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -2088,13 +1432,6 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextAdvanced")
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
 end
 
 local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)

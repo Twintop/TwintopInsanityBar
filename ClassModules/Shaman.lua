@@ -328,6 +328,8 @@ local function FillSpellData_Enhancement()
 
 		{ variable = "$mana", description = L["ShamanEnhancementBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$manaPercent", description = L["ShamanEnhancementBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
 		{ variable = "$manaMax", description = L["ShamanEnhancementBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		
@@ -602,10 +604,28 @@ local function RefreshLookupData_Enhancement()
 
 	-- This probably needs to be pulled every refresh
 
-	local currentManaColor = sharedSettings.colors.text.current.color
+	local currentManaColor = TRB.Data.settings.mage.arcane.colors.text.current.color
+	local castingManaColor = TRB.Data.settings.mage.arcane.colors.text.casting.color
+
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	local manaPrecision = TRB.Data.settings.mage.arcane.manaPrecision or 1
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	--$casting
+	local _castingMana = snapshotData.casting.resourceFinal
+	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+
+	--$manaMax
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+
+	--$manaPercent
+	--[[local maxResource = TRB.Data.character.maxResource
+
+	if maxResource == 0 then
+		maxResource = 1
+	end]]
+	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
 	--$ascendanceTime
 	local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
@@ -618,6 +638,8 @@ local function RefreshLookupData_Enhancement()
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$manaMax"] = TRB.Data.character.maxResource
+	lookup["$manaPercent"] = manaPercent
+	lookup["$resourcePercent"] = manaPercent
 	lookup["$ascendanceTime"] = ascendanceTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$maelstromWeapon"] = snapshotData.attributes.resource2
@@ -630,6 +652,8 @@ local function RefreshLookupData_Enhancement()
 	lookupLogic["$mana"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+	lookupLogic["$manaPercent"] = _manaPercent
+	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$ascendanceTime"] = _ascendanceTime
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$maelstromWeapon"] = snapshotData.attributes.resource2
@@ -1701,7 +1725,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			-- Do not compare snapshotData.attributes.resource as it may be a secret value
 			valid = false
 		elseif var == "$resourceMax" or var == "$manaMax" then
-			valid = true		
+			valid = true
+		elseif var == "$resourcePercent" or var == "$manaPercent" then
+			-- Do not compare resource percent as it may be a secret value
+			valid = false
 		elseif var == "$comboPoints" or var == "$maelstromWeapon" then
 			if TRB.Details.addonData.build ~= "64914" then
 				valid = true

@@ -19,157 +19,13 @@ local DEVOURER_MAX_FURY = 140
 local function HavocLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="", --{$ucTime}[$ucTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$metamorphosisTime}[$metamorphosisTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]$fury",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings = HavocLoadDefaultBarTextSimpleSettings
-
-local function HavocLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$metamorphosisTime}[#metamorphosis $metamorphosisTime #metamorphosis]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]$fury",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=22,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	return textSettings
-end
 
 local function HavocLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -241,26 +97,8 @@ local function HavocLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		colors = {
 			text = {
 				current = {
@@ -284,14 +122,7 @@ local function HavocLoadDefaultSettings(includeBarText)
 				metamorphosis="FF67F100",
 				metamorphosisEnding="FFFF0000"
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			},
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -326,21 +157,7 @@ local function HavocLoadDefaultSettings(includeBarText)
 		},
 		audio = {
 		},
-		textures = {
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(),
 	}
 
 	if includeBarText then
@@ -353,157 +170,13 @@ end
 local function VengeanceLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$metamorphosisTime}[$metamorphosisTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[$casting + ]$fury",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSimpleSettings = VengeanceLoadDefaultBarTextSimpleSettings
-
-local function VengeanceLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$metamorphosisTime}[#metamorphosis $metamorphosisTime #metamorphosis]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$iaFury}[#ia$iaFury+]{$casting}[#casting$casting+]$fury",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=22,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	return textSettings
-end
 
 local function VengeanceLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -560,37 +233,9 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		comboPoints = {
-			width=25,
-			height=13,
-			xPos=0,
-			yPos=4,
-			border=1,
-			spacing=14,
-			relativeTo="TOP",
-			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		colors = {
 			text = {
 				current = {
@@ -622,14 +267,7 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				final="FFFF0000",
 				sameColor=false
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			},
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -664,27 +302,7 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 		},
 		audio = {
 		},
-		textures = {
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			comboPointsBackgroundName="Blizzard Tooltip",
-			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
-			comboPointsBorderName="1 Pixel",
-			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
-			comboPointsBarName="Blizzard",
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -697,29 +315,6 @@ end
 local function DevourerLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="$resource",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
 		{
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
@@ -745,86 +340,11 @@ local function DevourerLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSimpleSettings = DevourerLoadDefaultBarTextSimpleSettings
-
-local function DevourerLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]$fury",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=22,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	return textSettings
-end
 
 local function DevourerLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -871,37 +391,9 @@ local function DevourerLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		comboPoints = {
-			width=25,
-			height=13,
-			xPos=0,
-			yPos=4,
-			border=1,
-			spacing=14,
-			relativeTo="TOP",
-			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		colors = {
 			text = {
 				current = {
@@ -930,7 +422,7 @@ local function DevourerLoadDefaultSettings(includeBarText)
 			comboPoints = {
 				border="FF660088",
 				background="66000000",
-				base="FFC942FD",
+				base="FF9800FF",
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false,
@@ -943,14 +435,7 @@ local function DevourerLoadDefaultSettings(includeBarText)
 					enabled = true
 				},
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			},
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -985,27 +470,7 @@ local function DevourerLoadDefaultSettings(includeBarText)
 		},
 		audio = {
 		},
-		textures = {
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			comboPointsBackgroundName="Blizzard Tooltip",
-			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
-			comboPointsBorderName="1 Pixel",
-			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
-			comboPointsBarName="Blizzard",
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -1067,19 +532,6 @@ local function HavocConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DemonHunterHavocFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = HavocLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -1098,13 +550,6 @@ local function HavocConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextAdvanced")
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
 end
 
 local function HavocConstructBarColorsAndBehaviorPanel(parent)
@@ -1591,19 +1036,6 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DemonHunterVengeanceFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = VengeanceLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -1622,13 +1054,6 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextAdvanced")
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
 end
 
 local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
@@ -2132,19 +1557,6 @@ local function DevourerConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Devourer_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DemonHunterDevourerFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = DevourerLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -2163,13 +1575,6 @@ local function DevourerConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_DemonHunter_Devourer_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_DemonHunter_Devourer_ResetBarTextAdvanced")
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.devourer = controls
 end
 
 local function DevourerConstructBarColorsAndBehaviorPanel(parent)

@@ -3188,12 +3188,12 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local relativeToFrame = {}
 	relativeToFrame[L["MainResourceBar"]] = "Resource"
-	relativeToFrame[L["Screen"]] = "UIParent"
 	relativeToFrame[L["HealthBar"]] = "HealthBar"
+	relativeToFrame[L["Screen"]] = "UIParent"
 	local relativeToFrameList = {
 		L["MainResourceBar"],
-		L["Screen"],
 		L["HealthBar"],
+		L["Screen"],
 	}
 	
 	if (classId == 1 and specId == 3) then -- Protection Warrior
@@ -3203,6 +3203,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["MainResourceBar"],
 			L["IgnorePain"],
 			L["ShieldBlock"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif(classId == 2) then -- Paladin
@@ -3218,6 +3219,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HolyPower3"],
 			L["HolyPower4"],
 			L["HolyPower5"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 4 and specId == 1) then -- Assassination Rogue
@@ -3235,6 +3237,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["ComboPoint4"],
 			L["ComboPoint5"],
 			L["ComboPoint6"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 4 and specId == 2) then -- Outlaw Rogue
@@ -3254,6 +3257,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["ComboPoint5"],
 			L["ComboPoint6"],
 			L["ComboPoint7"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 4 and specId == 3) then -- Subtlety Rogue
@@ -3273,32 +3277,35 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["ComboPoint5"],
 			L["ComboPoint6"],
 			L["ComboPoint7"],
+			L["HealthBar"],
 			L["Screen"],
 		}
-	elseif (classId == 5 and specId == 1) then -- Discipline Priest
-		relativeToFrame[L["PowerWordRadianceCharge1"]] = "PowerWord_Radiance_1"
-		relativeToFrame[L["PowerWordRadianceCharge2"]] = "PowerWord_Radiance_2"
-		relativeToFrameList = {
-			L["MainResourceBar"],
-			L["PowerWordRadianceCharge1"],
-			L["PowerWordRadianceCharge2"],
-			L["Screen"],
-		}
-	elseif (classId == 5 and specId == 2) then -- Holy Priest
-		relativeToFrame[L["HolyWordSerenityCharge1"]] = "HolyWord_Serenity_1"
-		relativeToFrame[L["HolyWordSerenityCharge2"]] = "HolyWord_Serenity_2"
-		relativeToFrame[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
-		relativeToFrame[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
-		relativeToFrame[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
-		relativeToFrameList = {
-			L["MainResourceBar"],
-			L["HolyWordSerenityCharge1"],
-			L["HolyWordSerenityCharge2"],
-			L["HolyWordSanctifyCharge1"],
-			L["HolyWordSanctifyCharge2"],
-			L["HolyWordChastiseCharge1"],
-			L["Screen"],
-		}
+	--elseif (classId == 5 and specId == 1) then -- Discipline Priest
+	--	relativeToFrame[L["PowerWordRadianceCharge1"]] = "PowerWord_Radiance_1"
+	--	relativeToFrame[L["PowerWordRadianceCharge2"]] = "PowerWord_Radiance_2"
+	--	relativeToFrameList = {
+	--		L["MainResourceBar"],
+	--		L["PowerWordRadianceCharge1"],
+	--		L["PowerWordRadianceCharge2"],
+	--		L["HealthBar"],
+	--		L["Screen"],
+	--	}
+	--elseif (classId == 5 and specId == 2) then -- Holy Priest
+	--	relativeToFrame[L["HolyWordSerenityCharge1"]] = "HolyWord_Serenity_1"
+	--	relativeToFrame[L["HolyWordSerenityCharge2"]] = "HolyWord_Serenity_2"
+	--	relativeToFrame[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
+	--	relativeToFrame[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
+	--	relativeToFrame[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
+	--	relativeToFrameList = {
+	--		L["MainResourceBar"],
+	--		L["HolyWordSerenityCharge1"],
+	--		L["HolyWordSerenityCharge2"],
+	--		L["HolyWordSanctifyCharge1"],
+	--		L["HolyWordSanctifyCharge2"],
+	--		L["HolyWordChastiseCharge1"],
+	--		L["HealthBar"],
+	--		L["Screen"],
+	--	}
 	elseif(classId == 6) then -- Death Knight
 		relativeToFrame[L["Rune1"]] = "ComboPoint_1"
 		relativeToFrame[L["Rune2"]] = "ComboPoint_2"
@@ -3314,6 +3321,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Rune4"],
 			L["Rune5"],
 			L["Rune6"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 7 and specId == 2) then -- Enhancement Shaman
@@ -3339,6 +3347,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Maelstrom8"],
 			L["Maelstrom9"],
 			L["Maelstrom10"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif(classId == 8 and specId == 1) then -- Arcane Mage
@@ -3352,6 +3361,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["ArcaneCharge2"],
 			L["ArcaneCharge3"],
 			L["ArcaneCharge4"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 9) then -- Warlock
@@ -3367,6 +3377,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["SoulShard3"],
 			L["SoulShard4"],
 			L["SoulShard5"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 10 and specId == 1) then -- Brewmaster Monk
@@ -3374,6 +3385,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["Stagger"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 10 and specId == 3) then -- Windwalker Monk
@@ -3391,6 +3403,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Chi4"],
 			L["Chi5"],
 			L["Chi6"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 11 and specId == 2) then -- Feral Druid
@@ -3406,6 +3419,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["ComboPoint3"],
 			L["ComboPoint4"],
 			L["ComboPoint5"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 12 and specId == 2) then -- Vengeance Demon Hunter
@@ -3421,6 +3435,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["SoulFragment3"],
 			L["SoulFragment4"],
 			L["SoulFragment5"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 12 and specId == 3) then -- Devourer Demon Hunter
@@ -3428,6 +3443,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["SoulFragments"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 13) then -- Evoker
@@ -3445,6 +3461,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Essence4"],
 			L["Essence5"],
 			L["Essence6"],
+			L["HealthBar"],
 			L["Screen"],
 		}
 	end

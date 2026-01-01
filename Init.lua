@@ -37,6 +37,7 @@ addonData.libs.SharedMedia:Register("sound", L["LSMSoundAirHorn"], "Interface\\A
 
 addonData.libs.SharedMedia:Register("statusbar", L["LSMStatusBarM1"], "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\m1.tga")
 addonData.libs.SharedMedia:Register("statusbar", L["LSMStatusBarClean"], "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\clean.blp")
+addonData.libs.SharedMedia:Register("statusbar", L["LSMStatusBarSmoother"], "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga")
 
 if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then -- No localization on this as it is usually provided by WeakAuras
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
@@ -68,8 +69,8 @@ TRB.Data.constants = {
 			backgroundName="Blizzard Tooltip",
 			border="Interface\\Buttons\\WHITE8X8",
 			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
+			resourceBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\clean.blp",
+			resourceBarName="TRB: Clean",
 		},
 		sounds = {
 			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",

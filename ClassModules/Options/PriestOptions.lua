@@ -18,129 +18,16 @@ local SHADOW_MAX_INSANITY = 150
 local function DisciplineLoadExtraBarTextSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			useDefaultFontFace = false,
-			guid = TRB.Functions.String:Guid(),
-			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$pwRadianceTime&$pwRadianceCharges=0}[$pwRadianceTime]",
-			fontFaceName = "Friz Quadrata TT",
-			fontSize = 14,
-			name = "PW Radiance 1",
-			position = {
-				relativeToName = L["PositionCenter"],
-				relativeTo = "CENTER",
-				xPos = 0,
-				relativeToFrameName = L["PowerWordRadianceCharge1"],
-				yPos = 0,
-				relativeToFrame = "PowerWord_Radiance_1",
-			},
-			fontJustifyHorizontal = "LEFT",
-			useDefaultFontSize = false,
-			color = "ffffffff",
-			enabled = true,
-		},
-		{
-			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			useDefaultFontFace = false,
-			guid = TRB.Functions.String:Guid(),
-			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$pwRadianceTime&$pwRadianceCharges=1}[$pwRadianceTime]",
-			fontFaceName = "Friz Quadrata TT",
-			fontSize = 14,
-			name = "PW Radiance 2",
-			position = {
-				relativeToName = L["PositionCenter"],
-				relativeTo = "CENTER",
-				xPos = 0,
-				relativeToFrameName =  L["PowerWordRadianceCharge2"],
-				yPos = 0,
-				relativeToFrame = "PowerWord_Radiance_2",
-			},
-			fontJustifyHorizontal = "LEFT",
-			useDefaultFontSize = false,
-			color = "ffffffff",
-			enabled = true,
-		},
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
 local function DisciplineLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",--$atonementCount",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting + ]$mana/$manaMax $manaPercent%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
 	}
 
 	local extraTextSettings = DisciplineLoadExtraBarTextSettings()
@@ -151,88 +38,6 @@ local function DisciplineLoadDefaultBarTextSimpleSettings()
 	return textSettings
 end
 TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings = DisciplineLoadDefaultBarTextSimpleSettings
-
-local function DisciplineLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",--#atonement $atonementCount ($atonementMinTime)||n{$potionCooldown}[#slumberingSoulSerum $potionCooldown] ",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",--||n{$scTime}[#sc$scTime#sc]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]$mana/$manaMax $manaPercent%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	local extraTextSettings = DisciplineLoadExtraBarTextSettings()
-
-	for x = 1, #extraTextSettings do
-		table.insert(textSettings, extraTextSettings[x])
-	end
-	return textSettings
-end
 
 local function DisciplineLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -315,44 +120,8 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
-		comboPoints = {
-			width=25,
-			height=13,
-			xPos=0,
-			yPos=4,
-			border=1,
-			spacing=14,
-			relativeTo="TOP",
-			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-		},
-		shadowfiend={
-			mode="time",
-			swingsMax=4,
-			gcdsMax=2,
-			timeMax=15.0,
-			enabled=true
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		colors={
 			text = {
 				current = {
@@ -365,7 +134,7 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 					color = "FF8080FF"
 				}
 			},
-			bar={
+			bar = {
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
@@ -383,14 +152,7 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				powerWordRadiance="FFFFDD22",
 				powerWordRadianceEnabled = true
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			}
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
 		displayText={
 			default = {
@@ -423,27 +185,7 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundAirHorn"]
 			}
 		},
-		textures={
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			comboPointsBackgroundName="Blizzard Tooltip",
-			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
-			comboPointsBorderName="1 Pixel",
-			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
-			comboPointsBarName="Blizzard",
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -457,198 +199,16 @@ end
 local function HolyLoadExtraBarTextSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			useDefaultFontFace = false,
-			guid = TRB.Functions.String:Guid(),
-			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$hwSerenityTime&$hwSerenityCharges=0}[$hwSerenityTime]",
-			fontFaceName = "Friz Quadrata TT",
-			fontSize = 14,
-			name = "HW Serenity 1",
-			position = {
-				relativeToName = L["PositionCenter"],
-				relativeTo = "CENTER",
-				xPos = 0,
-				relativeToFrameName = L["HolyWordSerenityCharge1"],
-				yPos = 0,
-				relativeToFrame = "HolyWord_Serenity_1",
-			},
-			fontJustifyHorizontal = "LEFT",
-			useDefaultFontSize = false,
-			color = "ffffffff",
-			enabled = true,
-		},
-		{
-			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			useDefaultFontFace = false,
-			guid = TRB.Functions.String:Guid(),
-			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$hwSerenityTime&$hwSerenityCharges=1}[$hwSerenityTime]",
-			fontSize = 14,
-			color = "FFFFFFFF",
-			name = "HW Serenity 2",
-			position = {
-				relativeToName = L["PositionCenter"],
-				relativeTo = "CENTER",
-				xPos = 0,
-				relativeToFrameName = L["HolyWordSerenityCharge2"],
-				yPos = 0,
-				relativeToFrame = "HolyWord_Serenity_2",
-			},
-			fontJustifyHorizontal = "LEFT",
-			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
-			useDefaultFontColor = false,
-		},
-		{
-			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			useDefaultFontFace = false,
-			guid = TRB.Functions.String:Guid(),
-			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$hwSanctifyTime&$hwSanctifyCharges=0}[$hwSanctifyTime]",
-			fontSize = 14,
-			color = "FFFFFFFF",
-			name = "HW Sanctify 1",
-			position = {
-				relativeToName = L["PositionCenter"],
-				relativeTo = "CENTER",
-				xPos = 0,
-				relativeToFrameName = L["HolyWordSanctifyCharge1"],
-				yPos = 0,
-				relativeToFrame = "HolyWord_Sanctify_1",
-			},
-			fontJustifyHorizontal = "LEFT",
-			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
-			useDefaultFontColor = false,
-		},
-		{
-			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			useDefaultFontFace = false,
-			guid = TRB.Functions.String:Guid(),
-			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$hwSanctifyTime&$hwSanctifyCharges=1}[$hwSanctifyTime]",
-			fontSize = 14,
-			color = "FFFFFFFF",
-			name = "HW Sanctify 2",
-			position = {
-				relativeToName = L["PositionCenter"],
-				relativeTo = "CENTER",
-				xPos = 0,
-				relativeToFrameName = L["HolyWordSanctifyCharge2"],
-				yPos = 0,
-				relativeToFrame = "HolyWord_Sanctify_2",
-			},
-			fontJustifyHorizontal = "LEFT",
-			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
-			useDefaultFontColor = false,
-		},
-		{
-			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			useDefaultFontFace = false,
-			guid = TRB.Functions.String:Guid(),
-			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$hwChastiseTime}[$hwChastiseTime]",
-			fontSize = 14,
-			color = "FFFFFFFF",
-			name = "HW Chastise",
-			position = {
-				relativeToName = L["PositionCenter"],
-				relativeTo = "CENTER",
-				xPos = 0,
-				relativeToFrameName = L["HolyWordChastiseCharge1"],
-				yPos = 0,
-				relativeToFrame = "HolyWord_Chastise_1",
-			},
-			fontJustifyHorizontal = "LEFT",
-			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
-			useDefaultFontColor = false,
-		}
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
 local function HolyLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",--{$apotheosisTime}[$apotheosisTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting + ]$mana/$manaMax $manaPercent%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
 	}
 
 	local extraTextSettings = HolyLoadExtraBarTextSettings()
@@ -659,88 +219,6 @@ local function HolyLoadDefaultBarTextSimpleSettings()
 	return textSettings
 end
 TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings = HolyLoadDefaultBarTextSimpleSettings
-
-local function HolyLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="",--{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#slumberingSoulSerum $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",--{$apotheosisTime}[#apotheosis $apotheosisTime #apotheosis]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$casting}[#casting$casting+]$mana/$manaMax $manaPercent%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	local extraTextSettings = HolyLoadExtraBarTextSettings()
-
-	for x = 1, #extraTextSettings do
-		table.insert(textSettings, extraTextSettings[x])
-	end
-	return textSettings
-end
 
 local function HolyLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -815,49 +293,13 @@ local function HolyLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
-		comboPoints = {
-			width=25,
-			height=13,
-			xPos=0,
-			yPos=4,
-			border=1,
-			spacing=14,
-			relativeTo="TOP",
-			relativeToName = L["PositionAboveMiddle"],
-			fullWidth=true,
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		endOfApotheosis = {
 			enabled=true,
 			mode="gcd",
 			gcdsMax=2,
 			timeMax=3.0
-		},
-		shadowfiend={
-			mode="time",
-			swingsMax=4,
-			gcdsMax=2,
-			timeMax=15.0,
-			enabled=true
 		},
 		colors={
 			text = {
@@ -871,7 +313,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 					color = "FF8080FF"
 				},
 			},
-			bar={
+			bar = {
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
@@ -920,14 +362,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 					show = true
 				}
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			}
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
 		displayText={
 			default = {
@@ -972,27 +407,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundAirHorn"]
 			}
 		},
-		textures={
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			comboPointsBackgroundName="Blizzard Tooltip",
-			comboPointsBorder="Interface\\Buttons\\WHITE8X8",
-			comboPointsBorderName="1 Pixel",
-			comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
-			comboPointsBarName="Blizzard",
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -1005,234 +420,13 @@ end
 local function ShadowLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="$haste%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="",--"{$vfTime}[$vfTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="$resource",--"{$casting}[$casting + ]$insanity",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=18,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
 	}
 
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.Priest.ShadowLoadDefaultBarTextSimpleSettings = ShadowLoadDefaultBarTextSimpleSettings
-
-local function ShadowLoadDefaultBarTextAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="$haste% ($gcd)",
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			fontFaceName = "Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize = 13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			guid = TRB.Functions.String:Guid(),
-			name = L["PositionMiddle"],
-			text="{$mfiTime}[#mfi $mfiTime - $mfiStacks #mfi]{$entropicRiftTime}[#entropicRift $entropicRiftTime - $entropicRiftExtensionsRemaining #entropicRift]||n{$sotvTime}[#sotv $sotvTime #screamsOfTheVoid]",--"{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			fontFaceName = "Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize = 13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			guid = TRB.Functions.String:Guid(),
-			name = L["PositionRight"],
-			text="$resource",--"{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$hvInsanity}[#hv$hvInsanity+]{$psInsanity}[#halo$psInsanity+]$insanity",
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			fontFaceName = "Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize = 22,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	return textSettings
-end
-
-local function ShadowLoadDefaultBarTextNarrowAdvancedSettings()
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="$haste% ($gcd)",
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			fontFaceName = "Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize = 13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			text="",--"{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			fontFaceName = "Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize = 13,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="$resource",--"{$casting}[#casting$casting+]$insanity",
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			fontFaceName = "Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize = 22,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		}
-	}
-
-	return textSettings
-end
 
 local function ShadowLoadDefaultSettings(includeBarText)
 	local settings = {
@@ -1285,26 +479,8 @@ local function ShadowLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = {
-			width=555,
-			height=34,
-			xPos=0,
-			yPos=-200,
-			border=4,
-			dragAndDrop=false,
-			pinToPersonalResourceDisplay=false
-		},
-		healthBar = {
-			width=555,
-			height=16,
-			xPos=0,
-			yPos=-4,
-			border=2,
-			spacing=0,
-			relativeTo="BOTTOM",
-			relativeToName = L["PositionBelowMiddle"],
-			fullWidth=true,
-		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 		mindbender={ --TODO: Rename this shadowfiend to be consistent with Discipline and Holy
 			mode="gcd",
 			swingsMax=4,
@@ -1380,14 +556,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 					show = true
 				}
 			},
-			healthBar = {
-				border = { color = "FF008800" },
-				background = { color = "66000000" },
-				type = "step",
-				low = { color = "FFFF0000", threshold = 0.0 },
-				medium = { color = "FFFFFF00", threshold = 0.30 },
-				high = { color = "FF00FF00", threshold = 0.70 }
-			}
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
 		displayText={
 			default = {
@@ -1420,21 +589,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
-		textures={
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-			textureLock=true,
-			healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-			healthBackgroundName="Blizzard Tooltip",
-			healthBorder="Interface\\Buttons\\WHITE8X8",
-			healthBorderName="1 Pixel",
-			healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-			healthBarName="Blizzard",
-		}
+		textures = TRB.Functions.Settings:DefaultTextures(),
 	}
 
 	if includeBarText then
@@ -1498,19 +653,6 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestDisciplineFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = DisciplineLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -1529,13 +671,6 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_Priest_Discipline_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Priest_Discipline_ResetBarTextAdvanced")
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.discipline = controls
 end
 
 local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
@@ -1936,19 +1071,6 @@ local function HolyConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Priest_Holy_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestHolyFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = HolyLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -1967,13 +1089,6 @@ local function HolyConstructResetDefaultsPanel(parent)
 		StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
-
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextAdvanced")
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
 end
 
 local function HolyConstructBarColorsAndBehaviorPanel(parent)
@@ -2599,32 +1714,6 @@ local function ShadowConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestShadowFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = ShadowLoadDefaultBarTextAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-	StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextNarrowAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["PriestShadowFull"]),
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnAccept = function()
-			spec.displayText.barText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
-			controls.barTextFields.ResetTableValues(spec.displayText.barText)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
 
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
@@ -2642,20 +1731,6 @@ local function ShadowConstructResetDefaultsPanel(parent)
 	controls.resetButton1:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextSimple")
 	end)
-
-	yCoord = yCoord - 40
-	controls.resetButton2 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedNarrow"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton2:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextNarrowAdvanced")
-	end)
-
-	yCoord = yCoord - 40
-	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextAdvanced")
-	end)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 end
 
 local function ShadowConstructBarColorsAndBehaviorPanel(parent)

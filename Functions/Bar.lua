@@ -555,7 +555,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	if topBottom == "BOTTOM" then
 		yPos = -settings.bar.border + groupSettings.yPos
 	else
-		yPos = settings.bar.border + groupSettings.yPos - 1
+		yPos = settings.bar.border + groupSettings.yPos - 2
 	end
 
 	-- Position the target container

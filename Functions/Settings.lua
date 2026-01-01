@@ -105,36 +105,9 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				health = "combat",
 				dragonriding = true
 			},
-			bar = {
-				width = 555,
-				height = 34,
-				xPos = 0,
-				yPos = -200,
-				border = 4,
-				dragAndDrop = false,
-				pinToPersonalResourceDisplay = false
-			},
-			comboPoints = {
-				width = 25,
-				height = 13,
-				xPos = 0,
-				yPos = 4,
-				border = 1,
-				spacing = 14,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAboveMiddle"],
-				fullWidth = false,
-			},
-			healthBar = {
-				width = 555,
-				height = 16,
-				xPos = 0,
-				yPos = -4,
-				border = 2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelowMiddle"],
-				fullWidth = true,
-			},
+			bar = TRB.Functions.Settings:DefaultBarDimensions(),
+			comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+			healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
 			precision = {
 				secondary = 2,
 				resource = 0
@@ -162,14 +135,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 						enabled = false
 					},
 				},
-				healthBar = {
-					border = { color = "FF008800" },
-					background = { color = "66000000" },
-					type = "step",
-					low = { color = "FFFF0000", threshold = 0.0 },
-					medium = { color = "FFFFFF00", threshold = 0.30 },
-					high = { color = "FF00FF00", threshold = 0.70 }
-				},
+				healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 				threshold = {
 					under = {
 						color = "FFFFFFFF"
@@ -191,27 +157,7 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 					},
 				}
 			},
-			textures={
-				background = "Interface\\Tooltips\\UI-Tooltip-Background",
-				backgroundName = "Blizzard Tooltip",
-				border = "Interface\\Buttons\\WHITE8X8",
-				borderName = "1 Pixel",
-				resourceBar = "Interface\\TargetingFrame\\UI-StatusBar",
-				resourceBarName = "Blizzard",
-				textureLock = true,
-				comboPointsBackground = "Interface\\Tooltips\\UI-Tooltip-Background",
-				comboPointsBackgroundName = "Blizzard Tooltip",
-				comboPointsBorder = "Interface\\Buttons\\WHITE8X8",
-				comboPointsBorderName = "1 Pixel",
-				comboPointsBar = "Interface\\TargetingFrame\\UI-StatusBar",
-				comboPointsBarName = "Blizzard",
-				healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
-				healthBackgroundName="Blizzard Tooltip",
-				healthBorder="Interface\\Buttons\\WHITE8X8",
-				healthBorderName="1 Pixel",
-				healthBar="Interface\\TargetingFrame\\UI-StatusBar",
-				healthBarName="Blizzard",
-			},
+			textures = TRB.Functions.Settings:DefaultTextures(true),
 			displayText={
 				default = {
 					fontFace = "Fonts\\FRIZQT__.TTF",
@@ -361,8 +307,6 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				}
 			},
 			experimental = {
-				specs = {
-				}
 			}
 		},
 		deathknight = {
@@ -509,4 +453,221 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 		end
 	end
 	return newSettings
+end
+
+function TRB.Functions.Settings:DefaultBarDimensions()
+	return {
+		width=300,
+		height=30,
+		xPos=0,
+		yPos=-200,
+		border=2,
+		dragAndDrop=false,
+		pinToPersonalResourceDisplay=false
+	}
+end
+
+function TRB.Functions.Settings:DefaultHealthDimensions()
+	return {
+		width = 300,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		relativeTo = "BOTTOM",
+		relativeToName = L["PositionBelowMiddle"],
+		fullWidth = true,
+	}
+end
+
+function TRB.Functions.Settings:DefaultComboPointsDimensions()
+	return {
+		width=30,
+		height=20,
+		xPos=0,
+		yPos=0,
+		border=2,
+		spacing=0,
+		relativeTo="TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth=true,
+	}
+end
+
+function TRB.Functions.Settings:DefaultHealthBarColors()
+	return {
+		border = { color = "FF008800" },
+		background = { color = "66000000" },
+		type = "step",
+		low = { color = "FFFF0000", threshold = 0.0 },
+		medium = { color = "FFFFFF00", threshold = 0.30 },
+		high = { color = "FF00FF00", threshold = 0.70 }
+	}
+end
+
+---comment
+---@param includeComboPoints boolean?
+---@return table
+function TRB.Functions.Settings:DefaultTextures(includeComboPoints)
+	local textures = {
+		background="Interface\\Tooltips\\UI-Tooltip-Background",
+		backgroundName="Blizzard Tooltip",
+		border="Interface\\Buttons\\WHITE8X8",
+		borderName="1 Pixel",
+		resourceBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
+		resourceBarName=L["LSMStatusBarSmoother"],
+		textureLock=true,
+		healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+		healthBackgroundName="Blizzard Tooltip",
+		healthBorder="Interface\\Buttons\\WHITE8X8",
+		healthBorderName="1 Pixel",
+		healthBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
+		healthBarName=L["LSMStatusBarSmoother"],
+	}
+	if includeComboPoints then
+		textures.comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background"
+		textures.comboPointsBackgroundName="Blizzard Tooltip"
+		textures.comboPointsBorder="Interface\\Buttons\\WHITE8X8"
+		textures.comboPointsBorderName="1 Pixel"
+		textures.comboPointsBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
+		textures.comboPointsBarName=L["LSMStatusBarSmoother"]
+	end
+	return textures
+end
+
+
+---@alias trbIncludeResourceType
+---| '"resource"' # Generic $resource centered
+---| '"mana"' # $mana% left, $mana / $manaMax right
+
+---Adds default bar text that is used globally
+---@param includeResourceType trbIncludeResourceType?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResourceType)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="$healthPercent%",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "HealthBar",
+				relativeToFrameName = L["HealthBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$health / $healthMax",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "HealthBar",
+				relativeToFrameName = L["HealthBar"]
+			}
+		},
+	}
+
+	if includeResourceType == "resource" then
+		table.insert(textSettings,
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="$resource",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	elseif includeResourceType == "mana" then
+		table.insert(textSettings,
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="$manaPercent%",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$mana / $manaMax",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	end
+
+	return textSettings
 end

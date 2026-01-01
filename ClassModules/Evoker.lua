@@ -228,6 +228,8 @@ local function FillSpellData_Devastation()
 
 		{ variable = "$mana", description = L["EvokerDevastationBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$manaPercent", description = L["EvokerDevastationBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
 		{ variable = "$manaMax", description = L["EvokerDevastationBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		
@@ -380,6 +382,8 @@ local function FillSpellData_Augmentation()
 
 		{ variable = "$mana", description = L["EvokerAugmentationBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$manaPercent", description = L["EvokerAugmentationBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
 		{ variable = "$manaMax", description = L["EvokerAugmentationBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		
@@ -465,12 +469,28 @@ local function RefreshLookupData_Devastation()
 	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
-	local currentManaColor = sharedSettings.colors.text.current.color
+	local currentManaColor = TRB.Data.settings.mage.arcane.colors.text.current.color
+	local castingManaColor = TRB.Data.settings.mage.arcane.colors.text.casting.color
+
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
+	local manaPrecision = TRB.Data.settings.mage.arcane.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	--$casting
+	local _castingMana = snapshotData.casting.resourceFinal
+	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+
 	--$manaMax
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+
+	--$manaPercent
+	--[[local maxResource = TRB.Data.character.maxResource
+
+	if maxResource == 0 then
+		maxResource = 1
+	end]]
+	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 	
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
@@ -486,6 +506,8 @@ local function RefreshLookupData_Devastation()
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = manaMax
 	lookup["$resource"] = currentMana
+	lookup["$manaPercent"] = manaPercent
+	lookup["$resourcePercent"] = manaPercent
 	lookup["$essence"] = snapshotData.attributes.resource2
 	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
@@ -498,6 +520,8 @@ local function RefreshLookupData_Devastation()
 	lookupLogic["$mana"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = snapshotData.attributes.resource
+	lookupLogic["$manaPercent"] = _manaPercent
+	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceRegenTime"] = _essenceRegenTime
@@ -601,12 +625,28 @@ local function RefreshLookupData_Augmentation()
 	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
-	local currentManaColor = sharedSettings.colors.text.current.color
+	local currentManaColor = TRB.Data.settings.mage.arcane.colors.text.current.color
+	local castingManaColor = TRB.Data.settings.mage.arcane.colors.text.casting.color
+
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
+	local manaPrecision = TRB.Data.settings.mage.arcane.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+	--$casting
+	local _castingMana = snapshotData.casting.resourceFinal
+	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+
 	--$manaMax
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+
+	--$manaPercent
+	--[[local maxResource = TRB.Data.character.maxResource
+
+	if maxResource == 0 then
+		maxResource = 1
+	end]]
+	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
@@ -622,6 +662,8 @@ local function RefreshLookupData_Augmentation()
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = manaMax
 	lookup["$resource"] = currentMana
+	lookup["$manaPercent"] = manaPercent
+	lookup["$resourcePercent"] = manaPercent
 	lookup["$essence"] = snapshotData.attributes.resource
 	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
@@ -634,6 +676,8 @@ local function RefreshLookupData_Augmentation()
 	lookupLogic["$mana"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = snapshotData.attributes.resource
+	lookupLogic["$manaPercent"] = _manaPercent
+	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceRegenTime"] = _essenceRegenTime
