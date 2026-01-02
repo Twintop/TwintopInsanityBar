@@ -196,7 +196,7 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 	threshold:Show()
 	threshold.hasIcon = false
 	
-	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.bar.border, true)
+	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.comboPoints.border, true)
 end
 
 function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)

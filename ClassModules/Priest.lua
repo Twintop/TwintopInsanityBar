@@ -551,6 +551,8 @@ local function FillSpellData_Shadow()
 		{ variable = "$entropicRiftTime", description = L["PriestShadowBarTextVariable_entropicRiftTime"], printInSettings = true },
 		{ variable = "$entropicRiftExtensionsRemaining", description = L["PriestShadowBarTextVariable_entropicRiftExtensionsRemaining"], printInSettings = true },
 
+		{ variable = "$vfTime", description = L["PriestShadowBarTextVariable_vfTime"], printInSettings = true, color = false },
+
 		--[[{ variable = "$siTime", description = L["PriestShadowBarTextVariable_siTime"], printInSettings = true, color = false },
 		
 		{ variable = "$mindBlastCharges", description = L["PriestShadowBarTextVariable_mindBlastCharges"], printInSettings = true, color = false },
@@ -562,7 +564,6 @@ local function FillSpellData_Shadow()
 		{ variable = "$mmStacks", description = L["PriestShadowBarTextVariable_spStacks"], printInSettings = false, color = false },
 		{ variable = "$spCrit", description = L["PriestShadowBarTextVariable_spCrit"], printInSettings = true, color = false },
 
-		{ variable = "$vfTime", description = L["PriestShadowBarTextVariable_vfTime"], printInSettings = true, color = false },
 
 		{ variable = "$ysTime", description = L["PriestShadowBarTextVariable_ysTime"], printInSettings = true, color = false },
 		{ variable = "$ysStacks", description = L["PriestShadowBarTextVariable_ysStacks"], printInSettings = true, color = false },
@@ -936,11 +937,9 @@ local function RefreshLookupData_Shadow()
 	local currentTime = GetTime()
 	local normalizedInsanity = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
-	--[[
-
 	--$vfTime
 	local _voidformTime = snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
-	local voidformTime = TRB.Functions.BarText:TimerPrecision(_voidformTime)]]
+	local voidformTime = TRB.Functions.BarText:TimerPrecision(_voidformTime)
 
 	local currentInsanityColor = sharedSettings.colors.text.current.color
 	local castingInsanityColor = sharedSettings.colors.text.casting.color
@@ -1072,8 +1071,8 @@ local function RefreshLookupData_Shadow()
 	lookup["$sotvTime"] = sotvTime
 	lookup["$entropicRiftTime"] = entropicRiftTime
 	lookup["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
-	--[[lookup["$mdTime"] = mdTime
 	lookup["$vfTime"] = voidformTime
+	--[[lookup["$mdTime"] = mdTime
 	lookup["$spTime"] = spTime
 	lookup["$mmTime"] = spTime
 	lookup["$spStacks"] = spStacks
@@ -1104,8 +1103,8 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$sotvTime"] = _sotvTime
 	lookupLogic["$entropicRiftTime"] = _entropicRiftTime
 	lookupLogic["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
-	--[[lookupLogic["$mdTime"] = _mdTime
 	lookupLogic["$vfTime"] = _voidformTime
+	--[[lookupLogic["$mdTime"] = _mdTime
 	lookupLogic["$spTime"] = _spTime
 	lookupLogic["$mmTime"] = _spTime
 	lookupLogic["$spStacks"] = spStacks
@@ -1186,6 +1185,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+		local snapshots = snapshotData.snapshots
 		if event == "UNIT_SPELLCAST_START" then
 			if spellId == spells.mindBlast.id then
 				casting.startTime = currentTime
@@ -1203,9 +1203,9 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.spellId = spells.voidform.id
 				casting.icon = spells.voidform.icon
 
-				if talents:IsTalentActive(spells.improvedVoidform) or true then -- This seems to be bugged and always adds the resource generation
+				if talents:IsTalentActive(spells.improvedVoidform) then
 					casting.resourceRaw = casting.resourceRaw + spells.improvedVoidform.resource
-				end
+				end				
 			elseif spellId == spells.mindgames.id then
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.mindgames.resource
@@ -1239,8 +1239,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 
 				-- If Mind Flay: Insanity is supposedly active but we're channeling Mind Flay, something got messed up in the buff tracking and we need to clear the buff
-				if snapshotData.snapshots[spells.mindFlayInsanity.id].buff.isActive then
-					snapshotData.snapshots[spells.mindFlayInsanity.id].buff:Reset()
+				if snapshots[spells.mindFlayInsanity.id].buff.isActive then
+					snapshots[spells.mindFlayInsanity.id].buff:Reset()
 				end
 			elseif spellId == spells.mindFlayInsanity.castId then
 				casting.spellId = spells.mindFlayInsanity.castId
@@ -1248,57 +1248,67 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = spells.mindFlayInsanity.resource
 				casting.icon = spells.mindFlayInsanity.icon
 
-				snapshotData.snapshots[spells.mindFlayInsanity.id].buff:RemoveStack()
+				snapshots[spells.mindFlayInsanity.id].buff:RemoveStack()
 			elseif spellId == spells.voidTorrent.id then
 				casting.spellId = spells.voidTorrent.id
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.voidTorrent.resource
 				casting.icon = spells.voidTorrent.icon
 
-				snapshotData.snapshots[spells.entropicRift.id].buff:InitializeCustom(spells.entropicRift.duration, currentTime)
+				snapshots[spells.entropicRift.id].buff:InitializeCustom(spells.entropicRift.duration, currentTime)
 				if talents:IsTalentActive(spells.darkeningHorizon) then
-					snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = spells.darkeningHorizon.attributes["maxExtensions"]
+					snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = spells.darkeningHorizon.attributes["maxExtensions"]
 				else
-					snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = 0
+					snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = 0
 				end
 			end
 			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.halo.id then
 				if talents:IsTalentActive(spells.manifestedPower) then
-					snapshotData.snapshots[spells.mindFlayInsanity.id].buff:InitializeCustom(spells.mindFlayInsanity.duration, currentTime, true)
+					snapshots[spells.mindFlayInsanity.id].buff:InitializeCustom(spells.mindFlayInsanity.duration, currentTime, true)
 					--TODO: Clean this up into something more automated
 					if talents:IsTalentActive(spells.powerSurge) then
 						C_Timer.After(0, function()
 							C_Timer.After(spells.powerSurge.tickRate, function()
-								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
+								snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
 							end)
 							C_Timer.After((spells.powerSurge.tickRate * 2), function()
-								snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
+								snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
 							end)
 							if talents:IsTalentActive(spells.energyConservation) then
 								C_Timer.After((spells.powerSurge.tickRate * 3), function()
-									snapshotData.snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 3), true)
+									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 3), true)
 								end)
 							end
 						end)
 					end
 				end
+			elseif spellId == spells.voidform.id then
+				snapshots[spells.voidform.id].buff:InitializeCustom(spells.voidform.duration, currentTime)
+				snapshots[spells.voidform.id].buff.attributes["swmCasts"] = 0
 			elseif spellId == spells.shadowWordMadness.castId then
 				if talents:IsTalentActive(spells.screamsOfTheVoid) then
-					snapshotData.snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime)
+					snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime)
+				end
+
+				if snapshots[spells.voidform.id].buff.isActive and talents:IsTalentActive(spells.ancientMadness) then
+					local mod = spells.ancientMadness.attributes.durationPerCastMod ^ (snapshots[spells.voidform.id].buff.attributes["swmCasts"] or 0)
+					local increasedDuration = mod * spells.ancientMadness.attributes.durationMod
+					snapshots[spells.voidform.id].buff:AddTimeOrInitializeCustom(increasedDuration)
+					snapshots[spells.voidform.id].buff.attributes["swmCasts"] = snapshots[spells.voidform.id].buff.attributes["swmCasts"] + 1
 				end
 			elseif spellId == spells.tentacleSlam.castId then
 				if talents:IsTalentActive(spells.screamsOfTheVoid) and talents:IsTalentActive(spells.maddeningTentacles) then
 					C_Timer.After((spells.tentacleSlam.attributes.delay), function()
-						snapshotData.snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime+spells.tentacleSlam.attributes.delay)
+						snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime+spells.tentacleSlam.attributes.delay)
 					end)
 				end
 			elseif spellId == spells.voidBlast.id then
-				snapshotData.snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime) -- Force update of remaining time before checking
-				if talents:IsTalentActive(spells.darkeningHorizon) and snapshotData.snapshots[spells.entropicRift.id].buff.isActive and snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] > 0 then
-					snapshotData.snapshots[spells.entropicRift.id].buff:AddTimeOrInitializeCustom(spells.darkeningHorizon.duration, currentTime)
-					snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = snapshotData.snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] - 1
+				snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime) -- Force update of remaining time before checking
+				if talents:IsTalentActive(spells.darkeningHorizon) and snapshots[spells.entropicRift.id].buff.isActive and snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] > 0 then
+					snapshots[spells.entropicRift.id].buff:AddTimeOrInitializeCustom(spells.darkeningHorizon.duration, currentTime)
+					snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] - 1
 				end
 			end
 		end
@@ -1709,8 +1719,30 @@ local function UpdateResourceBar()
 				end
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				if snapshots[spells.voidform.id].buff.isActive then
+					local timeLeft = snapshots[spells.voidform.id].buff.remaining
+					local timeThreshold = 0
+					local useEndOfVoidformColor = false
 
-				if spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
+					if specSettings.endOfVoidform.enabled then
+						useEndOfVoidformColor = true
+						if specSettings.endOfVoidform.mode == "gcd" then
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							timeThreshold = gcd * specSettings.endOfVoidform.gcdsMax
+						elseif specSettings.endOfVoidform.mode == "time" then
+							timeThreshold = specSettings.endOfVoidform.timeMax
+						end
+					end
+
+					if useEndOfVoidformColor and timeLeft <= timeThreshold then
+						barColor = specSettings.colors.bar.inVoidform1GCD
+					elseif spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
+						barColor = specSettings.colors.bar.shadowWordMadnessUsable
+					else
+						barColor = specSettings.colors.bar.inVoidform
+					end
+
+				elseif spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
 					barColor = specSettings.colors.bar.shadowWordMadnessUsable
 				else
 					barColor = specSettings.colors.bar.base
@@ -2344,11 +2376,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0 then
 				valid = true
 			end
-		--[[elseif var == "$vfTime" then
+		elseif var == "$vfTime" then
 			if (snapshots[spells.voidform.id].buff.remaining ~= nil and snapshots[spells.voidform.id].buff.remaining > 0) then
 				valid = true
 			end
-		elseif var == "$hvTicks" then
+		--[[elseif var == "$hvTicks" then
 			if snapshots[spells.horrificVisions.id].buff.ticks > 0 then
 				valid = true
 			end

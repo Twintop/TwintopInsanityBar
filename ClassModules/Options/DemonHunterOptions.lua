@@ -16,13 +16,46 @@ local HAVOC_MAX_FURY = 170
 local VENGEANCE_MAX_FURY = 120
 local DEVOURER_MAX_FURY = 140
 
+local function SharedLoadDefaultBarTextSimpleSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$metamorphosisTime>0}[#meta$metamorphosisTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+	}
+
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	return textSettings
+end
+
 local function HavocLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
-	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	local sharedSettings = SharedLoadDefaultBarTextSimpleSettings()
+	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings = HavocLoadDefaultBarTextSimpleSettings
@@ -172,8 +205,8 @@ local function VengeanceLoadDefaultBarTextSimpleSettings()
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
-	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	local sharedSettings = SharedLoadDefaultBarTextSimpleSettings()
+	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSimpleSettings = VengeanceLoadDefaultBarTextSimpleSettings
@@ -260,9 +293,9 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				metamorphosisEnding="FFFF0000",
 			},
 			comboPoints = {
-				border="FF660088",
+				border="FF4C0065",
 				background="66000000",
-				base="FFC942FD",
+				base="FF9800D4",
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false
@@ -340,8 +373,8 @@ local function DevourerLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
-	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	local sharedSettings = SharedLoadDefaultBarTextSimpleSettings()
+	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSimpleSettings = DevourerLoadDefaultBarTextSimpleSettings
@@ -582,7 +615,7 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, false, nil, true)
 
-	yCoord = yCoord - 100
+	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
@@ -1089,7 +1122,7 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
 
-	yCoord = yCoord - 100
+	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
@@ -1610,7 +1643,7 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
 
-	yCoord = yCoord - 100
+	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30

@@ -712,6 +712,7 @@ end
 ---@field public shadowWordPain TRB.Classes.SpellBase
 ---@field public tentacleSlam TRB.Classes.SpellBase
 ---@field public maddeningTentacles TRB.Classes.SpellBase
+---@field public sustainedPotency TRB.Classes.SpellBase
 --[[
 ---@field public powerSurge TRB.Classes.SpellBase
 ---@field public misery TRB.Classes.SpellBase
@@ -837,7 +838,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 228260,
 		buffId = 194249,
 		isTalent = true,
-		resource = 10
+		resource = 10,
+		duration = 20
 	})
 	self.improvedVoidform = TRB.Classes.SpellBase:New({
 		id = 341540,
@@ -847,7 +849,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.ancientMadness = TRB.Classes.SpellBase:New({
 		id = 1231346,
 		isTalent = true,
-		durationMod = 2.5
+		durationMod = 3,
+		durationPerCastMod = 0.75
 	})
 	self.voidVolley = TRB.Classes.SpellBase:New({
 		id = 1242173,
@@ -973,6 +976,11 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 1272308,
 		ticks = 1,
 		isTalent = true
+	})
+	self.sustainedPotency = TRB.Classes.SpellBase:New({
+		id = 454001,
+		isTalent = true,
+		duration = 20
 	})
 	--[[self.resonantEnergy = TRB.Classes.SpellBase:New({
 		id = 453845,

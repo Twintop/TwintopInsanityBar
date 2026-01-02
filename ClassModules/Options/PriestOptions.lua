@@ -1757,7 +1757,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
-	yCoord = yCoord - 30
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false)
 
 	yCoord = yCoord - 30
@@ -1766,7 +1766,6 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
-	--[[
 	yCoord = yCoord - 30
 	controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidform"], spec.colors.bar.inVoidform, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inVoidform		
@@ -1781,7 +1780,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
 	end)
 
-	controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_vfDaColorChange", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_vfColorChange", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.endOfVoidform
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxVoidformEnd"])
@@ -1790,7 +1789,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.endOfVoidform.enabled = self:GetChecked()
 	end)
-	]]
+
 	yCoord = yCoord - 30
 	controls.colors.shadowWordMadnessUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickershadowWordMadness"], spec.colors.bar.shadowWordMadnessUsable, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.shadowWordMadnessUsable
@@ -1814,13 +1813,6 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.bar.instantMindBlast.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 30
-	controls.colors.shadowWordMadnessUsableCasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerCastingshadowWordMadnessReady"], spec.colors.bar.shadowWordMadnessUsableCasting, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.shadowWordMadnessUsableCasting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "shadowWordMadnessUsableCasting")
 	end)]]
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1903,7 +1895,6 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 3, yCoord)
 
-	--[[
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderEndOfVoidformConfiguration"], oUi.xCoord, yCoord)
 
@@ -1955,7 +1946,6 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 		self.EditBox:SetText(value)
 		spec.endOfVoidform.timeMax = value
 	end)
-	]]
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], 1, SHADOW_MAX_INSANITY)
