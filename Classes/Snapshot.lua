@@ -167,7 +167,17 @@ end
 
 ---Resets the object to default values
 ---@param includeAttributes boolean? # If true or nil, also resets custom attributes
-function TRB.Classes.SnapshotBuff:Reset(includeAttributes)
+---@param force boolean? # If true, reset even if currently paused
+function TRB.Classes.SnapshotBuff:Reset(includeAttributes, force)
+	-- Don't reset if we're actively paused with budget remaining (unless forced)
+	-- This prevents the game's UNIT_AURA removal events from clearing a paused buff
+	if not force and self.isPaused and self.pauseMaxDuration ~= nil then
+		local currentPauseElapsed = GetTime() - (self.pauseStartTime or GetTime())
+		if self.pauseElapsedTime + currentPauseElapsed < self.pauseMaxDuration then
+			return
+		end
+	end
+
 	if includeAttributes == nil then
 		includeAttributes = true
 	end
@@ -306,6 +316,10 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 		-- Check if pause budget is exhausted
 		if totalPauseTime >= self.pauseMaxDuration then
 			-- Finalize the pause elapsed time at max and exit pause mode
+			-- Extend endTime by the max pause duration before resuming normal tracking
+			if self.endTime ~= nil then
+				self.endTime = self.endTime + self.pauseMaxDuration
+			end
 			self.pauseElapsedTime = self.pauseMaxDuration
 			self.pauseStartTime = nil
 			self.isPaused = false
@@ -313,6 +327,9 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 			-- Continue to normal time calculation below
 		else
 			-- Still within pause budget, return frozen time
+			-- Maintain isActive and remaining so other code sees consistent state
+			self.isActive = true
+			self.remaining = self.previousRemaining
 			self.lastRefreshGetTime = currentTime
 			return self.previousRemaining
 		end
