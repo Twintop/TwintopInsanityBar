@@ -100,6 +100,10 @@ end
 ---@field private lastRefreshGetTime number
 ---@field public previousRemaining number
 ---@field public attributes table
+---@field public pauseMaxDuration number? # Maximum allowed pause duration, nil if not pausable
+---@field public pauseElapsedTime number # Cumulative time spent paused
+---@field public pauseStartTime number? # When the current pause began, nil if not paused
+---@field public isPaused boolean # Whether the buff is currently paused
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
@@ -183,6 +187,10 @@ function TRB.Classes.SnapshotBuff:Reset(includeAttributes)
 	self.refreshRequested = false
 	self.lastRefreshGetTime = 0
 	self.previousRemaining = 0
+	self.pauseMaxDuration = nil
+	self.pauseElapsedTime = 0
+	self.pauseStartTime = nil
+	self.isPaused = false
 
 	if includeAttributes then
 		self.attributes = {}
@@ -208,6 +216,81 @@ function TRB.Classes.SnapshotBuff:SetTickData(hasTicks, resourcePerTick, tickRat
 	self.tickRate = tickRate
 end
 
+---Sets the maximum pause duration for this buff. Resets pauseElapsedTime when called.
+---@param maxDuration number? # Maximum pause duration in seconds. Set to nil to disable pause functionality.
+function TRB.Classes.SnapshotBuff:SetPauseMaxDuration(maxDuration)
+	self.pauseMaxDuration = maxDuration
+	self.pauseElapsedTime = 0
+	self.pauseStartTime = nil
+	self.isPaused = false
+end
+
+---Enters pause mode, freezing the remaining time at the current value.
+---Does nothing if already paused, pauseMaxDuration is nil, or the buff is not active.
+function TRB.Classes.SnapshotBuff:EnterPauseMode()
+	-- Don't enter pause mode if already paused, not pausable, or buff is inactive
+	if self.isPaused or self.pauseMaxDuration == nil or not self.isActive then
+		return
+	end
+
+	-- Check if we've already exhausted the pause budget
+	if self.pauseElapsedTime >= self.pauseMaxDuration then
+		return
+	end
+
+	-- Snapshot the current remaining time before entering pause mode
+	self:GetRemainingTime()
+	self.previousRemaining = self.remaining
+
+	-- Enter pause mode
+	self.pauseStartTime = GetTime()
+	self.isPaused = true
+	self.currentlySimple = true
+end
+
+---Exits pause mode, resuming normal time tracking.
+---Does nothing if not currently paused.
+function TRB.Classes.SnapshotBuff:ExitPauseMode()
+	if not self.isPaused then
+		return
+	end
+
+	-- Calculate elapsed pause time
+	local currentTime = GetTime()
+	local pauseElapsed = currentTime - (self.pauseStartTime or currentTime)
+
+	-- Add to cumulative pause time, capped at max duration
+	self.pauseElapsedTime = math.min(self.pauseElapsedTime + pauseElapsed, self.pauseMaxDuration or 0)
+
+	-- Extend the endTime by the pause duration to account for the frozen time
+	if self.endTime ~= nil then
+		self.endTime = self.endTime + pauseElapsed
+	end
+
+	-- Exit pause mode
+	self.pauseStartTime = nil
+	self.isPaused = false
+	self.currentlySimple = false
+
+	-- Resume normal time tracking
+	self:GetRemainingTime()
+end
+
+---Gets the remaining pause budget (time that can still be paused).
+---@return number # Remaining pause time in seconds, or 0 if not pausable
+function TRB.Classes.SnapshotBuff:GetPauseTimeRemaining()
+	if self.pauseMaxDuration == nil then
+		return 0
+	end
+
+	local currentPauseElapsed = 0
+	if self.isPaused and self.pauseStartTime then
+		currentPauseElapsed = GetTime() - self.pauseStartTime
+	end
+
+	return math.max(0, self.pauseMaxDuration - self.pauseElapsedTime - currentPauseElapsed)
+end
+
 ---Computes the time remaining on the Snapshot and also refreshes data related to ticks if the spell supports it
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 ---@param useLeeway boolean? # If true, use the included leeway value for offsetting the remainingTime slightly.
@@ -215,10 +298,28 @@ end
 function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 	currentTime = currentTime or GetTime()
 
-    if self.currentlySimple then
-        self.lastRefreshGetTime = currentTime
-        return self.previousRemaining
-    end
+	-- Handle pause mode with max duration tracking
+	if self.isPaused and self.pauseMaxDuration ~= nil then
+		local currentPauseElapsed = currentTime - (self.pauseStartTime or currentTime)
+		local totalPauseTime = self.pauseElapsedTime + currentPauseElapsed
+
+		-- Check if pause budget is exhausted
+		if totalPauseTime >= self.pauseMaxDuration then
+			-- Finalize the pause elapsed time at max and exit pause mode
+			self.pauseElapsedTime = self.pauseMaxDuration
+			self.pauseStartTime = nil
+			self.isPaused = false
+			self.currentlySimple = false
+			-- Continue to normal time calculation below
+		else
+			-- Still within pause budget, return frozen time
+			self.lastRefreshGetTime = currentTime
+			return self.previousRemaining
+		end
+	elseif self.currentlySimple then
+		self.lastRefreshGetTime = currentTime
+		return self.previousRemaining
+	end
 
     if self.lastRefreshGetTime == currentTime then
         return self.remaining

@@ -10,6 +10,63 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local eventFrame = CreateFrame("Frame")
 
+-- Frame for handling Sustained Potency pause events (PLAYER_CONTROL_LOST/GAINED, PLAYER_REGEN_ENABLED/DISABLED)
+local sustainedPotencyFrame = CreateFrame("Frame")
+
+---Handles Sustained Potency pause events for Voidform
+---@param self any
+---@param event string
+local function SustainedPotencyEventHandler(self, event)
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData == nil then
+		return
+	end
+
+	local spellsData = TRB.Data.spellsData
+	if spellsData == nil or spellsData.spells == nil then
+		return
+	end
+
+	---@type TRB.Classes.Priest.ShadowSpells
+	local spells = spellsData.spells
+
+	local voidformSnapshot = snapshotData.snapshots[spells.voidform.id]
+	if voidformSnapshot == nil then
+		return
+	end
+
+	local voidformBuff = voidformSnapshot.buff
+	if voidformBuff == nil or not voidformBuff.isActive then
+		return
+	end
+
+	if event == "PLAYER_CONTROL_LOST" or event == "PLAYER_REGEN_ENABLED" then
+		-- Enter pause mode when losing control or exiting combat
+		voidformBuff:EnterPauseMode()
+	elseif event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_REGEN_DISABLED" then
+		-- Exit pause mode when regaining control or entering combat
+		voidformBuff:ExitPauseMode()
+	end
+end
+
+sustainedPotencyFrame:SetScript("OnEvent", SustainedPotencyEventHandler)
+
+---Registers Sustained Potency events for Voidform pause tracking
+local function RegisterSustainedPotencyEvents()
+	sustainedPotencyFrame:RegisterEvent("PLAYER_CONTROL_LOST")
+	sustainedPotencyFrame:RegisterEvent("PLAYER_CONTROL_GAINED")
+	sustainedPotencyFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+	sustainedPotencyFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+end
+
+---Unregisters Sustained Potency events
+local function UnregisterSustainedPotencyEvents()
+	sustainedPotencyFrame:UnregisterEvent("PLAYER_CONTROL_LOST")
+	sustainedPotencyFrame:UnregisterEvent("PLAYER_CONTROL_GAINED")
+	sustainedPotencyFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	sustainedPotencyFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+end
+
 ---@type TRB.Classes.Talents
 local talents
 
@@ -1921,10 +1978,26 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
+		-- Configure Sustained Potency pause tracking for Voidform
+		local voidformSnapshot = specCache.shadow.snapshotData.snapshots[spells.voidform.id]
+		if voidformSnapshot ~= nil then
+			if specCache.shadow.talents:IsTalentActive(spells.sustainedPotency) then
+				-- Set the pause max duration from the Sustained Potency talent
+				voidformSnapshot.buff:SetPauseMaxDuration(spells.sustainedPotency.duration)
+				RegisterSustainedPotencyEvents()
+			else
+				-- Clear pause configuration if talent is not active
+				voidformSnapshot.buff:SetPauseMaxDuration(nil)
+				UnregisterSustainedPotencyEvents()
+			end
+		end
+
 		talents = specCache.shadow.talents
 		TRB.Data.barConstructedForSpec = "shadow"
 		ConstructResourceBar(specCache.shadow.settings)
 	else
+		-- Unregister Sustained Potency events when not Shadow spec
+		UnregisterSustainedPotencyEvents()
 		TRB.Data.barConstructedForSpec = nil
 	end
 
