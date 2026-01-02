@@ -521,7 +521,7 @@ local function RefreshLookupData_Affliction()
 
 	local _shadowEmbraceStacks = snapshotData.targetData.trackedSpells[shadowEmbrace.id].stacks or 0
 	local shadowEmbraceStacks
-	local _shadowEmbraceMaxStacks = shadowEmbrace.attributes.maxStacks
+	local _shadowEmbraceMaxStacks = shadowEmbrace.maxStacks
 	local shadowEmbraceMaxStacks = string.format("%s", _shadowEmbraceMaxStacks)
 	local _shadowEmbraceTime = 0
 	local shadowEmbraceTime

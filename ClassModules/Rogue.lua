@@ -1575,7 +1575,7 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 								--end
 							elseif spell.id == spells.dispatch.id then
-								if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.attributes.maxStacks then
+								if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.maxStacks then
 									showThreshold = false
 								elseif isUsable then-- currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1584,7 +1584,7 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.coupDeGrace.id then
-								if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.attributes.maxStacks then
+								if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.maxStacks then
 									showThreshold = false
 								elseif specCacheSettings.colors.threshold.special.enabled and currentResource >= resourceAmount then
 									thresholdColor = specCacheSettings.colors.threshold.special.color
@@ -1869,7 +1869,7 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.eviscerate.id then
-								if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.attributes.maxStacks then
+								if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.maxStacks then
 									showThreshold = false
 								elseif specCacheSettings.colors.threshold.special.enabled and snapshots[spells.finalityEviscerate.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold.special.color
@@ -1881,7 +1881,7 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.coupDeGrace.id then
-								if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.attributes.maxStacks then
+								if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.maxStacks then
 									showThreshold = false
 								elseif isUsable then-- currentResource >= resourceAmount then
 									if specCacheSettings.colors.threshold.special.enabled then

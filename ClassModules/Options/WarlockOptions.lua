@@ -92,7 +92,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -189,7 +189,7 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 			default = {
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18,
+				fontSize=14,
 				color="FFFFFFFF",
 			},
 			barText = {}
@@ -307,7 +307,7 @@ local function DestructionLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}

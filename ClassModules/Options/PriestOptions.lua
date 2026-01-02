@@ -138,11 +138,9 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				surgeOfLight1="FFFCE58E",
-				surgeOfLight2="FFAF9942",
+				surgeOfLight="FFFCE58E",
 				shadowCovenant="FFC4A5E2",
 				surgeOfLightBorderChange1=true,
-				surgeOfLightBorderChange2=true,
 				shadowCovenantBorderChange=true,
 			},
 			comboPoints = {
@@ -160,7 +158,7 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -173,16 +171,10 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 			surgeOfLight={
-				name = L["PriestAudioSurgeOfLight1"],
+				name = L["PriestAudioSurgeOfLight"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			surgeOfLight2={
-				name = L["PriestAudioSurgeOfLight2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
 			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -209,6 +201,29 @@ end
 local function HolyLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$apotheosisTime}[#apotheosis$apotheosisTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
 	}
 
 	local extraTextSettings = HolyLoadExtraBarTextSettings()
@@ -322,12 +337,10 @@ local function HolyLoadDefaultSettings(includeBarText)
 				holyWordChastise="FFAAFFAA",
 				holyWordSanctify="FF55FF55",
 				holyWordSerenity="FF00FF00",
-				surgeOfLight1="FFFCE58E",
-				surgeOfLight2="FFAF9942",
+				surgeOfLight="FFFCE58E",
 				resonantWords="FFAA00FF",
 				lightweaver="FF00FFFF",
 				surgeOfLightBorderChange1=true,
-				surgeOfLightBorderChange2=true,
 				resonantWordsBorderChange=true,
 				lightweaverBorderChange=true,
 				holyWordChastiseEnabled=false,
@@ -370,7 +383,7 @@ local function HolyLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -383,16 +396,10 @@ local function HolyLoadDefaultSettings(includeBarText)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 			surgeOfLight={
-				name = L["PriestAudioSurgeOfLight1"],
+				name = L["PriestAudioSurgeOfLight"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			surgeOfLight2={
-				name = L["PriestAudioSurgeOfLight2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
 			},
 			resonantWords={
 				name = L["PriestHolyAudioResonantWords"],
@@ -420,6 +427,29 @@ end
 local function ShadowLoadDefaultBarTextSimpleSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$vfTime}[#voidform$vfTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
 	}
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
@@ -564,7 +594,7 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -736,39 +766,22 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "shadowCovenant")
 	end)]]
 
-	controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight1"], spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.surgeOfLight1
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
-	end)
-					
-	--[[controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight2"], spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.surgeOfLight2
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
-	end)]]
-	
 	yCoord = yCoord - 30
-	controls.checkBoxes.surgeOfLight1BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Threshold_Option_surgeOfLight1BorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLight1BorderChange
+	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.surgeOfLight
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "SurgeOfLight")
+	end)
+	
+	controls.checkBoxes.surgeOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Threshold_Option_surgeOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.surgeOfLightBorderChange
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight1"])
-	f.tooltip = L["PriestCheckboxSurgeOfLight1Tooltip"]
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight"])
+	f.tooltip = L["PriestCheckboxSurgeOfLightTooltip"]
 	f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
 	end)
-	
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.surgeOfLight2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Threshold_Option_surgeOfLight2BorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLight2BorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight2"])
-	f.tooltip = L["PriestCheckboxSurgeOfLight2Tooltip"]
-	f:SetChecked(spec.colors.bar.surgeOfLightBorderChange2)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
-	end)]]
 
 	--[[
 	yCoord = yCoord - 40
@@ -908,9 +921,7 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight1"], L["PriestAudioCheckboxSurgeOfLight1Tooltip"])
-	
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight2", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight2"], L["PriestAudioCheckboxSurgeOfLight2Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight"], L["PriestAudioCheckboxSurgeOfLightTooltip"])
 end
 
 local function DisciplineConstructBarTextDisplayPanel(parent, cache)
@@ -1176,7 +1187,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.holyWordSerenity
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordSerenity")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosis"], spec.colors.bar.apotheosis, 300, 25, oUi.xCoord2, yCoord)
@@ -1200,7 +1211,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.inApotheosisEnd
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosisEnd")
-	end)]]
+	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1212,19 +1223,24 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], false, true)
 
-	--[[controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight1"], spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.surgeOfLight1
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
-	end)
-					
-	controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight2"], spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
-	f = controls.colors.surgeOfLight2
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
+	yCoord = yCoord - 30
+	controls.checkBoxes.surgeOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.surgeOfLightBorderChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight"])
+	f.tooltip = L["PriestCheckboxSurgeOfLightTooltip"]
+	f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
 	end)
 
-	controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerResonantWords"], spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-90)
+	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.surgeOfLight
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "SurgeOfLight")
+	end)
+	
+	--[[controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerResonantWords"], spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-90)
 	f = controls.colors.resonantWords
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "resonantWords")
@@ -1234,28 +1250,6 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.lightweaver
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "lightweaver")
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.surgeOfLight1BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLight1BorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLight1BorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight1"])
-	f.tooltip = L["PriestCheckboxSurgeOfLight1Tooltip"]
-	f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.surgeOfLight2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLight2BorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLight2BorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight2"])
-	f.tooltip = L["PriestCheckboxSurgeOfLight2Tooltip"]
-	f:SetChecked(spec.colors.bar.surgeOfLightBorderChange2)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
 	end)
 	
 	yCoord = yCoord - 30
@@ -1396,7 +1390,12 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)
+	end)]]
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 2, yCoord)
+	
+	
 	
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyHeaderEndOfApotheosisConfiguration"], oUi.xCoord, yCoord)
@@ -1448,10 +1447,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.endOfApotheosis.timeMax = value
-	end)]]
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 2, yCoord)
+	end)
 end
 
 local function HolyConstructThresholdPanel(parent)
@@ -1547,9 +1543,7 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight1"], L["PriestAudioCheckboxSurgeOfLight1Tooltip"])
-	
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight2", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight2"], L["PriestAudioCheckboxSurgeOfLight2Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight"], L["PriestAudioCheckboxSurgeOfLightTooltip"])
 	
 	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "resonantWords", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxResonantWords"], L["PriestHolyAudioCheckboxResonantWordsTooltip"])
 	

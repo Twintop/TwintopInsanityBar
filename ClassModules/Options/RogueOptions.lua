@@ -204,7 +204,7 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -419,7 +419,7 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -635,7 +635,7 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}

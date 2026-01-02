@@ -260,7 +260,7 @@ local function DevastationLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -419,7 +419,7 @@ local function PreservationLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -550,7 +550,7 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}

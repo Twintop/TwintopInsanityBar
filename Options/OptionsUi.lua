@@ -3749,7 +3749,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=18,
+			fontSize=14,
 			color="FFFFFFFF",
 			position = {
 				xPos = 0,

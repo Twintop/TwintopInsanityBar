@@ -214,7 +214,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -298,7 +298,7 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}
@@ -463,7 +463,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=18,
+				fontSize=14,
 				color = "FFFFFFFF",
 			},
 			barText = {}

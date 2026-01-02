@@ -397,7 +397,7 @@ end
 ---@field public shadowfiend TRB.Classes.SpellThreshold
 ---@field public cannibalize TRB.Classes.SpellThreshold
 ]]
----@field public surgeOfLight TRB.Classes.SpellBase
+---@field public flashHeal TRB.Classes.SpellBase
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
@@ -407,6 +407,15 @@ function TRB.Classes.Priest.HealerSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
 
 	-- Priest Class Baseline Abilities
+	self.flashHeal = TRB.Classes.SpellBase:New({
+		id = 2061,
+		isTalent = false,
+		baseline = true,
+		primaryResourceType = Enum.PowerType.Mana,
+		attributes = {
+			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
+		}
+	})
 	--[[self.shadowWordPain = TRB.Classes.SpellBase:New({
 		id = 589,
 		baseDuration = 16,
@@ -429,11 +438,6 @@ function TRB.Classes.Priest.HealerSpells:New()
 		hasCooldown = true,
 		rangeCheck = false
 	})]]
-	self.surgeOfLight = TRB.Classes.SpellBase:New({
-		id = 114255,
-		duration = 20,
-		isTalent = true
-	})
 
 	--[[
 	-- Racials
@@ -553,6 +557,8 @@ end
 
 ---@class TRB.Classes.Priest.HolySpells : TRB.Classes.Priest.HealerSpells
 ---@field public flashHeal TRB.Classes.SpellBase
+---@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
+---@field public halo TRB.Classes.SpellBase
 --[[---@field public holyWordSerenity TRB.Classes.SpellBase
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
@@ -565,10 +571,14 @@ end
 ---@field public answeredPrayers TRB.Classes.SpellBase
 ---@field public smite TRB.Classes.Priest.HolyWordSpell
 ---@field public heal TRB.Classes.Priest.HolyWordSpell
----@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
 ---@field public holyFire TRB.Classes.Priest.HolyWordSpell
----@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
----@field public apotheosis TRB.Classes.Priest.HolyWordSpell]]
+---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell]]
+---@field public benediction TRB.Classes.SpellBase
+---@field public apotheosis TRB.Classes.Priest.HolyWordSpell
+---@field public manifestedPower TRB.Classes.SpellBase
+---@field public powerSurge TRB.Classes.SpellBase
+---@field public energyConservation TRB.Classes.SpellBase
+---@field public sustainedPotency TRB.Classes.SpellBase
 TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.HolySpells.__index = TRB.Classes.Priest.HolySpells
 
@@ -583,7 +593,11 @@ function TRB.Classes.Priest.HolySpells:New()
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 6,
 		isTalent = false,
-		baseline = true
+		baseline = true,
+		primaryResourceType = Enum.PowerType.Mana,
+		attributes = {
+			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
+		}
 	})
 	--[[self.smite = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 585,
@@ -596,16 +610,16 @@ function TRB.Classes.Priest.HolySpells:New()
 	-- Holy Baseline Abilities
 
 	-- Holy Talent Abilities
-	--[[self.holyWordSerenity = TRB.Classes.SpellBase:New({
-		id = 2050,
-		duration = 60,
-		hasCharges = true
-	})
 	self.prayerOfHealing = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 596,
 		holyWordKey = "holyWordSanctify",
 		holyWordReduction = 6,
 		isTalent = true
+	})
+	--[[self.holyWordSerenity = TRB.Classes.SpellBase:New({
+		id = 2050,
+		duration = 60,
+		hasCharges = true
 	})
 	self.holyWordChastise = TRB.Classes.SpellBase:New({
 		id = 88625,
@@ -632,14 +646,14 @@ function TRB.Classes.Priest.HolySpells:New()
 	self.voiceOfHarmony = TRB.Classes.SpellBase:New({
 		id = 390994,
 		isTalent = true
-	})
+	})]]
 	self.apotheosis = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 200183,
 		holyWordModifier = 4, -- 300% more
 		duration = 20,
 		isTalent = true
 	})
-	self.resonantWords = TRB.Classes.SpellBase:New({
+	--[[self.resonantWords = TRB.Classes.SpellBase:New({
 		id = 372313,
 		talentId = 372309,
 		isTalent = true
@@ -666,17 +680,49 @@ function TRB.Classes.Priest.HolySpells:New()
 			[1] = 100,
 			[2] = 50
 		}
-	})
+	})]]
 
+	self.benediction = TRB.Classes.SpellBase:New({
+		id = 1262755,
+		isTalent = true
+	})
 	-- Set Bonuses
-	self.sacredReverence = TRB.Classes.SpellBase:New({ -- T31 4P
-		id = 423510,
-	})
 
-	self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
 
 	-- Archon
-	self.resonantEnergy = TRB.Classes.SpellBase:New({
+	self.halo = TRB.Classes.SpellBase:New({
+		id = 120517,
+		isTalent = true,
+		resource = 5
+	})
+	self.manifestedPower = TRB.Classes.SpellBase:New({
+		id = 453783,
+		isTalent = true
+	})
+	self.powerSurge = TRB.Classes.SpellBase:New({
+		id = 453109,
+		isTalent = true,
+		resourcePerTick = 15,
+		tickRate = 5,
+		ticks = 3,
+		duration = 10,
+		hasTicks = true
+	})
+	self.energyConservation = TRB.Classes.SpellBase:New({
+		id = 1272308,
+		ticks = 1,
+		isTalent = true
+	})
+	self.sustainedPotency = TRB.Classes.SpellBase:New({
+		id = 454001,
+		buffId = 454002,
+		isTalent = true,
+		duration = 120,
+		maxStacks = 6,
+		pauseDuration = 20,
+		durationMod = 1
+	})
+	--[[self.resonantEnergy = TRB.Classes.SpellBase:New({
 		id = 453845,
 		debuffId = 453850,
 		isTalent = true,
@@ -980,7 +1026,10 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.sustainedPotency = TRB.Classes.SpellBase:New({
 		id = 454001,
 		isTalent = true,
-		duration = 20
+		duration = 120,
+		maxStacks = 6,
+		pauseDuration = 20,
+		durationMod = 1
 	})
 	--[[self.resonantEnergy = TRB.Classes.SpellBase:New({
 		id = 453845,

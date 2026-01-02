@@ -458,7 +458,7 @@ function TRB.Classes.SnapshotBuff:AddStack(refreshTime)
 	if refreshTime == nil then
 		refreshTime = false
 	end
-	if self.isActive then
+	if self.isActive and (self.parent.spell.maxStacks == nil or self.applications < self.parent.spell.maxStacks) then
 		self.applications = self.applications + 1
 		if refreshTime then
 			self.endTime = GetTime() + self.duration

@@ -17,7 +17,7 @@ local sustainedPotencyFrame = CreateFrame("Frame")
 ---@param self any
 ---@param event string
 local function SustainedPotencyEventHandler(self, event)
-	local snapshotData = TRB.Data.snapshotData
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	if snapshotData == nil then
 		return
 	end
@@ -27,25 +27,40 @@ local function SustainedPotencyEventHandler(self, event)
 		return
 	end
 
-	---@type TRB.Classes.Priest.ShadowSpells
-	local spells = spellsData.spells
+	local buff = nil
 
-	local voidformSnapshot = snapshotData.snapshots[spells.voidform.id]
-	if voidformSnapshot == nil then
-		return
+	if TRB.Data.character.specId == 2 then
+		---@type TRB.Classes.Priest.HolySpells
+		local spells = spellsData.spells
+		
+		local apotheosisSnapshot = snapshotData.snapshots[spells.apotheosis.id]
+		if apotheosisSnapshot == nil then
+			return
+		end
+
+		buff = apotheosisSnapshot.buff
+	elseif TRB.Data.character.specId == 3 then
+		---@type TRB.Classes.Priest.ShadowSpells
+		local spells = spellsData.spells
+
+		local voidformSnapshot = snapshotData.snapshots[spells.voidform.id]
+		if voidformSnapshot == nil then
+			return
+		end
+
+		buff = voidformSnapshot.buff
 	end
 
-	local voidformBuff = voidformSnapshot.buff
-	if voidformBuff == nil or not voidformBuff.isActive then
+	if buff == nil or not buff.isActive then
 		return
 	end
 
 	if event == "PLAYER_CONTROL_LOST" or event == "PLAYER_REGEN_ENABLED" then
 		-- Enter pause mode when losing control or exiting combat
-		voidformBuff:EnterPauseMode()
+		buff:EnterPauseMode()
 	elseif event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_REGEN_DISABLED" then
 		-- Exit pause mode when regaining control or entering combat
-		voidformBuff:ExitPauseMode()
+		buff:ExitPauseMode()
 	end
 end
 
@@ -120,13 +135,10 @@ local function FillSpecializationCache()
 	specCache.discipline.snapshotData.attributes.manaRegen = 0
 	specCache.discipline.snapshotData.audio = {
 		innervateCue = false,
-		surgeOfLightCue = false,
-		surgeOfLight2Cue = false
+		surgeOfLightCue = false
 	}
-	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
-	---@type TRB.Classes.Snapshot
-	--[[specCache.discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
+	--[[---@type TRB.Classes.Snapshot
+	specCache.discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
 	---@type TRB.Classes.Snapshot
 	specCache.discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
@@ -172,13 +184,12 @@ local function FillSpecializationCache()
 		resonantWordsCue = false,
 		lightweaverCue = false,
 		surgeOfLightCue = false,
-		surgeOfLight2Cue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
-	--[[---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis, nil, "sometimes")
 	---@type TRB.Classes.Snapshot
+	specCache.holy.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
+	--[[---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.resonantWords.id] = TRB.Classes.Snapshot:New(spells.resonantWords)
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.lightweaver.id] = TRB.Classes.Snapshot:New(spells.lightweaver)
@@ -235,6 +246,8 @@ local function FillSpecializationCache()
 	specCache.shadow.snapshotData.snapshots[spells.screamsOfTheVoid.id] = TRB.Classes.Snapshot:New(spells.screamsOfTheVoid)
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift)
+	---@type TRB.Classes.Snapshot
+	specCache.shadow.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
 	--[[
 	---@type TRB.Classes.Snapshot
 	specCache.shadow.snapshotData.snapshots[spells.shatteredPsyche.id] = TRB.Classes.Snapshot:New(spells.shatteredPsyche)
@@ -282,8 +295,6 @@ local function FillSpellData_Discipline()
 		{ variable = "#powerWordRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = false },
 		{ variable = "#sc", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = true },
 		{ variable = "#shadowCovenant", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = false },]]
-		{ variable = "#sol", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
-		{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
 	}
 	specCache.discipline.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -328,9 +339,6 @@ local function FillSpellData_Discipline()
 		{ variable = "$manaMax", description = L["PriestDisciplineBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["PriestDisciplineBarTextVariable_casting"], printInSettings = true, color = false },
-
-		{ variable = "$solStacks", description = L["PriestDisciplineBarTextVariable_solStacks"], printInSettings = true, color = false },
-		{ variable = "$solTime", description = L["PriestDisciplineBarTextVariable_solTime"], printInSettings = true, color = false },
 				
 		--[[{ variable = "$scTime", description = L["PriestDisciplineBarTextVariable_scTime"], printInSettings = true, color = false },
 		{ variable = "$shadowCovenantTime", description = "", printInSettings = false, color = false },
@@ -367,8 +375,9 @@ local function FillSpellData_Holy()
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
 
-		--[[{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },	
 		{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },
+
+		--[[{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },	
 		{ variable = "#heal", icon = spells.heal.icon, description = spells.heal.name, printInSettings = true },
 		{ variable = "#hf", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = true },
 		{ variable = "#holyFire", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = false },
@@ -393,8 +402,6 @@ local function FillSpellData_Holy()
 		{ variable = "#prayerOfHealing", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = false },
 		{ variable = "#sacredReverence", icon = spells.sacredReverence.icon, description = spells.sacredReverence.name, printInSettings = true },
 		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },]]
-		{ variable = "#sol", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
-		{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
 	}
 	specCache.holy.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -459,16 +466,13 @@ local function FillSpellData_Holy()
 		{ variable = "$serenityCharges", description = "", printInSettings = false, color = false },
 		{ variable = "$holyWordSerenityCharges", description = "", printInSettings = false, color = false },
 		
-		{ variable = "$sacredReverenceStacks", description = L["PriestHolyBarTextVariable_sacredReverenceStacks"], printInSettings = true, color = false },
+		{ variable = "$sacredReverenceStacks", description = L["PriestHolyBarTextVariable_sacredReverenceStacks"], printInSettings = true, color = false },]]
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
 		
-		{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
+		--[[{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
 		{ variable = "$answeredPrayersMaxStacks", description = L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"], printInSettings = true, color = false },
 		{ variable = "$answeredPrayersRemainingStacks", description = L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"], printInSettings = true, color = false },
-
-		{ variable = "$solStacks", description = L["PriestHolyBarTextVariable_solStacks"], printInSettings = true, color = false },
-		{ variable = "$solTime", description = L["PriestHolyBarTextVariable_solTime"], printInSettings = true, color = false },
 		
 		{ variable = "$lightweaverStacks", description = L["PriestHolyBarTextVariable_lightweaverStacks"], printInSettings = true, color = false },
 		{ variable = "$lightweaverTime", description = L["PriestHolyBarTextVariable_lightweaverTime"], printInSettings = true, color = false },
@@ -675,11 +679,11 @@ local function CalculateHolyWordCooldown(base, spellId)
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local mod = 1
 
-	--[[if snapshots[spells.apotheosis.id].buff.isActive then
-		mod = mod * spells.apotheosis--[@as TRB.Classes.Priest.HolyWordSpell].holyWordModifier
+	if snapshots[spells.apotheosis.id].buff.isActive then
+		mod = mod * spells.apotheosis--[[@as TRB.Classes.Priest.HolyWordSpell]].holyWordModifier
 	end
 
-	if talents:IsTalentActive(spells.lightOfTheNaaru) then
+	--[[if talents:IsTalentActive(spells.lightOfTheNaaru) then
 		mod = mod * (1 + (spells.lightOfTheNaaru--[@as TRB.Classes.Priest.HolyWordSpell].holyWordModifier * talents.talents[spells.lightOfTheNaaru.id].currentRank))
 	end]]
 
@@ -725,13 +729,7 @@ local function RefreshLookupData_Discipline()
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
-	--[[--$solStacks
-	local _solStacks = snapshots[spells.surgeOfLight.id].buff.applications or 0
-	local solStacks = string.format("%.0f", _solStacks)
-	--$solTime
-	local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
-	local solTime = TRB.Functions.BarText:TimerPrecision(_solTime)
-
+	--[[
 	--$scTime
 	local _scTime = snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
 	local scTime = TRB.Functions.BarText:TimerPrecision(_scTime)
@@ -778,8 +776,7 @@ local function RefreshLookupData_Discipline()
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
 	lookup["$casting"] = castingMana
-	--[[lookup["$solStacks"] = solStacks
-	lookup["$solTime"] = solTime
+	--[[
 	lookup["$pwRadianceTime"] = pwRadianceTime
 	lookup["$radianceTime"] = pwRadianceTime
 	lookup["$powerWordRadianceTime"] = pwRadianceTime
@@ -799,8 +796,7 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
-	--[[lookupLogic["$solStacks"] = _solStacks
-	lookupLogic["$solTime"] = _solTime
+	--[[
 	lookupLogic["$pwRadianceTime"] = _pwRadianceTime
 	lookupLogic["$radianceTime"] = _pwRadianceTime
 	lookupLogic["$powerWordRadianceTime"] = _pwRadianceTime
@@ -866,13 +862,13 @@ local function RefreshLookupData_Holy()
 	
 	--$hwSerenityCharges
 	local _hwSerenityCharges = snapshots[spells.holyWordSerenity.id].cooldown.charges
-	local hwSerenityCharges = string.format("%.0f", _hwSerenityCharges)
+	local hwSerenityCharges = string.format("%.0f", _hwSerenityCharges)]]
 
 	--$apotheosisTime
 	local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 	local apotheosisTime = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)
 	
-	--$answeredPrayersStacks
+	--[[--$answeredPrayersStacks
 	local _answeredPrayersStacks = snapshots[spells.answeredPrayers.id].buff.applications or 0
 	local answeredPrayersStacks = string.format("%.0f", _answeredPrayersStacks)
 	--$answeredPrayersMaxStacks
@@ -885,13 +881,7 @@ local function RefreshLookupData_Holy()
 	local _answeredPrayersRemainingStacks = _answeredPrayersMaxStacks - _answeredPrayersStacks
 	local answeredPrayersRemainingStacks = string.format("%.0f", _answeredPrayersRemainingStacks)
 
-	--$solStacks
-	local _solStacks = snapshots[spells.surgeOfLight.id].buff.applications or 0
-	local solStacks = string.format("%.0f", _solStacks)
-	--$solTime
-	local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
-	local solTime = TRB.Functions.BarText:TimerPrecision(_solTime)
-
+	--
 	--$lightweaverStacks
 	local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.applications or 0
 	local lightweaverStacks = string.format("%.0f", _lightweaverStacks)
@@ -918,6 +908,7 @@ local function RefreshLookupData_Holy()
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
 	lookup["$casting"] = castingMana
+	lookup["$apotheosisTime"] = apotheosisTime
 	--[[
 	lookup["$hwChastiseTime"] = hwChastiseTime
 	lookup["$chastiseTime"] = hwChastiseTime
@@ -934,11 +925,8 @@ local function RefreshLookupData_Holy()
 	lookup["$hwSerenityCharges"] = hwSerenityCharges
 	lookup["$serenityCharges"] = hwSerenityCharges
 	lookup["$holyWordSerenityCharges"] = hwSerenityCharges
-	lookup["$solStacks"] = solStacks
-	lookup["$solTime"] = solTime
 	lookup["$lightweaverStacks"] = lightweaverStacks
 	lookup["$lightweaverTime"] = lightweaverTime
-	lookup["$apotheosisTime"] = apotheosisTime
 	lookup["$answeredPrayersStacks"] = answeredPrayersStacks
 	lookup["$answeredPrayersMaxStacks"] = answeredPrayersMaxStacks
 	lookup["$answeredPrayersRemainingStacks"] = answeredPrayersRemainingStacks
@@ -954,6 +942,7 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
+	lookupLogic["$apotheosisTime"] = _apotheosisTime
 	--[[
 	lookupLogic["$hwChastiseTime"] = _hwChastiseTime
 	lookupLogic["$chastiseTime"] = _hwChastiseTime
@@ -970,11 +959,8 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$hwSerenityCharges"] = _hwSerenityCharges
 	lookupLogic["$serenityCharges"] = _hwSerenityCharges
 	lookupLogic["$holyWordSerenityCharges"] = _hwSerenityCharges
-	lookupLogic["$solStacks"] = _solStacks
-	lookupLogic["$solTime"] = _solTime
 	lookupLogic["$lightweaverStacks"] = _lightweaverStacks
 	lookupLogic["$lightweaverTime"] = _lightweaverTime
-	lookupLogic["$apotheosisTime"] = _apotheosisTime
 	lookupLogic["$answeredPrayersStacks"] = _answeredPrayersStacks
 	lookupLogic["$answeredPrayersMaxStacks"] = _answeredPrayersMaxStacks
 	lookupLogic["$answeredPrayersRemainingStacks"] = _answeredPrayersRemainingStacks
@@ -1221,6 +1207,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+		local snapshots = snapshotData.snapshots
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
 
@@ -1239,6 +1226,45 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end]]
 			UpdateCastingResourceFinal_Holy()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.halo.id then
+				if talents:IsTalentActive(spells.manifestedPower) then
+					--TODO: Clean this up into something more automated
+					if talents:IsTalentActive(spells.powerSurge) then
+						local function SustainedPotencyStack()
+							if talents:IsTalentActive(spells.sustainedPotency) then
+								if snapshots[spells.apotheosis.id].buff.isActive then
+									snapshots[spells.apotheosis.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
+								else
+									snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.attributes.durationMod, currentTime, true)
+								end
+							end
+						end
+
+						SustainedPotencyStack()
+
+						C_Timer.After(0, function()
+							C_Timer.After(spells.powerSurge.tickRate, function()
+								SustainedPotencyStack()
+							end)
+							C_Timer.After((spells.powerSurge.tickRate * 2), function()
+								SustainedPotencyStack()
+							end)
+							if talents:IsTalentActive(spells.energyConservation) then
+								C_Timer.After((spells.powerSurge.tickRate * 3), function()
+									SustainedPotencyStack()
+								end)
+							end
+						end)
+					end
+				end
+			elseif spellId == spells.apotheosis.id then
+				local duration = spells.apotheosis.duration + snapshots[spells.sustainedPotency.id].buff.applications * spells.sustainedPotency.attributes.durationMod
+ 				snapshots[spells.sustainedPotency.id].buff:Reset()
+
+				snapshots[spells.apotheosis.id].buff:InitializeCustom(duration, currentTime)
+				snapshots[spells.apotheosis.id].buff.attributes["swmCasts"] = 0
+			end
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
@@ -1322,27 +1348,54 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.halo.id then
-				if talents:IsTalentActive(spells.manifestedPower) then
-					snapshots[spells.mindFlayInsanity.id].buff:InitializeCustom(spells.mindFlayInsanity.duration, currentTime, true)
+				local function SustainedPotencyStack()
+					if talents:IsTalentActive(spells.sustainedPotency) then
+						if snapshots[spells.voidform.id].buff.isActive then
+							snapshots[spells.voidform.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
+						else
+							snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.attributes.durationMod, currentTime, true)
+						end
+					end
+				end
+
+				SustainedPotencyStack()
+				if talents:IsTalentActive(spells.manifestedPower) or talents:IsTalentActive(spells.sustainedPotency) then
+					if talents:IsTalentActive(spells.manifestedPower) then
+						snapshots[spells.mindFlayInsanity.id].buff:InitializeCustom(spells.mindFlayInsanity.duration, currentTime, true)
+					end
+
 					--TODO: Clean this up into something more automated
 					if talents:IsTalentActive(spells.powerSurge) then
+
 						C_Timer.After(0, function()
 							C_Timer.After(spells.powerSurge.tickRate, function()
-								snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
+								if talents:IsTalentActive(spells.manifestedPower) then
+									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
+								end
+								SustainedPotencyStack()
 							end)
 							C_Timer.After((spells.powerSurge.tickRate * 2), function()
-								snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
+								if talents:IsTalentActive(spells.manifestedPower) then
+									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
+								end
+								SustainedPotencyStack()
 							end)
 							if talents:IsTalentActive(spells.energyConservation) then
 								C_Timer.After((spells.powerSurge.tickRate * 3), function()
+								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 3), true)
+								end
+								SustainedPotencyStack()
 								end)
 							end
 						end)
 					end
 				end
 			elseif spellId == spells.voidform.id then
-				snapshots[spells.voidform.id].buff:InitializeCustom(spells.voidform.duration, currentTime)
+				local duration = spells.voidform.duration + snapshots[spells.sustainedPotency.id].buff.applications * spells.sustainedPotency.attributes.durationMod
+ 				snapshots[spells.sustainedPotency.id].buff:Reset()
+
+				snapshots[spells.voidform.id].buff:InitializeCustom(duration, currentTime)
 				snapshots[spells.voidform.id].buff.attributes["swmCasts"] = 0
 			elseif spellId == spells.shadowWordMadness.castId then
 				if talents:IsTalentActive(spells.screamsOfTheVoid) then
@@ -1372,6 +1425,23 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
+---Checks if Surge of Light is active by comparing Flash Heal's current mana cost to its base cost
+---@return boolean # True if Surge of Light is active (Flash Heal cost is reduced)
+local function IsSurgeOfLightActive()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	if spells == nil or spells.flashHeal == nil then
+		return false
+	end
+
+	local baseManaCost = spells.flashHeal.attributes.baseManaCost
+	if baseManaCost == nil or baseManaCost <= 0 then
+		return false
+	end
+
+	local currentCost = spells.flashHeal:GetPrimaryResourceCost(true) or 0
+	return currentCost < baseManaCost
+end
+
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
@@ -1384,6 +1454,19 @@ local function UpdateSnapshot_Healers()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
+	
+	-- Track Flash Heal mana cost to detect Surge of Light via cost reduction
+	local currentFlashHealCost = spells.flashHeal:GetPrimaryResourceCost(true) or 0
+	if currentFlashHealCost > 0 then
+		local baseManaCost = spells.flashHeal.attributes.baseManaCost
+		if baseManaCost == nil then
+			-- First time seeing a non-zero cost, store it
+			spells.flashHeal.attributes.baseManaCost = currentFlashHealCost
+		elseif currentFlashHealCost >= baseManaCost * 2 then
+			-- We captured a reduced cost initially, overwrite with the higher (true base) cost
+			spells.flashHeal.attributes.baseManaCost = currentFlashHealCost
+		end
+	end
 end
 
 local function UpdateSnapshot_Voidweaver()
@@ -1392,10 +1475,10 @@ local function UpdateSnapshot_Voidweaver()
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local entropicRift = snapshots[spells.entropicRift.id]
 	
-	if snapshots[spells.entropicRift.id].buff.isActive then
-		snapshots[spells.entropicRift.id].buff:GetRemainingTime()
-		if not snapshots[spells.entropicRift.id].buff.isActive then
-			snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] = 0
+	if entropicRift.buff.isActive then
+		entropicRift.buff:GetRemainingTime()
+		if not entropicRift.buff.isActive then
+			entropicRift.buff.attributes["extensionsRemaining"] = 0
 		end
 	end
 end
@@ -1424,31 +1507,29 @@ local function UpdateSnapshot_Holy()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
+	snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.sustainedPotency.id].buff:GetRemainingTime(currentTime)
 	--[[snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordSanctify.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordChastise.id].cooldown:Refresh()
-	snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime)]]
 end
 
 local function UpdateSnapshot_Shadow()
 	local currentTime = GetTime()
-	--[[UpdateSnapshot()
-	UpdateHorrificVisionsValues()
-	UpdatePowerSurge()]]
+	UpdateSnapshot()
 	UpdateSnapshot_Voidweaver()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
 	snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
-	--[[
+	snapshots[spells.sustainedPotency.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
-
-	snapshots[spells.mindBlast.id].cooldown:Refresh()]]
+	--snapshots[spells.mindBlast.id].cooldown:Refresh()
 end
 
 local function UpdateResourceBar()
@@ -1491,28 +1572,19 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
 
-				if snapshots[spells.surgeOfLight.id].buff.isActive then
-					if snapshots[spells.surgeOfLight.id].buff.applications == 1 then
-						if specSettings.colors.bar.surgeOfLightBorderChange1 then
-							barBorderColor = specSettings.colors.bar.surgeOfLight1
-						end
-
-						if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightCue then
-							snapshotData.audio.surgeOfLightCue = true
-							PlaySoundFile(specSettings.audio.surgeOfLight.sound, coreSettings.audio.channel.channel)
-						end
+				-- Detect Surge of Light via Flash Heal mana cost reduction
+				if IsSurgeOfLightActive() then
+					if specSettings.colors.bar.surgeOfLightBorderChange1 then
+						barBorderColor = specSettings.colors.bar.surgeOfLight
 					end
 
-					if snapshots[spells.surgeOfLight.id].buff.applications == 2 then
-						if specSettings.colors.bar.surgeOfLightBorderChange2 then
-							barBorderColor = specSettings.colors.bar.surgeOfLight2
-						end
-
-						if specSettings.audio.surgeOfLight2.enabled and not snapshotData.audio.surgeOfLight2Cue then
-							snapshotData.audio.surgeOfLight2Cue = true
-							PlaySoundFile(specSettings.audio.surgeOfLight2.sound, coreSettings.audio.channel.channel)
-						end
+					if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightCue then
+						snapshotData.audio.surgeOfLightCue = true
+						PlaySoundFile(specSettings.audio.surgeOfLight.sound, coreSettings.audio.channel.channel)
 					end
+				else
+					-- Reset audio cues when Surge of Light is no longer active
+					snapshotData.audio.surgeOfLightCue = false
 				end
 
 				--[[if snapshots[spells.shadowCovenant.id].buff.isActive then
@@ -1559,28 +1631,19 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
 
-				if snapshots[spells.surgeOfLight.id].buff.isActive then
-					if snapshots[spells.surgeOfLight.id].buff.applications == 1 then
-						if specSettings.colors.bar.surgeOfLightBorderChange1 then
-							barBorderColor = specSettings.colors.bar.surgeOfLight1
-						end
-
-						if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightCue then
-							snapshotData.audio.surgeOfLightCue = true
-							PlaySoundFile(specSettings.audio.surgeOfLight.sound, coreSettings.audio.channel.channel)
-						end
+				-- Detect Surge of Light via Flash Heal mana cost reduction
+				if IsSurgeOfLightActive() then
+					if specSettings.colors.bar.surgeOfLightBorderChange1 then
+						barBorderColor = specSettings.colors.bar.surgeOfLight
 					end
 
-					if snapshots[spells.surgeOfLight.id].buff.applications == 2 then
-						if specSettings.colors.bar.surgeOfLightBorderChange2 then
-							barBorderColor = specSettings.colors.bar.surgeOfLight2
-						end
-
-						if specSettings.audio.surgeOfLight2.enabled and not snapshotData.audio.surgeOfLight2Cue then
-							snapshotData.audio.surgeOfLight2Cue = true
-							PlaySoundFile(specSettings.audio.surgeOfLight2.sound, coreSettings.audio.channel.channel)
-						end
+					if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightCue then
+						snapshotData.audio.surgeOfLightCue = true
+						PlaySoundFile(specSettings.audio.surgeOfLight.sound, coreSettings.audio.channel.channel)
 					end
+				else
+					-- Reset audio cue when Surge of Light is no longer active
+					snapshotData.audio.surgeOfLightCue = false
 				end
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
@@ -1611,7 +1674,26 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if barColor == nil then
+				if snapshots[spells.apotheosis.id].buff.isActive and barColor == nil then
+					local timeThreshold = 0
+					local useEndOfApotheosisColor = false
+
+					if specSettings.endOfApotheosis.enabled then
+						useEndOfApotheosisColor = true
+						if specSettings.endOfApotheosis.mode == "gcd" then
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							timeThreshold = gcd * specSettings.endOfApotheosis.gcdsMax
+						elseif specSettings.endOfApotheosis.mode == "time" then
+							timeThreshold = specSettings.endOfApotheosis.timeMax
+						end
+					end
+
+					if useEndOfApotheosisColor and snapshots[spells.apotheosis.id].buff.remaining <= timeThreshold then
+						barColor = specSettings.colors.bar.apotheosisEnd
+					else
+						barColor = specSettings.colors.bar.apotheosis
+					end
+				elseif barColor == nil then
 					barColor = specSettings.colors.bar.base
 				end
 
@@ -1861,8 +1943,6 @@ local function SwitchSpec()
 		lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon
 		lookup["#sc"] = spells.shadowCovenant.icon
 		lookup["#shadowCovenant"] = spells.shadowCovenant.icon
-		lookup["#sol"] = spells.surgeOfLight.icon
-		lookup["#surgeOfLight"] = spells.surgeOfLight.icon
 		lookup["#entropicRift"] = spells.entropicRift.icon]]
 
 		TRB.Data.lookup = lookup
@@ -1889,8 +1969,8 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#flashHeal"] = spells.flashHeal.icon
-		--[[lookup["#answeredPrayers"] = spells.answeredPrayers.icon
 		lookup["#apotheosis"] = spells.apotheosis.icon
+		--[[lookup["#answeredPrayers"] = spells.answeredPrayers.icon
 		lookup["#heal"] = spells.heal.icon
 		lookup["#hwChastise"] = spells.holyWordChastise.icon
 		lookup["#chastise"] = spells.holyWordChastise.icon
@@ -1908,14 +1988,26 @@ local function SwitchSpec()
 		lookup["#lightOfTheNaaru"] = spells.lightOfTheNaaru.icon
 		lookup["#poh"] = spells.prayerOfHealing.icon
 		lookup["#prayerOfHealing"] = spells.prayerOfHealing.icon
-		lookup["#smite"] = spells.smite.icon
-		lookup["#sol"] = spells.surgeOfLight.icon
-		lookup["#surgeOfLight"] = spells.surgeOfLight.icon]]
+		lookup["#smite"] = spells.smite.icon]]
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
+
+		-- Configure Sustained Potency pause tracking for Apotheosis
+		local apotheosisSnapshot = specCache.holy.snapshotData.snapshots[spells.apotheosis.id]
+		if apotheosisSnapshot ~= nil then
+			if specCache.holy.talents:IsTalentActive(spells.sustainedPotency) then
+				-- Set the pause max duration from the Sustained Potency talent
+				apotheosisSnapshot.buff:SetPauseMaxDuration(spells.sustainedPotency.attributes.pauseDuration)
+				RegisterSustainedPotencyEvents()
+			else
+				-- Clear pause configuration if talent is not active
+				apotheosisSnapshot.buff:SetPauseMaxDuration(nil)
+				UnregisterSustainedPotencyEvents()
+			end
+		end
 
 		talents = specCache.holy.talents
 		TRB.Data.barConstructedForSpec = "holy"
@@ -1983,7 +2075,7 @@ local function SwitchSpec()
 		if voidformSnapshot ~= nil then
 			if specCache.shadow.talents:IsTalentActive(spells.sustainedPotency) then
 				-- Set the pause max duration from the Sustained Potency talent
-				voidformSnapshot.buff:SetPauseMaxDuration(spells.sustainedPotency.duration)
+				voidformSnapshot.buff:SetPauseMaxDuration(spells.sustainedPotency.attributes.pauseDuration)
 				RegisterSustainedPotencyEvents()
 			else
 				-- Clear pause configuration if talent is not active
@@ -2357,14 +2449,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
 				valid = true
 			end
-		elseif var == "$solStacks" then
-			if snapshots[spells.surgeOfLight.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$solTime" then
-			if snapshots[spells.surgeOfLight.id].buff.isActive then
-				valid = true
-			end
 		end
 	end
 
@@ -2397,11 +2481,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.resonantWords.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$apotheosisTime" then
+		else]]if var == "$apotheosisTime" then
 			if snapshots[spells.apotheosis.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$answeredPrayersStacks" then
+		--[[elseif var == "$answeredPrayersStacks" then
 			if snapshots[spells.answeredPrayers.id].buff.isActive then
 				valid = true
 			end
@@ -2436,8 +2520,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$sacredReverenceStacks" then
 			if snapshots[spells.sacredReverence.id].buff.isActive then
 				valid = true
-			end
-		end]]
+			end]]
+		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		if var == "$resource" or var == "$insanity" then

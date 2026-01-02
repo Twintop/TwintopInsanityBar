@@ -11,11 +11,11 @@ local content = [====[
 
 ---
 
-# 12.0.0.0-beta07 (2026-01-01)
+# 12.0.0.0-beta07 (2026-01-03)
 ## General
 
-- [#505 - NEW](#505) Add an optional player health bar, including new bar text variables `$health`, `$healthMax`, and `$healthPercent`.
-- (UPDATED) Modify the layout of the Textures section in the Options UI to group like textures together for easier navigation.
+- [#505](#505) Add an optional player health bar, including new bar text variables `$health`, `$healthMax`, and `$healthPercent`.
+- Modify the layout of the Textures section in the Options UI to group like textures together for easier navigation.
 
 ## Demon Hunter
 ### [#467](#467) Vengeance
@@ -28,6 +28,21 @@ local content = [====[
 - Change Stagger tracking to use ColorCurve.
 - Add a way to change thresholds for Medium and Heavy Stagger.
 - Add threshold line toggles for Medium and Heavy Stagger levels.
+
+## Priest
+### [#465](#465) Discipline
+
+- Update Surge of Light tracking mechanisms. Bar text variables have been removed as they no longer can provide accurate information due to API limitations.
+
+### [#464](#464) Holy
+
+- Re-enable Apotheosis tracking, including the `$apotheosisTime` bar text variable and bar color changes.
+- Update Surge of Light tracking mechanisms. Bar text variables have been removed as they no longer can provide accurate information due to API limitations.
+
+### [#463](#463) Shadow
+
+- Re-enable Voidform tracking, including the `$vfTime` bar text variable and bar color changes.
+- Remove workaround for Voidform Insanity gain on cast depending on talent selection.
 
 ---
 
