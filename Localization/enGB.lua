@@ -77,8 +77,6 @@ if locale == "enGB" then
     L["MonkMistweaverCheckboxVivify"] = "Instant Vivify colour change enabled"
     L["MonkMistweaverCheckboxVivifyTooltip"] = "This will change the bar colour when Vivify is able to be cast instantly due to a the effect of Vivacious Vivification being active."
     L["MonkMistweaverCheckboxManaTeaTooltip"] = "This will change the bar border colour when the cost of spells is reduced due to Mana Tea being active."
-    L["PriestCheckboxSurgeOfLight1Tooltip"] = "This will change the bar border colour when you have 1 stack of Surge of Light."
-    L["PriestCheckboxSurgeOfLight2Tooltip"] = "This will change the bar border colour when you have 2 stacks of Surge of Light."
     L["PriestDisciplineCheckboxShadowCovenantTooltip"] = "This will change the bar border colour when you have Shadow Covenant."
     L["PriestDisciplinePowerWordColorsHeader"] = "Power Word Colours"
     L["PriestHolyCheckboxHolyWordChastise"] = "Enable Holy Word: Chastise cooldown colour"

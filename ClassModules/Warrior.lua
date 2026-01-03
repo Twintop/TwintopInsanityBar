@@ -304,19 +304,6 @@ local function FillSpellData_Fury()
 		{ variable = "$rageMax", description = L["WarriorFuryBarTextVariable_rageMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		--[[
-		{ variable = "$enrageTime", description = L["WarriorFuryBarTextVariable_enrageTime"], printInSettings = true, color = false },
-
-		{ variable = "$suddenDeathTime", description = L["WarriorFuryBarTextVariable_suddenDeathTime"], printInSettings = true, color = false },
-		
-		{ variable = "$ravagerTicks", description = L["WarriorFuryBarTextVariable_ravagerTicks"], printInSettings = true, color = false },
-		{ variable = "$ravagerRage", description = L["WarriorFuryBarTextVariable_ravagerRage"], printInSettings = true, color = false },
-		
-		{ variable = "$bladestormTicks", description = L["WarriorFuryBarTextVariable_bladestormTicks"], printInSettings = true, color = false },
-		{ variable = "$bladestormRage", description = L["WarriorFuryBarTextVariable_bladestormRage"], printInSettings = true, color = false },
-
-		{ variable = "$whirlwindTime", description = L["WarriorFuryBarTextVariable_whirlwindTime"], printInSettings = true, color = false },
-		{ variable = "$whirlwindStacks", description = L["WarriorFuryBarTextVariable_whirlwindStacks"], printInSettings = true, color = false }]]
 	}
 end
 
@@ -341,10 +328,8 @@ local function FillSpellData_Protection()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		
-		--{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
 		{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = spells.ignorePain.name, printInSettings = true },
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
-		--{ variable = "#ravager", icon = spells.ravager.icon, description = spells.ravager.name, printInSettings = true },
 		{ variable = "#rend", icon = spells.rend.icon, description = spells.rend.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
 		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
@@ -391,8 +376,7 @@ local function FillSpellData_Protection()
 		{ variable = "$rageMax", description = L["WarriorProtectionBarTextVariable_rageMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		--[[
-		{ variable = "$ignorePainAbsorb", description = L["WarriorProtectionBarTextVariable_ignorePainAbsorb"], printInSettings = true, color = false },]]
+		
 		{ variable = "$ignorePainTime", description = L["WarriorProtectionBarTextVariable_ignorePainTime"], printInSettings = true, color = false },
 
 		{ variable = "$shieldBlockTime", description = L["WarriorProtectionBarTextVariable_shieldBlockTime"], printInSettings = true, color = false },
@@ -1376,19 +1360,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.warrior == nil or
 						TwintopInsanityBarSettings.warrior.arms == nil or
 						TwintopInsanityBarSettings.warrior.arms.displayText == nil then
-						settings.warrior.arms.displayText.barText = TRB.Options.Warrior.ArmsLoadDefaultBarTextSimpleSettings()
+						settings.warrior.arms.displayText.barText = TRB.Options.Warrior.ArmsLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.warrior == nil or
 						TwintopInsanityBarSettings.warrior.fury == nil or
 						TwintopInsanityBarSettings.warrior.fury.displayText == nil then
-						settings.warrior.fury.displayText.barText = TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings()
+						settings.warrior.fury.displayText.barText = TRB.Options.Warrior.FuryLoadDefaultBarTextSettings()
 					end
 
 					if  TwintopInsanityBarSettings.warrior == nil or
 						TwintopInsanityBarSettings.warrior.protection == nil or
 						TwintopInsanityBarSettings.warrior.protection.displayText == nil then
-						settings.warrior.protection.displayText.barText = TRB.Options.Warrior.ProtectionLoadDefaultBarTextSimpleSettings()
+						settings.warrior.protection.displayText.barText = TRB.Options.Warrior.ProtectionLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

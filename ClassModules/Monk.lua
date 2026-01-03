@@ -1463,19 +1463,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.monk == nil or
 						TwintopInsanityBarSettings.monk.brewmaster == nil or
 						TwintopInsanityBarSettings.monk.brewmaster.displayText == nil then
-						settings.monk.brewmaster.displayText.barText = TRB.Options.Monk.BrewmasterLoadDefaultBarTextSimpleSettings()
+						settings.monk.brewmaster.displayText.barText = TRB.Options.Monk.BrewmasterLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.monk == nil or
 						TwintopInsanityBarSettings.monk.mistweaver == nil or
 						TwintopInsanityBarSettings.monk.mistweaver.displayText == nil then
-						settings.monk.mistweaver.displayText.barText = TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings()
+						settings.monk.mistweaver.displayText.barText = TRB.Options.Monk.MistweaverLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.monk == nil or
 						TwintopInsanityBarSettings.monk.windwalker == nil or
 						TwintopInsanityBarSettings.monk.windwalker.displayText == nil then
-						settings.monk.windwalker.displayText.barText = TRB.Options.Monk.WindwalkerLoadDefaultBarTextSimpleSettings()
+						settings.monk.windwalker.displayText.barText = TRB.Options.Monk.WindwalkerLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

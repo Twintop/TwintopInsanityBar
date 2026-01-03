@@ -1646,11 +1646,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	local namePrefix = className .. "_" .. specName
 	local f = nil
 	
-	if includeComboPoints then
-		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["BarAndSecondardTexturesHeader"], secondaryResourceString), oUi.xCoord, yCoord)
-	else
-		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
-	end
+	controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
 	
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
@@ -1706,26 +1702,25 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 
 	yCoord = yCoord - 20
 
-	-- Row 1: Primary Bar (left), Secondary Bar (right, if applicable)
+	-- Row 1: Primary Bar (left), Health Bar (right)
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			StatusbarSetValue("resource", newValue)
 		end)
 
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "healthBar", L["HealthBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			StatusbarSetValue("health", newValue)
+		end)
+
+	-- Row 2: Secondary / Combo Points (left, if applicable)
 	if includeComboPoints then
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
+		yCoord = yCoord - 60
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
 			function(newValue)
 				StatusbarSetValue("comboPoints", newValue)
 			end)
 	end
-
-	yCoord = yCoord - 60
-
-	-- Row 2: Health Bar (left)
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "healthBar", L["HealthBarTexture"], L["StatusBarTextures"],
-		function(newValue)
-			StatusbarSetValue("health", newValue)
-		end)
 
 	yCoord = yCoord - 70
 
@@ -1734,7 +1729,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 
 	yCoord = yCoord - 20
 
-	-- Row 1: Primary Border (left), Secondary Border (right, if applicable)
+	-- Row 1: Primary Bar (left), Health Bar (right)
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"],
 		function(newValue)
 			local newName = borderPairsByName[newValue]
@@ -1756,31 +1751,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			RefreshBar()
 		end)
 
-	if includeComboPoints then
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"],
-			function(newValue)
-				local newName = borderPairsByName[newValue]
-				spec.textures.comboPointsBorder = newValue
-				spec.textures.comboPointsBorderName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
-
-				if spec.textures.textureLock then
-					spec.textures.border = newValue
-					spec.textures.borderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
-					spec.textures.healthBorder = newValue
-					spec.textures.healthBorderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
-				end
-
-				RefreshBar()
-			end)
-	end
-
-	yCoord = yCoord - 60
-
-	-- Row 2: Health Border (left)
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "healthBorder", L["HealthBorderTexture"], L["BorderTextures"],
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "border", "healthBorder", L["HealthBorderTexture"], L["BorderTextures"],
 		function(newValue)
 			local newName = borderPairsByName[newValue]
 			spec.textures.healthBorder = newValue
@@ -1801,6 +1772,30 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			RefreshBar()
 		end)
 
+
+	-- Row 2: Secondary / Combo Points (left, if applicable)
+	if includeComboPoints then
+		yCoord = yCoord - 60
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"],
+			function(newValue)
+				local newName = borderPairsByName[newValue]
+				spec.textures.comboPointsBorder = newValue
+				spec.textures.comboPointsBorderName = newName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+
+				if spec.textures.textureLock then
+					spec.textures.border = newValue
+					spec.textures.borderName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
+					spec.textures.healthBorder = newValue
+					spec.textures.healthBorderName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
+				end
+
+				RefreshBar()
+			end)
+	end
+
 	yCoord = yCoord - 70
 
 	-- ===== BACKGROUND TEXTURES SUBSECTION =====
@@ -1808,7 +1803,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 
 	yCoord = yCoord - 20
 
-	-- Row 1: Primary Background (left), Secondary Background (right, if applicable)
+	-- Row 1: Primary Bar (left), Health Bar (right)
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"],
 		function(newValue)
 			local newName = backgroundPairsByName[newValue]
@@ -1830,31 +1825,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			RefreshBar()
 		end)
 
-	if includeComboPoints then
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"],
-			function(newValue)
-				local newName = backgroundPairsByName[newValue]
-				spec.textures.comboPointsBackground = newValue
-				spec.textures.comboPointsBackgroundName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-				
-				if spec.textures.textureLock then
-					spec.textures.background = newValue
-					spec.textures.backgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
-					spec.textures.healthBackground = newValue
-					spec.textures.healthBackgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
-				end
-				
-				RefreshBar()
-			end)
-	end
-
-	yCoord = yCoord - 60
-
-	-- Row 2: Health Background (left)
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "healthBackground", L["HealthBackgroundTexture"], L["BackgroundTextures"],
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "healthBackground", L["HealthBackgroundTexture"], L["BackgroundTextures"],
 		function(newValue)
 			local newName = backgroundPairsByName[newValue]
 			spec.textures.healthBackground = newValue
@@ -1874,6 +1845,30 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			
 			RefreshBar()
 		end)
+
+
+	-- Row 2: Secondary / Combo Points (left, if applicable)
+	if includeComboPoints then
+	yCoord = yCoord - 60
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"],
+			function(newValue)
+				local newName = backgroundPairsByName[newValue]
+				spec.textures.comboPointsBackground = newValue
+				spec.textures.comboPointsBackgroundName = newName
+				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+				
+				if spec.textures.textureLock then
+					spec.textures.background = newValue
+					spec.textures.backgroundName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
+					spec.textures.healthBackground = newValue
+					spec.textures.healthBackgroundName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
+				end
+				
+				RefreshBar()
+			end)
+	end
 
 	yCoord = yCoord - 70
 
@@ -1934,6 +1929,33 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 
 	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
 
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalDisplayBar = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_displayBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalDisplayBar
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_BarDisplay"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayBar)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].displayBar = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			TRB.Functions.Character:ResetCaches()
+			if TRB.Frames.barGroups ~= nil then
+				local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			else
+				TRB.Functions.Bar:Construct()
+			end
+		end)
+	end
+
 	yCoord = yCoord - 30
 	
 	-- Bar visibility options mapping
@@ -1986,42 +2008,12 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary))
 	controls.dropDown.primaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
 
-	-- Secondary bar visibility dropdown (only if includeSecondaryVisibility is true)
-	if includeSecondaryVisibility then
-		local secondaryLabel = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"])
-		controls.dropDown.secondaryVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SecondaryVisibility", parent, "WowStyle1DropdownTemplate")
-		controls.dropDown.secondaryVisibility:SetWidth(oUi.sliderWidth)
-		controls.dropDown.secondaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, secondaryLabel, oUi.xCoord2, yCoord)
-		controls.dropDown.secondaryVisibility.label.font:SetFontObject(GameFontNormal)
-
-		local function SecondaryVisibilityIsSelected(value)
-			return value == spec.displayBar.secondary
-		end
-
-		local function SecondaryVisibilitySetSelected(newValue)
-			spec.displayBar.secondary = newValue
-			controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			TRB.Functions.Bar:HideResourceBar()
-		end
-
-		local function SecondaryVisibilityGenerator(dropdown, rootDescription)
-			for _, displayName in ipairs(visibilityOptionsList) do
-				rootDescription:CreateRadio(displayName, SecondaryVisibilityIsSelected, SecondaryVisibilitySetSelected, visibilityOptions[displayName])
-			end
-		end
-
-		controls.dropDown.secondaryVisibility:SetupMenu(SecondaryVisibilityGenerator)
-		controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.secondary))
-		controls.dropDown.secondaryVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
-	end
-
 	-- Health bar visibility dropdown (only if includeHealthVisibility is true)
 	if includeHealthVisibility and spec.displayBar.health ~= nil then
-		yCoord = yCoord - 70
 		local healthLabel = L["ShowBarVisibilityHealth"]
 		controls.dropDown.healthVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_HealthVisibility", parent, "WowStyle1DropdownTemplate")
 		controls.dropDown.healthVisibility:SetWidth(oUi.sliderWidth)
-		controls.dropDown.healthVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, healthLabel, oUi.xCoord, yCoord)
+		controls.dropDown.healthVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, healthLabel, oUi.xCoord2, yCoord)
 		controls.dropDown.healthVisibility.label.font:SetFontObject(GameFontNormal)
 
 		local function HealthVisibilityIsSelected(value)
@@ -2042,7 +2034,37 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 
 		controls.dropDown.healthVisibility:SetupMenu(HealthVisibilityGenerator)
 		controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health))
-		controls.dropDown.healthVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+		controls.dropDown.healthVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+	end
+
+	-- Secondary bar visibility dropdown (only if includeSecondaryVisibility is true)
+	if includeSecondaryVisibility then
+		yCoord = yCoord - 70
+		local secondaryLabel = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"])
+		controls.dropDown.secondaryVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SecondaryVisibility", parent, "WowStyle1DropdownTemplate")
+		controls.dropDown.secondaryVisibility:SetWidth(oUi.sliderWidth)
+		controls.dropDown.secondaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, secondaryLabel, oUi.xCoord, yCoord)
+		controls.dropDown.secondaryVisibility.label.font:SetFontObject(GameFontNormal)
+
+		local function SecondaryVisibilityIsSelected(value)
+			return value == spec.displayBar.secondary
+		end
+
+		local function SecondaryVisibilitySetSelected(newValue)
+			spec.displayBar.secondary = newValue
+			controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+			TRB.Functions.Bar:HideResourceBar()
+		end
+
+		local function SecondaryVisibilityGenerator(dropdown, rootDescription)
+			for _, displayName in ipairs(visibilityOptionsList) do
+				rootDescription:CreateRadio(displayName, SecondaryVisibilityIsSelected, SecondaryVisibilitySetSelected, visibilityOptions[displayName])
+			end
+		end
+
+		controls.dropDown.secondaryVisibility:SetupMenu(SecondaryVisibilityGenerator)
+		controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.secondary))
+		controls.dropDown.secondaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
 	end
 
 	if includeFlashAlpha then
@@ -3910,10 +3932,12 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		SetTableValues(spec.displayText, barTextTable)
 		_G["TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame"]:Hide()
 		
-		if classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then			
+		if classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
 			TRB.Data.cache.barText = {}
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
+			-- Hide all existing bar text frames before recreating to prevent stale text from persisting
+			TRB.Functions.BarText:Hide(spec)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		end
 		TRB.Functions.OptionsUi:SwitchToBarTextTabByClassSpec(classId, specId)

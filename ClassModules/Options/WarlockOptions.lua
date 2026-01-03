@@ -12,18 +12,25 @@ TRB.Options.Warlock.Affliction = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.affliction = {}
 
 --Affliction
-local function AfflictionLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Affliction
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function AfflictionLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Warlock.AfflictionLoadDefaultBarTextSimpleSettings = AfflictionLoadDefaultBarTextSimpleSettings
+TRB.Options.Warlock.AfflictionLoadDefaultBarTextSettings = AfflictionLoadDefaultBarTextSettings
 
-local function AfflictionLoadDefaultSettings(includeBarText)
+---Loads default settings for Affliction
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function AfflictionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -35,9 +42,9 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -121,25 +128,32 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = AfflictionLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = AfflictionLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
 -- Demonology
-local function DemonologyLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Demonology
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DemonologyLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Warlock.DemonologyLoadDefaultBarTextSimpleSettings = DemonologyLoadDefaultBarTextSimpleSettings
+TRB.Options.Warlock.DemonologyLoadDefaultBarTextSettings = DemonologyLoadDefaultBarTextSettings
 
-local function DemonologyLoadDefaultSettings(includeBarText)
+---Loads default settings for Demonology
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function DemonologyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -151,9 +165,9 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -224,7 +238,7 @@ local function DemonologyLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = DemonologyLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = DemonologyLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
@@ -232,18 +246,25 @@ end
 TRB.Options.Warlock.DemonologyLoadDefaultSettings = DemonologyLoadDefaultSettings
 
 -- Destruction
-local function DestructionLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Destruction
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DestructionLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Warlock.DestructionLoadDefaultBarTextSimpleSettings = DestructionLoadDefaultBarTextSimpleSettings
+TRB.Options.Warlock.DestructionLoadDefaultBarTextSettings = DestructionLoadDefaultBarTextSettings
 
-local function DestructionLoadDefaultSettings(includeBarText)
+---Loads default settings for Destruction
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function DestructionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 0,
@@ -255,9 +276,9 @@ local function DestructionLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -336,19 +357,23 @@ local function DestructionLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = DestructionLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = DestructionLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 TRB.Options.Warlock.DestructionLoadDefaultSettings = DestructionLoadDefaultSettings
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Warlock
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.warlock.affliction = AfflictionLoadDefaultSettings(includeBarText)
-	settings.warlock.demonology = DemonologyLoadDefaultSettings(includeBarText)
-	settings.warlock.destruction = DestructionLoadDefaultSettings(includeBarText)
+	settings.warlock.affliction = AfflictionLoadDefaultSettings(includeBarText, classic)
+	settings.warlock.demonology = DemonologyLoadDefaultSettings(includeBarText, classic)
+	settings.warlock.destruction = DestructionLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.Warlock.LoadDefaultSettings = LoadDefaultSettings
@@ -382,12 +407,38 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["WarlockAfflictionFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["WarlockAfflictionFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = AfflictionLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.warlock.affliction = AfflictionLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["WarlockAfflictionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = AfflictionLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["WarlockAfflictionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = AfflictionLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -399,18 +450,30 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1058,12 +1121,38 @@ local function DemonologyConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Warlock_Demonology_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["WarlockDemonologyFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Demonology_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["WarlockDemonologyFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = DemonologyLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.warlock.demonology = DemonologyLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Demonology_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["WarlockDemonologyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DemonologyLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Demonology_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["WarlockDemonologyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DemonologyLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1075,18 +1164,30 @@ local function DemonologyConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Warlock_Demonology_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Demonology_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Warlock_Demonology_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Demonology_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Demonology_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1218,12 +1319,38 @@ local function DestructionConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Warlock_Destruction_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["WarlockDestructionFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Destruction_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["WarlockDestructionFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = DestructionLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.warlock.destruction = DestructionLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Destruction_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["WarlockDestructionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DestructionLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Destruction_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["WarlockDestructionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DestructionLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1235,18 +1362,30 @@ local function DestructionConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Warlock_Destruction_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Destruction_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Warlock_Destruction_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Destruction_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warlock_Destruction_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end

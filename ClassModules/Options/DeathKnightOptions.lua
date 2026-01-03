@@ -19,7 +19,10 @@ local BLOOD_MAX_RUNIC_POWER = 125
 local FROST_MAX_RUNIC_POWER = 110
 local UNHOLY_MAX_RUNIC_POWER = 100
 
-local function DeathKnightLoadExtraBarTextSettings()
+---Loads extra default bar text settings
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DeathKnightLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -162,27 +165,34 @@ local function DeathKnightLoadExtraBarTextSettings()
 		}
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
 -- Blood
-local function BloodLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function BloodLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.DeathKnight.BloodLoadDefaultBarTextSimpleSettings = BloodLoadDefaultBarTextSimpleSettings
+TRB.Options.DeathKnight.BloodLoadDefaultBarTextSettings = BloodLoadDefaultBarTextSettings
 
-local function BloodLoadDefaultSettings(includeBarText)
+---Loads default settings for Blood
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function BloodLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -227,9 +237,9 @@ local function BloodLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -293,28 +303,35 @@ local function BloodLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = BloodLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = BloodLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
 -- Frost
-local function FrostLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function FrostLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 	
-	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.DeathKnight.FrostLoadDefaultBarTextSimpleSettings = FrostLoadDefaultBarTextSimpleSettings
+TRB.Options.DeathKnight.FrostLoadDefaultBarTextSettings = FrostLoadDefaultBarTextSettings
 
-local function FrostLoadDefaultSettings(includeBarText)
+---Loads default settings for Frost
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function FrostLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -365,9 +382,9 @@ local function FrostLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -431,27 +448,34 @@ local function FrostLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = FrostLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = FrostLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function UnholyLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function UnholyLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 	
-	local extraTextSettings = DeathKnightLoadExtraBarTextSettings()
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.DeathKnight.UnholyLoadDefaultBarTextSimpleSettings = UnholyLoadDefaultBarTextSimpleSettings
+TRB.Options.DeathKnight.UnholyLoadDefaultBarTextSettings = UnholyLoadDefaultBarTextSettings
 
-local function UnholyLoadDefaultSettings(includeBarText)
+---Loads default settings for Unholy
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function UnholyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -496,9 +520,9 @@ local function UnholyLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -562,18 +586,22 @@ local function UnholyLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = UnholyLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = UnholyLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Death Knight
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.deathknight.blood = BloodLoadDefaultSettings(includeBarText)
-	settings.deathknight.frost = FrostLoadDefaultSettings(includeBarText)
-	settings.deathknight.unholy = UnholyLoadDefaultSettings(includeBarText)
+	settings.deathknight.blood = BloodLoadDefaultSettings(includeBarText, classic)
+	settings.deathknight.frost = FrostLoadDefaultSettings(includeBarText, classic)
+	settings.deathknight.unholy = UnholyLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.DeathKnight.LoadDefaultSettings = LoadDefaultSettings
@@ -608,12 +636,38 @@ local function BloodConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DeathKnightBloodFull"]),
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DeathKnightBloodFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = BloodLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.deathknight.blood = BloodLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DeathKnightBloodFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BloodLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DeathKnightBloodFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BloodLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -625,18 +679,30 @@ local function BloodConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -990,12 +1056,38 @@ local function FrostConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DeathKnightFrostFull"]),
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DeathKnightFrostFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = FrostLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.deathknight.frost = FrostLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DeathKnightFrostFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = FrostLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DeathKnightFrostFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = FrostLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1007,18 +1099,30 @@ local function FrostConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1394,12 +1498,38 @@ local function UnholyConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DeathKnightUnholyFull"]),
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DeathKnightUnholyFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = UnholyLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.deathknight.unholy = UnholyLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DeathKnightUnholyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = UnholyLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DeathKnightUnholyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = UnholyLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1411,18 +1541,30 @@ local function UnholyConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end

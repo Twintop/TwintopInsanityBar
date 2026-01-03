@@ -15,31 +15,41 @@ TRB.Options.Priest.Shadow = {}
 
 local SHADOW_MAX_INSANITY = 150
 
-local function DisciplineLoadExtraBarTextSettings()
+---Loads extra default bar text settings for Discipline
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DisciplineLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
-local function DisciplineLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Discipline
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DisciplineLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local extraTextSettings = DisciplineLoadExtraBarTextSettings()
+	local extraTextSettings = DisciplineLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings = DisciplineLoadDefaultBarTextSimpleSettings
+TRB.Options.Priest.DisciplineLoadDefaultBarTextSettings = DisciplineLoadDefaultBarTextSettings
 
-local function DisciplineLoadDefaultSettings(includeBarText)
+---Loads default settings for Discipline
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function DisciplineLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -120,8 +130,8 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -181,24 +191,30 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = DisciplineLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = DisciplineLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
 
-local function HolyLoadExtraBarTextSettings()
+---Loads extra default bar text settings for Holy
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function HolyLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
-local function HolyLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Holy
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function HolyLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -226,16 +242,20 @@ local function HolyLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local extraTextSettings = HolyLoadExtraBarTextSettings()
+	local extraTextSettings = HolyLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings = HolyLoadDefaultBarTextSimpleSettings
+TRB.Options.Priest.HolyLoadDefaultBarTextSettings = HolyLoadDefaultBarTextSettings
 
-local function HolyLoadDefaultSettings(includeBarText)
+---Loads default settings for Holy
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function HolyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -308,8 +328,8 @@ local function HolyLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		endOfApotheosis = {
 			enabled=true,
 			mode="gcd",
@@ -418,13 +438,16 @@ local function HolyLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = HolyLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = HolyLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function ShadowLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Shadow
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function ShadowLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -452,13 +475,17 @@ local function ShadowLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Priest.ShadowLoadDefaultBarTextSimpleSettings = ShadowLoadDefaultBarTextSimpleSettings
+TRB.Options.Priest.ShadowLoadDefaultBarTextSettings = ShadowLoadDefaultBarTextSettings
 
-local function ShadowLoadDefaultSettings(includeBarText)
+---Loads default settings for Shadow
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function ShadowLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
@@ -509,8 +536,8 @@ local function ShadowLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		mindbender={ --TODO: Rename this shadowfiend to be consistent with Discipline and Holy
 			mode="gcd",
 			swingsMax=4,
@@ -623,18 +650,22 @@ local function ShadowLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = ShadowLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = ShadowLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Priest
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.priest.discipline = DisciplineLoadDefaultSettings(includeBarText)
-	settings.priest.holy = HolyLoadDefaultSettings(includeBarText)
-	settings.priest.shadow = ShadowLoadDefaultSettings(includeBarText)
+	settings.priest.discipline = DisciplineLoadDefaultSettings(includeBarText, classic)
+	settings.priest.holy = HolyLoadDefaultSettings(includeBarText, classic)
+	settings.priest.shadow = ShadowLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.Priest.LoadDefaultSettings = LoadDefaultSettings
@@ -675,7 +706,46 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = DisciplineLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["PriestDisciplineFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.priest.discipline = DisciplineLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["PriestDisciplineFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["PriestDisciplineFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -687,18 +757,30 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Priest_Discipline_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Discipline_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Priest_Discipline_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Discipline_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Discipline_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1074,7 +1156,46 @@ local function HolyConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = HolyLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = HolyLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Holy_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["PriestHolyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.priest.holy = HolyLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Holy_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["PriestHolyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = HolyLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Holy_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["PriestHolyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = HolyLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1086,18 +1207,30 @@ local function HolyConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Priest_Holy_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1700,7 +1833,46 @@ local function ShadowConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = ShadowLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = ShadowLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["PriestShadowFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.priest.shadow = ShadowLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["PriestShadowFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = ShadowLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["PriestShadowFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = ShadowLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1712,19 +1884,32 @@ local function ShadowConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Priest_Shadow_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextCompact")
 	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextClassic")
+	end)
+	yCoord = yCoord - 40
 end
 
 local function ShadowConstructBarColorsAndBehaviorPanel(parent)

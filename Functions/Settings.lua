@@ -21,7 +21,10 @@ local specGlobalDefaults = {
 	textures = false
 }
 
-function TRB.Functions.Settings:LoadDefaultSettings()
+---Loads the default settings structure
+---@param classic boolean?
+---@return TRB.Classes.Settings.Core
+function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	local settings = {
 		core = {
 			dataRefreshRate = 5.0,
@@ -105,9 +108,9 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 				health = "combat",
 				dragonriding = true
 			},
-			bar = TRB.Functions.Settings:DefaultBarDimensions(),
-			comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-			healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+			bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+			comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+			healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 			precision = {
 				secondary = 2,
 				resource = 0
@@ -381,6 +384,11 @@ function TRB.Functions.Settings:LoadDefaultSettings()
 end
 
 function TRB.Functions.Settings:PortForwardSettings()
+	local classes = {
+		"deathknight", "demonhunter", "druid", "evoker", "hunter",
+		"mage", "monk", "paladin", "priest", "rogue",
+		"shaman", "warlock", "warrior"
+	}
 	-- Migrate displayBar settings from old boolean format to new enum format
 	local function MigrateDisplayBar(displayBar)
 		if displayBar == nil then
@@ -413,16 +421,24 @@ function TRB.Functions.Settings:PortForwardSettings()
 	end
 
 	-- Migrate all class/spec settings
-	local classes = {
-		"deathknight", "demonhunter", "druid", "evoker", "hunter",
-		"mage", "monk", "paladin", "priest", "rogue",
-		"shaman", "warlock", "warrior"
-	}
 	for _, className in ipairs(classes) do
 		if TRB.Data.settings and TRB.Data.settings[className] then
-			for specName, specSettings in pairs(TRB.Data.settings[className]) do
-				if specSettings and specSettings.displayBar then
-					MigrateDisplayBar(specSettings.displayBar)
+			for _, specSettings in pairs(TRB.Data.settings[className]) do
+				if specSettings then
+					if specSettings.displayBar then
+						MigrateDisplayBar(specSettings.displayBar)
+					end
+
+					if not specSettings.healthBar then
+						specSettings.healthBar = TRB.Functions.Settings:DefaultHealthDimensions(true)
+						
+						specSettings.textures.healthBackground="Interface\\Tooltips\\UI-Tooltip-Background"
+						specSettings.textures.healthBackgroundName="Blizzard Tooltip"
+						specSettings.textures.healthBorder="Interface\\Buttons\\WHITE8X8"
+						specSettings.textures.healthBorderName="1 Pixel"
+						specSettings.textures.healthBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
+						specSettings.textures.healthBarName=L["LSMStatusBarSmoother"]
+					end
 				end
 			end
 		end
@@ -455,42 +471,86 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 	return newSettings
 end
 
-function TRB.Functions.Settings:DefaultBarDimensions()
+---Gets the default primary bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.PrimaryBar
+function TRB.Functions.Settings:DefaultBarDimensions(classic)
+	local width = 300
+	local border = 2
+
+	if classic then
+		border = 4
+		width = 555
+	end
+
 	return {
-		width=300,
-		height=30,
-		xPos=0,
-		yPos=-200,
-		border=2,
-		dragAndDrop=false,
-		pinToPersonalResourceDisplay=false
+		width = width,
+		height = 30,
+		xPos = 0,
+		yPos = -200,
+		border = border,
+		dragAndDrop = false,
+		pinToPersonalResourceDisplay = false
 	}
 end
 
-function TRB.Functions.Settings:DefaultHealthDimensions()
+---Gets the default health bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultHealthDimensions(classic)
+	local width = 300
+	local height = 20
+	local yPos = 0
+	local border = 2
+
+	if classic then
+		yPos = -4
+		width = 555
+		height = 13
+		border = 1
+	end
+
 	return {
-		width = 300,
-		height = 20,
+		width = width,
+		height = height,
 		xPos = 0,
-		yPos = 0,
-		border = 2,
+		yPos = yPos,
+		border = border,
+		spacing = 0,
 		relativeTo = "BOTTOM",
 		relativeToName = L["PositionBelowMiddle"],
 		fullWidth = true,
 	}
 end
 
-function TRB.Functions.Settings:DefaultComboPointsDimensions()
+---Gets the default secondary (comboPoints) dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true
+		}
+	end
+
 	return {
-		width=30,
-		height=20,
-		xPos=0,
-		yPos=0,
-		border=2,
-		spacing=0,
-		relativeTo="TOP",
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		relativeTo ="TOP",
 		relativeToName = L["PositionAboveMiddle"],
-		fullWidth=true,
+		fullWidth = true,
 	}
 end
 
@@ -542,11 +602,39 @@ end
 
 ---Adds default bar text that is used globally
 ---@param includeResourceType trbIncludeResourceType?
+---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
-function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResourceType)
+function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResourceType, classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
+	}
+
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$health/$healthMax $healthPercent%",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=13,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "HealthBar",
+				relativeToFrameName = L["HealthBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
@@ -568,15 +656,15 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				relativeToFrame = "HealthBar",
 				relativeToFrameName = L["HealthBar"]
 			}
-		},
-		{
+		})
+		table.insert(textSettings, {
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="$health / $healthMax",
+			text="$health",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -591,82 +679,134 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				relativeToFrame = "HealthBar",
 				relativeToFrameName = L["HealthBar"]
 			}
-		},
-	}
+		})
+	end
 
 	if includeResourceType == "resource" then
-		table.insert(textSettings,
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="$resource",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		})
+		if classic then
+			table.insert(textSettings, {
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name = L["PositionRight"],
+				guid = TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]$resource",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = L["PositionRight"],
+				fontSize=20,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = L["PositionRight"],
+					relativeToFrame = "Resource",
+					relativeToFrameName = L["MainResourceBar"]
+				}
+			})
+		else
+			table.insert(textSettings,
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name = L["PositionMiddle"],
+				guid = TRB.Functions.String:Guid(),
+				text="$resource",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = L["PositionCenter"],
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = L["PositionCenter"],
+					relativeToFrame = "Resource",
+					relativeToFrameName = L["MainResourceBar"]
+				}
+			})
+		end
 	elseif includeResourceType == "mana" then
-		table.insert(textSettings,
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionLeft"],
-			guid = TRB.Functions.String:Guid(),
-			text="$manaPercent%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 2,
-				yPos = 0,
-				relativeTo = "LEFT",
-				relativeToName = L["PositionLeft"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		})
-		table.insert(textSettings, {
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="$mana / $manaMax",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=16,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		})
+		if classic then
+			table.insert(textSettings, {
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name = L["PositionRight"],
+				guid = TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]$mana/$manaMax $manaPercent%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = L["PositionRight"],
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = L["PositionRight"],
+					relativeToFrame = "Resource",
+					relativeToFrameName = L["MainResourceBar"]
+				}
+			})
+		else
+			table.insert(textSettings,
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name = L["PositionLeft"],
+				guid = TRB.Functions.String:Guid(),
+				text="$manaPercent%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = L["PositionLeft"],
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = L["PositionLeft"],
+					relativeToFrame = "Resource",
+					relativeToFrameName = L["MainResourceBar"]
+				}
+			})
+			table.insert(textSettings, {
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name = L["PositionRight"],
+				guid = TRB.Functions.String:Guid(),
+				text="$mana",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = L["PositionRight"],
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = L["PositionRight"],
+					relativeToFrame = "Resource",
+					relativeToFrameName = L["MainResourceBar"]
+				}
+			})
+		end
 	end
 
 	return textSettings

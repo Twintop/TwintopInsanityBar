@@ -15,7 +15,10 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = {}
 
-local function EvokerLoadExtraBarTextSettings()
+---Loads extra default bar text settings for Evoker
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function EvokerLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -158,27 +161,34 @@ local function EvokerLoadExtraBarTextSettings()
 		}
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
 -- Devastation
-local function DevastationLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Devastation
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DevastationLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local extraTextSettings = EvokerLoadExtraBarTextSettings()
+	local extraTextSettings = EvokerLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings = DevastationLoadDefaultBarTextSimpleSettings
+TRB.Options.Evoker.DevastationLoadDefaultBarTextSettings = DevastationLoadDefaultBarTextSettings
 
-local function DevastationLoadDefaultSettings(includeBarText)
+---Loads default settings for Devastation
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function DevastationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -196,9 +206,9 @@ local function DevastationLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -283,28 +293,35 @@ local function DevastationLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = DevastationLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = DevastationLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
 -- Preservation
-local function PreservationLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Preservation
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function PreservationLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local extraTextSettings = EvokerLoadExtraBarTextSettings()
+	local extraTextSettings = EvokerLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings = PreservationLoadDefaultBarTextSimpleSettings
+TRB.Options.Evoker.PreservationLoadDefaultBarTextSettings = PreservationLoadDefaultBarTextSettings
 
-local function PreservationLoadDefaultSettings(includeBarText)
+---Loads default settings for Preservation
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function PreservationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -369,9 +386,9 @@ local function PreservationLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -448,29 +465,35 @@ local function PreservationLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = PreservationLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = PreservationLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-
 -- Augmentation
-local function AugmentationLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Augmentation
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function AugmentationLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local extraTextSettings = EvokerLoadExtraBarTextSettings()
+	local extraTextSettings = EvokerLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings = AugmentationLoadDefaultBarTextSimpleSettings
+TRB.Options.Evoker.AugmentationLoadDefaultBarTextSettings = AugmentationLoadDefaultBarTextSettings
 
-local function AugmentationLoadDefaultSettings(includeBarText)
+---Loads default settings for Augmentation
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function AugmentationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -482,9 +505,9 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -573,18 +596,22 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = AugmentationLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = AugmentationLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Evoker
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.evoker.devastation = DevastationLoadDefaultSettings(includeBarText)
-	settings.evoker.preservation = PreservationLoadDefaultSettings(includeBarText)
-	settings.evoker.augmentation = AugmentationLoadDefaultSettings(includeBarText)
+	settings.evoker.devastation = DevastationLoadDefaultSettings(includeBarText, classic)
+	settings.evoker.preservation = PreservationLoadDefaultSettings(includeBarText, classic)
+	settings.evoker.augmentation = AugmentationLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.Evoker.LoadDefaultSettings = LoadDefaultSettings
@@ -619,12 +646,38 @@ local function DevastationConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerDevastationFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["EvokerDevastationFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = DevastationLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.evoker.devastation = DevastationLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["EvokerDevastationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DevastationLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["EvokerDevastationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = DevastationLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -636,18 +689,30 @@ local function DevastationConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Evoker_Devastation_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Devastation_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Evoker_Devastation_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Devastation_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Devastation_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1019,12 +1084,38 @@ local function PreservationConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerPreservationFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["EvokerPreservationFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = PreservationLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.evoker.preservation = PreservationLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["EvokerPreservationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = PreservationLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["EvokerPreservationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = PreservationLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1036,18 +1127,30 @@ local function PreservationConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Evoker_Preservation_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Preservation_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Evoker_Preservation_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Preservation_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Preservation_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1442,12 +1545,38 @@ local function AugmentationConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerAugmentationFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["EvokerAugmentationFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = AugmentationLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.evoker.augmentation = AugmentationLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["EvokerAugmentationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = AugmentationLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["EvokerAugmentationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = AugmentationLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1459,18 +1588,30 @@ local function AugmentationConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Evoker_Augmentation_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Augmentation_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Evoker_Augmentation_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Augmentation_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Evoker_Augmentation_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end

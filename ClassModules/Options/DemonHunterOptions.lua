@@ -16,7 +16,10 @@ local HAVOC_MAX_FURY = 170
 local VENGEANCE_MAX_FURY = 120
 local DEVOURER_MAX_FURY = 140
 
-local function SharedLoadDefaultBarTextSimpleSettings()
+---Loads shared default bar text settings for Demon Hunter
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function SharedLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -44,23 +47,30 @@ local function SharedLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
-local function HavocLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Havoc
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function HavocLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local sharedSettings = SharedLoadDefaultBarTextSimpleSettings()
+	local sharedSettings = SharedLoadDefaultBarTextSettings(classic)
 	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings = HavocLoadDefaultBarTextSimpleSettings
+TRB.Options.DemonHunter.HavocLoadDefaultBarTextSettings = HavocLoadDefaultBarTextSettings
 
-local function HavocLoadDefaultSettings(includeBarText)
+---Loads default settings for Havoc
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function HavocLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -130,8 +140,8 @@ local function HavocLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -194,24 +204,31 @@ local function HavocLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = HavocLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = HavocLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function VengeanceLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Vengeance
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function VengeanceLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local sharedSettings = SharedLoadDefaultBarTextSimpleSettings()
+	local sharedSettings = SharedLoadDefaultBarTextSettings(classic)
 	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSimpleSettings = VengeanceLoadDefaultBarTextSimpleSettings
+TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSettings = VengeanceLoadDefaultBarTextSettings
 
-local function VengeanceLoadDefaultSettings(includeBarText)
+---Loads default settings for Vengeance
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function VengeanceLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -266,9 +283,9 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -339,13 +356,16 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = VengeanceLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = VengeanceLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function DevourerLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Devourer
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DevourerLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -373,13 +393,17 @@ local function DevourerLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local sharedSettings = SharedLoadDefaultBarTextSimpleSettings()
+	local sharedSettings = SharedLoadDefaultBarTextSettings(classic)
 	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSimpleSettings = DevourerLoadDefaultBarTextSimpleSettings
+TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSettings = DevourerLoadDefaultBarTextSettings
 
-local function DevourerLoadDefaultSettings(includeBarText)
+---Loads default settings for Devourer
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function DevourerLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -424,9 +448,9 @@ local function DevourerLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -507,18 +531,22 @@ local function DevourerLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = DevourerLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = DevourerLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Demon Hunter
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.demonhunter.havoc = HavocLoadDefaultSettings(includeBarText)
-	settings.demonhunter.vengeance = VengeanceLoadDefaultSettings(includeBarText)
-	settings.demonhunter.devourer = DevourerLoadDefaultSettings(includeBarText)
+	settings.demonhunter.havoc = HavocLoadDefaultSettings(includeBarText, classic)
+	settings.demonhunter.vengeance = VengeanceLoadDefaultSettings(includeBarText, classic)
+	settings.demonhunter.devourer = DevourerLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.DemonHunter.LoadDefaultSettings = LoadDefaultSettings
@@ -552,12 +580,38 @@ local function HavocConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DemonHunterHavocFull"]),
+	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DemonHunterHavocFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = HavocLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.demonhunter.havoc = HavocLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DemonHunterHavocFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = HavocLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DemonHunterHavocFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = HavocLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -569,18 +623,30 @@ local function HavocConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1056,12 +1122,38 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DemonHunterVengeanceFull"]),
+	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DemonHunterVengeanceFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = VengeanceLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.demonhunter.vengeance = VengeanceLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DemonHunterVengeanceFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = VengeanceLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DemonHunterVengeanceFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = VengeanceLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1073,18 +1165,30 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DemonHunter_Vengeance_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DemonHunter_Vengeance_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1582,7 +1686,7 @@ local function DevourerConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = DevourerLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = DevourerLoadDefaultBarTextSettings()
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,

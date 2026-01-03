@@ -1529,19 +1529,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.demonhunter == nil or
 						TwintopInsanityBarSettings.demonhunter.havoc == nil or
 						TwintopInsanityBarSettings.demonhunter.havoc.displayText == nil then
-						settings.demonhunter.havoc.displayText.barText = TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings()
+						settings.demonhunter.havoc.displayText.barText = TRB.Options.DemonHunter.HavocLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.demonhunter == nil or
 						TwintopInsanityBarSettings.demonhunter.vengeance == nil or
 						TwintopInsanityBarSettings.demonhunter.vengeance.displayText == nil then
-						settings.demonhunter.vengeance.displayText.barText = TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSimpleSettings()
+						settings.demonhunter.vengeance.displayText.barText = TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.demonhunter == nil or
 						TwintopInsanityBarSettings.demonhunter.devourer == nil or
 						TwintopInsanityBarSettings.demonhunter.devourer.displayText == nil then
-						settings.demonhunter.devourer.displayText.barText = TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSimpleSettings()
+						settings.demonhunter.devourer.displayText.barText = TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

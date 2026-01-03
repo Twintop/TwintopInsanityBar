@@ -1448,19 +1448,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.hunter == nil or
 						TwintopInsanityBarSettings.hunter.beastMastery == nil or
 						TwintopInsanityBarSettings.hunter.beastMastery.displayText == nil then
-						settings.hunter.beastMastery.displayText.barText = TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSimpleSettings()
+						settings.hunter.beastMastery.displayText.barText = TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.hunter == nil or
 						TwintopInsanityBarSettings.hunter.marksmanship == nil or
 						TwintopInsanityBarSettings.hunter.marksmanship.displayText == nil then
-						settings.hunter.marksmanship.displayText.barText = TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSimpleSettings()
+						settings.hunter.marksmanship.displayText.barText = TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.hunter == nil or
 						TwintopInsanityBarSettings.hunter.survival == nil or
 						TwintopInsanityBarSettings.hunter.survival.displayText == nil then
-						settings.hunter.survival.displayText.barText = TRB.Options.Hunter.SurvivalLoadDefaultBarTextSimpleSettings()
+						settings.hunter.survival.displayText.barText = TRB.Options.Hunter.SurvivalLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

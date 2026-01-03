@@ -23,18 +23,25 @@ local PROTECTION_MAX_RAGE = 130
 	Arms Defaults
 ]]
 
-local function ArmsLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Arms
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function ArmsLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Warrior.ArmsLoadDefaultBarTextSimpleSettings = ArmsLoadDefaultBarTextSimpleSettings
+TRB.Options.Warrior.ArmsLoadDefaultBarTextSettings = ArmsLoadDefaultBarTextSettings
 
-local function ArmsLoadDefaultSettings(includeBarText)
+---Loads default settings for Arms
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function ArmsLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -106,8 +113,8 @@ local function ArmsLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -170,7 +177,7 @@ local function ArmsLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = ArmsLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = ArmsLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
@@ -181,18 +188,25 @@ end
 ]]
 
 
-local function FuryLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Fury
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function FuryLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings = FuryLoadDefaultBarTextSimpleSettings
+TRB.Options.Warrior.FuryLoadDefaultBarTextSettings = FuryLoadDefaultBarTextSettings
 
-local function FuryLoadDefaultSettings(includeBarText)
+---Loads default settings for Fury
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function FuryLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -252,8 +266,8 @@ local function FuryLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -317,7 +331,7 @@ local function FuryLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = FuryLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = FuryLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
@@ -327,7 +341,10 @@ end
 	Protection Defaults
 ]]
 
-local function ProtectionLoadExtraBarTextSettings()
+---Loads extra default bar text settings for Protection
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function ProtectionLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -378,26 +395,33 @@ local function ProtectionLoadExtraBarTextSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
-local function ProtectionLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Protection
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function ProtectionLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local extraTextSettings = ProtectionLoadExtraBarTextSettings()
+	local extraTextSettings = ProtectionLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.Warrior.ProtectionLoadDefaultBarTextSimpleSettings = ProtectionLoadDefaultBarTextSimpleSettings
+TRB.Options.Warrior.ProtectionLoadDefaultBarTextSettings = ProtectionLoadDefaultBarTextSettings
 
-local function ProtectionLoadDefaultSettings(includeBarText)
+---Loads default settings for Protection
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function ProtectionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -463,9 +487,9 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -544,18 +568,22 @@ local function ProtectionLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = ProtectionLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = ProtectionLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Warrior
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.warrior.arms = ArmsLoadDefaultSettings(includeBarText)
-	settings.warrior.fury = FuryLoadDefaultSettings(includeBarText)
-	settings.warrior.protection = ProtectionLoadDefaultSettings(includeBarText)
+	settings.warrior.arms = ArmsLoadDefaultSettings(includeBarText, classic)
+	settings.warrior.fury = FuryLoadDefaultSettings(includeBarText, classic)
+	settings.warrior.protection = ProtectionLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.Warrior.LoadDefaultSettings = LoadDefaultSettings
@@ -595,7 +623,46 @@ local function ArmsConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = ArmsLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = ArmsLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["WarriorArmsFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.warrior.arms = ArmsLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["WarriorArmsFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = ArmsLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["WarriorArmsFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = ArmsLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -607,18 +674,30 @@ local function ArmsConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Warrior_Arms_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1072,7 +1151,46 @@ local function FuryConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = FuryLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = FuryLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["WarriorFuryFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.warrior.fury = FuryLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["WarriorFuryFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = FuryLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["WarriorFuryFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = FuryLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1084,18 +1202,30 @@ local function FuryConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Warrior_Fury_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Fury_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Warrior_Fury_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Fury_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Fury_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1521,7 +1651,46 @@ local function ProtectionConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = ProtectionLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = ProtectionLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Protection_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["WarriorProtectionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.warrior.protection = ProtectionLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Protection_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["WarriorProtectionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = ProtectionLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Warrior_Protection_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["WarriorProtectionFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = ProtectionLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1533,18 +1702,30 @@ local function ProtectionConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Warrior_Protection_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Protection_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Warrior_Protection_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Protection_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Warrior_Protection_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end

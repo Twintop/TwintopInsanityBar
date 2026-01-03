@@ -14,6 +14,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 
 	if includeBarDisplay then
 		configuration.bar = settings.bar
+		configuration.healthBar = settings.healthBar
 		configuration.displayBar = settings.displayBar
 		configuration.textures = settings.textures
 		configuration.colors.bar = settings.colors.bar

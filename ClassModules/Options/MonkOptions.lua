@@ -21,7 +21,10 @@ local WINDWALKER_MAX_ENERGY = 150
 
 
 -- Brewmaster
-local function BrewmasterLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Brewmaster
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function BrewmasterLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -72,13 +75,17 @@ local function BrewmasterLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Monk.BrewmasterLoadDefaultBarTextSimpleSettings = BrewmasterLoadDefaultBarTextSimpleSettings
+TRB.Options.Monk.BrewmasterLoadDefaultBarTextSettings = BrewmasterLoadDefaultBarTextSettings
 
-local function BrewmasterLoadDefaultSettings(includeBarText)
+---Loads default settings for Brewmaster
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -158,9 +165,9 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -225,25 +232,32 @@ local function BrewmasterLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = BrewmasterLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = BrewmasterLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
 -- Mistweaver
-local function MistweaverLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Mistweaver
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function MistweaverLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings = MistweaverLoadDefaultBarTextSimpleSettings
+TRB.Options.Monk.MistweaverLoadDefaultBarTextSettings = MistweaverLoadDefaultBarTextSettings
 
-local function MistweaverLoadDefaultSettings(includeBarText)
+---Loads default settings for Mistweaver
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function MistweaverLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -255,8 +269,8 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors={
 			text = {
 				current = {
@@ -315,24 +329,31 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = MistweaverLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = MistweaverLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function WindwalkerLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Windwalker
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function WindwalkerLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Monk.WindwalkerLoadDefaultBarTextSimpleSettings = WindwalkerLoadDefaultBarTextSimpleSettings
+TRB.Options.Monk.WindwalkerLoadDefaultBarTextSettings = WindwalkerLoadDefaultBarTextSettings
 
-local function WindwalkerLoadDefaultSettings(includeBarText)
+---Loads default settings for Windwalker
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -398,9 +419,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -480,18 +501,22 @@ local function WindwalkerLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = WindwalkerLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = WindwalkerLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Monk
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.monk.brewmaster = BrewmasterLoadDefaultSettings(includeBarText)
-	settings.monk.mistweaver = MistweaverLoadDefaultSettings(includeBarText)
-	settings.monk.windwalker = WindwalkerLoadDefaultSettings(includeBarText)
+	settings.monk.brewmaster = BrewmasterLoadDefaultSettings(includeBarText, classic)
+	settings.monk.mistweaver = MistweaverLoadDefaultSettings(includeBarText, classic)
+	settings.monk.windwalker = WindwalkerLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.Monk.LoadDefaultSettings = LoadDefaultSettings
@@ -527,12 +552,38 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["MonkBrewmasterFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["MonkBrewmasterFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = BrewmasterLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.monk.brewmaster = BrewmasterLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["MonkBrewmasterFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BrewmasterLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["MonkBrewmasterFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BrewmasterLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -544,18 +595,30 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1002,12 +1065,38 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["MonkMistweaverFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["MonkMistweaverFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = MistweaverLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.monk.mistweaver = MistweaverLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["MonkMistweaverFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = MistweaverLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["MonkMistweaverFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = MistweaverLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1019,18 +1108,30 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1401,12 +1502,38 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["MonkWindwalkerFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["MonkWindwalkerFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = WindwalkerLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.monk.windwalker = WindwalkerLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["MonkWindwalkerFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = WindwalkerLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["MonkWindwalkerFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = WindwalkerLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1418,18 +1545,30 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end

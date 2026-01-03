@@ -948,15 +948,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.mage == nil or
 						TwintopInsanityBarSettings.mage.arcane == nil or
 						TwintopInsanityBarSettings.mage.arcane.displayText == nil then
-						settings.mage.arcane.displayText.barText = TRB.Options.Mage.ArcaneLoadDefaultBarTextSimpleSettings()
+						settings.mage.arcane.displayText.barText = TRB.Options.Mage.ArcaneLoadDefaultBarTextSettings()
 					elseif TwintopInsanityBarSettings.mage == nil or
 						TwintopInsanityBarSettings.mage.fire == nil or
 						TwintopInsanityBarSettings.mage.fire.displayText == nil then
-						settings.mage.fire.displayText.barText = TRB.Options.Mage.FireLoadDefaultBarTextSimpleSettings()
+						settings.mage.fire.displayText.barText = TRB.Options.Mage.FireLoadDefaultBarTextSettings()
 					elseif TwintopInsanityBarSettings.mage == nil or
 						TwintopInsanityBarSettings.mage.frost == nil or
 						TwintopInsanityBarSettings.mage.frost.displayText == nil then
-						settings.mage.frost.displayText.barText = TRB.Options.Mage.FrostLoadDefaultBarTextSimpleSettings()
+						settings.mage.frost.displayText.barText = TRB.Options.Mage.FrostLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

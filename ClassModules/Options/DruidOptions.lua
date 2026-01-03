@@ -25,18 +25,25 @@ local GUARDIAN_MAX_RAGE = 100
 	Balance Defaults
 ]]
 
-local function BalanceLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Balance
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function BalanceLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Druid.BalanceLoadDefaultBarTextSimpleSettings = BalanceLoadDefaultBarTextSimpleSettings
+TRB.Options.Druid.BalanceLoadDefaultBarTextSettings = BalanceLoadDefaultBarTextSettings
 
-local function BalanceLoadDefaultSettings(includeBarText)
+---Loads default settings for Balance
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function BalanceLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -94,8 +101,8 @@ local function BalanceLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -179,7 +186,7 @@ local function BalanceLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = BalanceLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = BalanceLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
@@ -189,7 +196,10 @@ end
 	Feral Defaults
 ]]
 
-local function FeralLoadExtraBarTextSettings()
+---Loads extra default bar text settings for Feral
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function FeralLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -309,26 +319,33 @@ local function FeralLoadExtraBarTextSettings()
 		}
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
-local function FeralLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Feral
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function FeralLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local extraTextSettings = FeralLoadExtraBarTextSettings()
+	local extraTextSettings = FeralLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
 	return textSettings
 end
-TRB.Options.Druid.FeralLoadDefaultBarTextSimpleSettings = FeralLoadDefaultBarTextSimpleSettings
+TRB.Options.Druid.FeralLoadDefaultBarTextSettings = FeralLoadDefaultBarTextSettings
 
-local function FeralLoadDefaultSettings(includeBarText)
+---Loads default settings for Feral
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function FeralLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -415,9 +432,9 @@ local function FeralLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -494,7 +511,7 @@ local function FeralLoadDefaultSettings(includeBarText)
 	}
 	
 	if includeBarText then
-		settings.displayText.barText = FeralLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = FeralLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
@@ -504,18 +521,25 @@ end
 	Guardian Defaults
 ]]
 
-local function GuardianLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Guardian
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function GuardianLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Druid.GuardianLoadDefaultBarTextSimpleSettings = GuardianLoadDefaultBarTextSimpleSettings
+TRB.Options.Druid.GuardianLoadDefaultBarTextSettings = GuardianLoadDefaultBarTextSettings
 
-local function GuardianLoadDefaultSettings(includeBarText)
+---Loads default settings for Guardian
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function GuardianLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		enabled = true,
 		precision = {
@@ -564,8 +588,8 @@ local function GuardianLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		endOfBerserk = {
 			enabled=true,
 			mode="gcd",
@@ -634,25 +658,32 @@ local function GuardianLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = GuardianLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = GuardianLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
 -- Restoration
-local function RestorationLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Restoration
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function RestorationLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Druid.RestorationLoadDefaultBarTextSimpleSettings = RestorationLoadDefaultBarTextSimpleSettings
+TRB.Options.Druid.RestorationLoadDefaultBarTextSettings = RestorationLoadDefaultBarTextSettings
 
-local function RestorationLoadDefaultSettings(includeBarText)
+---Loads default settings for Restoration
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function RestorationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -717,8 +748,8 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		endOfIncarnation = {
 			enabled=true,
 			mode="gcd",
@@ -779,19 +810,23 @@ local function RestorationLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = RestorationLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = RestorationLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Druid
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.druid.balance = BalanceLoadDefaultSettings(includeBarText)
-	settings.druid.feral = FeralLoadDefaultSettings(includeBarText)
-	settings.druid.guardian = GuardianLoadDefaultSettings(includeBarText)
-	settings.druid.restoration = RestorationLoadDefaultSettings(includeBarText)
+	settings.druid.balance = BalanceLoadDefaultSettings(includeBarText, classic)
+	settings.druid.feral = FeralLoadDefaultSettings(includeBarText, classic)
+	settings.druid.guardian = GuardianLoadDefaultSettings(includeBarText, classic)
+	settings.druid.restoration = RestorationLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.Druid.LoadDefaultSettings = LoadDefaultSettings
@@ -825,12 +860,38 @@ local function BalanceConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DruidBalanceFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DruidBalanceFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = BalanceLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.druid.balance = BalanceLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DruidBalanceFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BalanceLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DruidBalanceFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BalanceLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -842,18 +903,30 @@ local function BalanceConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Druid_Balance_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Balance_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Druid_Balance_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Balance_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Balance_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1369,9 +1442,6 @@ local function FeralConstructResetDefaultsPanel(parent)
 
 	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.feral
 	local yCoord = 5
-	local f = nil
-
-	local title = ""
 
 	StaticPopupDialogs["TwintopResourceBar_Druid_Feral_Reset"] = {
 		text = string.format(L["ResetBarDialog"], L["DruidFeralFull"]),
@@ -1386,12 +1456,38 @@ local function FeralConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Druid_Feral_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DruidFeralFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Druid_Feral_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DruidFeralFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = FeralLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.druid.feral = FeralLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Feral_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DruidFeralFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = FeralLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Feral_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DruidFeralFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = FeralLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1403,18 +1499,30 @@ local function FeralConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Druid_Feral_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Feral_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Druid_Feral_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Feral_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Feral_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1964,13 +2072,13 @@ local function GuardianConstructResetDefaultsPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.guardian
-	local yCoord = 5	
+	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_Reset"] = {
 		text = string.format(L["ResetBarDialog"], L["DruidGuardianFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
-		OnAccept = function(self)
+		OnAccept = function()
 			TRB.Data.settings.druid.guardian = GuardianLoadDefaultSettings(true)
 			C_UI.Reload()
 		end,
@@ -1979,12 +2087,38 @@ local function GuardianConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DruidGuardianFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DruidGuardianFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
-		OnAccept = function(self)
-			spec.displayText.barText = GuardianLoadDefaultBarTextSimpleSettings()
+		OnAccept = function()
+			TRB.Data.settings.druid.guardian = GuardianLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DruidGuardianFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = GuardianLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DruidGuardianFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = GuardianLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1996,18 +2130,30 @@ local function GuardianConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Druid_Guardian_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Guardian_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Druid_Guardian_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Guardian_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Guardian_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -2437,12 +2583,38 @@ local function RestorationConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["DruidRestorationFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DruidRestorationFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = RestorationLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.druid.restoration = RestorationLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DruidRestorationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = RestorationLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DruidRestorationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = RestorationLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -2454,18 +2626,30 @@ local function RestorationConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Druid_Restoration_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Restoration_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Druid_Restoration_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Restoration_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Druid_Restoration_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end

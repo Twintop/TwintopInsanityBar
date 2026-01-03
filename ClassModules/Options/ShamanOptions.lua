@@ -20,7 +20,10 @@ local ELEMENTAL_MAX_MAELSTROM = 175
 
 -- Elemental
 
-local function ElementalLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Elemental
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function ElementalLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -48,13 +51,17 @@ local function ElementalLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings = ElementalLoadDefaultBarTextSimpleSettings
+TRB.Options.Shaman.ElementalLoadDefaultBarTextSettings = ElementalLoadDefaultBarTextSettings
 
-local function ElementalLoadDefaultSettings(includeBarText)
+---Loads default settings for Elemental
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function ElementalLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -107,8 +114,8 @@ local function ElementalLoadDefaultSettings(includeBarText)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -182,14 +189,17 @@ local function ElementalLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = ElementalLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = ElementalLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
 -- Enhancement
-local function EnhancementLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Enhancement
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function EnhancementLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -217,13 +227,17 @@ local function EnhancementLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings = EnhancementLoadDefaultBarTextSimpleSettings
+TRB.Options.Shaman.EnhancementLoadDefaultBarTextSettings = EnhancementLoadDefaultBarTextSettings
 
-local function EnhancementLoadDefaultSettings(includeBarText)
+---Loads default settings for Enhancement
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function EnhancementLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -241,9 +255,9 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		endOfAscendance = {
 			enabled=true,
 			mode="gcd",
@@ -312,7 +326,7 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = EnhancementLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = EnhancementLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
@@ -320,7 +334,10 @@ end
 
 
 -- Restoration
-local function RestorationLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Restoration
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function RestorationLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -348,13 +365,17 @@ local function RestorationLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Shaman.RestorationLoadDefaultBarTextSimpleSettings = RestorationLoadDefaultBarTextSimpleSettings
+TRB.Options.Shaman.RestorationLoadDefaultBarTextSettings = RestorationLoadDefaultBarTextSettings
 
-local function RestorationLoadDefaultSettings(includeBarText)
+---Loads default settings for Restoration
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function RestorationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -419,8 +440,8 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		endOfAscendance = {
 			enabled=true,
 			mode="gcd",
@@ -471,18 +492,22 @@ local function RestorationLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = RestorationLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = RestorationLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Shaman
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.shaman.elemental = ElementalLoadDefaultSettings(includeBarText)
-	settings.shaman.enhancement = EnhancementLoadDefaultSettings(includeBarText)
-	settings.shaman.restoration = RestorationLoadDefaultSettings(includeBarText)
+	settings.shaman.elemental = ElementalLoadDefaultSettings(includeBarText, classic)
+	settings.shaman.enhancement = EnhancementLoadDefaultSettings(includeBarText, classic)
+	settings.shaman.restoration = RestorationLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
@@ -522,7 +547,46 @@ local function ElementalConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = ElementalLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = ElementalLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["ShamanElementalFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.shaman.elemental = ElementalLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["ShamanElementalFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = ElementalLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["ShamanElementalFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = ElementalLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -534,18 +598,30 @@ local function ElementalConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -997,7 +1073,46 @@ local function EnhancementConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = EnhancementLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = EnhancementLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["ShamanEnhancementFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.shaman.enhancement = EnhancementLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["ShamanEnhancementFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = EnhancementLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["ShamanEnhancementFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = EnhancementLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1009,18 +1124,30 @@ local function EnhancementConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Shaman_Enhancement_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Enhancement_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Shaman_Enhancement_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Enhancement_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Enhancement_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1411,7 +1538,46 @@ local function RestorationConstructResetDefaultsPanel(parent)
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = RestorationLoadDefaultBarTextSimpleSettings()
+			spec.displayText.barText = RestorationLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Restoration_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["ShamanRestorationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.shaman.restoration = RestorationLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Restoration_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["ShamanRestorationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = RestorationLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Shaman_Restoration_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["ShamanRestorationFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = RestorationLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1423,18 +1589,30 @@ local function RestorationConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end

@@ -18,18 +18,25 @@ local BEAST_MASTERY_MAX_FOCUS = 100
 local MARKSMANSHIP_MAX_FOCUS = 100
 local SURVIVAL_MAX_FOCUS = 100
 
-local function BeastMasteryLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Beast Mastery
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function BeastMasteryLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSimpleSettings = BeastMasteryLoadDefaultBarTextSimpleSettings
+TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSettings = BeastMasteryLoadDefaultBarTextSettings
 
-local function BeastMasteryLoadDefaultSettings(includeBarText)
+---Loads default settings for Beast Mastery
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -95,8 +102,8 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -171,13 +178,16 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = BeastMasteryLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = BeastMasteryLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function MarksmanshipLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Marksmanship
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function MarksmanshipLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 		{
@@ -205,13 +215,17 @@ local function MarksmanshipLoadDefaultBarTextSimpleSettings()
 		},
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSimpleSettings = MarksmanshipLoadDefaultBarTextSimpleSettings
+TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSettings = MarksmanshipLoadDefaultBarTextSettings
 
-local function MarksmanshipLoadDefaultSettings(includeBarText)
+---Loads default settings for Marksmanship
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -292,8 +306,8 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 			gcdsMax=3,
 			timeMax=4.5
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -386,24 +400,31 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = MarksmanshipLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = MarksmanshipLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function SurvivalLoadDefaultBarTextSimpleSettings()
+---Loads default bar text settings for Survival
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function SurvivalLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource")
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
-TRB.Options.Hunter.SurvivalLoadDefaultBarTextSimpleSettings = SurvivalLoadDefaultBarTextSimpleSettings
+TRB.Options.Hunter.SurvivalLoadDefaultBarTextSettings = SurvivalLoadDefaultBarTextSettings
 
-local function SurvivalLoadDefaultSettings(includeBarText)
+---Loads default settings for Survival
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function SurvivalLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
 			secondary = 2,
@@ -463,8 +484,8 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 			health = "combat",
 			dragonriding = true
 		},
-		bar = TRB.Functions.Settings:DefaultBarDimensions(),
-		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(),
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -527,18 +548,22 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 	}
 
 	if includeBarText then
-		settings.displayText.barText = SurvivalLoadDefaultBarTextSimpleSettings()
+		settings.displayText.barText = SurvivalLoadDefaultBarTextSettings(classic)
 	end
 
 	return settings
 end
 
-local function LoadDefaultSettings(includeBarText)
+---Loads default settings for Hunter
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 
-	settings.hunter.beastMastery = BeastMasteryLoadDefaultSettings(includeBarText)
-	settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings(includeBarText)
-	settings.hunter.survival = SurvivalLoadDefaultSettings(includeBarText)
+	settings.hunter.beastMastery = BeastMasteryLoadDefaultSettings(includeBarText, classic)
+	settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings(includeBarText, classic)
+	settings.hunter.survival = SurvivalLoadDefaultSettings(includeBarText, classic)
 	return settings
 end
 TRB.Options.Hunter.LoadDefaultSettings = LoadDefaultSettings
@@ -572,12 +597,38 @@ local function BeastMasteryConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["HunterBeastMasteryFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["HunterBeastMasteryFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = BeastMasteryLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.hunter.beastMastery = BeastMasteryLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["HunterBeastMasteryFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BeastMasteryLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["HunterBeastMasteryFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BeastMasteryLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -589,18 +640,30 @@ local function BeastMasteryConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1060,12 +1123,38 @@ local function MarksmanshipConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["HunterMarksmanshipFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["HunterMarksmanshipFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = MarksmanshipLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["HunterMarksmanshipFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = MarksmanshipLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["HunterMarksmanshipFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = MarksmanshipLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1077,18 +1166,30 @@ local function MarksmanshipConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end
@@ -1724,12 +1825,38 @@ local function SurvivalConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["HunterSurvivalFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["HunterSurvivalFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = SurvivalLoadDefaultBarTextSimpleSettings()
+			TRB.Data.settings.hunter.survival = SurvivalLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["HunterSurvivalFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = SurvivalLoadDefaultBarTextSettings()
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["HunterSurvivalFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = SurvivalLoadDefaultBarTextSettings(true)
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1741,18 +1868,30 @@ local function SurvivalConstructResetDefaultsPanel(parent)
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
+	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_Reset")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
 	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
-	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextSimple")
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 40
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextClassic")
 	end)
 	yCoord = yCoord - 40
 end

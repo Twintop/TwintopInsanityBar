@@ -2618,25 +2618,25 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.druid == nil or
 						TwintopInsanityBarSettings.druid.balance == nil or
 						TwintopInsanityBarSettings.druid.balance.displayText == nil then
-						settings.druid.balance.displayText.barText = TRB.Options.Druid.BalanceLoadDefaultBarTextSimpleSettings()
+						settings.druid.balance.displayText.barText = TRB.Options.Druid.BalanceLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.druid == nil or
 						TwintopInsanityBarSettings.druid.feral == nil or
 						TwintopInsanityBarSettings.druid.feral.displayText == nil then
-						settings.druid.feral.displayText.barText = TRB.Options.Druid.FeralLoadDefaultBarTextSimpleSettings()
+						settings.druid.feral.displayText.barText = TRB.Options.Druid.FeralLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.druid == nil or
 						TwintopInsanityBarSettings.druid.guardian == nil or
 						TwintopInsanityBarSettings.druid.guardian.displayText == nil then
-						settings.druid.guardian.displayText.barText = TRB.Options.Druid.GuardianLoadDefaultBarTextSimpleSettings()
+						settings.druid.guardian.displayText.barText = TRB.Options.Druid.GuardianLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.druid == nil or
 						TwintopInsanityBarSettings.druid.restoration == nil or
 						TwintopInsanityBarSettings.druid.restoration.displayText == nil then
-						settings.druid.restoration.displayText.barText = TRB.Options.Druid.RestorationLoadDefaultBarTextSimpleSettings()
+						settings.druid.restoration.displayText.barText = TRB.Options.Druid.RestorationLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

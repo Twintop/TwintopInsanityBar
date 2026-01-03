@@ -16,6 +16,7 @@ local content = [====[
 
 - [#505](#505) Add an optional player health bar, including new bar text variables `$health`, `$healthMax`, and `$healthPercent`.
 - Modify the layout of the Textures section in the Options UI to group like textures together for easier navigation.
+- Add new presets for bar size and bar text for all specializations; clean up existing outdated/unused presets.
 
 ## Demon Hunter
 ### [#467](#467) Vengeance

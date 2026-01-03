@@ -1321,15 +1321,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.deathknight == nil or
 						TwintopInsanityBarSettings.deathknight.blood == nil or
 						TwintopInsanityBarSettings.deathknight.blood.displayText == nil then
-						settings.deathknight.blood.displayText.barText = TRB.Options.DeathKnight.BloodLoadDefaultBarTextSimpleSettings()
+						settings.deathknight.blood.displayText.barText = TRB.Options.DeathKnight.BloodLoadDefaultBarTextSettings()
 					elseif TwintopInsanityBarSettings.deathknight == nil or
 						TwintopInsanityBarSettings.deathknight.frost == nil or
 						TwintopInsanityBarSettings.deathknight.frost.displayText == nil then
-						settings.deathknight.frost.displayText.barText = TRB.Options.DeathKnight.FrostLoadDefaultBarTextSimpleSettings()
+						settings.deathknight.frost.displayText.barText = TRB.Options.DeathKnight.FrostLoadDefaultBarTextSettings()
 					elseif TwintopInsanityBarSettings.deathknight == nil or
 						TwintopInsanityBarSettings.deathknight.unholy == nil or
 						TwintopInsanityBarSettings.deathknight.unholy.displayText == nil then
-						settings.deathknight.unholy.displayText.barText = TRB.Options.DeathKnight.UnholyLoadDefaultBarTextSimpleSettings()
+						settings.deathknight.unholy.displayText.barText = TRB.Options.DeathKnight.UnholyLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

@@ -19,10 +19,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public textures boolean
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
----@field public bar TRB.Casses.Settings.Bar
+---@field public bar TRB.Classes.Settings.PrimaryBar
 ---@field public colors TRB.Classes.Settings.Colors
----@field public comboPoints TRB.Casses.Settings.ComboPoints
----@field public healthBar TRB.Casses.Settings.HealthBar
+---@field public comboPoints TRB.Classes.Settings.SecondaryBar
+---@field public healthBar TRB.Classes.Settings.SecondaryBar
 ---@field public displayBar table?
 ---@field public displayText TRB.Classes.Settings.DisplayText
 ---@field public textures table?
@@ -119,7 +119,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ColorsCore : TRB.Classes.Settings.Colors
 ---@field public thresholdHealer TRB.Classes.Settings.ThresholdHealerColors
 
----@class TRB.Casses.Settings.Bar
+---@class TRB.Classes.Settings.PrimaryBar
 ---@field public width number
 ---@field public height number
 ---@field public xPos number
@@ -128,23 +128,13 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public dragAndDrop boolean
 ---@field public pinToPersonalResourceDisplay boolean
 
----@class TRB.Casses.Settings.ComboPoints
+---@class TRB.Classes.Settings.SecondaryBar
 ---@field public width number
 ---@field public height number
 ---@field public xPos number
 ---@field public yPos number
 ---@field public border integer
 ---@field public spacing integer
----@field public relativeTo string
----@field public relativeToName string
----@field public fullWidth boolean
-
----@class TRB.Casses.Settings.HealthBar
----@field public width number
----@field public height number
----@field public xPos number
----@field public yPos number
----@field public border integer
 ---@field public relativeTo string
 ---@field public relativeToName string
 ---@field public fullWidth boolean

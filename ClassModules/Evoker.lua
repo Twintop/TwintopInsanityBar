@@ -1174,19 +1174,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.evoker == nil or
 						TwintopInsanityBarSettings.evoker.devastation == nil or
 						TwintopInsanityBarSettings.evoker.devastation.displayText == nil then
-						settings.evoker.devastation.displayText.barText = TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings()
+						settings.evoker.devastation.displayText.barText = TRB.Options.Evoker.DevastationLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.evoker == nil or
 						TwintopInsanityBarSettings.evoker.preservation == nil or
 						TwintopInsanityBarSettings.evoker.preservation.displayText == nil then
-						settings.evoker.preservation.displayText.barText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings()
+						settings.evoker.preservation.displayText.barText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.evoker == nil or
 						TwintopInsanityBarSettings.evoker.augmentation == nil or
 						TwintopInsanityBarSettings.evoker.augmentation.displayText == nil then
-						settings.evoker.augmentation.displayText.barText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings()
+						settings.evoker.augmentation.displayText.barText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

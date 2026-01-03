@@ -1214,19 +1214,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if (TwintopInsanityBarSettings.warlock == nil or
 						TwintopInsanityBarSettings.warlock.affliction == nil or
 						TwintopInsanityBarSettings.warlock.affliction.displayText == nil) then
-						settings.warlock.affliction.displayText.barText = TRB.Options.Warlock.AfflictionLoadDefaultBarTextSimpleSettings()
+						settings.warlock.affliction.displayText.barText = TRB.Options.Warlock.AfflictionLoadDefaultBarTextSettings()
 					end
 
 					if (TwintopInsanityBarSettings.warlock == nil or
 						TwintopInsanityBarSettings.warlock.demonology == nil or
 						TwintopInsanityBarSettings.warlock.demonology.displayText == nil) then
-						settings.warlock.demonology.displayText.barText = TRB.Options.Warlock.DemonologyLoadDefaultBarTextSimpleSettings()
+						settings.warlock.demonology.displayText.barText = TRB.Options.Warlock.DemonologyLoadDefaultBarTextSettings()
 					end
 
 					if (TwintopInsanityBarSettings.warlock == nil or
 						TwintopInsanityBarSettings.warlock.destruction == nil or
 						TwintopInsanityBarSettings.warlock.destruction.displayText == nil) then
-						settings.warlock.destruction.displayText.barText = TRB.Options.Warlock.DestructionLoadDefaultBarTextSimpleSettings()
+						settings.warlock.destruction.displayText.barText = TRB.Options.Warlock.DestructionLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

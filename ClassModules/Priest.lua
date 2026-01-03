@@ -2139,19 +2139,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.priest == nil or
 						TwintopInsanityBarSettings.priest.discipline == nil or
 						TwintopInsanityBarSettings.priest.discipline.displayText == nil then
-						settings.priest.discipline.displayText.barText = TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings()
+						settings.priest.discipline.displayText.barText = TRB.Options.Priest.DisciplineLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.priest == nil or
 						TwintopInsanityBarSettings.priest.holy == nil or
 						TwintopInsanityBarSettings.priest.holy.displayText == nil then
-						settings.priest.holy.displayText.barText = TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings()
+						settings.priest.holy.displayText.barText = TRB.Options.Priest.HolyLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.priest == nil or
 						TwintopInsanityBarSettings.priest.shadow == nil or
 						TwintopInsanityBarSettings.priest.shadow.displayText == nil then
-						settings.priest.shadow.displayText.barText = TRB.Options.Priest.ShadowLoadDefaultBarTextSimpleSettings()
+						settings.priest.shadow.displayText.barText = TRB.Options.Priest.ShadowLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

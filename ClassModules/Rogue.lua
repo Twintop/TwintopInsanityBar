@@ -2258,19 +2258,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 					if TwintopInsanityBarSettings.rogue == nil or
 						TwintopInsanityBarSettings.rogue.assassination == nil or
 						TwintopInsanityBarSettings.rogue.assassination.displayText == nil then
-						settings.rogue.assassination.displayText.barText = TRB.Options.Rogue.AssassinationLoadDefaultBarTextSimpleSettings()
+						settings.rogue.assassination.displayText.barText = TRB.Options.Rogue.AssassinationLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.rogue == nil or
 						TwintopInsanityBarSettings.rogue.outlaw == nil or
 						TwintopInsanityBarSettings.rogue.outlaw.displayText == nil then
-						settings.rogue.outlaw.displayText.barText = TRB.Options.Rogue.OutlawLoadDefaultBarTextSimpleSettings()
+						settings.rogue.outlaw.displayText.barText = TRB.Options.Rogue.OutlawLoadDefaultBarTextSettings()
 					end
 
 					if TwintopInsanityBarSettings.rogue == nil or
 						TwintopInsanityBarSettings.rogue.subtlety == nil or
 						TwintopInsanityBarSettings.rogue.subtlety.displayText == nil then
-						settings.rogue.subtlety.displayText.barText = TRB.Options.Rogue.SubtletyLoadDefaultBarTextSimpleSettings()
+						settings.rogue.subtlety.displayText.barText = TRB.Options.Rogue.SubtletyLoadDefaultBarTextSettings()
 					end
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
