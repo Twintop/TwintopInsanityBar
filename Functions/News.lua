@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-beta08 (2026-01-03)
+## General
+
+- Fix some Lua errors due to incorrect settings.
+
+---
+
 # 12.0.0.0-beta07 (2026-01-03)
 ## General
 

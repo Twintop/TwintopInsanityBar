@@ -469,11 +469,11 @@ local function RefreshLookupData_Devastation()
 	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
-	local currentManaColor = TRB.Data.settings.mage.arcane.colors.text.current.color
-	local castingManaColor = TRB.Data.settings.mage.arcane.colors.text.casting.color
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.mage.arcane.manaPrecision or 1
+	local manaPrecision = specSettings.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -615,11 +615,11 @@ local function RefreshLookupData_Augmentation()
 	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
-	local currentManaColor = TRB.Data.settings.mage.arcane.colors.text.current.color
-	local castingManaColor = TRB.Data.settings.mage.arcane.colors.text.casting.color
+	local currentManaColor = sharedSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.mage.arcane.manaPrecision or 1
+	local manaPrecision = specSettings.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal

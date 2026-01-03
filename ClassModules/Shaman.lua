@@ -604,11 +604,11 @@ local function RefreshLookupData_Enhancement()
 
 	-- This probably needs to be pulled every refresh
 
-	local currentManaColor = TRB.Data.settings.mage.arcane.colors.text.current.color
-	local castingManaColor = TRB.Data.settings.mage.arcane.colors.text.casting.color
+	local currentManaColor = specSettings.colors.text.current.color
+	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.mage.arcane.manaPrecision or 1
+	local manaPrecision = specSettings.manaPrecision or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
