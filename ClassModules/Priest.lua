@@ -683,10 +683,6 @@ local function CalculateHolyWordCooldown(base, spellId)
 		mod = mod * spells.apotheosis--[[@as TRB.Classes.Priest.HolyWordSpell]].holyWordModifier
 	end
 
-	--[[if talents:IsTalentActive(spells.lightOfTheNaaru) then
-		mod = mod * (1 + (spells.lightOfTheNaaru--[@as TRB.Classes.Priest.HolyWordSpell].holyWordModifier * talents.talents[spells.lightOfTheNaaru.id].currentRank))
-	end]]
-
 	return mod * (base)
 end
 
@@ -720,11 +716,6 @@ local function RefreshLookupData_Discipline()
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- BreakUpLargeNumbers(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
-	--[[local maxResource = TRB.Data.character.maxResource
-
-	if maxResource == 0 then
-		maxResource = 1
-	end]]
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
@@ -834,11 +825,6 @@ local function RefreshLookupData_Holy()
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
-	--[[local maxResource = TRB.Data.character.maxResource
-
-	if maxResource == 0 then
-		maxResource = 1
-	end]]
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
@@ -1470,7 +1456,7 @@ local function UpdateSnapshot_Healers()
 end
 
 local function UpdateSnapshot_Voidweaver()
-	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.ShadowSpells]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.ShadowSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local entropicRift = snapshots[spells.entropicRift.id]

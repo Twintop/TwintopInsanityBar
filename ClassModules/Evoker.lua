@@ -483,11 +483,6 @@ local function RefreshLookupData_Devastation()
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
-	--[[local maxResource = TRB.Data.character.maxResource
-
-	if maxResource == 0 then
-		maxResource = 1
-	end]]
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
@@ -559,11 +554,6 @@ local function RefreshLookupData_Preservation()
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
-	--[[local maxResource = TRB.Data.character.maxResource
-
-	if maxResource == 0 then
-		maxResource = 1
-	end]]
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
@@ -639,11 +629,6 @@ local function RefreshLookupData_Augmentation()
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
-	--[[local maxResource = TRB.Data.character.maxResource
-
-	if maxResource == 0 then
-		maxResource = 1
-	end]]
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))

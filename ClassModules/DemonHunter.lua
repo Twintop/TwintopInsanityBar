@@ -74,20 +74,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.immolationAura.id] = TRB.Classes.Snapshot:New(spells.immolationAura)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.immolationAura1.id] = TRB.Classes.Snapshot:New(spells.immolationAura1)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.immolationAura2.id] = TRB.Classes.Snapshot:New(spells.immolationAura2)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.immolationAura3.id] = TRB.Classes.Snapshot:New(spells.immolationAura3)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.immolationAura4.id] = TRB.Classes.Snapshot:New(spells.immolationAura4)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.immolationAura5.id] = TRB.Classes.Snapshot:New(spells.immolationAura5)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.immolationAura6.id] = TRB.Classes.Snapshot:New(spells.immolationAura6)
-	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.unboundChaos.id] = TRB.Classes.Snapshot:New(spells.unboundChaos)
 	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.throwGlaive.id] = TRB.Classes.Snapshot:New(spells.throwGlaive)
@@ -151,8 +137,6 @@ local function FillSpecializationCache()
 	specCache.vengeance.snapshotData.snapshots[spells.felDevastation.id] = TRB.Classes.Snapshot:New(spells.felDevastation)
 	---@type TRB.Classes.Snapshot
 	specCache.vengeance.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
-	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.immolationAura.id] = TRB.Classes.Snapshot:New(spells.immolationAura)
 	---@type TRB.Classes.Snapshot
 	specCache.vengeance.snapshotData.snapshots[spells.soulFurnace.id] = TRB.Classes.Snapshot:New(spells.soulFurnace)
 	---@type TRB.Classes.Snapshot
@@ -234,7 +218,6 @@ local function FillSpellData_Havoc()
 		{ variable = "#felBarrage", icon = spells.felBarrage.icon, description = spells.felBarrage.name, printInSettings = true },
 		{ variable = "#glaiveFlurry", icon = spells.glaiveFlurry.icon, description = spells.glaiveFlurry.name, printInSettings = true },
 		{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
-		{ variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
@@ -314,13 +297,11 @@ local function FillSpellData_Vengeance()
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
 		{ variable = "#artOfTheGlaive", icon = spells.artOfTheGlaive.icon, description = spells.artOfTheGlaive.name, printInSettings = true },
-		{ variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
-		{ variable = "#ia", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = false },
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMeta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		--{ variable = "#soulFragments", icon = spells.soulFragments.icon, description = spells.soulFragments.name, printInSettings = true },
+		{ variable = "#soulFragments", icon = spells.soulFragments.icon, description = spells.soulFragments.name, printInSettings = true },
 		{ variable = "#studentOfSuffering", icon = spells.studentOfSuffering.icon, description = spells.studentOfSuffering.name, printInSettings = true },
 	}
 	specCache.vengeance.barTextVariables.values = {
@@ -363,10 +344,10 @@ local function FillSpellData_Vengeance()
 		{ variable = "$furyMax", description = L["DemonHunterVengeanceBarTextVariable_furyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["DemonHunterVengeanceBarTextVariable_casting"], printInSettings = true, color = false },
-		--[[{ variable = "$soulFragments", description = L["DemonHunterVengeanceBarTextVariable_soulFragments"], printInSettings = true, color = false },
+		{ variable = "$soulFragments", description = L["DemonHunterVengeanceBarTextVariable_soulFragments"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulFragmentsMax", description = L["DemonHunterVengeanceBarTextVariable_soulFragmentsMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },]]
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 
 		{ variable = "$metaTime", description = L["DemonHunterVengeanceBarTextVariable_metaTime"], printInSettings = true, color = false },
 		{ variable = "$metamorphosisTime", description = "", printInSettings = false, color = false },
@@ -630,6 +611,10 @@ local function RefreshLookupData_Vengeance()
 	local _castingFury = snapshotData.casting.resourceFinal
 	local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
 	
+	--$soulFragments
+	local _soulFragments = snapshotData.attributes.resource2 or 0
+	local soulFragments = string.format("%s", _soulFragments)
+
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -642,13 +627,10 @@ local function RefreshLookupData_Vengeance()
 	lookup["$metamorphosisTime"] = metamorphosisTime
 	lookup["$voidMetaTime"] = metamorphosisTime
 	lookup["$voidMetamorphosisTime"] = metamorphosisTime
-	--$soulFragments
-	local _soulFragments = snapshotData.attributes.resource2 or 0
-	local soulFragments = string.format("%s", _soulFragments)
 	lookup["$soulFragments"] = soulFragments
 	lookup["$comboPoints"] = soulFragments
-	lookup["$soulFragmentsMax"] = TRB.Data.character.maxResource2Value or 6
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Value or 6
+	lookup["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource --TRB.Data.character.maxResource2Value
+	lookup["$comboPointsMax"] = spells.soulFragments.attributes.maxResource --TRB.Data.character.maxResource2Value
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -663,8 +645,8 @@ local function RefreshLookupData_Vengeance()
 	lookupLogic["$voidMetamorphosisTime"] = _metamorphosisTime
 	lookupLogic["$soulFragments"] = _soulFragments
 	lookupLogic["$comboPoints"] = _soulFragments
-	lookupLogic["$soulFragmentsMax"] = TRB.Data.character.maxResource2Value or 5
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Value or 5
+	lookupLogic["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource --TRB.Data.character.maxResource2Value
+	lookupLogic["$comboPointsMax"] = spells.soulFragments.attributes.maxResource --TRB.Data.character.maxResource2Value
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1400,7 +1382,6 @@ local function SwitchSpec()
 		lookup["#felBarrage"] = spells.felBarrage.icon
 		lookup["#glaiveFlurry"] = spells.glaiveFlurry.icon
 		lookup["#glaiveTempest"] = spells.glaiveTempest.icon
-		lookup["#immolationAura"] = spells.immolationAura.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
@@ -1433,8 +1414,6 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
 		lookup["#glaiveFlurry"] = spells.glaiveFlurry.icon
-		lookup["#ia"] = spells.immolationAura.icon
-		lookup["#immolationAura"] = spells.immolationAura.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
@@ -1833,11 +1812,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	
 	if TRB.Data.character.specId == 1 then --Havoc
 	elseif TRB.Data.character.specId == 2 then --Vengeance
-		--[[if var == "$comboPoints" or var == "$soulFragments" then
-			valid = true
+		if var == "$comboPoints" or var == "$soulFragments" then
+			valid = false
 		elseif var == "$comboPointsMax"or var == "$soulFragmentsMax" then
 			valid = true
-		end]]
+		end
 	elseif TRB.Data.character.specId == 3 then --Devourer
 		if var == "$comboPoints" or var == "$soulFragments" or var == "$collapsingStar" then
 			valid = true
