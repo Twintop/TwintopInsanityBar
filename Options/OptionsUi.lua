@@ -1776,7 +1776,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	-- Row 2: Secondary / Combo Points (left, if applicable)
 	if includeComboPoints then
 		yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"],
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"],
 			function(newValue)
 				local newName = borderPairsByName[newValue]
 				spec.textures.comboPointsBorder = newValue
