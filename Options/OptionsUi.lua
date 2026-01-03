@@ -2407,30 +2407,6 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 
 	if unusable == true then
 		yCoord = yCoord - 30
-		--[[
-		controls.checkBoxes.thresholdUnusable = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdUnusable", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.thresholdUnusable
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord+10)
-		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdUnusableShowCheckbox"])
-		f.tooltip = L["ThresholdUnusableShowCheckboxTooltip"]
-		f:SetChecked(spec.colors.threshold.unusable.show)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.threshold.unusable.show = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdUnusableColorEnabled, spec.colors.threshold.unusable.show)
-		end)
-
-		controls.checkBoxes.thresholdUnusableColorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdUnusableColorEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.thresholdUnusableColorEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord-10)
-		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdUnusableCheckbox"])
-		f.tooltip = L["ThresholdUnusableCheckboxTooltip"]
-		f:SetChecked(spec.colors.threshold.unusable.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.threshold.unusable.enabled = self:GetChecked()
-		end)
-		
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdUnusableColorEnabled, spec.colors.threshold.unusable.show)]]
-
 		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnusable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
