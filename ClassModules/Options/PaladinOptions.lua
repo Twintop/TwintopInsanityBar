@@ -24,7 +24,7 @@ local function HolyLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
@@ -96,6 +96,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
+			health = "combat",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -186,7 +187,7 @@ local function ProtectionLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
@@ -289,7 +290,7 @@ local function RetributionLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end

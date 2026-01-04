@@ -107,7 +107,7 @@ end
 ---@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult
 function TRB.Classes.BarNode:SetColorCurve(colorResult)
-	if colorResult == nil then
+	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
 	self.resourceFrame:GetStatusBarTexture():SetVertexColor(colorResult:GetRGBA())

@@ -416,20 +416,20 @@ function TRB.Functions.Settings:PortForwardSettings()
 	end
 
 	-- Migrate core settings
-	if TRB.Data.settings and TRB.Data.settings.core and TRB.Data.settings.core.displayBar then
-		MigrateDisplayBar(TRB.Data.settings.core.displayBar)
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.displayBar then
+		MigrateDisplayBar(TwintopInsanityBarSettings.displayBar)
 	end
 
 	-- Migrate all class/spec settings
 	for _, className in ipairs(classes) do
-		if TRB.Data.settings and TRB.Data.settings[className] then
-			for _, specSettings in pairs(TRB.Data.settings[className]) do
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+			for _, specSettings in pairs(TwintopInsanityBarSettings[className]) do
 				if specSettings then
 					if specSettings.displayBar then
 						MigrateDisplayBar(specSettings.displayBar)
 					end
 
-					if not specSettings.healthBar then
+					if specSettings.textures and not specSettings.healthBar then
 						specSettings.healthBar = TRB.Functions.Settings:DefaultHealthDimensions(true)
 						
 						specSettings.textures.healthBackground="Interface\\Tooltips\\UI-Tooltip-Background"
@@ -438,6 +438,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 						specSettings.textures.healthBorderName="1 Pixel"
 						specSettings.textures.healthBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
 						specSettings.textures.healthBarName=L["LSMStatusBarSmoother"]
+
+						local healthBarText = TRB.Functions.Settings:LoadDefaultHealthBarTextSettings()
+						for k,v in pairs(healthBarText) do table.insert(specSettings.displayText.barText, v) end
 					end
 				end
 			end
@@ -595,16 +598,10 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints)
 	return textures
 end
 
-
----@alias trbIncludeResourceType
----| '"resource"' # Generic $resource centered
----| '"mana"' # $mana% left, $mana / $manaMax right
-
----Adds default bar text that is used globally
----@param includeResourceType trbIncludeResourceType?
+---Returns default bar text for the health bar
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
-function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResourceType, classic)
+function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
@@ -681,6 +678,21 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 			}
 		})
 	end
+	return textSettings
+end
+
+
+---@alias trbIncludeResourceType
+---| '"resource"' # Generic $resource centered
+---| '"mana"' # $mana% left, $mana / $manaMax right
+
+---Adds default bar text that is used globally
+---@param includeResourceType trbIncludeResourceType?
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResourceType, classic)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 
 	if includeResourceType == "resource" then
 		if classic then
