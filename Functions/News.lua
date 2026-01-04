@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-beta09 (2026-01-05)
+## General
+
+- Fix an issue with the new health bar not having any text by default when upgrading. This won't affect users who already upgraded to `beta07` or `beta08` but will fix it for anyone upgrading going forward.
+
+## Paladin
+### Holy
+
+- [#506](#506) Correct an issue where visibility options for the health bar were not being shown.
+
+---
+
 # 12.0.0.0-beta08 (2026-01-03)
 ## General
 
