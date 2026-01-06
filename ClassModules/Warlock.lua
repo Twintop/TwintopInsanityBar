@@ -1174,6 +1174,9 @@ local function SwitchSpec()
 			if TRB.Data.barConstructedForSpec ~= nil then
 				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 				TRB.Functions.Character:ResetCaches()
+				-- Ensure health values are populated so the health bar displays immediately
+				TRB.Functions.Character:UpdateHealthValues()
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end)

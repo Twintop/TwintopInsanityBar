@@ -331,9 +331,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		TRB.Data.cache.values.threshold = {}
 	end
 
-	-- Configure health bar group
+	-- Configure health bar group (apply appearance immediately to ensure textures are set)
 	if barGroups.health and settings.healthBar then
-		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, false)
+		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, true)
 	end
 
 	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)

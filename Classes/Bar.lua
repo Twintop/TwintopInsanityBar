@@ -110,7 +110,10 @@ function TRB.Classes.BarNode:SetColorCurve(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
-	self.resourceFrame:GetStatusBarTexture():SetVertexColor(colorResult:GetRGBA())
+	local texture = self.resourceFrame:GetStatusBarTexture()
+	if texture then
+		texture:SetVertexColor(colorResult:GetRGBA())
+	end
 end
 
 ---Sets the border color
