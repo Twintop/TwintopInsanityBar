@@ -679,6 +679,12 @@ end
 	and textures under flat keys like settings.textures.<key>Bar, settings.textures.<key>Border, settings.textures.<key>Background.
 ]]
 
+---@class TRB.Classes.BarTypeDefinition.ThresholdLevel
+---@field public key string # The data key in colorSettings (e.g., "low", "medium", "high", "heavy")
+---@field public colorLabelKey string # Localization key for the color picker label
+---@field public sliderLabelKey string? # Localization key for the threshold slider label (nil for first level which has no slider)
+---@field public sliderTooltipKey string? # Localization key for the threshold slider tooltip
+
 ---@class TRB.Classes.BarTypeDefinition
 ---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
 ---@field public displayName string # Localized display name for UI
@@ -691,11 +697,17 @@ end
 ---@field public hasSpacing boolean # True if bar supports spacing option (multi-node only)
 ---@field public hasThresholds boolean # True if bar supports threshold lines
 ---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
+---@field public thresholdLevels TRB.Classes.BarTypeDefinition.ThresholdLevel[]? # Required when colorCurveType is "step" or "linear". Ordered array of threshold level definitions.
+---@field public colorTypeLabelKey string? # Localization key for the color type dropdown header (defaults to "CustomBarColorType")
+---@field public colorTypeStepLabelKey string? # Localization key for "step" option (defaults to "CustomBarColorTypeStep")
+---@field public colorTypeLinearLabelKey string? # Localization key for "linear" option (defaults to "CustomBarColorTypeLinear")
+---@field public colorTypeNoneLabelKey string? # Localization key for "none" option (defaults to "CustomBarColorTypeNone")
 ---@field public defaultDimensionsFunc function? # Function returning default dimensions (SecondaryBar structure)
 ---@field public defaultColorsFunc function? # Function returning default colors
 ---@field public defaultTexturesFunc function? # Function returning default textures
 ---@field public visibilityKey string # Key in displayBar for visibility setting (e.g., "stagger", "mana")
 ---@field public nodeColors table[]? # Array of {key, displayName, hasEnabled} for per-node color pickers (e.g., Warrior defensives)
+---@field public onChangeCallback function? # Optional callback function to call after color/threshold changes
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -717,6 +729,22 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.hasSpacing = config.hasSpacing or config.isMultiNode or false
 	self.hasThresholds = config.hasThresholds or false
 	self.colorCurveType = config.colorCurveType -- nil, "step", or "linear"
+
+	-- Threshold color options (required when colorCurveType is "step" or "linear")
+	self.thresholdLevels = config.thresholdLevels
+	self.colorTypeLabelKey = config.colorTypeLabelKey
+	self.colorTypeStepLabelKey = config.colorTypeStepLabelKey
+	self.colorTypeLinearLabelKey = config.colorTypeLinearLabelKey
+	self.colorTypeNoneLabelKey = config.colorTypeNoneLabelKey
+	self.onChangeCallback = config.onChangeCallback
+
+	-- Validate: thresholdLevels is required when colorCurveType is "step" or "linear"
+	if (self.colorCurveType == "step" or self.colorCurveType == "linear") then
+		assert(self.thresholdLevels and #self.thresholdLevels > 0,
+			string.format("BarTypeDefinition '%s': thresholdLevels is required when colorCurveType is '%s'",
+				self.key, self.colorCurveType))
+	end
+
 	self.defaultDimensionsFunc = config.defaultDimensionsFunc
 	self.defaultColorsFunc = config.defaultColorsFunc
 	self.defaultTexturesFunc = config.defaultTexturesFunc
@@ -982,6 +1010,16 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = "step", -- Green -> Yellow -> Red based on stagger level
 		visibilityKey = "stagger",
+		-- Threshold color configuration
+		thresholdLevels = {
+			{ key = "low", colorLabelKey = "StaggerBarColorLight" },
+			{ key = "medium", colorLabelKey = "StaggerBarColorMedium", sliderLabelKey = "StaggerBarThresholdMedium", sliderTooltipKey = "StaggerBarThresholdMediumTooltip" },
+			{ key = "heavy", colorLabelKey = "StaggerBarColorHeavy", sliderLabelKey = "StaggerBarThresholdHeavy", sliderTooltipKey = "StaggerBarThresholdHeavyTooltip" }
+		},
+		colorTypeLabelKey = "StaggerBarColorType",
+		colorTypeStepLabelKey = "StaggerBarColorTypeStep",
+		colorTypeLinearLabelKey = "StaggerBarColorTypeLinear",
+		colorTypeNoneLabelKey = "StaggerBarColorTypeNone",
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultStaggerBarDimensions(classic)
 		end,

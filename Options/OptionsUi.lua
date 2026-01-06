@@ -1762,8 +1762,9 @@ end
 ---@param specId integer # Spec ID
 ---@param yCoord number # Starting Y coordinate
 ---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
+---@param onChangeCallback function? # Optional callback to call after changes (overrides barTypeDef.onChangeCallback)
 ---@return number # New Y coordinate after adding controls
-function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, onChangeCallback)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
 	local f = nil
@@ -1774,6 +1775,19 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 		return yCoord
 	end
 	
+	-- Determine the callback to use (parameter overrides definition)
+	local changeCallback = onChangeCallback or barTypeDef.onChangeCallback
+	
+	-- Helper to call the change callback
+	local function triggerChange()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		if changeCallback then
+			changeCallback()
+		end
+	end
+	
 	local displayName = barTypeDef.displayName
 	
 	controls.colors = controls.colors or {}
@@ -1781,13 +1795,19 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
 	local colorControls = controls.colors.bars[barTypeDef.key]
 	
+	-- Get localization keys with fallbacks
+	local colorTypeLabelKey = barTypeDef.colorTypeLabelKey or "CustomBarColorType"
+	local colorTypeStepLabelKey = barTypeDef.colorTypeStepLabelKey or "CustomBarColorTypeStep"
+	local colorTypeLinearLabelKey = barTypeDef.colorTypeLinearLabelKey or "CustomBarColorTypeLinear"
+	local colorTypeNoneLabelKey = barTypeDef.colorTypeNoneLabelKey or "CustomBarColorTypeNone"
+	
 	-- Color Transition Type dropdown
 	-- Note: yCoord already positioned at header row, so dropdown label goes here
 	local yCoord2 = yCoord - 30
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ColorCurveType", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetWidth(oUi.sliderWidth)
-	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerBarColorType"] or "Color Transition Type", oUi.xCoord, yCoord)
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L[colorTypeLabelKey], oUi.xCoord, yCoord)
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label.font:SetFontObject(GameFontNormal)
 
 	local function ColorCurveTypeIsSelected(value)
@@ -1796,26 +1816,24 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 
 	local function ColorCurveTypeGetDisplayName(value)
 		if value == "step" then
-			return L["StaggerBarColorTypeStep"] or "Step"
+			return L[colorTypeStepLabelKey]
 		elseif value == "linear" then
-			return L["StaggerBarColorTypeLinear"] or "Linear"
+			return L[colorTypeLinearLabelKey]
 		else
-			return L["StaggerBarColorTypeNone"] or "None"
+			return L[colorTypeNoneLabelKey]
 		end
 	end
 
 	local function ColorCurveTypeSetSelected(newValue)
 		colorSettings.type = newValue
 		controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetDefaultText(ColorCurveTypeGetDisplayName(newValue))
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		triggerChange()
 	end
 
 	local function ColorCurveTypeGenerator(dropdown, rootDescription)
-		rootDescription:CreateRadio(L["StaggerBarColorTypeStep"] or "Step", ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
-		rootDescription:CreateRadio(L["StaggerBarColorTypeLinear"] or "Linear", ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
-		rootDescription:CreateRadio(L["StaggerBarColorTypeNone"] or "None", ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "none")
+		rootDescription:CreateRadio(L[colorTypeStepLabelKey], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
+		rootDescription:CreateRadio(L[colorTypeLinearLabelKey], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
+		rootDescription:CreateRadio(L[colorTypeNoneLabelKey], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "none")
 	end
 
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetupMenu(ColorCurveTypeGenerator)
@@ -1825,71 +1843,71 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	-- Advance yCoord past the dropdown (dropdown + its label takes about 50 units)
 	yCoord = yCoord - 80
 
-	-- Threshold sliders and color pickers
-	-- Determine threshold keys (could be low/medium/high or low/medium/heavy for Stagger)
-	local thresholdKeys = {}
-	if colorSettings.low then table.insert(thresholdKeys, "low") end
-	if colorSettings.medium then table.insert(thresholdKeys, "medium") end
-	if colorSettings.high then table.insert(thresholdKeys, "high") end
-	if colorSettings.heavy then table.insert(thresholdKeys, "heavy") end
+	-- Get threshold levels from definition (required for threshold-based bars)
+	local thresholdLevels = barTypeDef.thresholdLevels
+	if not thresholdLevels or #thresholdLevels == 0 then
+		-- Early exit if no threshold levels defined
+		return yCoord
+	end
 	
 	-- Build threshold sliders (skip first one - no slider needed for base/low)
-	for i, thresholdKey in ipairs(thresholdKeys) do
+	for i, thresholdLevel in ipairs(thresholdLevels) do
+		local thresholdKey = thresholdLevel.key
 		if i > 1 and colorSettings[thresholdKey] and colorSettings[thresholdKey].threshold ~= nil then
-			local sliderLabel = string.format(L["CustomBarThreshold"] or "%s %s Threshold", displayName, thresholdKey:gsub("^%l", string.upper))
+			local sliderLabel = thresholdLevel.sliderLabelKey and L[thresholdLevel.sliderLabelKey] or string.format(L["CustomBarThreshold"], displayName, thresholdKey:gsub("^%l", string.upper))
 			controls[barTypeDef.key .. thresholdKey .. "Threshold"] = TRB.Functions.OptionsUi:BuildSlider(parent, sliderLabel, 
 				0, 1, colorSettings[thresholdKey].threshold, 0.01, 2,
 				oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+			if thresholdLevel.sliderTooltipKey then
+				controls[barTypeDef.key .. thresholdKey .. "Threshold"].tooltip = L[thresholdLevel.sliderTooltipKey]
+			end
 			controls[barTypeDef.key .. thresholdKey .. "Threshold"]:SetScript("OnValueChanged", function(self, value)
 				value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 				value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 				self.EditBox:SetText(value)
 				colorSettings[thresholdKey].threshold = value
-
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				triggerChange()
 			end)
 			yCoord = yCoord - 60
 		end
 	end
 	
 	-- Build color pickers for each threshold
-	for _, thresholdKey in ipairs(thresholdKeys) do
+	for _, thresholdLevel in ipairs(thresholdLevels) do
+		local thresholdKey = thresholdLevel.key
 		if colorSettings[thresholdKey] and colorSettings[thresholdKey].color then
-			yCoord2 = yCoord2 - 30
-			local colorLabel = string.format(L["CustomBarColorThreshold"] or "%s %s Color", displayName, thresholdKey:gsub("^%l", string.upper))
+			local colorLabel = L[thresholdLevel.colorLabelKey]
 			colorControls[thresholdKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorLabel, colorSettings[thresholdKey].color, 300, 25, oUi.xCoord2, yCoord2)
 			f = colorControls[thresholdKey]
 			f:SetScript("OnMouseDown", function(self, button, ...)
 				TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, barTypeDef.key)
 			end)
+			yCoord2 = yCoord2 - 30
 		end
 	end
 	
 	-- Border and background colors
-	yCoord = math.min(yCoord, yCoord2) - 30
 	if colorSettings.border then
 		local borderColorValue = type(colorSettings.border) == "table" and colorSettings.border.color or colorSettings.border
-		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"] or "%s Border Color", displayName), borderColorValue, 300, 25, oUi.xCoord, yCoord)
+		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, 300, 25, oUi.xCoord2, yCoord2)
 		f = colorControls.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "border", barTypeDef.key)
 		end)
-		yCoord = yCoord - 30
+		yCoord2 = yCoord2 - 30
 	end
 	
 	if colorSettings.background then
 		local bgColorValue = type(colorSettings.background) == "table" and colorSettings.background.color or colorSettings.background
-		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"] or "%s Background Color", displayName), bgColorValue, 300, 25, oUi.xCoord, yCoord)
+		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, 300, 25, oUi.xCoord2, yCoord2)
 		f = colorControls.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "background", barTypeDef.key)
 		end)
-		yCoord = yCoord - 30
+		yCoord2 = yCoord2 - 30
 	end
 	
-	return yCoord
+	return math.min(yCoord, yCoord2)
 end
 
 ---Generates visibility options for a custom bar
@@ -3244,146 +3262,44 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 end
 
 function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, classId, specId, yCoord)
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName
-	local f = nil
+	local L = TRB.Localization or {}
 
+	-- Build the header
 	controls.healthBarColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarColorHeader"], oUi.xCoord, yCoord)
-
-	-- Color Transition Type dropdown
 	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 30
-	controls.dropDown = controls.dropDown or {}
-	controls.dropDown.healthColorCurveType = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_HealthColorCurveType", parent, "WowStyle1DropdownTemplate")
-	controls.dropDown.healthColorCurveType:SetWidth(oUi.sliderWidth)
-	controls.dropDown.healthColorCurveType.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarColorType"], oUi.xCoord, yCoord)
-	controls.dropDown.healthColorCurveType.label.font:SetFontObject(GameFontNormal)
 
-	local function ColorCurveTypeIsSelected(value)
-		return value == spec.colors.healthBar.type
-	end
-
-	local function ColorCurveTypeGetDisplayName(value)
-		if value == "step" then
-			return L["HealthBarColorTypeStep"]
-		elseif value == "linear" then
-			return L["HealthBarColorTypeLinear"]
-		else
-			return L["HealthBarColorTypeNone"]
+	-- Create a lightweight bar type definition-like object for Health Bar
+	-- This allows us to use the generic threshold color function while keeping
+	-- the Health Bar's settings at spec.colors.healthBar (not spec.colors.bars.health)
+	local healthBarTypeDef = {
+		key = "health",
+		displayName = L["HealthBar"]:gsub(" Bar$", ""), -- "Health" instead of "Health Bar" for labels like "Health border"
+		colorCurveType = "step",
+		thresholdLevels = {
+			{ key = "low", colorLabelKey = "HealthBarColorLow" },
+			{ key = "medium", colorLabelKey = "HealthBarColorMedium", sliderLabelKey = "HealthBarThresholdMedium", sliderTooltipKey = "HealthBarThresholdMediumTooltip" },
+			{ key = "high", colorLabelKey = "HealthBarColorHigh", sliderLabelKey = "HealthBarThresholdHigh", sliderTooltipKey = "HealthBarThresholdHighTooltip" }
+		},
+		colorTypeLabelKey = "HealthBarColorType",
+		colorTypeStepLabelKey = "HealthBarColorTypeStep",
+		colorTypeLinearLabelKey = "HealthBarColorTypeLinear",
+		colorTypeNoneLabelKey = "HealthBarColorTypeNone",
+		-- Custom GetColors to retrieve from spec.colors.healthBar instead of spec.colors.bars.health
+		GetColors = function(self, specSettings)
+			if specSettings and specSettings.colors then
+				return specSettings.colors.healthBar
+			end
+			return nil
 		end
-	end
+	}
 
-	local function ColorCurveTypeSetSelected(newValue)
-		spec.colors.healthBar.type = newValue
-		controls.dropDown.healthColorCurveType:SetDefaultText(ColorCurveTypeGetDisplayName(newValue))
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+	-- Use the generic threshold color function with the Health Bar callback
+	return TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(
+		parent, controls, spec, classId, specId, yCoord, healthBarTypeDef,
+		function()
+			TRB.Functions.Character:UpdateHealthValues()
 		end
-		TRB.Functions.Character:UpdateHealthValues()
-	end
-
-	local function ColorCurveTypeGenerator(dropdown, rootDescription)
-		rootDescription:CreateRadio(L["HealthBarColorTypeStep"], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
-		rootDescription:CreateRadio(L["HealthBarColorTypeLinear"], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
-		rootDescription:CreateRadio(L["HealthBarColorTypeNone"], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "none")
-	end
-
-	controls.dropDown.healthColorCurveType:SetupMenu(ColorCurveTypeGenerator)
-	controls.dropDown.healthColorCurveType:SetDefaultText(ColorCurveTypeGetDisplayName(spec.colors.healthBar.type))
-	controls.dropDown.healthColorCurveType:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
-
-
-	-- Medium Health Threshold Slider
-	yCoord = yCoord - 80
-	controls.healthThresholdMedium = TRB.Functions.OptionsUi:BuildSlider(parent, L["HealthBarThresholdMedium"], 0, 1, spec.colors.healthBar.medium.threshold, 0.01, 2,
-								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.healthThresholdMedium.tooltip = L["HealthBarThresholdMediumTooltip"]
-	controls.healthThresholdMedium:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.colors.healthBar.medium.threshold = value
-
-		if spec.colors.healthBar.high.threshold < spec.colors.healthBar.medium.threshold then
-			spec.colors.healthBar.medium.threshold = spec.colors.healthBar.high.threshold
-			controls.healthThresholdMedium.EditBox:SetText(spec.colors.healthBar.medium.threshold)
-			controls.healthThresholdMedium:SetValue(spec.colors.healthBar.medium.threshold)
-		end
-
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:UpdateHealthValues()
-	end)
-
-	-- High Health Threshold Slider
-	yCoord = yCoord - 60
-	controls.healthThresholdHigh = TRB.Functions.OptionsUi:BuildSlider(parent, L["HealthBarThresholdHigh"], 0, 1, spec.colors.healthBar.high.threshold, 0.01, 2,
-								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.healthThresholdHigh.tooltip = L["HealthBarThresholdHighTooltip"]
-	controls.healthThresholdHigh:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.colors.healthBar.high.threshold = value
-
-		if spec.colors.healthBar.high.threshold < spec.colors.healthBar.medium.threshold then
-			spec.colors.healthBar.high.threshold = spec.colors.healthBar.medium.threshold
-			controls.healthThresholdHigh.EditBox:SetText(spec.colors.healthBar.high.threshold)
-			controls.healthThresholdHigh:SetValue(spec.colors.healthBar.high.threshold)
-		end
-
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:UpdateHealthValues()
-	end)
-
-	
-	-- Low Health Color
-	controls.colors = controls.colors or {}
-	controls.colors.healthBar = controls.colors.healthBar or {}
-	controls.colors.healthBar.low = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarColorLow"], spec.colors.healthBar.low.color, 300, 25, oUi.xCoord2, yCoord2)
-	f = controls.colors.healthBar.low
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors.healthBar, "low", "health")
-	end)
-
-	-- Medium Health Color
-	yCoord2 = yCoord2 - 30
-	controls.colors.healthBar.medium = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarColorMedium"], spec.colors.healthBar.medium.color, 300, 25, oUi.xCoord2, yCoord2)
-	f = controls.colors.healthBar.medium
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors.healthBar, "medium", "health")
-	end)
-
-	-- High Health Color
-	yCoord2 = yCoord2 - 30
-	controls.colors.healthBar.high = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarColorHigh"], spec.colors.healthBar.high.color, 300, 25, oUi.xCoord2, yCoord2)
-	f = controls.colors.healthBar.high
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors.healthBar, "high", "health")
-	end)
-	
-	yCoord2 = yCoord2 - 30
-
-	controls.colors.healthColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHealthBarBorder"], spec.colors.healthBar.border.color, 300, 25, oUi.xCoord2, yCoord2)
-	f = controls.colors.healthColorBorder
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "border", "health")
-	end)
-	
-	yCoord2 = yCoord2 - 30
-
-	controls.colors.healthColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.healthBar.background.color, 300, 25, oUi.xCoord2, yCoord2)
-	f = controls.colors.healthColorBackground
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "background", "health")
-	end)
-
-	yCoord = yCoord2 - 20
-
-	return yCoord
+	)
 end
 
 function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls, spec, classId, specId, yCoord)

@@ -325,6 +325,12 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		end
 	end
 
+	-- Clear threshold color cache so AdjustThresholdDisplay recalculates colors correctly
+	-- This fixes a bug where moving the bar caused threshold colors to reset and stay wrong
+	if TRB.Data.cache and TRB.Data.cache.values then
+		TRB.Data.cache.values.threshold = {}
+	end
+
 	-- Configure health bar group
 	if barGroups.health and settings.healthBar then
 		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, false)
