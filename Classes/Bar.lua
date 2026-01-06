@@ -669,3 +669,367 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 		self.containerFrame:SetScript("OnHide", nil)
 	end
 end
+
+--[[
+	BarTypeDefinition: Metadata describing a custom bar type.
+	Used by the bar system to configure construction, options UI, and IO.
+	Custom bars are stored under settings.bars.<key>, colors under settings.colors.bars.<key>,
+	and textures under flat keys like settings.textures.<key>Bar, settings.textures.<key>Border, settings.textures.<key>Background.
+]]
+
+---@class TRB.Classes.BarTypeDefinition
+---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
+---@field public displayName string # Localized display name for UI
+---@field public settingsPath string # Path to settings (always "bars.<key>")
+---@field public colorsPath string # Path to colors (always "colors.bars.<key>")
+---@field public texturePrefix string # Prefix for texture keys (e.g., "stagger" -> "staggerBar", "staggerBorder", "staggerBackground")
+---@field public isMultiNode boolean # True if bar has multiple nodes (like combo points), false for single node
+---@field public maxNodes integer # Maximum number of nodes (1 for single-node bars)
+---@field public minMaxMode string # "discrete" (0-1), "health", "mana", "percentage", or "custom"
+---@field public hasSpacing boolean # True if bar supports spacing option (multi-node only)
+---@field public hasThresholds boolean # True if bar supports threshold lines
+---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
+---@field public defaultDimensionsFunc function? # Function returning default dimensions (SecondaryBar structure)
+---@field public defaultColorsFunc function? # Function returning default colors
+---@field public defaultTexturesFunc function? # Function returning default textures
+---@field public visibilityKey string # Key in displayBar for visibility setting (e.g., "stagger", "mana")
+TRB.Classes.BarTypeDefinition = {}
+TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
+
+---Creates a new BarTypeDefinition
+---@param config table # Configuration table with bar type properties
+---@return TRB.Classes.BarTypeDefinition
+function TRB.Classes.BarTypeDefinition:New(config)
+	local self = {}
+	setmetatable(self, TRB.Classes.BarTypeDefinition)
+
+	self.key = config.key
+	self.displayName = config.displayName or config.key
+	self.settingsPath = "bars." .. config.key
+	self.colorsPath = "colors.bars." .. config.key
+	self.texturePrefix = config.key -- Flat texture keys: staggerBar, staggerBorder, staggerBackground
+	self.isMultiNode = config.isMultiNode or false
+	self.maxNodes = config.maxNodes or 1
+	self.minMaxMode = config.minMaxMode or "discrete"
+	self.hasSpacing = config.hasSpacing or config.isMultiNode or false
+	self.hasThresholds = config.hasThresholds or false
+	self.colorCurveType = config.colorCurveType -- nil, "step", or "linear"
+	self.defaultDimensionsFunc = config.defaultDimensionsFunc
+	self.defaultColorsFunc = config.defaultColorsFunc
+	self.defaultTexturesFunc = config.defaultTexturesFunc
+	self.visibilityKey = config.visibilityKey or config.key
+
+	return self
+end
+
+---Gets the settings table for this bar type from a spec's settings
+---@param specSettings table # The spec's settings table
+---@return table? # The bar settings, or nil if not found
+function TRB.Classes.BarTypeDefinition:GetSettings(specSettings)
+	if specSettings and specSettings.bars then
+		return specSettings.bars[self.key]
+	end
+	return nil
+end
+
+---Gets the colors table for this bar type from a spec's settings
+---@param specSettings table # The spec's settings table
+---@return table? # The bar colors, or nil if not found
+function TRB.Classes.BarTypeDefinition:GetColors(specSettings)
+	if specSettings and specSettings.colors and specSettings.colors.bars then
+		return specSettings.colors.bars[self.key]
+	end
+	return nil
+end
+
+---Gets the textures for this bar type from a spec's settings using flat keys
+---@param specSettings table # The spec's settings table
+---@return table? # The bar textures as {bar, barName, border, borderName, background, backgroundName}, or nil if not found
+function TRB.Classes.BarTypeDefinition:GetTextures(specSettings)
+	if specSettings and specSettings.textures then
+		local barKey = self.key .. "Bar"
+		local borderKey = self.key .. "Border"
+		local bgKey = self.key .. "Background"
+		if specSettings.textures[barKey] then
+			return {
+				bar = specSettings.textures[barKey],
+				barName = specSettings.textures[barKey .. "Name"],
+				border = specSettings.textures[borderKey],
+				borderName = specSettings.textures[borderKey .. "Name"],
+				background = specSettings.textures[bgKey],
+				backgroundName = specSettings.textures[bgKey .. "Name"]
+			}
+		end
+	end
+	return nil
+end
+
+---Sets the settings table for this bar type in a spec's settings
+---@param specSettings table # The spec's settings table
+---@param barSettings table # The bar settings to set
+function TRB.Classes.BarTypeDefinition:SetSettings(specSettings, barSettings)
+	if specSettings then
+		specSettings.bars = specSettings.bars or {}
+		specSettings.bars[self.key] = barSettings
+	end
+end
+
+---Sets the colors table for this bar type in a spec's settings
+---@param specSettings table # The spec's settings table
+---@param colorSettings table # The color settings to set
+function TRB.Classes.BarTypeDefinition:SetColors(specSettings, colorSettings)
+	if specSettings then
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.bars = specSettings.colors.bars or {}
+		specSettings.colors.bars[self.key] = colorSettings
+	end
+end
+
+---Sets the textures for this bar type in a spec's settings using flat keys
+---@param specSettings table # The spec's settings table
+---@param textureSettings table # The texture settings to set {bar, barName, border, borderName, background, backgroundName}
+function TRB.Classes.BarTypeDefinition:SetTextures(specSettings, textureSettings)
+	if specSettings then
+		specSettings.textures = specSettings.textures or {}
+		local barKey = self.key .. "Bar"
+		local borderKey = self.key .. "Border"
+		local bgKey = self.key .. "Background"
+		if textureSettings then
+			specSettings.textures[barKey] = textureSettings.bar
+			specSettings.textures[barKey .. "Name"] = textureSettings.barName
+			specSettings.textures[borderKey] = textureSettings.border
+			specSettings.textures[borderKey .. "Name"] = textureSettings.borderName
+			specSettings.textures[bgKey] = textureSettings.background
+			specSettings.textures[bgKey .. "Name"] = textureSettings.backgroundName
+		end
+	end
+end
+
+---Gets the default dimensions for this bar type
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar?
+function TRB.Classes.BarTypeDefinition:GetDefaultDimensions(classic)
+	if self.defaultDimensionsFunc then
+		return self.defaultDimensionsFunc(classic)
+	end
+	-- Fall back to generic secondary bar dimensions
+	return TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
+end
+
+---Gets the default colors for this bar type
+---@return table?
+function TRB.Classes.BarTypeDefinition:GetDefaultColors()
+	if self.defaultColorsFunc then
+		return self.defaultColorsFunc()
+	end
+	-- Fall back to simple bar/border/background structure
+	return {
+		bar = { color = "FF0000FF" },
+		border = { color = "FF000066" },
+		background = { color = "66000000" }
+	}
+end
+
+---Gets the default textures for this bar type
+---@return table
+function TRB.Classes.BarTypeDefinition:GetDefaultTextures()
+	if self.defaultTexturesFunc then
+		return self.defaultTexturesFunc()
+	end
+	-- Fall back to standard textures
+	local L = TRB.Localization or {}
+	return {
+		bar = "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
+		barName = L["LSMStatusBarSmoother"] or "Smoother",
+		border = "Interface\\Buttons\\WHITE8X8",
+		borderName = "1 Pixel",
+		background = "Interface\\Tooltips\\UI-Tooltip-Background",
+		backgroundName = "Blizzard Tooltip"
+	}
+end
+
+
+--[[
+	BarTypeRegistry: Central registry of all custom bar type definitions.
+	Used to discover what bar types exist and how to configure them.
+]]
+
+---@class TRB.Classes.BarTypeRegistry
+---@field private definitions table<string, TRB.Classes.BarTypeDefinition>
+TRB.Classes.BarTypeRegistry = {}
+TRB.Classes.BarTypeRegistry.__index = TRB.Classes.BarTypeRegistry
+
+-- Singleton instance
+TRB.Classes.BarTypeRegistry.instance = nil
+
+---Gets the singleton instance of the registry
+---@return TRB.Classes.BarTypeRegistry
+function TRB.Classes.BarTypeRegistry:GetInstance()
+	if not TRB.Classes.BarTypeRegistry.instance then
+		local registry = {}
+		setmetatable(registry, TRB.Classes.BarTypeRegistry)
+		registry.definitions = {}
+		TRB.Classes.BarTypeRegistry.instance = registry
+	end
+	return TRB.Classes.BarTypeRegistry.instance
+end
+
+---Registers a bar type definition
+---@param definition TRB.Classes.BarTypeDefinition
+function TRB.Classes.BarTypeRegistry:Register(definition)
+	self.definitions[definition.key] = definition
+end
+
+---Gets a bar type definition by key
+---@param key string
+---@return TRB.Classes.BarTypeDefinition?
+function TRB.Classes.BarTypeRegistry:Get(key)
+	return self.definitions[key]
+end
+
+---Gets all registered bar type definitions
+---@return table<string, TRB.Classes.BarTypeDefinition>
+function TRB.Classes.BarTypeRegistry:GetAll()
+	return self.definitions
+end
+
+---Checks if a bar type is registered
+---@param key string
+---@return boolean
+function TRB.Classes.BarTypeRegistry:Has(key)
+	return self.definitions[key] ~= nil
+end
+
+---Gets the bar types that a spec uses based on its GetSpecConfiguration
+---@param classId integer
+---@param specId integer
+---@return table<string, TRB.Classes.BarTypeDefinition> # Map of key -> definition for this spec's custom bars
+function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
+	local result = {}
+	
+	-- Get the class name from classId
+	local classNames = {
+		[1] = "Warrior",
+		[2] = "Paladin",
+		[3] = "Hunter",
+		[4] = "Rogue",
+		[5] = "Priest",
+		[6] = "DeathKnight",
+		[7] = "Shaman",
+		[8] = "Mage",
+		[9] = "Warlock",
+		[10] = "Monk",
+		[11] = "Druid",
+		[12] = "DemonHunter",
+		[13] = "Evoker"
+	}
+	
+	local className = classNames[classId]
+	if not className then
+		return result
+	end
+	
+	-- Get the factory for this class
+	local classModule = TRB.Classes[className]
+	if not classModule or not classModule.BarGroupsFactory or not classModule.BarGroupsFactory.GetSpecConfiguration then
+		return result
+	end
+	
+	-- Get the spec configuration
+	local specConfig = classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+	if not specConfig then
+		return result
+	end
+	
+	-- Check each bar group in the config for custom bar types
+	for barGroupKey, barGroupConfig in pairs(specConfig) do
+		-- Skip primary, secondary, and health as they use the old system
+		if barGroupKey ~= "primary" and barGroupKey ~= "secondary" and barGroupKey ~= "health" then
+			-- Check if this is a registered custom bar type
+			local definition = self.definitions[barGroupKey]
+			if definition then
+				result[barGroupKey] = definition
+			end
+		end
+	end
+	
+	return result
+end
+
+--[[
+	Register built-in bar types.
+	This is called when the addon loads to set up the known custom bar types.
+	Class-specific bar types are registered here so they're available before
+	the class modules load.
+]]
+
+---Registers all built-in bar type definitions
+function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
+	local L = TRB.Localization or {}
+	
+	-- Stagger bar (Brewmaster Monk)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "stagger",
+		displayName = L["ResourceStagger"] or "Stagger",
+		isMultiNode = false,
+		maxNodes = 1,
+		minMaxMode = "percentage", -- 0-100% of max health
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = "step", -- Green -> Yellow -> Red based on stagger level
+		visibilityKey = "stagger",
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultStaggerBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultStaggerBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+	
+	-- Defensives bar (Protection Warrior)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "defensives",
+		displayName = L["ResourceWarriorDefensives"] or "Defensives",
+		isMultiNode = true,
+		maxNodes = 2, -- Ignore Pain + Shield Block
+		minMaxMode = "discrete", -- 0-1 per node (buff active or not)
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil, -- Simple colors per buff type
+		visibilityKey = "defensives",
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultDefensivesBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+	
+	-- Mana bar (Shadow Priest, Balance Druid, Elemental Shaman)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "mana",
+		displayName = L["ResourceMana"] or "Mana",
+		isMultiNode = false,
+		maxNodes = 1,
+		minMaxMode = "mana",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil, -- Simple bar color
+		visibilityKey = "mana",
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultManaBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultManaBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+end

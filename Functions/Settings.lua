@@ -481,6 +481,102 @@ function TRB.Functions.Settings:PortForwardSettings()
 					if isManaBarSpec and specSettings.colors and specSettings.colors.text and not specSettings.colors.text.manaBar then
 						specSettings.colors.text.manaBar = { color = "FF0000FF" }
 					end
+
+					-- Migrate mana bar from old manaBar structure to new bars.mana structure
+					if isManaBarSpec then
+						-- Migrate dimensions: manaBar -> bars.mana
+						if specSettings.manaBar and not specSettings.bars then
+							specSettings.bars = {}
+						end
+						if specSettings.manaBar and specSettings.bars and not specSettings.bars.mana then
+							specSettings.bars.mana = {
+								width = specSettings.manaBar.width or 555,
+								height = specSettings.manaBar.height or 24,
+								xPos = specSettings.manaBar.xPos or 0,
+								yPos = specSettings.manaBar.yPos or 4,
+								border = specSettings.manaBar.border or 2,
+								relativeTo = specSettings.manaBar.relativeTo or "TOP",
+								relativeToName = specSettings.manaBar.relativeToName or L["PositionAboveMiddle"]
+							}
+						end
+
+						-- Migrate colors: colors.manaBar -> colors.bars.mana
+						if specSettings.colors and specSettings.colors.manaBar then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.mana then
+								local oldColors = specSettings.colors.manaBar
+								specSettings.colors.bars.mana = {
+									border = { color = oldColors.border and oldColors.border.color or "FF00FF98" },
+									background = { color = oldColors.background and oldColors.background.color or "66000000" },
+									bar = { color = oldColors.bar and oldColors.bar.color or "FF0000FF" }
+								}
+							end
+						end
+
+						-- Mana bar textures already use flat keys (manaBarBar, manaBarBorder, manaBarBackground)
+						-- No migration needed since these keys are already in use
+
+						-- Migrate displayBar: mana -> mana (ensure it exists in displayBar)
+						if specSettings.displayBar and specSettings.displayBar.mana == nil then
+							specSettings.displayBar.mana = "never"
+						end
+					end
+
+					-- Migrate Brewmaster Stagger bar from old comboPoints structure to new bars.stagger structure
+					if className == "monk" and specName == "brewmaster" then
+						-- Migrate dimensions: comboPoints -> bars.stagger
+						if specSettings.comboPoints and not specSettings.bars then
+							specSettings.bars = {}
+						end
+						if specSettings.comboPoints and specSettings.bars and not specSettings.bars.stagger then
+							specSettings.bars.stagger = {
+								width = specSettings.comboPoints.width or 555,
+								height = specSettings.comboPoints.height or 24,
+								xPos = specSettings.comboPoints.xPos or 0,
+								yPos = specSettings.comboPoints.yPos or 4,
+								border = specSettings.comboPoints.border or 2,
+								spacing = specSettings.comboPoints.spacing or 0,
+								relativeTo = specSettings.comboPoints.relativeTo or "TOP",
+								relativeToName = specSettings.comboPoints.relativeToName or L["PositionAboveMiddle"],
+								fullWidth = specSettings.comboPoints.fullWidth
+							}
+						end
+
+						-- Migrate colors: colors.comboPoints -> colors.bars.stagger
+						if specSettings.colors and specSettings.colors.comboPoints then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.stagger then
+								local oldColors = specSettings.colors.comboPoints
+								specSettings.colors.bars.stagger = {
+									border = { color = oldColors.border or "FF00FF98" },
+									background = { color = oldColors.background or "66000000" },
+									type = oldColors.type or "step",
+									low = { color = oldColors.light and oldColors.light.color or "FF85FF85", threshold = 0.0 },
+									medium = { color = oldColors.medium and oldColors.medium.color or "FFFFFAB8", threshold = oldColors.medium and oldColors.medium.threshold or 0.30 },
+									heavy = { color = oldColors.heavy and oldColors.heavy.color or "FFFF6B6B", threshold = oldColors.heavy and oldColors.heavy.threshold or 0.60 }
+								}
+							end
+						end
+
+						-- Migrate textures: textures.comboPointsBar/etc -> flat stagger texture keys
+						if specSettings.textures then
+							if not specSettings.textures.staggerBar then
+								specSettings.textures.staggerBar = specSettings.textures.comboPointsBar or specSettings.textures.resourceBar
+								specSettings.textures.staggerBarName = specSettings.textures.comboPointsBarName or specSettings.textures.resourceBarName
+								specSettings.textures.staggerBorder = specSettings.textures.comboPointsBorder or specSettings.textures.border
+								specSettings.textures.staggerBorderName = specSettings.textures.comboPointsBorderName or specSettings.textures.borderName
+								specSettings.textures.staggerBackground = specSettings.textures.comboPointsBackground or specSettings.textures.background
+								specSettings.textures.staggerBackgroundName = specSettings.textures.comboPointsBackgroundName or specSettings.textures.backgroundName
+							end
+						end
+
+						-- Migrate displayBar: secondary -> stagger
+						if specSettings.displayBar and specSettings.displayBar.secondary and not specSettings.displayBar.stagger then
+							specSettings.displayBar.stagger = specSettings.displayBar.secondary
+						elseif specSettings.displayBar and not specSettings.displayBar.stagger then
+							specSettings.displayBar.stagger = "combat"
+						end
+					end
 				end
 			end
 		end
@@ -645,6 +741,152 @@ function TRB.Functions.Settings:DefaultManaBarColors()
 		bar = { color = "FF0000FF" },
 		border = { color = "FF0000AA" },
 		background = { color = "66000000" }
+	}
+end
+
+--[[
+	Custom Bar Default Settings
+	These functions provide defaults for bars stored under settings.bars.<key>,
+	settings.colors.bars.<key>, and settings.textures.bars.<key>.
+]]
+
+---Gets the default dimensions for a custom bar (single node, fullWidth)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 0,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		relativeTo = "TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth = true,
+	}
+end
+
+---Gets the default colors for a simple custom bar (no thresholds)
+---@param barColor string? # ARGB hex color for bar (default: blue)
+---@param borderColor string? # ARGB hex color for border (default: dark blue)
+---@param backgroundColor string? # ARGB hex color for background (default: transparent black)
+---@return table
+function TRB.Functions.Settings:DefaultCustomBarColors(barColor, borderColor, backgroundColor)
+	return {
+		bar = { color = barColor or "FF0000FF" },
+		border = { color = borderColor or "FF0000AA" },
+		background = { color = backgroundColor or "66000000" }
+	}
+end
+
+---Gets the default colors for a threshold-based custom bar (like Stagger or Health)
+---@param lowColor string? # ARGB hex color for low state
+---@param mediumColor string? # ARGB hex color for medium state
+---@param highColor string? # ARGB hex color for high state
+---@param mediumThreshold number? # Threshold for medium state (0-1)
+---@param highThreshold number? # Threshold for high state (0-1)
+---@param colorType string? # "step", "linear", or "none"
+---@return table
+function TRB.Functions.Settings:DefaultCustomBarThresholdColors(lowColor, mediumColor, highColor, mediumThreshold, highThreshold, colorType)
+	return {
+		border = { color = "FF000066" },
+		background = { color = "66000000" },
+		type = colorType or "step",
+		low = { color = lowColor or "FF00FF00", threshold = 0.0 },
+		medium = { color = mediumColor or "FFFFFF00", threshold = mediumThreshold or 0.30 },
+		high = { color = highColor or "FFFF0000", threshold = highThreshold or 0.70 }
+	}
+end
+
+---Gets the default textures for a custom bar (nested structure)
+---@return table
+function TRB.Functions.Settings:DefaultCustomBarTextures()
+	return {
+		bar = "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
+		barName = L["LSMStatusBarSmoother"],
+		border = "Interface\\Buttons\\WHITE8X8",
+		borderName = "1 Pixel",
+		background = "Interface\\Tooltips\\UI-Tooltip-Background",
+		backgroundName = "Blizzard Tooltip"
+	}
+end
+
+---Gets default Stagger bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultStaggerBarDimensions(classic)
+	return self:DefaultCustomBarDimensions(classic)
+end
+
+---Gets default Stagger bar colors (green -> yellow -> red as stagger increases)
+---@return table
+function TRB.Functions.Settings:DefaultStaggerBarColors()
+	return {
+		border = { color = "FF000066" },
+		background = { color = "66000000" },
+		type = "step",
+		low = { color = "FF00FF00", threshold = 0.0 },     -- Green (light stagger)
+		medium = { color = "FFFFFF00", threshold = 0.30 }, -- Yellow (medium stagger)
+		heavy = { color = "FFFF0000", threshold = 0.60 }   -- Red (heavy stagger)
+	}
+end
+
+---Gets default Warrior Defensives bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
+	-- Defensives is a 2-node bar (Ignore Pain + Shield Block)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		relativeTo = "TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth = true,
+	}
+end
+
+---Gets default Warrior Defensives bar colors
+---@return table
+function TRB.Functions.Settings:DefaultDefensivesBarColors()
+	return {
+		border = { color = "FF7F3300" },
+		background = { color = "66000000" },
+		ignorePain = { color = "FFFFAA00" },
+		shieldBlock = { color = "FFCC0000" },
+		lastStand = { color = "FF00CC00" }
 	}
 end
 

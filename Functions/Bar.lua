@@ -330,10 +330,8 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, false)
 	end
 
-	-- Configure mana bar group (for DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
-	if barGroups.mana and settings.manaBar then
-		self:ConstructManaBarGroup(settings, barGroups.primary, barGroups.mana, false)
-	end
+	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)
+	self:ApplyCustomBarGroupsLayout(settings, barGroups)
 end
 
 ---Applies textures/colors to existing bar groups (OOP system only).
@@ -420,28 +418,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		end
 	end
 
-	-- Apply mana bar appearance (for DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
-	if barGroups.mana and settings.manaBar and settings.colors.manaBar then
-		local manaNode = barGroups.mana:GetNode(1)
-		if manaNode then
-			-- Only set textures if they exist (may be nil if migration hasn't run yet)
-			if settings.textures.manaBarBar and settings.textures.manaBarBorder and settings.textures.manaBarBackground then
-				manaNode:SetTextures(
-					settings.textures.manaBarBar,
-					settings.textures.manaBarBorder,
-					settings.textures.manaBarBackground
-				)
-			end
-			manaNode:SetBorderColor(settings.colors.manaBar.border.color)
-			manaNode:SetBackgroundColorFromString(settings.colors.manaBar.background.color)
-			manaNode:SetColor(settings.colors.manaBar.bar.color)
-			manaNode:SetFrameLevels(
-				frameLevels.cpContainer,
-				frameLevels.cpBorder,
-				frameLevels.cpResource
-			)
-		end
-	end
+	-- Apply custom bar group appearances from the registry (stagger, defensives, mana, etc.)
+	self:ApplyCustomBarGroupsAppearance(settings, barGroups)
 
 	-- Trigger resource bar updates to ensure all colors are applied from current spec settings
 	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -746,33 +724,197 @@ function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healt
 	self:ConstructAnchoredBarGroup(settings, primaryGroup, healthGroup, config, applyAppearance)
 end
 
----Constructs the mana bar group for DPS casters (Shadow Priest, Balance Druid, Elemental Shaman)
+---Applies layout to all custom bar groups registered in the BarTypeRegistry
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param primaryGroup TRB.Classes.BarGroup
----@param manaGroup TRB.Classes.BarGroup
----@param applyAppearance boolean?
-function TRB.Functions.Bar:ConstructManaBarGroup(settings, primaryGroup, manaGroup, applyAppearance)
-	---@type TRB.Classes.AnchoredBarGroupConfig
-	local config = {
-		settingsKey = "manaBar",
-		colorsKey = "manaBar",
-		nodeCount = 1, -- Mana bar always has 1 node
-		useApplyLayout = false,
-		defaultAnchorAbove = true, -- Default position is above primary bar (like combo points)
-		textures = {
-			bar = "manaBarBar",
-			border = "manaBarBorder",
-			background = "manaBarBackground"
-		},
-		colors = {
-			border = "border",
-			background = "background",
-			bar = "bar"
-		},
-		minMaxMode = "mana"
-	}
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
+	if settings == nil or barGroups == nil then
+		return
+	end
+	
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local allBarTypes = registry:GetAll()
+	local frameLevels = TRB.Data.constants.frameLevels
+	
+	for key, barTypeDef in pairs(allBarTypes) do
+		local barGroup = barGroups[key]
+		local barSettings = settings.bars and settings.bars[key]
+		
+		if barGroup and barSettings then
+			-- Get dimensions from settings or defaults
+			local width = barSettings.width or 555
+			local height = barSettings.height or 24
+			local border = barSettings.border or 2
+			local spacing = barSettings.spacing or 0
+			local fullWidth = barSettings.fullWidth or false
+			local relativeTo = barSettings.relativeTo or "TOP"
+			local xPos = barSettings.xPos or 0
+			local yPos = barSettings.yPos or 4
+			
+			-- Set node count
+			local nodeCount = barTypeDef.maxNodes or 1
+			barGroup:SetNodeCount(nodeCount)
+			
+			-- Set layout
+			if barTypeDef.hasSpacing then
+				barGroup:SetLayout(spacing, fullWidth, "HORIZONTAL")
+			end
+			
+			-- Position relative to primary bar
+			if barGroups.primary and barGroups.primary.containerFrame then
+				barGroup.containerFrame:ClearAllPoints()
+				-- Determine anchor point based on relativeTo position
+				-- If relativeTo = "TOP", anchor stagger's BOTTOM to primary's TOP
+				-- If relativeTo = "BOTTOM", anchor stagger's TOP to primary's BOTTOM
+				-- For LEFT/RIGHT, mirror horizontally
+				local selfAnchor
+				if relativeTo == "TOP" then
+					selfAnchor = "BOTTOM"
+				elseif relativeTo == "BOTTOM" then
+					selfAnchor = "TOP"
+				elseif relativeTo == "LEFT" then
+					selfAnchor = "RIGHT"
+				elseif relativeTo == "RIGHT" then
+					selfAnchor = "LEFT"
+				elseif relativeTo == "TOPLEFT" then
+					selfAnchor = "BOTTOMLEFT"
+				elseif relativeTo == "TOPRIGHT" then
+					selfAnchor = "BOTTOMRIGHT"
+				elseif relativeTo == "BOTTOMLEFT" then
+					selfAnchor = "TOPLEFT"
+				elseif relativeTo == "BOTTOMRIGHT" then
+					selfAnchor = "TOPRIGHT"
+				else
+					selfAnchor = "BOTTOM" -- Default to BOTTOM if unknown
+				end
+				barGroup.containerFrame:SetPoint(selfAnchor, barGroups.primary.containerFrame, relativeTo, xPos, yPos)
+			end
+			
+			-- Apply layout for multi-node or size for single-node
+			if barTypeDef.isMultiNode and nodeCount > 1 then
+				barGroup:ApplyLayout(
+					settings.bar.width,
+					width,
+					height,
+					border
+				)
+			else
+				-- Single node sizing
+				local effectiveWidth
+				if fullWidth then
+					-- Match primary bar width when fullWidth is enabled
+					effectiveWidth = settings.bar.width or 555
+				else
+					effectiveWidth = width
+				end
+				barGroup.containerFrame:SetWidth(effectiveWidth)
+				barGroup.containerFrame:SetHeight(height)
+				
+				local node = barGroup:GetNode(1)
+				if node then
+					node:SetDimensions(effectiveWidth, height, border)
+					node:SetFrameLevels(
+						frameLevels.cpContainer,
+						frameLevels.cpBorder,
+						frameLevels.cpResource
+					)
+					
+					-- Set min/max based on bar type's minMaxMode
+					local minMaxMode = barTypeDef.minMaxMode
+					if minMaxMode == "health" or minMaxMode == "percentage" then
+						local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
+						node:SetMinMax(0, healthMax)
+					elseif minMaxMode == "mana" then
+						local manaMax = UnitPowerMax("player", Enum.PowerType.Mana) or 1
+						node:SetMinMax(0, manaMax)
+					elseif minMaxMode == "discrete" then
+						node:SetMinMax(0, 1)
+					end
+					-- "custom" mode leaves min/max to be set externally
+					
+					local nodeContainer = node:GetContainerFrame()
+					if nodeContainer then
+						nodeContainer:ClearAllPoints()
+						nodeContainer:SetAllPoints(barGroup.containerFrame)
+					end
+					node:PositionResourceFrame()
+				end
+			end
+			
+			barGroup:Show()
+			barGroup:ShowNodes(nodeCount)
+		end
+	end
+end
 
-	self:ConstructAnchoredBarGroup(settings, primaryGroup, manaGroup, config, applyAppearance)
+---Applies appearance (textures/colors) to all custom bar groups registered in the BarTypeRegistry
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
+	if settings == nil or barGroups == nil then
+		return
+	end
+	
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local allBarTypes = registry:GetAll()
+	local frameLevels = TRB.Data.constants.frameLevels
+	
+	for key, barTypeDef in pairs(allBarTypes) do
+		local barGroup = barGroups[key]
+		local barSettings = settings.bars and settings.bars[key]
+		
+		if barGroup and barSettings then
+			-- Get textures from flat keys (same pattern as manaBar: staggerBar, staggerBorder, staggerBackground)
+			local barTexture = settings.textures[key .. "Bar"] or settings.textures.resourceBar
+			local borderTexture = settings.textures[key .. "Border"] or settings.textures.border
+			local backgroundTexture = settings.textures[key .. "Background"] or settings.textures.background
+			
+			-- Get colors from nested structure
+			local barColors = settings.colors and settings.colors.bars and settings.colors.bars[key] or {}
+			
+			-- Apply to all nodes
+			local nodeCount = barTypeDef.maxNodes or 1
+			for i = 1, nodeCount do
+				local node = barGroup:GetNode(i)
+				if node then
+					-- Set textures
+					if barTexture and borderTexture and backgroundTexture then
+						node:SetTextures(barTexture, borderTexture, backgroundTexture)
+					end
+					
+					-- Get colors (handle both raw string and { color = "..." } objects)
+					local borderColor = barColors.border
+					if type(borderColor) == "table" then borderColor = borderColor.color end
+					local backgroundColor = barColors.background
+					if type(backgroundColor) == "table" then backgroundColor = backgroundColor.color end
+					
+					-- Get bar color - could be simple or threshold-based
+					local barColor = nil
+					if barTypeDef.colorCurveType then
+						-- Threshold-based - use the "low" color as default
+						barColor = barColors.low and barColors.low.color or "FFFFFFFF"
+					else
+						-- Simple bar color
+						barColor = barColors.bar
+						if type(barColor) == "table" then barColor = barColor.color end
+					end
+					
+					-- Apply colors with fallbacks
+					node:SetBorderColor(borderColor or "FFFFFFFF")
+					node:SetBackgroundColorFromString(backgroundColor or "66000000")
+					if barColor then
+						node:SetColor(barColor)
+					end
+					
+					node:SetFrameLevels(
+						frameLevels.cpContainer,
+						frameLevels.cpBorder,
+						frameLevels.cpResource
+					)
+				end
+			end
+		end
+	end
 end
 
 ---Updates the value on a BarNode using the standard caching mechanism

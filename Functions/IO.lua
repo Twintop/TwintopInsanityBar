@@ -112,6 +112,18 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 10 then -- Monk
 			if specId == 1 then -- Brewmaster
+				-- Export stagger bar settings
+				configuration.bars = configuration.bars or {}
+				configuration.bars.stagger = settings.bars and settings.bars.stagger
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.stagger = settings.colors and settings.colors.bars and settings.colors.bars.stagger
+				-- Export flat texture keys (same pattern as manaBar)
+				configuration.textures.staggerBar = settings.textures and settings.textures.staggerBar
+				configuration.textures.staggerBarName = settings.textures and settings.textures.staggerBarName
+				configuration.textures.staggerBorder = settings.textures and settings.textures.staggerBorder
+				configuration.textures.staggerBorderName = settings.textures and settings.textures.staggerBorderName
+				configuration.textures.staggerBackground = settings.textures and settings.textures.staggerBackground
+				configuration.textures.staggerBackgroundName = settings.textures and settings.textures.staggerBackgroundName
 			elseif specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
 			end
@@ -687,7 +699,8 @@ function TRB.Functions.IO:Import(input)
 			configuration.hunter.marksmanship ~= nil or
 			configuration.hunter.survival ~= nil)) or
 		(configuration.monk ~= nil and
-			(configuration.monk.mistweaver ~= nil or
+			(configuration.monk.brewmaster ~= nil or
+			configuration.monk.mistweaver ~= nil or
 			configuration.monk.windwalker ~= nil)) or
 		(configuration.deathknight ~= nil and
 			(configuration.deathknight.blood ~= nil or

@@ -1309,7 +1309,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 
 	-- Spacing slider (if applicable)
 	if includeSpacing then
-		title = displayName .. " Spacing"
+		title = string.format(L["SecondarySpacing"], displayName)
 		controls[settingKey .. "Spacing"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec[settingKey].spacing, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls[settingKey .. "Spacing"]:SetScript("OnValueChanged", function(self, value)
@@ -1504,13 +1504,491 @@ function TRB.Functions.OptionsUi:GenerateManaBarColorOptions(parent, controls, s
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar)
+--[[
+	Custom Bar Options UI Functions
+	These functions work with bars stored under settings.bars.<key>, settings.colors.bars.<key>,
+	and settings.textures.bars.<key> using the BarTypeDefinition system.
+]]
+
+---Generates dimension options for a custom bar
+---@param parent Frame # Parent frame for the controls
+---@param controls table # Table to store control references
+---@param spec table # Spec settings table
+---@param classId integer # Class ID
+---@param specId integer # Spec ID
+---@param yCoord number # Starting Y coordinate
+---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
+---@param primaryResourceString string # Primary resource name for "relative to" label
+---@return number # New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, primaryResourceString)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
+	local f = nil
+	
+	-- Get the bar settings from the nested structure
+	local barSettings = barTypeDef:GetSettings(spec)
+	if not barSettings then
+		return yCoord
+	end
+	
+	local displayName = barTypeDef.displayName
+
+	-- Section header
+	local headerText = string.format(L["SecondaryBarPositionAndSize"], displayName)
+	controls[barTypeDef.key .. "DimensionsSection"] = TRB.Functions.OptionsUi:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
+	
+	-- Width slider
+	yCoord = yCoord - 40
+	local widthMin = barTypeDef.isMultiNode and 10 or 30
+	local widthMax = TRB.Data.sanityCheckValues.barMaxWidth or 555
+	local widthDivisor = barTypeDef.isMultiNode and 6 or 1
+	
+	controls[barTypeDef.key .. "Width"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryWidth"], displayName), 
+		widthMin, math.ceil(widthMax / widthDivisor), barSettings.width, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls[barTypeDef.key .. "Width"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		barSettings.width = value
+		
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+		end
+	end)
+	
+	-- Height slider
+	controls[barTypeDef.key .. "Height"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHeight"], displayName), 
+		1, TRB.Data.sanityCheckValues.barMaxHeight or 100, barSettings.height, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls[barTypeDef.key .. "Height"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		barSettings.height = value
+		
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+		end
+	end)
+	
+	-- X Position slider
+	yCoord = yCoord - 60
+	controls[barTypeDef.key .. "XPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHorizontalPosition"], displayName), 
+		math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth / 2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth / 2), barSettings.xPos, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls[barTypeDef.key .. "XPos"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		barSettings.xPos = value
+		
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+		end
+	end)
+	
+	-- Y Position slider
+	controls[barTypeDef.key .. "YPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryVerticalPosition"], displayName), 
+		math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight / 2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight / 2), barSettings.yPos, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls[barTypeDef.key .. "YPos"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		barSettings.yPos = value
+		
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+		end
+	end)
+	
+	-- Border slider
+	yCoord = yCoord - 60
+	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName), 
+		0, 10, barSettings.border, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls[barTypeDef.key .. "Border"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		barSettings.border = value
+		
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+		end
+	end)
+	
+	-- Spacing slider (only for multi-node bars)
+	if barTypeDef.hasSpacing then
+		controls[barTypeDef.key .. "Spacing"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondarySpacing"], displayName), 
+			-20, 20, barSettings.spacing, 1, 0,
+			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls[barTypeDef.key .. "Spacing"]:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			barSettings.spacing = value
+			
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			end
+		end)
+	end
+	
+	-- Relative To dropdown
+	yCoord = yCoord - 60
+	local relativeTo = {
+		[L["PositionAboveLeft"]] = "TOPLEFT",
+		[L["PositionAboveMiddle"]] = "TOP",
+		[L["PositionAboveRight"]] = "TOPRIGHT",
+		[L["PositionBelowLeft"]] = "BOTTOMLEFT",
+		[L["PositionBelowMiddle"]] = "BOTTOM",
+		[L["PositionBelowRight"]] = "BOTTOMRIGHT"
+	}
+	local relativeToList = {
+		L["PositionAboveLeft"], L["PositionAboveMiddle"], L["PositionAboveRight"],
+		L["PositionBelowLeft"], L["PositionBelowMiddle"], L["PositionBelowRight"]
+	}
+
+	controls[barTypeDef.key .. "RelativeTo"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_RelativeTo", parent, "WowStyle1DropdownTemplate")
+	local barRelativeTo = controls[barTypeDef.key .. "RelativeTo"]
+	barRelativeTo:SetWidth(oUi.dropdownWidth)
+	barRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], displayName, primaryResourceString), oUi.xCoord, yCoord)
+	barRelativeTo.label.font:SetFontObject(GameFontNormal)
+	barRelativeTo:SetDefaultText(barSettings.relativeToName)
+
+	local function RelativeToIsSelected(value)
+		return value == barSettings.relativeTo
+	end
+	
+	local function RelativeToSetSelected(newValue)
+		barSettings.relativeTo = newValue
+		for k, v in pairs(relativeTo) do
+			if v == newValue then
+				barSettings.relativeToName = k
+			end
+		end
+		barRelativeTo:SetDefaultText(barSettings.relativeToName)
+
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+		end
+	end
+
+	local function RelativeToGenerator(dropdown, rootDescription)
+		for _, displayNameItem in ipairs(relativeToList) do
+			rootDescription:CreateRadio(displayNameItem, RelativeToIsSelected, RelativeToSetSelected, relativeTo[displayNameItem])
+		end
+	end
+	barRelativeTo:SetupMenu(RelativeToGenerator)
+	barRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	
+	-- Full Width checkbox
+	controls[barTypeDef.key .. "FullWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_FullWidth", parent, "ChatConfigCheckButtonTemplate")
+	f = controls[barTypeDef.key .. "FullWidth"]
+	f:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding, yCoord - 30)
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], displayName))
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], displayName, displayName, displayName)
+	f:SetChecked(barSettings.fullWidth)
+	f:SetScript("OnClick", function(self, ...)
+		barSettings.fullWidth = self:GetChecked()
+		
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+		end
+	end)
+
+	return yCoord
+end
+
+---Generates color options for a custom bar with simple bar/border/background colors
+---@param parent Frame # Parent frame for the controls
+---@param controls table # Table to store control references
+---@param spec table # Spec settings table
+---@param classId integer # Class ID
+---@param specId integer # Spec ID
+---@param yCoord number # Starting Y coordinate
+---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
+---@return number # New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
+	local f = nil
+	
+	-- Get the color settings from the nested structure
+	local colorSettings = barTypeDef:GetColors(spec)
+	if not colorSettings then
+		return yCoord
+	end
+	
+	local displayName = barTypeDef.displayName
+	
+	-- Section header
+	local headerText = string.format(L["CustomBarColorHeader"], displayName)
+	controls[barTypeDef.key .. "ColorSection"] = TRB.Functions.OptionsUi:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
+	
+	yCoord = yCoord - 30
+	controls.colors = controls.colors or {}
+	controls.colors.bars = controls.colors.bars or {}
+	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
+	local colorControls = controls.colors.bars[barTypeDef.key]
+	
+	-- For threshold-based color bars (like Stagger), use the threshold color UI
+	if barTypeDef.colorCurveType == "step" or barTypeDef.colorCurveType == "linear" then
+		return TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+	end
+	
+	-- Simple bar/border/background colors
+	-- Bar Color
+	if colorSettings.bar then
+		local barColorValue = type(colorSettings.bar) == "table" and colorSettings.bar.color or colorSettings.bar
+		colorControls.bar = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), barColorValue, 300, 25, oUi.xCoord, yCoord)
+		f = colorControls.bar
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "bar", barTypeDef.key)
+		end)
+		yCoord = yCoord - 30
+	end
+	
+	-- Border Color
+	if colorSettings.border then
+		local borderColorValue = type(colorSettings.border) == "table" and colorSettings.border.color or colorSettings.border
+		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, 300, 25, oUi.xCoord, yCoord)
+		f = colorControls.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "border", barTypeDef.key)
+		end)
+		yCoord = yCoord - 30
+	end
+	
+	-- Background Color
+	if colorSettings.background then
+		local bgColorValue = type(colorSettings.background) == "table" and colorSettings.background.color or colorSettings.background
+		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, 300, 25, oUi.xCoord, yCoord)
+		f = colorControls.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "background", barTypeDef.key)
+		end)
+		yCoord = yCoord - 30
+	end
+	
+	return yCoord
+end
+
+---Generates color options for a custom bar with threshold-based colors (step/linear)
+---@param parent Frame # Parent frame for the controls
+---@param controls table # Table to store control references
+---@param spec table # Spec settings table
+---@param classId integer # Class ID
+---@param specId integer # Spec ID
+---@param yCoord number # Starting Y coordinate
+---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
+---@return number # New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
+	local f = nil
+	
+	-- Get the color settings from the nested structure
+	local colorSettings = barTypeDef:GetColors(spec)
+	if not colorSettings then
+		return yCoord
+	end
+	
+	local displayName = barTypeDef.displayName
+	
+	controls.colors = controls.colors or {}
+	controls.colors.bars = controls.colors.bars or {}
+	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
+	local colorControls = controls.colors.bars[barTypeDef.key]
+	
+	-- Color Transition Type dropdown
+	-- Note: yCoord already positioned at header row, so dropdown label goes here
+	local yCoord2 = yCoord - 30
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ColorCurveType", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetWidth(oUi.sliderWidth)
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerBarColorType"] or "Color Transition Type", oUi.xCoord, yCoord)
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label.font:SetFontObject(GameFontNormal)
+
+	local function ColorCurveTypeIsSelected(value)
+		return value == colorSettings.type
+	end
+
+	local function ColorCurveTypeGetDisplayName(value)
+		if value == "step" then
+			return L["StaggerBarColorTypeStep"] or "Step"
+		elseif value == "linear" then
+			return L["StaggerBarColorTypeLinear"] or "Linear"
+		else
+			return L["StaggerBarColorTypeNone"] or "None"
+		end
+	end
+
+	local function ColorCurveTypeSetSelected(newValue)
+		colorSettings.type = newValue
+		controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetDefaultText(ColorCurveTypeGetDisplayName(newValue))
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+
+	local function ColorCurveTypeGenerator(dropdown, rootDescription)
+		rootDescription:CreateRadio(L["StaggerBarColorTypeStep"] or "Step", ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
+		rootDescription:CreateRadio(L["StaggerBarColorTypeLinear"] or "Linear", ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
+		rootDescription:CreateRadio(L["StaggerBarColorTypeNone"] or "None", ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "none")
+	end
+
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetupMenu(ColorCurveTypeGenerator)
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetDefaultText(ColorCurveTypeGetDisplayName(colorSettings.type))
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	-- Advance yCoord past the dropdown (dropdown + its label takes about 50 units)
+	yCoord = yCoord - 80
+
+	-- Threshold sliders and color pickers
+	-- Determine threshold keys (could be low/medium/high or low/medium/heavy for Stagger)
+	local thresholdKeys = {}
+	if colorSettings.low then table.insert(thresholdKeys, "low") end
+	if colorSettings.medium then table.insert(thresholdKeys, "medium") end
+	if colorSettings.high then table.insert(thresholdKeys, "high") end
+	if colorSettings.heavy then table.insert(thresholdKeys, "heavy") end
+	
+	-- Build threshold sliders (skip first one - no slider needed for base/low)
+	for i, thresholdKey in ipairs(thresholdKeys) do
+		if i > 1 and colorSettings[thresholdKey] and colorSettings[thresholdKey].threshold ~= nil then
+			local sliderLabel = string.format(L["CustomBarThreshold"] or "%s %s Threshold", displayName, thresholdKey:gsub("^%l", string.upper))
+			controls[barTypeDef.key .. thresholdKey .. "Threshold"] = TRB.Functions.OptionsUi:BuildSlider(parent, sliderLabel, 
+				0, 1, colorSettings[thresholdKey].threshold, 0.01, 2,
+				oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+			controls[barTypeDef.key .. thresholdKey .. "Threshold"]:SetScript("OnValueChanged", function(self, value)
+				value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+				value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+				self.EditBox:SetText(value)
+				colorSettings[thresholdKey].threshold = value
+
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			end)
+			yCoord = yCoord - 60
+		end
+	end
+	
+	-- Build color pickers for each threshold
+	for _, thresholdKey in ipairs(thresholdKeys) do
+		if colorSettings[thresholdKey] and colorSettings[thresholdKey].color then
+			yCoord2 = yCoord2 - 30
+			local colorLabel = string.format(L["CustomBarColorThreshold"] or "%s %s Color", displayName, thresholdKey:gsub("^%l", string.upper))
+			colorControls[thresholdKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorLabel, colorSettings[thresholdKey].color, 300, 25, oUi.xCoord2, yCoord2)
+			f = colorControls[thresholdKey]
+			f:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, barTypeDef.key)
+			end)
+		end
+	end
+	
+	-- Border and background colors
+	yCoord = math.min(yCoord, yCoord2) - 30
+	if colorSettings.border then
+		local borderColorValue = type(colorSettings.border) == "table" and colorSettings.border.color or colorSettings.border
+		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"] or "%s Border Color", displayName), borderColorValue, 300, 25, oUi.xCoord, yCoord)
+		f = colorControls.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "border", barTypeDef.key)
+		end)
+		yCoord = yCoord - 30
+	end
+	
+	if colorSettings.background then
+		local bgColorValue = type(colorSettings.background) == "table" and colorSettings.background.color or colorSettings.background
+		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"] or "%s Background Color", displayName), bgColorValue, 300, 25, oUi.xCoord, yCoord)
+		f = colorControls.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "background", barTypeDef.key)
+		end)
+		yCoord = yCoord - 30
+	end
+	
+	return yCoord
+end
+
+---Generates visibility options for a custom bar
+---@param parent Frame # Parent frame for the controls
+---@param controls table # Table to store control references
+---@param spec table # Spec settings table
+---@param classId integer # Class ID
+---@param specId integer # Spec ID
+---@param yCoord number # Starting Y coordinate
+---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
+---@return number # New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
+	local f = nil
+	
+	-- Check if displayBar has the visibility key for this bar
+	if not spec.displayBar or spec.displayBar[barTypeDef.visibilityKey] == nil then
+		return yCoord
+	end
+	
+	local displayName = barTypeDef.displayName
+	
+	-- Visibility options mapping
+	local visibilityOptions = {
+		[L["ShowBarVisibilityAlways"]] = "always",
+		[L["ShowBarVisibilityCombat"]] = "combat",
+		[L["ShowBarVisibilityNever"]] = "never"
+	}
+	local visibilityOptionsList = {
+		L["ShowBarVisibilityAlways"],
+		L["ShowBarVisibilityCombat"],
+		L["ShowBarVisibilityNever"]
+	}
+
+	-- Get display name for current value
+	local function GetVisibilityDisplayName(value)
+		for displayNameItem, enumValue in pairs(visibilityOptions) do
+			if enumValue == value then
+				return displayNameItem
+			end
+		end
+		return L["ShowBarVisibilityCombat"] -- Default fallback
+	end
+
+	-- Visibility dropdown
+	local visibilityLabel = string.format(L["ShowBarVisibilityCustom"] or "Show %s", displayName)
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown[barTypeDef.key .. "Visibility"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Visibility", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown[barTypeDef.key .. "Visibility"]:SetWidth(oUi.sliderWidth)
+	controls.dropDown[barTypeDef.key .. "Visibility"].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, visibilityLabel, oUi.xCoord, yCoord)
+	controls.dropDown[barTypeDef.key .. "Visibility"].label.font:SetFontObject(GameFontNormal)
+
+	local function VisibilityIsSelected(value)
+		return value == spec.displayBar[barTypeDef.visibilityKey]
+	end
+
+	local function VisibilitySetSelected(newValue)
+		spec.displayBar[barTypeDef.visibilityKey] = newValue
+		controls.dropDown[barTypeDef.key .. "Visibility"]:SetDefaultText(GetVisibilityDisplayName(newValue))
+		TRB.Functions.Bar:HideResourceBar()
+	end
+
+	local function VisibilityGenerator(dropdown, rootDescription)
+		for _, displayNameItem in ipairs(visibilityOptionsList) do
+			rootDescription:CreateRadio(displayNameItem, VisibilityIsSelected, VisibilitySetSelected, visibilityOptions[displayNameItem])
+		end
+	end
+
+	controls.dropDown[barTypeDef.key .. "Visibility"]:SetupMenu(VisibilityGenerator)
+	controls.dropDown[barTypeDef.key .. "Visibility"]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[barTypeDef.visibilityKey]))
+	controls.dropDown[barTypeDef.key .. "Visibility"]:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	yCoord = yCoord - 70
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
 	local newName = statusbarPairsByName[newValue]
 	if includeComboPoints == nil then
 		includeComboPoints = false
 	end
 	if includeManaBar == nil then
 		includeManaBar = false
+	end
+	if customBars == nil then
+		customBars = {}
 	end
 
 	textures[variable.."Bar"] = newValue
@@ -1533,6 +2011,14 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 			DropdownSetupMenuWrapper(controls.manaBarBar)
 		end
 
+		-- Sync custom bar textures
+		for _, barTypeDef in ipairs(customBars) do
+			local barKey = barTypeDef.key .. "Bar"
+			textures[barKey] = newValue
+			textures[barKey .. "Name"] = newName
+			DropdownSetupMenuWrapper(controls[barKey])
+		end
+
 		textures.healthBar = newValue
 		textures.healthBarName = newName
 		DropdownSetupMenuWrapper(controls.healthBar)
@@ -1551,12 +2037,15 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 	end
 end
 
-function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar)
+function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars)
 	if includeComboPoints == nil then
 		includeComboPoints = false
 	end
 	if includeManaBar == nil then
 		includeManaBar = false
+	end
+	if customBars == nil then
+		customBars = {}
 	end
 	
 	if secondaryResourceString == nil then
@@ -1601,7 +2090,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	yCoord = yCoord - 30
 
 	local function StatusbarSetValue(variable, newValue)
-		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar)
+		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
 	end
 
 	local function RefreshBar()
@@ -1654,6 +2143,24 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end)
 	end
 
+	-- Custom bars (e.g., Stagger) - uses flat keys like staggerBar, staggerBarName
+	local customBarPlacedOnLeft = not (includeComboPoints and includeManaBar)
+	for i, barTypeDef in ipairs(customBars) do
+		-- Determine position: alternate left/right, starting new row as needed
+		local useLeftColumn = (i % 2 == 1) or not customBarPlacedOnLeft
+		if useLeftColumn then
+			yCoord = yCoord - 60
+		end
+		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
+		local barKey = barTypeDef.key .. "Bar"
+		local barLabel = string.format(L["CustomBarTextureBar"] or "%s Bar Texture", barTypeDef.displayName)
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "statusbar", barKey, barLabel, L["StatusBarTextures"],
+			function(newValue)
+				StatusbarSetValue(barTypeDef.key, newValue)
+			end)
+		customBarPlacedOnLeft = useLeftColumn
+	end
+
 	yCoord = yCoord - 70
 
 	-- ===== BORDER TEXTURES SUBSECTION =====
@@ -1679,6 +2186,13 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					spec.textures.manaBarBorder = newValue
 					spec.textures.manaBarBorderName = newName
 					DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
+				end
+				-- Sync custom bar borders
+				for _, barTypeDef in ipairs(customBars) do
+					local borderKey = barTypeDef.key .. "Border"
+					spec.textures[borderKey] = newValue
+					spec.textures[borderKey .. "Name"] = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
 				end
 				spec.textures.healthBorder = newValue
 				spec.textures.healthBorderName = newName
@@ -1708,6 +2222,13 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					spec.textures.manaBarBorder = newValue
 					spec.textures.manaBarBorderName = newName
 					DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
+				end
+				-- Sync custom bar borders
+				for _, barTypeDef in ipairs(customBars) do
+					local borderKey = barTypeDef.key .. "Border"
+					spec.textures[borderKey] = newValue
+					spec.textures[borderKey .. "Name"] = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
 				end
 			end
 
@@ -1773,6 +2294,56 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end)
 	end
 
+	-- Custom bar borders (e.g., Stagger) - uses flat keys like staggerBorder
+	customBarPlacedOnLeft = not (includeComboPoints and includeManaBar)
+	for i, barTypeDef in ipairs(customBars) do
+		local useLeftColumn = (i % 2 == 1) or not customBarPlacedOnLeft
+		if useLeftColumn then
+			yCoord = yCoord - 60
+		end
+		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
+		local borderKey = barTypeDef.key .. "Border"
+		local borderLabel = string.format(L["CustomBarTextureBorder"] or "%s Border Texture", barTypeDef.displayName)
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "border", borderKey, borderLabel, L["BorderTextures"],
+			function(newValue)
+				local newName = borderPairsByName[newValue]
+				spec.textures[borderKey] = newValue
+				spec.textures[borderKey .. "Name"] = newName
+				DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
+				
+				if spec.textures.textureLock then
+					spec.textures.border = newValue
+					spec.textures.borderName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
+					spec.textures.healthBorder = newValue
+					spec.textures.healthBorderName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
+					if includeComboPoints then
+						spec.textures.comboPointsBorder = newValue
+						spec.textures.comboPointsBorderName = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+					end
+					if includeManaBar then
+						spec.textures.manaBarBorder = newValue
+						spec.textures.manaBarBorderName = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
+					end
+					-- Sync other custom bars
+					for _, otherBarTypeDef in ipairs(customBars) do
+						if otherBarTypeDef.key ~= barTypeDef.key then
+							local otherBorderKey = otherBarTypeDef.key .. "Border"
+							spec.textures[otherBorderKey] = newValue
+							spec.textures[otherBorderKey .. "Name"] = newName
+							DropdownSetupMenuWrapper(controls.dropDown.textures[otherBorderKey])
+						end
+					end
+				end
+				
+				RefreshBar()
+			end)
+		customBarPlacedOnLeft = useLeftColumn
+	end
+
 	yCoord = yCoord - 70
 
 	-- ===== BACKGROUND TEXTURES SUBSECTION =====
@@ -1798,6 +2369,13 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					spec.textures.manaBarBackground = newValue
 					spec.textures.manaBarBackgroundName = newName
 					DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
+				end
+				-- Sync custom bar backgrounds
+				for _, barTypeDef in ipairs(customBars) do
+					local bgKey = barTypeDef.key .. "Background"
+					spec.textures[bgKey] = newValue
+					spec.textures[bgKey .. "Name"] = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
 				end
 				spec.textures.healthBackground = newValue
 				spec.textures.healthBackgroundName = newName
@@ -1828,6 +2406,13 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					spec.textures.manaBarBackgroundName = newName
 					DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
 				end
+				-- Sync custom bar backgrounds
+				for _, barTypeDef in ipairs(customBars) do
+					local bgKey = barTypeDef.key .. "Background"
+					spec.textures[bgKey] = newValue
+					spec.textures[bgKey .. "Name"] = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
+				end
 			end
 			
 			RefreshBar()
@@ -1855,6 +2440,13 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						spec.textures.manaBarBackground = newValue
 						spec.textures.manaBarBackgroundName = newName
 						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
+					end
+					-- Sync custom bar backgrounds
+					for _, barTypeDef in ipairs(customBars) do
+						local bgKey = barTypeDef.key .. "Background"
+						spec.textures[bgKey] = newValue
+						spec.textures[bgKey .. "Name"] = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
 					end
 				end
 				
@@ -1886,10 +2478,67 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						spec.textures.comboPointsBackgroundName = newName
 						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
 					end
+					-- Sync custom bar backgrounds
+					for _, barTypeDef in ipairs(customBars) do
+						local bgKey = barTypeDef.key .. "Background"
+						spec.textures[bgKey] = newValue
+						spec.textures[bgKey .. "Name"] = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
+					end
 				end
 				
 				RefreshBar()
 			end)
+	end
+
+	-- Custom bar backgrounds (e.g., Stagger) - uses flat keys like staggerBackground
+	customBarPlacedOnLeft = not (includeComboPoints and includeManaBar)
+	for i, barTypeDef in ipairs(customBars) do
+		local useLeftColumn = (i % 2 == 1) or not customBarPlacedOnLeft
+		if useLeftColumn then
+			yCoord = yCoord - 60
+		end
+		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
+		local bgKey = barTypeDef.key .. "Background"
+		local bgLabel = string.format(L["CustomBarTextureBackground"] or "%s Background Texture", barTypeDef.displayName)
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "background", bgKey, bgLabel, L["BackgroundTextures"],
+			function(newValue)
+				local newName = backgroundPairsByName[newValue]
+				spec.textures[bgKey] = newValue
+				spec.textures[bgKey .. "Name"] = newName
+				DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
+				
+				if spec.textures.textureLock then
+					spec.textures.background = newValue
+					spec.textures.backgroundName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
+					spec.textures.healthBackground = newValue
+					spec.textures.healthBackgroundName = newName
+					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
+					if includeComboPoints then
+						spec.textures.comboPointsBackground = newValue
+						spec.textures.comboPointsBackgroundName = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+					end
+					if includeManaBar then
+						spec.textures.manaBarBackground = newValue
+						spec.textures.manaBarBackgroundName = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
+					end
+					-- Sync other custom bars
+					for _, otherBarTypeDef in ipairs(customBars) do
+						if otherBarTypeDef.key ~= barTypeDef.key then
+							local otherBgKey = otherBarTypeDef.key .. "Background"
+							spec.textures[otherBgKey] = newValue
+							spec.textures[otherBgKey .. "Name"] = newName
+							DropdownSetupMenuWrapper(controls.dropDown.textures[otherBgKey])
+						end
+					end
+				end
+				
+				RefreshBar()
+			end)
+		customBarPlacedOnLeft = useLeftColumn
 	end
 
 	yCoord = yCoord - 70
@@ -1950,6 +2599,25 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.healthBackground = spec.textures.background
 			spec.textures.healthBackgroundName = spec.textures.backgroundName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
+
+			-- Sync custom bar textures (using flat keys like staggerBar, staggerBorder, staggerBackground)
+			for _, barTypeDef in ipairs(customBars) do
+				local barKey = barTypeDef.key .. "Bar"
+				local borderKey = barTypeDef.key .. "Border"
+				local bgKey = barTypeDef.key .. "Background"
+				
+				spec.textures[barKey] = spec.textures.resourceBar
+				spec.textures[barKey .. "Name"] = spec.textures.resourceBarName
+				DropdownSetupMenuWrapper(controls.dropDown.textures[barKey])
+				
+				spec.textures[borderKey] = spec.textures.border
+				spec.textures[borderKey .. "Name"] = spec.textures.borderName
+				DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
+				
+				spec.textures[bgKey] = spec.textures.background
+				spec.textures[bgKey .. "Name"] = spec.textures.backgroundName
+				DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
+			end
 
 			RefreshBar()
 		end

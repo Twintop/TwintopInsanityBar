@@ -161,13 +161,15 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		},
 		displayBar = {
 			primary = "combat",
-			secondary = "combat",
+			stagger = "combat",
 			health = "combat",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			stagger = TRB.Functions.Settings:DefaultStaggerBarDimensions(classic),
+		},
 		colors = {
 			text = {
 				current = {
@@ -189,13 +191,15 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				background="66000000",
 				base="FFFFFF00",
 			},
-			comboPoints = {
-				border="FF00FF98",
-				background="66000000",
-				type = "step",
-				light = { color = "FF85FF85", threshold = 0.0 },
-				medium = { color = "FFFFFAB8", threshold = 0.30 },
-				heavy = { color = "FFFF6B6B", threshold = 0.60 }
+			bars = {
+				stagger = {
+					border = { color = "FF00FF98" },
+					background = { color = "66000000" },
+					type = "step",
+					low = { color = "FF85FF85", threshold = 0.0 },
+					medium = { color = "FFFFFAB8", threshold = 0.30 },
+					heavy = { color = "FFFF6B6B", threshold = 0.60 }
+				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -228,8 +232,17 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true),
+		textures = TRB.Functions.Settings:DefaultTextures(false),
 	}
+
+	-- Add flat stagger bar texture keys (same pattern as manaBar)
+	local staggerTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.staggerBar = staggerTextures.bar
+	settings.textures.staggerBarName = staggerTextures.barName
+	settings.textures.staggerBorder = staggerTextures.border
+	settings.textures.staggerBorderName = staggerTextures.borderName
+	settings.textures.staggerBackground = staggerTextures.background
+	settings.textures.staggerBackgroundName = staggerTextures.backgroundName
 
 	if includeBarText then
 		settings.displayText.barText = BrewmasterLoadDefaultBarTextSettings(classic)
@@ -641,19 +654,36 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
 
+	-- Stagger bar dimensions using custom bar system
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], L["ResourceStagger"], false)
+	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
+	if staggerBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef, L["ResourceEnergy"])
+	end
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, true, L["ResourceStagger"])
+	-- Pass stagger bar definition to include its textures in the standard texture section
+	local customBars = {}
+	if staggerBarDef then
+		table.insert(customBars, staggerBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false, nil, false, customBars)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, true, L["ResourceStagger"], true)
+	-- Note: We use a custom visibility section for stagger since it's a custom bar
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, false, nil, true)
 
-	yCoord = yCoord - 90
+	-- Stagger bar visibility using custom bar system
+	-- Need to offset yCoord to account for primary/health dropdown height
+	yCoord = yCoord - 70
+	if staggerBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
+	end
+
+	yCoord = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
@@ -666,8 +696,11 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], false, false)
 
+	-- Stagger bar colors using custom bar system
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls, spec, 10, 1, yCoord)
+	if staggerBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
+	end
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)

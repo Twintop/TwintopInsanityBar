@@ -199,6 +199,23 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.comboPoints.border, true)
 end
 
+---Resets a threshold line for custom bar groups (stagger, defensives, etc.)
+---@param threshold Frame # The threshold frame to reset
+---@param width number # The width of the threshold line
+---@param height number # The height of the threshold line
+---@param borderColor string # The RGBA hex color string for the threshold
+function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, height, borderColor)
+	threshold:SetWidth(width)
+	threshold:SetHeight(height)
+	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
+	threshold.texture:SetAllPoints(threshold)
+	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
+	threshold:Show()
+	threshold.hasIcon = false
+	
+	TRB.Functions.Color:SetThresholdColor(threshold, borderColor, true)
+end
+
 function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
 	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
 		-- Hide the threshold line if showThreshold is false
@@ -241,6 +258,51 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 	if TRB.Data.cache.values.threshold[key].icon ~= thresholdLine.icon then
 		SetThresholdIconSizeAndPosition(settings, thresholdLine)
 		TRB.Data.cache.values.threshold[key].icon = thresholdLine.icon
+	end
+end
+
+---Repositions a threshold line for custom bar groups (stagger, defensives, etc.)
+---@param key string # Cache key for the threshold
+---@param thresholdLine Frame # The threshold frame to reposition
+---@param showThreshold boolean # Whether to show the threshold
+---@param parentFrame Frame # The parent frame to anchor to
+---@param value number # The value at which to position the threshold
+---@param maxResource number # The maximum resource value
+---@param barWidth number # The width of the bar
+---@param barBorder number # The border size of the bar
+---@param growRight boolean? # Whether the bar grows right (default true)
+function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine, showThreshold, parentFrame, value, maxResource, barWidth, barBorder, growRight)
+	if not showThreshold or thresholdLine == nil then
+		-- Hide the threshold line if showThreshold is false
+		if thresholdLine and not showThreshold then
+			thresholdLine:Hide()
+		end
+		return
+	end
+
+	-- Show the threshold line since showThreshold is true
+	thresholdLine:Show()
+
+	if growRight == nil then
+		growRight = true
+	end
+
+	if maxResource == nil or maxResource == 0 then
+		maxResource = 100
+	end
+
+	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
+	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource then
+		local factor = (barWidth - (barBorder * 2)) / maxResource
+
+		thresholdLine:ClearAllPoints()
+		if growRight then
+			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
+		else
+			thresholdLine:SetPoint("RIGHT", parentFrame, "LEFT", math.ceil(value * factor), 0)
+		end
+		TRB.Data.cache.values.threshold[key].value = value
+		TRB.Data.cache.values.threshold[key].maxResource = maxResource
 	end
 end
 

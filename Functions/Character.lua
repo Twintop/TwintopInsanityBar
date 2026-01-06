@@ -756,21 +756,78 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.textures = spec.textures
 	end
 
-	-- Mana bar textures are always spec-specific (not available in core settings)
-	-- Ensure they're propagated from spec even when using global texture settings
+	-- Mana bar and custom bar textures are spec-specific (not available in core settings)
+	-- When using global textures with texture lock enabled, sync from primary bar texture
+	-- When using global textures with texture lock disabled, use spec-specific textures
+	-- When using spec textures, always use spec-specific textures
 	if spec.textures then
-		if spec.textures.manaBarBar then
-			specCache.settings.textures.manaBarBar = spec.textures.manaBarBar
-			specCache.settings.textures.manaBarBarName = spec.textures.manaBarBarName
+		local useGlobalWithTextureLock = s.textures and specCache.settings.textures.textureLock
+		
+		-- Mana bar textures
+		if useGlobalWithTextureLock then
+			-- Sync mana bar textures to primary bar texture from global settings
+			specCache.settings.textures.manaBarBar = specCache.settings.textures.resourceBar
+			specCache.settings.textures.manaBarBarName = specCache.settings.textures.resourceBarName
+			specCache.settings.textures.manaBarBorder = specCache.settings.textures.border
+			specCache.settings.textures.manaBarBorderName = specCache.settings.textures.borderName
+			specCache.settings.textures.manaBarBackground = specCache.settings.textures.background
+			specCache.settings.textures.manaBarBackgroundName = specCache.settings.textures.backgroundName
+		else
+			-- Use spec-specific mana bar textures
+			if spec.textures.manaBarBar then
+				specCache.settings.textures.manaBarBar = spec.textures.manaBarBar
+				specCache.settings.textures.manaBarBarName = spec.textures.manaBarBarName
+			end
+			if spec.textures.manaBarBorder then
+				specCache.settings.textures.manaBarBorder = spec.textures.manaBarBorder
+				specCache.settings.textures.manaBarBorderName = spec.textures.manaBarBorderName
+			end
+			if spec.textures.manaBarBackground then
+				specCache.settings.textures.manaBarBackground = spec.textures.manaBarBackground
+				specCache.settings.textures.manaBarBackgroundName = spec.textures.manaBarBackgroundName
+			end
 		end
-		if spec.textures.manaBarBorder then
-			specCache.settings.textures.manaBarBorder = spec.textures.manaBarBorder
-			specCache.settings.textures.manaBarBorderName = spec.textures.manaBarBorderName
+		
+		-- Custom bar textures using flat keys (e.g., staggerBar, staggerBorder, staggerBackground)
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+		for key, _ in pairs(registry:GetAll()) do
+			local barKey = key .. "Bar"
+			local borderKey = key .. "Border"
+			local bgKey = key .. "Background"
+			if useGlobalWithTextureLock then
+				-- Sync custom bar textures to primary bar texture from global settings
+				specCache.settings.textures[barKey] = specCache.settings.textures.resourceBar
+				specCache.settings.textures[barKey .. "Name"] = specCache.settings.textures.resourceBarName
+				specCache.settings.textures[borderKey] = specCache.settings.textures.border
+				specCache.settings.textures[borderKey .. "Name"] = specCache.settings.textures.borderName
+				specCache.settings.textures[bgKey] = specCache.settings.textures.background
+				specCache.settings.textures[bgKey .. "Name"] = specCache.settings.textures.backgroundName
+			else
+				-- Use spec-specific custom bar textures
+				if spec.textures[barKey] then
+					specCache.settings.textures[barKey] = spec.textures[barKey]
+					specCache.settings.textures[barKey .. "Name"] = spec.textures[barKey .. "Name"]
+				end
+				if spec.textures[borderKey] then
+					specCache.settings.textures[borderKey] = spec.textures[borderKey]
+					specCache.settings.textures[borderKey .. "Name"] = spec.textures[borderKey .. "Name"]
+				end
+				if spec.textures[bgKey] then
+					specCache.settings.textures[bgKey] = spec.textures[bgKey]
+					specCache.settings.textures[bgKey .. "Name"] = spec.textures[bgKey .. "Name"]
+				end
+			end
 		end
-		if spec.textures.manaBarBackground then
-			specCache.settings.textures.manaBarBackground = spec.textures.manaBarBackground
-			specCache.settings.textures.manaBarBackgroundName = spec.textures.manaBarBackgroundName
-		end
+	end
+
+	-- Custom bar dimensions (stagger, defensives, mana, etc.) - always spec-specific
+	if spec.bars then
+		specCache.settings.bars = spec.bars
+	end
+
+	-- Custom bar colors (stagger, defensives, mana, etc.) - always spec-specific
+	if spec.colors and spec.colors.bars then
+		specCache.settings.colors.bars = spec.colors.bars
 	end
 
 	if s.displayBar then
@@ -783,6 +840,15 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	-- Ensure it's propagated from spec even when using global displayBar settings
 	if spec.displayBar and spec.displayBar.mana ~= nil then
 		specCache.settings.displayBar.mana = spec.displayBar.mana
+	end
+
+	-- Custom bar visibility (stagger, defensives, etc.) is always spec-specific
+	-- Ensure it's propagated from spec even when using global displayBar settings
+	if spec.displayBar and spec.displayBar.stagger ~= nil then
+		specCache.settings.displayBar.stagger = spec.displayBar.stagger
+	end
+	if spec.displayBar and spec.displayBar.defensives ~= nil then
+		specCache.settings.displayBar.defensives = spec.displayBar.defensives
 	end
 
 	--NYI
