@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-beta10 (2026-01-07)
+## General
+
+- [#297](#297) Add an optional Mana Bar for Balance Druid, Shadow Priest, and Elemental Shaman. This includes default text and new bar text variables `$mana`, `$manaMax`, and `$manaPercent`.
+
+---
+
 # 12.0.0.0-beta09 (2026-01-05)
 ## General
 

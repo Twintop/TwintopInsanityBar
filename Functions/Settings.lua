@@ -423,7 +423,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 	-- Migrate all class/spec settings
 	for _, className in ipairs(classes) do
 		if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
-			for _, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+			for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
 				if specSettings then
 					if specSettings.displayBar then
 						MigrateDisplayBar(specSettings.displayBar)
@@ -441,6 +441,45 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 						local healthBarText = TRB.Functions.Settings:LoadDefaultHealthBarTextSettings()
 						for k,v in pairs(healthBarText) do table.insert(specSettings.displayText.barText, v) end
+					end
+
+					-- Migrate mana bar settings for Shadow Priest, Balance Druid, and Elemental Shaman
+					local isManaBarSpec = (className == "priest" and specName == "shadow") or
+						(className == "druid" and specName == "balance") or
+						(className == "shaman" and specName == "elemental")
+
+					if isManaBarSpec and specSettings.textures and not specSettings.manaBar then
+						specSettings.manaBar = TRB.Functions.Settings:DefaultManaBarDimensions()
+						
+						if specSettings.displayBar then
+							specSettings.displayBar.mana = "never"
+						end
+
+						if specSettings.colors then
+							specSettings.colors.manaBar = TRB.Functions.Settings:DefaultManaBarColors()
+						end
+
+						specSettings.textures.manaBarBackground="Interface\\Tooltips\\UI-Tooltip-Background"
+						specSettings.textures.manaBarBackgroundName="Blizzard Tooltip"
+						specSettings.textures.manaBarBorder="Interface\\Buttons\\WHITE8X8"
+						specSettings.textures.manaBarBorderName="1 Pixel"
+						specSettings.textures.manaBarBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
+						specSettings.textures.manaBarBarName=L["LSMStatusBarSmoother"]
+
+						local manaBarText = TRB.Functions.Settings:LoadDefaultManaBarTextSettings()
+						if specSettings.displayText and specSettings.displayText.barText then
+							for k,v in pairs(manaBarText) do table.insert(specSettings.displayText.barText, v) end
+						end
+					end
+
+					-- Ensure mana bar colors exist for mana bar specs (in case manaBar was added but colors weren't)
+					if isManaBarSpec and specSettings.colors and not specSettings.colors.manaBar then
+						specSettings.colors.manaBar = TRB.Functions.Settings:DefaultManaBarColors()
+					end
+
+					-- Ensure mana bar text color exists for mana bar specs
+					if isManaBarSpec and specSettings.colors and specSettings.colors.text and not specSettings.colors.text.manaBar then
+						specSettings.colors.text.manaBar = { color = "FF0000FF" }
 					end
 				end
 			end
@@ -568,10 +607,52 @@ function TRB.Functions.Settings:DefaultHealthBarColors()
 	}
 end
 
----comment
+---Gets the default mana bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 0,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		relativeTo = "TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth = true,
+	}
+end
+
+---Gets the default mana bar colors
+---@return TRB.Classes.Settings.ManaBarColors
+function TRB.Functions.Settings:DefaultManaBarColors()
+	return {
+		bar = { color = "FF0000FF" },
+		border = { color = "FF0000AA" },
+		background = { color = "66000000" }
+	}
+end
+
+---Gets the default textures for bars
 ---@param includeComboPoints boolean?
+---@param includeManaBar boolean?
 ---@return table
-function TRB.Functions.Settings:DefaultTextures(includeComboPoints)
+function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaBar)
 	local textures = {
 		background="Interface\\Tooltips\\UI-Tooltip-Background",
 		backgroundName="Blizzard Tooltip",
@@ -594,6 +675,14 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints)
 		textures.comboPointsBorderName="1 Pixel"
 		textures.comboPointsBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
 		textures.comboPointsBarName=L["LSMStatusBarSmoother"]
+	end
+	if includeManaBar then
+		textures.manaBarBackground="Interface\\Tooltips\\UI-Tooltip-Background"
+		textures.manaBarBackgroundName="Blizzard Tooltip"
+		textures.manaBarBorder="Interface\\Buttons\\WHITE8X8"
+		textures.manaBarBorderName="1 Pixel"
+		textures.manaBarBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
+		textures.manaBarBarName=L["LSMStatusBarSmoother"]
 	end
 	return textures
 end
@@ -675,6 +764,88 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 				relativeToName = L["PositionRight"],
 				relativeToFrame = "HealthBar",
 				relativeToFrameName = L["HealthBar"]
+			}
+		})
+	end
+	return textSettings
+end
+
+---Returns default bar text for a secondary mana bar (used by DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {}
+
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$mana/$manaMax $manaPercent%",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=13,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "ManaBar",
+				relativeToFrameName = L["ManaBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text="$manaPercent%",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "ManaBar",
+				relativeToFrameName = L["ManaBar"]
+			}
+		})
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$mana",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "ManaBar",
+				relativeToFrameName = L["ManaBar"]
 			}
 		})
 	end

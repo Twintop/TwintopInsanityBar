@@ -66,6 +66,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
+				configuration.manaBar = settings.manaBar
+				configuration.colors.manaBar = settings.colors.manaBar
 			end
 		elseif classId == 6 then -- Death Knight
 			if specId == 1 then -- Blood
@@ -81,6 +83,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
 				configuration.endOfAscendance = settings.endOfAscendance
+				configuration.manaBar = settings.manaBar
+				configuration.colors.manaBar = settings.colors.manaBar
 			elseif specId == 2 then -- Enhancement
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
@@ -114,6 +118,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
 				configuration.endOfEclipse = settings.endOfEclipse
+				configuration.manaBar = settings.manaBar
+				configuration.colors.manaBar = settings.colors.manaBar
 				elseif specId == 2 then -- Feral
 					configuration.colors.comboPoints = settings.colors.comboPoints
 					configuration.comboPoints = settings.comboPoints

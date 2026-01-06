@@ -35,6 +35,10 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+
+	local manaBarTextSettings = TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
+	for k,v in pairs(manaBarTextSettings) do table.insert(textSettings, v) end
+
 	return textSettings
 end
 TRB.Options.Druid.BalanceLoadDefaultBarTextSettings = BalanceLoadDefaultBarTextSettings
@@ -92,6 +96,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			primary = "combat",
 			secondary = "combat",
 			health = "combat",
+			mana = "never",
 			dragonriding = true
 		},
 		endOfEclipse = {
@@ -103,6 +108,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		manaBar = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -117,6 +123,9 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
+				},
+				manaBar = {
+					color = "FF0000FF"
 				}
 			},
 			bar = {
@@ -134,6 +143,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				flashSsEnabled=true,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			manaBar = TRB.Functions.Settings:DefaultManaBarColors(),
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -182,7 +192,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(),
+		textures = TRB.Functions.Settings:DefaultTextures(false, true),
 	}
 
 	if includeBarText then
@@ -955,11 +965,14 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
 
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false)
-
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateManaBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord)
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false, nil, true)
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
@@ -1030,6 +1043,9 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateManaBarColorOptions(parent, controls, spec, 11, 1, yCoord)
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceHeaderEndOfEclipseConfiguration"], oUi.xCoord, yCoord)
@@ -1268,6 +1284,14 @@ local function BalanceConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	spec.colors.text.manaBar = spec.colors.text.manaBar or { color = "FF0000FF" }
+	controls.colors.text.manaBar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarTextColor"], spec.colors.text.manaBar.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.manaBar
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "manaBar")
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 11, 1, yCoord)

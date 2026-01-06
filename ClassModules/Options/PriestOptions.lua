@@ -477,6 +477,10 @@ local function ShadowLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+
+	local manaBarTextSettings = TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
+	for k,v in pairs(manaBarTextSettings) do table.insert(textSettings, v) end
+
 	return textSettings
 end
 TRB.Options.Priest.ShadowLoadDefaultBarTextSettings = ShadowLoadDefaultBarTextSettings
@@ -534,10 +538,12 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			primary = "combat",
 			secondary = "combat",
 			health = "combat",
+			mana = "never",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		manaBar = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
 		mindbender={ --TODO: Rename this shadowfiend to be consistent with Discipline and Holy
 			mode="gcd",
 			swingsMax=4,
@@ -565,6 +571,9 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = true
+				},
+				manaBar = {
+					color = "FF0000FF"
 				},
 				hasteBelow="FFFFFFFF",
 				hasteApproaching="FFFFFF00",
@@ -614,6 +623,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			manaBar = TRB.Functions.Settings:DefaultManaBarColors(),
 		},
 		displayText={
 			default = {
@@ -646,7 +656,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(),
+		textures = TRB.Functions.Settings:DefaultTextures(false, true),
 	}
 
 	if includeBarText then
@@ -1936,11 +1946,14 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false)
-
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowshadowWordMadness"], L["PriestShadowshadowWordMadnessAbbreviation"], false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateManaBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord)
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true)
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowshadowWordMadness"], L["PriestShadowshadowWordMadnessAbbreviation"], false, nil, true, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
@@ -2073,6 +2086,9 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateManaBarColorOptions(parent, controls, spec, 5, 3, yCoord)
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderEndOfVoidformConfiguration"], oUi.xCoord, yCoord)
@@ -2271,6 +2287,14 @@ local function ShadowConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	spec.colors.text.manaBar = spec.colors.text.manaBar or { color = "FF0000FF" }
+	controls.colors.text.manaBar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarTextColor"], spec.colors.text.manaBar.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.manaBar
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "manaBar")
 	end)
 
 	yCoord = yCoord - 40

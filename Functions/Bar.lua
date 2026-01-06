@@ -329,6 +329,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if barGroups.health and settings.healthBar then
 		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, false)
 	end
+
+	-- Configure mana bar group (for DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
+	if barGroups.mana and settings.manaBar then
+		self:ConstructManaBarGroup(settings, barGroups.primary, barGroups.mana, false)
+	end
 end
 
 ---Applies textures/colors to existing bar groups (OOP system only).
@@ -408,6 +413,29 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
 			healthNode:SetColor(settings.colors.healthBar.bar)
 			healthNode:SetFrameLevels(
+				frameLevels.cpContainer,
+				frameLevels.cpBorder,
+				frameLevels.cpResource
+			)
+		end
+	end
+
+	-- Apply mana bar appearance (for DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
+	if barGroups.mana and settings.manaBar and settings.colors.manaBar then
+		local manaNode = barGroups.mana:GetNode(1)
+		if manaNode then
+			-- Only set textures if they exist (may be nil if migration hasn't run yet)
+			if settings.textures.manaBarBar and settings.textures.manaBarBorder and settings.textures.manaBarBackground then
+				manaNode:SetTextures(
+					settings.textures.manaBarBar,
+					settings.textures.manaBarBorder,
+					settings.textures.manaBarBackground
+				)
+			end
+			manaNode:SetBorderColor(settings.colors.manaBar.border.color)
+			manaNode:SetBackgroundColorFromString(settings.colors.manaBar.background.color)
+			manaNode:SetColor(settings.colors.manaBar.bar.color)
+			manaNode:SetFrameLevels(
 				frameLevels.cpContainer,
 				frameLevels.cpBorder,
 				frameLevels.cpResource
@@ -555,7 +583,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	if topBottom == "BOTTOM" then
 		yPos = -settings.bar.border + groupSettings.yPos
 	else
-		yPos = settings.bar.border + groupSettings.yPos - 2
+		yPos = settings.bar.border + groupSettings.yPos
 	end
 
 	-- Position the target container
@@ -598,6 +626,9 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			if config.minMaxMode == "health" then
 				local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
 				singleNode:SetMinMax(0, healthMax)
+			elseif config.minMaxMode == "mana" then
+				local manaMax = UnitPowerMax("player", Enum.PowerType.Mana) or 1
+				singleNode:SetMinMax(0, manaMax)
 			elseif config.minMaxMode == "discrete" then
 				singleNode:SetMinMax(0, 1)
 			end
@@ -713,6 +744,35 @@ function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healt
 	}
 
 	self:ConstructAnchoredBarGroup(settings, primaryGroup, healthGroup, config, applyAppearance)
+end
+
+---Constructs the mana bar group for DPS casters (Shadow Priest, Balance Druid, Elemental Shaman)
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param primaryGroup TRB.Classes.BarGroup
+---@param manaGroup TRB.Classes.BarGroup
+---@param applyAppearance boolean?
+function TRB.Functions.Bar:ConstructManaBarGroup(settings, primaryGroup, manaGroup, applyAppearance)
+	---@type TRB.Classes.AnchoredBarGroupConfig
+	local config = {
+		settingsKey = "manaBar",
+		colorsKey = "manaBar",
+		nodeCount = 1, -- Mana bar always has 1 node
+		useApplyLayout = false,
+		defaultAnchorAbove = true, -- Default position is above primary bar (like combo points)
+		textures = {
+			bar = "manaBarBar",
+			border = "manaBarBorder",
+			background = "manaBarBackground"
+		},
+		colors = {
+			border = "border",
+			background = "background",
+			bar = "bar"
+		},
+		minMaxMode = "mana"
+	}
+
+	self:ConstructAnchoredBarGroup(settings, primaryGroup, manaGroup, config, applyAppearance)
 end
 
 ---Updates the value on a BarNode using the standard caching mechanism

@@ -623,6 +623,11 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.healthBar = spec.healthBar
 	end
 
+	-- Mana bar settings (no global toggle, always use spec settings if present)
+	if spec.manaBar then
+		specCache.settings.manaBar = spec.manaBar
+	end
+
 ---@diagnostic disable-next-line: missing-fields
 	specCache.settings.displayText = {
 		barText = spec.displayText.barText
@@ -641,7 +646,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 ---@diagnostic disable-next-line: missing-fields
 		threshold = {},
 		comboPoints = spec.colors.comboPoints,
-		healthBar = spec.colors.healthBar
+		healthBar = spec.colors.healthBar,
+		manaBar = spec.colors.manaBar
 	}
 
 	if s.textColors then
@@ -650,12 +656,15 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.text.spending = core.colors.text.spending
 		specCache.settings.colors.text.passive = core.colors.text.passive
 		specCache.settings.colors.text.overThreshold = core.colors.text.overThreshold
+		-- manaBar is spec-specific (only for Shadow Priest, Balance Druid, Elemental Shaman), so always use spec colors
+		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
 	else
 		specCache.settings.colors.text.current = spec.colors.text.current
 		specCache.settings.colors.text.casting = spec.colors.text.casting
 		specCache.settings.colors.text.spending = spec.colors.text.spending
 		specCache.settings.colors.text.passive = spec.colors.text.passive
 		specCache.settings.colors.text.overThreshold = spec.colors.text.overThreshold
+		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
 	end
 
 ---@diagnostic disable-next-line: missing-fields
@@ -747,37 +756,39 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.textures = spec.textures
 	end
 
+	-- Mana bar textures are always spec-specific (not available in core settings)
+	-- Ensure they're propagated from spec even when using global texture settings
+	if spec.textures then
+		if spec.textures.manaBarBar then
+			specCache.settings.textures.manaBarBar = spec.textures.manaBarBar
+			specCache.settings.textures.manaBarBarName = spec.textures.manaBarBarName
+		end
+		if spec.textures.manaBarBorder then
+			specCache.settings.textures.manaBarBorder = spec.textures.manaBarBorder
+			specCache.settings.textures.manaBarBorderName = spec.textures.manaBarBorderName
+		end
+		if spec.textures.manaBarBackground then
+			specCache.settings.textures.manaBarBackground = spec.textures.manaBarBackground
+			specCache.settings.textures.manaBarBackgroundName = spec.textures.manaBarBackgroundName
+		end
+	end
+
 	if s.displayBar then
 		specCache.settings.displayBar = core.displayBar
 	else
 		specCache.settings.displayBar = spec.displayBar
 	end
 
+	-- Mana bar visibility is always spec-specific (not available in core settings)
+	-- Ensure it's propagated from spec even when using global displayBar settings
+	if spec.displayBar and spec.displayBar.mana ~= nil then
+		specCache.settings.displayBar.mana = spec.displayBar.mana
+	end
+
 	--NYI
 	specCache.settings.audio = spec.audio
 	specCache.settings.maxResource = spec.maxResource
 
-end
-
-function TRB.Functions.Character:IsComboPointUser()
-	local classId = TRB.Data.character.classId
-	local specId = TRB.Data.character.specId
-	if 	(classId == 1 and specId == 3) or -- Protection Warrior
-		(classId == 2) or -- Paladin
-		(classId == 4) or -- Rogue
-		(classId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
-		(classId == 6) or -- Death Knight
-		(classId == 7 and specId == 2) or -- Enhancement Shaman
-		(classId == 8 and specId == 1) or -- Arcane Mage
-		(classId == 9) or -- Warlock
-		(classId == 10 and (specId == 1 or specId == 3)) or -- Brewmaster or Windwalker Monk
-		(classId == 11 and specId == 2) or -- Feral Druid
-		(classId == 12 and (specId == 2 or specId == 3)) or -- Vengeance or Devourer Demon Hunter
-		(classId == 13) -- Evoker
-		then
-		return true
-	end
-	return false
 end
 
 function TRB.Functions.Character:GetCurrentGCDTime(floor)

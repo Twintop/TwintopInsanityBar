@@ -89,6 +89,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public spending TRB.Classes.Settings.ColorEnabledEntry
 ---@field public passive TRB.Classes.Settings.ColorEnabledEntry
 ---@field public overThreshold TRB.Classes.Settings.ColorEnabledEntry
+---@field public manaBar TRB.Classes.Settings.ColorEntry?
 
 ---@class TRB.Classes.Settings.ThresholdColors
 ---@field public under TRB.Classes.Settings.ColorEntry
