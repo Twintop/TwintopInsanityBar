@@ -108,7 +108,9 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		manaBar = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+		bars = {
+			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+		},
 		colors = {
 			text = {
 				current = {
@@ -143,7 +145,9 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				flashSsEnabled=true,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
-			manaBar = TRB.Functions.Settings:DefaultManaBarColors(),
+			bars = {
+				mana = TRB.Functions.Settings:DefaultManaBarColors(),
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -965,8 +969,8 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateManaBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord)
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceAstralPower"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false, nil, true)
@@ -1045,7 +1049,7 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateManaBarColorOptions(parent, controls, spec, 11, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceHeaderEndOfEclipseConfiguration"], oUi.xCoord, yCoord)

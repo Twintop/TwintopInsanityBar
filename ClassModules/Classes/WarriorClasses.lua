@@ -439,12 +439,12 @@ function TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         true -- isPrimary
     )
 
-    -- Protection has secondary bar for defensive buffs (Shield Block + Ignore Pain)
-    -- Secondary bars are parented to UIParent for independent visibility
+    -- Protection has defensives bar for defensive buffs (Shield Block + Ignore Pain)
+    -- Defensives bars are parented to UIParent for independent visibility
     if specId == 3 then
-        barGroups.secondary = TRB.Classes.BarGroup:New(
+        barGroups.defensives = TRB.Classes.BarGroup:New(
             UIParent,
-            "TwintopResourceBarFrame_ComboPoint",
+            "TwintopResourceBarFrame_Defensives",
             2, -- Shield Block and Ignore Pain
             false -- not primary
         )
@@ -471,7 +471,7 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = true
             },
-            secondary = {
+            defensives = {
                 maxNodes = 2,
                 isPrimary = false,
                 resourceType = "DefensiveBuffs"

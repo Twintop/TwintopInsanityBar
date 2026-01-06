@@ -543,7 +543,9 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		manaBar = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+		bars = {
+			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+		},
 		mindbender={ --TODO: Rename this shadowfiend to be consistent with Discipline and Holy
 			mode="gcd",
 			swingsMax=4,
@@ -623,7 +625,9 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
-			manaBar = TRB.Functions.Settings:DefaultManaBarColors(),
+			bars = {
+				mana = TRB.Functions.Settings:DefaultManaBarColors(),
+			},
 		},
 		displayText={
 			default = {
@@ -1946,8 +1950,8 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateManaBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord)
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceInsanity"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true)
@@ -2088,7 +2092,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateManaBarColorOptions(parent, controls, spec, 5, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderEndOfVoidformConfiguration"], oUi.xCoord, yCoord)

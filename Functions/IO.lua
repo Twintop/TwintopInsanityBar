@@ -24,8 +24,18 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Fury
 				configuration.endOfEnrage = settings.endOfEnrage
 			elseif specId == 3 then -- Protection
-				configuration.colors.comboPoints = settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
+				-- Export defensives bar settings
+				configuration.bars = configuration.bars or {}
+				configuration.bars.defensives = settings.bars and settings.bars.defensives
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.defensives = settings.colors and settings.colors.bars and settings.colors.bars.defensives
+				-- Export flat texture keys
+				configuration.textures.defensivesBar = settings.textures and settings.textures.defensivesBar
+				configuration.textures.defensivesBarName = settings.textures and settings.textures.defensivesBarName
+				configuration.textures.defensivesBorder = settings.textures and settings.textures.defensivesBorder
+				configuration.textures.defensivesBorderName = settings.textures and settings.textures.defensivesBorderName
+				configuration.textures.defensivesBackground = settings.textures and settings.textures.defensivesBackground
+				configuration.textures.defensivesBackgroundName = settings.textures and settings.textures.defensivesBackgroundName
 			end
 		elseif classId == 2 then -- Paladin
 			if specId == 1 then -- Holy
@@ -66,8 +76,18 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
-				configuration.manaBar = settings.manaBar
-				configuration.colors.manaBar = settings.colors.manaBar
+				-- Export mana bar settings
+				configuration.bars = configuration.bars or {}
+				configuration.bars.mana = settings.bars and settings.bars.mana
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.mana = settings.colors and settings.colors.bars and settings.colors.bars.mana
+				-- Export flat texture keys
+				configuration.textures.manaBar = settings.textures and settings.textures.manaBar
+				configuration.textures.manaBarName = settings.textures and settings.textures.manaBarName
+				configuration.textures.manaBorder = settings.textures and settings.textures.manaBorder
+				configuration.textures.manaBorderName = settings.textures and settings.textures.manaBorderName
+				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
+				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
 			end
 		elseif classId == 6 then -- Death Knight
 			if specId == 1 then -- Blood
@@ -83,8 +103,18 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
 				configuration.endOfAscendance = settings.endOfAscendance
-				configuration.manaBar = settings.manaBar
-				configuration.colors.manaBar = settings.colors.manaBar
+				-- Export mana bar settings
+				configuration.bars = configuration.bars or {}
+				configuration.bars.mana = settings.bars and settings.bars.mana
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.mana = settings.colors and settings.colors.bars and settings.colors.bars.mana
+				-- Export flat texture keys
+				configuration.textures.manaBar = settings.textures and settings.textures.manaBar
+				configuration.textures.manaBarName = settings.textures and settings.textures.manaBarName
+				configuration.textures.manaBorder = settings.textures and settings.textures.manaBorder
+				configuration.textures.manaBorderName = settings.textures and settings.textures.manaBorderName
+				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
+				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
 			elseif specId == 2 then -- Enhancement
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
@@ -130,8 +160,18 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
 				configuration.endOfEclipse = settings.endOfEclipse
-				configuration.manaBar = settings.manaBar
-				configuration.colors.manaBar = settings.colors.manaBar
+				-- Export mana bar settings
+				configuration.bars = configuration.bars or {}
+				configuration.bars.mana = settings.bars and settings.bars.mana
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.mana = settings.colors and settings.colors.bars and settings.colors.bars.mana
+				-- Export flat texture keys
+				configuration.textures.manaBar = settings.textures and settings.textures.manaBar
+				configuration.textures.manaBarName = settings.textures and settings.textures.manaBarName
+				configuration.textures.manaBorder = settings.textures and settings.textures.manaBorder
+				configuration.textures.manaBorderName = settings.textures and settings.textures.manaBorderName
+				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
+				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
 				elseif specId == 2 then -- Feral
 					configuration.colors.comboPoints = settings.colors.comboPoints
 					configuration.comboPoints = settings.comboPoints

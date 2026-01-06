@@ -577,6 +577,104 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specSettings.displayBar.stagger = "combat"
 						end
 					end
+
+					-- Migrate Protection Warrior Defensives bar from old comboPoints structure to new bars.defensives structure
+					if className == "warrior" and specName == "protection" then
+						-- Migrate dimensions: comboPoints -> bars.defensives
+						if specSettings.comboPoints and not specSettings.bars then
+							specSettings.bars = {}
+						end
+						if specSettings.comboPoints and specSettings.bars and not specSettings.bars.defensives then
+							specSettings.bars.defensives = {
+								width = specSettings.comboPoints.width or 555,
+								height = specSettings.comboPoints.height or 24,
+								xPos = specSettings.comboPoints.xPos or 0,
+								yPos = specSettings.comboPoints.yPos or 4,
+								border = specSettings.comboPoints.border or 2,
+								spacing = specSettings.comboPoints.spacing or 0,
+								relativeTo = specSettings.comboPoints.relativeTo or "TOP",
+								relativeToName = specSettings.comboPoints.relativeToName or L["PositionAboveMiddle"],
+								fullWidth = specSettings.comboPoints.fullWidth
+							}
+							specSettings.comboPoints = nil -- Remove old comboPoints after migration
+						end
+
+						-- Migrate colors: colors.comboPoints.ignorePain/shieldBlock -> colors.bars.defensives.nodeColors
+						if specSettings.colors and specSettings.colors.comboPoints then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.defensives then
+								local oldColors = specSettings.colors.comboPoints
+								specSettings.colors.bars.defensives = {
+									border = { color = oldColors.border or "FFC21807" },
+									background = { color = oldColors.background or "66000000" },
+									nodeColors = {
+										ignorePain = {
+											color = oldColors.ignorePain and oldColors.ignorePain.color or "FFFFD000",
+											enabled = oldColors.ignorePain and oldColors.ignorePain.enabled ~= false
+										},
+										shieldBlock = {
+											color = oldColors.shieldBlock and oldColors.shieldBlock.color or "FF0099FF",
+											enabled = oldColors.shieldBlock and oldColors.shieldBlock.enabled ~= false
+										}
+									}
+								}
+								specSettings.colors.comboPoints = nil -- Remove old colors after migration
+							end
+						end
+
+						-- Migrate textures: textures.comboPointsBar/etc -> flat defensives texture keys
+						if specSettings.textures then
+							if not specSettings.textures.defensivesBar then
+								specSettings.textures.defensivesBar = specSettings.textures.comboPointsBar or specSettings.textures.resourceBar
+								specSettings.textures.defensivesBarName = specSettings.textures.comboPointsBarName or specSettings.textures.resourceBarName
+								specSettings.textures.defensivesBorder = specSettings.textures.comboPointsBorder or specSettings.textures.border
+								specSettings.textures.defensivesBorderName = specSettings.textures.comboPointsBorderName or specSettings.textures.borderName
+								specSettings.textures.defensivesBackground = specSettings.textures.comboPointsBackground or specSettings.textures.background
+								specSettings.textures.defensivesBackgroundName = specSettings.textures.comboPointsBackgroundName or specSettings.textures.backgroundName
+
+								specSettings.textures.comboPointsBar = nil
+								specSettings.textures.comboPointsBarName = nil
+								specSettings.textures.comboPointsBorder = nil
+								specSettings.textures.comboPointsBorderName = nil
+								specSettings.textures.comboPointsBackground = nil
+								specSettings.textures.comboPointsBackgroundName = nil
+							end
+						end
+
+						-- Migrate displayBar: secondary -> defensives
+						if specSettings.displayBar and specSettings.displayBar.secondary and not specSettings.displayBar.defensives then
+							specSettings.displayBar.defensives = specSettings.displayBar.secondary
+							specSettings.displayBar.secondary = nil
+						elseif specSettings.displayBar and not specSettings.displayBar.defensives then
+							specSettings.displayBar.defensives = "combat"
+						end
+
+						-- Ensure bars.defensives exists (fallback if no migration source)
+						if not specSettings.bars then
+							specSettings.bars = {}
+						end
+						if not specSettings.bars.defensives then
+							specSettings.bars.defensives = TRB.Functions.Settings:DefaultDefensivesBarDimensions()
+						end
+
+						-- Ensure colors.bars.defensives exists (fallback if no migration source)
+						if specSettings.colors then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.defensives then
+								specSettings.colors.bars.defensives = TRB.Functions.Settings:DefaultDefensivesBarColors()
+							end
+						end
+
+						-- Ensure textures exist (fallback if no migration source)
+						if specSettings.textures and not specSettings.textures.defensivesBar then
+							specSettings.textures.defensivesBar = specSettings.textures.resourceBar
+							specSettings.textures.defensivesBarName = specSettings.textures.resourceBarName
+							specSettings.textures.defensivesBorder = specSettings.textures.border
+							specSettings.textures.defensivesBorderName = specSettings.textures.borderName
+							specSettings.textures.defensivesBackground = specSettings.textures.background
+							specSettings.textures.defensivesBackgroundName = specSettings.textures.backgroundName
+						end
+					end
 				end
 			end
 		end
@@ -882,11 +980,12 @@ end
 ---@return table
 function TRB.Functions.Settings:DefaultDefensivesBarColors()
 	return {
-		border = { color = "FF7F3300" },
+		border = { color = "FFC21807" },
 		background = { color = "66000000" },
-		ignorePain = { color = "FFFFAA00" },
-		shieldBlock = { color = "FFCC0000" },
-		lastStand = { color = "FF00CC00" }
+		nodeColors = {
+			ignorePain = { color = "FFFFD000", enabled = true },
+			shieldBlock = { color = "FF0099FF", enabled = true }
+		}
 	}
 end
 

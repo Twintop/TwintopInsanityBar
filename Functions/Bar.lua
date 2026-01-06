@@ -740,16 +740,23 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 		local barGroup = barGroups[key]
 		local barSettings = settings.bars and settings.bars[key]
 		
-		if barGroup and barSettings then
-			-- Get dimensions from settings or defaults
-			local width = barSettings.width or 555
-			local height = barSettings.height or 24
-			local border = barSettings.border or 2
-			local spacing = barSettings.spacing or 0
-			local fullWidth = barSettings.fullWidth or false
-			local relativeTo = barSettings.relativeTo or "TOP"
-			local xPos = barSettings.xPos or 0
-			local yPos = barSettings.yPos or 4
+		-- Apply layout if bar group exists, even if barSettings is missing (use defaults from registry)
+		if barGroup then
+			-- Get dimensions from settings or defaults from registry
+			local defaultSettings = nil
+			if not barSettings and barTypeDef.defaultDimensionsFunc then
+				defaultSettings = barTypeDef.defaultDimensionsFunc()
+			end
+			local effectiveSettings = barSettings or defaultSettings or {}
+			
+			local width = effectiveSettings.width or 555
+			local height = effectiveSettings.height or 24
+			local border = effectiveSettings.border or 2
+			local spacing = effectiveSettings.spacing or 0
+			local fullWidth = effectiveSettings.fullWidth or false
+			local relativeTo = effectiveSettings.relativeTo or "TOP"
+			local xPos = effectiveSettings.xPos or 0
+			local yPos = effectiveSettings.yPos or 4
 			
 			-- Set node count
 			local nodeCount = barTypeDef.maxNodes or 1
@@ -798,6 +805,24 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 					height,
 					border
 				)
+				
+				-- Set min/max for each node based on bar type's minMaxMode
+				local minMaxMode = barTypeDef.minMaxMode
+				for i = 1, nodeCount do
+					local node = barGroup:GetNode(i)
+					if node then
+						if minMaxMode == "health" or minMaxMode == "percentage" then
+							local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
+							node:SetMinMax(0, healthMax)
+						elseif minMaxMode == "mana" then
+							local manaMax = UnitPowerMax("player", Enum.PowerType.Mana) or 1
+							node:SetMinMax(0, manaMax)
+						elseif minMaxMode == "discrete" then
+							node:SetMinMax(0, 1)
+						end
+						-- "custom" mode leaves min/max to be set externally
+					end
+				end
 			else
 				-- Single node sizing
 				local effectiveWidth
@@ -863,11 +888,12 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 		local barGroup = barGroups[key]
 		local barSettings = settings.bars and settings.bars[key]
 		
-		if barGroup and barSettings then
+		-- Apply appearance if bar group exists, even if barSettings is missing (use fallbacks)
+		if barGroup then
 			-- Get textures from flat keys (same pattern as manaBar: staggerBar, staggerBorder, staggerBackground)
-			local barTexture = settings.textures[key .. "Bar"] or settings.textures.resourceBar
-			local borderTexture = settings.textures[key .. "Border"] or settings.textures.border
-			local backgroundTexture = settings.textures[key .. "Background"] or settings.textures.background
+			local barTexture = settings.textures and (settings.textures[key .. "Bar"] or settings.textures.resourceBar)
+			local borderTexture = settings.textures and (settings.textures[key .. "Border"] or settings.textures.border)
+			local backgroundTexture = settings.textures and (settings.textures[key .. "Background"] or settings.textures.background)
 			
 			-- Get colors from nested structure
 			local barColors = settings.colors and settings.colors.bars and settings.colors.bars[key] or {}

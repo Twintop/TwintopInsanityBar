@@ -121,7 +121,9 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		manaBar = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+		bars = {
+			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+		},
 		colors = {
 			text = {
 				current = {
@@ -174,7 +176,9 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
-			manaBar = TRB.Functions.Settings:DefaultManaBarColors(),
+			bars = {
+				mana = TRB.Functions.Settings:DefaultManaBarColors(),
+			},
 		},
 		displayText={
 			default = {
@@ -661,7 +665,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateManaBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceMaelstrom"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false, true)
@@ -734,7 +738,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateManaBarColorOptions(parent, controls, spec, 7, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 7, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)

@@ -173,14 +173,16 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 	-- Set resource bar texture
 	self.resourceFrame:SetStatusBarTexture(resourceTexture)
 
-	-- Set background texture
-	self.containerFrame:SetBackdrop({
+	-- Set background texture using backdropInfo pattern for BackdropTemplate frames
+---@diagnostic disable-next-line: inject-field
+	self.containerFrame.backdropInfo = {
 		bgFile = backgroundTexture,
 		tile = true,
 		tileSize = self.width,
 		edgeSize = 1,
 		insets = {0, 0, 0, 0}
-	})
+	}
+	self.containerFrame:ApplyBackdrop()
 
 	-- Set border texture
 	if self.border < 1 then
@@ -693,6 +695,7 @@ end
 ---@field public defaultColorsFunc function? # Function returning default colors
 ---@field public defaultTexturesFunc function? # Function returning default textures
 ---@field public visibilityKey string # Key in displayBar for visibility setting (e.g., "stagger", "mana")
+---@field public nodeColors table[]? # Array of {key, displayName, hasEnabled} for per-node color pickers (e.g., Warrior defensives)
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -718,6 +721,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.defaultColorsFunc = config.defaultColorsFunc
 	self.defaultTexturesFunc = config.defaultTexturesFunc
 	self.visibilityKey = config.visibilityKey or config.key
+	self.nodeColors = config.nodeColors -- Array of {key, displayName, hasEnabled} for per-node colors
 
 	return self
 end
@@ -970,7 +974,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	-- Stagger bar (Brewmaster Monk)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "stagger",
-		displayName = L["ResourceStagger"] or "Stagger",
+		displayName = L["ResourceStagger"],
 		isMultiNode = false,
 		maxNodes = 1,
 		minMaxMode = "percentage", -- 0-100% of max health
@@ -992,7 +996,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	-- Defensives bar (Protection Warrior)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "defensives",
-		displayName = L["ResourceWarriorDefensives"] or "Defensives",
+		displayName = L["ResourceWarriorDefensives"],
 		isMultiNode = true,
 		maxNodes = 2, -- Ignore Pain + Shield Block
 		minMaxMode = "discrete", -- 0-1 per node (buff active or not)
@@ -1000,6 +1004,10 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = nil, -- Simple colors per buff type
 		visibilityKey = "defensives",
+		nodeColors = {
+			{ key = "ignorePain", displayName = L["IgnorePain"] , hasEnabled = false },--true }, // TODO: Make these independently enableable.
+			{ key = "shieldBlock", displayName = L["ShieldBlock"] , hasEnabled = false },--true }
+		},
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 		end,
@@ -1014,7 +1022,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	-- Mana bar (Shadow Priest, Balance Druid, Elemental Shaman)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "mana",
-		displayName = L["ResourceMana"] or "Mana",
+		displayName = L["ResourceMana"],
 		isMultiNode = false,
 		maxNodes = 1,
 		minMaxMode = "mana",

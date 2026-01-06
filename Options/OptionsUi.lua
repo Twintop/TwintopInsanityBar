@@ -1445,65 +1445,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, cont
 	})
 end
 
---- Legacy wrapper for mana bar dimension options
-function TRB.Functions.OptionsUi:GenerateManaBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString)
-	if primaryResourceString == nil then
-		primaryResourceString = L["ResourceInsanity"]
-	end
-
-	return TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, {
-		settingKey = "manaBar",
-		displayName = L["ManaBar"],
-		primaryResourceString = primaryResourceString,
-		globalSettingKey = nil, -- No global setting for mana bar
-		sectionHeaderKey = "ManaBarPositionAndSize",
-		includeSpacing = false,
-		widthDivisor = 1,
-		useSmallerSanityChecks = false
-	})
-end
-
-function TRB.Functions.OptionsUi:GenerateManaBarColorOptions(parent, controls, spec, classId, specId, yCoord)
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName
-	local f = nil
-
-	controls.manaBarColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ManaBarColorHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.colors = controls.colors or {}
-	controls.colors.manaBar = controls.colors.manaBar or {}
-
-	-- Mana Bar Color
-	controls.colors.manaBar.bar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarColorBar"], spec.colors.manaBar.bar.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.manaBar.bar
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.manaBar, controls.colors.manaBar, "bar", "manaBar")
-	end)
-	
-	yCoord = yCoord - 30
-
-	-- Mana Bar Border Color
-	controls.colors.manaBar.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarColorBorder"], spec.colors.manaBar.border.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.manaBar.border
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.manaBar, controls.colors.manaBar, "border", "manaBar")
-	end)
-	
-	yCoord = yCoord - 30
-
-	-- Mana Bar Background Color
-	controls.colors.manaBar.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarColorBackground"], spec.colors.manaBar.background.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.manaBar.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.manaBar, controls.colors.manaBar, "background", "manaBar")
-	end)
-
-	yCoord = yCoord - 30
-
-	return yCoord
-end
-
 --[[
 	Custom Bar Options UI Functions
 	These functions work with bars stored under settings.bars.<key>, settings.colors.bars.<key>,
@@ -1727,12 +1668,13 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 	if barTypeDef.colorCurveType == "step" or barTypeDef.colorCurveType == "linear" then
 		return TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
 	end
-	
+
 	-- Simple bar/border/background colors
 	-- Bar Color
+	
 	if colorSettings.bar then
 		local barColorValue = type(colorSettings.bar) == "table" and colorSettings.bar.color or colorSettings.bar
-		colorControls.bar = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), barColorValue, 300, 25, oUi.xCoord, yCoord)
+		colorControls.bar = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), barColorValue, 300, 25, oUi.xCoord2, yCoord)
 		f = colorControls.bar
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "bar", barTypeDef.key)
@@ -1740,10 +1682,57 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 		yCoord = yCoord - 30
 	end
 	
+	-- Per-node colors (for multi-node bars like Warrior defensives)
+	if barTypeDef.nodeColors and colorSettings.nodeColors then
+		colorControls.nodeColors = colorControls.nodeColors or {}
+		
+		for _, nodeConfig in ipairs(barTypeDef.nodeColors) do
+			local nodeKey = nodeConfig.key
+			local nodeDisplayName = nodeConfig.displayName
+			local nodeColorSettings = colorSettings.nodeColors[nodeKey]
+			
+			if nodeColorSettings then
+				colorControls.nodeColors[nodeKey] = colorControls.nodeColors[nodeKey] or {}
+				local nodeControls = colorControls.nodeColors[nodeKey]
+				
+				if nodeConfig.hasEnabled then
+					-- Build checkbox and color picker manually for node with enable option					
+					-- Create enable checkbox
+					local checkboxName = "TwintopResourceBar_" .. namePrefix .. "_" .. nodeKey .. "_Enabled"
+					nodeControls.enabled = CreateFrame("CheckButton", checkboxName, parent, "ChatConfigCheckButtonTemplate")
+					local fCheckbox = nodeControls.enabled
+					fCheckbox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+					getglobal(fCheckbox:GetName() .. 'Text'):SetText(nodeDisplayName)
+					fCheckbox.tooltip = nodeDisplayName
+					fCheckbox:SetChecked(nodeColorSettings.enabled)
+					fCheckbox:SetScript("OnClick", function(self, ...)
+						nodeColorSettings.enabled = self:GetChecked()
+					end)
+					
+					-- Create color picker
+					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorSettings.color, 300, 25, oUi.xCoord2, yCoord)
+					f = nodeControls.color
+					f:SetScript("OnMouseDown", function(self, button, ...)
+						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[nodeKey], nodeControls, "color", barTypeDef.key .. "_node")
+					end)
+				else
+					-- Simple color picker without enable checkbox
+					local nodeColorValue = nodeColorSettings.color or nodeColorSettings
+					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorValue, 300, 25, oUi.xCoord2, yCoord)
+					f = nodeControls.color
+					f:SetScript("OnMouseDown", function(self, button, ...)
+						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors, nodeControls, nodeKey, barTypeDef.key .. "_node")
+					end)
+				end
+				yCoord = yCoord - 30
+			end
+		end
+	end	
+	
 	-- Border Color
 	if colorSettings.border then
 		local borderColorValue = type(colorSettings.border) == "table" and colorSettings.border.color or colorSettings.border
-		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, 300, 25, oUi.xCoord, yCoord)
+		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, 300, 25, oUi.xCoord2, yCoord)
 		f = colorControls.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "border", barTypeDef.key)
@@ -1754,7 +1743,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 	-- Background Color
 	if colorSettings.background then
 		local bgColorValue = type(colorSettings.background) == "table" and colorSettings.background.color or colorSettings.background
-		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, 300, 25, oUi.xCoord, yCoord)
+		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, 300, 25, oUi.xCoord2, yCoord)
 		f = colorControls.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "background", barTypeDef.key)
