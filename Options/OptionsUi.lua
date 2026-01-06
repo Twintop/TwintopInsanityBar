@@ -1202,23 +1202,12 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].width = value
 
-		local maxBorderSize = math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(spec[settingKey].width / TRB.Data.constants.borderWidthFactor))
-		local borderSize = spec[settingKey].border
-	
-		if maxBorderSize < borderSize then
-			maxBorderSize = borderSize
-		end
-
+		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
+		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
+		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
+		controls[settingKey .. "BorderWidth"]:SetValue(borderSize)
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
-		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(maxBorderSize)
-		controls[settingKey .. "BorderWidth"].EditBox:SetText(borderSize)
-
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-			end
-		end
+		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(tostring(maxBorderSize))
 	end)
 
 	title = string.format(L["SecondaryHeight"], displayName)
@@ -1228,23 +1217,12 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].height = value
 
-		local maxBorderSize = math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
-		local borderSize = spec[settingKey].border
-	
-		if maxBorderSize < borderSize then
-			maxBorderSize = borderSize
-		end
-
+		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
+		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
+		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
-		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(maxBorderSize)
-		controls[settingKey .. "BorderWidth"].EditBox:SetText(borderSize)
-
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-			end
-		end
+		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(tostring(maxBorderSize))
+		controls[settingKey .. "BorderWidth"].EditBox:SetText(tostring(borderSize))
 	end)
 
 	-- Horizontal and Vertical position sliders
@@ -1295,6 +1273,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			end
 		end
 
+		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
 		local minsliderWidth = math.max(spec[settingKey].border*2, 1)
 		local minsliderHeight = math.max(spec[settingKey].border*2, 1)
 
@@ -1303,27 +1282,11 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		local scMaxWidth = useSmallerSanityChecks and scValues.comboPointsMaxWidth or scValues.barMaxWidth
 		controls[settingKey .. "Height"]:SetMinMaxValues(minsliderHeight, scMaxHeight)
 		controls[settingKey .. "Height"].MinLabel:SetText(tostring(minsliderHeight))
-		controls[settingKey .. "Width"]:SetMinMaxValues(minsliderWidth, scMaxWidth)
-		controls[settingKey .. "Width"].MinLabel:SetText(tostring(minsliderWidth))
+		if not spec[settingKey].fullWidth then
+			controls[settingKey .. "Width"]:SetMinMaxValues(minsliderWidth, scMaxWidth)
+			controls[settingKey .. "Width"].MinLabel:SetText(tostring(minsliderWidth))
+		end
 	end)
-
-	-- Spacing slider (if applicable)
-	if includeSpacing then
-		title = string.format(L["SecondarySpacing"], displayName)
-		controls[settingKey .. "Spacing"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec[settingKey].spacing, 1, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls[settingKey .. "Spacing"]:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			spec[settingKey].spacing = value
-
-			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				end
-			end
-		end)
-	end
 
 	-- Relative To dropdown
 	yCoord = yCoord - 40
@@ -1389,6 +1352,14 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	f:SetChecked(spec[settingKey].fullWidth)
 	f:SetScript("OnClick", function(self, ...)
 		spec[settingKey].fullWidth = self:GetChecked()
+		
+		-- Update border max based on new effective width
+		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
+		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
+		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
+		controls[settingKey .. "BorderWidth"]:SetValue(borderSize)
+		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
+		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(tostring(maxBorderSize))
 		
 		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
@@ -1491,6 +1462,14 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.width = value
 		
+		local effectiveWidth = barSettings.fullWidth and spec.bar.width or barSettings.width
+		local effectiveHeight = barSettings.fullWidth and spec.bar.height or barSettings.height
+		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
+		local borderSize = math.min(maxBorderSize, barSettings.border)
+		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
+		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
+		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
+		
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 		end
@@ -1503,6 +1482,14 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	controls[barTypeDef.key .. "Height"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.height = value
+		
+		local effectiveWidth = barSettings.fullWidth and spec.bar.width or barSettings.width
+		local effectiveHeight = barSettings.fullWidth and spec.bar.height or barSettings.height
+		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
+		local borderSize = math.min(maxBorderSize, barSettings.border)
+		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
+		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
+		controls[barTypeDef.key .. "Border"].EditBox:SetText(tostring(borderSize))
 		
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
@@ -1538,8 +1525,12 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	
 	-- Border slider
 	yCoord = yCoord - 60
+	-- When fullWidth is checked, use main bar dimensions for border max (matching Health Bar behavior)
+	local effectiveWidthForBorder = barSettings.fullWidth and spec.bar.width or barSettings.width
+	local effectiveHeightForBorder = barSettings.fullWidth and spec.bar.height or barSettings.height
+	local maxBorderHeight = math.min(math.floor(effectiveHeightForBorder / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidthForBorder / TRB.Data.constants.borderWidthFactor))
 	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName), 
-		0, 10, barSettings.border, 1, 0,
+		0, maxBorderHeight, barSettings.border, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "Border"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
@@ -1547,6 +1538,16 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+		end
+		
+		local minSliderWidth = math.max(barSettings.border * 2 + 1, widthMin)
+		local minSliderHeight = math.max(barSettings.border * 2 + 1, 1)
+		
+		controls[barTypeDef.key .. "Height"]:SetMinMaxValues(minSliderHeight, TRB.Data.sanityCheckValues.barMaxHeight or 100)
+		controls[barTypeDef.key .. "Height"].MinLabel:SetText(tostring(minSliderHeight))
+		if not barSettings.fullWidth then
+			controls[barTypeDef.key .. "Width"]:SetMinMaxValues(minSliderWidth, math.ceil(widthMax / widthDivisor))
+			controls[barTypeDef.key .. "Width"].MinLabel:SetText(tostring(minSliderWidth))
 		end
 	end)
 	
@@ -1623,6 +1624,15 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	f:SetChecked(barSettings.fullWidth)
 	f:SetScript("OnClick", function(self, ...)
 		barSettings.fullWidth = self:GetChecked()
+		
+		-- Update border max based on new effective width/height (matching Health Bar behavior)
+		local effectiveWidth = barSettings.fullWidth and spec.bar.width or barSettings.width
+		local effectiveHeight = barSettings.fullWidth and spec.bar.height or barSettings.height
+		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
+		local borderSize = math.min(maxBorderSize, barSettings.border)
+		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
+		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
+		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
 		
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)

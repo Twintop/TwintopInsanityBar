@@ -435,8 +435,10 @@ end
 
 ---Configuration for constructing an anchored bar group
 ---@class TRB.Classes.AnchoredBarGroupConfig
----@field public settingsKey string # Key to read from settings (e.g., "comboPoints", "healthBar")
----@field public colorsKey string # Key to read from settings.colors (e.g., "comboPoints", "healthBar")
+---@field public settingsKey string? # Key to read from settings (e.g., "comboPoints", "healthBar"). Ignored if settingsTable is provided.
+---@field public settingsTable table? # Direct settings table to use instead of looking up via settingsKey
+---@field public colorsKey string? # Key to read from settings.colors (e.g., "comboPoints", "healthBar"). Ignored if colorsTable is provided.
+---@field public colorsTable table? # Direct colors table to use instead of looking up via colorsKey
 ---@field public nodeCount integer? # Fixed node count, or nil to use TRB.Data.character.maxResource2
 ---@field public useApplyLayout boolean # If true, use group:ApplyLayout(); if false, size single node directly
 ---@field public defaultAnchorAbove boolean # If true, default anchor is TOP; if false, default is BOTTOM
@@ -451,7 +453,8 @@ end
 ---@param config TRB.Classes.AnchoredBarGroupConfig # Configuration for this bar group type
 ---@param applyAppearance boolean?
 function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targetGroup, config, applyAppearance)
-	local groupSettings = settings[config.settingsKey]
+	-- Allow direct settings table OR lookup by key
+	local groupSettings = config.settingsTable or (config.settingsKey and settings[config.settingsKey])
 	if groupSettings == nil then
 		return
 	end
@@ -622,7 +625,8 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 	-- Apply appearance only when requested
 	if applyAppearance then
-		local colorSettings = settings.colors[config.colorsKey]
+		-- Allow direct colors table OR lookup by key
+		local colorSettings = config.colorsTable or (config.colorsKey and settings.colors[config.colorsKey])
 		if colorSettings then
 			for i = 1, nodes do
 				local node = targetGroup:GetNode(i)
@@ -731,22 +735,22 @@ function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healt
 end
 
 ---Applies layout to all custom bar groups registered in the BarTypeRegistry
+---Uses ConstructAnchoredBarGroup for consistent positioning with health bar and combo points
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
 function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
-	if settings == nil or barGroups == nil then
+	if settings == nil or barGroups == nil or barGroups.primary == nil then
 		return
 	end
 	
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local allBarTypes = registry:GetAll()
-	local frameLevels = TRB.Data.constants.frameLevels
 	
 	for key, barTypeDef in pairs(allBarTypes) do
 		local barGroup = barGroups[key]
 		local barSettings = settings.bars and settings.bars[key]
 		
-		-- Apply layout if bar group exists, even if barSettings is missing (use defaults from registry)
+		-- Apply layout if bar group exists
 		if barGroup then
 			-- Get dimensions from settings or defaults from registry
 			local defaultSettings = nil
@@ -755,125 +759,42 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			end
 			local effectiveSettings = barSettings or defaultSettings or {}
 			
-			local width = effectiveSettings.width or 555
-			local height = effectiveSettings.height or 24
-			local border = effectiveSettings.border or 2
-			local spacing = effectiveSettings.spacing or 0
-			local fullWidth = effectiveSettings.fullWidth or false
-			local relativeTo = effectiveSettings.relativeTo or "TOP"
-			local xPos = effectiveSettings.xPos or 0
-			local yPos = effectiveSettings.yPos or 4
+			-- Ensure effectiveSettings has required fields with defaults
+			effectiveSettings.width = effectiveSettings.width or 555
+			effectiveSettings.height = effectiveSettings.height or 24
+			effectiveSettings.border = effectiveSettings.border or 2
+			effectiveSettings.spacing = effectiveSettings.spacing or 0
+			effectiveSettings.fullWidth = effectiveSettings.fullWidth or false
+			effectiveSettings.relativeTo = effectiveSettings.relativeTo or "TOP"
+			effectiveSettings.xPos = effectiveSettings.xPos or 0
+			effectiveSettings.yPos = effectiveSettings.yPos or 4
 			
-			-- Set node count
-			local nodeCount = barTypeDef.maxNodes or 1
-			barGroup:SetNodeCount(nodeCount)
+			-- Get color settings
+			local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[key]
 			
-			-- Set layout
-			if barTypeDef.hasSpacing then
-				barGroup:SetLayout(spacing, fullWidth, "HORIZONTAL")
-			end
+			-- Build config for ConstructAnchoredBarGroup
+			---@type TRB.Classes.AnchoredBarGroupConfig
+			local config = {
+				settingsTable = effectiveSettings,
+				colorsTable = colorSettings,
+				nodeCount = barTypeDef.maxNodes or 1,
+				useApplyLayout = barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1,
+				defaultAnchorAbove = true, -- Custom bars default to above primary bar
+				textures = {
+					bar = key .. "Bar",
+					border = key .. "Border",
+					background = key .. "Background"
+				},
+				colors = {
+					border = "border",
+					background = "background",
+					bar = "bar"
+				},
+				minMaxMode = barTypeDef.minMaxMode or "custom"
+			}
 			
-			-- Position relative to primary bar
-			if barGroups.primary and barGroups.primary.containerFrame then
-				barGroup.containerFrame:ClearAllPoints()
-				-- Determine anchor point based on relativeTo position
-				-- If relativeTo = "TOP", anchor stagger's BOTTOM to primary's TOP
-				-- If relativeTo = "BOTTOM", anchor stagger's TOP to primary's BOTTOM
-				-- For LEFT/RIGHT, mirror horizontally
-				local selfAnchor
-				if relativeTo == "TOP" then
-					selfAnchor = "BOTTOM"
-				elseif relativeTo == "BOTTOM" then
-					selfAnchor = "TOP"
-				elseif relativeTo == "LEFT" then
-					selfAnchor = "RIGHT"
-				elseif relativeTo == "RIGHT" then
-					selfAnchor = "LEFT"
-				elseif relativeTo == "TOPLEFT" then
-					selfAnchor = "BOTTOMLEFT"
-				elseif relativeTo == "TOPRIGHT" then
-					selfAnchor = "BOTTOMRIGHT"
-				elseif relativeTo == "BOTTOMLEFT" then
-					selfAnchor = "TOPLEFT"
-				elseif relativeTo == "BOTTOMRIGHT" then
-					selfAnchor = "TOPRIGHT"
-				else
-					selfAnchor = "BOTTOM" -- Default to BOTTOM if unknown
-				end
-				barGroup.containerFrame:SetPoint(selfAnchor, barGroups.primary.containerFrame, relativeTo, xPos, yPos)
-			end
-			
-			-- Apply layout for multi-node or size for single-node
-			if barTypeDef.isMultiNode and nodeCount > 1 then
-				barGroup:ApplyLayout(
-					settings.bar.width,
-					width,
-					height,
-					border
-				)
-				
-				-- Set min/max for each node based on bar type's minMaxMode
-				local minMaxMode = barTypeDef.minMaxMode
-				for i = 1, nodeCount do
-					local node = barGroup:GetNode(i)
-					if node then
-						if minMaxMode == "health" or minMaxMode == "percentage" then
-							local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
-							node:SetMinMax(0, healthMax)
-						elseif minMaxMode == "mana" then
-							local manaMax = UnitPowerMax("player", Enum.PowerType.Mana) or 1
-							node:SetMinMax(0, manaMax)
-						elseif minMaxMode == "discrete" then
-							node:SetMinMax(0, 1)
-						end
-						-- "custom" mode leaves min/max to be set externally
-					end
-				end
-			else
-				-- Single node sizing
-				local effectiveWidth
-				if fullWidth then
-					-- Match primary bar width when fullWidth is enabled
-					effectiveWidth = settings.bar.width or 555
-				else
-					effectiveWidth = width
-				end
-				barGroup.containerFrame:SetWidth(effectiveWidth)
-				barGroup.containerFrame:SetHeight(height)
-				
-				local node = barGroup:GetNode(1)
-				if node then
-					node:SetDimensions(effectiveWidth, height, border)
-					node:SetFrameLevels(
-						frameLevels.cpContainer,
-						frameLevels.cpBorder,
-						frameLevels.cpResource
-					)
-					
-					-- Set min/max based on bar type's minMaxMode
-					local minMaxMode = barTypeDef.minMaxMode
-					if minMaxMode == "health" or minMaxMode == "percentage" then
-						local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
-						node:SetMinMax(0, healthMax)
-					elseif minMaxMode == "mana" then
-						local manaMax = UnitPowerMax("player", Enum.PowerType.Mana) or 1
-						node:SetMinMax(0, manaMax)
-					elseif minMaxMode == "discrete" then
-						node:SetMinMax(0, 1)
-					end
-					-- "custom" mode leaves min/max to be set externally
-					
-					local nodeContainer = node:GetContainerFrame()
-					if nodeContainer then
-						nodeContainer:ClearAllPoints()
-						nodeContainer:SetAllPoints(barGroup.containerFrame)
-					end
-					node:PositionResourceFrame()
-				end
-			end
-			
-			barGroup:Show()
-			barGroup:ShowNodes(nodeCount)
+			-- Call ConstructAnchoredBarGroup (layout only, appearance handled separately)
+			self:ConstructAnchoredBarGroup(settings, barGroups.primary, barGroup, config, false)
 		end
 	end
 end

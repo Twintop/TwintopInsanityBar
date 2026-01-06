@@ -142,6 +142,7 @@ end
 function TRB.Classes.BarNode:SetDimensions(width, height, border)
 	self.width = width
 	self.height = height
+	local borderChanged = border ~= nil and border ~= self.border
 	if border then
 		self.border = border
 	end
@@ -156,6 +157,28 @@ function TRB.Classes.BarNode:SetDimensions(width, height, border)
 	self.borderFrame:SetHeight(height)
 
 	self.resourceFrame:SetHeight(innerHeight)
+
+	-- Update the border frame's edgeSize when border changes
+	-- This is necessary because edgeSize is part of backdropInfo, not just frame dimensions
+	if borderChanged and self.borderFrame.backdropInfo then
+		if self.border < 1 then
+			self.borderFrame.backdropInfo.edgeSize = 1
+			self.borderFrame:ApplyBackdrop()
+			self.borderFrame:SetBackdropColor(0, 0, 0, 0)
+			self.borderFrame:Hide()
+		else
+			self.borderFrame.backdropInfo.edgeSize = self.border
+			self.borderFrame:ApplyBackdrop()
+			self.borderFrame:SetBackdropColor(0, 0, 0, 0)
+			self.borderFrame:Show()
+		end
+		-- Restore cached border color after ApplyBackdrop resets it
+		local borderCacheKey = self.name .. "_border"
+		local cachedColor = TRB.Data.cache.colors.border[borderCacheKey]
+		if cachedColor then
+			self.borderFrame:SetBackdropBorderColor(cachedColor.r, cachedColor.g, cachedColor.b, cachedColor.a)
+		end
+	end
 end
 
 ---Sets the border size
