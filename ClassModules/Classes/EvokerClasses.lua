@@ -62,6 +62,8 @@ end
 
 ---@class TRB.Classes.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public essenceBurst TRB.Classes.SpellBase
+---@field public ebonMight TRB.Classes.SpellBase
+---@field public erruption TRB.Classes.SpellBase
 ---@field public temporalBurst TRB.Classes.SpellBase
 ---@field public meltArmor TRB.Classes.SpellBase
 TRB.Classes.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -76,7 +78,16 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 		id = 392268,
 		isBuff = true
 	})
-	
+    self.ebonMight = TRB.Classes.SpellBase:New({
+        id = 395296,
+        talentId = 395152,
+        isBuff = true,
+        isTalent = true
+    })
+	self.erruption = TRB.Classes.SpellBase:New({
+        id = 395160,
+        isTalent = true
+    })
 	-- Chronowarden
 	self.temporalBurst = TRB.Classes.SpellBase:New({
 		id = 431698,

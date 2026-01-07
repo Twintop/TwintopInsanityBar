@@ -15,12 +15,12 @@ local function AuraUpdateEvent(self, event, unit, info)
 	-- Short circuit this for now
 	if unit == "player" then
 		TRB.Data.cache.values.resource = {}
-		return
-	elseif 1 == 1 then
+		--return
+	elseif unit ~= "player" then
 		return
 	end
 	
-	if info.isFullUpdate then
+	if not issecretvalue(info.isFullUpdate) and info.isFullUpdate then
 		--Only do a full refresh of buffs for now
 		snapshotData:RefreshAllBuffs()
 		TRB.Data.cache.values.resource = {}
@@ -36,21 +36,23 @@ local function AuraUpdateEvent(self, event, unit, info)
 	if info.addedAuras then
 		if unit == "player" then
 			for _, v in pairs(info.addedAuras) do
-				local snapshot = snapshotData.snapshots[v.spellId]
+				if not issecretvalue(v.spellId) then
+					local snapshot = snapshotData.snapshots[v.spellId]
 
-				if snapshot ~= nil then
-					snapshot.buff:RefreshWithAuraData(v)
-				end
+					if snapshot ~= nil then
+						snapshot.buff:RefreshWithAuraData(v)
+					end
 
-				if v.isFromPlayerOrPlayerPet and targetData.trackedSpells[v.spellId] ~= nil and
-					specCache.spellsData.spellsById[v.spellId] ~= nil and specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed then
+					if v.isFromPlayerOrPlayerPet and targetData.trackedSpells[v.spellId] ~= nil and
+						specCache.spellsData.spellsById[v.spellId] ~= nil and specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed then
 
-					if TRB.Functions.Class:InitializeTarget(TRB.Data.character.guid, specCache.spellsData.spellsById[v.spellId][1].isFriend, specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed) then
-						targetData:HandleCombatLogBuff(v.spellId, "SPELL_AURA_APPLIED", TRB.Data.character.guid)
+						if TRB.Functions.Class:InitializeTarget(TRB.Data.character.guid, specCache.spellsData.spellsById[v.spellId][1].isFriend, specCache.spellsData.spellsById[v.spellId][1].isSelfInitializeAllowed) then
+							targetData:HandleCombatLogBuff(v.spellId, "SPELL_AURA_APPLIED", TRB.Data.character.guid)
+						end
 					end
 				end
+				TRB.Data.cache.values.resource = {}
 			end
-			TRB.Data.cache.values.resource = {}
 		else
 			-- This code works but has a fundamental flaw: UNIT_AURA only gives updates for the player, pet, and visible nameplates.
 			-- For adding auras, e.g. SPELL_AURA_APPLIED, we need to use COMBAT_LOG_EVENT_UNFILTERED in the class module instead.
@@ -314,6 +316,8 @@ function TRB.Functions.Aura:FindBuffById(spellId, onWhom, byWhom)
 		buffData = C_UnitAuras.GetBuffDataByIndex(onWhom, i)
 		if not buffData then
 			return
+		elseif issecretvalue(buffData.spellId) then
+			-- do nothing
 		elseif spellId == buffData.spellId and (byWhom == nil or byWhom == buffData.sourceUnit) then
 			return buffData
 		end
@@ -336,6 +340,8 @@ function TRB.Functions.Aura:FindDebuffById(spellId, onWhom, byWhom)
 		debuffData = C_UnitAuras.GetDebuffDataByIndex(onWhom, i)
 		if not debuffData then
 			return
+		elseif issecretvalue(buffData.spellId) then
+			-- do nothing
 		elseif spellId == debuffData.spellId and (byWhom == nil or byWhom == debuffData.sourceUnit) then
 			return debuffData
 		end

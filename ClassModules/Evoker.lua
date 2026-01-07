@@ -151,14 +151,18 @@ local function FillSpecializationCache()
 	spells = specCache.augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
 	specCache.augmentation.snapshotData.attributes.manaRegen = 0
+	specCache.augmentation.snapshotData.attributes.extendsEbonMight = false
 	specCache.augmentation.snapshotData.audio = {
 		essenceBurstCue = false,
-		essenceBurst2Cue = false
+		essenceBurst2Cue = false,
+		playedEbonMightEndingCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.augmentation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
 	---@type TRB.Classes.Snapshot
 	specCache.augmentation.snapshotData.snapshots[spells.temporalBurst.id] = TRB.Classes.Snapshot:New(spells.temporalBurst)
+	---@type TRB.Classes.Snapshot
+	specCache.augmentation.snapshotData.snapshots[spells.ebonMight.id] = TRB.Classes.Snapshot:New(spells.ebonMight)
 
 	specCache.augmentation.barTextVariables = {
 		icons = {},
@@ -341,6 +345,7 @@ local function FillSpellData_Augmentation()
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
 		{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
+		{ variable = "#ebonMight", icon = spells.ebonMight.icon, description = spells.ebonMight.name, printInSettings = true },
 		{ variable = "#meltArmor", icon = spells.meltArmor.icon, description = spells.meltArmor.name, printInSettings = true },
 		{ variable = "#temporalBurst", icon = spells.temporalBurst.icon, description = spells.temporalBurst.name, printInSettings = true },
 	}
@@ -392,6 +397,8 @@ local function FillSpellData_Augmentation()
 		{ variable = "$essenceRegenTime", description = L["EvokerAugmentationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerAugmentationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+
+		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false },
 	}
 end
 
@@ -640,6 +647,10 @@ local function RefreshLookupData_Augmentation()
 	end
 	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
+	--$ebonMightTime
+	local _ebonMightTime = snapshots[spells.ebonMight.id].buff:GetRemainingTime(currentTime)
+	local ebonMightTime = TRB.Functions.BarText:TimerPrecision(_ebonMightTime)
+
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -654,6 +665,7 @@ local function RefreshLookupData_Augmentation()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$essenceMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookup["$ebonMightTime"] = ebonMightTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -669,6 +681,7 @@ local function RefreshLookupData_Augmentation()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookupLogic["$ebonMightTime"] = _ebonMightTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -698,6 +711,22 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		end
 	elseif TRB.Data.character.specId == 3 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			-- Track if we're casting an ability that extends Ebon Might
+			if spellId == spells.erruption.id then
+				snapshotData.attributes.extendsEbonMight = true
+				casting:SnapshotSpell()
+			else
+				snapshotData.attributes.extendsEbonMight = false
+				casting:Reset()
+			end
+		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+			snapshotData.attributes.extendsEbonMight = false
+			casting:Reset()
+		else
+			casting:Reset()
+		end
 	end
 end
 
@@ -984,6 +1013,53 @@ local function UpdateResourceBar()
 					end
 				end
 
+				-- Ebon Might bar color changes
+				if snapshots[spells.ebonMight.id].buff.isActive then
+					local ebonMightTimeLeft = snapshots[spells.ebonMight.id].buff.remaining
+					local ebonMightTimeThreshold = 0
+					local useEndOfEbonMightColor = false
+
+					if specSettings.endOfEbonMight.enabled then
+						useEndOfEbonMightColor = true
+						if specSettings.endOfEbonMight.mode == "gcd" then
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							ebonMightTimeThreshold = gcd * specSettings.endOfEbonMight.gcdsMax
+						elseif specSettings.endOfEbonMight.mode == "time" then
+							ebonMightTimeThreshold = specSettings.endOfEbonMight.timeMax
+						end
+					end
+
+					-- Check if casting an ability that extends Ebon Might but won't finish before it expires
+					local castTimeRemaining = 0
+					if snapshotData.attributes.extendsEbonMight and snapshotData.casting.endTime ~= nil then
+						castTimeRemaining = snapshotData.casting.endTime - currentTime
+						if castTimeRemaining < 0 then
+							castTimeRemaining = 0
+						end
+					end
+
+					if specSettings.colors.bar.ebonMightDropDuringCast.enabled and snapshotData.attributes.extendsEbonMight and castTimeRemaining > ebonMightTimeLeft then
+						-- Cast will finish after Ebon Might expires
+						barColor = specSettings.colors.bar.ebonMightDropDuringCast.color
+
+						-- Play audio cue for ending soon
+						if specSettings.audio.ebonMightEnding.enabled and not snapshotData.audio.playedEbonMightEndingCue then
+							snapshotData.audio.playedEbonMightEndingCue = true
+							PlaySoundFile(specSettings.audio.ebonMightEnding.sound, coreSettings.audio.channel.channel)
+							print("play")
+						end
+					elseif useEndOfEbonMightColor and specSettings.colors.bar.inEbonMight1GCD.enabled and ebonMightTimeLeft <= ebonMightTimeThreshold then
+						-- Ebon Might is ending soon
+						barColor = specSettings.colors.bar.inEbonMight1GCD.color
+					elseif specSettings.colors.bar.inEbonMight.enabled then
+						-- Ebon Might is active
+						barColor = specSettings.colors.bar.inEbonMight.color
+						snapshotData.audio.playedEbonMightEndingCue = false
+					end
+				else
+					snapshotData.audio.playedEbonMightEndingCue = false
+				end
+
 				if primaryNode then
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
@@ -1099,6 +1175,7 @@ local function SwitchSpec()
 		lookup["#essenceBurst"] = spells.essenceBurst.icon
 		lookup["#meltArmor"] = spells.meltArmor.icon
 		lookup["#temporalBurst"] = spells.temporalBurst.icon
+		lookup["#ebonMight"] = spells.ebonMight.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1448,6 +1525,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if TRB.Data.character.specId == 1 then --Devastation			
 	elseif TRB.Data.character.specId == 2 then --Preservation
 	elseif TRB.Data.character.specId == 3 then -- Augmentation
+		if var == "$ebonMightTime" then
+			if snapshots[spells.ebonMight.id].buff.isActive then
+				valid = true
+			end
+		end
 	end
 
 	-- Chronowarden

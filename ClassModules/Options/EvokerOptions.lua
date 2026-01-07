@@ -539,6 +539,18 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				temporalBurst={
 					color = "FFFCE58E",
 					enabled = true
+				},
+				inEbonMight = {
+					color = "FFFF9900",
+					enabled = true
+				},
+				inEbonMight1GCD = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				ebonMightDropDuringCast = {
+					color = "FF550000",
+					enabled = true
 				}
 			},
 			comboPoints = {
@@ -591,6 +603,18 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
 			},
+			ebonMightEnding={
+				name = L["EvokerAugmentationAudioEbonMightEnding"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+		},
+		endOfEbonMight = {
+			enabled = true,
+			mode = "gcd",
+			gcdsMax = 2,
+			timeMax = 3.0
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -1651,6 +1675,57 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
+	
+	yCoord = yCoord - 30
+	controls.checkBoxes.inEbonMight = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_inEbonMight", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.inEbonMight
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMight"])
+	f.tooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"]
+	f:SetChecked(spec.colors.bar.inEbonMight.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.inEbonMight.enabled = self:GetChecked()
+	end)
+
+	controls.colors.inEbonMight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMight"], spec.colors.bar.inEbonMight.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.inEbonMight
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inEbonMight")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.endOfEbonMight = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_endOfEbonMight", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.endOfEbonMight
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEndOfEbonMight"])
+	f.tooltip = L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"]
+	f:SetChecked(spec.colors.bar.inEbonMight1GCD.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.inEbonMight1GCD.enabled = self:GetChecked()
+	end)
+
+	controls.colors.inEbonMight1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightEnd"], spec.colors.bar.inEbonMight1GCD.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.inEbonMight1GCD
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inEbonMight1GCD")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.ebonMightDropDuringCast = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightDropDuringCast", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ebonMightDropDuringCast
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMightDropDuringCast"])
+	f.tooltip = L["EvokerAugmentationCheckboxEbonMightDropDuringCastTooltip"]
+	f:SetChecked(spec.colors.bar.ebonMightDropDuringCast.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.ebonMightDropDuringCast.enabled = self:GetChecked()
+	end)
+
+	controls.colors.ebonMightDropDuringCast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightDropDuringCast"], spec.colors.bar.ebonMightDropDuringCast.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.ebonMightDropDuringCast
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMightDropDuringCast")
+	end)
 
 	yCoord = yCoord - 30
 	controls.colors.meltArmor = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerMeltArmor"], spec.colors.bar.meltArmor.color, 300, 25, oUi.xCoord2, yCoord)
@@ -1760,7 +1835,7 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
-	yCoord = yCoord - 30		
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1781,7 +1856,51 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 3, yCoord)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+
+	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.endOfEbonMightModeGCDs = CreateFrame("CheckButton", "TRB_EOEM_M_GCD", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfEbonMightModeGCDs
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EndOfAuraGcdMode"])
+	if spec.endOfEbonMight.mode == "gcd" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfEbonMightModeGCDs:SetChecked(true)
+		controls.checkBoxes.endOfEbonMightModeTime:SetChecked(false)
+		spec.endOfEbonMight.mode = "gcd"
+	end)
+
+	controls.endOfEbonMightGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, L["EndOfAuraGcdSlider"], 0.5, 10, spec.endOfEbonMight.gcdsMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfEbonMightGCDs:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.endOfEbonMight.gcdsMax = value
+	end)
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.endOfEbonMightModeTime = CreateFrame("CheckButton", "TRB_EOEM_M_TIME", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfEbonMightModeTime
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EndOfAuraTimeMode"])
+	if spec.endOfEbonMight.mode == "time" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfEbonMightModeGCDs:SetChecked(false)
+		controls.checkBoxes.endOfEbonMightModeTime:SetChecked(true)
+		spec.endOfEbonMight.mode = "time"
+	end)
+
+	controls.endOfEbonMightTime = TRB.Functions.OptionsUi:BuildSlider(parent, L["EndOfAuraTimeSlider"], 0, 15, spec.endOfEbonMight.timeMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfEbonMightTime:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.endOfEbonMight.timeMax = value
+	end)
 end
 
 local function AugmentationConstructFontAndTextPanel(parent)
@@ -1844,6 +1963,8 @@ local function AugmentationConstructAudioAndTrackingPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurstStack1"], L["EvokerAudioCheckboxEssenceBurstStack1Tooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst2", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurstStack2"], L["EvokerAudioCheckboxEssenceBurstStack2Tooltip"])
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "ebonMightEnding", spec, classId, specId, yCoord, L["EvokerAugmentationAudioCheckboxEbonMightEnding"], L["EvokerAugmentationAudioCheckboxEbonMightEndingTooltip"])
 end
 
 local function AugmentationConstructBarTextDisplayPanel(parent, cache)

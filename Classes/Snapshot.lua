@@ -610,7 +610,7 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 			end
 		elseif eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_DISPEL" then -- Lost buff
 			self:Reset()
-		elseif eventType == "SPELL_PERIODIC_ENERGIZE" then -- Tick with gain of energy		
+		elseif eventType == "SPELL_PERIODIC_ENERGIZE" then -- Tick with gain of energy
 			self:GetRemainingTime()
 
 			if self.hasTicks then
@@ -620,7 +620,7 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 			local currentTime = currentTime or GetTime()
 			local foundId = nil
 			
-			if unit == "player" then
+			if 1 == 2 and unit == "player" then -- We're disabling this for now because it causes `[ADDON_ACTION_BLOCKED]` errors the first time it fires.
 				foundId = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
 			else
 				foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
@@ -859,6 +859,25 @@ function TRB.Classes.SnapshotCasting:Reset()
 	self.spellKey = nil
 	self.gcdLockRemaining = 0
 	self.gcdLockLastUpdate = nil
+end
+
+function TRB.Classes.SnapshotCasting:SnapshotSpell()
+	local startTime, endTime, spellId
+	_, _, _, startTime, endTime, _, _, _, spellId = UnitCastingInfo("player")
+
+	if spellId == nil then
+		_, _, _, startTime, endTime, _, _, spellId, _ = UnitChannelInfo("player")
+	end
+	
+	if spellId ~= nil then
+		local spellInfo = C_Spell.GetSpellInfo(spellId)
+
+		self.startTime = startTime / 1000
+		self.endTime = endTime / 1000
+		self.resourceRaw = manaCost
+		self.spellId = spellInfo.spellID
+		self.icon = string.format("|T%s:0|t", spellInfo.iconID)
+	end
 end
 
 function TRB.Classes.SnapshotCasting:SnapshotManaSpell()
