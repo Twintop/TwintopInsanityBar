@@ -55,75 +55,6 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			secondary = 2,
 			resource = 0
 		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-				algariManaPotionRank1 = {
-					enabled = false,
-				},
-				algariManaPotionRank2 = {
-					enabled = false,
-				},
-				algariManaPotionRank3 = {
-					enabled = true,
-				},
-				cavedwellersDelightRank1 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank2 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank3 = {
-					enabled = true,
-				},
-				slumberingSoulSerumRank1 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank2 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank3 = {
-					enabled = true,
-				},
-				shadowfiend = {
-					enabled = true,
-					cooldown = false
-				},
-				mindbender = {
-					enabled = true,
-					cooldown = false
-				},
-				voidwraith = {
-					enabled = true,
-					cooldown = false
-				},
-				cannibalize = {
-					enabled = false,
-					cooldown = false
-				},
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},
-		},
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
@@ -261,67 +192,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			secondary = 2,
 			resource = 0
 		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-				algariManaPotionRank1 = {
-					enabled = false,
-				},
-				algariManaPotionRank2 = {
-					enabled = false,
-				},
-				algariManaPotionRank3 = {
-					enabled = true,
-				},
-				cavedwellersDelightRank1 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank2 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank3 = {
-					enabled = true,
-				},
-				slumberingSoulSerumRank1 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank2 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank3 = {
-					enabled = true,
-				},
-				shadowfiend = {
-					enabled = true,
-					cooldown = false
-				},
-				cannibalize = {
-					enabled = false,
-					cooldown = false
-				},
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},
-		},
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
@@ -450,7 +320,34 @@ end
 local function ShadowLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
+	}
+
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$vfTime}[#voidform$vfTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
@@ -472,8 +369,8 @@ local function ShadowLoadDefaultBarTextSettings(classic)
 				relativeToFrame = "Resource",
 				relativeToFrameName = L["MainResourceBar"]
 			}
-		},
-	}
+		})
+	end
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end

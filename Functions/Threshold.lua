@@ -207,10 +207,12 @@ end
 function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, height, borderColor)
 	threshold:SetWidth(width)
 	threshold:SetHeight(height)
+---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Show()
+---@diagnostic disable-next-line: inject-field
 	threshold.hasIcon = false
 	
 	TRB.Functions.Color:SetThresholdColor(threshold, borderColor, true)

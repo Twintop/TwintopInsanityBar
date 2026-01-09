@@ -51,12 +51,7 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.attributes.manaRegen = 0
 	specCache.holy.snapshotData.audio = {
 		innervateCue = false,
-		infusionOfLightCue = false,
-		infusionOfLight2Cue = false
 	}
-
-	--[[---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.infusionOfLight.id] = TRB.Classes.Snapshot:New(spells.infusionOfLight)]]
 
 	specCache.holy.barTextVariables = {
 		icons = {},
@@ -146,9 +141,6 @@ local function FillSpellData_Holy()
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-		
-		--[[{ variable = "#iol", icon = spells.infusionOfLight.icon, description = spells.infusionOfLight.name, printInSettings = true },
-		{ variable = "#infusionOfLight", icon = spells.infusionOfLight.icon, description = spells.infusionOfLight.name, printInSettings = false },]]
 	}
 	specCache.holy.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -467,14 +459,6 @@ local function RefreshLookupData_Holy()
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
 	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
-
-	--[[--$iolTime
-	local _iolTime = snapshots[spells.infusionOfLight.id].buff:GetRemainingTime(currentTime)
-	local iolTime = TRB.Functions.BarText:TimerPrecision(_iolTime)
-	--$iolTicks
-	local _iolStacks = snapshots[spells.infusionOfLight.id].buff.applications
-	local iolStacks = string.format("%.0f", _iolStacks)
-	]]
 
 	--$manaMax
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))

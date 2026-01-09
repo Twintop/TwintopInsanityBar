@@ -623,9 +623,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.healthBar = spec.healthBar
 	end
 
-	-- Mana bar settings (no global toggle, always use spec settings if present)
-	if spec.manaBar then
-		specCache.settings.manaBar = spec.manaBar
+	-- Extra bar settings (no global toggle, always use spec settings if present)
+	if spec.bars then
+		specCache.settings.bars = spec.bars
 	end
 
 ---@diagnostic disable-next-line: missing-fields
@@ -646,6 +646,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 ---@diagnostic disable-next-line: missing-fields
 		threshold = {},
 		comboPoints = spec.colors.comboPoints,
+		bars = spec.colors.bars,
 		healthBar = spec.colors.healthBar,
 		manaBar = spec.colors.manaBar
 	}
@@ -720,20 +721,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			for key, _ in pairs(spec.thresholds.thresholdDictionary) do
 				specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
 			end
-		end
-		
-		if isHealer then
-			--[[if s.thresholdPotions then
-				specCache.settings.thresholds.potionCooldown = core.thresholds.potionCooldown
-			else
-				specCache.settings.thresholds.potionCooldown = spec.thresholds.potionCooldown
-			end
-
-			if s.thresholdHealers then
-				for key, _ in pairs(core.thresholds.thresholdDictionaryHealers) do
-					specCache.settings.thresholds.thresholdDictionary[key] = core.thresholds.thresholdDictionaryHealers[key]
-				end
-			end]]
 		end
 	else
 		specCache.settings.thresholds = {

@@ -86,12 +86,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				}
 			}
 		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
-		},
 		maxResource = {
 			value = BEAST_MASTERY_MAX_FOCUS,
 			enabled = false
@@ -278,12 +272,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 			},
 			}
 		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
-		},
 		maxResource = {
 			value = MARKSMANSHIP_MAX_FOCUS,
 			enabled = false
@@ -467,12 +455,6 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 			}
-		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
 		},
 		maxResource = {
 			value = SURVIVAL_MAX_FOCUS,

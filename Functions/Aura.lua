@@ -197,7 +197,7 @@ local function AuraUpdateEventCache(self, event, unit, info)
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
 				if auraCache[v] ~= nil then
 					-- TODO: something about refreshing
-					print("Refreshing aura ID " .. v)
+					--print("Refreshing aura ID " .. v)
 				end
 			end
 		end

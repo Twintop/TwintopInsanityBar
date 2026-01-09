@@ -126,12 +126,6 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 				},
 			}
 		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
-		},
 		maxResource = {
 			value = ASSASSINATION_MAX_ENERGY,
 			enabled = false
@@ -165,9 +159,7 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 				border="FFFFD300",
 				borderStealth="FF000000",
 				background="66000000",
-				base="FFFFFF00",
-				noSliceAndDice="FFFF0000",
-				sliceAndDicePandemic="FFFF9900",
+				base="FFFFFF00"
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -342,12 +334,6 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 				}
 			}
 		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
-		},
 		maxResource = {
 			value = OUTLAW_MAX_ENERGY,
 			enabled = false
@@ -383,9 +369,7 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 				borderRtbBad="FFFF8888",
 				borderRtbGood="FF00FF00",
 				background="66000000",
-				base="FFFFFF00",
-				noSliceAndDice="FFFF0000",
-				sliceAndDicePandemic="FFFF9900",
+				base="FFFFFF00"
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -569,12 +553,6 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 				}
 			}
 		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
-		},
 		maxResource = {
 			value = SUBTLETY_MAX_ENERGY,
 			enabled = false
@@ -609,9 +587,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 				borderStealth="FF000000",
 				borderShadowcraft = "FF431863",
 				background="66000000",
-				base="FFFFFF00",
-				noSliceAndDice="FFFF0000",
-				sliceAndDicePandemic="FFFF9900",
+				base="FFFFFF00"
 			},
 			comboPoints = {
 				border="FFFFD300",
@@ -836,20 +812,6 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
-
-	--[[yCoord = yCoord - 30
-	controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.sliceAndDicePandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "sliceAndDicePandemic")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDiceDown"], spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.noSliceAndDice
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
-	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -1303,72 +1265,6 @@ local function AssassinationConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "blindside", spec, classId, specId, yCoord, L["RogueAssassinationAudioCheckboxBlindsideProc"], L["RogueAssassinationAudioCheckboxBlindsideProcTooltip"])
-
-	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackEnergyRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegen"])
-	f.tooltip = L["CheckboxTrackEnergyRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = L["RogueCheckboxEnergyRegenGcdsTooltip"]
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	title = L["TrackEnergyRegenEnergyGcds"]
-	controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.generation.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = L["RogueCheckboxEnergyRegenTimeTooltip"]
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["TrackEnergyRegenEnergyTime"]
-	controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)]]
 end
 
 local function AssassinationConstructBarTextDisplayPanel(parent, cache)
@@ -1635,20 +1531,6 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
-
-	--[[yCoord = yCoord - 30
-	controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.sliceAndDicePandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "sliceAndDicePandemic")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDiceDown"], spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.noSliceAndDice
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
-	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -2118,72 +2000,6 @@ local function OutlawConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "opportunity", spec, classId, specId, yCoord, L["RogueOutlawAudioCheckboxOpportunityProc"], L["RogueOutlawAudioCheckboxOpportunityProcTooltip"])
-
-	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackEnergyRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegen"])
-	f.tooltip = L["CheckboxTrackEnergyRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = L["RogueCheckboxEnergyRegenGcdsTooltip"]
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	title = L["TrackEnergyRegenEnergyGcds"]
-	controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.generation.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = L["RogueCheckboxEnergyRegenTimeTooltip"]
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["TrackEnergyRegenEnergyTime"]
-	controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)]]
 end
 
 local function OutlawConstructBarTextDisplayPanel(parent, cache)
@@ -2449,20 +2265,6 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
-
-	--[[yCoord = yCoord - 30
-	controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.sliceAndDicePandemic
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "sliceAndDicePandemic")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDiceDown"], spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.noSliceAndDice
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
-	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -2922,70 +2724,6 @@ local function SubtletyConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackEnergyRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegen"])
-	f.tooltip = L["CheckboxTrackEnergyRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = L["RogueCheckboxEnergyRegenGcdsTooltip"]
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	title = L["TrackEnergyRegenEnergyGcds"]
-	controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.generation.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	f.tooltip = L["RogueCheckboxEnergyRegenTimeTooltip"]
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["TrackEnergyRegenEnergyTime"]
-	controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)]]
 end
 
 local function SubtletyConstructBarTextDisplayPanel(parent, cache)

@@ -10,8 +10,6 @@ local specGlobalDefaults = {
 	comboPoints = false,
 	healthBar = false,
 	thresholdIcons = false,
-	thresholdHealers = false,
-	thresholdPotions = false,
 	displayBar = false,
 	displayText = false,
 	textColors = false,
@@ -65,41 +63,6 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					yPos = -12,
 					width = 24,
 					height = 24
-				},
-				thresholdDictionaryHealers = {
-					algariManaPotionRank1 = {
-						enabled = false,
-					},
-					algariManaPotionRank2 = {
-						enabled = false,
-					},
-					algariManaPotionRank3 = {
-						enabled = true,
-					},
-					cavedwellersDelightRank1 = {
-						enabled = false,
-					},
-					cavedwellersDelightRank2 = {
-						enabled = false,
-					},
-					cavedwellersDelightRank3 = {
-						enabled = true,
-					},
-					slumberingSoulSerumRank1 = {
-						enabled = false,
-					},
-					slumberingSoulSerumRank2 = {
-						enabled = false,
-					},
-					slumberingSoulSerumRank3 = {
-						enabled = true,
-					},
-				},
-				potionCooldown = {
-					enabled=true,
-					mode="time",
-					gcdsMax=40,
-					timeMax=60
 				},
 			},
 			displayBar = {
@@ -498,6 +461,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 								relativeTo = specSettings.manaBar.relativeTo or "TOP",
 								relativeToName = specSettings.manaBar.relativeToName or L["PositionAboveMiddle"]
 							}
+							specSettings.manaBar = nil
 						end
 
 						-- Migrate colors: colors.manaBar -> colors.bars.mana
@@ -506,8 +470,11 @@ function TRB.Functions.Settings:PortForwardSettings()
 							if not specSettings.colors.bars.mana then
 								local oldColors = specSettings.colors.manaBar
 								specSettings.colors.bars.mana = {
+---@diagnostic disable-next-line: undefined-field
 									border = { color = oldColors.border and oldColors.border.color or "FF00FF98" },
+---@diagnostic disable-next-line: undefined-field
 									background = { color = oldColors.background and oldColors.background.color or "66000000" },
+---@diagnostic disable-next-line: undefined-field
 									bar = { color = oldColors.bar and oldColors.bar.color or "FF0000FF" }
 								}
 							end
@@ -833,7 +800,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 end
 
 ---Gets the default mana bar colors
----@return TRB.Classes.Settings.ManaBarColors
+---@return TRB.Classes.Settings.GenericBarColorsBase
 function TRB.Functions.Settings:DefaultManaBarColors()
 	return {
 		bar = { color = "FF0000FF" },

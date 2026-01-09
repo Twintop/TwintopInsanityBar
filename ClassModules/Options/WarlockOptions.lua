@@ -61,18 +61,6 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				nightfall = {
-					color = "FF00D9FF",
-					enabled = true,
-				},
-				tormentedCrescendo = {
-					color = "FF00FF00",
-					enabled = true,
-				},
-				shadowEmbraceNotMax = {
-					color = "FFFF0000",
-					enabled = true
-				},
 			},
 				comboPoints = {
 				border="FF4749B5",

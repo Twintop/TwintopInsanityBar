@@ -300,18 +300,14 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Retribution
 			end
 		elseif classId == 3 then -- Hunters
-			configuration.generation = settings.generation
 			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
 			end
 		elseif classId == 4 then -- Rogues
 			if specId == 1 then -- Assassination
-				configuration.generation = settings.generation
 			elseif specId == 2 then -- Outlaw
-				configuration.generation = settings.generation
 			elseif specId == 3 then -- Subtlety
-				configuration.generation = settings.generation
 			end
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline

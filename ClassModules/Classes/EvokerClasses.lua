@@ -8,8 +8,6 @@ TRB.Classes.Evoker = TRB.Classes.Evoker or {}
 
 
 ---@class TRB.Classes.Evoker.DevastationSpells : TRB.Classes.SpecializationSpellsBase
----@field public essenceBurst TRB.Classes.SpellBase
----@field public meltArmor TRB.Classes.SpellBase
 TRB.Classes.Evoker.DevastationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Evoker.DevastationSpells.__index = TRB.Classes.Evoker.DevastationSpells
 
@@ -18,23 +16,11 @@ function TRB.Classes.Evoker.DevastationSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Evoker.DevastationSpells) --[[@as TRB.Classes.Evoker.DevastationSpells]]
 
-	self.essenceBurst = TRB.Classes.SpellBase:New({
-		id = 359618,
-		isBuff = true
-	})
-
-	-- Scalecommander
-	self.meltArmor = TRB.Classes.SpellBase:New({
-		id = 441172,
-		talentId = 441176,
-		isTalent = true
-	})
 	return self
 end
 
 
 ---@class TRB.Classes.Evoker.PreservationSpells : TRB.Classes.Healer.HealerSpells
----@field public essenceBurst TRB.Classes.SpellBase
 TRB.Classes.Evoker.PreservationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Evoker.PreservationSpells.__index = TRB.Classes.Evoker.PreservationSpells
 
@@ -45,27 +31,16 @@ function TRB.Classes.Evoker.PreservationSpells:New()
 	-- Evoker Class Talents		
 	
 	-- Preservation Spec Talents
-	self.essenceBurst = TRB.Classes.SpellBase:New({
-		id = 369299,
-		isBuff = true
-	})
-	
+    
 	-- Chronowarden
-	self.temporalBurst = TRB.Classes.SpellBase:New({
-		id = 431698,
-		isBuff = true
-	})
 
 	return self
 end
 
 
 ---@class TRB.Classes.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
----@field public essenceBurst TRB.Classes.SpellBase
 ---@field public ebonMight TRB.Classes.SpellBase
 ---@field public erruption TRB.Classes.SpellBase
----@field public temporalBurst TRB.Classes.SpellBase
----@field public meltArmor TRB.Classes.SpellBase
 TRB.Classes.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Evoker.AugmentationSpells.__index = TRB.Classes.Evoker.AugmentationSpells
 
@@ -74,10 +49,6 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Evoker.AugmentationSpells) --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
-	self.essenceBurst = TRB.Classes.SpellBase:New({
-		id = 392268,
-		isBuff = true
-	})
     self.ebonMight = TRB.Classes.SpellBase:New({
         id = 395296,
         talentId = 395152,
@@ -89,17 +60,6 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
         isTalent = true
     })
 	-- Chronowarden
-	self.temporalBurst = TRB.Classes.SpellBase:New({
-		id = 431698,
-		isBuff = true
-	})
-
-	-- Scalecommander
-	self.meltArmor = TRB.Classes.SpellBase:New({
-		id = 441172,
-		talentId = 441176,
-		isTalent = true
-	})
 	return self
 end
 

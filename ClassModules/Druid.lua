@@ -23,16 +23,6 @@ local specCache = {
 }
 TRB.Data.specCache = specCache
 
-local function CalculateManaGain(mana, isPotion)
-	if isPotion == nil then
-		isPotion = false
-	end
-
-	local modifier = 1.0
-
-	return mana * modifier
-end
-
 local function FillSpecializationCache()
 	-- Balance
 	specCache.balance.Global_TwintopResourceBar = {

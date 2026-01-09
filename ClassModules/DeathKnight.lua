@@ -771,10 +771,7 @@ local function UpdateCastingResourceFinal_Blood()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	--local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-	--local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-	-- Do nothing for now
-	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw-- * innervate.modifier * potionOfChilledClarity.modifier
+	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class

@@ -149,12 +149,6 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				}
 			}
 		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
-		},
 		maxResource = {
 			value = BREWMASTER_MAX_ENERGY,
 			enabled = false
@@ -415,12 +409,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 			}
-		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
 		},
 		maxResource = {
 			value = WINDWALKER_MAX_ENERGY,
@@ -1955,70 +1943,6 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
-
-	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackEnergyRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegen"])
-	f.tooltip = L["CheckboxTrackEnergyRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	title = L["TrackEnergyRegenEnergyGcds"]
-	controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.generation.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["TrackEnergyRegenEnergyTime"]
-	controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)]]
 end
 
 local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
