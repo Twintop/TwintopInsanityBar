@@ -378,30 +378,6 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$ebonMightTime}[#ebonMight $ebonMightTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		})
-	else
-		table.insert(textSettings, {
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
 			text="{$ebonMightTime}[#ebonMight $ebonMightTime]",
@@ -416,6 +392,30 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 				yPos = 0,
 				relativeTo = "RIGHT",
 				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$ebonMightTime}[#ebonMight $ebonMightTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
 				relativeToFrame = "Resource",
 				relativeToFrameName = L["MainResourceBar"]
 			}

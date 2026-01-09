@@ -52,18 +52,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					width = 2,
 					overlapBorder=true
 				},
-				icons = {
-					showCooldown = true,
-					border = 2,
-					relativeTo = "TOP",
-					relativeToName = L["PositionAbove"],
-					enabled = true,
-					desaturated = true,
-					xPos = 0,
-					yPos = -12,
-					width = 24,
-					height = 24
-				},
+				icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			},
 			displayBar = {
 				primary = "combat",
@@ -993,6 +982,23 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		textures.manaBarBarName=L["LSMStatusBarSmoother"]
 	end
 	return textures
+end
+
+---Gets the default settings for threshold icons
+---@return table
+function TRB.Functions.Settings:DefaultThresholdIconmSettings()
+	return {
+		showCooldown = true,
+		border = 2,
+		relativeTo = "BOTTOM",
+		relativeToName = L["PositionBelow"],
+		enabled = true,
+		desaturated = true,
+		xPos = 0,
+		yPos = 12,
+		width = 24,
+		height = 24
+	}
 end
 
 ---Returns default bar text for the health bar

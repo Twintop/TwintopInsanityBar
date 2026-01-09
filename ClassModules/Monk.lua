@@ -444,7 +444,7 @@ local function ConstructResourceBar(settings)
 				if staggerNode then
 					staggerNode:ClearThresholds()
 					-- Get stagger bar settings
-					local staggerSettings = settings.bars and settings.bars.stagger
+					local staggerSettings = settings.bars and settings.bars["stagger"]
 					local staggerColors = settings.colors and settings.colors.bars and settings.colors.bars.stagger
 					local thresholdWidth = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
 					local thresholdHeight = staggerSettings and staggerSettings.height or 24

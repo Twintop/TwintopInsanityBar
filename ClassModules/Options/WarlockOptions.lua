@@ -205,24 +205,6 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
-		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
-			icons = {
-				show = true,
-				xPos = 0,
-				yPos = -5,
-				width = 24,
-				height = 24,
-				desaturate = true,
-				enabled = true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBottom"],
-				fullWidth = true,
-			},
-		}
 	}
 
 	if includeBarText then
@@ -324,24 +306,6 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 		audio = {
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
-		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
-			icons = {
-				show = true,
-				xPos = 0,
-				yPos = -5,
-				width = 24,
-				height = 24,
-				desaturate = true,
-				enabled = true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBottom"],
-				fullWidth = true,
-			},
-		}
 	}
 
 	if includeBarText then

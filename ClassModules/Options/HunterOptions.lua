@@ -47,18 +47,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				revivePet = {
 					enabled = false,
@@ -230,18 +219,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				arcaneShot = {
 					enabled = true,
@@ -255,9 +233,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				scareBeast = {
 					enabled = false,
 				},
-			killCommand = {
-				enabled = true,
-			},
+				killCommand = {
+					enabled = true,
+				},
 				killShot = {
 					enabled = true,
 				},
@@ -267,9 +245,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				multiShot = {
 					enabled = true,
 				},
-			blackArrow = {
-				enabled = true,
-			},
+				blackArrow = {
+					enabled = true,
+				},
 			}
 		},
 		maxResource = {
@@ -423,18 +401,7 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				revivePet = {
 					enabled = false,
