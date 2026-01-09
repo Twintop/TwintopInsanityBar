@@ -1600,7 +1600,7 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	controls.checkBoxes.endOfEbonMightModeGCDs = CreateFrame("CheckButton", "TRB_EOEM_M_GCD", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.endOfEbonMightModeGCDs
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EndOfAuraGcdMode"])
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationEndOfEbonMightGcdMode"])
 	if spec.endOfEbonMight.mode == "gcd" then
 		f:SetChecked(true)
 	end
@@ -1610,7 +1610,7 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfEbonMight.mode = "gcd"
 	end)
 
-	controls.endOfEbonMightGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, L["EndOfAuraGcdSlider"], 0.5, 10, spec.endOfEbonMight.gcdsMax, 0.25, 2,
+	controls.endOfEbonMightGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, L["EvokerAugmentationEndOfEbonMightGcdSlider"], 0.5, 10, spec.endOfEbonMight.gcdsMax, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.endOfEbonMightGCDs:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
@@ -1621,7 +1621,7 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	controls.checkBoxes.endOfEbonMightModeTime = CreateFrame("CheckButton", "TRB_EOEM_M_TIME", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.endOfEbonMightModeTime
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EndOfAuraTimeMode"])
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationEndOfEbonMightTimeMode"])
 	if spec.endOfEbonMight.mode == "time" then
 		f:SetChecked(true)
 	end
@@ -1631,7 +1631,7 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfEbonMight.mode = "time"
 	end)
 
-	controls.endOfEbonMightTime = TRB.Functions.OptionsUi:BuildSlider(parent, L["EndOfAuraTimeSlider"], 0, 15, spec.endOfEbonMight.timeMax, 0.25, 2,
+	controls.endOfEbonMightTime = TRB.Functions.OptionsUi:BuildSlider(parent, L["EvokerAugmentationEndOfEbonMightTimeSlider"], 0, 15, spec.endOfEbonMight.timeMax, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.endOfEbonMightTime:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
