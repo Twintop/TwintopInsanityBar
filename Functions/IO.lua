@@ -68,12 +68,12 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end 
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline
-				configuration.colors.comboPoints = settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
+				--configuration.colors.comboPoints = settings.colors.comboPoints
+				--configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Holy
 				configuration.endOfApotheosis = settings.endOfApotheosis
-				configuration.colors.comboPoints = settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
+				--configuration.colors.comboPoints = settings.colors.comboPoints
+				--configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
 				-- Export mana bar settings
@@ -156,6 +156,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.textures.staggerBackgroundName = settings.textures and settings.textures.staggerBackgroundName
 			elseif specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
@@ -172,15 +174,15 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.textures.manaBorderName = settings.textures and settings.textures.manaBorderName
 				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
 				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
-				elseif specId == 2 then -- Feral
-					configuration.colors.comboPoints = settings.colors.comboPoints
-					configuration.comboPoints = settings.comboPoints
-				elseif specId == 3 then -- Guardian
-					-- No special bar display configuration for Guardian
-					configuration.endOfBerserk = settings.endOfBerserk
-				elseif specId == 4 then -- Restoration
-					configuration.endOfIncarnation = settings.endOfIncarnation
-				end
+			elseif specId == 2 then -- Feral
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			elseif specId == 3 then -- Guardian
+				-- No special bar display configuration for Guardian
+				configuration.endOfBerserk = settings.endOfBerserk
+			elseif specId == 4 then -- Restoration
+				configuration.endOfIncarnation = settings.endOfIncarnation
+			end
 		elseif classId == 12 then -- Demon Hunter
 			if specId == 1 then -- Havoc
 				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
@@ -203,6 +205,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Augmentation
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+				configuration.endOfEbonMight = settings.endOfEbonMight
 			end
 		end
 	end
