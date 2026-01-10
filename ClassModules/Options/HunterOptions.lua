@@ -1003,19 +1003,29 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 6 do 
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	for i = 1, 6 do
+		--[[
+			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
+		]]
+		if i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1032,7 +1042,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	BeastMasteryConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	BeastMasteryConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	BeastMasteryConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	BeastMasteryConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--BeastMasteryConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	BeastMasteryConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	BeastMasteryConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1506,7 +1516,7 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
-	
+
 	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.spending
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1697,19 +1707,29 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 6 do 
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	for i = 1, 6 do
+		--[[
+			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
+		]]
+		if i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1726,7 +1746,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	MarksmanshipConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	MarksmanshipConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	MarksmanshipConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	MarksmanshipConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--MarksmanshipConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	MarksmanshipConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	MarksmanshipConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -2166,19 +2186,29 @@ local function SurvivalConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
-	for i = 1, 6 do 
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	for i = 1, 6 do
+		--[[
+			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
+		]]
+		if i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -2195,7 +2225,7 @@ local function SurvivalConstructOptionsPanel(cache)
 	SurvivalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	SurvivalConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	SurvivalConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	SurvivalConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--SurvivalConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	SurvivalConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	SurvivalConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end

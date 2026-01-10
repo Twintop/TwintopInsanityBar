@@ -607,7 +607,10 @@ local function ArcaneConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -615,9 +618,9 @@ local function ArcaneConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
+			This spec doesn't use Threshold Lines or Audio & Tracking options. Don't let these tabs be made/rendered.
 		]]
-		if i == 2 then
+		if i == 2 or i == 4 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -643,7 +646,7 @@ local function ArcaneConstructOptionsPanel(cache)
 	ArcaneConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--ArcaneConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	ArcaneConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	ArcaneConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--ArcaneConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	ArcaneConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	ArcaneConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -937,7 +940,10 @@ local function FireConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -945,9 +951,9 @@ local function FireConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
+			This spec doesn't use Threshold Lines or Audio & Tracking options. Don't let these tabs be made/rendered.
 		]]
-		if i == 2 then
+		if i == 2 or i == 4 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -973,7 +979,7 @@ local function FireConstructOptionsPanel(cache)
 	FireConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--FireConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	FireConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	FireConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--FireConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	FireConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	FireConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1266,7 +1272,10 @@ local function FrostConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -1274,9 +1283,9 @@ local function FrostConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
+			This spec doesn't use Threshold Lines or Audio & Tracking options. Don't let these tabs be made/rendered.
 		]]
-		if i == 2 then
+		if i == 2 or i == 4 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -1302,7 +1311,7 @@ local function FrostConstructOptionsPanel(cache)
 	FrostConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--FrostConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	FrostConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	FrostConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--FrostConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	FrostConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	FrostConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end

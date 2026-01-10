@@ -993,19 +993,29 @@ local function BrewmasterConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
+		]]
+		if i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1022,7 +1032,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 	BrewmasterConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	BrewmasterConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	BrewmasterConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	BrewmasterConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--BrewmasterConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	BrewmasterConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	BrewmasterConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1421,21 +1431,34 @@ local function MistweaverConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	--[[
+		This spec doesn't use Threshold Lines. Make the width 1 instead of 100
+	]]
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Threshold Lines or Audio & Tracking options. Don't let these tabs be made/rendered.
+		]]
+		if i == 2 or i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1450,9 +1473,9 @@ local function MistweaverConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver = controls
 
 	MistweaverConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	MistweaverConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	--MistweaverConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	MistweaverConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	MistweaverConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--MistweaverConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	MistweaverConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	MistweaverConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1983,19 +2006,29 @@ local function WindwalkerConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
+		]]
+		if i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -2012,7 +2045,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	WindwalkerConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	WindwalkerConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	WindwalkerConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	WindwalkerConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--WindwalkerConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	WindwalkerConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	WindwalkerConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end

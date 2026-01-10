@@ -471,7 +471,7 @@ local function ConstructGlobalOptionsPanel()
 	ConstructMiscellaneousPanel(tabsheets[5].scrollFrame.scrollChild)
 end
 
-local function ConstructImportExportRow(parent, yCoord, controls, classId, specId, labelLocalization, classOrSpecLocalization, includeThreshold, includeButtons)
+local function ConstructImportExportRow(parent, yCoord, controls, classId, specId, labelLocalization, classOrSpecLocalization, includeThreshold, includeAudioTracking, includeButtons)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local buttonOffset = 0
@@ -480,6 +480,10 @@ local function ConstructImportExportRow(parent, yCoord, controls, classId, specI
 
 	if includeThreshold == nil then
 		includeThreshold = true
+	end
+
+	if includeAudioTracking == nil then
+		includeAudioTracking = true
 	end
 
 	if includeButtons == nil then
@@ -528,10 +532,12 @@ local function ConstructImportExportRow(parent, yCoord, controls, classId, specI
 		end)
 
 		buttonOffset = buttonOffset + buttonSpacing + 90
-		controls["export_" .. namePrefix .. "_AudioAndTracking"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
-		controls["export_" .. namePrefix .. "_AudioAndTracking"]:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. exportInnerMessage .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-		end)
+		if includeAudioTracking then
+			controls["export_" .. namePrefix .. "_AudioAndTracking"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
+			controls["export_" .. namePrefix .. "_AudioAndTracking"]:SetScript("OnClick", function(self, ...)
+				TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. exportInnerMessage .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
+			end)
+		end
 
 		buttonOffset = buttonOffset + buttonSpacing + 120
 		controls["export_" .. namePrefix .. "_BarText"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
@@ -682,70 +688,71 @@ local function ConstructImportExportPanel()
 
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, nil, nil, L["ExportMessageAllClassesSpecs"], L["ExportMessageAllClassesSpecs"])
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, nil, L["DeathKnight"], L["DeathKnight"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 1, L["DeathKnightBlood"], L["DeathKnightBloodFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 2, L["DeathKnightFrost"], L["DeathKnightFrostFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 3, L["DeathKnightUnholy"], L["DeathKnightUnholyFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, nil, L["DeathKnight"], L["DeathKnight"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 1, L["DeathKnightBlood"], L["DeathKnightBloodFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 2, L["DeathKnightFrost"], L["DeathKnightFrostFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 3, L["DeathKnightUnholy"], L["DeathKnightUnholyFull"], true, false)
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, nil, L["DemonHunter"], L["DemonHunter"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 1, L["DemonHunterHavoc"], L["DemonHunterHavocFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 2, L["DemonHunterVengeance"], L["DemonHunterVengeanceFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 3, L["DemonHunterDevourer"], L["DemonHunterDevourerFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, nil, L["DemonHunter"], L["DemonHunter"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 1, L["DemonHunterHavoc"], L["DemonHunterHavocFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 2, L["DemonHunterVengeance"], L["DemonHunterVengeanceFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 3, L["DemonHunterDevourer"], L["DemonHunterDevourerFull"], true, false)
 
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, nil, L["Druid"], L["Druid"])
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 1, L["DruidBalance"], L["DruidBalanceFull"])
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 2, L["DruidFeral"], L["DruidFeralFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 3, L["DruidGuardian"], L["DruidGuardianFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 4, L["DruidRestoration"], L["DruidRestorationFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 3, L["DruidGuardian"], L["DruidGuardianFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 4, L["DruidRestoration"], L["DruidRestorationFull"], false, false)
 	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, nil, L["Evoker"], L["Evoker"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 1, L["EvokerDevastation"], L["EvokerDevastationFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 2, L["EvokerPreservation"], L["EvokerPreservationFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, nil, L["Evoker"], L["Evoker"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 1, L["EvokerDevastation"], L["EvokerDevastationFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 2, L["EvokerPreservation"], L["EvokerPreservationFull"], false, false)
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 3, L["EvokerAugmentation"], L["EvokerAugmentationFull"], false)
 	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, nil, L["Hunter"], L["Hunter"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 1, L["HunterBeastMastery"], L["HunterBeastMasteryFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 2, L["HunterMarksmanship"], L["HunterMarksmanshipFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 3, L["HunterSurvival"], L["HunterSurvivalFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, nil, L["Hunter"], L["Hunter"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 1, L["HunterBeastMastery"], L["HunterBeastMasteryFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 2, L["HunterMarksmanship"], L["HunterMarksmanshipFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 3, L["HunterSurvival"], L["HunterSurvivalFull"], true, false)
 	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, nil, L["Mage"], L["Mage"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 1, L["MageArcane"], L["MageArcaneFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 2, L["MageFire"], L["MageFireFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 3, L["MageFrost"], L["MageFrostFull"], false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, nil, L["Mage"], L["Mage"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 1, L["MageArcane"], L["MageArcaneFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 2, L["MageFire"], L["MageFireFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 3, L["MageFrost"], L["MageFrostFull"], false, false)
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, nil, L["Monk"], L["Monk"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 2, L["MonkMistweaver"], L["MonkMistweaverFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 3, L["MonkWindwalker"], L["MonkWindwalkerFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, nil, L["Monk"], L["Monk"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 1, L["MonkBrewmaster"], L["MonkBreamasterFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 2, L["MonkMistweaver"], L["MonkMistweaverFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 3, L["MonkWindwalker"], L["MonkWindwalkerFull"], true, false)
 	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, nil, L["Paladin"], L["Paladin"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 1, L["PaladinHoly"], L["PaladinHolyFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 2, L["PaladinProtection"], L["PaladinProtectionFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 3, L["PaladinRetribution"], L["PaladinRetributionFull"], false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, nil, L["Paladin"], L["Paladin"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 1, L["PaladinHoly"], L["PaladinHolyFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 2, L["PaladinProtection"], L["PaladinProtectionFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 3, L["PaladinRetribution"], L["PaladinRetributionFull"], false, false)
 	
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, nil, L["Priest"], L["Priest"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 1, L["PriestDiscipline"], L["PriestDisciplineFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 2, L["PriestHoly"], L["PriestHolyFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 1, L["PriestDiscipline"], L["PriestDisciplineFull"], false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 2, L["PriestHoly"], L["PriestHolyFull"], false)
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 3, L["PriestShadow"], L["PriestShadowFull"])
 	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, nil, L["Rogue"], L["Rogue"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 1, L["RogueAssassination"], L["RogueAssassinationFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 2, L["RogueOutlaw"], L["RogueOutlawFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 3, L["RogueSubtlety"], L["RogueSubtletyFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, nil, L["Rogue"], L["Rogue"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 1, L["RogueAssassination"], L["RogueAssassinationFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 2, L["RogueOutlaw"], L["RogueOutlawFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 3, L["RogueSubtlety"], L["RogueSubtletyFull"], true, false)
 	
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, nil, L["Shaman"], L["Shaman"])
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, 1, L["ShamanElemental"], L["ShamanElementalFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, 2, L["ShamanEnhancement"], L["ShamanEnhancementFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, 3, L["ShamanRestoration"], L["ShamanRestorationFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, 2, L["ShamanEnhancement"], L["ShamanEnhancementFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, 3, L["ShamanRestoration"], L["ShamanRestorationFull"], false, false)
 	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, nil, L["Warlock"], L["Warlock"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 1, L["WarlockAffliction"], L["WarlockAfflictionFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 1, L["WarlockDemonology"], L["WarlockDemonologyFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 1, L["WarlockDestruction"], L["WarlockDestructionFull"], false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, nil, L["Warlock"], L["Warlock"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 1, L["WarlockAffliction"], L["WarlockAfflictionFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 2, L["WarlockDemonology"], L["WarlockDemonologyFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 3, L["WarlockDestruction"], L["WarlockDestructionFull"], false, false)
 
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, nil, L["Warrior"], L["Warrior"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 1, L["WarriorArms"], L["WarriorArmsFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 2, L["WarriorFury"], L["WarriorFuryFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 3, L["WarriorProtection"], L["WarriorProtectionFull"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 1, L["WarriorArms"], L["WarriorArmsFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 2, L["WarriorFury"], L["WarriorFuryFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 3, L["WarriorProtection"], L["WarriorProtectionFull"], true, false)
 end
 
 function TRB.Options:ConstructOptionsPanel()

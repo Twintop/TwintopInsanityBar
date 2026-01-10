@@ -977,7 +977,10 @@ local function DisciplineConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	--[[
+		This spec doesn't use Threshold Lines. Make the width 1 instead of 100
+	]]
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
 	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
@@ -986,12 +989,19 @@ local function DisciplineConstructOptionsPanel(cache)
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
+		]]
+		if i == 2 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1006,7 +1016,7 @@ local function DisciplineConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.discipline = controls
 
 	DisciplineConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	DisciplineConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	--DisciplineConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	DisciplineConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
 	DisciplineConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	DisciplineConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
@@ -1648,7 +1658,10 @@ local function HolyConstructOptionsPanel(cache)
 
 	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
+	--[[
+		This spec doesn't use Threshold Lines. Make the width 1 instead of 100
+	]]
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
 	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
@@ -1657,12 +1670,19 @@ local function HolyConstructOptionsPanel(cache)
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
+		]]
+		if i == 2 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1677,7 +1697,7 @@ local function HolyConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
 
 	HolyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	HolyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
+	--HolyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	HolyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
 	HolyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	HolyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)

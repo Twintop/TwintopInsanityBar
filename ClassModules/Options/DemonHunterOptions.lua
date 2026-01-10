@@ -1013,19 +1013,29 @@ local function HavocConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
+		]]
+		if i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1042,7 +1052,7 @@ local function HavocConstructOptionsPanel(cache)
 	HavocConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	HavocConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	HavocConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	HavocConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--HavocConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	HavocConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	HavocConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1559,19 +1569,29 @@ local function VengeanceConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
+		]]
+		if i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1588,7 +1608,7 @@ local function VengeanceConstructOptionsPanel(cache)
 	VengeanceConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	VengeanceConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	VengeanceConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	VengeanceConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--VengeanceConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	VengeanceConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	VengeanceConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -2050,19 +2070,29 @@ local function DevourerConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
+		]]
+		if i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -2079,7 +2109,7 @@ local function DevourerConstructOptionsPanel(cache)
 	DevourerConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	DevourerConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	DevourerConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	DevourerConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--DevourerConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	DevourerConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	DevourerConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end

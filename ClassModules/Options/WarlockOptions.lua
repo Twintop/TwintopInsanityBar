@@ -657,9 +657,9 @@ local function AfflictionConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
+			This spec doesn't use Threshold Lines or Audio & Tracking. Don't let these tabs be made/rendered.
 		]]
-		if i == 2 then
+		if i == 2 or i == 4 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -685,7 +685,7 @@ local function AfflictionConstructOptionsPanel(cache)
 	AfflictionConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--AfflictionConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	AfflictionConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	AfflictionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--AfflictionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	AfflictionConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	AfflictionConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1043,7 +1043,10 @@ local function DemonologyConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -1051,9 +1054,9 @@ local function DemonologyConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
+			This spec doesn't use Threshold Lines or Audio & Tracking. Don't let these tabs be made/rendered.
 		]]
-		if i == 2 then
+		if i == 2 or i == 4 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -1079,7 +1082,7 @@ local function DemonologyConstructOptionsPanel(cache)
 	DemonologyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--DemonologyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	DemonologyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	DemonologyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--DemonologyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	DemonologyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	DemonologyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1421,19 +1424,29 @@ local function DestructionConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
+	--[[
+		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
+	]]
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Warlock_Destruction_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		--[[
+			This spec doesn't use Threshold Lines or Audio & Tracking. Don't let these tabs be made/rendered.
+		]]
+		if i == 2 or i == 4 then
+			tabs[i]:Hide()
+		else
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Warlock_Destruction_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		end
 	end
 
 	tabsheets[1]:Show()
@@ -1450,7 +1463,7 @@ local function DestructionConstructOptionsPanel(cache)
 	DestructionConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--DestructionConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	DestructionConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	DestructionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	--DestructionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	DestructionConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	DestructionConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
