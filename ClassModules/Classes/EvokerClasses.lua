@@ -41,6 +41,8 @@ end
 ---@class TRB.Classes.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public ebonMight TRB.Classes.SpellBase
 ---@field public erruption TRB.Classes.SpellBase
+---@field public emeraldBlossom TRB.Classes.SpellBase
+---@field public dreamOfSpring TRB.Classes.SpellBase
 TRB.Classes.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Evoker.AugmentationSpells.__index = TRB.Classes.Evoker.AugmentationSpells
 
@@ -57,6 +59,15 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
     })
 	self.erruption = TRB.Classes.SpellBase:New({
         id = 395160,
+        isTalent = true
+    })
+
+    self.emeraldBlossom = TRB.Classes.SpellBase:New({
+        id = 355913,
+        baseline = true
+    })
+    self.dreamOfSpring = TRB.Classes.SpellBase:New({
+        id = 414969,
         isTalent = true
     })
 	-- Chronowarden

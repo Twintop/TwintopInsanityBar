@@ -667,16 +667,22 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
-		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+		if event == "UNIT_SPELLCAST_EMPOWER_START" then
+			snapshotData.attributes.extendsEbonMight = true
+			casting:SnapshotSpell()
+		elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			-- Track if we're casting an ability that extends Ebon Might
 			if spellId == spells.erruption.id then
+				snapshotData.attributes.extendsEbonMight = true
+				casting:SnapshotSpell()
+			elseif spellId == spells.emeraldBlossom.id and talents:IsTalentActive(spells.dreamOfSpring.talentId) then
 				snapshotData.attributes.extendsEbonMight = true
 				casting:SnapshotSpell()
 			else
 				snapshotData.attributes.extendsEbonMight = false
 				casting:Reset()
 			end
-		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 			snapshotData.attributes.extendsEbonMight = false
 			casting:Reset()
 		else
