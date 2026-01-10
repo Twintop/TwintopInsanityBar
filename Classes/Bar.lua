@@ -707,9 +707,9 @@ end
 
 ---@class TRB.Classes.BarTypeDefinition.ThresholdLevel
 ---@field public key string # The data key in colorSettings (e.g., "low", "medium", "high", "heavy")
----@field public colorLabelKey string # Localization key for the color picker label
----@field public sliderLabelKey string? # Localization key for the threshold slider label (nil for first level which has no slider)
----@field public sliderTooltipKey string? # Localization key for the threshold slider tooltip
+---@field public colorLabel string # Localized string for the color picker label (pass L["Key"] at registration time)
+---@field public sliderLabel string? # Localized string for the threshold slider label (nil for first level which has no slider)
+---@field public sliderTooltip string? # Localized string for the threshold slider tooltip
 
 ---@class TRB.Classes.BarTypeDefinition
 ---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
@@ -724,10 +724,10 @@ end
 ---@field public hasThresholds boolean # True if bar supports threshold lines
 ---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
 ---@field public thresholdLevels TRB.Classes.BarTypeDefinition.ThresholdLevel[]? # Required when colorCurveType is "step" or "linear". Ordered array of threshold level definitions.
----@field public colorTypeLabelKey string? # Localization key for the color type dropdown header (defaults to "CustomBarColorType")
----@field public colorTypeStepLabelKey string? # Localization key for "step" option (defaults to "CustomBarColorTypeStep")
----@field public colorTypeLinearLabelKey string? # Localization key for "linear" option (defaults to "CustomBarColorTypeLinear")
----@field public colorTypeNoneLabelKey string? # Localization key for "none" option (defaults to "CustomBarColorTypeNone")
+---@field public colorTypeLabel string? # Localized string for the color type dropdown header (pass L["Key"] at registration time)
+---@field public colorTypeStepLabel string? # Localized string for "step" option
+---@field public colorTypeLinearLabel string? # Localized string for "linear" option
+---@field public colorTypeNoneLabel string? # Localized string for "none" option
 ---@field public defaultDimensionsFunc function? # Function returning default dimensions (SecondaryBar structure)
 ---@field public defaultColorsFunc function? # Function returning default colors
 ---@field public defaultTexturesFunc function? # Function returning default textures
@@ -758,10 +758,10 @@ function TRB.Classes.BarTypeDefinition:New(config)
 
 	-- Threshold color options (required when colorCurveType is "step" or "linear")
 	self.thresholdLevels = config.thresholdLevels
-	self.colorTypeLabelKey = config.colorTypeLabelKey
-	self.colorTypeStepLabelKey = config.colorTypeStepLabelKey
-	self.colorTypeLinearLabelKey = config.colorTypeLinearLabelKey
-	self.colorTypeNoneLabelKey = config.colorTypeNoneLabelKey
+	self.colorTypeLabel = config.colorTypeLabel
+	self.colorTypeStepLabel = config.colorTypeStepLabel
+	self.colorTypeLinearLabel = config.colorTypeLinearLabel
+	self.colorTypeNoneLabel = config.colorTypeNoneLabel
 	self.onChangeCallback = config.onChangeCallback
 
 	-- Validate: thresholdLevels is required when colorCurveType is "step" or "linear"
@@ -898,7 +898,7 @@ function TRB.Classes.BarTypeDefinition:GetDefaultTextures()
 	local L = TRB.Localization or {}
 	return {
 		bar = "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
-		barName = L["LSMStatusBarSmoother"] or "Smoother",
+		barName = L["LSMStatusBarSmoother"],
 		border = "Interface\\Buttons\\WHITE8X8",
 		borderName = "1 Pixel",
 		background = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -1036,16 +1036,16 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = "step", -- Green -> Yellow -> Red based on stagger level
 		visibilityKey = "stagger",
-		-- Threshold color configuration
+		-- Threshold color configuration - pass resolved localized strings, NOT keys
 		thresholdLevels = {
-			{ key = "low", colorLabelKey = "StaggerBarColorLight" },
-			{ key = "medium", colorLabelKey = "StaggerBarColorMedium", sliderLabelKey = "StaggerBarThresholdMedium", sliderTooltipKey = "StaggerBarThresholdMediumTooltip" },
-			{ key = "heavy", colorLabelKey = "StaggerBarColorHeavy", sliderLabelKey = "StaggerBarThresholdHeavy", sliderTooltipKey = "StaggerBarThresholdHeavyTooltip" }
+			{ key = "low", colorLabel = L["StaggerBarColorLight"] },
+			{ key = "medium", colorLabel = L["StaggerBarColorMedium"], sliderLabel = L["StaggerBarThresholdMedium"], sliderTooltip = L["StaggerBarThresholdMediumTooltip"] },
+			{ key = "heavy", colorLabel = L["StaggerBarColorHeavy"], sliderLabel = L["StaggerBarThresholdHeavy"], sliderTooltip = L["StaggerBarThresholdHeavyTooltip"] }
 		},
-		colorTypeLabelKey = "StaggerBarColorType",
-		colorTypeStepLabelKey = "StaggerBarColorTypeStep",
-		colorTypeLinearLabelKey = "StaggerBarColorTypeLinear",
-		colorTypeNoneLabelKey = "StaggerBarColorTypeNone",
+		colorTypeLabel = L["StaggerBarColorType"],
+		colorTypeStepLabel = L["StaggerBarColorTypeStep"],
+		colorTypeLinearLabel = L["StaggerBarColorTypeLinear"],
+		colorTypeNoneLabel = L["StaggerBarColorTypeNone"],
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultStaggerBarDimensions(classic)
 		end,

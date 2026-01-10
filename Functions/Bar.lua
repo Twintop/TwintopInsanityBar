@@ -769,14 +769,14 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			local effectiveSettings = barSettings or defaultSettings or {}
 			
 			-- Ensure effectiveSettings has required fields with defaults
-			effectiveSettings.width = effectiveSettings.width or 555
-			effectiveSettings.height = effectiveSettings.height or 24
-			effectiveSettings.border = effectiveSettings.border or 2
-			effectiveSettings.spacing = effectiveSettings.spacing or 0
-			effectiveSettings.fullWidth = effectiveSettings.fullWidth or false
-			effectiveSettings.relativeTo = effectiveSettings.relativeTo or "TOP"
-			effectiveSettings.xPos = effectiveSettings.xPos or 0
-			effectiveSettings.yPos = effectiveSettings.yPos or 4
+			effectiveSettings.width = effectiveSettings.width
+			effectiveSettings.height = effectiveSettings.height
+			effectiveSettings.border = effectiveSettings.border
+			effectiveSettings.spacing = effectiveSettings.spacing
+			effectiveSettings.fullWidth = effectiveSettings.fullWidth
+			effectiveSettings.relativeTo = effectiveSettings.relativeTo
+			effectiveSettings.xPos = effectiveSettings.xPos
+			effectiveSettings.yPos = effectiveSettings.yPos
 			
 			-- Get color settings
 			local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[key]

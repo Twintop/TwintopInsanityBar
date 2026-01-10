@@ -1124,8 +1124,8 @@ end
 ---@field displayName string The localized display name for the bar
 ---@field primaryResourceString string? The primary resource name (for "relative to" label)
 ---@field globalSettingKey string? The key in global settings (nil if no global checkbox)
----@field globalTooltipKey string? Localization key for global checkbox tooltip
----@field sectionHeaderKey string? Localization key for section header (defaults to SecondaryPositionAndSize)
+---@field globalTooltip string? Localized string for global checkbox tooltip (pass L["Key"] directly)
+---@field sectionHeader string? Localized string for section header (defaults to SecondaryPositionAndSize formatted)
 ---@field includeSpacing boolean? Whether to include spacing slider (default false)
 ---@field widthDivisor number? Divisor for max width slider (default 1, use 6 for combo points)
 ---@field useSmallerSanityChecks boolean? Use comboPointsMaxHeight/Width instead of barMaxHeight/Width (default false)
@@ -1144,8 +1144,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	local displayName = config.displayName
 	local primaryResourceString = config.primaryResourceString or L["Resource"]
 	local globalSettingKey = config.globalSettingKey
-	local globalTooltipKey = config.globalTooltipKey
-	local sectionHeaderKey = config.sectionHeaderKey
+	local globalTooltip = config.globalTooltip
+	local sectionHeader = config.sectionHeader or string.format(L["SecondaryPositionAndSize"], displayName)
 	local includeSpacing = config.includeSpacing or false
 	local widthDivisor = config.widthDivisor or 1
 	local useSmallerSanityChecks = config.useSmallerSanityChecks or false
@@ -1161,7 +1161,6 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
 	-- Section header
-	local sectionHeader = sectionHeaderKey and L[sectionHeaderKey] or string.format(L["SecondaryPositionAndSize"], displayName)
 	controls[settingKey .. "PositionSection"] = TRB.Functions.OptionsUi:BuildSectionHeader(parent, sectionHeader, oUi.xCoord, yCoord)
 
 	-- Global checkbox (if applicable)
@@ -1173,7 +1172,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		f.tooltip = globalTooltipKey and L[globalTooltipKey] or L["CheckboxUseGlobalTooltip_ComboPoints"]
+		f.tooltip = globalTooltip or L["CheckboxUseGlobalTooltip_ComboPoints"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey])
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey] = self:GetChecked()
@@ -1406,7 +1405,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		displayName = secondaryResourceString,
 		primaryResourceString = primaryResourceString,
 		globalSettingKey = "comboPoints",
-		globalTooltipKey = "CheckboxUseGlobalTooltip_ComboPoints",
+		globalTooltip = L["CheckboxUseGlobalTooltip_ComboPoints"],
 		includeSpacing = includeSpacing,
 		widthDivisor = 6,
 		useSmallerSanityChecks = true
@@ -1424,8 +1423,8 @@ function TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, cont
 		displayName = L["HealthBar"],
 		primaryResourceString = primaryResourceString,
 		globalSettingKey = "healthBar",
-		globalTooltipKey = "CheckboxUseGlobalTooltip_HealthBar",
-		sectionHeaderKey = "HealthBarPositionAndSize",
+		globalTooltip = L["CheckboxUseGlobalTooltip_HealthBar"],
+		sectionHeader = L["HealthBarPositionAndSize"],
 		includeSpacing = false,
 		widthDivisor = 1,
 		useSmallerSanityChecks = false
@@ -1821,11 +1820,11 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
 	local colorControls = controls.colors.bars[barTypeDef.key]
 	
-	-- Get localization keys with fallbacks
-	local colorTypeLabelKey = barTypeDef.colorTypeLabelKey or "CustomBarColorType"
-	local colorTypeStepLabelKey = barTypeDef.colorTypeStepLabelKey or "CustomBarColorTypeStep"
-	local colorTypeLinearLabelKey = barTypeDef.colorTypeLinearLabelKey or "CustomBarColorTypeLinear"
-	local colorTypeNoneLabelKey = barTypeDef.colorTypeNoneLabelKey or "CustomBarColorTypeNone"
+	-- Get localized strings from barTypeDef (resolved at registration time, with fallbacks to generic labels)
+	local colorTypeLabel = barTypeDef.colorTypeLabel or L["CustomBarColorType"]
+	local colorTypeStepLabel = barTypeDef.colorTypeStepLabel or L["CustomBarColorTypeStep"]
+	local colorTypeLinearLabel = barTypeDef.colorTypeLinearLabel or L["CustomBarColorTypeLinear"]
+	local colorTypeNoneLabel = barTypeDef.colorTypeNoneLabel or L["CustomBarColorTypeNone"]
 	
 	-- Color Transition Type dropdown
 	-- Note: yCoord already positioned at header row, so dropdown label goes here
@@ -1833,7 +1832,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ColorCurveType", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetWidth(oUi.sliderWidth)
-	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L[colorTypeLabelKey], oUi.xCoord, yCoord)
+	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, colorTypeLabel, oUi.xCoord, yCoord)
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label.font:SetFontObject(GameFontNormal)
 
 	local function ColorCurveTypeIsSelected(value)
@@ -1842,11 +1841,11 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 
 	local function ColorCurveTypeGetDisplayName(value)
 		if value == "step" then
-			return L[colorTypeStepLabelKey]
+			return colorTypeStepLabel
 		elseif value == "linear" then
-			return L[colorTypeLinearLabelKey]
+			return colorTypeLinearLabel
 		else
-			return L[colorTypeNoneLabelKey]
+			return colorTypeNoneLabel
 		end
 	end
 
@@ -1857,9 +1856,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	end
 
 	local function ColorCurveTypeGenerator(dropdown, rootDescription)
-		rootDescription:CreateRadio(L[colorTypeStepLabelKey], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
-		rootDescription:CreateRadio(L[colorTypeLinearLabelKey], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
-		rootDescription:CreateRadio(L[colorTypeNoneLabelKey], ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "none")
+		rootDescription:CreateRadio(colorTypeStepLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
+		rootDescription:CreateRadio(colorTypeLinearLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
+		rootDescription:CreateRadio(colorTypeNoneLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "none")
 	end
 
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetupMenu(ColorCurveTypeGenerator)
@@ -1880,12 +1879,13 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	for i, thresholdLevel in ipairs(thresholdLevels) do
 		local thresholdKey = thresholdLevel.key
 		if i > 1 and colorSettings[thresholdKey] and colorSettings[thresholdKey].threshold ~= nil then
-			local sliderLabel = thresholdLevel.sliderLabelKey and L[thresholdLevel.sliderLabelKey] or string.format(L["CustomBarThreshold"], displayName, thresholdKey:gsub("^%l", string.upper))
+			-- Use resolved sliderLabel string from thresholdLevel, or fall back to generic formatted label
+			local sliderLabel = thresholdLevel.sliderLabel or string.format(L["CustomBarThreshold"], displayName, thresholdKey:gsub("^%l", string.upper))
 			controls[barTypeDef.key .. thresholdKey .. "Threshold"] = TRB.Functions.OptionsUi:BuildSlider(parent, sliderLabel, 
 				0, 1, colorSettings[thresholdKey].threshold, 0.01, 2,
 				oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-			if thresholdLevel.sliderTooltipKey then
-				controls[barTypeDef.key .. thresholdKey .. "Threshold"].tooltip = L[thresholdLevel.sliderTooltipKey]
+			if thresholdLevel.sliderTooltip then
+				controls[barTypeDef.key .. thresholdKey .. "Threshold"].tooltip = thresholdLevel.sliderTooltip
 			end
 			controls[barTypeDef.key .. thresholdKey .. "Threshold"]:SetScript("OnValueChanged", function(self, value)
 				value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
@@ -1902,7 +1902,8 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	for _, thresholdLevel in ipairs(thresholdLevels) do
 		local thresholdKey = thresholdLevel.key
 		if colorSettings[thresholdKey] and colorSettings[thresholdKey].color then
-			local colorLabel = L[thresholdLevel.colorLabelKey]
+			-- Use resolved colorLabel string from thresholdLevel
+			local colorLabel = thresholdLevel.colorLabel
 			colorControls[thresholdKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorLabel, colorSettings[thresholdKey].color, 300, 25, oUi.xCoord2, yCoord2)
 			f = colorControls[thresholdKey]
 			f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1980,7 +1981,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, cont
 	end
 
 	-- Visibility dropdown
-	local visibilityLabel = string.format(L["ShowBarVisibilityCustom"] or "Show %s", displayName)
+	local visibilityLabel = string.format(L["ShowBarVisibilityCustom"], displayName)
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown[barTypeDef.key .. "Visibility"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Visibility", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown[barTypeDef.key .. "Visibility"]:SetWidth(oUi.sliderWidth)
@@ -2186,7 +2187,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		end
 		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
 		local barKey = barTypeDef.key .. "Bar"
-		local barLabel = string.format(L["CustomBarTextureBar"] or "%s Bar Texture", barTypeDef.displayName)
+		local barLabel = string.format(L["CustomBarTextureBar"], barTypeDef.displayName)
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "statusbar", barKey, barLabel, L["StatusBarTextures"],
 			function(newValue)
 				StatusbarSetValue(barTypeDef.key, newValue)
@@ -2336,7 +2337,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		end
 		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
 		local borderKey = barTypeDef.key .. "Border"
-		local borderLabel = string.format(L["CustomBarTextureBorder"] or "%s Border Texture", barTypeDef.displayName)
+		local borderLabel = string.format(L["CustomBarTextureBorder"], barTypeDef.displayName)
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "border", borderKey, borderLabel, L["BorderTextures"],
 			function(newValue)
 				local newName = borderPairsByName[newValue]
@@ -2533,7 +2534,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		end
 		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
 		local bgKey = barTypeDef.key .. "Background"
-		local bgLabel = string.format(L["CustomBarTextureBackground"] or "%s Background Texture", barTypeDef.displayName)
+		local bgLabel = string.format(L["CustomBarTextureBackground"], barTypeDef.displayName)
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "background", bgKey, bgLabel, L["BackgroundTextures"],
 			function(newValue)
 				local newName = backgroundPairsByName[newValue]
@@ -3297,19 +3298,20 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	-- Create a lightweight bar type definition-like object for Health Bar
 	-- This allows us to use the generic threshold color function while keeping
 	-- the Health Bar's settings at spec.colors.healthBar (not spec.colors.bars.health)
+	-- IMPORTANT: Pass resolved localized strings, NOT localization keys
 	local healthBarTypeDef = {
 		key = "health",
 		displayName = L["HealthBar"]:gsub(" Bar$", ""), -- "Health" instead of "Health Bar" for labels like "Health border"
 		colorCurveType = "step",
 		thresholdLevels = {
-			{ key = "low", colorLabelKey = "HealthBarColorLow" },
-			{ key = "medium", colorLabelKey = "HealthBarColorMedium", sliderLabelKey = "HealthBarThresholdMedium", sliderTooltipKey = "HealthBarThresholdMediumTooltip" },
-			{ key = "high", colorLabelKey = "HealthBarColorHigh", sliderLabelKey = "HealthBarThresholdHigh", sliderTooltipKey = "HealthBarThresholdHighTooltip" }
+			{ key = "low", colorLabel = L["HealthBarColorLow"] },
+			{ key = "medium", colorLabel = L["HealthBarColorMedium"], sliderLabel = L["HealthBarThresholdMedium"], sliderTooltip = L["HealthBarThresholdMediumTooltip"] },
+			{ key = "high", colorLabel = L["HealthBarColorHigh"], sliderLabel = L["HealthBarThresholdHigh"], sliderTooltip = L["HealthBarThresholdHighTooltip"] }
 		},
-		colorTypeLabelKey = "HealthBarColorType",
-		colorTypeStepLabelKey = "HealthBarColorTypeStep",
-		colorTypeLinearLabelKey = "HealthBarColorTypeLinear",
-		colorTypeNoneLabelKey = "HealthBarColorTypeNone",
+		colorTypeLabel = L["HealthBarColorType"],
+		colorTypeStepLabel = L["HealthBarColorTypeStep"],
+		colorTypeLinearLabel = L["HealthBarColorTypeLinear"],
+		colorTypeNoneLabel = L["HealthBarColorTypeNone"],
 		-- Custom GetColors to retrieve from spec.colors.healthBar instead of spec.colors.bars.health
 		GetColors = function(self, specSettings)
 			if specSettings and specSettings.colors then
