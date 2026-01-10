@@ -8,8 +8,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public comboPoints boolean
 ---@field public healthBar boolean
 ---@field public thresholdIcons boolean
----@field public thresholdHealers boolean
----@field public thresholdPotions boolean
 ---@field public displayBar boolean
 ---@field public displayText boolean
 ---@field public textColors boolean
@@ -23,6 +21,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public colors TRB.Classes.Settings.Colors
 ---@field public comboPoints TRB.Classes.Settings.SecondaryBar
 ---@field public healthBar TRB.Classes.Settings.SecondaryBar
+---@field public bars TRB.Classes.Settings.SecondaryBar[]?
 ---@field public displayBar table?
 ---@field public displayText TRB.Classes.Settings.DisplayText
 ---@field public textures table?
@@ -48,7 +47,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.Thresholds
 ---@field public properties TRB.Classes.Settings.ThresholdProperties
 ---@field public icons TRB.Classes.Settings.ThresholdIcons
----@field public potionCooldown? TRB.Classes.Settings.GenericTrackingOverX
 ---@field public specProperties table?
 ---@field public thresholdDictionary { string: table }
 
@@ -89,6 +87,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public spending TRB.Classes.Settings.ColorEnabledEntry
 ---@field public passive TRB.Classes.Settings.ColorEnabledEntry
 ---@field public overThreshold TRB.Classes.Settings.ColorEnabledEntry
+---@field public manaBar TRB.Classes.Settings.ColorEntry?
 
 ---@class TRB.Classes.Settings.ThresholdColors
 ---@field public under TRB.Classes.Settings.ColorEntry
@@ -97,9 +96,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public special TRB.Classes.Settings.ColorEntry
 ---@field public outOfRange TRB.Classes.Settings.ColorShowEntry
 
----@class TRB.Classes.Settings.ThresholdHealerColors
----@field public over TRB.Classes.Settings.ColorEntry
----@field public unusable TRB.Classes.Settings.ColorEntry
+---@class TRB.Classes.Settings.GenericBarColorsBase
+---@field public bar TRB.Classes.Settings.ColorEntry
+---@field public border TRB.Classes.Settings.ColorEntry
+---@field public background TRB.Classes.Settings.ColorEntry
 
 ---@class TRB.Classes.Settings.HealthBarColors
 ---@field public border string
@@ -113,11 +113,11 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public text TRB.Classes.Settings.TextColors
 ---@field public bar table
 ---@field public comboPoints table
+---@field public bars table
 ---@field public healthBar TRB.Classes.Settings.HealthBarColors
 ---@field public threshold TRB.Classes.Settings.ThresholdColors|{ [string]: TRB.Classes.Settings.ColorEnabledEntry }
 
 ---@class TRB.Classes.Settings.ColorsCore : TRB.Classes.Settings.Colors
----@field public thresholdHealer TRB.Classes.Settings.ThresholdHealerColors
 
 ---@class TRB.Classes.Settings.PrimaryBar
 ---@field public width number

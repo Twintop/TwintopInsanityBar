@@ -203,18 +203,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				deathCoil = {
 					enabled = true
@@ -342,18 +331,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				deathCoil = {
 					enabled = true
@@ -486,18 +464,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				deathCoil = {
 					enabled = true

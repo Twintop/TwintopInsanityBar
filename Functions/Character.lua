@@ -623,6 +623,11 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.healthBar = spec.healthBar
 	end
 
+	-- Extra bar settings (no global toggle, always use spec settings if present)
+	if spec.bars then
+		specCache.settings.bars = spec.bars
+	end
+
 ---@diagnostic disable-next-line: missing-fields
 	specCache.settings.displayText = {
 		barText = spec.displayText.barText
@@ -641,7 +646,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 ---@diagnostic disable-next-line: missing-fields
 		threshold = {},
 		comboPoints = spec.colors.comboPoints,
-		healthBar = spec.colors.healthBar
+		bars = spec.colors.bars,
+		healthBar = spec.colors.healthBar,
+		manaBar = spec.colors.manaBar
 	}
 
 	if s.textColors then
@@ -650,12 +657,15 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.text.spending = core.colors.text.spending
 		specCache.settings.colors.text.passive = core.colors.text.passive
 		specCache.settings.colors.text.overThreshold = core.colors.text.overThreshold
+		-- manaBar is spec-specific (only for Shadow Priest, Balance Druid, Elemental Shaman), so always use spec colors
+		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
 	else
 		specCache.settings.colors.text.current = spec.colors.text.current
 		specCache.settings.colors.text.casting = spec.colors.text.casting
 		specCache.settings.colors.text.spending = spec.colors.text.spending
 		specCache.settings.colors.text.passive = spec.colors.text.passive
 		specCache.settings.colors.text.overThreshold = spec.colors.text.overThreshold
+		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
 	end
 
 ---@diagnostic disable-next-line: missing-fields
@@ -712,20 +722,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
 			end
 		end
-		
-		if isHealer then
-			--[[if s.thresholdPotions then
-				specCache.settings.thresholds.potionCooldown = core.thresholds.potionCooldown
-			else
-				specCache.settings.thresholds.potionCooldown = spec.thresholds.potionCooldown
-			end
-
-			if s.thresholdHealers then
-				for key, _ in pairs(core.thresholds.thresholdDictionaryHealers) do
-					specCache.settings.thresholds.thresholdDictionary[key] = core.thresholds.thresholdDictionaryHealers[key]
-				end
-			end]]
-		end
 	else
 		specCache.settings.thresholds = {
 			specProperties = {},
@@ -747,37 +743,105 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.textures = spec.textures
 	end
 
+	-- Mana bar and custom bar textures are spec-specific (not available in core settings)
+	-- When using global textures with texture lock enabled, sync from primary bar texture
+	-- When using global textures with texture lock disabled, use spec-specific textures
+	-- When using spec textures, always use spec-specific textures
+	if spec.textures then
+		local useGlobalWithTextureLock = s.textures and specCache.settings.textures.textureLock
+		
+		-- Mana bar textures
+		if useGlobalWithTextureLock then
+			-- Sync mana bar textures to primary bar texture from global settings
+			specCache.settings.textures.manaBarBar = specCache.settings.textures.resourceBar
+			specCache.settings.textures.manaBarBarName = specCache.settings.textures.resourceBarName
+			specCache.settings.textures.manaBarBorder = specCache.settings.textures.border
+			specCache.settings.textures.manaBarBorderName = specCache.settings.textures.borderName
+			specCache.settings.textures.manaBarBackground = specCache.settings.textures.background
+			specCache.settings.textures.manaBarBackgroundName = specCache.settings.textures.backgroundName
+		else
+			-- Use spec-specific mana bar textures
+			if spec.textures.manaBarBar then
+				specCache.settings.textures.manaBarBar = spec.textures.manaBarBar
+				specCache.settings.textures.manaBarBarName = spec.textures.manaBarBarName
+			end
+			if spec.textures.manaBarBorder then
+				specCache.settings.textures.manaBarBorder = spec.textures.manaBarBorder
+				specCache.settings.textures.manaBarBorderName = spec.textures.manaBarBorderName
+			end
+			if spec.textures.manaBarBackground then
+				specCache.settings.textures.manaBarBackground = spec.textures.manaBarBackground
+				specCache.settings.textures.manaBarBackgroundName = spec.textures.manaBarBackgroundName
+			end
+		end
+		
+		-- Custom bar textures using flat keys (e.g., staggerBar, staggerBorder, staggerBackground)
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+		for key, _ in pairs(registry:GetAll()) do
+			local barKey = key .. "Bar"
+			local borderKey = key .. "Border"
+			local bgKey = key .. "Background"
+			if useGlobalWithTextureLock then
+				-- Sync custom bar textures to primary bar texture from global settings
+				specCache.settings.textures[barKey] = specCache.settings.textures.resourceBar
+				specCache.settings.textures[barKey .. "Name"] = specCache.settings.textures.resourceBarName
+				specCache.settings.textures[borderKey] = specCache.settings.textures.border
+				specCache.settings.textures[borderKey .. "Name"] = specCache.settings.textures.borderName
+				specCache.settings.textures[bgKey] = specCache.settings.textures.background
+				specCache.settings.textures[bgKey .. "Name"] = specCache.settings.textures.backgroundName
+			else
+				-- Use spec-specific custom bar textures
+				if spec.textures[barKey] then
+					specCache.settings.textures[barKey] = spec.textures[barKey]
+					specCache.settings.textures[barKey .. "Name"] = spec.textures[barKey .. "Name"]
+				end
+				if spec.textures[borderKey] then
+					specCache.settings.textures[borderKey] = spec.textures[borderKey]
+					specCache.settings.textures[borderKey .. "Name"] = spec.textures[borderKey .. "Name"]
+				end
+				if spec.textures[bgKey] then
+					specCache.settings.textures[bgKey] = spec.textures[bgKey]
+					specCache.settings.textures[bgKey .. "Name"] = spec.textures[bgKey .. "Name"]
+				end
+			end
+		end
+	end
+
+	-- Custom bar dimensions (stagger, defensives, mana, etc.) - always spec-specific
+	if spec.bars then
+		specCache.settings.bars = spec.bars
+	end
+
+	-- Custom bar colors (stagger, defensives, mana, etc.) - always spec-specific
+	if spec.colors and spec.colors.bars then
+		specCache.settings.colors.bars = spec.colors.bars
+	end
+
 	if s.displayBar then
 		specCache.settings.displayBar = core.displayBar
 	else
 		specCache.settings.displayBar = spec.displayBar
 	end
 
+	-- Mana bar visibility is always spec-specific (not available in core settings)
+	-- Ensure it's propagated from spec even when using global displayBar settings
+	if spec.displayBar and spec.displayBar.mana ~= nil then
+		specCache.settings.displayBar.mana = spec.displayBar.mana
+	end
+
+	-- Custom bar visibility (stagger, defensives, etc.) is always spec-specific
+	-- Ensure it's propagated from spec even when using global displayBar settings
+	if spec.displayBar and spec.displayBar.stagger ~= nil then
+		specCache.settings.displayBar.stagger = spec.displayBar.stagger
+	end
+	if spec.displayBar and spec.displayBar.defensives ~= nil then
+		specCache.settings.displayBar.defensives = spec.displayBar.defensives
+	end
+
 	--NYI
 	specCache.settings.audio = spec.audio
 	specCache.settings.maxResource = spec.maxResource
 
-end
-
-function TRB.Functions.Character:IsComboPointUser()
-	local classId = TRB.Data.character.classId
-	local specId = TRB.Data.character.specId
-	if 	(classId == 1 and specId == 3) or -- Protection Warrior
-		(classId == 2) or -- Paladin
-		(classId == 4) or -- Rogue
-		(classId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
-		(classId == 6) or -- Death Knight
-		(classId == 7 and specId == 2) or -- Enhancement Shaman
-		(classId == 8 and specId == 1) or -- Arcane Mage
-		(classId == 9) or -- Warlock
-		(classId == 10 and (specId == 1 or specId == 3)) or -- Brewmaster or Windwalker Monk
-		(classId == 11 and specId == 2) or -- Feral Druid
-		(classId == 12 and (specId == 2 or specId == 3)) or -- Vengeance or Devourer Demon Hunter
-		(classId == 13) -- Evoker
-		then
-		return true
-	end
-	return false
 end
 
 function TRB.Functions.Character:GetCurrentGCDTime(floor)

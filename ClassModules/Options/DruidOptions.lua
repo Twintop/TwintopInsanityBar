@@ -32,9 +32,64 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
+	
+
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$eclipseTime}[#eclipse $eclipseTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$eclipseTime}[#eclipse $eclipseTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	end
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+
+	local manaBarTextSettings = TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
+	for k,v in pairs(manaBarTextSettings) do table.insert(textSettings, v) end
+
 	return textSettings
 end
 TRB.Options.Druid.BalanceLoadDefaultBarTextSettings = BalanceLoadDefaultBarTextSettings
@@ -54,18 +109,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			specProperties = {
 				starsurgeThresholdOnlyOverShow = false,
 			},
@@ -92,6 +136,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			primary = "combat",
 			secondary = "combat",
 			health = "combat",
+			mana = "never",
 			dragonriding = true
 		},
 		endOfEclipse = {
@@ -103,6 +148,9 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+		},
 		colors = {
 			text = {
 				current = {
@@ -117,6 +165,9 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
+				},
+				manaBar = {
+					color = "FF0000FF"
 				}
 			},
 			bar = {
@@ -134,6 +185,9 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				flashSsEnabled=true,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				mana = TRB.Functions.Settings:DefaultManaBarColors(),
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -182,7 +236,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(),
+		textures = TRB.Functions.Settings:DefaultTextures(false, true),
 	}
 
 	if includeBarText then
@@ -356,18 +410,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
             thresholdDictionary = {
 			brutalSlash = {
 				enabled = true,
@@ -415,12 +458,6 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
             }
-		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
 		},
 		maxResource = {
 			value = FERAL_MAX_ENERGY,
@@ -551,18 +588,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				ironfur = {
 					enabled = true,
@@ -688,59 +714,6 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 		precision = {
 			secondary = 2,
 			resource = 0
-		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-				algariManaPotionRank1 = {
-					enabled = false,
-				},
-				algariManaPotionRank2 = {
-					enabled = false,
-				},
-				algariManaPotionRank3 = {
-					enabled = true,
-				},
-				cavedwellersDelightRank1 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank2 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank3 = {
-					enabled = true,
-				},
-				slumberingSoulSerumRank1 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank2 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank3 = {
-					enabled = true,
-				},
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},
 		},
 		displayBar = {
 			primary = "combat",
@@ -956,10 +929,13 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceAstralPower"])
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true)
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false, nil, true)
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
@@ -1030,6 +1006,9 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceHeaderEndOfEclipseConfiguration"], oUi.xCoord, yCoord)
@@ -1268,6 +1247,14 @@ local function BalanceConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	spec.colors.text.manaBar = spec.colors.text.manaBar or { color = "FF0000FF" }
+	controls.colors.text.manaBar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarTextColor"], spec.colors.text.manaBar.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.manaBar
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "manaBar")
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 11, 1, yCoord)

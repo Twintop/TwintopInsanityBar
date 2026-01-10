@@ -11,6 +11,29 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-beta10 (2026-01-10)
+## General
+
+- [#297](#297) Add an optional Mana Bar for Balance Druid, Shadow Priest, and Elemental Shaman. This includes default text and new bar text variables `$mana`, `$manaMax`, and `$manaPercent`.
+- Lots of general cleanup of options menus.
+
+## Evoker
+### [#473](#473) Augmentation
+
+- Add support for tracking Ebon Might, available via bar text as `$ebonMightTime`. While active, the primary (mana) bar will change color with a configurable color change at the end X GCDs/seconds away from expiring. Additionally, there is a third bar color change and optional audio cue when your current Ebon Might duration increasing hardcase ability will not complete in time.
+
+## Monk
+### [#494](#494) Brewmaster
+
+- Convert the Stagger bar to use the new bar architecture. As a result, Global Settings for "Combo Points" will no longer affect the Stagger bar.
+
+## Warrior
+### [#489](#489) Protection
+
+- Convert the Defensives bar to use the new bar architecture. As a result, Global Settings for "Combo Points" will no longer affect the Defensives bar.
+
+---
+
 # 12.0.0.0-beta09 (2026-01-05)
 ## General
 

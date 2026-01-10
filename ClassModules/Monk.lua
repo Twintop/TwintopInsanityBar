@@ -433,48 +433,32 @@ local function ConstructResourceBar(settings)
 	end
 
 	-- Handle secondary bar based on spec
-	if barGroups and barGroups.secondary then
+	if barGroups then
 		if TRB.Data.character.specId == 1 then -- Brewmaster uses Stagger bar with thresholds
-			local maxStaggerNodes = 1
-			TRB.Data.character.maxResource2 = maxStaggerNodes
-			
-			-- Set the node count and layout for Stagger bar
-			barGroups.secondary:SetNodeCount(maxStaggerNodes)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
-			barGroups.secondary:Show()
-			
-			-- Apply layout to position the Stagger bar correctly
-			barGroups.secondary:ApplyLayout(
-				settings.bar.width,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
-			)
-			
-			-- Set up the Stagger bar node with textures and colors
-			local frameLevels = TRB.Data.constants.frameLevels
-			local staggerNode = barGroups.secondary:GetNode(1)
-			if staggerNode then
-				staggerNode:SetTextures(
-					settings.textures.comboPointsBar,
-					settings.textures.comboPointsBorder,
-					settings.textures.comboPointsBackground
-				)
-				staggerNode:SetBorderColor(settings.colors.comboPoints.border)
-				staggerNode:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-				staggerNode:SetColor(settings.colors.comboPoints.base)
-				staggerNode:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+			if barGroups.stagger then
+				TRB.Data.character.maxResource2 = 1
 				
 				-- Create thresholds on the Stagger bar (for Medium and Heavy Stagger thresholds)
-				staggerNode:ClearThresholds()
-				for _ = 1, 2 do
-					local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetResourceFrame())
-					TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
-					staggerNode:RegisterThreshold(thresholdFrame)
+				-- Layout and appearance are handled by the generic ApplyCustomBarGroupsLayout/Appearance
+				local staggerNode = barGroups.stagger:GetNode(1)
+				if staggerNode then
+					staggerNode:ClearThresholds()
+					-- Get stagger bar settings
+					local staggerSettings = settings.bars and settings.bars["stagger"]
+					local staggerColors = settings.colors and settings.colors.bars and settings.colors.bars.stagger
+					local thresholdWidth = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
+					local thresholdHeight = staggerSettings and staggerSettings.height or 24
+					local borderColor = staggerColors and staggerColors.border and staggerColors.border.color or "FF00FF98"
+					
+					for _ = 1, 2 do
+						local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetResourceFrame())
+						TRB.Functions.Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor)
+						staggerNode:RegisterThreshold(thresholdFrame)
+					end
 				end
 			end
 
-		elseif TRB.Data.character.specId == 3 then -- Windwalker uses Chi
+		elseif TRB.Data.character.specId == 3 and barGroups.secondary then -- Windwalker uses Chi
 			local maxChi = TRB.Data.character.maxResource2
 			if maxChi == nil or maxChi == 0 then
 				maxChi = barGroups.secondary.maxNodes or 5
@@ -563,8 +547,9 @@ local function RefreshLookupData_Brewmaster()
 	local _stagger = snapshotData.attributes.stagger or 0
 	local _staggerPercent = snapshotData.attributes.staggerPercent or 0
 
-	-- Get stagger color from ColorCurve result
-	local staggerColor = specSettings.colors.comboPoints.light.color
+	-- Get stagger color from ColorCurve result, fallback to low color from custom bar settings
+	local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
+	local staggerColor = staggerColors.low and staggerColors.low.color or "FF85FF85"
 	if snapshotData.attributes.staggerColor then
 		local r, g, b, a = snapshotData.attributes.staggerColor:GetRGBA()
 		staggerColor = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
@@ -799,12 +784,12 @@ end
 local function UpdateStaggerColor()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
-	-- Get configurable color curve settings from spec settings
+	-- Get configurable color curve settings from spec settings (new custom bar structure)
 	local staggerBarSettings = nil
 	if TRB.Data.specCache and TRB.Data.specCache.brewmaster then
 		local specCache = TRB.Data.specCache.brewmaster
-		if specCache and specCache.settings and specCache.settings.colors then
-			staggerBarSettings = specCache.settings.colors.comboPoints
+		if specCache and specCache.settings and specCache.settings.colors and specCache.settings.colors.bars then
+			staggerBarSettings = specCache.settings.colors.bars.stagger
 		end
 	end
 
@@ -818,8 +803,16 @@ local function UpdateStaggerColor()
 	local lightThreshold = 0.0
 	local lightR, lightG, lightB, lightA = 0.52, 1, 0.52, 1 -- default green for light stagger
 
-	-- Light stagger color and threshold
-	if staggerBarSettings.light then
+	-- Light/Low stagger color and threshold (renamed from "light" to "low" in new structure)
+	if staggerBarSettings.low then
+		if staggerBarSettings.low.color then
+			lightR, lightG, lightB, lightA = TRB.Functions.Color:GetRGBAFromString(staggerBarSettings.low.color, true)
+		end
+		if staggerBarSettings.low.threshold then
+			lightThreshold = staggerBarSettings.low.threshold
+		end
+	elseif staggerBarSettings.light then
+		-- Backwards compatibility with old structure
 		if staggerBarSettings.light.color then
 			lightR, lightG, lightB, lightA = TRB.Functions.Color:GetRGBAFromString(staggerBarSettings.light.color, true)
 		end
@@ -1018,18 +1011,35 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.stagger ~= "never" then
 				refreshText = true
 				-- Update Stagger bar using BarNodes
-				if barGroups and barGroups.secondary then
-					local staggerNode = barGroups.secondary:GetNode(1)
+				if barGroups and barGroups.stagger then
+					local staggerNode = barGroups.stagger:GetNode(1)
 					if staggerNode then
 						-- Set Stagger bar value as percentage of max health
 						staggerNode:SetMinMax(0, snapshotData.attributes.healthMax)
 						staggerNode:SetValue(snapshotData.attributes.stagger)
 
-						local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-						local cpBorderColor = specSettings.colors.comboPoints.border
+						-- Get stagger colors and dimensions from the new custom bar structure
+						local staggerSettings = specSettings.bars and specSettings.bars.stagger or {}
+						local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
+						local staggerBorder = staggerSettings.border or 2
+						
+						-- Calculate effective width (respects fullWidth setting)
+						local staggerWidth
+						if staggerSettings.fullWidth then
+							staggerWidth = specSettings.bar.width or 555
+						else
+							staggerWidth = staggerSettings.width or 555
+						end
+						
+						local cpBackgroundColor = staggerColors.background
+						if type(cpBackgroundColor) == "table" then cpBackgroundColor = cpBackgroundColor.color end
+						local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(cpBackgroundColor or "66000000", true)
+						local cpBorderColor = staggerColors.border
+						if type(cpBorderColor) == "table" then cpBorderColor = cpBorderColor.color end
+						cpBorderColor = cpBorderColor or "FF00FF98"
 
 						-- Use ColorCurve for stagger bar fill color
 						staggerNode:SetColorCurve(snapshotData.attributes.staggerColor)
@@ -1038,24 +1048,23 @@ local function UpdateResourceBar()
 
 						-- Update Stagger thresholds on the BarNode (use discrete colors, configurable positions)
 						local staggerThresholds = staggerNode:GetThresholds()
-						local staggerResourceFrame = staggerNode:GetResourceFrame()
 
 						-- Medium Stagger threshold (configurable position, discrete color)
 						if staggerThresholds[1] then
-							local mediumThreshold = specSettings.colors.comboPoints.medium and specSettings.colors.comboPoints.medium.threshold or 0.30
-							local mediumColor = specSettings.colors.comboPoints.medium and specSettings.colors.comboPoints.medium.color or "FFFFFAB8"
+							local mediumThreshold = staggerColors.medium and staggerColors.medium.threshold or 0.30
+							local mediumColor = staggerColors.medium and staggerColors.medium.color or "FFFFFAB8"
 							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[1], mediumColor, true)
-							TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetContainerFrame(), mediumThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax)
+							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetContainerFrame(), mediumThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax, staggerWidth, staggerBorder)
 						end
 
 						-- Heavy Stagger threshold (configurable position, discrete color)
 						if staggerThresholds[2] then
-							local heavyThreshold = specSettings.colors.comboPoints.heavy and specSettings.colors.comboPoints.heavy.threshold or 0.60
-							local heavyColor = specSettings.colors.comboPoints.heavy and specSettings.colors.comboPoints.heavy.color or "FFFF6B6B"
+							local heavyThreshold = staggerColors.heavy and staggerColors.heavy.threshold or 0.60
+							local heavyColor = staggerColors.heavy and staggerColors.heavy.color or "FFFF6B6B"
 							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[2], heavyColor, true)
-							TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "comboPointThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetContainerFrame(), heavyThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax)
+							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetContainerFrame(), heavyThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax, staggerWidth, staggerBorder)
 						end
 					end
 				end
@@ -1423,6 +1432,13 @@ local function SwitchSpec()
 			if TRB.Data.barConstructedForSpec ~= nil then
 				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 				TRB.Functions.Character:ResetCaches()
+				-- Reapply bar textures after spec switch to ensure health bar and other bar textures render correctly
+				if TRB.Frames.barGroups then
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(specCache[TRB.Data.barConstructedForSpec].settings, TRB.Frames.barGroups)
+				end
+				-- Ensure health values are populated so the health bar displays immediately
+				TRB.Functions.Character:UpdateHealthValues()
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end)
@@ -1669,10 +1685,21 @@ function TRB.Functions.Class:HideResourceBar(force)
 				-- "never" means showPrimary stays false
 			end
 
-			-- Determine secondary bar visibility independently
-			-- Brewmaster (specId == 1) uses Stagger, Windwalker (specId == 3) uses Chi
+			-- Determine stagger bar visibility (Brewmaster only)
+			local showStagger = false
+			if not forceHideAll and TRB.Data.character.specId == 1 then
+				local staggerVisibility = sharedSettings.displayBar.stagger
+				if staggerVisibility == "always" then
+					showStagger = true
+				elseif staggerVisibility == "combat" then
+					showStagger = affectingCombat or inVehicle
+				end
+				-- "never" means showStagger stays false
+			end
+
+			-- Determine secondary bar visibility (Windwalker Chi only)
 			local showSecondary = false
-			if not forceHideAll and (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3) then
+			if not forceHideAll and TRB.Data.character.specId == 3 then
 				if sharedSettings.displayBar.secondary == "always" then
 					showSecondary = true
 				elseif sharedSettings.displayBar.secondary == "combat" then
@@ -1701,7 +1728,17 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 			end
 
-			-- Apply secondary bar visibility
+			-- Apply stagger bar visibility (Brewmaster only)
+			if barGroups and barGroups.stagger then
+				if showStagger then
+					barGroups.stagger:Show()
+					barGroups.stagger:ShowNodes(1)
+				else
+					barGroups.stagger:Hide()
+				end
+			end
+
+			-- Apply secondary bar visibility (Windwalker Chi)
 			if barGroups and barGroups.secondary then
 				if showSecondary then
 					barGroups.secondary:Show()
@@ -1722,7 +1759,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Track if any bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth
+			snapshotData.attributes.isTracking = showPrimary or showStagger or showSecondary or showHealth
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -1731,6 +1768,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 		else
 			if barGroups and barGroups.primary then
 				barGroups.primary:Hide()
+			end
+			if barGroups and barGroups.stagger then
+				barGroups.stagger:Hide()
 			end
 			if barGroups and barGroups.secondary then
 				barGroups.secondary:Hide()
@@ -1744,6 +1784,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 	else
 		if barGroups and barGroups.primary then
 			barGroups.primary:Hide()
+		end
+		if barGroups and barGroups.stagger then
+			barGroups.stagger:Hide()
 		end
 		if barGroups and barGroups.secondary then
 			barGroups.secondary:Hide()
@@ -1866,17 +1909,37 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			end
 		end
 		return nil, true, false
+	elseif normalizedRelativeFrame == "StaggerBar" then
+		-- Brewmaster Stagger bar
+		if barGroups and barGroups.stagger then
+			local staggerNode = barGroups.stagger:GetNode(1)
+			if staggerNode then
+				local isVisible = barGroups.stagger.isVisible and staggerNode.isVisible
+				return staggerNode:GetResourceFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
 	end
 
-	-- Handle secondary resources (Stagger for Brewmaster, Chi for Windwalker)
+	-- Handle secondary resources (Chi for Windwalker, also supports Stagger for Brewmaster via ComboPoint1)
 	local comboPointPrefix = "ComboPoint"
 	if string.sub(normalizedRelativeFrame, 1, string.len(comboPointPrefix)) == comboPointPrefix then
 		local comboPoint = tonumber(string.sub(normalizedRelativeFrame, string.len(comboPointPrefix) + 1))
-		if comboPoint and barGroups.secondary then
-			local cpNode = barGroups.secondary:GetNode(comboPoint)
-			if cpNode then
-				local isVisible = barGroups.secondary.isVisible and cpNode.isVisible
-				return cpNode:GetResourceFrame(), true, isVisible
+		if comboPoint then
+			-- For Brewmaster, ComboPoint1 refers to the Stagger bar
+			if TRB.Data.character.specId == 1 and barGroups.stagger then
+				local staggerNode = barGroups.stagger:GetNode(comboPoint)
+				if staggerNode then
+					local isVisible = barGroups.stagger.isVisible and staggerNode.isVisible
+					return staggerNode:GetResourceFrame(), true, isVisible
+				end
+			-- For Windwalker, ComboPointN refers to Chi
+			elseif barGroups.secondary then
+				local cpNode = barGroups.secondary:GetNode(comboPoint)
+				if cpNode then
+					local isVisible = barGroups.secondary.isVisible and cpNode.isVisible
+					return cpNode:GetResourceFrame(), true, isVisible
+				end
 			end
 		end
 		return nil, true, false

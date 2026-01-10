@@ -474,11 +474,10 @@ function TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(specId)
             true -- isPrimary
         )
 
-        -- Stagger bar (1 node with thresholds)
-        -- Secondary bars are parented to UIParent for independent visibility
-        barGroups.secondary = TRB.Classes.BarGroup:New(
+        -- Stagger bar (1 node with thresholds) - custom bar type
+        barGroups.stagger = TRB.Classes.BarGroup:New(
             UIParent,
-            "TwintopResourceBarFrame_ComboPoint",
+            "TwintopResourceBarFrame_Stagger",
             1,
             false -- not primary
         )
@@ -548,10 +547,11 @@ function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = true
             },
-            secondary = {
+            stagger = {
                 maxNodes = 1,
                 isPrimary = false,
-                resourceType = "Stagger"
+                resourceType = "Stagger",
+                isCustomBar = true
             },
             health = {
                 maxNodes = 1,

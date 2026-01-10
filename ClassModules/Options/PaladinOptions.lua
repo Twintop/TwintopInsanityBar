@@ -40,59 +40,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			secondary = 2,
 			resource = 0
 		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-				algariManaPotionRank1 = {
-					enabled = false,
-				},
-				algariManaPotionRank2 = {
-					enabled = false,
-				},
-				algariManaPotionRank3 = {
-					enabled = true,
-				},
-				cavedwellersDelightRank1 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank2 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank3 = {
-					enabled = true,
-				},
-				slumberingSoulSerumRank1 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank2 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank3 = {
-					enabled = true,
-				},
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},
-		},
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
@@ -118,14 +65,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				infusionOfLight = {
-					color = "FFFCE58E",
-					enabled = true
-				},
-				infusionOfLight2 = {
-					color = "FFAF9942",
-					enabled = true
-				}
 			},
 			comboPoints = {
 				border="FFAF9942",
@@ -154,18 +93,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			infusionOfLight={
-				name = L["PaladinHolyAudioInfusionOfLightStack1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			infusionOfLight2={
-				name = L["PaladinHolyAudioInfusionOfLightStack2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -202,26 +129,6 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 		precision = {
 			secondary = 2,
 			resource = 0
-		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-			},
 		},
 		displayBar = {
 			primary = "combat",
@@ -305,26 +212,6 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 		precision = {
 			secondary = 2,
 			resource = 0
-		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-			},
 		},
 		displayBar = {
 			primary = "combat",
@@ -543,40 +430,6 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], false, true)
-	
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.infusionOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_Threshold_Option_infusionOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.infusionOfLightBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyAudioInfusionOfLightStack1"])
-	f.tooltip = L["PaladinHolyCheckboxInfusionOfLightStack1Tooltip"]
-	f:SetChecked(spec.colors.bar.infusionOfLight.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.infusionOfLight.enabled = self:GetChecked()
-	end)
-
-	controls.colors.infusionOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyColorPickerInfusionOfLightStack1"], spec.colors.bar.infusionOfLight.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.infusionOfLight
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "infusionOfLight")
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.infusionOfLight2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_Threshold_Option_infusionOfLight2BorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.infusionOfLight2BorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyAudioInfusionOfLightStack2"])
-	f.tooltip = L["PaladinHolyCheckboxInfusionOfLightStack2Tooltip"]
-	f:SetChecked(spec.colors.bar.infusionOfLight2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.infusionOfLight2.enabled = self:GetChecked()
-	end)
-
-	controls.colors.infusionOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyColorPickerInfusionOfLightStack2"], spec.colors.bar.infusionOfLight2.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.infusionOfLight2
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "infusionOfLight2")
-	end)]]
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinHolyPowerColorsHeader"], oUi.xCoord, yCoord)
@@ -718,10 +571,6 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "infusionOfLight", spec, classId, specId, yCoord, L["PaladinHolyAudioCheckboxInfusionOfLightStack1"], L["PaladinHolyAudioCheckboxInfusionOfLightStack1Tooltip"])
-	
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "infusionOfLight2", spec, classId, specId, yCoord, L["PaladinHolyAudioCheckboxInfusionOfLightStack2"], L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"])
 end
 
 local function HolyConstructBarTextDisplayPanel(parent, cache)

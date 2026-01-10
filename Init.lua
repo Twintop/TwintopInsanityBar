@@ -174,6 +174,9 @@ TRB.Data.character = {
 }
 _, _, TRB.Data.character.raceId = UnitRace("player")
 
+-- Register built-in bar types
+TRB.Classes.BarTypeRegistry:GetInstance():RegisterBuiltInTypes()
+
 ---@type TRB.Classes.SpellsData
 ---@diagnostic disable-next-line: missing-fields
 TRB.Data.spellsData = {}

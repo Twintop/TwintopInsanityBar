@@ -379,9 +379,7 @@ local function FillSpellData_Assassination()
 		{ variable = "$comboPoints", description = L["RogueAssassinationBarTextVariable_comboPoints"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = L["RogueAssassinationBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
 
-		--[[{ variable = "$sadTime", description = L["RogueAssassinationBarTextVariable_sadTime"], printInSettings = true, color = false },
-		{ variable = "$sliceAndDiceTime", description = "", printInSettings = false, color = false },
-
+		--[[
 		-- Proc
 		{ variable = "$blindsideTime", description = L["RogueAssassinationBarTextVariable_blindsideTime"], printInSettings = true, color = false },]]
 	}
@@ -505,9 +503,6 @@ local function FillSpellData_Outlaw()
 		{ variable = "$skullAndCrossbonesTime", description = L["RogueOutlawBarTextVariable_skullAndCrossbonesTime"], printInSettings = true, color = false },
 		{ variable = "$trueBearingTime", description = L["RogueOutlawBarTextVariable_trueBearingTime"], printInSettings = true, color = false },
 
-		{ variable = "$sadTime", description = L["RogueOutlawBarTextVariable_sadTime"], printInSettings = true, color = false },
-		{ variable = "$sliceAndDiceTime", description = "", printInSettings = false, color = false },
-
 		-- Proc
 		{ variable = "$opportunityTime", description = L["RogueOutlawBarTextVariable_opportunityTime"], printInSettings = true, color = false },]]
 	}
@@ -602,10 +597,7 @@ local function FillSpellData_Subtlety()
 		{ variable = "$sodTime", description = L["RogueSubtletyBarTextVariable_sodTime"], printInSettings = true, color = false },
 		{ variable = "$symbolsOfDeathTime", description = "", printInSettings = false, color = false },
 
-		{ variable = "$flagellationTime", description = L["RogueSubtletyBarTextVariable_flagellationTime"], printInSettings = true, color = false },
-
-		{ variable = "$sadTime", description = L["RogueSubtletyBarTextVariable_sadTime"], printInSettings = true, color = false },
-		{ variable = "$sliceAndDiceTime", description = "", printInSettings = false, color = false },]]
+		{ variable = "$flagellationTime", description = L["RogueSubtletyBarTextVariable_flagellationTime"], printInSettings = true, color = false },]]
 	}
 end
 
@@ -747,19 +739,7 @@ local function RefreshLookupData_Assassination()
 	--$casting
 	local castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 		
-	--[[--$sadTime
-	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
-	local sadTime
-	
-	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
-	elseif _sadTime > 0 then
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
-	else
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-	end
-
-	
+	--[[
 	--$blindsideTime
 	local _blindsideTime = snapshots[spells.blindside.id].buff:GetRemainingTime(currentTime)
 	local blindsideTime = TRB.Functions.BarText:TimerPrecision(_blindsideTime)]]
@@ -775,8 +755,7 @@ local function RefreshLookupData_Assassination()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$inStealth"] = ""
-	--[[lookup["$sadTime"] = sadTime
-	lookup["$sliceAndDiceTime"] = sadTime
+	--[[
 	lookup["$blindsideTime"] = blindsideTime]]
 	TRB.Data.lookup = lookup
 
@@ -789,8 +768,7 @@ local function RefreshLookupData_Assassination()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$inStealth"] = IsStealthed()
-	--[[lookupLogic["$sadTime"] = _sadTime
-	lookupLogic["$sliceAndDiceTime"] = _sadTime
+	--[[
 	lookupLogic["$blindsideTime"] = _blindsideTime]]
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -838,18 +816,6 @@ local function RefreshLookupData_Outlaw()
 	local castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	
 	--[[
-	--$sadTime
-	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
-	local sadTime
-	
-	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
-	elseif _sadTime > 0 then
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
-	else
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-	end
-
 	local rollTheBones = snapshots[spells.rollTheBones.id]
 	local rollTheBonesCount = rollTheBones.attributes.count
 	local rollTheBonesTemporaryCount = rollTheBones.attributes.temporaryCount
@@ -903,8 +869,6 @@ local function RefreshLookupData_Outlaw()
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$inStealth"] = ""
 	--[[
-	lookup["$sadTime"] = sadTime
-	lookup["$sliceAndDiceTime"] = sadTime
 	lookup["$opportunityTime"] = opportunityTime
 	lookup["$rtbCount"] = rollTheBonesCount
 	lookup["$rollTheBonesCount"] = rollTheBonesCount
@@ -934,8 +898,6 @@ local function RefreshLookupData_Outlaw()
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$inStealth"] = IsStealthed()
 	--[[
-	lookupLogic["$sadTime"] = _sadTime
-	lookupLogic["$sliceAndDiceTime"] = _sadTime
 	lookupLogic["$opportunityTime"] = _opportunityTime
 	lookupLogic["$rtbCount"] = rollTheBonesCount
 	lookupLogic["$rollTheBonesCount"] = rollTheBonesCount
@@ -998,18 +960,6 @@ local function RefreshLookupData_Subtlety()
 	local castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	
 	--[[
-	--$sadTime
-	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
-	local sadTime
-	
-	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.up.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
-	elseif _sadTime > 0 then
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.pandemic.color, TRB.Functions.BarText:TimerPrecision(_sadTime))
-	else
-		sadTime = string.format("|c%s%s|r", sharedSettings.colors.text.dots.down.color, TRB.Functions.BarText:TimerPrecision(0))
-	end
-
 	--$flagellationTime
 	local _flagellationTime = snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
 	local flagellationTime = TRB.Functions.BarText:TimerPrecision(_flagellationTime)
@@ -1034,8 +984,6 @@ local function RefreshLookupData_Subtlety()
 	lookup["$inStealth"] = ""
 	--[[
 	lookup["$shadowTechniquesCount"] = shadowTechniquesCount
-	lookup["$sadTime"] = sadTime
-	lookup["$sliceAndDiceTime"] = sadTime
 	lookup["$flagellationTime"] = flagellationTime
 	lookup["$sodTime"] = sodTime
 	lookup["$symbolsOfDeathTime"] = sodTime]]
@@ -1051,9 +999,7 @@ local function RefreshLookupData_Subtlety()
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$inStealth"] = IsStealthed()
 	--[[
-	lookupLogic["$shadowTechniquesCount"] = shadowTechniquesCount	
-	lookupLogic["$sadTime"] = _sadTime
-	lookupLogic["$sliceAndDiceTime"] = _sadTime
+	lookupLogic["$shadowTechniquesCount"] = shadowTechniquesCount
 	lookupLogic["$flagellationTime"] = _flagellationTime
 	lookupLogic["$sodTime"] = _sodTime
 	lookupLogic["$symbolsOfDeathTime"] = _sodTime]]
@@ -1231,12 +1177,6 @@ local function UpdateResourceBar()
 									thresholdColor = specCacheSettings.colors.threshold.under.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
-
-								--[[if snapshots[spell.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-									frameLevel = TRB.Data.constants.frameLevels.thresholdBase
-								else]]
-									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								--end
 							elseif spell.id == spells.garrote.id then
 								if not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
@@ -1309,18 +1249,6 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
-
-				--[[
-				local affectingCombat = TRB.Data.character.inCombat
-
-				if affectingCombat then
-					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
-					if sadTime == 0 then
-						barColor = specSettings.colors.bar.noSliceAndDice
-					elseif sadTime < spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-						barColor = specSettings.colors.bar.sliceAndDicePandemic
-					end
-				end]]
 
 				local barBorderColor = specSettings.colors.bar.border
 				if IsStealthed() or stealthViaBuff then
@@ -1537,12 +1465,6 @@ local function UpdateResourceBar()
 									thresholdColor = specCacheSettings.colors.threshold.under.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
-
-								--[[if snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-									frameLevel = TRB.Data.constants.frameLevels.thresholdBase
-								else]]
-									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								--end
 							elseif spell.id == spells.dispatch.id then
 								if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.maxStacks then
 									showThreshold = false
@@ -1616,17 +1538,6 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
-
-				--[[local affectingCombat = TRB.Data.character.inCombat
-
-				if affectingCombat then
-					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
-					if sadTime == 0 then
-						barColor = specSettings.colors.bar.noSliceAndDice
-					elseif sadTime < spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-						barColor = specSettings.colors.bar.sliceAndDicePandemic
-					end
-				end]]
 
 				local barBorderColor = specSettings.colors.bar.border
 
@@ -1776,12 +1687,6 @@ local function UpdateResourceBar()
 									thresholdColor = specCacheSettings.colors.threshold.under.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
-
-								--[[if snapshots[spell.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-									frameLevel = TRB.Data.constants.frameLevels.thresholdBase
-								else]]
-									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								--end
 							elseif spell.id == spells.backstab.id then
 								if talents:IsTalentActive(spells.gloomblade) then
 									showThreshold = false
@@ -1912,17 +1817,6 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
-
-				--[[local affectingCombat = TRB.Data.character.inCombat
-
-				if affectingCombat then
-					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
-					if sadTime == 0 then
-						barColor = specSettings.colors.bar.noSliceAndDice
-					elseif sadTime < spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-						barColor = specSettings.colors.bar.sliceAndDicePandemic
-					end
-				end]]
 
 				local barBorderColor = specSettings.colors.bar.border
 				
@@ -2192,6 +2086,9 @@ local function SwitchSpec()
 			if TRB.Data.barConstructedForSpec ~= nil then
 				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 				TRB.Functions.Character:ResetCaches()
+				-- Ensure health values are populated so the health bar displays immediately
+				TRB.Functions.Character:UpdateHealthValues()
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end)
@@ -2619,10 +2516,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		valid = true
 	elseif var == "$comboPointsMax" then
 		valid = true
-	--[[elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
-		if snapshots[spells.sliceAndDice.id].buff.isActive then
-			valid = true
-		end]]
 	elseif var == "$inStealth" then
 		if IsStealthed() then
 			valid = true

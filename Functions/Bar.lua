@@ -325,10 +325,19 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		end
 	end
 
-	-- Configure health bar group
-	if barGroups.health and settings.healthBar then
-		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, false)
+	-- Clear threshold color cache so AdjustThresholdDisplay recalculates colors correctly
+	-- This fixes a bug where moving the bar caused threshold colors to reset and stay wrong
+	if TRB.Data.cache and TRB.Data.cache.values then
+		TRB.Data.cache.values.threshold = {}
 	end
+
+	-- Configure health bar group (apply appearance immediately to ensure textures are set)
+	if barGroups.health and settings.healthBar then
+		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, true)
+	end
+
+	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)
+	self:ApplyCustomBarGroupsLayout(settings, barGroups)
 end
 
 ---Applies textures/colors to existing bar groups (OOP system only).
@@ -415,6 +424,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		end
 	end
 
+	-- Apply custom bar group appearances from the registry (stagger, defensives, mana, etc.)
+	self:ApplyCustomBarGroupsAppearance(settings, barGroups)
+
 	-- Trigger resource bar updates to ensure all colors are applied from current spec settings
 	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 		TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -423,8 +435,10 @@ end
 
 ---Configuration for constructing an anchored bar group
 ---@class TRB.Classes.AnchoredBarGroupConfig
----@field public settingsKey string # Key to read from settings (e.g., "comboPoints", "healthBar")
----@field public colorsKey string # Key to read from settings.colors (e.g., "comboPoints", "healthBar")
+---@field public settingsKey string? # Key to read from settings (e.g., "comboPoints", "healthBar"). Ignored if settingsTable is provided.
+---@field public settingsTable table? # Direct settings table to use instead of looking up via settingsKey
+---@field public colorsKey string? # Key to read from settings.colors (e.g., "comboPoints", "healthBar"). Ignored if colorsTable is provided.
+---@field public colorsTable table? # Direct colors table to use instead of looking up via colorsKey
 ---@field public nodeCount integer? # Fixed node count, or nil to use TRB.Data.character.maxResource2
 ---@field public useApplyLayout boolean # If true, use group:ApplyLayout(); if false, size single node directly
 ---@field public defaultAnchorAbove boolean # If true, default anchor is TOP; if false, default is BOTTOM
@@ -439,7 +453,8 @@ end
 ---@param config TRB.Classes.AnchoredBarGroupConfig # Configuration for this bar group type
 ---@param applyAppearance boolean?
 function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targetGroup, config, applyAppearance)
-	local groupSettings = settings[config.settingsKey]
+	-- Allow direct settings table OR lookup by key
+	local groupSettings = config.settingsTable or (config.settingsKey and settings[config.settingsKey])
 	if groupSettings == nil then
 		return
 	end
@@ -555,7 +570,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	if topBottom == "BOTTOM" then
 		yPos = -settings.bar.border + groupSettings.yPos
 	else
-		yPos = settings.bar.border + groupSettings.yPos - 2
+		yPos = settings.bar.border + groupSettings.yPos
 	end
 
 	-- Position the target container
@@ -598,6 +613,9 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			if config.minMaxMode == "health" then
 				local healthMax = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.healthMax or UnitHealthMax("player")
 				singleNode:SetMinMax(0, healthMax)
+			elseif config.minMaxMode == "mana" then
+				local manaMax = UnitPowerMax("player", Enum.PowerType.Mana) or 1
+				singleNode:SetMinMax(0, manaMax)
 			elseif config.minMaxMode == "discrete" then
 				singleNode:SetMinMax(0, 1)
 			end
@@ -607,11 +625,21 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 	-- Apply appearance only when requested
 	if applyAppearance then
-		local colorSettings = settings.colors[config.colorsKey]
+		-- Allow direct colors table OR lookup by key
+		local colorSettings = config.colorsTable or (config.colorsKey and settings.colors[config.colorsKey])
 		if colorSettings then
 			for i = 1, nodes do
 				local node = targetGroup:GetNode(i)
 				if node then
+					-- Clear cached colors for this node before setting textures.
+					-- SetTextures() calls ApplyBackdrop() which resets border color to white.
+					-- Without clearing the cache, SetBorderColor() may skip the update
+					-- if it thinks the cached color matches the desired color.
+					local borderCacheKey = node.name .. "_border"
+					local backdropCacheKey = node.name .. "_background"
+					TRB.Data.cache.colors.border[borderCacheKey] = nil
+					TRB.Data.cache.colors.backdrop[backdropCacheKey] = nil
+
 					node:SetTextures(
 						settings.textures[config.textures.bar],
 						settings.textures[config.textures.border],
@@ -713,6 +741,142 @@ function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healt
 	}
 
 	self:ConstructAnchoredBarGroup(settings, primaryGroup, healthGroup, config, applyAppearance)
+end
+
+---Applies layout to all custom bar groups registered in the BarTypeRegistry
+---Uses ConstructAnchoredBarGroup for consistent positioning with health bar and combo points
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
+	if settings == nil or barGroups == nil or barGroups.primary == nil then
+		return
+	end
+	
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local allBarTypes = registry:GetAll()
+	
+	for key, barTypeDef in pairs(allBarTypes) do
+		local barGroup = barGroups[key]
+		local barSettings = settings.bars and settings.bars[key]
+		
+		-- Apply layout if bar group exists
+		if barGroup then
+			-- Get dimensions from settings or defaults from registry
+			local defaultSettings = nil
+			if not barSettings and barTypeDef.defaultDimensionsFunc then
+				defaultSettings = barTypeDef.defaultDimensionsFunc()
+			end
+			local effectiveSettings = barSettings or defaultSettings or {}
+			
+			-- Ensure effectiveSettings has required fields with defaults
+			effectiveSettings.width = effectiveSettings.width
+			effectiveSettings.height = effectiveSettings.height
+			effectiveSettings.border = effectiveSettings.border
+			effectiveSettings.spacing = effectiveSettings.spacing
+			effectiveSettings.fullWidth = effectiveSettings.fullWidth
+			effectiveSettings.relativeTo = effectiveSettings.relativeTo
+			effectiveSettings.xPos = effectiveSettings.xPos
+			effectiveSettings.yPos = effectiveSettings.yPos
+			
+			-- Get color settings
+			local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[key]
+			
+			-- Build config for ConstructAnchoredBarGroup
+			---@type TRB.Classes.AnchoredBarGroupConfig
+			local config = {
+				settingsTable = effectiveSettings,
+				colorsTable = colorSettings,
+				nodeCount = barTypeDef.maxNodes or 1,
+				useApplyLayout = barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1,
+				defaultAnchorAbove = true, -- Custom bars default to above primary bar
+				textures = {
+					bar = key .. "Bar",
+					border = key .. "Border",
+					background = key .. "Background"
+				},
+				colors = {
+					border = "border",
+					background = "background",
+					bar = "bar"
+				},
+				minMaxMode = barTypeDef.minMaxMode or "custom"
+			}
+			
+			-- Call ConstructAnchoredBarGroup (layout only, appearance handled separately)
+			self:ConstructAnchoredBarGroup(settings, barGroups.primary, barGroup, config, false)
+		end
+	end
+end
+
+---Applies appearance (textures/colors) to all custom bar groups registered in the BarTypeRegistry
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
+	if settings == nil or barGroups == nil then
+		return
+	end
+	
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local allBarTypes = registry:GetAll()
+	local frameLevels = TRB.Data.constants.frameLevels
+	
+	for key, barTypeDef in pairs(allBarTypes) do
+		local barGroup = barGroups[key]
+		local barSettings = settings.bars and settings.bars[key]
+		
+		-- Apply appearance if bar group exists, even if barSettings is missing (use fallbacks)
+		if barGroup then
+			-- Get textures from flat keys (same pattern as manaBar: staggerBar, staggerBorder, staggerBackground)
+			local barTexture = settings.textures and (settings.textures[key .. "Bar"] or settings.textures.resourceBar)
+			local borderTexture = settings.textures and (settings.textures[key .. "Border"] or settings.textures.border)
+			local backgroundTexture = settings.textures and (settings.textures[key .. "Background"] or settings.textures.background)
+			
+			-- Get colors from nested structure
+			local barColors = settings.colors and settings.colors.bars and settings.colors.bars[key] or {}
+			
+			-- Apply to all nodes
+			local nodeCount = barTypeDef.maxNodes or 1
+			for i = 1, nodeCount do
+				local node = barGroup:GetNode(i)
+				if node then
+					-- Set textures
+					if barTexture and borderTexture and backgroundTexture then
+						node:SetTextures(barTexture, borderTexture, backgroundTexture)
+					end
+					
+					-- Get colors (handle both raw string and { color = "..." } objects)
+					local borderColor = barColors.border
+					if type(borderColor) == "table" then borderColor = borderColor.color end
+					local backgroundColor = barColors.background
+					if type(backgroundColor) == "table" then backgroundColor = backgroundColor.color end
+					
+					-- Get bar color - could be simple or threshold-based
+					local barColor = nil
+					if barTypeDef.colorCurveType then
+						-- Threshold-based - use the "low" color as default
+						barColor = barColors.low and barColors.low.color or "FFFFFFFF"
+					else
+						-- Simple bar color
+						barColor = barColors.bar
+						if type(barColor) == "table" then barColor = barColor.color end
+					end
+					
+					-- Apply colors with fallbacks
+					node:SetBorderColor(borderColor or "FFFFFFFF")
+					node:SetBackgroundColorFromString(backgroundColor or "66000000")
+					if barColor then
+						node:SetColor(barColor)
+					end
+					
+					node:SetFrameLevels(
+						frameLevels.cpContainer,
+						frameLevels.cpBorder,
+						frameLevels.cpResource
+					)
+				end
+			end
+		end
+	end
 end
 
 ---Updates the value on a BarNode using the standard caching mechanism

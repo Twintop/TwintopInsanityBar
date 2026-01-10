@@ -40,26 +40,6 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 			secondary = 2,
 			resource = 0
 		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-			},
-		},
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
@@ -144,26 +124,6 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 			secondary = 2,
 			resource = 0
 		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-			},
-		},
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
@@ -237,26 +197,6 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 		precision = {
 			secondary = 2,
 			resource = 0
-		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-			},
 		},
 		displayBar = {
 			primary = "combat",

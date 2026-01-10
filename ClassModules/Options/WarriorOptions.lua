@@ -52,18 +52,7 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = true,
@@ -217,18 +206,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = true,
@@ -432,18 +410,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = true,
@@ -485,11 +452,14 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			primary = "combat",
 			secondary = "combat",
 			health = "combat",
+			defensives = "combat",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		bars = {
+			defensives = TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic),
+		},
 		colors = {
 			text = {
 				current = {
@@ -511,21 +481,8 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				background="66000000",
 				base="FFFF0000",
 			},
-			comboPoints = {
-				border="FFC21807",
-				background="66000000",
-				base="FFC942FD",
-				penultimate="FFFF9900",
-				final="FFFF0000",
-				sameColor=false,
-				ignorePain = {
-					color = "FFFFD000",
-					enabled = true
-				},
-				shieldBlock = {
-					color = "FF0099FF",
-					enabled = true
-				}
+			bars = {
+				defensives = TRB.Functions.Settings:DefaultDefensivesBarColors(),
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -564,8 +521,16 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundAirHorn"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true),
+		textures = TRB.Functions.Settings:DefaultTextures(false),
 	}
+
+	-- Add defensives bar textures
+	settings.textures.defensivesBackground="Interface\\Tooltips\\UI-Tooltip-Background"
+	settings.textures.defensivesBackgroundName="Blizzard Tooltip"
+	settings.textures.defensivesBorder="Interface\\Buttons\\WHITE8X8"
+	settings.textures.defensivesBorderName="1 Pixel"
+	settings.textures.defensivesBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
+	settings.textures.defensivesBarName=L["LSMStatusBarSmoother"]
 
 	if includeBarText then
 		settings.displayText.barText = ProtectionLoadDefaultBarTextSettings(classic)
@@ -1752,18 +1717,22 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], L["ResourceWarriorDefensives"])
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"), L["ResourceRage"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 3, yCoord, true, L["ResourceWarriorDefensives"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 3, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives") })
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, true, L["ResourceWarriorDefensives"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
 
-	yCoord = yCoord - 90
+	-- Defensives bar visibility using custom bar system
+	yCoord = yCoord - 70
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 1, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"))
+
+	yCoord = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 30
@@ -1777,35 +1746,7 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], true, false)
 
 	yCoord = yCoord - 40
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarriorProtectionHeaderDefensiveColors"], oUi.xCoord, yCoord)
-	
-	controls.colors.comboPoints = {}
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.ignorePain = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionDefensiveIgnorePain"], spec.colors.comboPoints.ignorePain.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.comboPoints.ignorePain
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "ignorePain")
-	end)
-
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerDefensiveBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.border
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.shieldBlock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionDefensiveShieldBlock"], spec.colors.comboPoints.shieldBlock.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.comboPoints.shieldBlock
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "shieldBlock")
-	end)
-
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorProtectionColorPickerUnfilledDefensiveBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 1, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"))
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 1, 3, yCoord)

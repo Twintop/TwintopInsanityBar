@@ -210,6 +210,11 @@ end
 
 function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, classId, specId)
 	if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
+		-- Create texture if it doesn't exist yet (can happen with dynamically created thresholds)
+		if frame.texture == nil then
+			frame.texture = frame:CreateTexture(nil, "OVERLAY")
+			frame.texture:SetAllPoints(frame)
+		end
 		frame.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
 		if frame.icon ~= nil and frame.hasIcon == true then
 			frame.icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))

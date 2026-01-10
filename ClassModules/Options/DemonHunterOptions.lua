@@ -81,18 +81,7 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				annihilation = {
 					enabled = true,
@@ -239,18 +228,7 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				soulCleave = {
 					enabled = true,
@@ -414,18 +392,7 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				voidRay = {
 					enabled = true,

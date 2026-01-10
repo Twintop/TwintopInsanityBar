@@ -186,8 +186,6 @@ local function FillSpellData_Arms()
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
 		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
 		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true },
-
-		--[[{ variable = "#charge", icon = spells.charge.icon, description = spells.charge.name, printInSettings = true },]]
 	}
 	specCache.arms.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -425,24 +423,24 @@ local function ConstructResourceBar(settings)
 
 	if TRB.Data.character.specId == 1 then
 		-- Arms: No secondary bar
-		if barGroups and barGroups.secondary then
-			barGroups.secondary:Hide()
+		if barGroups and barGroups.defensives then
+			barGroups.defensives:Hide()
 		end
 		TRB.Functions.Aura:DisableUnitAuraCache()
 	elseif TRB.Data.character.specId == 2 then
 		-- Fury: No secondary bar
-		if barGroups and barGroups.secondary then
-			barGroups.secondary:Hide()
+		if barGroups and barGroups.defensives then
+			barGroups.defensives:Hide()
 		end
 		TRB.Functions.Aura:DisableUnitAuraCache()
 	elseif TRB.Data.character.specId == 3 then
 		-- Protection: Show secondary bar for defensive buffs (Shield Block + Ignore Pain)
-		if barGroups and barGroups.secondary then
+		if barGroups and barGroups.defensives then
 			local maxDefensiveBuffs = TRB.Data.character.maxResource2 or 2
-			barGroups.secondary:Show()
-			barGroups.secondary:ShowNodes(maxDefensiveBuffs)
+			barGroups.defensives:Show()
+			barGroups.defensives:ShowNodes(maxDefensiveBuffs)
 			for x = 1, maxDefensiveBuffs do
-				local defensiveNode = barGroups.secondary:GetNode(x)
+				local defensiveNode = barGroups.defensives:GetNode(x)
 				if defensiveNode then
 					defensiveNode:SetMinMax(0, 1)
 				end
@@ -771,8 +769,12 @@ end
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
 local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 	local currentTime = GetTime()
-	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-	local cpBorderColor = specSettings.colors.comboPoints.border
+	-- Handle both raw string and { color = "..." } object formats
+	local bgColor = specSettings.colors.bars.defensives.background
+	if type(bgColor) == "table" then bgColor = bgColor.color end
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(bgColor, true)
+	local cpBorderColor = specSettings.colors.bars.defensives.border
+	if type(cpBorderColor) == "table" then cpBorderColor = cpBorderColor.color end
 
 	local barGroups = TRB.Frames.barGroups
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -790,10 +792,10 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 	for _, buffConfig in ipairs(defensiveBuffs) do
 		local spell = buffConfig.spell
 		local colorKey = buffConfig.colorKey
-		local defensiveBarEnabled = specSettings.colors.comboPoints[colorKey] and specSettings.colors.comboPoints[colorKey].enabled
+		local defensiveBarEnabled = specSettings.colors.bars.defensives.nodeColors[colorKey] and specSettings.colors.bars.defensives.nodeColors[colorKey].enabled
 		
 		if talents:IsTalentActive(spell) and defensiveBarEnabled then
-			local cpColor = specSettings.colors.comboPoints[colorKey].color
+			local cpColor = specSettings.colors.bars.defensives.nodeColors[colorKey].color
 			local buff = snapshots[spell.id].buff
 			
 			local cpTime = 0
@@ -813,8 +815,8 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 				cpDuration = 1
 			end
 			
-			if barGroups and barGroups.secondary then
-				local defensiveNode = barGroups.secondary:GetNode(currentDefensiveBar)
+			if barGroups and barGroups.defensives then
+				local defensiveNode = barGroups.defensives:GetNode(currentDefensiveBar)
 				if defensiveNode then
 					TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. currentDefensiveBar, defensiveNode, cpTime, cpDuration)
 					defensiveNode:SetBorderColor(cpBorderColor)
@@ -1183,7 +1185,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.defensives ~= "never" then
 				-- Update defensive buff secondary bar nodes
 				UpdateDefensiveBuffs(specSettings, specCacheSettings)
 			end
@@ -1325,6 +1327,9 @@ local function SwitchSpec()
 			if TRB.Data.barConstructedForSpec ~= nil then
 				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 				TRB.Functions.Character:ResetCaches()
+				-- Ensure health values are populated so the health bar displays immediately
+				TRB.Functions.Character:UpdateHealthValues()
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end)
@@ -1530,9 +1535,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Only Protection (specId == 3) uses the secondary bar
 			local showSecondary = false
 			if not forceHideAll and TRB.Data.character.specId == 3 then
-				if sharedSettings.displayBar.secondary == "always" then
+				if sharedSettings.displayBar.defensives == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.secondary == "combat" then
+				elseif sharedSettings.displayBar.defensives == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -1559,12 +1564,12 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Apply secondary bar visibility
-			if barGroups and barGroups.secondary then
+			if barGroups and barGroups.defensives then
 				if showSecondary then
-					barGroups.secondary:Show()
-					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+					barGroups.defensives:Show()
+					barGroups.defensives:ShowNodes(TRB.Data.character.maxResource2)
 				else
-					barGroups.secondary:Hide()
+					barGroups.defensives:Hide()
 				end
 			end
 
@@ -1588,8 +1593,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if barGroups and barGroups.primary then
 				barGroups.primary:Hide()
 			end
-			if barGroups and barGroups.secondary then
-				barGroups.secondary:Hide()
+			if barGroups and barGroups.defensives then
+				barGroups.defensives:Hide()
 			end
 			if barGroups and barGroups.health then
 				barGroups.health:Hide()
@@ -1601,8 +1606,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 		if barGroups and barGroups.primary then
 			barGroups.primary:Hide()
 		end
-		if barGroups and barGroups.secondary then
-			barGroups.secondary:Hide()
+		if barGroups and barGroups.defensives then
+			barGroups.defensives:Hide()
 		end
 		if barGroups and barGroups.health then
 			barGroups.health:Hide()
@@ -1728,19 +1733,19 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		-- Handle Protection's defensive buff nodes
 		if TRB.Data.character.specId == 3 then
 			if TRB.Functions.String:StartsWith(relativeToFrame, "IgnorePain") then
-				if barGroups and barGroups.secondary then
-					local node = barGroups.secondary:GetNode(1)
+				if barGroups and barGroups.defensives then
+					local node = barGroups.defensives:GetNode(1)
 					if node then
-						local isVisible = barGroups.secondary.isVisible and node.isVisible
+						local isVisible = barGroups.defensives.isVisible and node.isVisible
 						return node:GetResourceFrame(), true, isVisible
 					end
 				end
 				return nil, true, false
 			elseif TRB.Functions.String:StartsWith(relativeToFrame, "ShieldBlock") then
-				if barGroups and barGroups.secondary then
-					local node = barGroups.secondary:GetNode(2)
+				if barGroups and barGroups.defensives then
+					local node = barGroups.defensives:GetNode(2)
 					if node then
-						local isVisible = barGroups.secondary.isVisible and node.isVisible
+						local isVisible = barGroups.defensives.isVisible and node.isVisible
 						return node:GetResourceFrame(), true, isVisible
 					end
 				end
@@ -1751,10 +1756,10 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		local comboPointIndex = string.match(relativeToFrame, "^ComboPoint(%d+)$")
 		if comboPointIndex ~= nil then
 			local index = tonumber(comboPointIndex)
-			if index ~= nil and barGroups and barGroups.secondary then
-				local node = barGroups.secondary:GetNode(index)
+			if index ~= nil and barGroups and barGroups.defensives then
+				local node = barGroups.defensives:GetNode(index)
 				if node then
-					local isVisible = barGroups.secondary.isVisible and node.isVisible
+					local isVisible = barGroups.defensives.isVisible and node.isVisible
 					return node:GetResourceFrame(), true, isVisible
 				end
 			end

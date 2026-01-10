@@ -55,75 +55,6 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			secondary = 2,
 			resource = 0
 		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-				algariManaPotionRank1 = {
-					enabled = false,
-				},
-				algariManaPotionRank2 = {
-					enabled = false,
-				},
-				algariManaPotionRank3 = {
-					enabled = true,
-				},
-				cavedwellersDelightRank1 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank2 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank3 = {
-					enabled = true,
-				},
-				slumberingSoulSerumRank1 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank2 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank3 = {
-					enabled = true,
-				},
-				shadowfiend = {
-					enabled = true,
-					cooldown = false
-				},
-				mindbender = {
-					enabled = true,
-					cooldown = false
-				},
-				voidwraith = {
-					enabled = true,
-					cooldown = false
-				},
-				cannibalize = {
-					enabled = false,
-					cooldown = false
-				},
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},
-		},
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
@@ -261,67 +192,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			secondary = 2,
 			resource = 0
 		},
-		thresholds = {
-			properties = {
-				width = 2,
-				overlapBorder=true
-			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
-			thresholdDictionary = {
-				algariManaPotionRank1 = {
-					enabled = false,
-				},
-				algariManaPotionRank2 = {
-					enabled = false,
-				},
-				algariManaPotionRank3 = {
-					enabled = true,
-				},
-				cavedwellersDelightRank1 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank2 = {
-					enabled = false,
-				},
-				cavedwellersDelightRank3 = {
-					enabled = true,
-				},
-				slumberingSoulSerumRank1 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank2 = {
-					enabled = false,
-				},
-				slumberingSoulSerumRank3 = {
-					enabled = true,
-				},
-				shadowfiend = {
-					enabled = true,
-					cooldown = false
-				},
-				cannibalize = {
-					enabled = false,
-					cooldown = false
-				},
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},
-		},
 		displayBar = {
 			primary = "combat",
 			secondary = "combat",
@@ -450,7 +320,34 @@ end
 local function ShadowLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
+	}
+
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$vfTime}[#voidform$vfTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
@@ -472,11 +369,15 @@ local function ShadowLoadDefaultBarTextSettings(classic)
 				relativeToFrame = "Resource",
 				relativeToFrameName = L["MainResourceBar"]
 			}
-		},
-	}
+		})
+	end
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+
+	local manaBarTextSettings = TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
+	for k,v in pairs(manaBarTextSettings) do table.insert(textSettings, v) end
+
 	return textSettings
 end
 TRB.Options.Priest.ShadowLoadDefaultBarTextSettings = ShadowLoadDefaultBarTextSettings
@@ -499,18 +400,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			properties = {
 				width = 2,
 				overlapBorder=true
-			},
-			icons = {
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			},			
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			specProperties = {
 				shadowWordMadnessThresholdOnlyOverShow = false,
 			},
@@ -534,10 +425,14 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			primary = "combat",
 			secondary = "combat",
 			health = "combat",
+			mana = "never",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+		},
 		mindbender={ --TODO: Rename this shadowfiend to be consistent with Discipline and Holy
 			mode="gcd",
 			swingsMax=4,
@@ -565,6 +460,9 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = true
+				},
+				manaBar = {
+					color = "FF0000FF"
 				},
 				hasteBelow="FFFFFFFF",
 				hasteApproaching="FFFFFF00",
@@ -614,6 +512,9 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				mana = TRB.Functions.Settings:DefaultManaBarColors(),
+			},
 		},
 		displayText={
 			default = {
@@ -646,7 +547,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(),
+		textures = TRB.Functions.Settings:DefaultTextures(false, true),
 	}
 
 	if includeBarText then
@@ -1937,10 +1838,13 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceInsanity"])
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowshadowWordMadness"], L["PriestShadowshadowWordMadnessAbbreviation"], false, nil, true)
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true)
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowshadowWordMadness"], L["PriestShadowshadowWordMadnessAbbreviation"], false, nil, true, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
@@ -2073,6 +1977,9 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderEndOfVoidformConfiguration"], oUi.xCoord, yCoord)
@@ -2271,6 +2178,14 @@ local function ShadowConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	spec.colors.text.manaBar = spec.colors.text.manaBar or { color = "FF0000FF" }
+	controls.colors.text.manaBar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarTextColor"], spec.colors.text.manaBar.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.manaBar
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "manaBar")
 	end)
 
 	yCoord = yCoord - 40

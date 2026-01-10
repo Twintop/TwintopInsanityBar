@@ -290,6 +290,14 @@ function TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(specId)
             false -- not primary
         )
 
+        -- Mana bar (1 node) - optional secondary mana display for Elemental
+        barGroups.mana = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Mana",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Enhancement
         -- Primary mana bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(

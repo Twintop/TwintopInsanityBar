@@ -47,18 +47,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				revivePet = {
 					enabled = false,
@@ -85,12 +74,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				}
 			}
-		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
 		},
 		maxResource = {
 			value = BEAST_MASTERY_MAX_FOCUS,
@@ -236,18 +219,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				arcaneShot = {
 					enabled = true,
@@ -261,9 +233,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				scareBeast = {
 					enabled = false,
 				},
-			killCommand = {
-				enabled = true,
-			},
+				killCommand = {
+					enabled = true,
+				},
 				killShot = {
 					enabled = true,
 				},
@@ -273,16 +245,10 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				multiShot = {
 					enabled = true,
 				},
-			blackArrow = {
-				enabled = true,
-			},
+				blackArrow = {
+					enabled = true,
+				},
 			}
-		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
 		},
 		maxResource = {
 			value = MARKSMANSHIP_MAX_FOCUS,
@@ -435,18 +401,7 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "TOP",
-				relativeToName = L["PositionAbove"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=-12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				revivePet = {
 					enabled = false,
@@ -467,12 +422,6 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 			}
-		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
 		},
 		maxResource = {
 			value = SURVIVAL_MAX_FOCUS,

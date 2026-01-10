@@ -21,17 +21,6 @@ local specCache = {
 }
 TRB.Data.specCache = specCache
 
-local function CalculateManaGain(mana, isPotion)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
-	if isPotion == nil then
-		isPotion = false
-	end
-
-	local modifier = 1.0
-
-	return mana * modifier
-end
-
 local function FillSpecializationCache()
 	-- Elemental
 	Global_TwintopResourceBar = {
@@ -260,6 +249,10 @@ local function FillSpellData_Elemental()
 		{ variable = "$maelstromMax", description = L["ShamanElementalBarTextVariable_maelstromMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["ShamanElementalBarTextVariable_casting"], printInSettings = true, color = false },
+
+		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$manaPercent", description = L["PriestHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
 
 		--[[{ variable = "$ifStacks", description = L["ShamanElementalBarTextVariable_ifStacks"], printInSettings = true, color = false },
 		{ variable = "$ifMaelstrom", description = L["ShamanElementalBarTextVariable_ifMaelstrom"], printInSettings = true, color = false },
@@ -555,6 +548,23 @@ local function RefreshLookupData_Elemental()
 	local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
 	local ascendanceTime = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
 
+	-- Mana lookups
+	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color or "FF0000FF"
+	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
+	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
+
+	--$mana
+	local manaPrecision = specSettings.manaPrecision or 1
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+
+	--$manaMax
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))
+
+	--$manaPercent
+	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -571,6 +581,10 @@ local function RefreshLookupData_Elemental()
 	lookup["$skTime"] = stormkeeperTime
 	lookup["$eogsTime"] = eogsTime
 	lookup["$pfTime"] = pfTime]]
+	lookup["$mana"] = currentMana
+	lookup["$manaMax"] = manaMax
+	lookup["$manaPercent"] = manaPercent
+
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -587,6 +601,10 @@ local function RefreshLookupData_Elemental()
 	lookupLogic["$skTime"] = _stormkeeperTime
 	lookupLogic["$eogsTime"] = _eogsTime
 	lookupLogic["$pfTime"] = _pfTime]]
+	lookupLogic["$mana"] = normalizedMana
+	lookupLogic["$manaMax"] = normalizedManaMax
+	lookupLogic["$manaPercent"] = _manaPercent
+
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1057,6 +1075,21 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
+
+			-- Mana bar update (Balance only)
+			if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana ~= "never" then
+				refreshText = true
+				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
+				if manaNode then
+					local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
+					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
+					manaNode:SetMinMax(0, maxMana)
+					manaNode:SetValue(currentMana)
+					manaNode:SetColor(specSettings.colors.manaBar.bar.color)
+					manaNode:SetBorderColor(specSettings.colors.manaBar.border.color)
+					manaNode:SetBackgroundColorFromString(specSettings.colors.manaBar.background.color)
+				end
+			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
@@ -1341,6 +1374,9 @@ local function SwitchSpec()
 			if TRB.Data.barConstructedForSpec ~= nil then
 				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 				TRB.Functions.Character:ResetCaches()
+				-- Ensure health values are populated so the health bar displays immediately
+				TRB.Functions.Character:UpdateHealthValues()
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end)
@@ -1608,8 +1644,28 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 			end
 
+			-- Determine mana bar visibility independently (Elemental only)
+			local showMana = false
+			if not forceHideAll and TRB.Data.character.specId == 1 and sharedSettings.displayBar.mana ~= nil then
+				if sharedSettings.displayBar.mana == "always" then
+					showMana = true
+				elseif sharedSettings.displayBar.mana == "combat" then
+					showMana = affectingCombat or inVehicle
+				end
+				-- "never" means showMana stays false
+			end
+
+			-- Apply mana bar visibility
+			if barGroups and barGroups.mana then
+				if showMana then
+					barGroups.mana:Show()
+				else
+					barGroups.mana:Hide()
+				end
+			end
+
 			-- Track if any bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth
+			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth or showMana
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -1625,6 +1681,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if barGroups and barGroups.health then
 				barGroups.health:Hide()
 			end
+			if barGroups and barGroups.mana then
+				barGroups.mana:Hide()
+			end
 			TRB.Functions.BarText:Hide(sharedSettings)
 			snapshotData.attributes.isTracking = false
 		end
@@ -1637,6 +1696,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 		if barGroups and barGroups.health then
 			barGroups.health:Hide()
+		end
+		if barGroups and barGroups.mana then
+			barGroups.mana:Hide()
 		end
 		snapshotData.attributes.isTracking = false
 	end
@@ -1705,6 +1767,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.ascendance.id].buff.isActive then
 				valid = true
 			end
+		elseif var == "$mana" then
+			-- Do not compare snapshotData.attributes.mana as it may be a secret value
+			valid = false
+		elseif var == "$manaMax" then
+			valid = true
+		elseif var == "$manaPercent" then
+			-- Do not compare mana percent as it may be a secret value
+			valid = false
 		end
 	elseif TRB.Data.character.specId == 2 then --Enhancement
 		if var == "$casting" then
@@ -1758,6 +1828,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if var == "$health" or var == "$healthMax" or var == "$healthPercent" then
 		valid = true
 	end
+	
+
+	-- Mana variables (Balance only)
+	if TRB.Data.character.specId == 1 then
+		if var == "$mana" or var == "$manaMax" or var == "$manaPercent" then
+			valid = true
+		end
+	end
 
 	return valid
 end
@@ -1804,6 +1882,18 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
 				return healthNode:GetResourceFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	end
+
+	-- Handle mana bar (Elemental only)
+	if normalizedRelativeFrame == "ManaBar" or normalizedRelativeFrame == "Mana" then
+		if barGroups and barGroups.mana then
+			local manaNode = barGroups.mana:GetNode(1)
+			if manaNode then
+				local isVisible = barGroups.mana.isVisible and manaNode.isVisible
+				return manaNode:GetResourceFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

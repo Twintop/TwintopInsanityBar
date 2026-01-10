@@ -8,7 +8,6 @@ TRB.Classes.Paladin = TRB.Classes.Paladin or {}
 
 
 ---@class TRB.Classes.Paladin.HolySpells : TRB.Classes.Healer.HealerSpells
----@field public infusionOfLight TRB.Classes.SpellBase
 TRB.Classes.Paladin.HolySpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Paladin.HolySpells.__index = TRB.Classes.Paladin.HolySpells
 
@@ -19,11 +18,6 @@ function TRB.Classes.Paladin.HolySpells:New()
     -- Paladin Class Baseline Abilities
 
     -- Holy Baseline Abilities
-    self.infusionOfLight = TRB.Classes.SpellBase:New({
-        id = 54149,
-        isTalent = false,
-        baseline = true
-    })
 
     -- Paladin Class Talents		
     

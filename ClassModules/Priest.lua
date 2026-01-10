@@ -95,16 +95,6 @@ local specCache = {
 }
 TRB.Data.specCache = specCache
 
-local function CalculateManaGain(mana, isPotion)
-	if isPotion == nil then
-		isPotion = false
-	end
-
-	local modifier = 1.0
-
-	return mana * modifier
-end
-
 local function FillSpecializationCache()
 	-- Discipline
 	specCache.discipline.Global_TwintopResourceBar = {
@@ -602,6 +592,10 @@ local function FillSpellData_Shadow()
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["PriestShadowBarTextVariable_casting"], printInSettings = true, color = false },
 
+		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$manaPercent", description = L["PriestHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
+
 		{ variable = "$mdTime", description = L["PriestShadowBarTextVariable_mdTime"], printInSettings = true, color = false },
 
 		{ variable = "$mfiTime", description = L["PriestShadowBarTextVariable_mfiTime"], printInSettings = true, color = false },
@@ -1087,6 +1081,24 @@ local function RefreshLookupData_Shadow()
 	local voidVolleyTime = TRB.Functions.BarText:TimerPrecision(_voidVolleyTime)
 	]]
 
+	-- Mana lookups (Shadow uses mana as secondary resource display)
+	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color or "FF0000FF"
+	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
+	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
+
+	--$mana
+	local manaPrecision = specSettings.manaPrecision or 1
+	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+
+	--$manaMax
+	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+
+	--$manaPercent
+	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
+
+
 	----------------------------
 
 	local lookup = TRB.Data.lookup
@@ -1101,6 +1113,9 @@ local function RefreshLookupData_Shadow()
 	lookup["$entropicRiftTime"] = entropicRiftTime
 	lookup["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
 	lookup["$vfTime"] = voidformTime
+	lookup["$mana"] = currentMana
+	lookup["$manaMax"] = manaMax
+	lookup["$manaPercent"] = manaPercent
 	--[[lookup["$mdTime"] = mdTime
 	lookup["$spTime"] = spTime
 	lookup["$mmTime"] = spTime
@@ -1133,6 +1148,9 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$entropicRiftTime"] = _entropicRiftTime
 	lookupLogic["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
 	lookupLogic["$vfTime"] = _voidformTime
+	lookupLogic["$mana"] = normalizedMana
+	lookupLogic["$manaMax"] = normalizedManaMax
+	lookupLogic["$manaPercent"] = _manaPercent
 	--[[lookupLogic["$mdTime"] = _mdTime
 	lookupLogic["$spTime"] = _spTime
 	lookupLogic["$mmTime"] = _spTime
@@ -1892,6 +1910,21 @@ local function UpdateResourceBar()
 			end
 		end
 
+		-- Update mana bar (Shadow only)
+		if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana ~= "never" then
+			refreshText = true
+			local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
+			if manaNode then
+				local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
+				local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
+				manaNode:SetMinMax(0, maxMana)
+				manaNode:SetValue(currentMana)
+				manaNode:SetColor(specSettings.colors.manaBar.bar.color)
+				manaNode:SetBorderColor(specSettings.colors.manaBar.border.color)
+				manaNode:SetBackgroundColorFromString(specSettings.colors.manaBar.background.color)
+			end
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
@@ -2089,6 +2122,9 @@ local function SwitchSpec()
 			if TRB.Data.barConstructedForSpec ~= nil then
 				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 				TRB.Functions.Character:ResetCaches()
+				-- Ensure health values are populated so the health bar displays immediately
+				TRB.Functions.Character:UpdateHealthValues()
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end)
@@ -2353,6 +2389,17 @@ function TRB.Functions.Class:HideResourceBar(force)
 				-- "never" means showHealth stays false
 			end
 
+			-- Determine mana bar visibility independently (Shadow only)
+			local showMana = false
+			if TRB.Data.character.specId == 3 and not forceHideAll and sharedSettings.displayBar.mana ~= nil then
+				if sharedSettings.displayBar.mana == "always" then
+					showMana = true
+				elseif sharedSettings.displayBar.mana == "combat" then
+					showMana = affectingCombat or inVehicle
+				end
+				-- "never" means showMana stays false
+			end
+
 			-- Apply primary bar visibility
 			if barGroups and barGroups.primary then
 				if showPrimary then
@@ -2372,8 +2419,18 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 			end
 
+			-- Apply mana bar visibility (Shadow only)
+			if barGroups and barGroups.mana then
+				if showMana then
+					barGroups.mana:Show()
+					barGroups.mana:ShowNodes(1)
+				else
+					barGroups.mana:Hide()
+				end
+			end
+
 			-- Track if the bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showHealth
+			snapshotData.attributes.isTracking = showPrimary or showHealth or showMana
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -2387,6 +2444,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if barGroups and barGroups.health then
 				barGroups.health:Hide()
 			end
+			if barGroups and barGroups.mana then
+				barGroups.mana:Hide()
+			end
 			snapshotData.attributes.isTracking = false
 		end
 	else
@@ -2397,9 +2457,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 		if barGroups and barGroups.health then
 			barGroups.health:Hide()
 		end
+		if barGroups and barGroups.mana then
+			barGroups.mana:Hide()
+		end
 		snapshotData.attributes.isTracking = false
 	end
 end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 	if valid then
@@ -2599,6 +2663,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.voidVolley.id].buff.isActive  then
 				valid = true
 			end]]
+		elseif var == "$mana" then
+			-- Do not compare snapshotData.attributes.resource as it may be a secret value
+			valid = false
+		elseif var == "$manaPercent" then
+			-- Do not compare resource percent as it may be a secret value
+			valid = false
+		elseif var == "$manaMax" then
+			valid = true
 		else
 			valid = false
 		end
@@ -2652,6 +2724,15 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
 				return healthNode:GetResourceFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	elseif relativeToFrame == "ManaBar" then
+		if barGroups and barGroups.mana then
+			local manaNode = barGroups.mana:GetNode(1)
+			if manaNode then
+				local isVisible = barGroups.mana.isVisible and manaNode.isVisible
+				return manaNode:GetResourceFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

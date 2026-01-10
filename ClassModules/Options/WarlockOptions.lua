@@ -61,18 +61,6 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
-				nightfall = {
-					color = "FF00D9FF",
-					enabled = true,
-				},
-				tormentedCrescendo = {
-					color = "FF00FF00",
-					enabled = true,
-				},
-				shadowEmbraceNotMax = {
-					color = "FFFF0000",
-					enabled = true
-				},
 			},
 				comboPoints = {
 				border="FF4749B5",
@@ -217,24 +205,6 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
-		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
-			icons = {
-				show = true,
-				xPos = 0,
-				yPos = -5,
-				width = 24,
-				height = 24,
-				desaturate = true,
-				enabled = true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBottom"],
-				fullWidth = true,
-			},
-		}
 	}
 
 	if includeBarText then
@@ -336,24 +306,6 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 		audio = {
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
-		thresholds = {
-			width = 2,
-			overlapBorder=true,
-			outOfRange=true,
-			icons = {
-				show = true,
-				xPos = 0,
-				yPos = -5,
-				width = 24,
-				height = 24,
-				desaturate = true,
-				enabled = true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBottom"],
-				fullWidth = true,
-			},
-		}
 	}
 
 	if includeBarText then

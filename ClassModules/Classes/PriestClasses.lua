@@ -1157,6 +1157,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             true -- isPrimary
         )
 
+        -- Secondary mana bar (1 node) - optional, controlled by settings
+        barGroups.mana = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Mana",
+            1,
+            false -- not primary
+        )
+
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
             parentFrame or UIParent,

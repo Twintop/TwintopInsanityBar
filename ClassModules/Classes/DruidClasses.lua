@@ -759,6 +759,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             false -- not primary
         )
 
+        -- Mana bar (1 node) - optional secondary mana display for Balance
+        barGroups.mana = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Mana",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Feral
         -- Primary Energy bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(

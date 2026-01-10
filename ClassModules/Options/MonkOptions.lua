@@ -96,18 +96,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				cracklingJadeLightning = {
 					enabled = false,
@@ -149,25 +138,21 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				}
 			}
 		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
-		},
 		maxResource = {
 			value = BREWMASTER_MAX_ENERGY,
 			enabled = false
 		},
 		displayBar = {
 			primary = "combat",
-			secondary = "combat",
+			stagger = "combat",
 			health = "combat",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
-		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			stagger = TRB.Functions.Settings:DefaultStaggerBarDimensions(classic),
+		},
 		colors = {
 			text = {
 				current = {
@@ -189,13 +174,15 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				background="66000000",
 				base="FFFFFF00",
 			},
-			comboPoints = {
-				border="FF00FF98",
-				background="66000000",
-				type = "step",
-				light = { color = "FF85FF85", threshold = 0.0 },
-				medium = { color = "FFFFFAB8", threshold = 0.30 },
-				heavy = { color = "FFFF6B6B", threshold = 0.60 }
+			bars = {
+				stagger = {
+					border = { color = "FF00FF98" },
+					background = { color = "66000000" },
+					type = "step",
+					low = { color = "FF85FF85", threshold = 0.0 },
+					medium = { color = "FFFFFAB8", threshold = 0.30 },
+					heavy = { color = "FFFF6B6B", threshold = 0.60 }
+				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -228,8 +215,17 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true),
+		textures = TRB.Functions.Settings:DefaultTextures(false),
 	}
+
+	-- Add flat stagger bar texture keys (same pattern as manaBar)
+	local staggerTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.staggerBar = staggerTextures.bar
+	settings.textures.staggerBarName = staggerTextures.barName
+	settings.textures.staggerBorder = staggerTextures.border
+	settings.textures.staggerBorderName = staggerTextures.borderName
+	settings.textures.staggerBackground = staggerTextures.background
+	settings.textures.staggerBackgroundName = staggerTextures.backgroundName
 
 	if includeBarText then
 		settings.displayText.barText = BrewmasterLoadDefaultBarTextSettings(classic)
@@ -364,18 +360,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = {
-				showCooldown=true,
-				border=2,
-				relativeTo = "BOTTOM",
-				relativeToName = L["PositionBelow"],
-				enabled=true,
-				desaturated=true,
-				xPos=0,
-				yPos=12,
-				width=24,
-				height=24
-			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				cracklingJadeLightning = {
 					enabled = false,
@@ -402,12 +387,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 			}
-		},
-		generation = {
-			mode="gcd",
-			gcds=1,
-			time=1.5,
-			enabled=true
 		},
 		maxResource = {
 			value = WINDWALKER_MAX_ENERGY,
@@ -641,19 +620,36 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
 
+	-- Stagger bar dimensions using custom bar system
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], L["ResourceStagger"], false)
+	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
+	if staggerBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef, L["ResourceEnergy"])
+	end
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, true, L["ResourceStagger"])
+	-- Pass stagger bar definition to include its textures in the standard texture section
+	local customBars = {}
+	if staggerBarDef then
+		table.insert(customBars, staggerBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false, nil, false, customBars)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, true, L["ResourceStagger"], true)
+	-- Note: We use a custom visibility section for stagger since it's a custom bar
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, false, nil, true)
 
-	yCoord = yCoord - 90
+	-- Stagger bar visibility using custom bar system
+	-- Need to offset yCoord to account for primary/health dropdown height
+	yCoord = yCoord - 70
+	if staggerBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
+	end
+
+	yCoord = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
@@ -666,8 +662,11 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], false, false)
 
+	-- Stagger bar colors using custom bar system
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls, spec, 10, 1, yCoord)
+	if staggerBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
+	end
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
@@ -1922,70 +1921,6 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
-
-	--[[controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.trackEnergyRegen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegen"])
-	f.tooltip = L["CheckboxTrackEnergyRegenTooltip"]
-	f:SetChecked(spec.generation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.generation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_PFG_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(true)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(false)
-		spec.generation.mode = "gcd"
-	end)
-
-	title = L["TrackEnergyRegenEnergyGcds"]
-	controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.generation.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_PFG_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.energyGenerationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.generation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.energyGenerationModeGCDs:SetChecked(false)
-		controls.checkBoxes.energyGenerationModeTime:SetChecked(true)
-		spec.generation.mode = "time"
-	end)
-
-	title = L["TrackEnergyRegenEnergyTime"]
-	controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.generation.time = value
-	end)]]
 end
 
 local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
