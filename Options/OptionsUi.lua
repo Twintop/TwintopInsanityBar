@@ -1124,7 +1124,7 @@ end
 ---@field displayName string The localized display name for the bar
 ---@field primaryResourceString string? The primary resource name (for "relative to" label)
 ---@field globalSettingKey string? The key in global settings (nil if no global checkbox)
----@field globalTooltip string? Localized string for global checkbox tooltip (pass L["Key"] directly)
+---@field globalTooltip string? Localized string for global checkbox tooltip
 ---@field sectionHeader string? Localized string for section header (defaults to SecondaryPositionAndSize formatted)
 ---@field includeSpacing boolean? Whether to include spacing slider (default false)
 ---@field widthDivisor number? Divisor for max width slider (default 1, use 6 for combo points)
@@ -1461,7 +1461,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	local displayName = barTypeDef.displayName
 
 	-- Section header
-	local headerText = string.format(L["SecondaryBarPositionAndSize"], displayName)
+	local headerText = string.format(L["SecondaryPositionAndSize"], displayName)
 	controls[barTypeDef.key .. "DimensionsSection"] = TRB.Functions.OptionsUi:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
 	
 	-- Width slider
@@ -1821,10 +1821,10 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	local colorControls = controls.colors.bars[barTypeDef.key]
 	
 	-- Get localized strings from barTypeDef (resolved at registration time, with fallbacks to generic labels)
-	local colorTypeLabel = barTypeDef.colorTypeLabel or L["CustomBarColorType"]
-	local colorTypeStepLabel = barTypeDef.colorTypeStepLabel or L["CustomBarColorTypeStep"]
-	local colorTypeLinearLabel = barTypeDef.colorTypeLinearLabel or L["CustomBarColorTypeLinear"]
-	local colorTypeNoneLabel = barTypeDef.colorTypeNoneLabel or L["CustomBarColorTypeNone"]
+	local colorTypeLabel = barTypeDef.colorTypeLabel or L["ColorType"]
+	local colorTypeStepLabel = barTypeDef.colorTypeStepLabel or L["ColorTypeStep"]
+	local colorTypeLinearLabel = barTypeDef.colorTypeLinearLabel or L["ColorTypeLinear"]
+	local colorTypeNoneLabel = barTypeDef.colorTypeNoneLabel or L["ColorTypeNone"]
 	
 	-- Color Transition Type dropdown
 	-- Note: yCoord already positioned at header row, so dropdown label goes here

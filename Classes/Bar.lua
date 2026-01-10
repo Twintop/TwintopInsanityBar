@@ -710,7 +710,7 @@ end
 
 ---@class TRB.Classes.BarTypeDefinition.ThresholdLevel
 ---@field public key string # The data key in colorSettings (e.g., "low", "medium", "high", "heavy")
----@field public colorLabel string # Localized string for the color picker label (pass L["Key"] at registration time)
+---@field public colorLabel string # Localized string for the color picker label
 ---@field public sliderLabel string? # Localized string for the threshold slider label (nil for first level which has no slider)
 ---@field public sliderTooltip string? # Localized string for the threshold slider tooltip
 
@@ -727,7 +727,7 @@ end
 ---@field public hasThresholds boolean # True if bar supports threshold lines
 ---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
 ---@field public thresholdLevels TRB.Classes.BarTypeDefinition.ThresholdLevel[]? # Required when colorCurveType is "step" or "linear". Ordered array of threshold level definitions.
----@field public colorTypeLabel string? # Localized string for the color type dropdown header (pass L["Key"] at registration time)
+---@field public colorTypeLabel string? # Localized string for the color type dropdown header
 ---@field public colorTypeStepLabel string? # Localized string for "step" option
 ---@field public colorTypeLinearLabel string? # Localized string for "linear" option
 ---@field public colorTypeNoneLabel string? # Localized string for "none" option

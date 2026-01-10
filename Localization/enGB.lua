@@ -205,4 +205,13 @@ if locale == "enGB" then
     L["ShamanEnhancementMaelstromWeaponColorsHeader"] = "Maelstrom Weapon Colours"
     L["PriestCheckboxSurgeOfLightTooltip"] = "This will change the bar border colour when you have Surge of Light."
     L["CustomBarColorHeader"] = "%s Colours"
+    L["HealthBarColorHeader"] = "Health Bar Colours"
+    L["HealthBarColorHigh"] = "High Health Colour"
+    L["HealthBarColorLow"] = "Low Health Colour"
+    L["HealthBarColorMedium"] = "Medium Health Colour"
+    L["HealthBarColorType"] = "Colour Transition Type"
+    L["HealthBarColorTypeNone"] = "Single (High Health Colour)"
+    L["HealthBarThresholdHighTooltip"] = "Health percentage at which the bar colour transitions from Medium to High."
+    L["HealthBarThresholdMediumTooltip"] = "Health percentage at which the bar colour transitions from Low to Medium."
+    L["ColorType"] = "Colour Transition Type"
 end
