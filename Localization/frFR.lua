@@ -168,7 +168,6 @@ if locale == "frFR" then
     L["UseDefaultFontSizeTooltip"] = "Cela fera que cette zone de texte de barre utilisera la taille de police par défaut au lieu de la taille de police choisie ci-dessus."
     L["FontColor"] = "Couleur de Police"
     L["UseDefaultFontColor"] = "Utiliser la Couleur de Police par défaut"
-    L["PriestShadowColorPickerTextPassive"] = "Insanité Passive"
     L["DruidBalanceIcon_starweaver"] = "%s ou %s"
     L["DruidBalanceIcon_eclipse"] = "%s %s %s ou %s"
     L["DruidBalanceIcon_moon"] = "%s %s ou %s"

@@ -28,7 +28,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 		},
 	}
 
@@ -62,7 +61,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 		},
 	}
 
@@ -93,7 +91,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 		},
 	}
 
@@ -421,8 +418,6 @@ local function ConstructResourceBar(settings)
 					node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 				end
 			end
-		else
-			barGroups.secondary:Hide()
 		end
 	end
 
@@ -937,11 +932,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						TwintopInsanityBarSettings.mage.arcane == nil or
 						TwintopInsanityBarSettings.mage.arcane.displayText == nil then
 						settings.mage.arcane.displayText.barText = TRB.Options.Mage.ArcaneLoadDefaultBarTextSettings()
-					elseif TwintopInsanityBarSettings.mage == nil or
+					end
+
+					if TwintopInsanityBarSettings.mage == nil or
 						TwintopInsanityBarSettings.mage.fire == nil or
 						TwintopInsanityBarSettings.mage.fire.displayText == nil then
 						settings.mage.fire.displayText.barText = TRB.Options.Mage.FireLoadDefaultBarTextSettings()
-					elseif TwintopInsanityBarSettings.mage == nil or
+					end
+
+					if TwintopInsanityBarSettings.mage == nil or
 						TwintopInsanityBarSettings.mage.frost == nil or
 						TwintopInsanityBarSettings.mage.frost.displayText == nil then
 						settings.mage.frost.displayText.barText = TRB.Options.Mage.FrostLoadDefaultBarTextSettings()

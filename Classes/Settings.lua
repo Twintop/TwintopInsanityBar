@@ -177,7 +177,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.GenericTrackingOverX
 ---@field public enabled boolean
----@field public mode string --Really should make this an enum of gcd/seconds (and swings for Shadowfiend?)
+---@field public mode string --Really should make this an enum of gcd/seconds
 ---@field public gcdsMax number
 ---@field public timeMax number
 

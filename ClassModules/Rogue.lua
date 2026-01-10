@@ -28,7 +28,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 			regen = 0
 		},
 		isPvp = false
@@ -98,7 +97,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 			regen = 0
 		},
 		isPvp = false
@@ -208,7 +206,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 			regen = 0
 		},
 		isPvp = false

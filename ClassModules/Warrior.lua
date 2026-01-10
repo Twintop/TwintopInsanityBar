@@ -26,8 +26,7 @@ local function FillSpecializationCache()
 	-- Arms
 	specCache.arms.Global_TwintopResourceBar = {
 		resource = {
-			resource = 0,
-			passive = 0
+			resource = 0
 		}
 	}
 
@@ -74,7 +73,6 @@ local function FillSpecializationCache()
 	specCache.fury.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
-			passive = 0,
 			ravager = 0
 		},
 		ravager = {
@@ -122,8 +120,7 @@ local function FillSpecializationCache()
 	-- Protection
 	specCache.protection.Global_TwintopResourceBar = {
 		resource = {
-			resource = 0,
-			passive = 0
+			resource = 0
 		}
 	}
 

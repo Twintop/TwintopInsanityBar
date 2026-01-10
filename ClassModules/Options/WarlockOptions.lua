@@ -70,14 +70,6 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 				final="FFFF0000",
 				sameColor=false,
 				consistentUnfilledColor = false,
-				succulentSoul = {
-					color = "FF31001B",
-					enabled = true,
-				},
-				malignOmen = {
-					color = "FF00C9B4",
-					enabled = true,
-				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
@@ -93,24 +85,6 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			tormentedCrescendo={
-				name = L["WarlockAfflictionAudioTormentedCrescendo1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
-			tormentedCrescendo2={
-				name = L["WarlockAfflictionAudioTormentedCrescendo2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
-			nightfall={
-				name = L["WarlockAfflictionAudioNightfall"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -171,11 +145,7 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			bar = {
 				border="FF000099",
 				background="66000000",
-				base="FF0000FF",
-				demonicCore = {
-					color = "FFFF9900",
-					enabled = true,
-				},
+				base="FF0000FF"
 			},
 			comboPoints = {
 				border="FF4749B5",
@@ -197,12 +167,6 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			demonicCore={
-				name = L["WarlockDemonologyAudioDemonicCore"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -465,65 +429,10 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.shadowEmbraceNotMax = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_shadowEmbraceNotMax", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.shadowEmbraceNotMax
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxShadowEmbraceNotMax"])
-	f.tooltip = L["WarlockAfflictionCheckboxShadowEmbraceNotMaxTooltip"]
-	f:SetChecked(spec.colors.bar.shadowEmbraceNotMax.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.shadowEmbraceNotMax.enabled = self:GetChecked()
-	end)
-
-	controls.colors.shadowEmbraceNotMax = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerShadowEmbraceNotMax"], spec.colors.bar.shadowEmbraceNotMax.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.shadowEmbraceNotMax
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "shadowEmbraceNotMax")
-	end)
-
-	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], false)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.nightfall = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_nightfallProc", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.nightfall
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxNightfall"])
-	f.tooltip = L["WarlockAfflictionCheckboxNightfallTooltip"]
-	f:SetChecked(spec.colors.bar.nightfall.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.nightfall.enabled = self:GetChecked()
-	end)
-
-	controls.colors.nightfall = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerNightfall"], spec.colors.bar.nightfall.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.nightfall
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "nightfall")
-	end)
-
-	----
-	yCoord = yCoord - 30
-	controls.checkBoxes.tormentedCrescendo = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_tormentedCrescendoProc", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.tormentedCrescendo
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxTormentedCrescendo"])
-	f.tooltip = L["WarlockAfflictionCheckboxTormentedCrescendoTooltip"]
-	f:SetChecked(spec.colors.bar.tormentedCrescendo.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.tormentedCrescendo.enabled = self:GetChecked()
-	end)
-
-	controls.colors.tormentedCrescendo = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerTormentedCrescendo"], spec.colors.bar.tormentedCrescendo.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.tormentedCrescendo
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "tormentedCrescendo")
 	end)
 	
 	yCoord = yCoord - 40
@@ -560,23 +469,6 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.malignOmen = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_malignOmen", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.malignOmen
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxMalignOmen"])
-	f.tooltip = L["WarlockAfflictionCheckboxMalignOmenTooltip"]
-	f:SetChecked(spec.colors.comboPoints.malignOmen.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.malignOmen.enabled = self:GetChecked()
-	end)
-
-	controls.colors.malignOmen = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerMalignOmen"], spec.colors.comboPoints.malignOmen.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.malignOmen
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "malignOmen")
-	end)
 	
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsBorderColorsHeader"], oUi.xCoord, yCoord)
@@ -586,23 +478,6 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.succulentSoul = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Border_Option_succulentSoul", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.succulentSoul
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionCheckboxSucculentSoul"])
-	f.tooltip = L["WarlockAfflictionCheckboxSucculentSoulTooltip"]
-	f:SetChecked(spec.colors.comboPoints.succulentSoul.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.succulentSoul.enabled = self:GetChecked()
-	end)
-
-	controls.colors.succulentSoul = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionColorPickerSucculentSoul"], spec.colors.comboPoints.succulentSoul.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.succulentSoul
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "succulentSoul")
 	end)
 
 	yCoord = yCoord - 30
@@ -665,13 +540,6 @@ local function AfflictionConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
-	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 1, yCoord)
 end
 
@@ -695,12 +563,6 @@ local function AfflictionConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "nightfall", spec, classId, specId, yCoord, L["WarlockAfflictionAudioCheckboxNightfall"], L["WarlockAfflictionAudioCheckboxNightfallTooltip"])
-	
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "tormentedCrescendo", spec, classId, specId, yCoord, L["WarlockAfflictionAudioCheckboxTormentedCrescendo1"], L["WarlockAfflictionAudioCheckboxTormentedCrescendo1Tooltip"])
-	
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "tormentedCrescendo2", spec, classId, specId, yCoord, L["WarlockAfflictionAudioCheckboxTormentedCrescendo2"], L["WarlockAfflictionAudioCheckboxTormentedCrescendo2Tooltip"])
 end
 
 
@@ -873,23 +735,6 @@ local function DemonologyConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], false)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.demonicCore = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Demonology_Border_Option_demonicCore", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.demonicCore
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockDemonologyCheckboxDemonicCore"])
-	f.tooltip = L["WarlockDemonologyCheckboxDemonicCoreTooltip"]
-	f:SetChecked(spec.colors.bar.demonicCore.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.demonicCore.enabled = self:GetChecked()
-	end)
-
-	controls.colors.demonicCore = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockDemonologyColorPickerDemonicCore"], spec.colors.bar.demonicCore.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.demonicCore
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "demonicCore")
-	end)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsColorsHeader"], oUi.xCoord, yCoord)
@@ -995,13 +840,6 @@ local function DemonologyConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
-
-	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-	end)
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 2, yCoord)
 end
@@ -1026,8 +864,6 @@ local function DemonologyConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "demonicCore", spec, classId, specId, yCoord, L["WarlockDemonologyAudioCheckboxDemonicCore"], L["WarlockDemonologyAudioCheckboxDemonicCoreTooltip"])
 end
 
 local function DemonologyConstructBarTextDisplayPanel(parent, cache)
@@ -1479,13 +1315,6 @@ local function DestructionConstructFontAndTextPanel(parent)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 end
 

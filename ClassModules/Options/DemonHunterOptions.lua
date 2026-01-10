@@ -848,13 +848,6 @@ local function HavocConstructThresholdPanel(parent)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
-		--[[{
-			name = "special",
-			hasEnabledCheckbox = true,
-			colorLocalization = L["DemonHunterHavocThresholdSpecial"],
-			enabledCheckboxLocalization = L["DemonHunterHavocThresholdSpecialEnabled"],
-			enabledCheckboxTooltipLocalization = L["DemonHunterHavocThresholdSpecialEnabledTooltip"]
-		}]]
 	}
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, true, true, true, custom)
@@ -893,12 +886,6 @@ local function HavocConstructFontAndTextPanel(parent)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
-	end)
-
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocTextColorPickerPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
 	yCoord = yCoord - 30
@@ -1407,13 +1394,6 @@ local function VengeanceConstructThresholdPanel(parent)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
-		--[[{
-			name = "special",
-			hasEnabledCheckbox = true,
-			colorLocalization = L["DemonHunterVengeanceThresholdSpecial"],
-			enabledCheckboxLocalization = L["DemonHunterVengeanceThresholdSpecialEnabled"],
-			enabledCheckboxTooltipLocalization = L["DemonHunterVengeanceThresholdSpecialEnabledTooltip"]
-		}]]
 	}
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, true, true, true, custom)
@@ -1452,12 +1432,6 @@ local function VengeanceConstructFontAndTextPanel(parent)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
-	end)
-
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceTextColorPickerPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
 	yCoord = yCoord - 30
@@ -1911,13 +1885,6 @@ local function DevourerConstructThresholdPanel(parent)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
-		--[[{
-			name = "special",
-			hasEnabledCheckbox = true,
-			colorLocalization = L["DemonHunterDevourerThresholdSpecial"],
-			enabledCheckboxLocalization = L["DemonHunterDevourerThresholdSpecialEnabled"],
-			enabledCheckboxTooltipLocalization = L["DemonHunterDevourerThresholdSpecialEnabledTooltip"]
-		}]]
 	}
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], true, true, true, false, custom)
@@ -1957,12 +1924,6 @@ local function DevourerConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
-
-	--[[controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerTextColorPickerPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)

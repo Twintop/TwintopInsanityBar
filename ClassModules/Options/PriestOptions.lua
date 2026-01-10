@@ -868,13 +868,6 @@ local function DisciplineConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
-	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 5, 1, yCoord)
 end
 
@@ -1541,13 +1534,6 @@ local function HolyConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
-	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassiveMana"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 5, 2, yCoord)
 end
 
@@ -1844,7 +1830,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true)
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowshadowWordMadness"], L["PriestShadowshadowWordMadnessAbbreviation"], false, nil, true, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowShadowWordMadness"], L["PriestShadowShadowWordMadnessAbbreviation"], false, nil, true, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
@@ -2104,10 +2090,6 @@ local function ShadowConstructThresholdPanel(parent)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
-		--[[{
-			name = "mindbender",
-			colorLocalization = L["PriestShadowThresholdShadowfiend"]
-		}]]
 	}
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], true, true, false, true, custom)
@@ -2152,13 +2134,6 @@ local function ShadowConstructFontAndTextPanel(parent)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerTextPassive"], spec.colors.text.passive.color, 300, 25, oUi.xCoord, yCoord)
-	f = controls.colors.text.passive
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
 	yCoord = yCoord - 30
@@ -2295,124 +2270,6 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "dpReady", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxshadowWordMadness"], L["PriestShadowAudioCheckboxshadowWordMadnessTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "mdProc", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxMindDevourer"], L["PriestShadowAudioCheckboxMindDevourerTooltip"])
-
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "powerInfusion", spec, classId, specId, yCoord, L["GlobalAudioCheckboxPowerInfusion"], L["GlobalAudioCheckboxPowerInfusionTooltip"])
-
-	--[[controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderAuspiciousSpiritsTracking"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	controls.checkBoxes.as = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_trackingAS", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.as
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowTrackingCheckboxAuspiciousSpirits"])
-	f.tooltip = L["PriestShadowTrackingCheckboxAuspiciousSpiritsTooltip"]
-	f:SetChecked(spec.auspiciousSpiritsTracker)
-	f:SetScript("OnClick", function(self, ...)
-		spec.auspiciousSpiritsTracker = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderEternalCallToTheVoidTracking"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.voidTendril = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_trackingECTTV", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.voidTendril
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowTrackingCheckboxEternalCallToTheVoid"])
-	f.tooltip = L["PriestShadowTrackingCheckboxEternalCallToTheVoidTooltip"]
-	f:SetChecked(spec.voidTendrilTracker)
-	f:SetScript("OnClick", function(self, ...)
-		spec.voidTendrilTracker = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHeaderShadowfiendMindbenderTracking"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_trackingSF", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mindbender
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxTrackShadowfiendInsanityGain"])
-	f.tooltip = L["PriestShadowCheckboxTrackShadowfiendInsanityGainTooltip"]
-	f:SetChecked(spec.mindbender.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.mindbender.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.mindbenderModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_RB3_8", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.mindbenderModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxShadowfiendGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.mindbender.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.mindbenderModeGCDs:SetChecked(true)
-		controls.checkBoxes.mindbenderModeSwings:SetChecked(false)
-		controls.checkBoxes.mindbenderModeTime:SetChecked(false)
-		spec.mindbender.mode = "gcd"
-	end)
-
-	title = L["PriestShadowShadowfiendGcds"]
-	controls.mindbenderGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 24, spec.mindbender.gcdsMax, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.mindbenderGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.mindbender.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.mindbenderModeSwings = CreateFrame("CheckButton", "TwintopResourceBar_RB3_9", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.mindbenderModeSwings
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxShadowfiendSwings"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.mindbender.mode == "swing" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.mindbenderModeGCDs:SetChecked(false)
-		controls.checkBoxes.mindbenderModeSwings:SetChecked(true)
-		controls.checkBoxes.mindbenderModeTime:SetChecked(false)
-		spec.mindbender.mode = "swing"
-	end)
-
-	title = L["PriestShadowShadowfiendSwings"]
-	controls.mindbenderSwings = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 20, spec.mindbender.swingsMax, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.mindbenderSwings:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.mindbender.swingsMax = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.mindbenderModeTime = CreateFrame("CheckButton", "TwintopResourceBar_RB3_10", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.mindbenderModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxShadowfiendTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.mindbender.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.mindbenderModeGCDs:SetChecked(false)
-		controls.checkBoxes.mindbenderModeSwings:SetChecked(false)
-		controls.checkBoxes.mindbenderModeTime:SetChecked(true)
-		spec.mindbender.mode = "time"
-	end)
-
-	title = L["PriestShadowShadowfiendTime"]
-	controls.mindbenderTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 18, spec.mindbender.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.mindbender.timeMax = value
-	end)]]
 end
 
 local function ShadowConstructBarTextDisplayPanel(parent, cache)

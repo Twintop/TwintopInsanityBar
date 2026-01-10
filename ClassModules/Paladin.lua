@@ -28,7 +28,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 		},
 	}
 
@@ -63,7 +62,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 		},
 	}
 
@@ -94,7 +92,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 		},
 	}
 
@@ -993,11 +990,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						TwintopInsanityBarSettings.paladin.holy == nil or
 						TwintopInsanityBarSettings.paladin.holy.displayText == nil then
 						settings.paladin.holy.displayText.barText = TRB.Options.Paladin.HolyLoadDefaultBarTextSettings()
-					elseif TwintopInsanityBarSettings.paladin == nil or
+					end
+
+					if TwintopInsanityBarSettings.paladin == nil or
 						TwintopInsanityBarSettings.paladin.protection == nil or
 						TwintopInsanityBarSettings.paladin.protection.displayText == nil then
 						settings.paladin.protection.displayText.barText = TRB.Options.Paladin.ProtectionLoadDefaultBarTextSettings()
-					elseif TwintopInsanityBarSettings.paladin == nil or
+					end
+
+					if TwintopInsanityBarSettings.paladin == nil or
 						TwintopInsanityBarSettings.paladin.retribution == nil or
 						TwintopInsanityBarSettings.paladin.retribution.displayText == nil then
 						settings.paladin.retribution.displayText.barText = TRB.Options.Paladin.RetributionLoadDefaultBarTextSettings()

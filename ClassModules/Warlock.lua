@@ -28,7 +28,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 			regen = 0
 		},
 		isPvp = false
@@ -51,30 +50,18 @@ local function FillSpecializationCache()
 	local spells = specCache.affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
 	specCache.affliction.snapshotData.audio = {
-		nightfallCue = false,
-		tormentedCrescendoCue = false,
-		tormentedCrescendo2Cue = false
 	}
 
 	specCache.affliction.barTextVariables = {
 		icons = {},
 		values = {}
 	}
-	---@type TRB.Classes.Snapshot
-	specCache.affliction.snapshotData.snapshots[spells.nightfall.id] = TRB.Classes.Snapshot:New(spells.nightfall)
-	---@type TRB.Classes.Snapshot
-	specCache.affliction.snapshotData.snapshots[spells.tormentedCrescendo.id] = TRB.Classes.Snapshot:New(spells.tormentedCrescendo)
-	---@type TRB.Classes.Snapshot
-	specCache.affliction.snapshotData.snapshots[spells.malignOmen.id] = TRB.Classes.Snapshot:New(spells.malignOmen)
-	---@type TRB.Classes.Snapshot
-	specCache.affliction.snapshotData.snapshots[spells.succulentSoul.id] = TRB.Classes.Snapshot:New(spells.succulentSoul)
 
 	-- Demonology
 	specCache.demonology.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 			regen = 0
 		},
 		isPvp = false
@@ -109,7 +96,6 @@ local function FillSpecializationCache()
 		resource = {
 			resource = 0,
 			casting = 0,
-			passive = 0,
 			regen = 0
 		},
 		isPvp = false
@@ -160,20 +146,6 @@ local function FillSpellData_Affliction()
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-				
-		{ variable = "#agony", icon = spells.agony.icon, description = spells.agony.name, printInSettings = true },
-		{ variable = "#corruption", icon = spells.corruption.icon, description = spells.corruption.name, printInSettings = true },
-		{ variable = "#haunt", icon = spells.haunt.icon, description = spells.haunt.name, printInSettings = true },
-		{ variable = "#malignOmen", icon = spells.malignOmen.icon, description = spells.malignOmen.name, printInSettings = true },
-		{ variable = "#nightfall", icon = spells.nightfall.icon, description = spells.nightfall.name, printInSettings = true },
-		{ variable = "#phantomSingularity", icon = spells.phantomSingularity.icon, description = spells.phantomSingularity.name, printInSettings = true },
-		{ variable = "#shadowEmbrace", icon = spells.shadowEmbraceShadowBolt.icon, description = spells.shadowEmbraceShadowBolt.name, printInSettings = true },
-		{ variable = "#soulRot", icon = spells.soulRot.icon, description = spells.soulRot.name, printInSettings = true },
-		{ variable = "#succulentSoul", icon = spells.succulentSoul.icon, description = spells.succulentSoul.name, printInSettings = true },
-		{ variable = "#tormentedCrescendo", icon = spells.tormentedCrescendo.icon, description = spells.tormentedCrescendo.name, printInSettings = true },
-		{ variable = "#ua", icon = spells.unstableAffliction.icon, description = spells.unstableAffliction.name, printInSettings = true },
-		{ variable = "#vileTaint", icon = spells.vileTaint.icon, description = spells.vileTaint.name, printInSettings = true },
-		{ variable = "#wither", icon = spells.wither.icon, description = spells.wither.name, printInSettings = true },
 	}
 	specCache.affliction.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -223,18 +195,6 @@ local function FillSpellData_Affliction()
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		
-		--[[
-		{ variable = "$phantomSingularityTime", description = L["WarlockAfflictionBarTextVariable_phantomSingularityTime"], printInSettings = true, color = false },
-
-		{ variable = "$nightfallTime", description = L["WarlockAfflictionBarTextVariable_nightfallTime"], printInSettings = true, color = false },
-		{ variable = "$nightfallStacks", description = L["WarlockAfflictionBarTextVariable_nightfallStacks"], printInSettings = true, color = false },
-		{ variable = "$tormentedCrescendoTime", description = L["WarlockAfflictionBarTextVariable_tormentedCrescendoTime"], printInSettings = true, color = false },
-		{ variable = "$tormentedCrescendoStacks", description = L["WarlockAfflictionBarTextVariable_tormentedCrescendoStacks"], printInSettings = true, color = false },
-		{ variable = "$succulentSoulTime", description = L["WarlockAfflictionBarTextVariable_succulentSoulTime"], printInSettings = true, color = false },
-		{ variable = "$succulentSoulStacks", description = L["WarlockAfflictionBarTextVariable_succulentSoulStacks"], printInSettings = true, color = false },
-		{ variable = "$malignOmenTime", description = L["WarlockAfflictionBarTextVariable_malignOmenTime"], printInSettings = true, color = false },
-		{ variable = "$malignOmenStacks", description = L["WarlockAfflictionBarTextVariable_malignOmenStacks"], printInSettings = true, color = false },]]
 	}
 end
 
@@ -506,58 +466,6 @@ local function RefreshLookupData_Affliction()
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
-
-	--[[	
-	--$shadowEmbraceStacks $shadowEmbraceTime
-	local shadowEmbrace = spells.shadowEmbraceShadowBolt
-	if talents:IsTalentActive(spells.drainSoul) then
-		shadowEmbrace = spells.shadowEmbraceDrainSoul
-	end
-
-	local _shadowEmbraceStacks = snapshotData.targetData.trackedSpells[shadowEmbrace.id].stacks or 0
-	local shadowEmbraceStacks
-	local _shadowEmbraceMaxStacks = shadowEmbrace.maxStacks
-	local shadowEmbraceMaxStacks = string.format("%s", _shadowEmbraceMaxStacks)
-	local _shadowEmbraceTime = 0
-	local shadowEmbraceTime
-	if target ~= nil then
-		_shadowEmbraceStacks = target.spells[shadowEmbrace.id].stacks or 0
-		_shadowEmbraceTime = target.spells[shadowEmbrace.id].remainingTime or 0
-	end	
-	shadowEmbraceTime = TRB.Functions.BarText:TimerPrecision(_shadowEmbraceTime)
-	shadowEmbraceStacks = string.format("%s", _shadowEmbraceStacks)
-
-	--$nightfallTime
-	local _nightfallTime = snapshotData.snapshots[spells.nightfall.id].buff:GetRemainingTime(currentTime)
-	local nightfallTime = TRB.Functions.BarText:TimerPrecision(_nightfallTime)
-	
-	--$nightfallStacks
-	local _nightfallStacks = snapshotData.snapshots[spells.nightfall.id].buff.applications or 0
-	local nightfallStacks = string.format("%s", _nightfallStacks)
-
-	--$tormentedCrescendoTime
-	local _tormentedCrescendoTime = snapshotData.snapshots[spells.tormentedCrescendo.id].buff:GetRemainingTime(currentTime)
-	local tormentedCrescendoTime =  TRB.Functions.BarText:TimerPrecision(_tormentedCrescendoTime)
-	
-	--$tormentedCrescendoStacks
-	local _tormentedCrescendoStacks = snapshotData.snapshots[spells.tormentedCrescendo.id].buff.applications or 0
-	local tormentedCrescendoStacks = string.format("%.0f", _tormentedCrescendoStacks)
-	
-	--$succulentSoulTime
-	local _succulentSoulTime = snapshotData.snapshots[spells.succulentSoul.id].buff:GetRemainingTime()
-	local succulentSoulTime =  TRB.Functions.BarText:TimerPrecision(_succulentSoulTime)
-	
-	--$succulentSoulStacks
-	local _succulentSoulStacks = snapshotData.snapshots[spells.succulentSoul.id].buff.applications or 0
-	local succulentSoulStacks = string.format("%.0f", _succulentSoulStacks)
-	
-	--$malignOmenTime
-	local _malignOmenTime = snapshotData.snapshots[spells.malignOmen.id].buff:GetRemainingTime()
-	local malignOmenTime =  TRB.Functions.BarText:TimerPrecision(_malignOmenTime)
-	
-	--$malignOmenStacks
-	local _malignOmenStacks = snapshotData.snapshots[spells.malignOmen.id].buff.applications or 0
-	local malignOmenStacks = string.format("%.0f", _malignOmenStacks)]]
 	
 	----------------------------
 
@@ -573,18 +481,6 @@ local function RefreshLookupData_Affliction()
 	lookup["$comboPoints"] = normalizedSoulShards
 	lookup["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	--[[
-	lookup["$tormentedCrescendoTime"] = tormentedCrescendoTime
-	lookup["$tormentedCrescendoStacks"] = tormentedCrescendoStacks
-	lookup["$nightfallTime"] = nightfallTime
-	lookup["$nightfallStacks"] = nightfallStacks
-	lookup["$succulentSoulTime"] = succulentSoulTime
-	lookup["$succulentSoulStacks"] = succulentSoulStacks
-	lookup["$malignOmenTime"] = malignOmenTime
-	lookup["$malignOmenStacks"] = malignOmenStacks
-	lookup["$shadowEmbraceStacks"] = shadowEmbraceStacks
-	lookup["$shadowEmbraceMaxStacks"] = shadowEmbraceMaxStacks
-	lookup["$shadowEmbraceTime"] = shadowEmbraceTime]]
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -599,16 +495,6 @@ local function RefreshLookupData_Affliction()
 	lookupLogic["$comboPoints"] = normalizedSoulShards
 	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-	--[[
-	lookupLogic["$tormentedCrescendoTime"] = _tormentedCrescendoTime
-	lookupLogic["$tormentedCrescendoStacks"] = _tormentedCrescendoStacks
-	lookupLogic["$succulentSoulTime"] = _succulentSoulTime
-	lookupLogic["$succulentSoulStacks"] = _succulentSoulStacks
-	lookupLogic["$malignOmenTime"] = _malignOmenTime
-	lookupLogic["$malignOmenStacks"] = _malignOmenStacks
-	lookupLogic["$shadowEmbraceStacks"] = _shadowEmbraceStacks
-	lookupLogic["$shadowEmbraceMaxStacks"] = _shadowEmbraceMaxStacks
-	lookupLogic["$shadowEmbraceTime"] = _shadowEmbraceTime]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -838,25 +724,7 @@ local function UpdateResourceBar()
 					cpColor = specSettings.colors.comboPoints.final
 				end
 			end
-
-			-- Malign Omen coloring
-			if specSettings.colors.comboPoints.malignOmen.enabled and snapshotData.snapshots[spells.malignOmen.id].buff.isActive then
-				if x <= normalizedResource2 and snapshotData.snapshots[spells.malignOmen.id].buff.applications > (normalizedResource2 - x) then
-					cpColor = specSettings.colors.comboPoints.malignOmen.color
-				elseif not specSettings.colors.comboPoints.consistentUnfilledColor and x > normalizedResource2 and x <= snapshotData.snapshots[spells.malignOmen.id].buff.applications then
-					cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.malignOmen.color, true)
-				end
-			end
-
-			-- Succulent Soul border coloring
-			if specSettings.colors.comboPoints.succulentSoul.enabled and snapshotData.snapshots[spells.succulentSoul.id].buff.isActive then
-				if x <= normalizedResource2 and snapshotData.snapshots[spells.succulentSoul.id].buff.applications > (normalizedResource2 - x) then
-					cpBorderColor = specSettings.colors.comboPoints.succulentSoul.color
-				elseif x > normalizedResource2 and x <= snapshotData.snapshots[spells.succulentSoul.id].buff.applications then
-					cpBorderColor = specSettings.colors.comboPoints.succulentSoul.color
-				end
-			end
-
+			
 			if barGroups and barGroups.secondary then
 				local shardNode = barGroups.secondary:GetNode(x)
 				if shardNode then
@@ -916,33 +784,6 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
-
-				if snapshots[spells.nightfall.id].buff.isActive then
-					if specSettings.colors.bar.nightfall.enabled then
-						barBorderColor = specSettings.colors.bar.nightfall.color
-					end
-
-					if specSettings.audio.nightfall.enabled and snapshotData.audio.nightfallCue == false then
-						snapshotData.audio.nightfallCue = true
-						PlaySoundFile(specSettings.audio.nightfall.sound, coreSettings.audio.channel.channel)
-					end
-				else
-					snapshotData.audio.nightfallCue = false
-				end
-
-				if snapshots[spells.tormentedCrescendo.id].buff.isActive then
-					if specSettings.colors.bar.tormentedCrescendo.enabled then
-						barBorderColor = specSettings.colors.bar.tormentedCrescendo.color
-					end
-
-					if snapshots[spells.tormentedCrescendo.id].buff.applications == 1 and specSettings.audio.tormentedCrescendo.enabled and not snapshotData.audio.tormentedCrescendoCue then
-						snapshotData.audio.tormentedCrescendoCue = true
-						PlaySoundFile(specSettings.audio.tormentedCrescendo.sound, coreSettings.audio.channel.channel)
-					elseif	snapshots[spells.tormentedCrescendo.id].buff.applications == 2 and specSettings.audio.tormentedCrescendo2.enabled and not snapshotData.audio.tormentedCrescendo2Cue then
-						snapshotData.audio.tormentedCrescendo2Cue = true
-						PlaySoundFile(specSettings.audio.tormentedCrescendo2.sound, coreSettings.audio.channel.channel)
-					end
-				end
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
@@ -1078,23 +919,8 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Affliction
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.affliction.settings)
-		--[[
-		targetData:AddSpellTracking(spells.shadowEmbraceShadowBolt)
-		targetData:AddSpellTracking(spells.shadowEmbraceDrainSoul)]]
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#ua"] = spells.unstableAffliction.icon
-		lookup["#agony"] = spells.agony.icon
-		lookup["#corruption"] = spells.corruption.icon
-		lookup["#haunt"] = spells.haunt.icon
-		lookup["#vileTaint"] = spells.vileTaint.icon
-		lookup["#soulRot"] = spells.soulRot.icon
-		lookup["#phantomSingularity"] = spells.phantomSingularity.icon
-		lookup["#nightfall"] = spells.nightfall.icon
-		lookup["#tormentedCrescendo"] = spells.tormentedCrescendo.icon
-		lookup["#succulentSoul"] = spells.succulentSoul.icon
-		lookup["#malignOmen"] = spells.malignOmen.icon
-		lookup["#shadowEmbrace"] = spells.shadowEmbraceShadowBolt.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1499,65 +1325,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	if TRB.Data.character.specId == 1 then --Affliction
-		--[[if var == "$nightfallTime" then
-			if snapshots[spells.nightfall.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$nightfallStacks" then
-			if snapshots[spells.nightfall.id].buff.applications > 0 then
-				valid = true
-			end
-		elseif var == "$tormentedCrescendoTime" then
-			if snapshots[spells.tormentedCrescendo.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$tormentedCrescendoStacks" then
-			if snapshots[spells.tormentedCrescendo.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$malignOmenTime" then
-			if snapshots[spells.malignOmen.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$malignOmenStacks" then
-			if snapshots[spells.malignOmen.id].buff.applications > 0 then
-				valid = true
-			end
-		elseif var == "$succulentSoulTime" then
-			if snapshots[spells.succulentSoul.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$succulentSoulStacks" then
-			if snapshots[spells.succulentSoul.id].buff.applications > 0 then
-				valid = true
-			end
-		elseif var == "$shadowEmbraceStacks" then
-			local shadowEmbrace = spells.shadowEmbraceShadowBolt
-			if talents:IsTalentActive(spells.drainSoul) then
-				shadowEmbrace = spells.shadowEmbraceDrainSoul
-			end
-			if not UnitIsDeadOrGhost("target") and
-			UnitCanAttack("player", "target") and
-			target ~= nil and
-			target.spells[shadowEmbrace.id] ~= nil and
-			target.spells[shadowEmbrace.id].stacks > 0 then
-				valid = true
-			end
-		elseif var == "$shadowEmbraceMaxStacks" then
-			valid = true
-		elseif var == "$shadowEmbraceTime" then
-			local shadowEmbrace = spells.shadowEmbraceShadowBolt
-			if talents:IsTalentActive(spells.drainSoul) then
-				shadowEmbrace = spells.shadowEmbraceDrainSoul
-			end
-			if not UnitIsDeadOrGhost("target") and
-			UnitCanAttack("player", "target") and
-			target ~= nil and
-			target.spells[shadowEmbrace.id] ~= nil and
-			target.spells[shadowEmbrace.id].remainingTime > 0 then
-			valid = true
-			end
-		end]]
 	elseif TRB.Data.character.specId == 2 then --Demonology
 	elseif TRB.Data.character.specId == 3 then --Destruction
 	end

@@ -3,21 +3,24 @@ local L = TRB.Localization
 
 TRB.Functions.Settings = {}
 
---[[@type TRB.Classes.Settings.SpecializationGlobalEnabled]]
-local specGlobalDefaults = {
-	--specEnable = false,
-	bar = false,
-	comboPoints = false,
-	healthBar = false,
-	thresholdIcons = false,
-	displayBar = false,
-	displayText = false,
-	textColors = false,
-	thresholdColors = false,
-	healthBarColors = false,
-	precision = false,
-	textures = false
-}
+---Creates a new independent copy of NewSpecGlobalDefaults()
+---@return TRB.Classes.Settings.SpecializationGlobalEnabled
+local function NewSpecGlobalDefaults()
+    return {
+		--specEnable = false,
+		bar = false,
+		comboPoints = false,
+		healthBar = false,
+		thresholdIcons = false,
+		displayBar = false,
+		displayText = false,
+		textColors = false,
+		thresholdColors = false,
+		healthBarColors = false,
+		precision = false,
+		textures = false
+	}
+end
 
 ---Loads the default settings structure
 ---@param classic boolean?
@@ -127,70 +130,70 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			global = {
 				globalEnable = false,
 				deathknight = {
-					blood = specGlobalDefaults,
-					frost = specGlobalDefaults,
-					unholy = specGlobalDefaults
+					blood = NewSpecGlobalDefaults(),
+					frost = NewSpecGlobalDefaults(),
+					unholy = NewSpecGlobalDefaults()
 				},
 				demonhunter = {
-					havoc = specGlobalDefaults,
-					vengeance = specGlobalDefaults,
-					devourer = specGlobalDefaults
+					havoc = NewSpecGlobalDefaults(),
+					vengeance = NewSpecGlobalDefaults(),
+					devourer = NewSpecGlobalDefaults()
 				},
 				druid = {
-					balance = specGlobalDefaults,
-					feral = specGlobalDefaults,
-					guardian = specGlobalDefaults,
-					restoration = specGlobalDefaults
+					balance = NewSpecGlobalDefaults(),
+					feral = NewSpecGlobalDefaults(),
+					guardian = NewSpecGlobalDefaults(),
+					restoration = NewSpecGlobalDefaults()
 				},
 				evoker = {
-					devastation = specGlobalDefaults,
-					preservation = specGlobalDefaults,
-					augmentation = specGlobalDefaults
+					devastation = NewSpecGlobalDefaults(),
+					preservation = NewSpecGlobalDefaults(),
+					augmentation = NewSpecGlobalDefaults()
 				},
 				hunter = {
-					beastMastery = specGlobalDefaults,
-					marksmanship = specGlobalDefaults,
-					survival = specGlobalDefaults
+					beastMastery = NewSpecGlobalDefaults(),
+					marksmanship = NewSpecGlobalDefaults(),
+					survival = NewSpecGlobalDefaults()
 				},
 				mage = {
-					arcane = specGlobalDefaults,
-					fire = specGlobalDefaults,
-					frost = specGlobalDefaults
+					arcane = NewSpecGlobalDefaults(),
+					fire = NewSpecGlobalDefaults(),
+					frost = NewSpecGlobalDefaults()
 				},
 				monk = {
-					brewmaster = specGlobalDefaults,
-					mistweaver = specGlobalDefaults,
-					windwalker = specGlobalDefaults
+					brewmaster = NewSpecGlobalDefaults(),
+					mistweaver = NewSpecGlobalDefaults(),
+					windwalker = NewSpecGlobalDefaults()
 				},
 				paladin = {
-					holy = specGlobalDefaults,
-					protection = specGlobalDefaults,
-					retribution = specGlobalDefaults,
+					holy = NewSpecGlobalDefaults(),
+					protection = NewSpecGlobalDefaults(),
+					retribution = NewSpecGlobalDefaults(),
 				},
 				priest = {
-					discipline = specGlobalDefaults,
-					holy = specGlobalDefaults,
-					shadow = specGlobalDefaults
+					discipline = NewSpecGlobalDefaults(),
+					holy = NewSpecGlobalDefaults(),
+					shadow = NewSpecGlobalDefaults()
 				},
 				rogue = {
-					assassination = specGlobalDefaults,
-					outlaw = specGlobalDefaults,
-					subtlety = specGlobalDefaults
+					assassination = NewSpecGlobalDefaults(),
+					outlaw = NewSpecGlobalDefaults(),
+					subtlety = NewSpecGlobalDefaults()
 				},
 				shaman = {
-					elemental = specGlobalDefaults,
-					enhancement = specGlobalDefaults,
-					restoration = specGlobalDefaults
+					elemental = NewSpecGlobalDefaults(),
+					enhancement = NewSpecGlobalDefaults(),
+					restoration = NewSpecGlobalDefaults()
 				},
 				warlock = {
-					affliction = specGlobalDefaults,
-					demonology = specGlobalDefaults,
-					destruction = specGlobalDefaults
+					affliction = NewSpecGlobalDefaults(),
+					demonology = NewSpecGlobalDefaults(),
+					destruction = NewSpecGlobalDefaults()
 				},
 				warrior = {
-					arms = specGlobalDefaults,
-					fury = specGlobalDefaults,
-					protection = specGlobalDefaults
+					arms = NewSpecGlobalDefaults(),
+					fury = NewSpecGlobalDefaults(),
+					protection = NewSpecGlobalDefaults()
 				}
 			},
 			enabled = {

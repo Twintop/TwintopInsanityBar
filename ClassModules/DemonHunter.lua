@@ -27,7 +27,6 @@ local function FillSpecializationCache()
 	specCache.havoc.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
-			passive = 0,
 			burningHatred = 0,
 			tacticalRetreat = 0
 		},
@@ -98,7 +97,6 @@ local function FillSpecializationCache()
 	specCache.vengeance.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
-			passive = 0,
 			burningHatred = 0,
 			tacticalRetreat = 0
 		},
@@ -154,7 +152,6 @@ local function FillSpecializationCache()
 	specCache.devourer.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
-			passive = 0,
 			burningHatred = 0,
 			tacticalRetreat = 0
 		},
