@@ -642,7 +642,10 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 
 				node.containerFrame:ClearAllPoints()
 				if i == 1 then
-					node.containerFrame:SetPoint("TOPLEFT", self.containerFrame, "TOPLEFT", border, 0)
+					-- Offset Y by -border because borderFrame is centered on containerFrame
+					-- and extends 'border' pixels above it. This aligns the visual top (border edge)
+					-- with the group container's top edge.
+					node.containerFrame:SetPoint("TOPLEFT", self.containerFrame, "TOPLEFT", border, -border)
 				else
 					local prevNode = self.nodes[i-1]
 					if prevNode then
