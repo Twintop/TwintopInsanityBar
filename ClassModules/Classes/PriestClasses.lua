@@ -41,11 +41,6 @@ end
 
 
 ---@class TRB.Classes.Priest.HealerSpells : TRB.Classes.Healer.HealerSpells
---[[
----@field public shadowWordPain TRB.Classes.SpellBase
----@field public shadowfiend TRB.Classes.SpellThreshold
----@field public cannibalize TRB.Classes.SpellThreshold
-]]
 ---@field public flashHeal TRB.Classes.SpellBase
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
@@ -65,45 +60,6 @@ function TRB.Classes.Priest.HealerSpells:New()
 			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
 		}
 	})
-	--[[self.shadowWordPain = TRB.Classes.SpellBase:New({
-		id = 589,
-		baseDuration = 16,
-		pandemic = true,
-		isTalent = false,
-		baseline = true
-	})
-
-	-- Priest Talent Abilities
-	self.shadowfiend = TRB.Classes.SpellThreshold:New({
-		id = 34433,
-		iconName = "spell_shadow_shadowfiend",
-		energizeId = 343727,
-		settingKey = "shadowfiend",
-		primaryResourceType = Enum.PowerType.Mana,
-		isTalent = true,
-		baseline = false,
-		resourcePercent = 0.005,
-		duration = 15,
-		hasCooldown = true,
-		rangeCheck = false
-	})]]
-
-	--[[
-	-- Racials
-	self.cannibalize = TRB.Classes.SpellThreshold:New({
-		id = 20577,
-		buffId = 20578,
-		baseline = true,
-		resourcePerTick = 0.07,
-		duration = 10,
-		hasTicks = true,
-		tickRate = 2,
-		settingKey = "cannibalize",
-		primaryResourceType = Enum.PowerType.Mana,
-		isSnowflake = true,
-		hasCooldown = true,
-		rangeCheck = false
-	})]]
 
 	return self
 end
@@ -116,9 +72,7 @@ end
 ---@field public lightsPromise TRB.Classes.SpellBase
 ---@field public shadowCovenant TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
----@field public depthOfShadows TRB.Classes.SpellBase
----@field public mindbender TRB.Classes.SpellThreshold
----@field public voidwraith TRB.Classes.SpellThreshold]]
+---@field public depthOfShadows TRB.Classes.SpellBase]]
 TRB.Classes.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.DisciplineSpells.__index = TRB.Classes.Priest.DisciplineSpells
 
@@ -128,8 +82,6 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Priest.DisciplineSpells) --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
 	-- Priest Class Baseline Abilities
-	--[[self.shadowfiend.baseline = true
-	self.shadowfiend.primaryResourceType = Enum.PowerType.Mana]]
 	
 	-- Discipline Baseline Abilities
 
@@ -162,18 +114,6 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		talentId = 314867,
 		isTalent = true
 	})
-	self.mindbender = TRB.Classes.SpellThreshold:New({
-		id = 123040,
-		iconName = "spell_shadow_soulleech_3",
-		energizeId = 123051,
-		settingKey = "mindbender",
-		primaryResourceType = Enum.PowerType.Mana,
-		isTalent = true,
-		duration = 12,
-		resourcePercent = 0.002,
-		hasCooldown = true,
-		rangeCheck = false
-	})
 
 	-- Voidweaver
 	self.entropicRift = TRB.Classes.SpellBase:New({
@@ -185,19 +125,6 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 	self.depthOfShadows = TRB.Classes.SpellBase:New({
 		id = 451308,
 		isTalent = true
-	})
-	self.voidwraith = TRB.Classes.SpellThreshold:New({
-		id = 451235,
-		talentId = 451234,
-		settingKey = "voidwraith",
-		energizeId = 262485,
-		primaryResourceType = Enum.PowerType.Mana,
-		isTalent = true,
-		duration = 15,
-		resourcePercent = 0.005,
-		resourcePercentMindbender = 0.002,
-		hasCooldown = true,
-		rangeCheck = false
 	})]]
 	
 	return self
@@ -471,14 +398,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	})
 
 	-- Priest Talent Abilities			
-	--[[self.shadowfiend = TRB.Classes.SpellBase:New({
-		id = 34433,
-		iconName = "spell_shadow_shadowfiend",
-		energizeId = 279420,
-		resource = 2,
-		isTalent = true,
-		baseline = true
-	})
+	--[[
 	self.massDispel = TRB.Classes.SpellBase:New({
 		id = 32375,
 		isTalent = true
@@ -719,13 +639,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	})
 	--[[self.depthOfShadows = TRB.Classes.SpellBase:New({
 		id = 451308,
-		isTalent = true
-	})
-	self.voidwraith = TRB.Classes.SpellBase:New({
-		id = 451235,
-		talentId = 451234,
-		energizeId = 262485,
-		resource = 2,
 		isTalent = true
 	})]]
 

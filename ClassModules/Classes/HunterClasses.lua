@@ -154,6 +154,7 @@ end
 ---@field public multiShot TRB.Classes.SpellThreshold
 ---@field public blackArrow TRB.Classes.SpellThreshold
 ---@field public killShot TRB.Classes.SpellThreshold
+---@field public wailingArrow TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.MarksmanshipSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
 TRB.Classes.Hunter.MarksmanshipSpells.__index = TRB.Classes.Hunter.MarksmanshipSpells
 
@@ -235,6 +236,18 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         isTalent = true,
         isSnowflake = true,
         baseline = false -- When subTreeActive = true
+    })
+    self.wailingDead = TRB.Classes.SpellBase:New({
+        id = 1264290,
+        isTalent = true
+    })
+    self.wailingArrow = TRB.Classes.SpellThreshold:New({
+        id = 392060,
+        talentId = 1264290, -- Use Wailing Dead's talent ID
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "wailingArrow",
+        isTalent = true,
+        isSnowflake = true,
     })
 
     -- Sentinel

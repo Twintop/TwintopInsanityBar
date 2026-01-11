@@ -312,6 +312,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				blackArrow = {
 					enabled = true,
 				},
+				wailingArrow = {
+					enabled = true,
+				},
 			}
 		},
 		maxResource = {
@@ -1481,7 +1484,17 @@ local function MarksmanshipConstructThresholdPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.multiShot.enabled = self:GetChecked()
 	end)
-
+	
+	yCoord = yCoord - 25
+	controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.wailingArrowThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxWailingArrow"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxWailingArrowTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.wailingArrow.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.wailingArrow.enabled = self:GetChecked()
+	end)
 
 	controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], oUi.xCoord2, yCoord2, 110, 20)
 	yCoord2 = yCoord2 - 20

@@ -6,59 +6,6 @@ end
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Monk = TRB.Classes.Monk or {}
 
---[[
-	********************
-	***** Mana Tea *****
-	********************
-	]]
-
----@class TRB.Classes.Monk.ManaTea : TRB.Classes.Healer.HealerRegenBase
----@field public mana number
----@field private manaTeaRegenSnapshot TRB.Classes.Snapshot
----@field private energizingBrewSpell TRB.Classes.SpellBase
----@field private talents TRB.Classes.Talents
-TRB.Classes.Monk.ManaTea = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
-TRB.Classes.Monk.ManaTea.__index = TRB.Classes.Monk.ManaTea
-
----Creates a new Mana Tea object
----@param spell table # Spell we are snapshotting, in this case Mana Tea
----@param manaTeaRegenSnapshot TRB.Classes.Snapshot # Snapshot of manaTeaRegen used by the rest of the Mistweaver implementation
----@param energizingBrewSpell TRB.Classes.SpellBase # Energizing Brew spell, for reference data
----@param talents TRB.Classes.Talents # Talents object for Mistweaver
----@return TRB.Classes.Monk.ManaTea
-function TRB.Classes.Monk.ManaTea:New(spell, manaTeaRegenSnapshot, energizingBrewSpell, talents)
-	---@type TRB.Classes.Healer.HealerRegenBase
-	local snapshot = TRB.Classes.Healer.HealerRegenBase
-	local self = setmetatable(snapshot:New(spell), TRB.Classes.Monk.ManaTea)
-	self:Reset()
-	self.attributes = {}
-	self.manaTeaRegenSnapshot = manaTeaRegenSnapshot
-	self.energizingBrewSpell = energizingBrewSpell
-	self.talents = talents
-	return self
-end
-
----Updates Mana Tea's values
-function TRB.Classes.Monk.ManaTea:Update()
-	if self.manaTeaRegenSnapshot.buff.isActive then
-		self.mana = self:GetMaxManaReturn()
-	else
-		self.mana = 0
-	end
-end
-
-function TRB.Classes.Monk.ManaTea:GetMaxManaReturn()
-	local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-	local resourcePerTick = self.spell.resourcePerTick
-	local tickRate = self.spell:GetTickRate()
-
-	if self.talents:IsTalentActive(self.energizingBrewSpell) then
-		resourcePerTick = resourcePerTick * self.energizingBrewSpell.attributes.resourcePerTickMod
-		tickRate = tickRate * self.energizingBrewSpell.attributes.tickRateMod
-	end
-	return (TRB.Data.snapshotData.attributes.manaRegen * tickRate * self.buff.applications) + (self.buff.applications * resourcePerTick * TRB.Data.character.maxResource)
-end
-
 
 ---@class TRB.Classes.Monk.BrewmasterSpells : TRB.Classes.SpecializationSpellsBase
 --Baseline
@@ -188,14 +135,11 @@ end
 
 
 ---@class TRB.Classes.Monk.MistweaverSpells : TRB.Classes.Healer.HealerSpells
+---@field public risingSunKick TRB.Classes.SpellBase
 ---@field public soothingMist TRB.Classes.SpellBase
 ---@field public vivaciousVivification TRB.Classes.SpellBase
----@field public manaTea TRB.Classes.SpellBase
----@field public energizingBrew TRB.Classes.SpellBase
----@field public sheilunsGift TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
----@field public manaTeaCharges TRB.Classes.SpellThreshold
----@field public cannibalize TRB.Classes.SpellThreshold
+---@field public rushingWindKick TRB.Classes.SpellBase
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Monk.MistweaverSpells.__index = TRB.Classes.Monk.MistweaverSpells
 
@@ -203,6 +147,15 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 	---@type TRB.Classes.Healer.HealerSpells
 	local base = TRB.Classes.Healer.HealerSpells
 	self = setmetatable(base:New(), TRB.Classes.Monk.MistweaverSpells) --[[@as TRB.Classes.Monk.MistweaverSpells]]
+
+	self.risingSunKick = TRB.Classes.SpellBase:New({
+		id = 107428,
+		baseline = true,
+	})
+	self.vivify = TRB.Classes.SpellBase:New({
+		id = 116670,
+		baseline = true,
+	})
 
 	-- Monk Class Talents		
 	self.soothingMist = TRB.Classes.SpellBase:New({
@@ -213,46 +166,15 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 	})
 	self.vivaciousVivification = TRB.Classes.SpellBase:New({
 		id = 392883,
+		talentId = 388812,
+		isTalent = true,
+		duration = 20
 	})
 
 	-- Mistweaver Spec Talents
-	self.manaTea = TRB.Classes.SpellBase:New({
-		id = 197908,
-		talentId = 115869,
-		isTalent = true
-	})
-	self.manaTeaRegen = TRB.Classes.SpellBase:New({
-		id = 115294,
-		talentId = 115869,
-		isTalent = true
-	})
-	self.manaTeaCharges = TRB.Classes.SpellThreshold:New({
-		id = 115867,
-		talentId = 115869,
-		hasTicks = true,
-		tickRate = 0.5, -- hasted
-		resourcePerTick = 0.021,
-		settingKey = "manaTeaCharges",
-		primaryResourceType = Enum.PowerType.Mana,
-		isSnowflake = true,
-		rangeCheck = false
-	})
-	self.energizingBrew = TRB.Classes.SpellBase:New({
-		id = 422031,
+	self.rushingWindKick = TRB.Classes.SpellBase:New({
+		id = 467307,
 		isTalent = true,
-		resourcePerTickMod = 1.2,
-		tickRateMod = 0.5
-	})
-	self.sheilunsGift = TRB.Classes.SpellBase:New({
-		id = 399491,
-		isTalent = true,
-		hasCastCount = true,
-		maxCastCount = 10
-	})
-	self.shaohaosLessons = TRB.Classes.SpellBase:New({
-		id = 400089,
-		isTalent = true,
-		maxStacksMod = -10
 	})
 
 	-- Conduit of the Celestials
@@ -260,22 +182,6 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 		id = 443421,
 		talentId = 443294,
 		isTalent = true,
-	})
-
-	-- Racials
-	self.cannibalize = TRB.Classes.SpellThreshold:New({
-		id = 20577,
-		buffId = 20578,
-		baseline = true,
-		resourcePerTick = 0.07,
-		duration = 10,
-		hasTicks = true,
-		tickRate = 2,
-		settingKey = "cannibalize",
-		primaryResourceType = Enum.PowerType.Mana,
-		isSnowflake = true,
-		hasCooldown = true,
-		rangeCheck = false
 	})
 
 	return self
@@ -288,7 +194,6 @@ end
 ---@field public danceOfChiJi TRB.Classes.SpellBase
 ---@field public combatWisdom TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
----@field public flurryCharge TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
@@ -432,13 +337,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 	self.heartOfTheJadeSerpent = TRB.Classes.SpellBase:New({
 		id = 443421,
 		talentId = 443294,
-		isTalent = true
-	})
-
-	-- Shado-Pan
-	self.flurryCharge = TRB.Classes.SpellBase:New({
-		id = 451021,
-		talentId = 450615,
 		isTalent = true
 	})
 

@@ -108,6 +108,8 @@ local function FillSpecializationCache()
 	specCache.marksmanship.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
+	---@type TRB.Classes.Snapshot
+	specCache.marksmanship.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 
 	specCache.marksmanship.barTextVariables = {
 		icons = {},
@@ -1077,6 +1079,17 @@ local function UpdateResourceBar()
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								snapshotData.audio.playedKillShotCue = false
+							end
+						elseif spell.id == spells.wailingArrow.id then
+							if not snapshots[spells.trueshot.id].buff.isActive then
+								showThreshold = false
+							elseif snapshots[spell.id].cooldown:IsUnusable() then
+								showThreshold = false
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else
 							showThreshold = false

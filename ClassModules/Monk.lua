@@ -10,7 +10,8 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local eventFrame = CreateFrame("Frame")
 
-local talents --[[@as TRB.Classes.Talents]]
+---@type TRB.Classes.Talents
+local talents
 
 Global_TwintopResourceBar = {}
 
@@ -100,11 +101,7 @@ local function FillSpecializationCache()
 		innervateCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification, nil, "always")
-	--[[---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[spells.sheilunsGift.id] = TRB.Classes.Snapshot:New(spells.sheilunsGift)
-	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)]]
+	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification)
 
 	specCache.mistweaver.barTextVariables = {
 		icons = {},
@@ -154,8 +151,6 @@ local function FillSpecializationCache()
 	specCache.windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
-	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.flurryCharge.id] = TRB.Classes.Snapshot:New(spells.flurryCharge)
 
 	specCache.windwalker.barTextVariables = {
 		icons = {},
@@ -255,8 +250,6 @@ local function FillSpellData_Mistweaver()
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		
 		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
-		{ variable = "#manaTea", icon = spells.manaTea.icon, description = spells.manaTea.name, printInSettings = true },
-		{ variable = "#sheilunsGift", icon = spells.sheilunsGift.icon, description = spells.sheilunsGift.name, printInSettings = true },
 	}
 	specCache.mistweaver.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -335,7 +328,6 @@ local function FillSpellData_Windwalker()
 		{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
 		{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
 		{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
-		{ variable = "#flurryCharge", icon = spells.flurryCharge.icon, description = spells.flurryCharge.name, printInSettings = false },
 		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
 		{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
 		{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
@@ -742,11 +734,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Mistweaver()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-			local spells = spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 			if spellId == spells.soothingMist.id then
 				local manaCost = -spells.soothingMist:GetPrimaryResourceCost(true)
 
@@ -757,6 +749,12 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 			
 			UpdateCastingResourceFinal_Mistweaver()
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if talents:IsTalentActive(spells.vivaciousVivification) and (spellId == spells.risingSunKick.id or spellId == spells.rushingWindKick.id) then
+				snapshotData.snapshots[spells.vivaciousVivification.id].buff:InitializeCustom(spells.vivaciousVivification.duration, currentTime)
+			elseif spellId == spells.vivify.id then
+				snapshotData.snapshots[spells.vivaciousVivification.id].buff:Reset()
+			end
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
@@ -880,20 +878,27 @@ local function UpdateSnapshot_Brewmaster()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
+	local currentTime = GetTime()
 	UpdateSnapshot()
 
 	snapshotData.attributes.stagger = UnitStagger("player")
 	snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.healthMax
 	UpdateStaggerColor()
 
-	snapshots[spells.expelHarm.id].cooldown:GetRemainingTime()
-	snapshots[spells.detox.id].cooldown:GetRemainingTime()
-	snapshots[spells.paralysis.id].cooldown:GetRemainingTime()
-	snapshots[spells.cracklingJadeLightning.id].cooldown:GetRemainingTime()
+	snapshots[spells.expelHarm.id].cooldown:GetRemainingTime(currentTime)
+	snapshots[spells.detox.id].cooldown:GetRemainingTime(currentTime)
+	snapshots[spells.paralysis.id].cooldown:GetRemainingTime(currentTime)
+	snapshots[spells.cracklingJadeLightning.id].cooldown:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Mistweaver()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
+	local currentTime = GetTime()
+	
+	snapshots[spells.vivaciousVivification.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Windwalker()
@@ -1101,6 +1106,7 @@ local function UpdateResourceBar()
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
+					print(specSettings.colors.bar.vivaciousVivification.enabled , affectingCombat , snapshots[spells.vivaciousVivification.id].buff.isActive)
 					if specSettings.colors.bar.vivaciousVivification.enabled and affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive then
 						barColor = specSettings.colors.bar.vivaciousVivification.color
 					end
@@ -1347,8 +1353,6 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
-		lookup["#manaTea"] = spells.manaTea.icon
-		lookup["#sheilunsGift"] = spells.sheilunsGift.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1385,7 +1389,6 @@ local function SwitchSpec()
 		lookup["#expelHarm"] = spells.expelHarm.icon
 		lookup["#fistsOfFury"] = spells.fistsOfFury.icon
 		lookup["#fof"] = spells.fistsOfFury.icon
-		lookup["#flurryCharge"] = spells.flurryCharge.icon
 		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
 		lookup["#paralysis"] = spells.paralysis.icon
 		lookup["#risingSunKick"] = spells.risingSunKick.icon
