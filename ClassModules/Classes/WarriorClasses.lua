@@ -174,12 +174,10 @@ end
 
 
 ---@class TRB.Classes.Warrior.FurySpells : TRB.Classes.Warrior.WarriorBaseSpells
----@field public charge TRB.Classes.SpellBase
 ---@field public whirlwind TRB.Classes.SpellBase
 ---@field public enrage TRB.Classes.SpellBase
 ---@field public improvedExecute TRB.Classes.SpellBase
 ---@field public bladestorm TRB.Classes.SpellBase
----@field public stormOfSteel TRB.Classes.SpellBase
 ---@field public slam TRB.Classes.SpellThreshold
 ---@field public impendingVictory TRB.Classes.SpellThreshold
 ---@field public thunderClap TRB.Classes.SpellThreshold
@@ -192,12 +190,6 @@ function TRB.Classes.Warrior.FurySpells:New()
 	local base = TRB.Classes.Warrior.WarriorBaseSpells
 	self = setmetatable(base:New(), TRB.Classes.Warrior.FurySpells) --[[@as TRB.Classes.Warrior.FurySpells]]
 	--Warrior base abilities
-	self.charge = TRB.Classes.SpellBase:New({
-		id = 100,
-		resource = 20,
-		isTalent = false,
-		baseline = true,
-	})
 	self.execute = TRB.Classes.SpellThreshold:New({
 		id = 280735,
 		healthMinimum = 0.2,
@@ -287,8 +279,6 @@ function TRB.Classes.Warrior.FurySpells:New()
 		isTalent = true
 	})
 	
-	--self.massacre.id = 206315
-
 	self.bladestorm = TRB.Classes.SpellBase:New({
 		id = 227847,
 		hasTicks = true,
@@ -297,12 +287,6 @@ function TRB.Classes.Warrior.FurySpells:New()
 		resourcePerTick = 10,
 		energizeId = 50622,
 		isHasted = true
-	})
-	self.stormOfSteel = TRB.Classes.SpellBase:New({
-		id = 382953,
-		resourcePerTick = 10,
-		charges = 2,
-		isTalent = true
 	})
 
 	-- Mountain Thane	

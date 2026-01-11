@@ -249,7 +249,6 @@ local function FillSpellData_Fury()
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
 		{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = spells.bladestorm.name, printInSettings = true },
-		{ variable = "#charge", icon = spells.charge.icon, description = spells.charge.name, printInSettings = true },
 		{ variable = "#enrage", icon = spells.enrage.icon, description = spells.enrage.name, printInSettings = true },
 		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
@@ -1260,7 +1259,6 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		local lookup = TRB.Data.lookup or {}
 		lookup["#bladestorm"] = spells.bladestorm.icon
-		lookup["#charge"] = spells.charge.icon
 		lookup["#enrage"] = spells.enrage.icon
 		lookup["#execute"] = spells.execute.icon
 		lookup["#impendingVictory"] = spells.impendingVictory.icon
