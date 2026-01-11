@@ -105,12 +105,12 @@ Many specs have a secondary resource displayed as individual nodes above or belo
 - **Arcane Charges** (Arcane Mage)
 - **Chi** (Windwalker Monk)
 - **Combo Points** (Feral Druid, Assassination/Outlaw/Subtlety Rogue)
-- **Essence** (Devastation/Preservation/Augmentation Evoker) — displayed with timer-based regeneration progress
+- **Essence** (Devastation/Preservation/Augmentation Evoker) - displayed with timer-based regeneration progress
 - **Holy Power** (Holy/Protection/Retribution Paladin)
-- **Maelstrom Weapon** (Enhancement Shaman) — 5 or 10 stacks
-- **Runes** (Blood/Frost/Unholy Death Knight) — 6 individual runes with cooldown timers
+- **Maelstrom Weapon** (Enhancement Shaman) - 5 or 10 stacks
+- **Runes** (Blood/Frost/Unholy Death Knight) - 6 individual runes with cooldown timers
 - **Soul Fragments** (Vengeance/Devourer Demon Hunter)
-- **Soul Shards** (Affliction/Demonology/Destruction Warlock) — Destruction displays partial fragments
+- **Soul Shards** (Affliction/Demonology/Destruction Warlock) - Destruction displays partial fragments
 
 ### Health Bar
 
@@ -149,7 +149,7 @@ Many specs can track important buff status and timers via color changes and dire
 | Havoc/Vengeance/Devourer Demon Hunter | (Void) Metamorphosis |
 | Beast Mastery Hunter | Beast Cleave, Bestial Wrath |
 | Marksmanship Hunter | Trueshot |
-| Elemental Shaman | Ascendance |
+| Elemental/Enhancement/Restoration Shaman | Ascendance |
 | Augmentation Evoker | Ebon Might |
 
 ---
