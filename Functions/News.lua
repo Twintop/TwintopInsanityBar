@@ -21,11 +21,11 @@ local content = [====[
 
 - Re-enable Beast Cleave bar border change and bar text variable `$beastCleaveTime`.
 - Re-enable Bestial Wrath bar change and bar text variable `$bestialWrathTime`. This has changed from being a border color change to the Focus bar itself changing color. Added a second color change when Bestial Wrath is about to expire (configurable in the Options UI).
-- Add suport for Wailing Arrow via a threshold line.
+- Add support for Wailing Arrow via a threshold line.
 
 ### [#475](#475) Marksmanship
 
-- Add suport for Wailing Arrow via a threshold line.
+- Add support for Wailing Arrow via a threshold line.
 
 ## Monk
 ### [#477](#477) Mistweaver
