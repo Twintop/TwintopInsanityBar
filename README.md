@@ -9,7 +9,7 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 [![Issues](https://img.shields.io/github/issues-closed-raw/Twintop/TwintopInsanityBar?color=00CC00)](https://github.com/Twintop/TwintopInsanityBar/issues?q=is%3Aissue+is%3Aclosed)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Core?color=000000&label=Core)](https://github.com/Twintop/TwintopInsanityBar/labels/Core)
 
-#### Alpha (Midnight) / Live (The War Within) Issues
+## Issues by Class
 
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Death%20Knight?color=C41E3A&label=Death%20Knight)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Death%20Knight)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Demon%20Hunter?color=A330C9&label=Demon%20Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Demon%20Hunter)
@@ -25,61 +25,135 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Warlock?color=8788EE&label=Warlock)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Warlock)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Warrior?color=C69B6D&label=Warrior)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Warrior)
 
-#### Classic (Mists of Pandaria) Issues
+---
 
-[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Classic-Priest?color=FFFFFF&label=Priest)](https://github.com/Twintop/TwintopInsanityBar/labels/Classic-Priest)
+## Overview
 
-Currently supported specs:
+Twintop's Resource Bar (TRB) is a fully customizable resource bar addon that supports all 13 classes and 40 specialization in World of Warcraft. Whether you're tracking Rage, Mana, Energy, Insanity, or any other resource, TRB provides a unified interface with threshold markers, secondary resource tracking, health monitoring, and major cooldown timers.
 
-#### Alpha (Midnight)
+The addon is designed to give you the information you need at a glance, with visual and audio cues to help you make split-second decisions during combat.
 
-- Death Knight - Blood, Frost, Unholy
-- Demon Hunter - Havoc, Vengeance, Devourer
-- Druid - Balance, Feral, Guardian, Restoration
-- Evoker - Devastation, Preservation, Augmentation
-- Hunter - Beast Mastery, Marksmanship, Survival
-- Mage - Arcane, Fire, Frost
-- Monk - Brewmaster, Mistweaver, Windwalker
-- Priest - Discipline, Holy, Shadow
-- Paladin - Holy, Protection, Retribution
-- Rogue - Assassination, Outlaw, Subtlety
-- Shaman - Elemental, Enhancement, Restoration
-- Warlock - Affliction, Demonology, Destruction
-- Warrior - Arms, Fury, Protection
+---
 
-#### Live (The War Within)
+## Customization
 
-- Demon Hunter - Havoc, Vengeance
-- Druid - Balance, Feral, Restoration
-- Evoker - Devastation, Preservation, Augmentation
-- Hunter - Beast Mastery, Marksmanship, Survival
-- Monk - Mistweaver, Windwalker
-- Priest - Discipline, Holy, Shadow
-- Paladin - Holy
-- Rogue - Assassination, Outlaw, Subtlety
-- Shaman - Elemental, Enhancement (Experimental/Minimal), Restoration
-- Warlock - Affliction
-- Warrior - Arms, Fury
+TRB is built with customization at its core. Nearly every aspect of the addon can be tailored to fit your UI and playstyle.
 
-This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
+### Bar Visibility
 
-- Full color, font, and texture customization of every part of the bar to make it suit your UI or make certain situations stand out.
-- Audio and visual cues for when important spells (e.g. Devouring Plague, Earth Shock) can be cast.
-- Spell icons for your current casting spell and many others that are related to your primary resource or for tracking.
+Every bar can be shown or hidden independently:
 
-Spec specific features included for Shadow Priests:
+- Show bars always, only in combat, or never
+- Hide individual bars (health, mana, secondary resources) per spec
 
-- Calculates how long you have left until Voidform will end in Hungering Void, given the current Haste and Crit levels
-- Tracks Shadowy Apparition spawns (with Auspicious Spirits talented) and incoming Insanity as a result.
-- Tracks Shadowfiend/Mindbender swings and expected incoming Insanity from future swings.
+### Size and Position
 
-Bar text can be configured to show the following data in whatever format you'd like:
+- Adjustable width and height for primary and secondary resource bars
+- Pixel-precise positioning with horizontal and vertical offsets
+- Drag-and-drop repositioning
 
-- Current resource, mas resource, resource from Hardcasting a spell, resources incoming from Passive Sources (e.g. Auspicious Spirits, Shadowfiend/Mindbender, Death and Madness, and Eternal Call to the Void procs)
-- Current Haste%, GCD, Crit%, Mastery%
-- Number of Damage over Time spells out on targets
-- Spell icons for your current casting spell and many others that are related to Insanity or tracking.
+### Colors
 
-Found an issue? Report it on GitHub [https://github.com/Twintop/TwintopInsanityBar/issues/](https://github.com/Twintop/TwintopInsanityBar/issues/) or in Discord [https://discord.gg/eThqxM78xm](https://discord.gg/eThqxM78xm)
+- Separate color settings for bar fill, border, and background
+- Per-threshold colors: under resource threshold, over resource threshold, unusable, out of range
+- State-based bar colors that change based on active buffs or procs
+- Individual node coloring for secondary resources
 
-Looking to customize the bar's text? Be sure to check out the wiki! [https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization](https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization)
+### Textures and Fonts
+
+- Full LibSharedMedia integration for custom textures and fonts
+- Independent texture settings for primary bar, secondary nodes, and custom bars (Stagger, Mana, Defensives)
+- Configurable font face, size, and color for all text elements
+
+### Audio Notifications
+
+- Customizable sound cues triggered by resource thresholds or proc events
+- LibSharedMedia support for custom sounds
+- Configurable audio output channel
+
+### Bar Text
+
+TRB features a powerful bar text system that lets you display exactly the information you want, where you want it. Create multiple text entries with independent positioning, fonts, and colors.
+
+Use variables like `$resource`, `$comboPoints`, `$haste`, and `$gcd` to display live data, or `#casting` to show spell icons. Bar text also supports conditional logic with Boolean operators for dynamic displays.
+
+For complete documentation on available variables and advanced formatting, check out the [Bar Text Customization Wiki](https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization).
+
+### Import and Export
+
+Share your configuration with others or back up your settings:
+
+- Export individual sections (colors, thresholds, fonts, audio) or entire spec configurations
+- Import configurations from other players
+
+---
+
+## Features
+
+### Primary Resource Bar
+
+Every spec gets a primary resource bar that tracks your main resource (Mana, Rage, Energy, Focus, Runic Power, Fury, Insanity, Astral Power, or Maelstrom). The bar includes:
+
+- **Threshold lines** showing the cost of your abilities, color-coded by availability
+- **Predictive resource display** for some specs, showing expected resource gain from your current cast
+- **Maximum display customization** allows the bar to fill to a lower value than your maximum resource; useful for specs like Assassination Rogue with threshold lines and very high maximum resource pools
+
+### Secondary Resource Nodes
+
+Many specs have a secondary resource displayed as individual nodes above or below the primary bar:
+
+- **Arcane Charges** (Arcane Mage)
+- **Chi** (Windwalker Monk)
+- **Combo Points** (Feral Druid, Assassination/Outlaw/Subtlety Rogue)
+- **Essence** (Devastation/Preservation/Augmentation Evoker) — displayed with timer-based regeneration progress
+- **Holy Power** (Holy/Protection/Retribution Paladin)
+- **Maelstrom Weapon** (Enhancement Shaman) — 5 or 10 stacks
+- **Runes** (Blood/Frost/Unholy Death Knight) — 6 individual runes with cooldown timers
+- **Soul Fragments** (Vengeance/Devourer Demon Hunter)
+- **Soul Shards** (Affliction/Demonology/Destruction Warlock) — Destruction displays partial fragments
+
+### Health Bar
+
+A dedicated health bar is available for all specs, providing an at-a-glance view of your current health with customizable color thresholds.
+
+### Secondary Mana Bar
+
+Some DPS specs that may need to off-heal in a pinch have a secondary mana bar available (disabled by default):
+
+- Balance Druid
+- Elemental Shaman
+- Shadow Priest
+
+### Stagger Bar (Brewmaster Monk)
+
+Brewmaster Monks get a dedicated Stagger bar that displays current stagger damage as a percentage of maximum health. The bar includes configurable thresholds for Medium and Heavy stagger levels, with color transitions as stagger severity increases. Stagger levels and colors are set to Blizzard's defaults but can be freely customized to suit your preferences and needs.
+
+### Defensives Bar (Protection Warrior)
+
+Protection Warriors have a specialized Defensives bar that tracks the remaining duration of key defensive abilities:
+
+- **Ignore Pain** duration remaining
+- **Shield Block** duration remaining and available charges
+
+### Major Cooldown Tracking
+
+Many specs can track important buff status and timers via color changes and directly in bar text variables:
+
+| Spec | Tracked Cooldowns |
+| ------ | ------------------- |
+| Shadow Priest | Voidform, Entropic Rift (including extensions remaining) |
+| Balance Druid | Eclipse/Incarnation |
+| Feral Druid | Berserk/Incarnation, including incoming combo point generation timing |
+| Guardian Druid | Berserk/Incarnation |
+| Restoration Druid | Efflorescence, Incarnation |
+| Havoc/Vengeance/Devourer Demon Hunter | (Void) Metamorphosis |
+| Beast Mastery Hunter | Beast Cleave, Bestial Wrath |
+| Marksmanship Hunter | Trueshot |
+| Elemental Shaman | Ascendance |
+| Augmentation Evoker | Ebon Might |
+
+---
+
+## Support
+
+Found an issue? Report it on [GitHub](https://github.com/Twintop/TwintopInsanityBar/issues/) or join the discussion on [Discord](https://discord.gg/eThqxM78xm).
