@@ -12,6 +12,10 @@ local content = [====[
 ---
 
 # 12.0.0.0-beta11 (2026-01-12)
+## [#462](#462) General
+
+- There have been a large number of changes to what can be displayed as bar text due to the Addon Apocalypse in Midnight. As a result, to avoid broken bar text, all previous bar text has been reset to new defaults.
+
 ## Hunter
 ### [#474](#474) Beast Mastery
 
