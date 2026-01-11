@@ -204,7 +204,6 @@ local function FillSpellData_Elemental()
 		{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
 		{ variable = "#primalFracture", icon = spells.primalFracture.icon, description = spells.primalFracture.name, printInSettings = true },
 		{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
-		{ variable = "#tempest", icon = spells.tempest.icon, description = spells.tempest.name, printInSettings = true },
 	}
 	specCache.elemental.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -1290,7 +1289,6 @@ local function SwitchSpec()
 		lookup["#lightningBolt"] = spells.lightningBolt.icon
 		lookup["#primalFracture"] = spells.primalFracture.icon
 		lookup["#stormkeeper"] = spells.stormkeeper.icon
-		lookup["#tempest"] = spells.stormkeeper.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
