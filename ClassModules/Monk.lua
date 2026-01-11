@@ -1106,7 +1106,6 @@ local function UpdateResourceBar()
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					print(specSettings.colors.bar.vivaciousVivification.enabled , affectingCombat , snapshots[spells.vivaciousVivification.id].buff.isActive)
 					if specSettings.colors.bar.vivaciousVivification.enabled and affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive then
 						barColor = specSettings.colors.bar.vivaciousVivification.color
 					end

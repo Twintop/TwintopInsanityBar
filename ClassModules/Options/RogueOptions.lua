@@ -1513,6 +1513,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, false)
 
+	--[[
 	yCoord = yCoord - 30
 	controls.colors.borderRtbGood = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueOutlawColorPickerRollTheBonesHold"], spec.colors.bar.borderRtbGood, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderRtbGood
@@ -1525,7 +1526,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.borderRtbBad
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderRtbBad")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
@@ -2303,11 +2304,11 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
-	controls.colors.comboPoints.shadowTechniques = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowTechniques"], spec.colors.comboPoints.shadowTechniques, 300, 25, oUi.xCoord2, yCoord)
+	--[[controls.colors.comboPoints.shadowTechniques = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowTechniques"], spec.colors.comboPoints.shadowTechniques, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.shadowTechniques
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "shadowTechniques")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")

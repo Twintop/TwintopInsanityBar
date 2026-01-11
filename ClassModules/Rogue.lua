@@ -307,28 +307,15 @@ local function FillSpellData_Assassination()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-		{ variable = "#atrophicPoison", icon = spells.atrophicPoison.icon, description = spells.atrophicPoison.name, printInSettings = true },
-		{ variable = "#amplifyingPoison", icon = spells.amplifyingPoison.icon, description = spells.amplifyingPoison.name, printInSettings = true },
 		{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
 		{ variable = "#crimsonTempest", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = true },
 		{ variable = "#ct", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = false },
-		{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
-		{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
-		{ variable = "#deadlyPoison", icon = spells.deadlyPoison.icon, description = spells.deadlyPoison.name, printInSettings = true },
-		{ variable = "#dp", icon = spells.deadlyPoison.icon, description = spells.deadlyPoison.name, printInSettings = false },
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
 		{ variable = "#garrote", icon = spells.garrote.icon, description = spells.garrote.name, printInSettings = true },
-		{ variable = "#internalBleeding", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = true },
-		{ variable = "#ib", icon = spells.internalBleeding.icon, description = spells.internalBleeding.name, printInSettings = false },
-		{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
-		{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
 		{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-		{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
-		{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
-		{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
 	}
 	specCache.assassination.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -412,12 +399,7 @@ local function FillSpellData_Outlaw()
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
 		{ variable = "#dispatch", icon = spells.dispatch.icon, description = spells.dispatch.name, printInSettings = true },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
-		{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
-		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
 		{ variable = "#grandMelee", icon = spells.grandMelee.icon, description = spells.grandMelee.name, printInSettings = true },
-		{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
-		{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
 		{ variable = "#opportunity", icon = spells.opportunity.icon, description = spells.opportunity.name, printInSettings = true },
 		{ variable = "#pistolShot", icon = spells.pistolShot.icon, description = spells.pistolShot.name, printInSettings = true },
 		{ variable = "#rollTheBones", icon = spells.rollTheBones.icon, description = spells.rollTheBones.name, printInSettings = true },
@@ -426,10 +408,7 @@ local function FillSpellData_Outlaw()
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 		{ variable = "#sinisterStrike", icon = spells.sinisterStrike.icon, description = spells.sinisterStrike.name, printInSettings = true },
 		{ variable = "#skullAndCrossbones", icon = spells.skullAndCrossbones.icon, description = spells.skullAndCrossbones.name, printInSettings = true },
-		{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
 		{ variable = "#trueBearing", icon = spells.trueBearing.icon, description = spells.trueBearing.name, printInSettings = true },
-		{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
-		{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
 	}
 	specCache.outlaw.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -528,20 +507,12 @@ local function FillSpellData_Subtlety()
 
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
-		{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
-		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
 		{ variable = "#flagellation", icon = spells.flagellation.icon, description = spells.flagellation.name, printInSettings = true },
-		{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
-		{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 		{ variable = "#shadowTechniques", icon = spells.shadowTechniques.icon, description = spells.shadowTechniques.name, printInSettings = true },
-		{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
 		{ variable = "#sod", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = true },
 		{ variable = "#symbolsOfDeath", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = false },
-		{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
-		{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
 	}
 	specCache.subtlety.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -1941,28 +1912,15 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.assassination.settings)
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#amplifyingPoison"] = spells.amplifyingPoison.icon
-		lookup["#atrophicPoison"] = spells.atrophicPoison.icon
 		lookup["#blindside"] = spells.blindside.icon
 		lookup["#crimsonTempest"] = spells.crimsonTempest.icon
 		lookup["#ct"] = spells.crimsonTempest.icon
-		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
-		lookup["#cp"] = spells.cripplingPoison.icon
-		lookup["#deadlyPoison"] = spells.deadlyPoison.icon
-		lookup["#dp"] = spells.deadlyPoison.icon
 		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
 		lookup["#dismantle"] = spells.dismantle.icon
 		lookup["#garrote"] = spells.garrote.icon
-		lookup["#internalBleeding"] = spells.internalBleeding.icon
-		lookup["#ib"] = spells.internalBleeding.icon
-		lookup["#numbingPoison"] = spells.numbingPoison.icon
-		lookup["#np"] = spells.numbingPoison.icon
 		lookup["#rupture"] = spells.rupture.icon
 		lookup["#sad"] = spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
-		lookup["#stealth"] = spells.stealth.icon
-		lookup["#woundPoison"] = spells.woundPoison.icon
-		lookup["#wp"] = spells.woundPoison.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1990,21 +1948,15 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#adrenalineRush"] = spells.adrenalineRush.icon
-		lookup["#atrophicPoison"] = spells.atrophicPoison.icon
 		lookup["#betweenTheEyes"] = spells.betweenTheEyes.icon
 		lookup["#bladeFlurry"] = spells.bladeFlurry.icon
 		lookup["#bladeRush"] = spells.bladeRush.icon
 		lookup["#broadside"] = spells.broadside.icon
 		lookup["#buriedTreasure"] = spells.buriedTreasure.icon
-		lookup["#deathFromAbove"] = spells.numbingPoison.icon
+		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
 		lookup["#dispatch"] = spells.dispatch.icon
-		lookup["#dismantle"] = spells.numbingPoison.icon
-		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
-		lookup["#cp"] = spells.cripplingPoison.icon
 		lookup["#dismantle"] = spells.dismantle.icon
 		lookup["#grandMelee"] = spells.grandMelee.icon
-		lookup["#numbingPoison"] = spells.numbingPoison.icon
-		lookup["#np"] = spells.numbingPoison.icon
 		lookup["#opportunity"] = spells.opportunity.icon
 		lookup["#pistolShot"] = spells.pistolShot.icon
 		lookup["#rollTheBones"] = spells.rollTheBones.icon
@@ -2013,10 +1965,7 @@ local function SwitchSpec()
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
 		lookup["#sinisterStrike"] = spells.sinisterStrike.icon
 		lookup["#skullAndCrossbones"] = spells.skullAndCrossbones.icon
-		lookup["#stealth"] = spells.stealth.icon
 		lookup["#trueBearing"] = spells.trueBearing.icon
-		lookup["#woundPoison"] = spells.woundPoison.icon
-		lookup["#wp"] = spells.woundPoison.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2043,21 +1992,14 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.subtlety.settings)
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
-		lookup["#cp"] = spells.cripplingPoison.icon
 		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
 		lookup["#dismantle"] = spells.dismantle.icon
 		lookup["#flagellation"] = spells.flagellation.icon
-		lookup["#numbingPoison"] = spells.numbingPoison.icon
-		lookup["#np"] = spells.numbingPoison.icon
 		lookup["#sad"] = spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
 		lookup["#sod"] = spells.symbolsOfDeath.icon
 		lookup["#symbolsOfDeath"] = spells.symbolsOfDeath.icon
 		lookup["#shadowTechniques"] = spells.shadowTechniques.icon
-		lookup["#stealth"] = spells.stealth.icon
-		lookup["#woundPoison"] = spells.woundPoison.icon
-		lookup["#wp"] = spells.woundPoison.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 

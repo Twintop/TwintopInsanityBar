@@ -7,14 +7,8 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Rogue = TRB.Classes.Rogue or {}
 
 ---@class TRB.Classes.Rogue.RogueBaseSpells : TRB.Classes.SpecializationSpellsBase
----@field public cripplingPoison TRB.Classes.SpellBase
----@field public woundPoison TRB.Classes.SpellBase
----@field public numbingPoison TRB.Classes.SpellBase
----@field public atrophicPoison TRB.Classes.SpellBase
----@field public stealth TRB.Classes.SpellBase
 ---@field public subterfuge TRB.Classes.SpellBase
 ---@field public adrenalineRush TRB.Classes.SpellBase
----@field public supercharger TRB.Classes.SpellBase
 ---@field public echoingReprimand TRB.Classes.SpellBase
 ---@field public crimsonVial TRB.Classes.SpellThreshold
 ---@field public distract TRB.Classes.SpellThreshold
@@ -36,28 +30,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Rogue.RogueBaseSpells) --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
-   
-    -- Class Poisons
-    self.cripplingPoison = TRB.Classes.SpellBase:New({
-        id = 3409,
-        isTalent = false
-    })
-    self.woundPoison = TRB.Classes.SpellBase:New({
-        id = 8680,
-        isTalent = false
-    })
-    self.numbingPoison = TRB.Classes.SpellBase:New({
-        id = 5760,
-        isTalent = true
-    })
-    self.atrophicPoison = TRB.Classes.SpellBase:New({
-        id = 392388,
-        isTalent = true
-    })
-    
-    self.stealth = TRB.Classes.SpellBase:New({
-        id = 1784
-    })
 
     -- Rogue Class Baseline Abilities
     self.cheapShot = TRB.Classes.SpellComboPointThreshold:New({
@@ -162,10 +134,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     self.adrenalineRush = TRB.Classes.SpellBase:New({
         id = 13750
     })
-    self.supercharger = TRB.Classes.SpellBase:New({
-        id = 470347,
-        isTalent = true
-    })
+
     -- PvP
     self.deathFromAbove = TRB.Classes.SpellComboPointThreshold:New({
         id = 269513,
@@ -191,9 +160,6 @@ end
 
 
 ---@class TRB.Classes.Rogue.AssassinationSpells : TRB.Classes.Rogue.RogueBaseSpells
----@field public deadlyPoison TRB.Classes.SpellBase
----@field public amplifyingPoison TRB.Classes.SpellBase
----@field public internalBleeding TRB.Classes.SpellBase
 ---@field public improvedGarrote TRB.Classes.SpellBase
 ---@field public blindside TRB.Classes.SpellBase
 ---@field public ambush TRB.Classes.SpellComboPointThreshold
@@ -213,15 +179,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     local base = TRB.Classes.Rogue.RogueBaseSpells
     self = setmetatable(base:New(), TRB.Classes.Rogue.AssassinationSpells) --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 
-    -- Assassination Poisons
-    self.deadlyPoison = TRB.Classes.SpellBase:New({
-        id = 2818,
-        isTalent = true
-    })
-    self.amplifyingPoison = TRB.Classes.SpellBase:New({
-        id = 383414,
-        isTalent = true
-    })
     -- Rogue Class Baseline Abilities
     self.ambush = TRB.Classes.SpellComboPointThreshold:New({
         id = 8676,
@@ -295,11 +252,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         baseline = true
     })
 
-    -- Assassination Spec Abilities
-    self.internalBleeding = TRB.Classes.SpellBase:New({
-        id = 381627,
-        isTalent = true
-    })
     self.crimsonTempest = TRB.Classes.SpellComboPointThreshold:New({
         id = 1247227,
         primaryResourceType = Enum.PowerType.Energy,
