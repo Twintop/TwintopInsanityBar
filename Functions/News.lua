@@ -11,6 +11,16 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-beta11 (2026-01-12)
+## Hunter
+### [#474](#474) Beast Mastery
+
+- Re-enable Beast Cleave bar border change and bar text variable `$beastCleaveTime`.
+- Re-enable Bestial Wrath bar change and bar text variable `$bestialWrathTime`. This has changed from being a border color change to the Focus bar itself changing color. Added a second color change when Bestial Wrath is about to expire (configurable in the Options UI).
+- Add suport for Wailing Arrow via a threshold line.
+
+---
+
 # 12.0.0.0-beta10 (2026-01-10)
 ## General
 

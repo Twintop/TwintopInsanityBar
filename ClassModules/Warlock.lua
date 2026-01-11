@@ -369,7 +369,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	-- All Warlock specs use Soul Shards as secondary resource
 	if barGroups and barGroups.secondary then
@@ -658,7 +658,7 @@ local function UpdateResourceBar()
 	local classSettings = TRB.Data.settings.warlock
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.primary) then
 		return
@@ -724,7 +724,7 @@ local function UpdateResourceBar()
 					cpColor = specSettings.colors.comboPoints.final
 				end
 			end
-			
+
 			if barGroups and barGroups.secondary then
 				local shardNode = barGroups.secondary:GetNode(x)
 				if shardNode then
@@ -1150,7 +1150,7 @@ function TRB.Functions.Class:CheckCharacter()
 	if sharedSettings ~= nil then
 		if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
-			local barGroups = TRB.Frames.barGroups
+			local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 			if barGroups and barGroups.secondary then
 				barGroups.secondary:Show()
 				TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
@@ -1189,7 +1189,7 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
@@ -1359,7 +1359,7 @@ end
 ---@return boolean # Is Enabled?
 ---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if not (barGroups and barGroups.primary) then
 		return nil, true, false
 	end

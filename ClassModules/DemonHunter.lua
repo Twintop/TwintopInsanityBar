@@ -73,25 +73,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.unboundChaos.id] = TRB.Classes.Snapshot:New(spells.unboundChaos)
-	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.throwGlaive.id] = TRB.Classes.Snapshot:New(spells.throwGlaive)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.tacticalRetreat.id] = TRB.Classes.Snapshot:New(spells.tacticalRetreat)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.chaosTheory.id] = TRB.Classes.Snapshot:New(spells.chaosTheory)
-	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.felBarrage.id] = TRB.Classes.Snapshot:New(spells.felBarrage)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.artOfTheGlaive.id] = TRB.Classes.Snapshot:New(spells.artOfTheGlaive)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.glaiveFlurry.id] = TRB.Classes.Snapshot:New(spells.glaiveFlurry)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.rendingStrike.id] = TRB.Classes.Snapshot:New(spells.rendingStrike)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.studentOfSuffering.id] = TRB.Classes.Snapshot:New(spells.studentOfSuffering)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.warbladesHunger.id] = TRB.Classes.Snapshot:New(spells.warbladesHunger)
 
 	-- vengeance
 	specCache.vengeance.Global_TwintopResourceBar = {
@@ -135,20 +119,8 @@ local function FillSpecializationCache()
 	specCache.vengeance.snapshotData.snapshots[spells.felDevastation.id] = TRB.Classes.Snapshot:New(spells.felDevastation)
 	---@type TRB.Classes.Snapshot
 	specCache.vengeance.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
-	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.soulFurnace.id] = TRB.Classes.Snapshot:New(spells.soulFurnace)
-	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.artOfTheGlaive.id] = TRB.Classes.Snapshot:New(spells.artOfTheGlaive)
-	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.glaiveFlurry.id] = TRB.Classes.Snapshot:New(spells.glaiveFlurry)
-	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.rendingStrike.id] = TRB.Classes.Snapshot:New(spells.rendingStrike)
-	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.studentOfSuffering.id] = TRB.Classes.Snapshot:New(spells.studentOfSuffering)
-	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.warbladesHunger.id] = TRB.Classes.Snapshot:New(spells.warbladesHunger)
 	
-	-- Havoc
+	-- Devourer
 	specCache.devourer.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
@@ -203,26 +175,18 @@ local function FillSpellData_Havoc()
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
 		{ variable = "#annihilation", icon = spells.annihilation.icon, description = spells.annihilation.name, printInSettings = true },
-		{ variable = "#artOfTheGlaive", icon = spells.artOfTheGlaive.icon, description = spells.artOfTheGlaive.name, printInSettings = true },
 		{ variable = "#bladeDance", icon = spells.bladeDance.icon, description = spells.bladeDance.name, printInSettings = true },
 		{ variable = "#blindFury", icon = spells.blindFury.icon, description = spells.blindFury.name, printInSettings = true },
-		{ variable = "#bh", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = false },
-		{ variable = "#burningHatred", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = true },
 		{ variable = "#chaosNova", icon = spells.chaosNova.icon, description = spells.chaosNova.name, printInSettings = true },
 		{ variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
 		{ variable = "#deathSweep", icon = spells.deathSweep.icon, description = spells.deathSweep.name, printInSettings = true },
 		{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
 		{ variable = "#felBarrage", icon = spells.felBarrage.icon, description = spells.felBarrage.name, printInSettings = true },
-		{ variable = "#glaiveFlurry", icon = spells.glaiveFlurry.icon, description = spells.glaiveFlurry.name, printInSettings = true },
 		{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMeta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#rendingStrike", icon = spells.rendingStrike.icon, description = spells.rendingStrike.name, printInSettings = true },
-		{ variable = "#studentOfSuffering", icon = spells.studentOfSuffering.icon, description = spells.studentOfSuffering.name, printInSettings = true },
-		{ variable = "#tacticalRetreat", icon = spells.tacticalRetreat.icon, description = spells.tacticalRetreat.name, printInSettings = true },
-		{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
 	}
 	specCache.havoc.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -293,13 +257,11 @@ local function FillSpellData_Vengeance()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-		{ variable = "#artOfTheGlaive", icon = spells.artOfTheGlaive.icon, description = spells.artOfTheGlaive.name, printInSettings = true },
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMeta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#soulFragments", icon = spells.soulFragments.icon, description = spells.soulFragments.name, printInSettings = true },
-		{ variable = "#studentOfSuffering", icon = spells.studentOfSuffering.icon, description = spells.studentOfSuffering.name, printInSettings = true },
 	}
 	specCache.vengeance.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -443,7 +405,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	-- Create thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
@@ -876,7 +838,7 @@ local function UpdateResourceBar()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 
 	if TRB.Data.character.maxResource == nil then
@@ -1366,26 +1328,19 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.havoc.settings)
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
 		lookup["#annihilation"] = spells.annihilation.icon
 		lookup["#bladeDance"] = spells.bladeDance.icon
 		lookup["#blindFury"] = spells.blindFury.icon
-		lookup["#bh"] = spells.burningHatred.icon
-		lookup["#burningHatred"] = spells.burningHatred.icon
 		lookup["#chaosNova"] = spells.chaosNova.icon
 		lookup["#chaosStrike"] = spells.chaosStrike.icon
 		lookup["#deathSweep"] = spells.deathSweep.icon
 		lookup["#eyeBeam"] = spells.eyeBeam.icon
 		lookup["#felBarrage"] = spells.felBarrage.icon
-		lookup["#glaiveFlurry"] = spells.glaiveFlurry.icon
 		lookup["#glaiveTempest"] = spells.glaiveTempest.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
 		lookup["#voidMeta"] = spells.metamorphosis.icon
-		lookup["#rendingStrike"] = spells.rendingStrike.icon
-		lookup["#tacticalRetreat"] = spells.tacticalRetreat.icon
-		lookup["#unboundChaos"] = spells.unboundChaos.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1409,13 +1364,10 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.vengeance.settings)
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#artOfTheGlaive"] = spells.artOfTheGlaive.icon
-		lookup["#glaiveFlurry"] = spells.glaiveFlurry.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
 		lookup["#voidMeta"] = spells.metamorphosis.icon
-		lookup["#rendingStrike"] = spells.rendingStrike.icon
 		--lookup["#soulFragments"] = spells.soulFragments.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
@@ -1676,7 +1628,7 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
@@ -1851,7 +1803,7 @@ end
 ---@return boolean # Is Enabled?
 ---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if relativeToFrame ~= nil then
 		relativeToFrame = string.gsub(relativeToFrame, "_", "")
 	end

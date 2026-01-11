@@ -13,33 +13,19 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public moonkinForm TRB.Classes.SpellBase
 ---@field public sunfire TRB.Classes.SpellBase
 ---@field public wrath TRB.Classes.SpellBase
----@field public eclipse TRB.Classes.SpellBase
 ---@field public eclipseSolar TRB.Classes.SpellBase
 ---@field public eclipseLunar TRB.Classes.SpellBase
 ---@field public celestialAlignment TRB.Classes.SpellBase
 ---@field public incarnationChosenOfElune TRB.Classes.SpellBase
----@field public naturesBalance TRB.Classes.SpellBase
 ---@field public stellarFlare TRB.Classes.SpellBase
 ---@field public wildSurges TRB.Classes.SpellBase
----@field public starweaver TRB.Classes.SpellBase
----@field public starweaversWarp TRB.Classes.SpellBase
----@field public starweaversWeft TRB.Classes.SpellBase
 ---@field public soulOfTheForest TRB.Classes.SpellBase
----@field public furyOfElune TRB.Classes.SpellBase
 ---@field public newMoon TRB.Classes.SpellBase
 ---@field public halfMoon TRB.Classes.SpellBase
 ---@field public fullMoon TRB.Classes.SpellBase
----@field public sunderedFirmament TRB.Classes.SpellBase
----@field public astralCommunion TRB.Classes.SpellBase
----@field public touchTheCosmos TRB.Classes.SpellBase
 ---@field public boundlessMoonlight TRB.Classes.SpellBase
 ---@field public theEternalMoon TRB.Classes.SpellBase
----@field public theLightOfElune TRB.Classes.SpellBase
 ---@field public moonGuardian TRB.Classes.SpellBase
----@field public bounteousBloom TRB.Classes.SpellBase
----@field public dreamburst TRB.Classes.SpellBase
----@field public forceOfNature TRB.Classes.SpellBase
----@field public starlord TRB.Classes.SpellBase
 ---@field public starsurge TRB.Classes.SpellThreshold
 ---@field public starsurge2 TRB.Classes.SpellThreshold
 ---@field public starsurge3 TRB.Classes.SpellThreshold
@@ -125,10 +111,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
 
     -- Balance Spec Talents
-    self.eclipse = TRB.Classes.SpellBase:New({
-        id = 1239669,
-        isTalent = true
-    })
     self.eclipseSolar = TRB.Classes.SpellBase:New({
         id = 48517,
         castId = 1233346,
@@ -146,14 +128,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         isTalent = true,
         duration = 15
     })
-
-    self.naturesBalance = TRB.Classes.SpellBase:New({
-        id = 202430,
-        resource = 2,
-        outOfCombatResource = 6,
-        tickRate = 3,
-        isTalent = true
-    })
     self.stellarFlare = TRB.Classes.SpellBase:New({
         id = 202347,
         resource = 12,
@@ -165,16 +139,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 406890,
         isTalent = true,
         resourceMod = 2
-    })
-    self.starweaver = TRB.Classes.SpellBase:New({
-        id = 393940,
-        isTalent = true
-    })
-    self.starweaversWarp = TRB.Classes.SpellBase:New({ --Free Starfall
-        id = 393942,
-    })
-    self.starweaversWeft = TRB.Classes.SpellBase:New({ --Free Starsurge
-        id = 393944,
     })
     self.soulOfTheForest = TRB.Classes.SpellBase:New({
         id = 114107,
@@ -190,14 +154,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         castId = 390414,
         isTalent = true,
         duration = 20
-    })
-    self.furyOfElune = TRB.Classes.SpellBase:New({
-        id = 202770,
-        duration = 8,
-        resourcePerTick = 2.5,
-        hasTicks = true,
-        tickRate = 0.5,
-        isTalent = true
     })
     self.newMoon = TRB.Classes.SpellBase:New({
         id = 274281,
@@ -216,26 +172,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         resource = 40,
         boundlessMoonlight = 2
     })
-    self.sunderedFirmament = TRB.Classes.SpellBase:New({
-        id = 394108,
-        talentId = 394094,
-        hasTicks = true,
-        resourcePerTick = TRB.Functions.Number:RoundTo(2.5 * 0.25, 1, "floor", true),
-        tickRate = 0.5,
-        isTalent = true
-    })
-    self.astralCommunion = TRB.Classes.SpellBase:New({
-        id = 450599,
-        resourceMod = -15
-    })
-    self.touchTheCosmos = TRB.Classes.SpellBase:New({
-        id = 450360
-    })
-    self.starlord = TRB.Classes.SpellBase:New({
-        id = 279709,
-        talentId = 202345,
-        isTalent = true
-    })
 
     -- Elune's Chosen
     self.boundlessMoonlight = TRB.Classes.SpellBase:New({
@@ -249,37 +185,10 @@ function TRB.Classes.Druid.BalanceSpells:New()
         moonResourceMod = 3,
         furyResourceMod = 6
     })
-    self.theLightOfElune = TRB.Classes.SpellBase:New({
-        id = 428655,
-        isTalent = true,
-        duration = 3,
-        resourcePerTick = 2.5,
-        hasTicks = true,
-        tickRate = 0.5
-    })
     self.moonGuardian = TRB.Classes.SpellBase:New({
         id = 429520,
         isTalent = true,
         resourceMod = 2
-    })
-
-    -- Keeper of the Grove
-    self.forceOfNature = TRB.Classes.SpellBase:New({
-        id = 205636,
-        isTalent = true,
-        duration = 10,
-        resourcePerTick = 30, -- 10 * 3 treants
-        hasTicks = true,
-        tickRate = 2
-    })
-    self.bounteousBloom = TRB.Classes.SpellBase:New({
-        id = 429215,
-        isTalent = true
-    })
-    self.dreamburst = TRB.Classes.SpellBase:New({
-        id = 433832,
-        talentId = 433831,
-        isTalent = true
     })
     --Set Bonuses
 
@@ -288,20 +197,13 @@ end
 
 
 ---@class TRB.Classes.Druid.FeralSpells : TRB.Classes.SpecializationSpellsBase
----@field public shadowmeld TRB.Classes.SpellBase
----@field public catForm TRB.Classes.SpellBase
----@field public sunfire TRB.Classes.SpellBase
----@field public prowl TRB.Classes.SpellBase
----@field public tigersFury TRB.Classes.SpellBase
 ---@field public clearcasting TRB.Classes.SpellBase
 ---@field public lunarInspiration TRB.Classes.SpellBase
----@field public suddenAmbush TRB.Classes.SpellBase
 ---@field public berserk TRB.Classes.SpellBase
----@field public carnivorousInstinct TRB.Classes.SpellBase
----@field public bloodtalons TRB.Classes.SpellBase
 ---@field public incarnationAvatarOfAshamane TRB.Classes.SpellBase
 ---@field public circleOfLifeAndDeath TRB.Classes.SpellBase
 ---@field public apexPredatorsCraving TRB.Classes.SpellBase
+---@field public empoweredShapeshifting TRB.Classes.SpellBase
 ---@field public rake TRB.Classes.SpellComboPointThreshold
 ---@field public rip TRB.Classes.SpellComboPointThreshold
 ---@field public maim TRB.Classes.SpellComboPointThreshold
@@ -324,17 +226,6 @@ function TRB.Classes.Druid.FeralSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(),  {__index = TRB.Classes.Druid.FeralSpells})
-
-    -- Racial abilities
-    self.shadowmeld = TRB.Classes.SpellBase:New({
-        id = 58984
-    })
-
-    -- Druid Class Baseline Abilities
-    self.catForm = TRB.Classes.SpellBase:New({
-        id = 768,
-        baseline = true
-    })
 
     -- Druid Class Talents
     self.rake = TRB.Classes.SpellComboPointThreshold:New({
@@ -384,13 +275,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         cooldown = 20,
         isTalent = true
     })
-    self.sunfire = TRB.Classes.SpellBase:New({
-        id = 164815,
-        resource = 2,
-        pandemic = true,
-        baseDuration = 13.5,
-        isTalent = true
-    })
 
     -- Feral Spec Baseline Abilities
     self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
@@ -407,11 +291,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         comboPoints = true,
         settingKey = "ferociousBiteMaximum",
         isSnowflake = true
-    })
-    self.prowl = TRB.Classes.SpellBase:New({
-        id = 5215,
-        idIncarnation = 102547,
-        modifier = 1.6
     })
     self.shred = TRB.Classes.SpellComboPointThreshold:New({
         id = 5221,
@@ -431,12 +310,6 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
 
     -- Feral Spec Talents
-    self.tigersFury = TRB.Classes.SpellBase:New({
-        id = 5217,
-        modifier = 1.15,
-        hasCooldown = true,
-        isTalent = true
-    })
     self.clearcasting = TRB.Classes.SpellBase:New({
         id = 135700
     })
@@ -465,10 +338,6 @@ function TRB.Classes.Druid.FeralSpells:New()
             tigersFury = true
         }
     })
-    self.suddenAmbush = TRB.Classes.SpellBase:New({
-        id = 384667,
-        isTalent = true
-    })
     self.berserk = TRB.Classes.SpellBase:New({
         id = 106951,
         castId = 106951,
@@ -490,18 +359,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         hasCooldown = true,
         isClearcasting = true,
         hasCharges = true
-    })
-    self.carnivorousInstinct = TRB.Classes.SpellBase:New({
-        id = 390902,
-        modifierPerStack = 0.06,
-        isTalent = true
-    })
-    self.bloodtalons = TRB.Classes.SpellBase:New({
-        id = 145152,
-        window = 4,
-        isTalent = true,
-        --isSnowflake = true,
-        modifier = 1.25
     })
     self.feralFrenzy = TRB.Classes.SpellComboPointThreshold:New({
         id = 274837,
@@ -540,6 +397,10 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 391882
     })
     -- Druid of the Claw
+    self.empoweredShapeshifting = TRB.Classes.SpellBase:New({
+        id = 441689,
+        isTalent = true
+    })
     self.ravageMinimum = TRB.Classes.SpellComboPointThreshold:New({
         id = 441591,
         buffId = 441585,
@@ -560,10 +421,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         comboPoints = true,
         settingKey = "ravageMaximum",
         isSnowflake = true
-    })
-    self.empoweredShapeshifting = TRB.Classes.SpellBase:New({
-        id = 441689,
-        isTalent = true
     })
     self.frenziedRegeneration = TRB.Classes.SpellThreshold:New({
         id = 22842,
@@ -623,15 +480,6 @@ function TRB.Classes.Druid.GuardianSpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "raze"
     })
-    self.ravage = TRB.Classes.SpellBase:New({--Threshold:New({
-        id = 441583,
-        buffId = 441585,
-        talentId = 441583,
-        isTalent = true,
-        primaryResourceType = Enum.PowerType.Rage,
-        settingKey = "ravage",
-        isSnowflake = true
-    })
     self.berserk = TRB.Classes.SpellBase:New({
         id = 50334,
         castId = 50334,
@@ -650,14 +498,11 @@ end
 
 
 ---@class TRB.Classes.Druid.RestorationSpells : TRB.Classes.Healer.HealerSpells
----@field public moonfire TRB.Classes.SpellBase
----@field public sunfire TRB.Classes.SpellBase
 ---@field public efflorescence TRB.Classes.SpellBase
 ---@field public lifetreading TRB.Classes.SpellBase
 ---@field public lifebloom TRB.Classes.SpellBase
 ---@field public incarnationTreeOfLife TRB.Classes.SpellBase
 ---@field public cenariusGuidance TRB.Classes.SpellBase
----@field public reforestation TRB.Classes.SpellBase
 ---@field public clearcasting TRB.Classes.SpellBase
 TRB.Classes.Druid.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Druid.RestorationSpells.__index = TRB.Classes.Druid.RestorationSpells
@@ -667,23 +512,6 @@ function TRB.Classes.Druid.RestorationSpells:New()
     local base = TRB.Classes.Healer.HealerSpells
     self = setmetatable(base:New(), {__index = TRB.Classes.Druid.RestorationSpells})
 
-    -- Druid Class Baseline Abilities
-    self.moonfire = TRB.Classes.SpellBase:New({
-        id = 164812,
-        resource = 2,
-        pandemic = true,
-        baseDuration = 16
-    })
-
-    -- Druid Class Talents
-    self.sunfire = TRB.Classes.SpellBase:New({
-        id = 164815,
-        isTalent = true,
-        pandemic = true,
-        baseDuration = 12
-    })
-
-    -- Restoration Spec Baseline Abilities
     -- Restoration Spec Talents
     self.efflorescence = TRB.Classes.SpellBase:New({
         id = 145205,
@@ -708,11 +536,6 @@ function TRB.Classes.Druid.RestorationSpells:New()
     })
     self.cenariusGuidance = TRB.Classes.SpellBase:New({
         id = 393371,
-        isTalent = true
-    })
-    self.reforestation = TRB.Classes.SpellBase:New({
-        id = 392360,
-        talentId = 392356,
         isTalent = true
     })
     self.clearcasting = TRB.Classes.SpellBase:New({

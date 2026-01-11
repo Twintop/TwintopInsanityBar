@@ -54,17 +54,13 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.bestialWrath.id] = TRB.Classes.Snapshot:New(spells.bestialWrath)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.callOfTheWild.id] = TRB.Classes.Snapshot:New(spells.callOfTheWild)
+	specCache.beastMastery.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.beastCleave.id] = TRB.Classes.Snapshot:New(spells.beastCleave)
-	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.cobraSting.id] = TRB.Classes.Snapshot:New(spells.cobraSting, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.direBeastHawk.id] = TRB.Classes.Snapshot:New(spells.direBeastHawk)
-	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.deathblow.id] = TRB.Classes.Snapshot:New(spells.deathblow)
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.wildThrash.id] = TRB.Classes.Snapshot:New(spells.wildThrash)
 
@@ -107,15 +103,11 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.steadyFocus.id] = TRB.Classes.Snapshot:New(spells.steadyFocus)
-	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.aimedShot.id] = TRB.Classes.Snapshot:New(spells.aimedShot)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
-	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.deathblow.id] = TRB.Classes.Snapshot:New(spells.deathblow)
 
 	specCache.marksmanship.barTextVariables = {
 		icons = {},
@@ -150,8 +142,6 @@ local function FillSpecializationCache()
 	specCache.survival.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(spells.wildfireBomb)
-	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[spells.tipOfTheSpear.id] = TRB.Classes.Snapshot:New(spells.tipOfTheSpear)
 	---@type TRB.Classes.Snapshot
 	specCache.survival.snapshotData.snapshots[spells.boomstick.id] = TRB.Classes.Snapshot:New(spells.boomstick)
 	
@@ -189,7 +179,6 @@ local function FillSpellData_BeastMastery()
 		{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
 		{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
 		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
-		{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
 	}
 	specCache.beastMastery.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -232,10 +221,9 @@ local function FillSpellData_BeastMastery()
 		{ variable = "$focusMax", description = L["HunterBeastMasteryBarTextVariable_focusMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["HunterBeastMasteryBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$regen", description = L["HunterBeastMasteryBarTextVariable_regen"], printInSettings = true, color = false },
-		{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
-		{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
-		--[[{ variable = "$beastCleaveTime", description = L["HunterBeastMasteryBarTextVariable_beastCleaveTime"], printInSettings = true, color = false },]]
+
+		{ variable = "$beastCleaveTime", description = L["HunterBeastMasteryBarTextVariable_beastCleaveTime"], printInSettings = true, color = false },
+		{ variable = "$bestialWrathTime", description = L["HunterBeastMasteryBarTextVariable_bestialWrathTime"], printInSettings = true, color = false }
 	}
 end
 
@@ -268,8 +256,6 @@ local function FillSpellData_Marksmanship()
 		{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = spells.rapidFire.name, printInSettings = true },
 		{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
 		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
-		{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
-		{ variable = "#steadyFocus", icon = spells.steadyFocus.icon, description = spells.steadyFocus.name, printInSettings = true },
 		{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = spells.steadyShot.name, printInSettings = true },
 		{ variable = "#trueshot", icon = spells.trueshot.icon, description = spells.trueshot.name, printInSettings = true }
 	}
@@ -314,9 +300,6 @@ local function FillSpellData_Marksmanship()
 		{ variable = "$focusMax", description = L["HunterMarksmanshipBarTextVariable_focusMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["HunterMarksmanshipBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$regen", description = L["HunterMarksmanshipBarTextVariable_regen"], printInSettings = true, color = false },
-		{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
-		{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
 
 		{ variable = "$trueshotTime", description = L["HunterMarksmanshipBarTextVariable_trueshotTime"], printInSettings = true, color = false },
 		{ variable = "$lockAndLoadTime", description = L["HunterMarksmanshipBarTextVariable_lockAndLoadTime"], printInSettings = true, color = false },
@@ -346,14 +329,10 @@ local function FillSpellData_Survival()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-		{ variable = "#harpoon", icon = spells.harpoon.icon, description = spells.harpoon.name, printInSettings = true },
 		{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
 		{ variable = "#raptorStrike", icon = spells.raptorStrike.icon, description = spells.raptorStrike.name, printInSettings = true },
 		{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
 		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
-		{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
-		{ variable = "#tipOfTheSpear", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = true },
-		{ variable = "#tots", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = false },
 		{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = spells.wildfireBomb.name, printInSettings = true },
 		{ variable = "#wingClip", icon = spells.wingClip.icon, description = spells.wingClip.name, printInSettings = true },
 
@@ -399,9 +378,6 @@ local function FillSpellData_Survival()
 		{ variable = "$focusMax", description = L["HunterSurvivalBarTextVariable_focusMax"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["HunterSurvivalBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$regen", description = L["HunterSurvivalBarTextVariable_regen"], printInSettings = true, color = false },
-		{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
-		{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
 	}
 end
 
@@ -436,7 +412,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	-- Create thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
@@ -497,16 +473,18 @@ local function RefreshLookupData_BeastMastery()
 	--$casting
 	local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, snapshotData.casting.resourceFinal)
 		
-	--[[--$beastCleaveTime
+	--$beastCleaveTime
 	local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
 	local beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
 
-	if talents:IsTalentActive(spells.bloodFrenzy) and (snapshots[spells.callOfTheWild.id].buff:GetRemainingTime(currentTime)) > (snapshots[spells.beastCleave.id].buff.remaining) then
-		_beastCleaveTime = snapshots[spells.callOfTheWild.id].buff.remaining
-	end
+	beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
 
-	beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)]]
+		
+	--$bestialWrathTime
+	local _bestialWrathTime = snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime)
+	local bestialWrathTime = TRB.Functions.BarText:TimerPrecision(_bestialWrathTime)
 
+	bestialWrathTime = TRB.Functions.BarText:TimerPrecision(_bestialWrathTime)
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -515,7 +493,8 @@ local function RefreshLookupData_BeastMastery()
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$focusMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingFocus
-	--lookup["$beastCleaveTime"] = beastCleaveTime
+	lookup["$beastCleaveTime"] = beastCleaveTime
+	lookup["$bestialWrathTime"] = bestialWrathTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -524,7 +503,8 @@ local function RefreshLookupData_BeastMastery()
 	lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	--lookupLogic["$beastCleaveTime"] = _beastCleaveTime
+	lookupLogic["$beastCleaveTime"] = _beastCleaveTime
+	lookupLogic["$bestialWrathTime"] = _bestialWrathTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -571,21 +551,16 @@ local function RefreshLookupData_Marksmanship()
 	local _trueshotTime = snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
 	local trueshotTime = TRB.Functions.BarText:TimerPrecision(_trueshotTime)
 
-	--[[--$steadyFocusTime
-	local _steadyFocusTime = snapshots[spells.steadyFocus.id].buff:GetRemainingTime(currentTime)
-	local steadyFocusTime = TRB.Functions.BarText:TimerPrecision(_steadyFocusTime)]]
-
 	----------------------------
 
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resource"] = currentFocus
-	lookup["$focus"] = currentFocus	
+	lookup["$focus"] = currentFocus
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$focusMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingFocus
 	lookup["$trueshotTime"] = trueshotTime
-	--lookup["$steadyFocusTime"] = steadyFocusTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -693,9 +668,9 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.bestialWrath.castId then
-				--snapshotData.snapshots[spells.bestialWrath.id].buff:InitializeCustom(spells.bestialWrath.duration, currentTime)
+				snapshotData.snapshots[spells.bestialWrath.id].buff:InitializeCustom(spells.bestialWrath.duration, currentTime)
 			elseif spellId == spells.wildThrash.castId then
-				snapshotData.snapshots[spells.wildThrash.id].cooldown:InitializeCustom(spells.wildThrash.cooldown, currentTime)
+				snapshotData.snapshots[spells.beastCleave.id].buff:InitializeCustom(spells.beastCleave.duration, currentTime)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -758,13 +733,18 @@ local function UpdateDarkRanger()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells|TRB.Classes.Hunter.MarksmanshipSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
-	
-	--snapshots[spells.blackArrow.id].cooldown:Refresh()
 end
 
 local function UpdateSnapshot_BeastMastery()
 	UpdateSnapshot()
 	UpdateDarkRanger()
+	
+	local currentTime = GetTime()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+	---@type table<integer, TRB.Classes.Snapshot>
+	local snapshots = TRB.Data.snapshotData.snapshots
+	
+	snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Marksmanship()
@@ -799,7 +779,7 @@ local function UpdateResourceBar()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.primary) then
 		return
@@ -862,10 +842,7 @@ local function UpdateResourceBar()
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.blackArrow.id and talents:IsTalentActive(spells.blackArrow) then
-							if snapshots[spells.deathblow.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-							elseif isUsable then
+							if isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -875,6 +852,17 @@ local function UpdateResourceBar()
 							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							end
+						elseif spell.id == spells.wailingArrow.id then
+							if not snapshots[spells.bestialWrath.id].buff.isActive then
+								showThreshold = false
+							elseif snapshots[spell.id].cooldown:IsUnusable() then
+								showThreshold = false
 							elseif isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
@@ -922,11 +910,42 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.beastCleave.enabled and TRB.Functions.Class:IsValidVariableForSpec("$beastCleaveTime") then
+				if specSettings.colors.bar.bestialWrath.enabled and snapshotData.snapshots[spells.bestialWrath.id].buff.isActive then
+					local timeLeft = snapshots[spells.bestialWrath.id].buff.remaining
+					local timeThreshold = 0
+					local useEndOfBestialWrathColor = false
+
+					if specSettings.endOfBestialWrath.enabled then
+						useEndOfBestialWrathColor = true
+						if specSettings.endOfBestialWrath.mode == "gcd" then
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							timeThreshold = gcd * specSettings.endOfBestialWrath.gcdsMax
+						elseif specSettings.endOfBestialWrath.mode == "time" then
+							timeThreshold = specSettings.endOfBestialWrath.timeMax
+						end
+					end
+
+					if useEndOfBestialWrathColor and timeLeft <= timeThreshold then
+						barColor = specSettings.colors.bar.bestialWrathEnd.color
+					else
+						barColor = specSettings.colors.bar.bestialWrath.color
+					end
+				end
+
+				if specSettings.colors.bar.beastCleave.enabled and snapshotData.snapshots[spells.beastCleave.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.beastCleave.color
 				end
 
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				if spells.bestialWrath:IsUsable() then
+					if specSettings.colors.bar.flashEnabled then
+						TRB.Functions.Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
+					else
+						barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					end
+				else
+					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				end
+
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
@@ -967,21 +986,6 @@ local function UpdateResourceBar()
 				end
 
 				local barBorderColor = specSettings.colors.bar.border
-
-				if TRB.Data.character.inCombat and specSettings.steadyFocus.enabled and talents:IsTalentActive(spells.steadyFocus) then
-					local timeThreshold = 0
-
-					if specSettings.steadyFocus.mode == "gcd" then
-						local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-						timeThreshold = gcd * specSettings.steadyFocus.gcdsMax
-					elseif specSettings.steadyFocus.mode == "time" then
-						timeThreshold = specSettings.steadyFocus.timeMax
-					end
-
-					if snapshots[spells.steadyFocus.id].buff:GetRemainingTime(currentTime) <= timeThreshold then
-						barBorderColor = specSettings.colors.bar.borderSteadyFocus
-					end
-				end
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
@@ -1039,14 +1043,7 @@ local function UpdateResourceBar()
 								snapshotData.audio.playedAimedShotCue = true
 							end
 						elseif spell.id == spells.killShot.id and not talents:IsTalentActive(spells.blackArrow) then
-							if snapshots[spells.deathblow.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
-									snapshotData.audio.playedKillShotCue = true
-									PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
-								end
-							elseif snapshots[spell.id].cooldown:IsUnusable() then
+							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								snapshotData.audio.playedKillShotCue = false
@@ -1064,14 +1061,7 @@ local function UpdateResourceBar()
 								snapshotData.audio.playedKillShotCue = false
 							end
 						elseif spell.id == spells.blackArrow.id and talents:IsTalentActive(spells.blackArrow) then			
-							if snapshots[spells.deathblow.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUsable() then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-								frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-								if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
-									snapshotData.audio.playedKillShotCue = true
-									PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
-								end
-							elseif snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								snapshotData.audio.playedKillShotCue = false
@@ -1310,7 +1300,6 @@ local function SwitchSpec()
 		lookup["#killCommand"] = spells.killCommand.icon
 		lookup["#revivePet"] = spells.revivePet.icon
 		lookup["#scareBeast"] = spells.scareBeast.icon
-		lookup["#serpentSting"] = spells.serpentSting.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1345,8 +1334,6 @@ local function SwitchSpec()
 		lookup["#rapidFire"] = spells.rapidFire.icon
 		lookup["#revivePet"] = spells.revivePet.icon
 		lookup["#scareBeast"] = spells.scareBeast.icon
-		lookup["#serpentSting"] = spells.serpentSting.icon
-		lookup["#steadyFocus"] = spells.steadyFocus.icon
 		lookup["#steadyShot"] = spells.steadyShot.icon
 		lookup["#trueshot"] = spells.trueshot.icon
 		TRB.Data.lookup = lookup
@@ -1375,14 +1362,10 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.survival.settings)
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#harpoon"] = spells.harpoon.icon
 		lookup["#killCommand"] = spells.killCommand.icon
 		lookup["#raptorStrike"] = spells.raptorStrike.icon
 		lookup["#revivePet"] = spells.revivePet.icon
 		lookup["#scareBeast"] = spells.scareBeast.icon
-		lookup["#serpentSting"] = spells.serpentSting.icon
-		lookup["#tipOfTheSpear"] = spells.tipOfTheSpear.icon
-		lookup["#tots"] = spells.tipOfTheSpear.icon
 		lookup["#wingClip"] = spells.wingClip.icon
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
 		TRB.Data.lookup = lookup
@@ -1575,7 +1558,7 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
@@ -1684,20 +1667,20 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	if TRB.Data.character.specId == 1 then --Beast Mastery		
-		--[[if var == "$beastCleaveTime" then
-			if snapshots[spells.beastCleave.id].buff.isActive or snapshots[spells.callOfTheWild.id].buff.isActive then
+		if var == "$beastCleaveTime" then
+			if snapshots[spells.beastCleave.id].buff.isActive then
 				valid = true
 			end
-		end]]
+		elseif var == "$bestialWrathTime" then
+			if snapshots[spells.bestialWrath.id].buff.isActive then
+				valid = true
+			end
+		end
 	elseif TRB.Data.character.specId == 2 then --Marksmanship
 		if var == "$trueshotTime" then
 			if snapshots[spells.trueshot.id].buff.isActive then
 				valid = true
 			end
-		--[[elseif var == "$steadyFocusTime" then
-			if snapshots[spells.steadyFocus.id].buff.isActive then
-				valid = true
-			end]]
 		end
 	elseif TRB.Data.character.specId == 3 then --Survivial
 	end
@@ -1725,7 +1708,7 @@ end
 ---@return boolean # Is Enabled?
 ---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if not (barGroups and barGroups.primary) then
 		return nil, true, false
 	end

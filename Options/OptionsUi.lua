@@ -397,7 +397,7 @@ end
 ---Gets the primary bar's container frame for use in color picker callbacks
 ---@return Frame|nil
 function TRB.Functions.OptionsUi:GetPrimaryBackdropFrame()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if barGroups and barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then
@@ -411,7 +411,7 @@ end
 ---@return table<number, Frame>
 function TRB.Functions.OptionsUi:GetSecondaryBackdropFrames()
 	local frames = {}
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if barGroups and barGroups.secondary then
 		local nodeCount = barGroups.secondary:GetNodeCount()
 		for i = 1, nodeCount do
@@ -430,7 +430,7 @@ end
 ---Gets the health bar's container frame for use in color picker callbacks
 ---@return Frame|nil
 function TRB.Functions.OptionsUi:GetHealthBackdropFrame()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if barGroups and barGroups.health then
 		local healthNode = barGroups.health:GetNode(1)
 		if healthNode then

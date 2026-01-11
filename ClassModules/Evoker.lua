@@ -382,7 +382,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	-- Construct thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
@@ -722,7 +722,7 @@ end
 local function UpdateEssence(specSettings, specCacheSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	for x = 1, TRB.Data.character.maxResource2 do
 		local cpBorderColor = specSettings.colors.comboPoints.border
@@ -760,7 +760,7 @@ local function UpdateResourceBar()
 	local classSettings = TRB.Data.settings.evoker
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 
 	if TRB.Data.character.maxResource == nil or TRB.Data.character.maxResource2 == nil then
@@ -1252,7 +1252,7 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
@@ -1440,7 +1440,7 @@ end
 ---@return boolean # Is Enabled?
 ---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if relativeToFrame ~= nil then
 		relativeToFrame = string.gsub(relativeToFrame, "_", "")
 	end

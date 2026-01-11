@@ -644,7 +644,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	-- Create thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
@@ -1544,7 +1544,7 @@ local function UpdateResourceBar()
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.primary) then
 		return
@@ -1884,7 +1884,6 @@ local function UpdateResourceBar()
 					else
 						barColor = specSettings.colors.bar.inVoidform
 					end
-
 				elseif spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
 					barColor = specSettings.colors.bar.shadowWordMadnessUsable
 				else
@@ -2353,7 +2352,7 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
@@ -2705,7 +2704,7 @@ end
 ---@return boolean # Is Enabled?
 ---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if relativeToFrame ~= nil then
 		relativeToFrame = string.gsub(relativeToFrame, "_", "")
 	end

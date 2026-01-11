@@ -61,7 +61,7 @@ if locale == "enGB" then
     L["HunterTextColorsHeader"] = "Focus Text Colours"
     L["HunterCheckboxThresholdOverTooltip"] = "This will change the Focus text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
     L["HunterBeastMasteryColorPickerbestialWrath"] = "Border colour when you can use bestial Wrath"
-    L["HunterBeastMasteryCheckboxbestialWrathTooltip"] = "This will change the bar's border colour when bestial Wrath is usable. This takes precedence over Beast Cleave's colour."
+    L["HunterBeastMasteryCheckboxBestialWrathTooltip"] = "This will change the bar's colour when bestial Wrath is usable."
     L["HunterBeastMasteryCheckboxBeastCleaveTooltip"] = "This will change the bar border colour when the Beast Cleave effect is active, either via Beast Cleave it self or Call of the Wild being active with Bloody Frenzy."
     L["HunterMarksmanshipCheckboxEndOfTrueshot"] = "Change bar colour at the end of Trueshot"
     L["HunterMarksmanshipCheckboxEndOfTrueshotTooltip"] = "Changes the bar colour when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."

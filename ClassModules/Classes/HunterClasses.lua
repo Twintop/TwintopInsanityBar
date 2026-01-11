@@ -7,8 +7,6 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Hunter = TRB.Classes.Hunter or {}
 
 ---@class TRB.Classes.Hunter.HunterBaseSpells : TRB.Classes.SpecializationSpellsBase
----@field public concussiveShot TRB.Classes.SpellBase
----@field public serpentSting TRB.Classes.SpellBase
 ---@field public revivePet TRB.Classes.SpellThreshold
 ---@field public wingClip TRB.Classes.SpellThreshold
 ---@field public scareBeast TRB.Classes.SpellThreshold
@@ -36,41 +34,24 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
         settingKey = "wingClip",
         baseline = true
     })
-    self.concussiveShot = TRB.Classes.SpellBase:New({
-        id = 5116,
-        isTalent = true
-    })
     self.scareBeast = TRB.Classes.SpellThreshold:New({
         id = 1513,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "scareBeast",
         isTalent = true
     })
-    self.serpentSting = TRB.Classes.SpellBase:New({
-        id = 271788,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "serpentSting",
-        isTalent = true,
-        baseDuration = 18
-    })
 
     return self
 end
 
 ---@class TRB.Classes.Hunter.BeastMasterySpells : TRB.Classes.Hunter.HunterBaseSpells
----@field public barbedShot TRB.Classes.SpellBase
----@field public savagery TRB.Classes.SpellBase
----@field public cobraSting TRB.Classes.SpellBase
 ---@field public bestialWrath TRB.Classes.SpellBase
----@field public scentOfBlood TRB.Classes.SpellBase
 ---@field public beastCleave TRB.Classes.SpellBase
----@field public callOfTheWild TRB.Classes.SpellBase
----@field public bloodFrenzy TRB.Classes.SpellBase
----@field public deathblow TRB.Classes.SpellBase
 ---@field public cobraShot TRB.Classes.SpellThreshold
 ---@field public killCommand TRB.Classes.SpellThreshold
 ---@field public blackArrow TRB.Classes.SpellThreshold
 ---@field public wildThrash TRB.Classes.SpellThreshold
+---@field public wailingArrow TRB.Classes.SpellThreshold
 ---@field public direBeastHawk TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.BeastMasterySpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
 TRB.Classes.Hunter.BeastMasterySpells.__index = TRB.Classes.Hunter.BeastMasterySpells
@@ -90,59 +71,18 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         killCommandCooldownReduction = 2,
         isTalent = true
     })
-    self.barbedShot = TRB.Classes.SpellBase:New({
-        id = 217200,
-        buffIdList = {
-            246152,
-            246851,
-            246852,
-            246853,
-            246854
-        },
-        resource = 5,
-        ticks = 4,
-        duration = 8,
-        hasCharges = true,
-        hasCooldown = true,
-        isTalent = true
-    })
-    self.savagery = TRB.Classes.SpellBase:New({
-        id = 424557,
-        isTalent = true,
-        duration = 2
-    })
-    self.cobraSting = TRB.Classes.SpellBase:New({
-        id = 392296,
-        isTalent = true
-    })
     self.bestialWrath = TRB.Classes.SpellBase:New({
         id = 19574,
         castId = 19574,
         isTalent = true,
         duration = 15
     })
-    self.scentOfBlood = TRB.Classes.SpellBase:New({
-        id = 193532,
-        isTalent = true
-    })
+
     self.beastCleave = TRB.Classes.SpellBase:New({
         id = 268877,
         talentId = 115939,
-        isTalent = true
-    })
-    self.callOfTheWild = TRB.Classes.SpellBase:New({
-        id = 359844,
-        isTalent = true
-    })
-    self.bloodFrenzy = TRB.Classes.SpellBase:New({
-        id = 407412,
-        isTalent = true
-    })
-    self.deathblow = TRB.Classes.SpellBase:New({
-        id = 378770,
-        talentId = 378769,
         isTalent = true,
-        isBuff = true
+        duration = 8
     })
     self.killCommand = TRB.Classes.SpellThreshold:New({
         id = 34026,
@@ -174,7 +114,19 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         hasCooldown = true,
         isTalent = true,
         isSnowflake = true,
-        baseline = false -- When subTreeActive = true
+        baseline = false
+    })
+    self.wailingDead = TRB.Classes.SpellBase:New({
+        id = 1264290,
+        isTalent = true
+    })
+    self.wailingArrow = TRB.Classes.SpellThreshold:New({
+        id = 392060,
+        talentId = 1264290, -- Use Wailing Dead's talent ID
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "wailingArrow",
+        isTalent = true,
+        isSnowflake = true,
     })
 
     -- PvP
@@ -194,7 +146,6 @@ end
 ---@class TRB.Classes.Hunter.MarksmanshipSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public steadyShot TRB.Classes.SpellBase
 ---@field public rapidFire TRB.Classes.SpellBase
----@field public deathblow TRB.Classes.SpellBase
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public cantMissWontMiss TRB.Classes.SpellBase
 ---@field public lockAndLoad TRB.Classes.SpellBase
@@ -250,18 +201,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         duration = 2, --On cast then every 1/3 sec, hasted
         isTalent = true
     })
-    self.deathblow = TRB.Classes.SpellBase:New({
-        id = 378770,
-        talentId = 378769,
-        isTalent = true,
-        isBuff = true
-    })
-    self.steadyFocus = TRB.Classes.SpellBase:New({
-        id = 193534,
-        talentId = 193533,
-        duration = 15,
-        isTalent = true
-    })
     self.trueshot = TRB.Classes.SpellBase:New({
         id = 288613,
         castId = 288613,
@@ -311,11 +250,7 @@ end
 
 ---@class TRB.Classes.Hunter.SurvivalSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public killCommand TRB.Classes.SpellBase
----@field public guerrillaTactics TRB.Classes.SpellBase
----@field public harpoon TRB.Classes.SpellBase
----@field public tipOfTheSpear TRB.Classes.SpellBase
 ---@field public wildfireBomb TRB.Classes.SpellBase
----@field public quickReload TRB.Classes.SpellBase
 ---@field public boomstick TRB.Classes.SpellThreshold
 ---@field public hatchetToss TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
@@ -349,11 +284,6 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         cooldown = 45
     })
     -- TODO: Implement Boomstick cooldown to also incorporate Lethal Calibration
-    self.quickReload = TRB.Classes.SpellBase:New({
-        id = 1272136,
-        isTalent = true,
-        cooldownMod = -15
-    })
     self.hatchetToss = TRB.Classes.SpellThreshold:New({
         id = 193265,
         primaryResourceType = Enum.PowerType.Focus,
@@ -366,28 +296,12 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         settingKey = "raptorStrike",
         isTalent = true
     })
-    self.guerrillaTactics = TRB.Classes.SpellBase:New({
-        id = 264332,
-        isTalent = true
-    })
     self.wildfireBomb = TRB.Classes.SpellThreshold:New({
         id = 259495,
         isTalent = true,
         hasCharges = true,
         hasCooldown = true
     })
-    self.harpoon = TRB.Classes.SpellBase:New({
-        id = 190925,
-        isTalent = true
-    })
-    self.tipOfTheSpear = TRB.Classes.SpellBase:New({
-        id = 260286,
-        talentId = 260285,
-        isTalent = true
-    })
-    self.serpentSting.id = 259491
-    self.serpentSting.talentId = 268501
-    self.serpentSting.baseDuration = 12
 
     return self
 end

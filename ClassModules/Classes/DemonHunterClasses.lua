@@ -9,18 +9,7 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@class TRB.Classes.DemonHunter.HavocSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public demonic TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
----@field public burningHatred TRB.Classes.SpellBase
----@field public felfireHeart TRB.Classes.SpellBase
 ---@field public blindFury TRB.Classes.SpellBase
----@field public unboundChaos TRB.Classes.SpellBase
----@field public tacticalRetreat TRB.Classes.SpellBase
----@field public chaosTheory TRB.Classes.SpellBase
----@field public artOfTheGlaive TRB.Classes.SpellBase
----@field public glaiveFlurry TRB.Classes.SpellBase
----@field public rendingStrike TRB.Classes.SpellBase
----@field public studentOfSuffering TRB.Classes.SpellBase
----@field public warbladesHunger TRB.Classes.SpellBase
----@field public illidansGrasp TRB.Classes.SpellBase
 ---@field public throwGlaive TRB.Classes.SpellThreshold
 ---@field public bladeDance TRB.Classes.SpellThreshold
 ---@field public chaosStrike TRB.Classes.SpellThreshold
@@ -125,21 +114,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		isTalent = true,
 		rangeCheck = false
 	})
-	self.burningHatred = TRB.Classes.SpellBase:New({
-		id = 258922,
-		talentId = 320374,
-		resourcePerTick = 4,
-		tickRate = 1,
-		hasTicks = true,
-		duration = 12,
-		isTalent = true
-	})
-	self.felfireHeart = TRB.Classes.SpellBase:New({ --TODO: figure out how this plays with Burning Hatred
-		id = 388109,
-		duration = 4, -- These don't match what's seen on the PTR, should be 2,
-		ticks = 4, --2,
-		isTalent = true
-	})
 	self.blindFury = TRB.Classes.SpellBase:New({
 		id = 203550,
 		tickRate = 0.1,
@@ -156,20 +130,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		isTalent = true,
 		rangeCheck = false
 	})
-	self.unboundChaos = TRB.Classes.SpellBase:New({
-		id = 347462,
-		duration = 20
-	})
-	self.tacticalRetreat = TRB.Classes.SpellBase:New({
-		id = 389890,
-		resourcePerTick = 8,
-		tickRate = 1,
-		hasTicks = true,
-		isTalent = true
-	})
-	self.chaosTheory = TRB.Classes.SpellBase:New({
-		id = 390195
-	})
 	self.felBarrage = TRB.Classes.SpellThreshold:New({
 		id = 258925,
 		primaryResourceType = Enum.PowerType.Fury,
@@ -180,43 +140,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		rangeCheck = false
 	})
 
-	-- Aldrachi Reaver
-	self.artOfTheGlaive = TRB.Classes.SpellBase:New({
-		id = 444661,
-		buffId = 444661,
-		talentId = 442290,
-		isTalent = true
-	})
-	self.glaiveFlurry = TRB.Classes.SpellBase:New({
-		id = 442435
-	})
-	self.rendingStrike = TRB.Classes.SpellBase:New({
-		id = 442442
-	})
-	self.warbladesHunger = TRB.Classes.SpellBase:New({
-		id = 442503,
-		talentId = 442502,
-		isTalent = true,
-		isBuff = true
-	})
-
-	-- Fel-Scarred
-	self.studentOfSuffering = TRB.Classes.SpellBase:New({
-		id = 453239,
-		buffId = 453239,
-		talentId = 452412,
-		isTalent = true,
-		resourcePerTick = 5,
-		tickRate = 2,
-		hasTicks = true
-	})
-
-	--PVP
-	self.illidansGrasp = TRB.Classes.SpellBase:New({
-		id = 205630,
-		isPvp = true
-	})
-
 	return self
 end
 
@@ -225,12 +148,6 @@ end
 ---@field public soulFragments TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
 ---@field public vengefulBeast TRB.Classes.SpellBase
----@field public soulFurnace TRB.Classes.SpellBase
----@field public artOfTheGlaive TRB.Classes.SpellBase
----@field public glaiveFlurry TRB.Classes.SpellBase
----@field public rendingStrike TRB.Classes.SpellBase
----@field public studentOfSuffering TRB.Classes.SpellBase
----@field public warbladesHunger TRB.Classes.SpellBase
 ---@field public soulCleave TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public felDevastation TRB.Classes.SpellThreshold
@@ -302,41 +219,6 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 		isTalent = true,
 		isSnowflake = true,
 		rangeCheck = false
-	})
-	self.soulFurnace = TRB.Classes.SpellBase:New({
-		id = 391172,
-		isTalent = true
-	})
-
-	-- Aldrachi Reaver
-	self.artOfTheGlaive = TRB.Classes.SpellBase:New({
-		id = 444661,
-		buffId = 444661,
-		talentId = 442290,
-		isTalent = true
-	})
-	self.glaiveFlurry = TRB.Classes.SpellBase:New({
-		id = 442435
-	})
-	self.rendingStrike = TRB.Classes.SpellBase:New({
-		id = 442442
-	})
-	self.warbladesHunger = TRB.Classes.SpellBase:New({
-		id = 442503,
-		talentId = 442502,
-		isTalent = true,
-		isBuff = true
-	})
-
-	-- Fel-Scarred
-	self.studentOfSuffering = TRB.Classes.SpellBase:New({
-		id = 453239,
-		buffId = 453239,
-		talentId = 452412,
-		isTalent = true,
-		resourcePerTick = 5,
-		tickRate = 2,
-		hasTicks = true
 	})
 
 	return self

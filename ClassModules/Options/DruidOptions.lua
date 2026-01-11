@@ -1097,7 +1097,7 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.starfall.enabled = self:GetChecked()
 
-		local barGroups = TRB.Frames.barGroups
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 		if barGroups and barGroups.primary then
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
@@ -1123,7 +1123,7 @@ local function BalanceConstructThresholdPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.starsurge.enabled = self:GetChecked()
 
-		local barGroups = TRB.Frames.barGroups
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 		if barGroups and barGroups.primary then
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then

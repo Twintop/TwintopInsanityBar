@@ -117,14 +117,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.clearcasting.id] = TRB.Classes.Snapshot:New(spells.clearcasting)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.tigersFury.id] = TRB.Classes.Snapshot:New(spells.tigersFury)
-	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.shadowmeld.id] = TRB.Classes.Snapshot:New(spells.shadowmeld, nil, "always")
-	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.prowl.id] = TRB.Classes.Snapshot:New(spells.prowl, nil, "always")
-	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.suddenAmbush.id] = TRB.Classes.Snapshot:New(spells.suddenAmbush)
-	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.berserk.id] = TRB.Classes.Snapshot:New(spells.berserk, {
 		lastTick = nil,
 		nextTick = nil,
@@ -133,8 +125,6 @@ local function FillSpecializationCache()
 	})
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id] = TRB.Classes.Snapshot:New(spells.incarnationAvatarOfAshamane)
-	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.bloodtalons.id] = TRB.Classes.Snapshot:New(spells.bloodtalons)
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.apexPredatorsCraving.id] = TRB.Classes.Snapshot:New(spells.apexPredatorsCraving)
 	-- Druid of the Claw
@@ -243,10 +233,6 @@ local function FillSpellData_Balance()
 		
 		{ variable = "#starsurge", icon = spells.starsurge.icon, description = spells.starsurge.name, printInSettings = true },
 		{ variable = "#starfall", icon = spells.fullMoon.icon, description = spells.fullMoon.name, printInSettings = true },
-		{ variable = "#starweaver", icon = string.format(L["DruidBalanceIcon_starweaver"], spells.starweaversWarp.icon, spells.starweaversWeft.icon), description = L["DruidBalanceIconDescription_starweaver"], printInSettings = true },
-		{ variable = "#starweaversWarp", icon = spells.starweaversWarp.icon, description = spells.starweaversWarp.name, printInSettings = true },
-		{ variable = "#starweaversWeft", icon = spells.starweaversWeft.icon, description = spells.starweaversWeft.name, printInSettings = true },
-		{ variable = "#starlord", icon = spells.starlord.icon, description = spells.starlord.name, printInSettings = true},
 
 		{ variable = "#eclipse", icon = string.format(L["DruidBalanceIcon_eclipse"], spells.incarnationChosenOfElune.icon, spells.celestialAlignment.icon, spells.eclipseSolar.icon, spells.eclipseLunar.icon), description = L["DruidBalanceIconDescription_eclipse"], printInSettings = true },
 		{ variable = "#celestialAlignment", icon = spells.celestialAlignment.icon, description = spells.celestialAlignment.name, printInSettings = true },			
@@ -261,21 +247,9 @@ local function FillSpellData_Balance()
 		{ variable = "#eclipseLunar", icon = spells.eclipseLunar.icon, description = spells.eclipseLunar.name, printInSettings = false },
 		{ variable = "#lunarEclipse", icon = spells.eclipseLunar.icon, description = spells.eclipseLunar.name, printInSettings = false },
 		
-		{ variable = "#naturesBalance", icon = spells.naturesBalance.icon, description = spells.naturesBalance.name, printInSettings = true },
-		
 		{ variable = "#soulOfTheForest", icon = spells.soulOfTheForest.icon, description = spells.soulOfTheForest.name, printInSettings = true },
 		
 		{ variable = "#stellarFlare", icon = spells.stellarFlare.icon, description = spells.stellarFlare.name, printInSettings = true },
-
-		{ variable = "#foe", icon = spells.furyOfElune.icon, description = spells.furyOfElune.name, printInSettings = false },
-		{ variable = "#furyOfElune", icon = spells.furyOfElune.icon, description = spells.furyOfElune.name, printInSettings = true },
-		
-		{ variable = "#sunderedFirmament", icon = spells.sunderedFirmament.icon, description = spells.sunderedFirmament.name, printInSettings = true },
-		
-		{ variable = "#bb", icon = spells.bounteousBloom.icon, description = spells.bounteousBloom.name, printInSettings = true },
-		{ variable = "#bounteousBloom", icon = spells.bounteousBloom.icon, description = spells.bounteousBloom.name, printInSettings = false },
-
-		{ variable = "#dreamburst", icon = spells.dreamburst.icon, description = spells.dreamburst.name, printInSettings = true},
 
 		{ variable = "#newMoon", icon = spells.newMoon.icon, description = spells.newMoon.name, printInSettings = true },
 		{ variable = "#halfMoon", icon = spells.halfMoon.icon, description = spells.halfMoon.name, printInSettings = true },
@@ -364,10 +338,7 @@ local function FillSpellData_Feral()
 
 		{ variable = "#apexPredatorsCraving", icon = spells.apexPredatorsCraving.icon, description = spells.apexPredatorsCraving.name, printInSettings = true },
 		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
-		{ variable = "#bloodtalons", icon = spells.bloodtalons.icon, description = spells.bloodtalons.name, printInSettings = true },
 		{ variable = "#brutalSlash", icon = spells.brutalSlash.icon, description = spells.brutalSlash.name, printInSettings = true },
-		{ variable = "#carnivorousInstinct", icon = spells.carnivorousInstinct.icon, description = spells.carnivorousInstinct.name, printInSettings = true },
-		{ variable = "#catForm", icon = spells.catForm.icon, description = spells.catForm.name, printInSettings = true },
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
 		{ variable = "#ferociousBite", icon = spells.ferociousBiteMinimum.icon, description = spells.ferociousBiteMinimum.name, printInSettings = true },
@@ -377,16 +348,11 @@ local function FillSpellData_Feral()
 		{ variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
 		{ variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
 		{ variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
-		{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
-		{ variable = "#stealth", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = false },
 		{ variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
 		{ variable = "#ravage", icon = spells.ravageMinimum.icon, description = spells.ravageMinimum.name, printInSettings = true },
 		{ variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
-		{ variable = "#shadowmeld", icon = spells.shadowmeld.icon, description = spells.shadowmeld.name, printInSettings = true },
 		{ variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
-		{ variable = "#suddenAmbush", icon = spells.suddenAmbush.icon, description = spells.suddenAmbush.name, printInSettings = true },
 		{ variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
-		{ variable = "#tigersFury", icon = spells.tigersFury.icon, description = spells.tigersFury.name, printInSettings = true },
 	}
 	specCache.feral.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -534,7 +500,6 @@ local function FillSpellData_Restoration()
 		{ variable = "#efflorescence", icon = spells.efflorescence.icon, description = spells.efflorescence.name, printInSettings = true },
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#incarnation", icon = spells.incarnationTreeOfLife.icon, description = spells.incarnationTreeOfLife.name, printInSettings = true },
-		{ variable = "#reforestation", icon = spells.reforestation.icon, description = spells.reforestation.name, printInSettings = true },
 	}
 	specCache.restoration.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -639,7 +604,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	-- Feral uses secondary bar (Combo Points). maxResource2 must already be populated
 	-- by the snapshot pipeline (EventRegistration -> UpdateResourceValues) before this runs.
@@ -1311,7 +1276,7 @@ local function UpdateResourceBar()
 	local classSettings = TRB.Data.settings.druid
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.primary) then
 		return
@@ -1374,17 +1339,12 @@ local function UpdateResourceBar()
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
 					local isUsable = spell:IsUsable()
-						
-					local astralCommunionOffset = 0
-					--[[if snapshotData.snapshots[spells.astralCommunion.id].buff.isActive then
-						astralCommunionOffset = -spells.astralCommunion.attributes.resourceMod
-					end]]
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.settingKey == spells.starsurge.settingKey then
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif isUsable then-- snapshots[spells.starweaversWeft.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive or currentResource >= spells.starsurge:GetPrimaryResourceCost() then
+							elseif isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -1392,7 +1352,7 @@ local function UpdateResourceBar()
 							end
 							
 							if showThreshold then
-								if isUsable --[[(snapshots[spells.starweaversWeft.id].buff.isActive or snapshots[spells.touchTheCosmos.id].buff.isActive)]] and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
+								if isUsable and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
 									snapshotData.audio.playedstarweaverCue = true
 									snapshotData.audio.playedSfCue = true
 									PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
@@ -1405,14 +1365,14 @@ local function UpdateResourceBar()
 								snapshotData.audio.playedstarweaverCue = false
 							end
 						elseif spell.settingKey == spells.starsurge2.settingKey then
-							if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then--and aboveCounts < 2 then
+							if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then
 								showThreshold = false
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						elseif spell.settingKey == spells.starsurge3.settingKey then
-							if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then-- and aboveCounts < 3 then
+							if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then
 								showThreshold = false
 							else
 								thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2091,21 +2051,11 @@ local function SwitchSpec()
 		lookup["#lunar"] = spells.eclipseLunar.icon
 		lookup["#eclipseLunar"] = spells.eclipseLunar.icon
 		lookup["#lunarEclipse"] = spells.eclipseLunar.icon
-		lookup["#naturesBalance"] = spells.naturesBalance.icon
 		lookup["#soulOfTheForest"] = spells.soulOfTheForest.icon
-		lookup["#foe"] = spells.furyOfElune.icon
-		lookup["#furyOfElune"] = spells.furyOfElune.icon
-		lookup["#sunderedFirmament"] = spells.sunderedFirmament.icon
 		lookup["#stellarFlare"] = spells.stellarFlare.icon
 		lookup["#newMoon"] = spells.newMoon.icon
 		lookup["#halfMoon"] = spells.halfMoon.icon
 		lookup["#fullMoon"] = spells.fullMoon.icon
-		lookup["#starweaversWarp"] = spells.starweaversWarp.icon
-		lookup["#starweaversWeft"] = spells.starweaversWeft.icon
-		lookup["#starlord"] = spells.starlord.icon
-		lookup["#bb"] = spells.bounteousBloom.icon
-		lookup["#bounteousBloom"] = spells.bounteousBloom.icon
-		lookup["#dreamburst"] = spells.dreamburst.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2135,10 +2085,7 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
 		lookup["#berserk"] = spells.berserk.icon
-		lookup["#bloodtalons"] = spells.bloodtalons.icon
 		lookup["#brutalSlash"] = spells.brutalSlash.icon
-		lookup["#carnivorousInstinct"] = spells.carnivorousInstinct.icon
-		lookup["#catForm"] = spells.catForm.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
 		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
 		lookup["#ferociousBite"] = spells.ferociousBiteMinimum.icon
@@ -2148,16 +2095,11 @@ local function SwitchSpec()
 		lookup["#maim"] = spells.maim.icon
 		lookup["#moonfire"] = spells.moonfire.icon
 		lookup["#primalWrath"] = spells.primalWrath.icon
-		lookup["#prowl"] = spells.prowl.icon
-		lookup["#stealth"] = spells.prowl.icon
 		lookup["#rake"] = spells.rake.icon
 		lookup["#ravage"] = spells.ravageMinimum.icon
 		lookup["#rip"] = spells.rip.icon
-		lookup["#shadowmeld"] = spells.shadowmeld.icon
 		lookup["#shred"] = spells.shred.icon
-		lookup["#suddenAmbush"] = spells.suddenAmbush.icon
 		lookup["#swipe"] = spells.swipe.icon
-		lookup["#tigersFury"] = spells.tigersFury.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2214,7 +2156,6 @@ local function SwitchSpec()
 		lookup["#efflorescence"] = spells.efflorescence.icon
 		lookup["#incarnation"] = spells.incarnationTreeOfLife.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
-		lookup["#reforestation"] = spells.reforestation.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2381,7 +2322,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "druid"
 
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "balance"
@@ -2507,7 +2448,7 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 or TRB.Data.character.specId == 4 then
 		local sharedSettings
@@ -2803,7 +2744,7 @@ end
 ---@return boolean # Is Enabled?
 ---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if not (barGroups and barGroups.primary) then
 		return nil, true, false
 	end

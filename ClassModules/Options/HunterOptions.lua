@@ -26,6 +26,56 @@ local function BeastMasteryLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$bestialWrathTime}[#bestialWrath$bestialWrathTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$bestialWrathTime}[#bestialWrath$bestialWrathTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		})
+	end
+
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
@@ -67,7 +117,10 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				blackArrow = {
 					enabled = true,
 				},
-				wildThrash = { -- New
+				wildThrash = {
+					enabled = true,
+				},
+				wailingArrow = {
 					enabled = true,
 				},
 				direBeastHawk = {
@@ -84,6 +137,12 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 			secondary = "combat",
 			health = "combat",
 			dragonriding = true
+		},
+		endOfBestialWrath = {
+			enabled=true,
+			mode="gcd",
+			gcdsMax=2,
+			timeMax=3.0
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -108,16 +167,21 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 			},
 			bar = {
 				border="FFAB5124",
-				borderbestialWrath="FF005500",
 				background="66000000",
 				base="FFFF8040",
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
-				bestialWrathEnabled=true,
 				beastCleave = {
 					color = "FF77FF77",
 					enabled = true
+				},
+				bestialWrath = {
+					color = "FF005500",
+					enabled = true
+				},
+				bestialWrathEnd = {
+					color = "FFFF0000"
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -266,12 +330,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 			gcdsMax=2,
 			timeMax=3.0
 		},
-		steadyFocus = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=3,
-			timeMax=4.5
-		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
@@ -295,7 +353,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 			},
 			bar = {
 				border="FFAB5124",
-				borderSteadyFocus="FFFFFF00",
 				background="66000000",
 				base="FFFF8040",
 				trueshot="FF00B60E",
@@ -645,24 +702,44 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", true, L["HunterBeastMasterybestialWrath"], L["HunterBeastMasterybestialWrath"], false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", true, L["HunterBeastMasteryBestialWrath"], L["HunterBeastMasteryBestialWrath"], false, nil, true)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
+	
+	yCoord = yCoord - 30
+	controls.checkBoxes.bestialWrathBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Border_Option_bestialWrathChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.bestialWrathBorderChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBestialWrath"])
+	f.tooltip = L["HunterBeastMasteryCheckboxBestialWrathTooltip"]
+	f:SetChecked(spec.colors.bar.bestialWrath.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.bestialWrath.enabled = self:GetChecked()
+	end)
 
-	--[[yCoord = yCoord - 30
-	controls.colors.frenzyUse = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBarbedShotUse"], spec.colors.bar.frenzyUse, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.frenzyUse
+	controls.colors.borderBestialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBestialWrath"], spec.colors.bar.bestialWrath.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.borderBestialWrath
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "frenzyUse")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "bestialWrath")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.frenzyHold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBarbedShotHold"], spec.colors.bar.frenzyHold, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.frenzyHold
+	controls.checkBoxes.endOfBestialWrath = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Bar_Option_bestialWrathColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.endOfBestialWrath
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBestialWrathEnd"])
+	f.tooltip = L["HunterBeastMasteryCheckboxBestialWrathEndTooltip"]
+	f:SetChecked(spec.endOfBestialWrath.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.endOfBestialWrath.enabled = self:GetChecked()
+	end)
+
+	controls.colors.bestialWrathEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBestialWrathEnd"], spec.colors.bar.bestialWrathEnd.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.bestialWrathEnd
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "frenzyHold")
-	end)]]
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "bestialWrathEnd")
+	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -673,23 +750,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, false)
-	
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.bestialWrathBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Border_Option_bestialWrathChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.bestialWrathBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxbestialWrath"])
-	f.tooltip = L["HunterBeastMasteryCheckboxbestialWrathTooltip"]
-	f:SetChecked(spec.colors.bar.bestialWrathEnabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.bestialWrathEnabled = self:GetChecked()
-	end)
-
-	controls.colors.borderbestialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerbestialWrath"], spec.colors.bar.borderbestialWrath, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.borderbestialWrath
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderbestialWrath")
-	end)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.beastCleaveBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Border_Option_beastCleaveChange", parent, "ChatConfigCheckButtonTemplate")
@@ -706,11 +766,65 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.beastCleave
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "beastCleave")
-	end)]]
+	end)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 1, yCoord)
 
+
+	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterBeastMasteryHeaderEndOfBestialWrathConfiguration"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+
+	controls.checkBoxes.endOfBestialWrathModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_endOfBestialWrath_modeGCDs", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfBestialWrathModeGCDs
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBestialWrathGcds"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.endOfBestialWrath.mode == "gcd" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfBestialWrathModeGCDs:SetChecked(true)
+		controls.checkBoxes.endOfBestialWrathModeTime:SetChecked(false)
+		spec.endOfBestialWrath.mode = "gcd"
+	end)
+
+	title = L["HunterBeastMasteryBestialWrathGcds"]
+	controls.endOfBestialWrathGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfBestialWrath.gcdsMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfBestialWrathGCDs:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.endOfBestialWrath.gcdsMax = value
+	end)
+
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.endOfBestialWrathModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_endOfBestialWrath_modeTime", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfBestialWrathModeTime
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBestialWrathTime"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.endOfBestialWrath.mode == "time" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfBestialWrathModeGCDs:SetChecked(false)
+		controls.checkBoxes.endOfBestialWrathModeTime:SetChecked(true)
+		spec.endOfBestialWrath.mode = "time"
+	end)
+
+	title = L["HunterBeastMasteryBestialWrathTime"]
+	controls.endOfBestialWrathTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfBestialWrath.timeMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfBestialWrathTime:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.endOfBestialWrath.timeMax = value
+	end)
+	
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
 end
@@ -771,6 +885,17 @@ local function BeastMasteryConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.killCommand.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.killCommand.enabled = self:GetChecked()
+	end)
+	
+	yCoord = yCoord - 25
+	controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.wailingArrowThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxWailingArrow"])
+	f.tooltip = L["HunterBeastMasteryThresholdCheckboxWailingArrowTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.wailingArrow.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.wailingArrow.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -920,7 +1045,7 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "beastCleaveDown", spec, classId, specId, yCoord, L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"], L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "beastCleaveDown", spec, classId, specId, yCoord, L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"], L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"])
 end
 
 local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
@@ -1003,29 +1128,19 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
 
 	tabsheets[1]:Show()
@@ -1042,7 +1157,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	BeastMasteryConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	BeastMasteryConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	BeastMasteryConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--BeastMasteryConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	BeastMasteryConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	BeastMasteryConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	BeastMasteryConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1214,23 +1329,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, false)
 
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.steadyFocus = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.steadyFocus
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxSteadyFocus"])
-	f.tooltip = L["HunterMarksmanshipCheckboxSteadyFocusTooltip"]
-	f:SetChecked(spec.steadyFocus.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.steadyFocus.enabled = self:GetChecked()
-	end)
-	
-	controls.colors.borderSteadyFocus = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerSteadyFocus"], spec.colors.bar.borderSteadyFocus, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.borderSteadyFocus
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderSteadyFocus")
-	end)]]
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 2, yCoord)
 
@@ -1285,57 +1383,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 		self.EditBox:SetText(value)
 		spec.endOfTrueshot.timeMax = value
 	end)
-
-	--[[yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterMarksmanshipHeaderSteadyFocusExpiration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.steadyFocusModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.steadyFocusModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxSteadyFocusGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.steadyFocus.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.steadyFocusModeGCDs:SetChecked(true)
-		controls.checkBoxes.steadyFocusModeTime:SetChecked(false)
-		spec.steadyFocus.mode = "gcd"
-	end)
-
-	title = L["HunterMarksmanshipSteadyFocusGcds"]
-	controls.steadyFocusGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 30, spec.steadyFocus.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.steadyFocusGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.steadyFocus.gcdsMax = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.steadyFocusModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.steadyFocusModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxSteadyFocusTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.steadyFocus.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.steadyFocusModeGCDs:SetChecked(false)
-		controls.checkBoxes.steadyFocusModeTime:SetChecked(true)
-		spec.steadyFocus.mode = "time"
-	end)
-
-	title = L["HunterMarksmanshipSteadyFocusTime"]
-	controls.steadyFocusTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.steadyFocus.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.steadyFocusTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.steadyFocus.timeMax = value
-	end)]]
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 1, MARKSMANSHIP_MAX_FOCUS)

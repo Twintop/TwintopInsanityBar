@@ -316,7 +316,7 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 	local settings = TRB.Data.specCache[TRB.Data.barConstructedForSpec].settings
 
 	-- Try BarGroups system first (new OOP system)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if barGroups then
 		-- Redraw primary bar thresholds
 		if barGroups.primary then

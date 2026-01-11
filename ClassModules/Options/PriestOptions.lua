@@ -433,13 +433,6 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 		bars = {
 			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
 		},
-		mindbender={ --TODO: Rename this shadowfiend to be consistent with Discipline and Holy
-			mode="gcd",
-			swingsMax=4,
-			gcdsMax=2,
-			timeMax=3.0,
-			enabled=true
-		},
 		endOfVoidform = {
 			enabled=true,
 			mode="gcd",

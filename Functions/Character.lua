@@ -24,7 +24,7 @@ TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.l
 --TODO: Move this somewhere else.
 --This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
 function TRB.Functions.Class:HideResourceBar(force)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if barGroups then
 		if barGroups.primary then
 			barGroups.primary:Hide()
@@ -902,7 +902,7 @@ function TRB.Functions.Character:EventRegistration()
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.specSupported then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]

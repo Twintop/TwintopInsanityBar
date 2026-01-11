@@ -355,7 +355,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	-- Arcane uses secondary bar (Arcane Charges). maxResource2 must already be populated
 	-- by the snapshot pipeline (EventRegistration -> UpdateResourceValues) before this runs.
@@ -636,7 +636,7 @@ local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.mage
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.primary) then
 		return
@@ -1036,7 +1036,7 @@ function TRB.Functions.Class:CheckCharacter()
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-				local barGroups = TRB.Frames.barGroups
+				local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 				if barGroups and barGroups.secondary then
 					barGroups.secondary:Show()
 					TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
@@ -1055,7 +1055,7 @@ function TRB.Functions.Class:CheckCharacter()
 	-- If maxResource2 was previously unset and we just initialized it (or it changed),
 	-- ensure the secondary group is laid out/styled immediately for Arcane.
 	if TRB.Data.character.specId == 1 and sharedSettings ~= nil and oldMaxResource2 ~= TRB.Data.character.maxResource2 then
-		local barGroups = TRB.Frames.barGroups
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 		if barGroups and barGroups.secondary then
 			barGroups.secondary:Show()
 			TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
@@ -1093,7 +1093,7 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
@@ -1264,7 +1264,7 @@ end
 ---@return boolean # Is Enabled?
 ---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if not (barGroups and barGroups.primary) then
 		return nil, true, false
 	end

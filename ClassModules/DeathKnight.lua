@@ -456,7 +456,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	-- Construct thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
@@ -844,7 +844,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
 	local runes = TRB.Data.character.runes
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	
 	for x = 1, TRB.Data.character.maxResource2 do
 		local rune = runes[x]
@@ -876,7 +876,7 @@ local function UpdateResourceBar()
 	local classSettings = TRB.Data.settings.deathknight
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.primary) then
 		return
@@ -1329,7 +1329,7 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						TwintopInsanityBarSettings.deathknight.frost.displayText == nil then
 						settings.deathknight.frost.displayText.barText = TRB.Options.DeathKnight.FrostLoadDefaultBarTextSettings()
 					end 
-					
+
 					if TwintopInsanityBarSettings.deathknight == nil or
 						TwintopInsanityBarSettings.deathknight.unholy == nil or
 						TwintopInsanityBarSettings.deathknight.unholy.displayText == nil then
@@ -1427,7 +1427,7 @@ function TRB.Functions.Class:CheckCharacter()
 	end
 
 	if sharedSettings ~= nil then
-		local barGroups = TRB.Frames.barGroups
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 		if barGroups and barGroups.secondary then
 			barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
 		end
@@ -1463,7 +1463,7 @@ end
 function TRB.Functions.Class:HideResourceBar(force)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
@@ -1675,7 +1675,7 @@ end
 ---@return boolean # Is Enabled?
 ---@return boolean # Is Visible?
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local barGroups = TRB.Frames.barGroups
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if relativeToFrame ~= nil then
 		relativeToFrame = string.gsub(relativeToFrame, "_", "")
 	end
