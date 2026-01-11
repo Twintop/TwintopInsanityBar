@@ -1488,6 +1488,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.monk ~= true then
+						TRB.Data.settings.monk.brewmaster.displayText.barText = TRB.Options.Monk.BrewmasterLoadDefaultBarTextSettings()
+						TRB.Data.settings.monk.mistweaver.displayText.barText = TRB.Options.Monk.MistweaverLoadDefaultBarTextSettings()
+						TRB.Data.settings.monk.windwalker.displayText.barText = TRB.Options.Monk.WindwalkerLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.monk = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Monk"])
+					end
 				else
 					local settings = TRB.Options.Monk.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

@@ -1611,3 +1611,5 @@ L["HunterBeastMasteryThresholdCheckboxWailingArrow"] = "Wailing Arrow"
 L["HunterBeastMasteryThresholdCheckboxWailingArrowTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only shown if Wailing Dead is talented and Bestial Wrath has been used."
 L["HunterMarksmanshipThresholdCheckboxWailingArrow"] = "Wailing Arrow"
 L["HunterMarksmanshipThresholdCheckboxWailingArrowTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only shown if Wailing Dead is talented and Bestial Wrath has been used."
+
+L["MidnightBarTextResetMessage"] = "TRB: Due to extensive changes in bar text from The War Within to Midnight, %s bar text settings have been reset to default values."

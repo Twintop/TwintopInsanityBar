@@ -1425,6 +1425,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.shaman ~= true then
+						TRB.Data.settings.shaman.elemental.displayText.barText = TRB.Options.Shaman.ElementalLoadDefaultBarTextSettings()
+						TRB.Data.settings.shaman.enhancement.displayText.barText = TRB.Options.Shaman.EnhancementLoadDefaultBarTextSettings()
+						TRB.Data.settings.shaman.restoration.displayText.barText = TRB.Options.Shaman.RestorationLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.shaman = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Shaman"])
+					end
 				else
 					local settings = TRB.Options.Shaman.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

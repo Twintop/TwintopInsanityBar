@@ -1463,6 +1463,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.hunter ~= true then
+						TRB.Data.settings.hunter.beastMastery.displayText.barText = TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSettings()
+						TRB.Data.settings.hunter.marksmanship.displayText.barText = TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSettings()
+						TRB.Data.settings.hunter.survival.displayText.barText = TRB.Options.Hunter.SurvivalLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.hunter = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Hunter"])
+					end
 				else
 					local settings = TRB.Options.Hunter.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

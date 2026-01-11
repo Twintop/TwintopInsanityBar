@@ -24,9 +24,26 @@ end
 
 ---Loads the default settings structure
 ---@param classic boolean?
----@return TRB.Classes.Settings.Core
+---@return table
 function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	local settings = {
+		manualUpdateChecks = {
+			midnightBarTextReset = {
+				deathknight = false,
+				demonhunter = false,
+				druid = false,
+				evoker = false,
+				hunter = false,
+				mage = false,
+				monk = false,
+				paladin = false,
+				priest = false,
+				rogue = false,
+				shaman = false,
+				warlock = false,
+				warrior = false
+			}
+		},
 		core = {
 			dataRefreshRate = 5.0,
 			reactionTime = 0.1,
@@ -600,7 +617,8 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 	local newSettings = {}
 	if oldSettings ~= nil then
 		for k, v in pairs(oldSettings) do
-			if  k == "core" or
+			if  k == "manualUpdateChecks" or
+				k == "core" or
 				k == "deathknight" or
 				k == "demonhunter" or
 				k == "druid" or
@@ -1266,4 +1284,10 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 	end
 
 	return textSettings
+end
+
+---Shows a message in chat informing the user that their bar text has been reset due to Midnight changes.
+---@param className string
+function TRB.Functions.Settings:ShowMidnightBarTextResetMessage(className)
+	print(string.format(L["MidnightBarTextResetMessage"], className))
 end

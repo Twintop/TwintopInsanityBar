@@ -1377,6 +1377,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.warrior ~= true then
+						TRB.Data.settings.warrior.arms.displayText.barText = TRB.Options.Warrior.ArmsLoadDefaultBarTextSettings()
+						TRB.Data.settings.warrior.fury.displayText.barText = TRB.Options.Warrior.FuryLoadDefaultBarTextSettings()
+						TRB.Data.settings.warrior.protection.displayText.barText = TRB.Options.Warrior.ProtectionLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.warrior = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Warrior"])
+					end
 				else
 					local settings = TRB.Options.Warrior.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

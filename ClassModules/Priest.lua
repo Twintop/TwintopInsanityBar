@@ -2173,6 +2173,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.priest ~= true then
+						TRB.Data.settings.priest.discipline.displayText.barText = TRB.Options.Priest.DisciplineLoadDefaultBarTextSettings()
+						TRB.Data.settings.priest.holy.displayText.barText = TRB.Options.Priest.HolyLoadDefaultBarTextSettings()
+						TRB.Data.settings.priest.shadow.displayText.barText = TRB.Options.Priest.ShadowLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.priest = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Priest"])
+					end
 				else
 					local settings = TRB.Options.Priest.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

@@ -1006,6 +1006,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.paladin ~= true then
+						TRB.Data.settings.paladin.holy.displayText.barText = TRB.Options.Paladin.HolyLoadDefaultBarTextSettings()
+						TRB.Data.settings.paladin.protection.displayText.barText = TRB.Options.Paladin.ProtectionLoadDefaultBarTextSettings()
+						TRB.Data.settings.paladin.retribution.displayText.barText = TRB.Options.Paladin.RetributionLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.paladin = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Paladin"])
+					end
 				else
 					local settings = TRB.Options.Paladin.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

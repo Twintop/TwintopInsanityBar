@@ -2246,6 +2246,16 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.druid ~= true then
+						TRB.Data.settings.druid.balance.displayText.barText = TRB.Options.Druid.BalanceLoadDefaultBarTextSettings()
+						TRB.Data.settings.druid.feral.displayText.barText = TRB.Options.Druid.FeralLoadDefaultBarTextSettings()
+						TRB.Data.settings.druid.guardian.displayText.barText = TRB.Options.Druid.GuardianLoadDefaultBarTextSettings()
+						TRB.Data.settings.druid.restoration.displayText.barText = TRB.Options.Druid.RestorationLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.druid = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Druid"])
+					end
 				else
 					local settings = TRB.Options.Druid.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

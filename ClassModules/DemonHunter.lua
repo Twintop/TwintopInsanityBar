@@ -1477,6 +1477,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.demonhunter ~= true then
+						TRB.Data.settings.demonhunter.havoc.displayText.barText = TRB.Options.DemonHunter.HavocLoadDefaultBarTextSettings()
+						TRB.Data.settings.demonhunter.vengeance.displayText.barText = TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSettings()
+						TRB.Data.settings.demonhunter.devourer.displayText.barText = TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.demonhunter = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["DemonHunter"])
+					end
 				else
 					local settings = TRB.Options.DemonHunter.LoadDefaultSettings(true)
 					TRB.Data.settings = settings

@@ -1338,6 +1338,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
+
+					if TRB.Data.settings.manualUpdateChecks.midnightBarTextReset ~= nil and
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.deathknight ~= true then
+						TRB.Data.settings.deathknight.blood.displayText.barText = TRB.Options.DeathKnight.BloodLoadDefaultBarTextSettings()
+						TRB.Data.settings.deathknight.frost.displayText.barText = TRB.Options.DeathKnight.FrostLoadDefaultBarTextSettings()
+						TRB.Data.settings.deathknight.unholy.displayText.barText = TRB.Options.DeathKnight.UnholyLoadDefaultBarTextSettings()
+						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.deathknight = true
+						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["DeathKnight"])
+					end
 				else
 					local settings = TRB.Options.DeathKnight.LoadDefaultSettings(true)
 					TRB.Data.settings = settings
