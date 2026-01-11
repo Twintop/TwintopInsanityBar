@@ -29,12 +29,12 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	local settings = {
 		manualUpdateChecks = {
 			midnightBarTextReset = {
-				deathknight = false,
+				deathknight = true,
 				demonhunter = false,
 				druid = false,
 				evoker = false,
 				hunter = false,
-				mage = false,
+				mage = true,
 				monk = false,
 				paladin = false,
 				priest = false,
