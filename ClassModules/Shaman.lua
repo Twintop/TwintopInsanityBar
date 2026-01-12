@@ -438,8 +438,14 @@ local function ConstructResourceBar(settings)
 		if TRB.Data.character.specId == 2 and TRB.Details.addonData.build ~= "64914" then
 			local maxStacks = TRB.Data.character.maxResource2 or 10
 			
+			-- Determine display node count based on compressed view setting
+			local displayNodes = maxStacks
+			if settings.colors and settings.colors.comboPoints and settings.colors.comboPoints.compressedView then
+				displayNodes = math.ceil(maxStacks / 2) -- 10 stacks -> 5 nodes
+			end
+			
 			-- Ensure secondary group knows the correct node count
-			barGroups.secondary:SetNodeCount(maxStacks)
+			barGroups.secondary:SetNodeCount(displayNodes)
 			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
 			barGroups.secondary:Show()
 			
@@ -453,7 +459,7 @@ local function ConstructResourceBar(settings)
 			
 			-- Explicitly set textures and colors for each Maelstrom Weapon node
 			local frameLevels = TRB.Data.constants.frameLevels
-			for i = 1, maxStacks do
+			for i = 1, displayNodes do
 				local node = barGroups.secondary:GetNode(i)
 				if node then
 					node:SetTextures(
@@ -466,6 +472,14 @@ local function ConstructResourceBar(settings)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
 					node:SetColor(settings.colors.comboPoints.base)
 					node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+				end
+			end
+			
+			-- Hide any extra nodes beyond displayNodes
+			for i = displayNodes + 1, maxStacks do
+				local node = barGroups.secondary:GetNode(i)
+				if node then
+					node:Hide()
 				end
 			end
 		else
@@ -1149,29 +1163,115 @@ local function UpdateResourceBar()
 				-- Update Maelstrom Weapon stacks using BarNodes
 				if TRB.Details.addonData.build ~= "64914" and barGroups.secondary then
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-					for x = 1, TRB.Data.character.maxResource2 do
-						local cpBorderColor = specSettings.colors.comboPoints.border
-						local cpColor = specSettings.colors.comboPoints.base
-						local cpBR = cpBackgroundRed
-						local cpBG = cpBackgroundGreen
-						local cpBB = cpBackgroundBlue
-
-						local stackNode = barGroups.secondary:GetNode(x)
-						if stackNode then
-							if snapshotData.attributes.resource2 >= x then
-								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 1, 1)
-								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate
-								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final
+					local maxStacks = TRB.Data.character.maxResource2 or 10
+					local currentStacks = snapshotData.attributes.resource2 or 0
+					local compressedView = specSettings.colors.comboPoints.compressedView
+					local displayNodes = compressedView and math.ceil(maxStacks / 2) or maxStacks
+					
+					local cpBorderColor = specSettings.colors.comboPoints.border
+					
+					if compressedView then
+						-- Compressed view: 5 nodes representing 10 stacks
+						-- Stacks 1-5 fill nodes left-to-right with base color
+						-- Stacks 6-10 overwrite nodes left-to-right with overflow color
+						local firstHalf = math.min(currentStacks, 5)  -- How many of stacks 1-5 we have
+						local secondHalf = math.max(0, currentStacks - 5)  -- How many of stacks 6-10 we have
+						
+						for nodeIndex = 1, displayNodes do
+							local stackNode = barGroups.secondary:GetNode(nodeIndex)
+							if stackNode then
+								local cpColor = specSettings.colors.comboPoints.base
+								local isFilled = false
+								local isOverflow = false
+								
+								-- Determine if this node is filled and whether it's overflow
+								if nodeIndex <= secondHalf then
+									-- This node is in the overflow range (stacks 6-10)
+									isFilled = true
+									isOverflow = true
+									cpColor = specSettings.colors.comboPoints.overflowBase.color
+								elseif nodeIndex <= firstHalf then
+									-- This node is in the base range (stacks 1-5)
+									isFilled = true
+									isOverflow = false
+									cpColor = specSettings.colors.comboPoints.base
 								end
-							else
-								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 0, 1)
+								
+								-- Apply penultimate/final colors
+								if isFilled and isOverflow then
+									-- Check for penultimate (9 stacks) or final (10 stacks)
+									if currentStacks == maxStacks then
+										-- At max stacks (10): sameColor makes all overflow nodes final, otherwise only node 5
+										if specSettings.comboPoints.sameColor or nodeIndex == displayNodes then
+											cpColor = specSettings.colors.comboPoints.final
+										elseif nodeIndex == displayNodes - 1 then
+											cpColor = specSettings.colors.comboPoints.penultimate
+										end
+									elseif currentStacks == maxStacks - 1 then
+										-- At penultimate stacks (9): sameColor makes all overflow nodes penultimate
+										if specSettings.comboPoints.sameColor or nodeIndex == secondHalf then
+											cpColor = specSettings.colors.comboPoints.penultimate
+										end
+									end
+								end
+								
+								if isFilled then
+									TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. nodeIndex, stackNode, 1, 1)
+								else
+									TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. nodeIndex, stackNode, 0, 1)
+								end
+								
+								stackNode:SetBorderColor(cpBorderColor)
+								stackNode:SetColor(cpColor)
+								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 							end
-							
-							stackNode:SetBorderColor(cpBorderColor)
-							stackNode:SetColor(cpColor)
-							stackNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+						end
+					else
+						-- Standard view: 10 nodes, one per stack
+						-- Nodes 1-5 use base color, nodes 6-10 use overflow/penultimate/final
+						local halfPoint = math.ceil(maxStacks / 2) -- 5 for 10 stacks
+						
+						for x = 1, maxStacks do
+							local cpColor = specSettings.colors.comboPoints.base
+							local isFilled = currentStacks >= x
+
+							local stackNode = barGroups.secondary:GetNode(x)
+							if stackNode then
+								if isFilled then
+									TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 1, 1)
+									
+									-- Determine color based on position and sameColor setting
+									if specSettings.comboPoints.sameColor then
+										-- sameColor: all filled nodes share the highest applicable color
+										if currentStacks == maxStacks then
+											cpColor = specSettings.colors.comboPoints.final
+										elseif currentStacks == maxStacks - 1 then
+											cpColor = specSettings.colors.comboPoints.penultimate
+										elseif currentStacks > halfPoint then
+											cpColor = specSettings.colors.comboPoints.overflowBase.color
+										else
+											cpColor = specSettings.colors.comboPoints.base
+										end
+									else
+										-- Per-node coloring
+										if x == maxStacks then
+											cpColor = specSettings.colors.comboPoints.final
+										elseif x == maxStacks - 1 then
+											cpColor = specSettings.colors.comboPoints.penultimate
+										elseif x > halfPoint then
+											cpColor = specSettings.colors.comboPoints.overflowBase.color
+										else
+											cpColor = specSettings.colors.comboPoints.base
+										end
+									end
+								else
+									TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 0, 1)
+								end
+								
+								stackNode:SetBorderColor(cpBorderColor)
+								stackNode:SetColor(cpColor)
+								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+							end
 						end
 					end
 				end
