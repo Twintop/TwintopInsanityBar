@@ -291,7 +291,7 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false,
-				compressedView=false
+				compressedView=true
 			},
 			threshold = {
 				under = {

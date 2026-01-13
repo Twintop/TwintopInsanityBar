@@ -9,6 +9,13 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon is still underway! If you have any interest in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
+# 12.0.0.0-beta12 (2026-01-14)
+## Shaman
+### [#484](#484) Enhancement
+
+- Add an option to toggle the number of Maelstrom Weapon Combo Points UX elements between 5 and 10.
+- Add a new color option for Maelstrom Weapon stacks 1-5.
+
 ---
 
 # 12.0.0.0-beta11 (2026-01-12)
