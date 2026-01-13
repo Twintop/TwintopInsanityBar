@@ -620,7 +620,7 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 			local currentTime = currentTime or GetTime()
 			local foundId = nil
 			
-			if 1 == 2 and unit == "player" then -- We're disabling this for now because it causes `[ADDON_ACTION_BLOCKED]` errors the first time it fires.
+			if unit == "player" then
 				foundId = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
 			else
 				foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
