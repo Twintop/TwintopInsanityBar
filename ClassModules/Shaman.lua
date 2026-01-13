@@ -107,6 +107,8 @@ local function FillSpecializationCache()
 	specCache.enhancement.snapshotData.audio = {
 	}
 	---@type TRB.Classes.Snapshot
+	specCache.enhancement.snapshotData.snapshots[spells.maelstromWeapon.id] = TRB.Classes.Snapshot:New(spells.maelstromWeapon)
+	---@type TRB.Classes.Snapshot
 	specCache.enhancement.snapshotData.snapshots[spells.ascendance.id] = TRB.Classes.Snapshot:New(spells.ascendance)
 
 	specCache.enhancement.barTextVariables = {
@@ -609,6 +611,12 @@ local function RefreshLookupData_Enhancement()
 	--$manaMax
 	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
+	--$maelstromWeapon
+	local _maelstromWeapon = snapshots[spells.maelstromWeapon.id].buff.applications or 0
+
+	--$maelstromWeaponMax
+	local _maelstromWeaponMax = spells.maelstromWeapon.maxStacks
+
 	--$manaPercent
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
@@ -628,10 +636,10 @@ local function RefreshLookupData_Enhancement()
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
 	lookup["$ascendanceTime"] = ascendanceTime
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$maelstromWeapon"] = snapshotData.attributes.resource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$maelstromWeaponMax"] = TRB.Data.character.maxResource2
+	lookup["$comboPoints"] = _maelstromWeapon
+	lookup["$maelstromWeapon"] = _maelstromWeapon
+	lookup["$comboPointsMax"] = _maelstromWeaponMax
+	lookup["$maelstromWeaponMax"] = _maelstromWeaponMax
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -642,10 +650,10 @@ local function RefreshLookupData_Enhancement()
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$ascendanceTime"] = _ascendanceTime
-	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$maelstromWeapon"] = snapshotData.attributes.resource2
-	lookupLogic["$maelstromWeaponMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookupLogic["$comboPoints"] = _maelstromWeapon
+	lookupLogic["$maelstromWeapon"] = _maelstromWeapon
+	lookupLogic["$maelstromWeaponMax"] = _maelstromWeaponMax
+	lookupLogic["$comboPointsMax"] = _maelstromWeaponMax
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -847,13 +855,16 @@ local function UpdateSnapshot_Elemental()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-
-	--snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-	--snapshots[spells.icefury.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Enhancement()
+	local currentTime = GetTime()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
+
+	snapshots[spells.maelstromWeapon.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Restoration()
@@ -1067,9 +1078,7 @@ local function UpdateResourceBar()
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
-		if TRB.Data.character.maxResource2 == nil then
-			return
-		end
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 		local specSettings = classSettings.enhancement
 		local specCacheSettings = TRB.Data.specCache.enhancement.settings
 		UpdateSnapshot_Enhancement()
@@ -1126,8 +1135,8 @@ local function UpdateResourceBar()
 				-- Update Maelstrom Weapon stacks using BarNodes
 				if TRB.Details.addonData.build ~= "64914" and barGroups.secondary then
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-					local maxStacks = TRB.Data.character.maxResource2 or 10
-					local currentStacks = snapshotData.attributes.resource2 or 0
+					local maxStacks = spells.maelstromWeapon.maxStacks
+					local currentStacks = snapshots[spells.maelstromWeapon.id].buff.applications
 					local compressedView = specSettings.colors.comboPoints.compressedView
 					local displayNodes = compressedView and math.ceil(maxStacks / 2) or maxStacks
 					
@@ -1615,7 +1624,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		if TRB.Details.addonData.build ~= "64914" then
 			TRB.Data.resource2 = "SPELL"
-			TRB.Data.resource2Id = 344179
+			TRB.Data.resource2Id = TRB.Data.spellsData.spells.maelstromWeapon.id
 			TRB.Data.resource2Factor = 1
 		else
 			TRB.Data.resource2 = nil

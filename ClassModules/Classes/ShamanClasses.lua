@@ -175,6 +175,7 @@ end
 
 
 ---@class TRB.Classes.Shaman.EnhancementSpells : TRB.Classes.SpecializationSpellsBase
+---@field public maelstromWeapon TRB.Classes.SpellBase
 ---@field public doomWinds TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
 TRB.Classes.Shaman.EnhancementSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -185,6 +186,11 @@ function TRB.Classes.Shaman.EnhancementSpells:New()
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Shaman.EnhancementSpells) --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 
+    self.maelstromWeapon = TRB.Classes.SpellBase:New({
+        id = 344179,
+        maxStacks = 10,
+        duration = 30
+    })
     self.doomWinds = TRB.Classes.SpellBase:New({
         id = 384352,
         castId = 384352,

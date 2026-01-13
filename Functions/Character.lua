@@ -71,15 +71,8 @@ local function UpdateResourceValues()
 	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
 	snapshotData.attributes.resourceModified = UnitPower("player", TRB.Data.resource, false)
 	if TRB.Data.resource2 ~= nil then
-		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
-			if TRB.Details.addonData.build ~= "64914" then
-				local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)
-				if resourceBuff ~= nil then
-					snapshotData.attributes.resource2 = resourceBuff.applications or 0
-				else
-					snapshotData.attributes.resource2 = 0
-				end
-			end
+		if TRB.Data.resource2 == "SPELL" then
+			--Do nothing, this is handled by UNIT_AURA
 		elseif TRB.Data.resource2 == "CUSTOM" then
 			-- Do nothing
 		else
