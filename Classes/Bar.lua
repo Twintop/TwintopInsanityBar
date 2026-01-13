@@ -567,6 +567,56 @@ function TRB.Classes.BarGroup:ShowNodes(count)
 	end
 end
 
+---Rebuilds the bar group with a specific number of display nodes.
+---Handles node count, layout, textures, and visibility in one call.
+---@param displayNodes integer # Number of nodes to display
+---@param settings table # Settings table containing bar, comboPoints, textures, and colors subtables
+function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
+	if settings == nil or settings.comboPoints == nil or settings.bar == nil then
+		return
+	end
+
+	-- Set node count and apply layout
+	self:SetNodeCount(displayNodes)
+	self:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+	self:Show()
+
+	-- Apply layout to position all nodes correctly
+	self:ApplyLayout(
+		settings.bar.width,
+		settings.comboPoints.width,
+		settings.comboPoints.height,
+		settings.comboPoints.border
+	)
+
+	-- Show/hide nodes and set up textures
+	local frameLevels = TRB.Data.constants.frameLevels
+	for i = 1, displayNodes do
+		local node = self:GetNode(i)
+		if node then
+			node:SetTextures(
+				settings.textures.comboPointsBar,
+				settings.textures.comboPointsBorder,
+				settings.textures.comboPointsBackground
+			)
+			node:SetMinMax(0, 1)
+			node:SetBorderColor(settings.colors.comboPoints.border)
+			node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
+			node:SetColor(settings.colors.comboPoints.base)
+			node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+			node:Show()
+		end
+	end
+
+	-- Hide any extra nodes beyond displayNodes
+	for i = displayNodes + 1, self.maxNodes do
+		local node = self:GetNode(i)
+		if node then
+			node:Hide()
+		end
+	end
+end
+
 ---Hides all nodes
 function TRB.Classes.BarGroup:HideAllNodes()
 	for i = 1, self.maxNodes do

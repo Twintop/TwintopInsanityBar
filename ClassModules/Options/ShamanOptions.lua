@@ -1241,8 +1241,12 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.compressedView)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.compressedView = self:GetChecked()
-		-- Trigger bar reconstruction to apply the change
-		if TRB.Frames.barGroups then
+		-- Rebuild secondary bar with correct node count
+		local barGroups = TRB.Frames.barGroups
+		if barGroups and barGroups.secondary then
+			local maxStacks = TRB.Data.character.maxResource2 or 10
+			local displayNodes = spec.colors.comboPoints.compressedView and math.ceil(maxStacks / 2) or maxStacks
+			barGroups.secondary:RebuildNodes(displayNodes, spec)
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)

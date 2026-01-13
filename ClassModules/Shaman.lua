@@ -444,44 +444,7 @@ local function ConstructResourceBar(settings)
 				displayNodes = math.ceil(maxStacks / 2) -- 10 stacks -> 5 nodes
 			end
 			
-			-- Ensure secondary group knows the correct node count
-			barGroups.secondary:SetNodeCount(displayNodes)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
-			barGroups.secondary:Show()
-			
-			-- Apply layout to position all nodes correctly
-			barGroups.secondary:ApplyLayout(
-				settings.bar.width,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
-			)
-			
-			-- Explicitly set textures and colors for each Maelstrom Weapon node
-			local frameLevels = TRB.Data.constants.frameLevels
-			for i = 1, displayNodes do
-				local node = barGroups.secondary:GetNode(i)
-				if node then
-					node:SetTextures(
-						settings.textures.comboPointsBar,
-						settings.textures.comboPointsBorder,
-						settings.textures.comboPointsBackground
-					)
-					node:SetMinMax(0, 1)
-					node:SetBorderColor(settings.colors.comboPoints.border)
-					node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-					node:SetColor(settings.colors.comboPoints.base)
-					node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
-				end
-			end
-			
-			-- Hide any extra nodes beyond displayNodes
-			for i = displayNodes + 1, maxStacks do
-				local node = barGroups.secondary:GetNode(i)
-				if node then
-					node:Hide()
-				end
-			end
+			barGroups.secondary:RebuildNodes(displayNodes, settings)
 		else
 			barGroups.secondary:Hide()
 		end
@@ -1723,7 +1686,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if barGroups and barGroups.secondary then
 				if showSecondary then
 					barGroups.secondary:Show()
-					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+					-- Respect compressed view setting for node count
+					local maxStacks = TRB.Data.character.maxResource2 or 10
+					local displayNodes = maxStacks
+					if sharedSettings.colors and sharedSettings.colors.comboPoints and sharedSettings.colors.comboPoints.compressedView then
+						displayNodes = math.ceil(maxStacks / 2)
+					end
+					barGroups.secondary:ShowNodes(displayNodes)
 				else
 					barGroups.secondary:Hide()
 				end
