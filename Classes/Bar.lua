@@ -594,6 +594,15 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 	for i = 1, displayNodes do
 		local node = self:GetNode(i)
 		if node then
+			-- Clear cached colors for this node before setting textures.
+			-- SetTextures() calls ApplyBackdrop() which resets border color to white.
+			-- Without clearing the cache, SetBorderColor() may skip the update
+			-- if it thinks the cached color matches the desired color.
+			local borderCacheKey = node.name .. "_border"
+			local backdropCacheKey = node.name .. "_background"
+			TRB.Data.cache.colors.border[borderCacheKey] = nil
+			TRB.Data.cache.colors.backdrop[backdropCacheKey] = nil
+
 			node:SetTextures(
 				settings.textures.comboPointsBar,
 				settings.textures.comboPointsBorder,
