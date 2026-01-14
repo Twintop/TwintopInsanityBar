@@ -75,7 +75,7 @@ Every bar can be shown or hidden independently:
 
 TRB features a powerful bar text system that lets you display exactly the information you want, where you want it. Create multiple text entries with independent positioning, fonts, and colors.
 
-Use variables like `$resource`, `$comboPoints`, `$haste`, and `$gcd` to display live data, or `#casting` to show spell icons. Bar text also supports conditional logic with Boolean operators for dynamic displays.
+Use variables like `$resource`, `$comboPoints`, `$haste`, `$gcd`, and `$inCombatTime` to display live data, or `#casting` to show spell icons. Bar text also supports conditional logic with Boolean operators for dynamic displays.
 
 For complete documentation on available variables and advanced formatting, check out the [Bar Text Customization Wiki](https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization).
 

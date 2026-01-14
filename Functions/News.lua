@@ -14,6 +14,7 @@ local content = [====[
 
 - Re-enable bar border and resource text overcap notifications via color change. Unfortunately, it is not possible to re-enable the audio cue at this time due to API limitations.
 - Add `$inCombatTime`, a new bar text variable which shows the time elapsed since entering combat. This timer resets when exiting combat.
+- Adjust default thresholds that are enabled for all specializations.
 
 ## Shaman
 ### [#484](#484) Enhancement
