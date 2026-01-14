@@ -525,22 +525,20 @@ local function RefreshLookupData_Brewmaster()
 		end
 	end
 
+	--$energy
+	local _currentEnergy = snapshotData.attributes.resource
+	local currentEnergy
+	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentEnergyColor,
-			sharedSettings.colors.text.overcap.color,
-			snapshotData.attributes.resource,
-			TRB.Data.character.maxResource,
-			"brewmaster_text"
-		)
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentEnergy))
+		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
+	else
+		currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, _currentEnergy)
+		castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, snapshotData.casting.resourceFinal)
 	end
-
-	--$energy
-	local currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, snapshotData.attributes.resource)
-	--$casting
-	local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, snapshotData.casting.resourceFinal)
 
 	--$stagger and $staggerPercent
 	local _stagger = snapshotData.attributes.stagger or 0
@@ -660,24 +658,21 @@ local function RefreshLookupData_Windwalker()
 		end
 	end
 
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentEnergyColor,
-			sharedSettings.colors.text.overcap.color,
-			snapshotData.attributes.resource,
-			TRB.Data.character.maxResource,
-			"windwalker_text"
-		)
-	end
-
 	--$energy
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _normalizedEnergy = normalizedEnergy
-	local currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)-- TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
-	--$casting
-	local castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+	local currentEnergy
+	local castingEnergy
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
+		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+	else
+		currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
+		castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+	end
 
 	----------------------------
 
@@ -1028,20 +1023,15 @@ local function UpdateResourceBar()
 					local barBorderColor = specSettings.colors.bar.border
 					local barColor = specSettings.colors.bar.base
 
+					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.overcapEnabled then
-						barBorderColor = TRB.Functions.Color:GetOvercapColor(
-							specCacheSettings,
-							barBorderColor,
-							specSettings.colors.bar.borderOvercap,
-							snapshotData.attributes.resource,
-							TRB.Data.character.maxResource,
-							"brewmaster_border"
-						)
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+						primaryNode:SetBorderColorCurve(borderColorResult)
+					else
+						primaryNode:SetBorderColor(barBorderColor)
 					end
-
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
-					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end
@@ -1278,20 +1268,15 @@ local function UpdateResourceBar()
 						barBorderColor = specSettings.colors.bar.borderChiJi
 					end
 
+					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.overcapEnabled then
-						barBorderColor = TRB.Functions.Color:GetOvercapColor(
-							specCacheSettings,
-							barBorderColor,
-							specSettings.colors.bar.borderOvercap,
-							snapshotData.attributes.resource,
-							TRB.Data.character.maxResource,
-							"windwalker_border"
-						)
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+						primaryNode:SetBorderColorCurve(borderColorResult)
+					else
+						primaryNode:SetBorderColor(barBorderColor)
 					end
-
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
-					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				end

@@ -112,7 +112,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = ELEMENTAL_MAX_MAELSTROM
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -138,7 +138,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					color = "FF0000FF"
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},

@@ -846,19 +846,6 @@ local function RefreshLookupData_Feral()
 		end
 	end
 
-	-- Apply overcap color if enabled (takes precedence over overThreshold, but not stealth)
-	-- Stealth takes precedence over overcap for Feral
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentEnergyColor,
-			sharedSettings.colors.text.overcap.color,
-			normalizedEnergy,
-			TRB.Data.character.maxResource,
-			"feral_text"
-		)
-	end
-
 	if snapshotData.casting.resourceFinal < 0 then
 		castingEnergyColor = sharedSettings.colors.text.spending.color
 	end
@@ -866,9 +853,19 @@ local function RefreshLookupData_Feral()
 	--$energy
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _normalizedEnergy = normalizedEnergy
-	local currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)-- TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
-	--$casting
-	local castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+	local currentEnergy
+	local castingEnergy
+	-- Apply overcap color if enabled (takes precedence over overThreshold, but not stealth)
+	-- Stealth takes precedence over overcap for Feral
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
+		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+	else
+		currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
+		castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+	end
 
 	--$berserkTime (and $incarnationTime)
 	local _berserkTime = GetBerserkRemainingTime()
@@ -960,24 +957,21 @@ local function RefreshLookupData_Guardian()
 		end
 	end
 
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentRageColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentRageColor,
-			sharedSettings.colors.text.overcap.color,
-			normalizedRage,
-			TRB.Data.character.maxResource,
-			"guardian_text"
-		)
-	end
-
 	--$rage
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentRage = normalizedRage
-	local currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)-- TRB.Functions.Number:RoundTo(_currentRage, resourcePrecision, "floor"))
-	--$casting
-	local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+	local currentRage
+	local castingRage
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
+		castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+	else
+		currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
+		castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+	end
 
 	
 	--$berserkTime (and $incarnationTime)
@@ -1777,23 +1771,18 @@ local function UpdateResourceBar()
 				end
 
 				local barBorderColor = specSettings.colors.bar.border
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				if IsStealthed() then
-					barBorderColor = specSettings.colors.bar.borderStealth
+					primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth)
 				elseif specSettings.colors.bar.overcapEnabled then
 					-- Apply overcap border color if enabled (skipped when stealthed)
-					barBorderColor = TRB.Functions.Color:GetOvercapColor(
-						specCacheSettings,
-						barBorderColor,
-						specSettings.colors.bar.borderOvercap,
-						snapshotData.attributes.resource,
-						TRB.Data.character.maxResource,
-						"feral_border"
-					)
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				else
+					primaryNode:SetBorderColor(barBorderColor)
 				end
 
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
-
-				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
@@ -1977,22 +1966,17 @@ local function UpdateResourceBar()
 				end
 
 				local barBorderColor = specSettings.colors.bar.border
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.overcapEnabled then
-					barBorderColor = TRB.Functions.Color:GetOvercapColor(
-						specCacheSettings,
-						barBorderColor,
-						specSettings.colors.bar.borderOvercap,
-						currentResource,
-						TRB.Data.character.maxResource,
-						"guardian_border"
-					)
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				else
+					primaryNode:SetBorderColor(barBorderColor)
 				end
-				
-				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
 			-- Health bar update

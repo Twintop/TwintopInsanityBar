@@ -229,7 +229,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = BLOOD_MAX_RUNIC_POWER
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -246,7 +246,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 					color = "FF8080FF"
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},
@@ -374,7 +374,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = FROST_MAX_RUNIC_POWER
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -391,7 +391,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					color = "FF8080FF"
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},
@@ -512,7 +512,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = UNHOLY_MAX_RUNIC_POWER
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -529,7 +529,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 					color = "FF8080FF"
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},

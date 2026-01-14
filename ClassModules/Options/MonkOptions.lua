@@ -151,7 +151,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = BREWMASTER_MAX_ENERGY
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -174,7 +174,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					enabled = false
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},
@@ -408,7 +408,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = WINDWALKER_MAX_ENERGY
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -429,7 +429,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					enabled = false
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},

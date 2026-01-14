@@ -105,7 +105,7 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = ARMS_MAX_RAGE
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -258,7 +258,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = FURY_MAX_RAGE
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -480,7 +480,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = PROTECTION_MAX_RAGE
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),

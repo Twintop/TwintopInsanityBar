@@ -128,7 +128,7 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = ASSASSINATION_MAX_ENERGY
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -149,7 +149,7 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					enabled = false
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},
@@ -336,7 +336,7 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = OUTLAW_MAX_ENERGY
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -357,7 +357,7 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 					enabled = false
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},
@@ -555,7 +555,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = SUBTLETY_MAX_ENERGY
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -576,7 +576,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					enabled = false
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},

@@ -505,20 +505,17 @@ local function RefreshLookupData_Blood()
 	local castingRunicPowerColor = TRB.Data.settings.deathknight.blood.colors.text.casting.color
 
 	-- Apply overcap color if enabled
+	local currentRunicPower
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentRunicPowerColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentRunicPowerColor,
-			sharedSettings.colors.text.overcap.color,
-			normalizedRunicPower,
-			TRB.Data.character.maxResource,
-			"blood_text"
-		)
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		currentRunicPower = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+	else
+		currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
 	end
 
-	--$runicPower
+	--$runicPowerMax
 	local runicPowerPrecision = TRB.Data.settings.deathknight.frost.runicPowerPrecision or 1
-	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicPowerPrecision, "floor", true))
 	
 	--$runicPowerMax
 	local runicPowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicPowerPrecision, "floor", true))
@@ -604,20 +601,17 @@ local function RefreshLookupData_Frost()
 	local castingRunicPowerColor = TRB.Data.settings.deathknight.frost.colors.text.casting.color
 
 	-- Apply overcap color if enabled
+	local currentRunicPower
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentRunicPowerColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentRunicPowerColor,
-			sharedSettings.colors.text.overcap.color,
-			normalizedRunicPower,
-			TRB.Data.character.maxResource,
-			"frost_text"
-		)
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		currentRunicPower = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+	else
+		currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
 	end
 
-	--$runicPower
+	--$runicPowerMax
 	local runicPowerPrecision = TRB.Data.settings.deathknight.frost.runicPowerPrecision or 1
-	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicPowerPrecision, "floor", true))
 	
 	--$runicPowerMax
 	local runicPowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicPowerPrecision, "floor", true))
@@ -703,20 +697,17 @@ local function RefreshLookupData_Unholy()
 	local castingRunicPowerColor = TRB.Data.settings.deathknight.unholy.colors.text.casting.color
 
 	-- Apply overcap color if enabled
+	local currentRunicPower
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentRunicPowerColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentRunicPowerColor,
-			sharedSettings.colors.text.overcap.color,
-			normalizedRunicPower,
-			TRB.Data.character.maxResource,
-			"unholy_text"
-		)
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		currentRunicPower = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+	else
+		currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
 	end
 
-	--$runicPower
+	--$runicPowerMax
 	local runicPowerPrecision = TRB.Data.settings.deathknight.frost.runicPowerPrecision or 1
-	local currentRunicPower = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedRunicPower, runicPowerPrecision, "floor", true))
 	
 	--$runicPowerMax
 	local runicPowerMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, runicPowerPrecision, "floor", true))
@@ -948,14 +939,11 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.overcapEnabled then
-					barBorderColor = TRB.Functions.Color:GetOvercapColor(
-						specSettings,
-						barBorderColor,
-						specSettings.colors.bar.borderOvercap,
-						currentResource,
-						TRB.Data.character.maxResource,
-						"blood_border"
-					)
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				else
+					primaryNode:SetBorderColor(barBorderColor)
 				end
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -964,7 +952,6 @@ local function UpdateResourceBar()
 				end
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
@@ -1056,14 +1043,11 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.overcapEnabled then
-					barBorderColor = TRB.Functions.Color:GetOvercapColor(
-						specSettings,
-						barBorderColor,
-						specSettings.colors.bar.borderOvercap,
-						currentResource,
-						TRB.Data.character.maxResource,
-						"frost_border"
-					)
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				else
+					primaryNode:SetBorderColor(barBorderColor)
 				end
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1072,7 +1056,6 @@ local function UpdateResourceBar()
 				end
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
@@ -1164,14 +1147,11 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.overcapEnabled then
-					barBorderColor = TRB.Functions.Color:GetOvercapColor(
-						specSettings,
-						barBorderColor,
-						specSettings.colors.bar.borderOvercap,
-						currentResource,
-						TRB.Data.character.maxResource,
-						"unholy_border"
-					)
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				else
+					primaryNode:SetBorderColor(barBorderColor)
 				end
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1180,7 +1160,6 @@ local function UpdateResourceBar()
 				end
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)

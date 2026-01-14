@@ -429,7 +429,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = SHADOW_MAX_INSANITY
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -464,7 +464,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				hasteApproaching="FFFFFF00",
 				hasteAbove="FF00FF00",
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},

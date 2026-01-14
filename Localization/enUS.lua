@@ -1619,6 +1619,15 @@ L["ShamanEnhancementCheckboxMaelstromWeaponCompressedViewTooltip"] = "When enabl
 L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"] = "Maelstrom Weapon overflow (stacks 6-10)"
 
 -- Overcap text color
+L["BorderColorOvercap"] = "Border when you are overcapped on %s"
+L["BorderColorOvercapToggle"] = "Change border color when overcapping"
+L["BorderColorOvercapToggleTooltip"] = "This will change the bar's border color when you are already above or your current hardcast spell will result in overcapping %s (as configured)."
+L["OvercappingConfigurationHeader"] = "Overcapping Configuration"
+L["OvercapRelativeOffset"] = "Relative %s Offset from Maximum"
+L["OvercapRelativeOffsetAmount"] = "Relative %s Offset Amount"
+L["OvercapFixedValue"] = "Fixed %s Value"
+L["OvercapAbove"] = "Overcap Above %s"
+L["Overcap"] = "Overcap"
 L["GlobalColorPickerOvercap"] = "Resource is at or above overcap threshold"
 L["GlobalCheckboxThresholdOvercapTooltip"] = "This will change the Resource text color when your resource is at or above the configured overcap threshold."
 L["DeathKnightColorPickerOvercap"] = "Runic Power is at or above overcap threshold"

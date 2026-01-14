@@ -323,6 +323,14 @@ function TRB.Functions.Color:BuildOvercapCurve(specSettings, normalColor, overca
 
 	local overcapPercent = overcapThreshold / maxResource
 
+	-- Check cache first
+	local cache = TRB.Data.cache.overcapColorCurves
+	local cacheKey = normalColor .. "_" .. overcapColor .. "_" .. tostring(overcapPercent)
+	
+	if cache[cacheKey] then
+		return cache[cacheKey]
+	end
+
 	local normalR, normalG, normalB, normalA = TRB.Functions.Color:GetRGBAFromString(normalColor, true)
 	local overcapR, overcapG, overcapB, overcapA = TRB.Functions.Color:GetRGBAFromString(overcapColor, true)
 
@@ -334,5 +342,6 @@ function TRB.Functions.Color:BuildOvercapCurve(specSettings, normalColor, overca
 	colorCurve:AddPoint(0, normalColorObj)
 	colorCurve:AddPoint(overcapPercent, overcapColorObj)
 
+	cache[cacheKey] = colorCurve
 	return colorCurve
 end

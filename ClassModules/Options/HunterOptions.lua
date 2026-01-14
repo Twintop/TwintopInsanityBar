@@ -147,7 +147,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = BEAST_MASTERY_MAX_FOCUS
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -170,7 +170,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 					enabled = false
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},
@@ -347,7 +347,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = MARKSMANSHIP_MAX_FOCUS
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -370,7 +370,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 					enabled = false
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},
@@ -518,7 +518,7 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 		overcap = {
 			mode = "relative",
 			relative = 0,
-			fixed = 100
+			fixed = SURVIVAL_MAX_FOCUS
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -541,7 +541,7 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					enabled = false
 				},
 				overcap = {
-					color = "FF800000",
+					color = "FFFF0000",
 					enabled = true
 				},
 			},
