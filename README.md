@@ -97,6 +97,7 @@ Every spec gets a primary resource bar that tracks your main resource (Mana, Rag
 - **Threshold lines** showing the cost of your abilities, color-coded by availability
 - **Predictive resource display** for some specs, showing expected resource gain from your current cast
 - **Maximum display customization** allows the bar to fill to a lower value than your maximum resource; useful for specs like Assassination Rogue with threshold lines and very high maximum resource pools
+- **Overcapping resource alert** change the bar border and resource text color when almost full on resources for specs with fast auto-regennerating resources (i.e. Rogues) and those with builder/spender playstyles (i.e. Shadow)
 
 ### Secondary Resource Nodes
 
