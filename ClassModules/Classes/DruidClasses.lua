@@ -6,8 +6,83 @@ end
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Druid = TRB.Classes.Druid or {}
 
+---@class TRB.Classes.Druid.DruidBaseSpells : TRB.Classes.SpecializationSpellsBase
+---@field public frenziedRegeneration TRB.Classes.SpellThreshold
+---@field public ironfur TRB.Classes.SpellThreshold
+---@field public rake TRB.Classes.SpellComboPointThreshold
+---@field public rip TRB.Classes.SpellComboPointThreshold
+---@field public maim TRB.Classes.SpellComboPointThreshold
+TRB.Classes.Druid.DruidBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Druid.DruidBaseSpells.__index = TRB.Classes.Druid.DruidBaseSpells
 
----@class TRB.Classes.Druid.BalanceSpells : TRB.Classes.SpecializationSpellsBase
+function TRB.Classes.Druid.DruidBaseSpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), {__index = TRB.Classes.Druid.BalanceSpells})
+
+    -- Bear Form abilities
+    self.frenziedRegeneration = TRB.Classes.SpellThreshold:New({
+        id = 22842,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "frenziedRegeneration",
+        hasCooldown = true,
+		rangeCheck = false
+    })
+    self.ironfur = TRB.Classes.SpellThreshold:New({
+        id = 192081,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "ironfur",
+		rangeCheck = false
+    })
+
+    -- Cat Form abilities
+    self.rake = TRB.Classes.SpellComboPointThreshold:New({
+        id = 1822,
+        debuffId = 155722,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPointsGenerated = 1,
+        settingKey = "rake",
+        hasSnapshot = true,
+        pandemic = true,
+        baseDuration = 15,
+        bonuses = {
+            stealth = true,
+            tigersFury = true
+        },
+        isTalent = true,
+        baseline = true
+    })
+    self.rip = TRB.Classes.SpellComboPointThreshold:New({
+        id = 1079,
+        debuffId = 1079,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPoints = true,
+        settingKey = "rip",
+        hasSnapshot = true,
+        bonuses = {
+            bloodtalons = true,
+            tigersFury = true
+        },
+        isTalent = true,
+        baseline = true
+    })
+    self.maim = TRB.Classes.SpellComboPointThreshold:New({
+        id = 22570,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPoints = true,
+        settingKey = "maim",
+        hasCooldown = true,
+        cooldown = 20,
+        isTalent = true
+    })
+
+    return self
+end
+
+
+---@class TRB.Classes.Druid.BalanceSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public moonfire TRB.Classes.SpellBase
 ---@field public starfire TRB.Classes.SpellBase
 ---@field public moonkinForm TRB.Classes.SpellBase
@@ -30,13 +105,13 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public starsurge2 TRB.Classes.SpellThreshold
 ---@field public starsurge3 TRB.Classes.SpellThreshold
 ---@field public starfall TRB.Classes.SpellThreshold
-TRB.Classes.Druid.BalanceSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Druid.BalanceSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.BalanceSpells.__index = TRB.Classes.Druid.BalanceSpells
 
 function TRB.Classes.Druid.BalanceSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), {__index = TRB.Classes.Druid.BalanceSpells})
+    ---@type TRB.Classes.Druid.DruidBaseSpells
+    local base = TRB.Classes.Druid.DruidBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Druid.BalanceSpells) --[[@as TRB.Classes.Druid.BalanceSpells]]
     -- Druid Class Baseline Abilities
     self.moonfire = TRB.Classes.SpellBase:New({
         id = 164812,
@@ -196,7 +271,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
 end
 
 
----@class TRB.Classes.Druid.FeralSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Druid.FeralSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public clearcasting TRB.Classes.SpellBase
 ---@field public lunarInspiration TRB.Classes.SpellBase
 ---@field public berserk TRB.Classes.SpellBase
@@ -204,9 +279,6 @@ end
 ---@field public circleOfLifeAndDeath TRB.Classes.SpellBase
 ---@field public apexPredatorsCraving TRB.Classes.SpellBase
 ---@field public empoweredShapeshifting TRB.Classes.SpellBase
----@field public rake TRB.Classes.SpellComboPointThreshold
----@field public rip TRB.Classes.SpellComboPointThreshold
----@field public maim TRB.Classes.SpellComboPointThreshold
 ---@field public ferociousBiteMinimum TRB.Classes.SpellComboPointThreshold
 ---@field public ferociousBiteMaximum TRB.Classes.SpellComboPointThreshold
 ---@field public shred TRB.Classes.SpellComboPointThreshold
@@ -219,62 +291,13 @@ end
 ---@field public ravageMinimum TRB.Classes.SpellComboPointThreshold
 ---@field public ravageMaximum TRB.Classes.SpellComboPointThreshold
 ---@field public frenziedRegeneration TRB.Classes.SpellComboPointThreshold
-TRB.Classes.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.FeralSpells.__index = TRB.Classes.Druid.FeralSpells
 
 function TRB.Classes.Druid.FeralSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(),  {__index = TRB.Classes.Druid.FeralSpells})
-
-    -- Druid Class Talents
-    self.rake = TRB.Classes.SpellComboPointThreshold:New({
-        id = 1822,
-        debuffId = 155722,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 1,
-        settingKey = "rake",
-        hasSnapshot = true,
-        pandemic = true,
-        baseDuration = 15,
-        bonuses = {
-            stealth = true,
-            tigersFury = true
-        },
-        isTalent = true,
-        baseline = true
-    })
-    self.rip = TRB.Classes.SpellComboPointThreshold:New({
-        id = 1079,
-        debuffId = 1079,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPoints = true,
-        settingKey = "rip",
-        hasSnapshot = true,
-        pandemicTimes = {
-            8 * 0.3, -- 0 CP, show same as if we had 1
-            8 * 0.3,
-            12 * 0.3,
-            16 * 0.3,
-            20 * 0.3,
-            24 * 0.3
-        },
-        bonuses = {
-            bloodtalons = true,
-            tigersFury = true
-        },
-        isTalent = true,
-        baseline = true
-    })
-    self.maim = TRB.Classes.SpellComboPointThreshold:New({
-        id = 22570,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPoints = true,
-        settingKey = "maim",
-        hasCooldown = true,
-        cooldown = 20,
-        isTalent = true
-    })
+    ---@type TRB.Classes.Druid.DruidBaseSpells
+    local base = TRB.Classes.Druid.DruidBaseSpells
+    self = setmetatable(base:New(),  TRB.Classes.Druid.FeralSpells) --[[@as TRB.Classes.Druid.FeralSpells]]
 
     -- Feral Spec Baseline Abilities
     self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
@@ -436,37 +459,19 @@ function TRB.Classes.Druid.FeralSpells:New()
 end
 
 
----@class TRB.Classes.Druid.GuardianSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Druid.GuardianSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public berserk TRB.Classes.SpellBase
 ---@field public incarnationGuardianOfUrsoc TRB.Classes.SpellBase
----@field public frenziedRegeneration TRB.Classes.SpellThreshold
----@field public ironfur TRB.Classes.SpellThreshold
 ---@field public maul TRB.Classes.SpellThreshold
 ---@field public raze TRB.Classes.SpellThreshold
-TRB.Classes.Druid.GuardianSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Druid.GuardianSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.GuardianSpells.__index = TRB.Classes.Druid.GuardianSpells
 
 function TRB.Classes.Druid.GuardianSpells:New()
-    ---@type TRB.Classes.SpecializationSpellsBase
-    local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), {__index = TRB.Classes.Druid.GuardianSpells})
+    ---@type TRB.Classes.Druid.DruidBaseSpells
+    local base = TRB.Classes.Druid.DruidBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Druid.GuardianSpells) --[[@as TRB.Classes.Druid.GuardianSpells]]
 
-    
-    self.frenziedRegeneration = TRB.Classes.SpellThreshold:New({
-        id = 22842,
-        isTalent = true,
-        primaryResourceType = Enum.PowerType.Rage,
-        settingKey = "frenziedRegeneration",
-        hasCooldown = true,
-		rangeCheck = false
-    })
-    self.ironfur = TRB.Classes.SpellThreshold:New({
-        id = 192081,
-        isTalent = true,
-        primaryResourceType = Enum.PowerType.Rage,
-        settingKey = "ironfur",
-		rangeCheck = false
-    })
     self.maul = TRB.Classes.SpellThreshold:New({
         id = 6807,
         isTalent = true,
@@ -497,20 +502,28 @@ function TRB.Classes.Druid.GuardianSpells:New()
 end
 
 
----@class TRB.Classes.Druid.RestorationSpells : TRB.Classes.Healer.HealerSpells
+---@class TRB.Classes.Druid.RestorationSpells : TRB.Classes.Healer.HealerSpells, TRB.Classes.Druid.DruidBaseSpells
 ---@field public efflorescence TRB.Classes.SpellBase
 ---@field public lifetreading TRB.Classes.SpellBase
 ---@field public lifebloom TRB.Classes.SpellBase
 ---@field public incarnationTreeOfLife TRB.Classes.SpellBase
 ---@field public cenariusGuidance TRB.Classes.SpellBase
 ---@field public clearcasting TRB.Classes.SpellBase
-TRB.Classes.Druid.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
+TRB.Classes.Druid.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.RestorationSpells.__index = TRB.Classes.Druid.RestorationSpells
 
 function TRB.Classes.Druid.RestorationSpells:New()
-    ---@type TRB.Classes.Healer.HealerSpells
-    local base = TRB.Classes.Healer.HealerSpells
-    self = setmetatable(base:New(), {__index = TRB.Classes.Druid.RestorationSpells})
+    ---@type TRB.Classes.Druid.DruidBaseSpells
+    local druidBase = TRB.Classes.Druid.DruidBaseSpells
+    self = setmetatable(druidBase:New(), TRB.Classes.Druid.RestorationSpells) --[[@as TRB.Classes.Druid.RestorationSpells]]
+    
+    -- Mixin HealerSpells abilities
+    local healerSpells = TRB.Classes.Healer.HealerSpells:New()
+    for k, v in pairs(healerSpells) do
+        if self[k] == nil then -- Don't override DruidBaseSpells abilities
+            self[k] = v
+        end
+    end
 
     -- Restoration Spec Talents
     self.efflorescence = TRB.Classes.SpellBase:New({

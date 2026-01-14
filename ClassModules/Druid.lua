@@ -555,6 +555,51 @@ local function FillSpellData_Restoration()
 	}
 end
 
+---@alias trbDruidForm
+---| '"humanoid"'		# nil
+---| '"cat"'			# 1
+---| '"treeOfLife"'		# 2
+---| '"travel"'			# 3
+---| '"aquatic"'		# 4
+---| '"bear"'			# 5
+---| '"swiftFlight"'	# 27
+---| '"flight"'			# 29
+---| '"moonkin"'		# 31-35
+---| '"treant"'			# 36
+
+local function UpdateShapeshiftForm()
+	local formId = GetShapeshiftFormID()
+	TRB.Data.character.currentShapeshiftFormId = formId
+
+	if formId == 0 then
+		TRB.Data.character.currentShapeshiftForm = "humanoid"
+	elseif formId == 1 then
+		TRB.Data.character.currentShapeshiftForm = "cat"
+	elseif formId == 2 then
+		TRB.Data.character.currentShapeshiftForm = "treeOfLife"
+	elseif formId == 3 then
+		TRB.Data.character.currentShapeshiftForm = "travel"
+	elseif formId == 4 then
+		TRB.Data.character.currentShapeshiftForm = "aquatic"
+	elseif formId == 5 then
+		TRB.Data.character.currentShapeshiftForm = "bear"
+	elseif formId == 27 then
+		TRB.Data.character.currentShapeshiftForm = "swiftFlight"
+	elseif formId == 29 then
+		TRB.Data.character.currentShapeshiftForm = "flight"
+	elseif formId >= 31 and formId <= 35 then
+		TRB.Data.character.currentShapeshiftForm = "moonkin"
+	elseif formId == 36 then
+		TRB.Data.character.currentShapeshiftForm = "treant"
+	else
+		TRB.Data.character.currentShapeshiftForm = "humanoid"
+	end
+end
+
+local shapeshiftFrame = CreateFrame("Frame")
+shapeshiftFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+shapeshiftFrame:SetScript("OnEvent", UpdateShapeshiftForm)
+
 local function GetCurrentMoonSpell()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -757,8 +802,8 @@ local function RefreshLookupData_Balance()
 		castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	end
 	
-	--New Moon
 	local currentMoonIcon = spells.newMoon.icon
+	--New Moon
 	
 	--$eclipseTime
 	local _eclispeTime, eclipseIcon = GetEclipseRemainingTime()

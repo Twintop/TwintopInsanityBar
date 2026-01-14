@@ -76,16 +76,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "sliceAndDice",
         hasCooldown = false,
         isSnowflake = true,
-        pandemicTimes = {
-            12 * 0.3, -- 0 CP, show same as if we had 1
-            12 * 0.3,
-            18 * 0.3,
-            24 * 0.3,
-            30 * 0.3,
-            36 * 0.3,
-            42 * 0.3,
-            48 * 0.3
-        },
         baseline = true,
         rangeCheck = false
     })
@@ -239,16 +229,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         settingKey = "rupture",
-        pandemicTimes = {
-            8 * 0.3, -- 0 CP, show same as if we had 1
-            8 * 0.3,
-            12 * 0.3,
-            16 * 0.3,
-            20 * 0.3,
-            24 * 0.3,
-            28 * 0.3,
-            32 * 0.3,
-        },
         baseline = true
     })
 
@@ -257,16 +237,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         settingKey = "crimsonTempest",
-        pandemicTimes = {
-            6 * 0.3, -- 0 CP, show same as if we had 1
-            6 * 0.3,
-            8 * 0.3,
-            10 * 0.3,
-            12 * 0.3,
-            14 * 0.3,
-            16 * 0.3,
-            18 * 0.3, -- Kyrian ability buff
-        },
         isTalent = true,
         rangeCheck = false
     })
