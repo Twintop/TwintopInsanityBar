@@ -10,6 +10,10 @@ local content = [====[
 *Localization of the addon is still underway! If you have any interest in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
 # 12.0.0.0-beta12 (2026-01-14)
+## [#462](#462) General
+
+- Re-enable bar border and resource text overcap notifications via color change. Unfortunately, it is not possible to re-enable the audio cue at this time due to API limitations.
+
 ## Shaman
 ### [#484](#484) Enhancement
 
