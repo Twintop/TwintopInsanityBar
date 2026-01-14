@@ -225,7 +225,7 @@ local function ConstructMiscellaneousPanel(parent)
 		TRB.Data.settings.core.timers.precisionLow = value
 	end)
 	
-	title = L["TimerBelowPrecision"]
+	title = L["TimerAbovePrecision"]
 	controls.timersHighPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionHigh, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.timersHighPrecision:SetScript("OnValueChanged", function(self, value)

@@ -939,6 +939,17 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookup["||r"] = string.format("%s", "|r")
 	lookup["%%"] = "%"
 
+	--$inCombatTime
+	local inCombatTime = "00:00"
+	local _inCombatTime = 0
+	if TRB.Data.character.inCombat and TRB.Data.character.combatStartTime ~= nil then
+		_inCombatTime = GetTime() - TRB.Data.character.combatStartTime
+		local minutes = math.floor(_inCombatTime / 60)
+		local seconds = math.floor(_inCombatTime - (minutes * 60))
+		inCombatTime = string.format("%02d:%02d", minutes, seconds)
+	end
+	lookup["$inCombatTime"] = inCombatTime
+	lookupLogic["$inCombatTime"] = _inCombatTime
 	--#castingIcon
 	local castingIcon = snapshotData.casting.icon or ""
 	local castingAmount = snapshotData.casting.resourceFinal or 0
@@ -991,6 +1002,10 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	elseif var == "$stam" or var == "$stamina" then
 		valid = true
 	elseif var == "$inCombat" then
+		if TRB.Data.character.inCombat then
+			valid = true
+		end
+	elseif var == "$inCombatTime" then
 		if TRB.Data.character.inCombat then
 			valid = true
 		end

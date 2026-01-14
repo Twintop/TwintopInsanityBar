@@ -242,8 +242,10 @@ TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFra
 TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_REGEN_DISABLED" then
 		TRB.Data.character.inCombat = true
+		TRB.Data.character.combatStartTime = GetTime()
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		TRB.Data.character.inCombat = false
+		TRB.Data.character.combatStartTime = nil
 	end
 	TRB.Functions.Bar:ShowResourceBar()
 end)
