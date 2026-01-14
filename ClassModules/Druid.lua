@@ -727,33 +727,31 @@ local function RefreshLookupData_Balance()
 	local currentAstralPowerColor = sharedSettings.colors.text.current.color
 	local castingAstralPowerColor = sharedSettings.colors.text.casting.color
 
-	local astralPowerThreshold = math.min(spells.starsurge:GetPrimaryResourceCost(), spells.starfall:GetPrimaryResourceCost())
-
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled and normalizedAstralPower >= astralPowerThreshold then
+		if sharedSettings.colors.text.overThreshold.enabled and (spells.starsurge:IsUsable() or spells.starfall:IsUsable()) then
 			currentAstralPowerColor = sharedSettings.colors.text.overThreshold.color
 			castingAstralPowerColor = sharedSettings.colors.text.overThreshold.color
 		end
 	end
 
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentAstralPowerColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentAstralPowerColor,
-			sharedSettings.colors.text.overcap.color,
-			normalizedAstralPower,
-			TRB.Data.character.maxResource,
-			"balance_text"
-		)
-	end
-
-	--$astralPower
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentAstralPower = normalizedAstralPower
-	local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, _currentAstralPower)-- TRB.Functions.Number:RoundTo(normalizedAstralPower, resourcePrecision, "floor"))
-	--$casting
-	local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+	local currentAstralPower
+	local castingAstralPower
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		--$astralPower
+		currentAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentAstralPower))
+		--$casting
+		castingAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+	else
+		--$astralPower
+		currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, _currentAstralPower)
+		--$casting
+		castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+	end
 	
 	--New Moon
 	local currentMoonIcon = spells.newMoon.icon
@@ -1517,17 +1515,13 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.overcapEnabled then
-					barBorderColor = TRB.Functions.Color:GetOvercapColor(
-						specCacheSettings,
-						barBorderColor,
-						specSettings.colors.bar.borderOvercap,
-						currentResource,
-						TRB.Data.character.maxResource,
-						"balance_border"
-					)
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				else
+					primaryNode:SetBorderColor(barBorderColor)
 				end
-				
-				primaryNode:SetBorderColor(barBorderColor)
+
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)

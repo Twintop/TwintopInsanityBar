@@ -303,3 +303,36 @@ end
 function TRB.Functions.Color:ClearOvercapColorCurveCache()
 	TRB.Data.cache.overcapColorCurves = {}
 end
+
+---Builds an overcap ColorCurve for use with UnitPowerPercent
+---@param specSettings table The spec-specific settings table (e.g., specSettings.overcap)
+---@param normalColor string The normal color hex string (e.g., "FF00FF00")
+---@param overcapColor string The overcap color hex string
+---@return table colorCurve A ColorCurve object ready for UnitPowerPercent
+function TRB.Functions.Color:BuildOvercapCurve(specSettings, normalColor, overcapColor)
+	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
+	local overcapThreshold = maxResource
+
+	if specSettings and specSettings.overcap then
+		if specSettings.overcap.mode == "relative" then
+			overcapThreshold = maxResource + (specSettings.overcap.relative or 0)
+		else
+			overcapThreshold = specSettings.overcap.fixed or maxResource
+		end
+	end
+
+	local overcapPercent = overcapThreshold / maxResource
+
+	local normalR, normalG, normalB, normalA = TRB.Functions.Color:GetRGBAFromString(normalColor, true)
+	local overcapR, overcapG, overcapB, overcapA = TRB.Functions.Color:GetRGBAFromString(overcapColor, true)
+
+	local normalColorObj = CreateColor(normalR, normalG, normalB, normalA)
+	local overcapColorObj = CreateColor(overcapR, overcapG, overcapB, overcapA)
+
+	local colorCurve = C_CurveUtil.CreateColorCurve()
+	colorCurve:SetType(Enum.LuaCurveType.Step)
+	colorCurve:AddPoint(0, normalColorObj)
+	colorCurve:AddPoint(overcapPercent, overcapColorObj)
+
+	return colorCurve
+end

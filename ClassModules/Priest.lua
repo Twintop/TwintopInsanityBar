@@ -980,32 +980,9 @@ local function RefreshLookupData_Shadow()
 
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		-- Build overcap text curve (same pattern as border)
-		local maxResource = TRB.Data.character.maxResourceUnmodified or 100
-		local overcapSettings = specSettings.overcap
-		local overcapThreshold = maxResource
-		if overcapSettings then
-			if overcapSettings.mode == "relative" then
-				overcapThreshold = maxResource + (overcapSettings.relative or 0)
-			else
-				overcapThreshold = overcapSettings.fixed or maxResource
-			end
-		end
-		local overcapPercent = overcapThreshold / maxResource
-		
-		local normalR, normalG, normalB, normalA = TRB.Functions.Color:GetRGBAFromString(currentInsanityColor, true)
-		local overcapR, overcapG, overcapB, overcapA = TRB.Functions.Color:GetRGBAFromString(sharedSettings.colors.text.overcap.color, true)
-		
-		local normalColorObj = CreateColor(normalR, normalG, normalB, normalA)
-		local overcapColorObj = CreateColor(overcapR, overcapG, overcapB, overcapA)
-		
-		local overcapTextCurve = C_CurveUtil.CreateColorCurve()
-		overcapTextCurve:SetType(Enum.LuaCurveType.Step)
-		overcapTextCurve:AddPoint(0, normalColorObj)
-		overcapTextCurve:AddPoint(overcapPercent, overcapColorObj)
-		
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentInsanityColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentInsanity = textColorResult:WrapTextInColorCode(_currentInsanity)-- TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
+		currentInsanity = textColorResult:WrapTextInColorCode(_currentInsanity)
 		castingInsanity = textColorResult:WrapTextInColorCode(TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
 	else
 		currentInsanity = string.format("|c%s%s|r", currentInsanityColor, _currentInsanity)-- TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
@@ -1782,37 +1759,9 @@ local function UpdateResourceBar()
 				end
 
 				-- Build overcap border curve if enabled
-				-- The curve transitions from current barBorderColor to overcap border color at the threshold
 				local overcapBorderCurve = nil
 				if specSettings.colors.bar.overcapEnabled then
-					-- Use maxResourceUnmodified (display value, e.g., 100 for Insanity) not maxResource (raw value, e.g., 15000)
-					-- because overcap settings are in display units
-					local maxResource = TRB.Data.character.maxResourceUnmodified or 100
-					local overcapSettings = specSettings.overcap
-					local overcapThreshold = maxResource
-					if overcapSettings then
-						if overcapSettings.mode == "relative" then
-							overcapThreshold = maxResource + (overcapSettings.relative or 0)
-						else
-							overcapThreshold = overcapSettings.fixed or maxResource
-						end
-					end
-					-- Calculate threshold as percentage of max resource (0-1 range)
-					local overcapPercent = overcapThreshold / maxResource
-					
-					local normalR, normalG, normalB, normalA = TRB.Functions.Color:GetRGBAFromString(barBorderColor, true)
-					local overcapR, overcapG, overcapB, overcapA = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true)
-					
-					local normalColorObj = CreateColor(normalR, normalG, normalB, normalA)
-					local overcapColorObj = CreateColor(overcapR, overcapG, overcapB, overcapA)
-					
-					overcapBorderCurve = C_CurveUtil.CreateColorCurve()
-					overcapBorderCurve:SetType(Enum.LuaCurveType.Step)
-					-- Step curves: color at point X applies from X% until the next point
-					-- Point at 0 = use normalColor from 0% until overcapPercent
-					-- Point at overcapPercent = use overcapColor from overcapPercent onwards
-					overcapBorderCurve:AddPoint(0, normalColorObj)
-					overcapBorderCurve:AddPoint(overcapPercent, overcapColorObj)
+					overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 				end
 
 				-- Get resourceFrame and thresholds from the BarNode

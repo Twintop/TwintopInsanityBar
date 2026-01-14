@@ -484,28 +484,28 @@ local function RefreshLookupData_Elemental()
 	end
 
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled and snapshotData.attributes.resource >= maelstromThreshold then
+		if sharedSettings.colors.text.overThreshold.enabled and (spells.earthShock:IsUsable() or spells.elementalBlast:IsUsable()) then
 			currentMaelstromColor = sharedSettings.colors.text.overThreshold.color
 			castingMaelstromColor = sharedSettings.colors.text.overThreshold.color
 		end
 	end
 
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	local currentMaelstrom
+	local castingMaelstrom
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
-		currentMaelstromColor = TRB.Functions.Color:GetOvercapColor(
-			sharedSettings,
-			currentMaelstromColor,
-			sharedSettings.colors.text.overcap.color,
-			snapshotData.attributes.resource,
-			TRB.Data.character.maxResource,
-			"elemental_text"
-		)
+		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentMaelstromColor, sharedSettings.colors.text.overcap.color)
+		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+		--$maelstrom
+		currentMaelstrom = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.attributes.resource))
+		--$casting
+		castingMaelstrom = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
+	else
+		--$maelstrom
+		currentMaelstrom = string.format("|c%s%.0f|r", currentMaelstromColor, snapshotData.attributes.resource)
+		--$casting
+		castingMaelstrom = string.format("|c%s%.0f|r", castingMaelstromColor, snapshotData.casting.resourceFinal)
 	end
-
-	--$maelstrom
-	local currentMaelstrom = string.format("|c%s%.0f|r", currentMaelstromColor, snapshotData.attributes.resource)
-	--$casting
-	local castingMaelstrom = string.format("|c%s%.0f|r", castingMaelstromColor, snapshotData.casting.resourceFinal)
 	
 	--[[
 	----------
@@ -1058,17 +1058,13 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.overcapEnabled then
-					barBorderColor = TRB.Functions.Color:GetOvercapColor(
-						specCacheSettings,
-						barBorderColor,
-						specSettings.colors.bar.borderOvercap,
-						currentResource,
-						TRB.Data.character.maxResource,
-						"elemental_border"
-					)
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				else
+					primaryNode:SetBorderColor(barBorderColor)
 				end
 
-				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
