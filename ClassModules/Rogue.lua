@@ -696,6 +696,18 @@ local function RefreshLookupData_Assassination()
 		end
 	end
 
+	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentEnergyColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"assassination_text"
+		)
+	end
+
 	if snapshotData.casting.resourceFinal < 0 then
 		castingEnergyColor = sharedSettings.colors.text.spending.color
 	end
@@ -770,6 +782,18 @@ local function RefreshLookupData_Outlaw()
 				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
+	end
+
+	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentEnergyColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"outlaw_text"
+		)
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
@@ -914,6 +938,18 @@ local function RefreshLookupData_Subtlety()
 				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
+	end
+
+	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentEnergyColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"subtlety_text"
+		)
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
@@ -1221,6 +1257,16 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				if IsStealthed() or stealthViaBuff then
 					barBorderColor = specSettings.colors.bar.borderStealth
+				elseif specSettings.colors.bar.overcapEnabled then
+					-- Apply overcap border color if enabled (skipped when stealthed)
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						snapshotData.attributes.resource,
+						TRB.Data.character.maxResource,
+						"assassination_border"
+					)
 				end
 
 				if barGroups and barGroups.primary then
@@ -1515,6 +1561,16 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderRtbGood
 				elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == false and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 					barBorderColor = specSettings.colors.bar.borderRtbBad]]
+				elseif specSettings.colors.bar.overcapEnabled then
+					-- Apply overcap border color if enabled (skipped when stealthed)
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						snapshotData.attributes.resource,
+						TRB.Data.character.maxResource,
+						"outlaw_border"
+					)
 				end
 
 				if barGroups and barGroups.primary then
@@ -1794,6 +1850,16 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.borderShadowcraft
 				elseif stealthViaBuff or IsStealthed() then
 					barBorderColor = specSettings.colors.bar.borderStealth
+				elseif specSettings.colors.bar.overcapEnabled then
+					-- Apply overcap border color if enabled (skipped when stealthed)
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						snapshotData.attributes.resource,
+						TRB.Data.character.maxResource,
+						"subtlety_border"
+					)
 				end
 
 				if barGroups and barGroups.primary then

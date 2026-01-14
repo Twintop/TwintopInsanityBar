@@ -525,6 +525,18 @@ local function RefreshLookupData_Brewmaster()
 		end
 	end
 
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentEnergyColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"brewmaster_text"
+		)
+	end
+
 	--$energy
 	local currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, snapshotData.attributes.resource)
 	--$casting
@@ -536,7 +548,7 @@ local function RefreshLookupData_Brewmaster()
 
 	-- Get stagger color from ColorCurve result, fallback to low color from custom bar settings
 	local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
-	local staggerColor = staggerColors.low and staggerColors.low.color or "FF85FF85"
+	local staggerColor = staggerColors.low and staggerColors.low.color
 	if snapshotData.attributes.staggerColor then
 		local r, g, b, a = snapshotData.attributes.staggerColor:GetRGBA()
 		staggerColor = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
@@ -646,6 +658,18 @@ local function RefreshLookupData_Windwalker()
 				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
+	end
+
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentEnergyColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"windwalker_text"
+		)
 	end
 
 	--$energy
@@ -1004,6 +1028,18 @@ local function UpdateResourceBar()
 					local barBorderColor = specSettings.colors.bar.border
 					local barColor = specSettings.colors.bar.base
 
+					-- Apply overcap border color if enabled
+					if specSettings.colors.bar.overcapEnabled then
+						barBorderColor = TRB.Functions.Color:GetOvercapColor(
+							specCacheSettings,
+							barBorderColor,
+							specSettings.colors.bar.borderOvercap,
+							snapshotData.attributes.resource,
+							TRB.Data.character.maxResource,
+							"brewmaster_border"
+						)
+					end
+
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
@@ -1240,6 +1276,18 @@ local function UpdateResourceBar()
 						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
 					elseif snapshots[spells.danceOfChiJi.id].buff.isActive then
 						barBorderColor = specSettings.colors.bar.borderChiJi
+					end
+
+					-- Apply overcap border color if enabled
+					if specSettings.colors.bar.overcapEnabled then
+						barBorderColor = TRB.Functions.Color:GetOvercapColor(
+							specCacheSettings,
+							barBorderColor,
+							specSettings.colors.bar.borderOvercap,
+							snapshotData.attributes.resource,
+							TRB.Data.character.maxResource,
+							"windwalker_border"
+						)
 					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)

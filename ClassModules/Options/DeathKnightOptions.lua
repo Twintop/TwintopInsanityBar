@@ -226,6 +226,11 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -239,10 +244,16 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				},
 				passive = {
 					color = "FF8080FF"
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FF009ABD",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FF00D1FF",
 			},
@@ -360,6 +371,11 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -373,10 +389,16 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				},
 				passive = {
 					color = "FF8080FF"
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FF009ABD",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FF00D1FF",
 			},
@@ -487,6 +509,11 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -500,10 +527,16 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				},
 				passive = {
 					color = "FF8080FF"
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FF009ABD",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FF00D1FF",
 			},
@@ -763,6 +796,9 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 1, yCoord)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], BLOOD_MAX_RUNIC_POWER)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], 1, BLOOD_MAX_RUNIC_POWER)
 end
 
@@ -856,6 +892,24 @@ local function BloodConstructFontAndTextPanel(parent)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DeathKnightCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 1, yCoord)
@@ -1193,6 +1247,9 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 2, yCoord)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], FROST_MAX_RUNIC_POWER)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], 1, FROST_MAX_RUNIC_POWER)
 end
 
@@ -1309,6 +1366,24 @@ local function FrostConstructFontAndTextPanel(parent)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DeathKnightCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 2, yCoord)
@@ -1639,6 +1714,9 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 3, yCoord)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], UNHOLY_MAX_RUNIC_POWER)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], 1, UNHOLY_MAX_RUNIC_POWER)
 end
 
@@ -1733,6 +1811,24 @@ local function UnholyConstructFontAndTextPanel(parent)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DeathKnightCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 3, yCoord)

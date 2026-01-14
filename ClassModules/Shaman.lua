@@ -490,6 +490,18 @@ local function RefreshLookupData_Elemental()
 		end
 	end
 
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentMaelstromColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentMaelstromColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"elemental_text"
+		)
+	end
+
 	--$maelstrom
 	local currentMaelstrom = string.format("|c%s%.0f|r", currentMaelstromColor, snapshotData.attributes.resource)
 	--$casting
@@ -1042,6 +1054,18 @@ local function UpdateResourceBar()
 					else
 						barColor = specSettings.colors.bar.inAscendance
 					end
+				end
+
+				-- Apply overcap border color if enabled
+				if specSettings.colors.bar.overcapEnabled then
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						currentResource,
+						TRB.Data.character.maxResource,
+						"elemental_border"
+					)
 				end
 
 				primaryNode:SetBorderColor(barBorderColor)

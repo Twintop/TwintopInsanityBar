@@ -394,13 +394,11 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			secondary = 2,
 			resource = 0
 		},
-		auspiciousSpiritsTracker=true,
-		voidTendrilTracker=true,
 		thresholds = {
 			properties = {
 				width = 2,
 				overlapBorder=true
-			},			
+			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			specProperties = {
 				shadowWordMadnessThresholdOnlyOverShow = false,
@@ -427,6 +425,11 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			mana = "never",
 			dragonriding = true
+		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -459,10 +462,16 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				},
 				hasteBelow="FFFFFFFF",
 				hasteApproaching="FFFFFF00",
-				hasteAbove="FF00FF00"
+				hasteAbove="FF00FF00",
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FF431863",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				borderMindFlayInsanity="FF00FF00",
 				background="66000000",
 				base="FF763BAF",
@@ -2033,6 +2042,9 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], SHADOW_MAX_INSANITY)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], 1, SHADOW_MAX_INSANITY)
 end
 
@@ -2156,6 +2168,12 @@ local function ShadowConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2166,6 +2184,16 @@ local function ShadowConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["PriestShadowCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

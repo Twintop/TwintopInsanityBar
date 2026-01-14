@@ -494,6 +494,18 @@ local function RefreshLookupData_Havoc()
 		end
 	end
 
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentFuryColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentFuryColor,
+			sharedSettings.colors.text.overcap.color,
+			normalizedResource,
+			TRB.Data.character.maxResource,
+			"havoc_text"
+		)
+	end
+
 	--$metamorphosisTime
 	local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 	local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
@@ -558,6 +570,19 @@ local function RefreshLookupData_Vengeance()
 			end
 		end
 	end
+
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentFuryColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentFuryColor,
+			sharedSettings.colors.text.overcap.color,
+			normalizedResource,
+			TRB.Data.character.maxResource,
+			"vengeance_text"
+		)
+	end
+
 	--$metamorphosisTime
 	local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 	local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
@@ -635,6 +660,18 @@ local function RefreshLookupData_Devourer()
 				currentFuryColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
+	end
+
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentFuryColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentFuryColor,
+			sharedSettings.colors.text.overcap.color,
+			normalizedResource,
+			TRB.Data.character.maxResource,
+			"devourer_text"
+		)
 	end
 
 	--$metamorphosisTime
@@ -968,6 +1005,18 @@ local function UpdateResourceBar()
 
 					local barBorderColor = specSettings.colors.bar.border
 
+					-- Apply overcap border color if enabled
+					if specSettings.colors.bar.overcapEnabled then
+						barBorderColor = TRB.Functions.Color:GetOvercapColor(
+							specSettings,
+							barBorderColor,
+							specSettings.colors.bar.borderOvercap,
+							currentResource,
+							TRB.Data.character.maxResource,
+							"havoc_border"
+						)
+					end
+
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
@@ -1092,6 +1141,18 @@ local function UpdateResourceBar()
 					end
 
 					local barBorderColor = specSettings.colors.bar.border
+
+					-- Apply overcap border color if enabled
+					if specSettings.colors.bar.overcapEnabled then
+						barBorderColor = TRB.Functions.Color:GetOvercapColor(
+							specSettings,
+							barBorderColor,
+							specSettings.colors.bar.borderOvercap,
+							currentResource,
+							TRB.Data.character.maxResource,
+							"vengeance_border"
+						)
+					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
@@ -1242,6 +1303,19 @@ local function UpdateResourceBar()
 					end
 
 					local barBorderColor = specSettings.colors.bar.border
+
+					-- Apply overcap border color if enabled
+					if specSettings.colors.bar.overcapEnabled then
+						barBorderColor = TRB.Functions.Color:GetOvercapColor(
+							specSettings,
+							barBorderColor,
+							specSettings.colors.bar.borderOvercap,
+							currentResource,
+							TRB.Data.character.maxResource,
+							"devourer_border"
+						)
+					end
+
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)

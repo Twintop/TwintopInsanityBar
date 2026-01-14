@@ -109,6 +109,11 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 			gcdsMax=2,
 			timeMax=3.0
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
@@ -131,10 +136,16 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				},
 				manaBar = {
 					color = "FF0000FF"
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FF00008D",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FF0055FF",
 				earthShock="FF00096A",
@@ -730,6 +741,9 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], ELEMENTAL_MAX_MAELSTROM)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], 1, ELEMENTAL_MAX_MAELSTROM)
 end
 
@@ -838,6 +852,12 @@ local function ElementalConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -848,6 +868,16 @@ local function ElementalConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["ShamanElementalCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

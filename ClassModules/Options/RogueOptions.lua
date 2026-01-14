@@ -125,6 +125,11 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -142,10 +147,16 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFFFD300",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				borderStealth="FF000000",
 				background="66000000",
 				base="FFFFFF00"
@@ -322,6 +333,11 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -339,10 +355,16 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFFFD300",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				borderStealth="FF000000",
 				borderRtbBad="FFFF8888",
 				borderRtbGood="FF00FF00",
@@ -530,6 +552,11 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -547,10 +574,16 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFFFD300",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				borderStealth="FF000000",
 				borderShadowcraft = "FF431863",
 				background="66000000",
@@ -865,6 +898,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 4, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], ASSASSINATION_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 1, ASSASSINATION_MAX_ENERGY)
@@ -1189,6 +1225,12 @@ local function AssassinationConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overThresholdEnabled
@@ -1198,6 +1240,16 @@ local function AssassinationConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["RogueCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 1, yCoord)
@@ -1605,6 +1657,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 4, 2, yCoord)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], OUTLAW_MAX_ENERGY)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 1, OUTLAW_MAX_ENERGY)
 end
 
@@ -1928,6 +1983,12 @@ local function OutlawConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1938,6 +1999,16 @@ local function OutlawConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["RogueCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 2, yCoord)
@@ -2342,6 +2413,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 4, 3, yCoord)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], SUBTLETY_MAX_ENERGY)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 1, SUBTLETY_MAX_ENERGY)
 end
 
@@ -2656,6 +2730,12 @@ local function SubtletyConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2666,6 +2746,16 @@ local function SubtletyConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["RogueCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 3, yCoord)

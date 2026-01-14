@@ -144,6 +144,11 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 			gcdsMax=2,
 			timeMax=3.0
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
@@ -163,10 +168,16 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFAB5124",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FFFF8040",
 				flashAlpha=0.70,
@@ -333,6 +344,11 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 			gcdsMax=2,
 			timeMax=3.0
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
@@ -352,10 +368,16 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFAB5124",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FFFF8040",
 				trueshot="FF00B60E",
@@ -493,6 +515,11 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
@@ -512,10 +539,16 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFAB5124",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FFFF8040",
 				flashAlpha=0.70,
@@ -827,6 +860,9 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		self.EditBox:SetText(value)
 		spec.endOfBestialWrath.timeMax = value
 	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], BEAST_MASTERY_MAX_FOCUS)
 	
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
@@ -1009,6 +1045,12 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1019,6 +1061,16 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 1, yCoord)
@@ -1388,6 +1440,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], MARKSMANSHIP_MAX_FOCUS)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 1, MARKSMANSHIP_MAX_FOCUS)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
@@ -1590,6 +1645,12 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1600,6 +1661,16 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 2, yCoord)
@@ -1976,6 +2047,9 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], SURVIVAL_MAX_FOCUS)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 1, SURVIVAL_MAX_FOCUS)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
@@ -2126,6 +2200,12 @@ local function SurvivalConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -2136,6 +2216,16 @@ local function SurvivalConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 3, yCoord)

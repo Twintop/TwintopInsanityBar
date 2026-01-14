@@ -70,6 +70,7 @@ local function UpdateResourceValues()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
 	snapshotData.attributes.resourceModified = UnitPower("player", TRB.Data.resource, false)
+	snapshotData.attributes.resourcePercent = UnitPowerPercent("player", TRB.Data.resource, true, CurveConstants.ScaleTo100)
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "SPELL" then
 			--Do nothing, this is handled by UNIT_AURA
@@ -176,6 +177,68 @@ function TRB.Functions.Character:UpdateHealthValues()
 	end
 end
 
+---Updates the overcap color based on current resource percentage and overcap settings
+---Stores the result in snapshotData.attributes.overcapColor (raw ColorMixin object)
+function TRB.Functions.Character:UpdateOvercapColor()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	
+	-- Get spec settings
+	local specSettings = nil
+	local sharedSettings = nil
+	if TRB.Data.settings and TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+		local classSettings = TRB.Data.settings[TRB.Data.character.className]
+		if classSettings then
+			specSettings = classSettings[TRB.Data.character.specName]
+		end
+		if TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.specName] then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		end
+	end
+	
+	-- Need both settings objects
+	if specSettings == nil or specSettings.overcap == nil then
+		snapshotData.attributes.overcapColor = nil
+		return
+	end
+	
+	if sharedSettings == nil or sharedSettings.colors == nil or sharedSettings.colors.text == nil or sharedSettings.colors.text.overcap == nil then
+		snapshotData.attributes.overcapColor = nil
+		return
+	end
+	
+	-- Get the normal and overcap colors
+	local normalColor = sharedSettings.colors.text.current.color
+	local overcapColor = sharedSettings.colors.text.overcap.color
+	local maxResource = TRB.Data.character.maxResource or 100
+	
+	-- Calculate the overcap threshold as a percentage
+	local overcapThreshold
+	if specSettings.overcap.mode == "relative" then
+		overcapThreshold = maxResource + (specSettings.overcap.relative or 0)
+	else
+		overcapThreshold = specSettings.overcap.fixed or maxResource
+	end
+	local overcapPercent = overcapThreshold / maxResource
+	
+	-- Get RGBA from colors
+	local normalR, normalG, normalB, normalA = TRB.Functions.Color:GetRGBAFromString(normalColor, true)
+	local overcapR, overcapG, overcapB, overcapA = TRB.Functions.Color:GetRGBAFromString(overcapColor, true)
+	
+	local normalColorObj = CreateColor(normalR, normalG, normalB, normalA)
+	local overcapColorObj = CreateColor(overcapR, overcapG, overcapB, overcapA)
+	
+	-- Create the curve
+	local curve = C_CurveUtil.CreateColorCurve()
+	curve:SetType(Enum.LuaCurveType.Step)
+	curve:AddPoint(0, normalColorObj)
+	curve:AddPoint(overcapPercent, overcapColorObj)
+	curve:AddPoint(2.0, overcapColorObj) -- Extend beyond 100% for overflow
+	
+	-- Evaluate using UnitPowerPercent with the curve - returns the appropriate color
+	-- Store the raw color object (like healthColor) for use with SetVertexColor
+	snapshotData.attributes.overcapColor = UnitPowerPercent("player", TRB.Data.resource, true, curve)
+end
+
 ---Handles some change with the character's status
 ---@param self any
 ---@param event string
@@ -185,6 +248,7 @@ local function CharacterChange(self, event, ...)
 		local unitTarget, powerType = ...
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			UpdateResourceValues()
+			TRB.Functions.Character:UpdateOvercapColor()
 		end
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then
 		local unitTarget = ...
@@ -650,6 +714,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.text.spending = core.colors.text.spending
 		specCache.settings.colors.text.passive = core.colors.text.passive
 		specCache.settings.colors.text.overThreshold = core.colors.text.overThreshold
+		specCache.settings.colors.text.overcap = core.colors.text.overcap
 		-- manaBar is spec-specific (only for Shadow Priest, Balance Druid, Elemental Shaman), so always use spec colors
 		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
 	else
@@ -658,6 +723,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.text.spending = spec.colors.text.spending
 		specCache.settings.colors.text.passive = spec.colors.text.passive
 		specCache.settings.colors.text.overThreshold = spec.colors.text.overThreshold
+		specCache.settings.colors.text.overcap = spec.colors.text.overcap
 		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
 	end
 

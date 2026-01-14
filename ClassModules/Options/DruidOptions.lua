@@ -146,6 +146,11 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			gcdsMax=2,
 			timeMax=3.0
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
@@ -168,10 +173,16 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				},
 				manaBar = {
 					color = "FF0000FF"
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFC16920",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FFFF7C0A",
 				lunar="FF144D72",
@@ -469,6 +480,11 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -486,10 +502,16 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFFF7C0A",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				borderStealth="FF000000",
 				background="66000000",
 				base="FFFFFF00",
@@ -614,6 +636,11 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		endOfBerserk = {
@@ -636,10 +663,16 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFC21807",
+				overcapEnabled=true,
+				borderOvercap="FF800000",
 				background="66000000",
 				base="FFFF0000",
 				berserk = {
@@ -1063,6 +1096,9 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], BALANCE_MAX_ASTRAL_POWER)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], 1, BALANCE_MAX_ASTRAL_POWER)
 end
 
@@ -1230,6 +1266,12 @@ local function BalanceConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_Druid_Balance_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1240,6 +1282,16 @@ local function BalanceConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_Druid_Balance_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DruidBalanceCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30
@@ -1656,6 +1708,9 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 2, yCoord)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], FERAL_MAX_ENERGY)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 1, FERAL_MAX_ENERGY)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
@@ -1875,6 +1930,13 @@ local function FeralConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1885,6 +1947,16 @@ local function FeralConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DruidFeralCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 120
@@ -2253,6 +2325,9 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfBerserk.timeMax = value
 	end)
 
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], GUARDIAN_MAX_RAGE)
+
 	yCoord = yCoord - 25
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], 1, GUARDIAN_MAX_RAGE)
 
@@ -2363,14 +2438,32 @@ local function GuardianConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	yCoord = yCoord - 30
+
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_OverThreshold_CB", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.overThresholdEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 	f.tooltip = L["DruidGuardianCheckboxThresholdOverTooltip"]
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_OvercapText_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DruidGuardianCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30

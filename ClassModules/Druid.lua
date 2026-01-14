@@ -736,6 +736,18 @@ local function RefreshLookupData_Balance()
 		end
 	end
 
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentAstralPowerColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentAstralPowerColor,
+			sharedSettings.colors.text.overcap.color,
+			normalizedAstralPower,
+			TRB.Data.character.maxResource,
+			"balance_text"
+		)
+	end
+
 	--$astralPower
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentAstralPower = normalizedAstralPower
@@ -834,6 +846,19 @@ local function RefreshLookupData_Feral()
 				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
+	end
+
+	-- Apply overcap color if enabled (takes precedence over overThreshold, but not stealth)
+	-- Stealth takes precedence over overcap for Feral
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentEnergyColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentEnergyColor,
+			sharedSettings.colors.text.overcap.color,
+			normalizedEnergy,
+			TRB.Data.character.maxResource,
+			"feral_text"
+		)
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
@@ -935,6 +960,18 @@ local function RefreshLookupData_Guardian()
 				castingRageColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
+	end
+
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentRageColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentRageColor,
+			sharedSettings.colors.text.overcap.color,
+			normalizedRage,
+			TRB.Data.character.maxResource,
+			"guardian_text"
+		)
 	end
 
 	--$rage
@@ -1477,6 +1514,18 @@ local function UpdateResourceBar()
 						end
 					end
 				end
+
+				-- Apply overcap border color if enabled
+				if specSettings.colors.bar.overcapEnabled then
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						currentResource,
+						TRB.Data.character.maxResource,
+						"balance_border"
+					)
+				end
 				
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
@@ -1736,6 +1785,16 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				if IsStealthed() then
 					barBorderColor = specSettings.colors.bar.borderStealth
+				elseif specSettings.colors.bar.overcapEnabled then
+					-- Apply overcap border color if enabled (skipped when stealthed)
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						snapshotData.attributes.resource,
+						TRB.Data.character.maxResource,
+						"feral_border"
+					)
 				end
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
@@ -1922,8 +1981,21 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.berserk.color
 					end
 				end
+
+				local barBorderColor = specSettings.colors.bar.border
+				-- Apply overcap border color if enabled
+				if specSettings.colors.bar.overcapEnabled then
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						currentResource,
+						TRB.Data.character.maxResource,
+						"guardian_border"
+					)
+				end
 				
-				primaryNode:SetBorderColor(specSettings.colors.bar.border)
+				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)

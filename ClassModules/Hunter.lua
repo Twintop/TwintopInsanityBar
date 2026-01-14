@@ -466,6 +466,18 @@ local function RefreshLookupData_BeastMastery()
 		end
 	end
 
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentFocusColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentFocusColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"beastmastery_text"
+		)
+	end
+
 	if snapshotData.casting.resourceFinal < 0 then
 		castingFocusColor = sharedSettings.colors.text.spending.color
 	end
@@ -540,6 +552,18 @@ local function RefreshLookupData_Marksmanship()
 		end
 	end
 
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentFocusColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentFocusColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"marksmanship_text"
+		)
+	end
+
 	if snapshotData.casting.resourceFinal < 0 then
 		castingFocusColor = sharedSettings.colors.text.spending.color
 	end
@@ -604,6 +628,18 @@ local function RefreshLookupData_Survival()
 				castingFocusColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
+	end
+
+	-- Apply overcap color if enabled (takes precedence over overThreshold)
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+		currentFocusColor = TRB.Functions.Color:GetOvercapColor(
+			sharedSettings,
+			currentFocusColor,
+			sharedSettings.colors.text.overcap.color,
+			snapshotData.attributes.resource,
+			TRB.Data.character.maxResource,
+			"survival_text"
+		)
 	end
 
 	if snapshotData.casting.resourceFinal < 0 then
@@ -938,6 +974,18 @@ local function UpdateResourceBar()
 					barBorderColor = specSettings.colors.bar.beastCleave.color
 				end
 
+				-- Apply overcap border color if enabled
+				if specSettings.colors.bar.overcapEnabled then
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						snapshotData.attributes.resource,
+						TRB.Data.character.maxResource,
+						"beastmastery_border"
+					)
+				end
+
 				if spells.bestialWrath:IsUsable() then
 					if specSettings.colors.bar.flashEnabled then
 						TRB.Functions.Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
@@ -1152,6 +1200,18 @@ local function UpdateResourceBar()
 					end
 				end
 
+				-- Apply overcap border color if enabled
+				if specSettings.colors.bar.overcapEnabled then
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						snapshotData.attributes.resource,
+						TRB.Data.character.maxResource,
+						"marksmanship_border"
+					)
+				end
+
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
@@ -1254,6 +1314,18 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base
+
+				-- Apply overcap border color if enabled
+				if specSettings.colors.bar.overcapEnabled then
+					barBorderColor = TRB.Functions.Color:GetOvercapColor(
+						specCacheSettings,
+						barBorderColor,
+						specSettings.colors.bar.borderOvercap,
+						snapshotData.attributes.resource,
+						TRB.Data.character.maxResource,
+						"survival_border"
+					)
+				end
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				primaryNode:SetBorderColor(barBorderColor)

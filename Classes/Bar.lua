@@ -122,6 +122,16 @@ function TRB.Classes.BarNode:SetBorderColor(colorString)
 	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.borderFrame, self.name .. "_border", colorString)
 end
 
+---Sets the border color from a curve result
+---@diagnostic disable-next-line: undefined-doc-name
+---@param colorResult LuaCurveEvaluatedResult
+function TRB.Classes.BarNode:SetBorderColorCurve(colorResult)
+	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
+		return
+	end
+	self.borderFrame:SetBackdropBorderColor(colorResult:GetRGBA())
+end
+
 ---Sets the background color
 ---@param r number # Red (0-1)
 ---@param g number # Green (0-1)

@@ -148,6 +148,11 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
@@ -167,10 +172,16 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFFFD300",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FFFFFF00",
 			},
@@ -394,6 +405,11 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 			health = "combat",
 			dragonriding = true
 		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = 100
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -411,10 +427,16 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				overThreshold = {
 					color = "FF00FF00",
 					enabled = false
-				}
+				},
+				overcap = {
+					color = "FF800000",
+					enabled = true
+				},
 			},
 			bar = {
 				border="FFFFD300",
+				overcapEnabled=true,
+				borderOvercap="FFFF0000",
 				borderChiJi="FF00FF00",
 				background="66000000",
 				base="FFFFFF00",
@@ -668,7 +690,10 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], BREWMASTER_MAX_ENERGY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, BREWMASTER_MAX_ENERGY)
 end
 
 local function BrewmasterConstructThresholdPanel(parent)
@@ -884,6 +909,41 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+	end)	
+
+	yCoord = yCoord - 30
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	f = controls.colors.text.overThreshold
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+	end)
+
+	controls.colors.overcapText = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.overcapText
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overThresholdEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["MonkBrewmasterCheckboxThresholdOverTooltip"]
+	f:SetChecked(spec.colors.text.overThreshold.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["MonkBrewmasterCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 1, yCoord)
@@ -1683,6 +1743,9 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 3, yCoord)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
 end
 
@@ -1849,6 +1912,12 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
 	yCoord = yCoord - 30
 
 	controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
@@ -1859,6 +1928,16 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	f:SetChecked(spec.colors.text.overThreshold.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overThreshold.enabled = self:GetChecked()
+	end)
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["MonkCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 3, yCoord)

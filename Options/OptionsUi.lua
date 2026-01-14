@@ -3282,6 +3282,26 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
 	end)
 
+	if includeOvercap then
+		yCoord = yCoord - 30
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["BorderColorOvercapToggle"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = string.format(L["BorderColorOvercapToggleTooltip"], primaryResourceString)
+		f:SetChecked(spec.colors.bar.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.overcapEnabled = self:GetChecked()
+		end)
+
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["BorderColorOvercap"], primaryResourceString), spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderOvercap
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
+		end)
+	end
+
 	if isHealer then
 	end
 
@@ -3466,6 +3486,66 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 	end)
 
 	yCoord = yCoord2 - 20
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, primaryResourceMax)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+	local title = ""
+
+	controls.overcappingConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["OvercappingConfigurationHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+	controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.overcapModeRelative
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapRelativeOffset"], primaryResourceString))
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.overcap.mode == "relative" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.overcapModeRelative:SetChecked(true)
+		controls.checkBoxes.overcapModeFixed:SetChecked(false)
+		spec.overcap.mode = "relative"
+	end)
+
+	title = string.format(L["OvercapRelativeOffsetAmount"], primaryResourceString)
+	controls.overcapRelative = TRB.Functions.OptionsUi:BuildSlider(parent, title, -primaryResourceMax, 0, spec.overcap.relative, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.overcapRelative:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		spec.overcap.relative = value
+	end)
+
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.overcapModeFixed = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.overcapModeFixed
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapFixedValue"], primaryResourceString))
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.overcap.mode == "fixed" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.overcapModeRelative:SetChecked(false)
+		controls.checkBoxes.overcapModeFixed:SetChecked(true)
+		spec.overcap.mode = "fixed"
+	end)
+
+	title = string.format(L["OvercapAbove"], primaryResourceString)
+	controls.overcapFixed = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, primaryResourceMax, spec.overcap.fixed, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.overcapFixed:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		spec.overcap.fixed = value
+	end)
 
 	return yCoord
 end
