@@ -69,8 +69,8 @@ TRB.Data.constants = {
 			backgroundName="Blizzard Tooltip",
 			border="Interface\\Buttons\\WHITE8X8",
 			borderName="1 Pixel",
-			resourceBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\clean.blp",
-			resourceBarName="TRB: Clean",
+			resourceBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
+			resourceBarName="TRB: Smoother",
 		},
 		sounds = {
 			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
