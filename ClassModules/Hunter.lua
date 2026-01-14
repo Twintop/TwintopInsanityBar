@@ -943,7 +943,7 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
-				if specSettings.colors.bar.bestialWrath.enabled and snapshotData.snapshots[spells.bestialWrath.id].buff.isActive then
+				if specSettings.colors.bar.bestialWrath.enabled and snapshotData.snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat then
 					local timeLeft = snapshots[spells.bestialWrath.id].buff.remaining
 					local timeThreshold = 0
 					local useEndOfBestialWrathColor = false

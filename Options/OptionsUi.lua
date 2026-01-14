@@ -1478,7 +1478,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	-- Width slider
 	yCoord = yCoord - 40
 	local widthMin = barTypeDef.isMultiNode and 10 or 30
-	local widthMax = TRB.Data.sanityCheckValues.barMaxWidth or 555
+	local widthMax = (TRB.Data.sanityCheckValues.barMaxWidth and TRB.Data.sanityCheckValues.barMaxWidth > 0) and TRB.Data.sanityCheckValues.barMaxWidth or 300
 	local widthDivisor = barTypeDef.isMultiNode and 6 or 1
 	
 	controls[barTypeDef.key .. "Width"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryWidth"], displayName),
@@ -1503,7 +1503,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	
 	-- Height slider
 	controls[barTypeDef.key .. "Height"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHeight"], displayName), 
-		1, TRB.Data.sanityCheckValues.barMaxHeight or 100, barSettings.height, 1, 0,
+		1, (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100, barSettings.height, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[barTypeDef.key .. "Height"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
@@ -1524,8 +1524,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	
 	-- X Position slider
 	yCoord = yCoord - 60
+	local xPosMax = (TRB.Data.sanityCheckValues.barMaxWidth and TRB.Data.sanityCheckValues.barMaxWidth > 0) and TRB.Data.sanityCheckValues.barMaxWidth or 300
 	controls[barTypeDef.key .. "XPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHorizontalPosition"], displayName), 
-		math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth / 2), math.floor(TRB.Data.sanityCheckValues.barMaxWidth / 2), barSettings.xPos, 1, 0,
+		math.ceil(-xPosMax / 2), math.floor(xPosMax / 2), barSettings.xPos, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "XPos"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
@@ -1537,8 +1538,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	end)
 	
 	-- Y Position slider
+	local yPosMax = (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100
 	controls[barTypeDef.key .. "YPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryVerticalPosition"], displayName), 
-		math.ceil(-TRB.Data.sanityCheckValues.barMaxHeight / 2), math.floor(TRB.Data.sanityCheckValues.barMaxHeight / 2), barSettings.yPos, 1, 0,
+		math.ceil(-yPosMax / 2), math.floor(yPosMax / 2), barSettings.yPos, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[barTypeDef.key .. "YPos"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
@@ -1555,6 +1557,8 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	local effectiveWidthForBorder = barSettings.fullWidth and spec.bar.width or barSettings.width
 	local effectiveHeightForBorder = barSettings.fullWidth and spec.bar.height or barSettings.height
 	local maxBorderHeight = math.min(math.floor(effectiveHeightForBorder / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidthForBorder / TRB.Data.constants.borderWidthFactor))
+	-- Ensure maxBorderHeight is at least as large as the current border value to prevent slider errors
+	maxBorderHeight = math.max(maxBorderHeight, barSettings.border)
 	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName), 
 		0, maxBorderHeight, barSettings.border, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -1568,8 +1572,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		
 		local minSliderWidth = math.max(barSettings.border * 2 + 1, widthMin)
 		local minSliderHeight = math.max(barSettings.border * 2 + 1, 1)
+		local heightSliderMax = (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100
 		
-		controls[barTypeDef.key .. "Height"]:SetMinMaxValues(minSliderHeight, TRB.Data.sanityCheckValues.barMaxHeight or 100)
+		controls[barTypeDef.key .. "Height"]:SetMinMaxValues(minSliderHeight, heightSliderMax)
 		controls[barTypeDef.key .. "Height"].MinLabel:SetText(tostring(minSliderHeight))
 		if not barSettings.fullWidth then
 			controls[barTypeDef.key .. "Width"]:SetMinMaxValues(minSliderWidth, math.ceil(widthMax / widthDivisor))

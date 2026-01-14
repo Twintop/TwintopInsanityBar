@@ -112,7 +112,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				cobraShot = {
-					enabled = true,
+					enabled = false,
 				},
 				blackArrow = {
 					enabled = true,
@@ -307,9 +307,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				},
 				scareBeast = {
 					enabled = false,
-				},
-				killCommand = {
-					enabled = true,
 				},
 				killShot = {
 					enabled = true,
@@ -1505,17 +1502,6 @@ local function MarksmanshipConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.blackArrow.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.blackArrow.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.killCommandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killCommand", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.killCommandThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillCommand"])
-	f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillCommandTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.killCommand.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.killCommand.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

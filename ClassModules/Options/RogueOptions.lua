@@ -58,13 +58,13 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				crimsonVial = {
-					enabled = true,
+					enabled = false,
 				},
 				distract = {
 					enabled = false,
 				},
 				feint = {
-					enabled = true,
+					enabled = false,
 				},
 				gouge = {
 					enabled = false,
@@ -79,20 +79,20 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				sliceAndDice = {
-					enabled = true,
+					enabled = false,
 				},
 				-- Assassination
 				crimsonTempest = {
-					enabled = true,
+					enabled = false,
 				},
 				envenom = {
 					enabled = true,
 				},
 				fanOfKnives = {
-					enabled = true,
+					enabled = false,
 				},
 				garrote = {
-					enabled = true,
+					enabled = false,
 				},
 				kingsbane = {
 					enabled = true,
@@ -104,7 +104,7 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				rupture = {
-					enabled = true,
+					enabled = false,
 				},
 				-- PvP					
 				deathFromAbove = {
@@ -265,13 +265,13 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				crimsonVial = {
-					enabled = true,
+					enabled = false,
 				},
 				distract = {
 					enabled = false,
 				},
 				feint = {
-					enabled = true,
+					enabled = false,
 				},
 				gouge = {
 					enabled = false,
@@ -289,23 +289,23 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 				sliceAndDice = {
-					enabled = true,
+					enabled = false,
 				},
 				-- Outlaw
 				betweenTheEyes = {
 					enabled = true,
 				},
 				bladeFlurry = {
-					enabled = true,
+					enabled = false,
 				},
 				dispatch = {
 					enabled = true,
 				},
 				killingSpree = {
-					enabled = true,
+					enabled = false,
 				},
 				pistolShot = {
-					enabled = true,
+					enabled = false,
 				},
 				rollTheBones = {
 					enabled = true,
@@ -478,7 +478,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				crimsonVial = {
-					enabled = true,
+					enabled = false,
 				},
 				distract = {
 					enabled = false,
@@ -487,7 +487,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 				feint = {
-					enabled = true,
+					enabled = false,
 				},
 				gouge = {
 					enabled = false,
@@ -502,7 +502,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				sliceAndDice = {
-					enabled = true,
+					enabled = false,
 				},
 				-- Subtlety
 				backstab = {
@@ -527,7 +527,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 				shurikenToss = {
-					enabled = true,
+					enabled = false,
 				},
 				-- PvP					
 				deathFromAbove = {
@@ -957,7 +957,7 @@ local function AssassinationConstructThresholdPanel(parent)
 	yCoord = yCoord - 25
 	controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.crimsonTempestThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonTempest"])
 	f.tooltip = L["RogueAssassinationThresholdCrimsonTempestTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.crimsonTempest.enabled)

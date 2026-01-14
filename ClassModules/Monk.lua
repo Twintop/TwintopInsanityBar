@@ -1056,9 +1056,9 @@ local function UpdateResourceBar()
 						-- Calculate effective width (respects fullWidth setting)
 						local staggerWidth
 						if staggerSettings.fullWidth then
-							staggerWidth = specSettings.bar.width or 555
+							staggerWidth = specSettings.bar.width
 						else
-							staggerWidth = staggerSettings.width or 555
+							staggerWidth = staggerSettings.width
 						end
 						
 						local cpBackgroundColor = staggerColors.background

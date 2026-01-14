@@ -1937,9 +1937,9 @@ local function UpdateResourceBar()
 				local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 				manaNode:SetMinMax(0, maxMana)
 				manaNode:SetValue(currentMana)
-				manaNode:SetColor(specSettings.colors.manaBar.bar.color)
-				manaNode:SetBorderColor(specSettings.colors.manaBar.border.color)
-				manaNode:SetBackgroundColorFromString(specSettings.colors.manaBar.background.color)
+				manaNode:SetColor(specSettings.colors.bars.mana.bar.color)
+				manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
+				manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
 			end
 		end
 

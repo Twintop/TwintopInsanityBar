@@ -423,9 +423,9 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
             thresholdDictionary = {
-			brutalSlash = {
-				enabled = true,
-			},
+				brutalSlash = {
+					enabled = false,
+				},
 				feralFrenzy = {
 					enabled = true,
 				},
@@ -445,13 +445,13 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				moonfire = {
-					enabled = true,
+					enabled = false,
 				},
 				primalWrath = {
 					enabled = true,
 				},
 				rake = {
-					enabled = true,
+					enabled = false,
 				},
 				ravageMaximum = {
 					enabled = true,
@@ -460,10 +460,10 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				rip = {
-					enabled = true,
+					enabled = false,
 				},
 				shred = {
-					enabled = true,
+					enabled = false,
 				},
 				swipe = {
 					enabled = false,
@@ -1815,7 +1815,7 @@ local function FeralConstructThresholdPanel(parent)
 	controls.labels.finishers = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryFinishersLabel"], oUi.xCoord2, yCoord2, 110, 20)
 	yCoord2 = yCoord2 - 20
 
-	controls.labels.ferociousBite = TRB.Functions.OptionsUi:BuildLabel(parent, L["DruidFeralThresholdCheckboxFerociousBite"], oUi.xCoord2, yCoord2, 110, 20, GameFontWhite)
+	controls.labels.ferociousBite = TRB.Functions.OptionsUi:BuildLabel(parent, L["DruidFeralThresholdCheckboxFerociousBite"], oUi.xCoord2, yCoord2, 300, 20, GameFontWhite)
 
 	yCoord2 = yCoord2 - 25
 	controls.checkBoxes.ferociousBiteMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Threshold_Option_ferociousBiteMinimum", parent, "ChatConfigCheckButtonTemplate")
