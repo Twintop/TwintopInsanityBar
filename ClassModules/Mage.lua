@@ -666,6 +666,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barBorderColor = specSettings.colors.bar.border
@@ -730,6 +731,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base
@@ -762,6 +764,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base

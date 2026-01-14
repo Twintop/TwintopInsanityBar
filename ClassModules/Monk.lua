@@ -437,7 +437,7 @@ local function ConstructResourceBar(settings)
 					local staggerColors = settings.colors and settings.colors.bars and settings.colors.bars.stagger
 					local thresholdWidth = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
 					local thresholdHeight = staggerSettings and staggerSettings.height or 24
-					local borderColor = staggerColors and staggerColors.border and staggerColors.border.color or "FF00FF98"
+					local borderColor = staggerColors and staggerColors.border and staggerColors.border.color
 					
 					for _ = 1, 2 do
 						local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetResourceFrame())
@@ -530,7 +530,7 @@ local function RefreshLookupData_Brewmaster()
 	local currentEnergy
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentEnergy))
@@ -664,7 +664,7 @@ local function RefreshLookupData_Windwalker()
 	local currentEnergy
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
@@ -954,6 +954,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1025,7 +1026,7 @@ local function UpdateResourceBar()
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled then
+					if specSettings.colors.bar.overcapEnabled and affectingCombat then
 						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
@@ -1062,10 +1063,10 @@ local function UpdateResourceBar()
 						
 						local cpBackgroundColor = staggerColors.background
 						if type(cpBackgroundColor) == "table" then cpBackgroundColor = cpBackgroundColor.color end
-						local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(cpBackgroundColor or "66000000", true)
+						local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(cpBackgroundColor, true)
 						local cpBorderColor = staggerColors.border
 						if type(cpBorderColor) == "table" then cpBorderColor = cpBorderColor.color end
-						cpBorderColor = cpBorderColor or "FF00FF98"
+						cpBorderColor = cpBorderColor
 
 						-- Use ColorCurve for stagger bar fill color
 						staggerNode:SetColorCurve(snapshotData.attributes.staggerColor)
@@ -1078,7 +1079,7 @@ local function UpdateResourceBar()
 						-- Medium Stagger threshold (configurable position, discrete color)
 						if staggerThresholds[1] then
 							local mediumThreshold = staggerColors.medium and staggerColors.medium.threshold or 0.30
-							local mediumColor = staggerColors.medium and staggerColors.medium.color or "FFFFFAB8"
+							local mediumColor = staggerColors.medium and staggerColors.medium.color
 							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[1], mediumColor, true)
 							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetContainerFrame(), mediumThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax, staggerWidth, staggerBorder)
@@ -1087,7 +1088,7 @@ local function UpdateResourceBar()
 						-- Heavy Stagger threshold (configurable position, discrete color)
 						if staggerThresholds[2] then
 							local heavyThreshold = staggerColors.heavy and staggerColors.heavy.threshold or 0.60
-							local heavyColor = staggerColors.heavy and staggerColors.heavy.color or "FFFF6B6B"
+							local heavyColor = staggerColors.heavy and staggerColors.heavy.color
 							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[2], heavyColor, true)
 							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetContainerFrame(), heavyThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax, staggerWidth, staggerBorder)
@@ -1121,6 +1122,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
@@ -1128,7 +1130,6 @@ local function UpdateResourceBar()
 				if primaryNode then
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-					local affectingCombat = TRB.Data.character.inCombat
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
@@ -1171,6 +1172,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1270,7 +1272,7 @@ local function UpdateResourceBar()
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled then
+					if specSettings.colors.bar.overcapEnabled and affectingCombat then
 						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)

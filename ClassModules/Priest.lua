@@ -979,7 +979,7 @@ local function RefreshLookupData_Shadow()
 	local castingInsanity
 
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentInsanityColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentInsanity = textColorResult:WrapTextInColorCode(_currentInsanity)
@@ -1089,7 +1089,7 @@ local function RefreshLookupData_Shadow()
 	]]
 
 	-- Mana lookups (Shadow uses mana as secondary resource display)
-	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color or "FF0000FF"
+	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
 	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
 	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 
@@ -1208,7 +1208,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	local currentTime = GetTime()
-	local affectingCombat = TRB.Data.character.inCombat
 
 	if TRB.Data.character.specId == 1 then
 		casting:SnapshotManaSpell()
@@ -1638,6 +1637,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border
@@ -1739,6 +1739,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
 
@@ -1760,7 +1761,7 @@ local function UpdateResourceBar()
 
 				-- Build overcap border curve if enabled
 				local overcapBorderCurve = nil
-				if specSettings.colors.bar.overcapEnabled then
+				if specSettings.colors.bar.overcapEnabled and affectingCombat then
 					overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 				end
 

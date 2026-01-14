@@ -854,7 +854,7 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 					local barColor = nil
 					if barTypeDef.colorCurveType then
 						-- Threshold-based - use the "low" color as default
-						barColor = barColors.low and barColors.low.color or "FFFFFFFF"
+						barColor = barColors.low and barColors.low.color
 					else
 						-- Simple bar color
 						barColor = barColors.bar
@@ -862,8 +862,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 					end
 					
 					-- Apply colors with fallbacks
-					node:SetBorderColor(borderColor or "FFFFFFFF")
-					node:SetBackgroundColorFromString(backgroundColor or "66000000")
+					node:SetBorderColor(borderColor)
+					node:SetBackgroundColorFromString(backgroundColor)
 					if barColor then
 						node:SetColor(barColor)
 					end

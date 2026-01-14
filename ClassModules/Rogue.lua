@@ -706,7 +706,7 @@ local function RefreshLookupData_Assassination()
 	local currentEnergy
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
@@ -791,7 +791,7 @@ local function RefreshLookupData_Outlaw()
 	local currentEnergy
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
@@ -944,7 +944,7 @@ local function RefreshLookupData_Subtlety()
 	local currentEnergy
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
@@ -1104,6 +1104,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1254,7 +1255,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					if IsStealthed() or stealthViaBuff then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth)
-					elseif specSettings.colors.bar.overcapEnabled then
+					elseif specSettings.colors.bar.overcapEnabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
 						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
@@ -1343,6 +1344,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1553,7 +1555,7 @@ local function UpdateResourceBar()
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderRtbGood)
 					elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == false and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderRtbBad)]]
-					elseif specSettings.colors.bar.overcapEnabled then
+					elseif specSettings.colors.bar.overcapEnabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
 						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
@@ -1638,6 +1640,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1837,7 +1840,7 @@ local function UpdateResourceBar()
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderShadowcraft)
 					elseif stealthViaBuff or IsStealthed() then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth)
-					elseif specSettings.colors.bar.overcapEnabled then
+					elseif specSettings.colors.bar.overcapEnabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
 						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)

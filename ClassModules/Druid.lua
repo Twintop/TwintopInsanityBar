@@ -739,7 +739,7 @@ local function RefreshLookupData_Balance()
 	local _currentAstralPower = normalizedAstralPower
 	local currentAstralPower
 	local castingAstralPower
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		--$astralPower
@@ -761,7 +761,7 @@ local function RefreshLookupData_Balance()
 	local eclipseTime = TRB.Functions.BarText:TimerPrecision(_eclispeTime)
 
 	-- Mana lookups (Balance uses mana as secondary resource display)
-	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color or "FF0000FF"
+	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
 	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
 	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 
@@ -857,7 +857,7 @@ local function RefreshLookupData_Feral()
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold, but not stealth)
 	-- Stealth takes precedence over overcap for Feral
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
@@ -963,7 +963,7 @@ local function RefreshLookupData_Guardian()
 	local currentRage
 	local castingRage
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
@@ -1334,9 +1334,9 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
-				local affectingCombat = TRB.Data.character.inCombat
 				local flashBar = false
 				local barBorderColor = specSettings.colors.bar.border
 
@@ -1508,7 +1508,7 @@ local function UpdateResourceBar()
 				end
 
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled then
+				if specSettings.colors.bar.overcapEnabled and affectingCombat then
 					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
@@ -1567,6 +1567,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1774,7 +1775,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				if IsStealthed() then
 					primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth)
-				elseif specSettings.colors.bar.overcapEnabled then
+				elseif specSettings.colors.bar.overcapEnabled and affectingCombat then
 					-- Apply overcap border color if enabled (skipped when stealthed)
 					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
@@ -1860,6 +1861,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1968,7 +1970,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled then
+				if specSettings.colors.bar.overcapEnabled and affectingCombat then
 					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
@@ -2002,6 +2004,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
@@ -2010,7 +2013,6 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
 				local barColor = specSettings.colors.bar.base
-				local affectingCombat = TRB.Data.character.inCombat
 
 				if affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive then
 					barColor = specSettings.colors.bar.noEfflorescence
@@ -2678,8 +2680,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	else
 		return false
 	end
-
-	local affectingCombat = TRB.Data.character.inCombat
 
 	if TRB.Data.character.specId == 1 then -- Balance
 		--[[if var == "$moonkinForm" then

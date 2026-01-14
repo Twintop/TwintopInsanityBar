@@ -493,7 +493,7 @@ local function RefreshLookupData_Elemental()
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	local currentMaelstrom
 	local castingMaelstrom
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled then
+	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentMaelstromColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		--$maelstrom
@@ -537,7 +537,7 @@ local function RefreshLookupData_Elemental()
 	local ascendanceTime = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
 
 	-- Mana lookups
-	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color or "FF0000FF"
+	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
 	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
 	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 
@@ -918,6 +918,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
+				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1057,7 +1058,7 @@ local function UpdateResourceBar()
 				end
 
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled then
+				if specSettings.colors.bar.overcapEnabled and affectingCombat then
 					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
