@@ -17,8 +17,6 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public deathSweep TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public eyeBeam TRB.Classes.SpellThreshold
----@field public glaiveTempest TRB.Classes.SpellThreshold
----@field public felBarrage TRB.Classes.SpellThreshold
 TRB.Classes.DemonHunter.HavocSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.DemonHunter.HavocSpells.__index = TRB.Classes.DemonHunter.HavocSpells
 
@@ -120,24 +118,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		resource = 3,
 		isHasted = true,
 		isTalent = true
-	})
-	self.glaiveTempest = TRB.Classes.SpellThreshold:New({
-		id = 342817,
-		primaryResourceType = Enum.PowerType.Fury,
-		cooldown = 20,
-		settingKey = "glaiveTempest",
-		hasCooldown = true,
-		isTalent = true,
-		rangeCheck = false
-	})
-	self.felBarrage = TRB.Classes.SpellThreshold:New({
-		id = 258925,
-		primaryResourceType = Enum.PowerType.Fury,
-		cooldown = 90,
-		settingKey = "felBarrage",
-		hasCooldown = true,
-		isTalent = true,
-		rangeCheck = false
 	})
 
 	return self

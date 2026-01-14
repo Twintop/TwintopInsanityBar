@@ -80,6 +80,11 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				health = "combat",
 				dragonriding = true
 			},
+			overcap = {
+				mode = "relative",
+				relative = 0,
+				fixed = 100
+			},
 			bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 			comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 			healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -108,6 +113,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					overThreshold = {
 						color = "FF00FF00",
 						enabled = false
+					},
+					overcap = {
+						color = "FFFF0000",
+						enabled = true
 					},
 				},
 				healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),

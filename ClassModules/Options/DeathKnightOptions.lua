@@ -212,7 +212,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				raiseAlly = {
-					enabled = true
+					enabled = false
 				}
 			}
 		},
@@ -345,10 +345,10 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				deathCoil = {
-					enabled = true
+					enabled = false
 				},
 				deathStrike = {
-					enabled = true
+					enabled = false
 				},
 				breathOfSindragosa = {
 					enabled = true
@@ -357,7 +357,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				glacialAdvance = {
-					enabled = true
+					enabled = false
 				}
 			}
 		},
@@ -495,7 +495,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				raiseAlly = {
-					enabled = true
+					enabled = false
 				}
 			}
 		},

@@ -97,7 +97,7 @@ function TRB.Classes.DeathKnight.FrostSpells:New()
         id = 194913,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "glacialAdvance",
-        isTalent = true
+        baseline = true
     })
 
     return self

@@ -90,7 +90,7 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 				chaosNova = {
-					enabled = true,
+					enabled = false,
 				},
 				chaosStrike = {
 					enabled = true,
@@ -101,15 +101,8 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 				eyeBeam = {
 					enabled = true,
 				},
-				-- Talents
-				glaiveTempest = {
-					enabled = true,
-				},
 				throwGlaive = {
-					enabled = true,
-				},
-				felBarrage = {
-					enabled = true,
+					enabled = false,
 				}
 			}
 		},
@@ -847,28 +840,6 @@ local function HavocConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.eyeBeam.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.eyeBeam.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.felBarrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_felBarrage", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.felBarrageThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxFelBarrage"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxFelBarrageTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.felBarrage.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.felBarrage.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.glaiveTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_glaiveTempest", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.glaiveTempestThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxGlaiveTempest"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.glaiveTempest.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.glaiveTempest.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

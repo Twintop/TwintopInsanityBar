@@ -69,13 +69,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.eyeBeam.id] = TRB.Classes.Snapshot:New(spells.eyeBeam)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.glaiveTempest.id] = TRB.Classes.Snapshot:New(spells.glaiveTempest)
-	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
 	---@type TRB.Classes.Snapshot
 	specCache.havoc.snapshotData.snapshots[spells.throwGlaive.id] = TRB.Classes.Snapshot:New(spells.throwGlaive)
-	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.felBarrage.id] = TRB.Classes.Snapshot:New(spells.felBarrage)
 
 	-- vengeance
 	specCache.vengeance.Global_TwintopResourceBar = {
@@ -181,8 +177,6 @@ local function FillSpellData_Havoc()
 		{ variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
 		{ variable = "#deathSweep", icon = spells.deathSweep.icon, description = spells.deathSweep.name, printInSettings = true },
 		{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
-		{ variable = "#felBarrage", icon = spells.felBarrage.icon, description = spells.felBarrage.name, printInSettings = true },
-		{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
@@ -1381,8 +1375,6 @@ local function SwitchSpec()
 		lookup["#chaosStrike"] = spells.chaosStrike.icon
 		lookup["#deathSweep"] = spells.deathSweep.icon
 		lookup["#eyeBeam"] = spells.eyeBeam.icon
-		lookup["#felBarrage"] = spells.felBarrage.icon
-		lookup["#glaiveTempest"] = spells.glaiveTempest.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
