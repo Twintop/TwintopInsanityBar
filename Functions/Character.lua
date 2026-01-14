@@ -877,24 +877,25 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	end
 
 	if s.displayBar then
-		specCache.settings.displayBar = core.displayBar
+		-- Create a shallow copy to avoid modifying the global displayBar object
+		specCache.settings.displayBar = {}
+		for k, v in pairs(core.displayBar) do
+			specCache.settings.displayBar[k] = v
+		end
+		
+		-- Override with spec-specific custom bar visibility settings
+		-- These are always spec-specific (mana, stagger, defensives, etc.)
+		if spec.displayBar and spec.displayBar.mana ~= nil then
+			specCache.settings.displayBar.mana = spec.displayBar.mana
+		end
+		if spec.displayBar and spec.displayBar.stagger ~= nil then
+			specCache.settings.displayBar.stagger = spec.displayBar.stagger
+		end
+		if spec.displayBar and spec.displayBar.defensives ~= nil then
+			specCache.settings.displayBar.defensives = spec.displayBar.defensives
+		end
 	else
 		specCache.settings.displayBar = spec.displayBar
-	end
-
-	-- Mana bar visibility is always spec-specific (not available in core settings)
-	-- Ensure it's propagated from spec even when using global displayBar settings
-	if spec.displayBar and spec.displayBar.mana ~= nil then
-		specCache.settings.displayBar.mana = spec.displayBar.mana
-	end
-
-	-- Custom bar visibility (stagger, defensives, etc.) is always spec-specific
-	-- Ensure it's propagated from spec even when using global displayBar settings
-	if spec.displayBar and spec.displayBar.stagger ~= nil then
-		specCache.settings.displayBar.stagger = spec.displayBar.stagger
-	end
-	if spec.displayBar and spec.displayBar.defensives ~= nil then
-		specCache.settings.displayBar.defensives = spec.displayBar.defensives
 	end
 
 	--NYI

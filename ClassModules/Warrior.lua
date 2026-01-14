@@ -1232,7 +1232,7 @@ local function UpdateResourceBar()
 			end
 
 			if specSettings.displayBar.defensives ~= "never" then
-				-- Update defensive buff secondary bar nodes
+			refreshText = true
 				UpdateDefensiveBuffs(specSettings, specCacheSettings)
 			end
 

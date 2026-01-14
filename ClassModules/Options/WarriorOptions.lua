@@ -55,7 +55,7 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
-					enabled = true,
+					enabled = false,
 				},
 				executeMaximum = {
 					enabled = true,
@@ -67,7 +67,7 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 					enabled = false,
 				},
 				slam = {
-					enabled = true,
+					enabled = false,
 				},
 				whirlwind = {
 					enabled = true,
@@ -82,13 +82,13 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 				rend = {
-					enabled = true,
+					enabled = false,
 				},
 				cleave = {
 					enabled = true,
 				},
 				ignorePain = {
-					enabled = true,
+					enabled = false,
 				}
 			}
 		},
@@ -435,7 +435,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
-					enabled = true,
+					enabled = false,
 				},
 				executeMaximum = {
 					enabled = true,
@@ -450,7 +450,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 				rend = {
-					enabled = true,
+					enabled = false,
 				},
 				revenge = {
 					enabled = true,
@@ -459,10 +459,10 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				},
 				slam = {
-					enabled = true,
+					enabled = false,
 				},
 				whirlwind = {
-					enabled = true,
+					enabled = false,
 				}
 			}
 		},

@@ -2011,7 +2011,22 @@ function TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, cont
 	local function VisibilitySetSelected(newValue)
 		spec.displayBar[barTypeDef.visibilityKey] = newValue
 		controls.dropDown[barTypeDef.key .. "Visibility"]:SetDefaultText(GetVisibilityDisplayName(newValue))
-		TRB.Functions.Bar:HideResourceBar()
+		
+		-- Refresh cache to ensure global settings pick up spec-specific overrides
+		TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+		TRB.Functions.Character:ResetCaches()
+		
+		if TRB.Frames.barGroups ~= nil then
+			local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:HideResourceBar()
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		else
+			TRB.Functions.Bar:HideResourceBar()
+		end
 	end
 
 	local function VisibilityGenerator(dropdown, rootDescription)
