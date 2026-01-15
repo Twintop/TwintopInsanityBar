@@ -129,6 +129,7 @@ function TRB.Classes.BarNode:SetBorderColorCurve(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
+	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
 	self.borderFrame:SetBackdropBorderColor(colorResult:GetRGBA())
 end
 

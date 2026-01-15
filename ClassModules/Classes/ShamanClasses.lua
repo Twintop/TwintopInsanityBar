@@ -43,7 +43,6 @@ end
 ---@field public echoesOfGreatSundering TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
 ---@field public preeminence TRB.Classes.SpellBase
----@field public primalFracture TRB.Classes.SpellBase
 ---@field public lightningBolt TRB.Classes.Shaman.OverloadSpell
 ---@field public lavaBurst TRB.Classes.Shaman.OverloadSpell
 ---@field public chainLightning TRB.Classes.Shaman.OverloadSpell
@@ -65,8 +64,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 188196,
         resource = 6,
         overload = 2,
-        baseline = true,
-        primalFracture = true
+        baseline = true
     })
 
     -- Elemental Baseline Abilities
@@ -83,8 +81,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         resource = 8,
         overload = 3,
         isTalent = true,
-        baseline = true,
-        primalFracture = true
+        baseline = true
     })
     self.chainLightning = TRB.Classes.Shaman.OverloadSpell:New({
         id = 188443,
@@ -96,8 +93,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     self.frostShock = TRB.Classes.SpellBase:New({
         id = 196840,
         resource = 10,
-        isTalent = true,
-        primalFracture = true
+        isTalent = true
     })
     self.hex = TRB.Classes.SpellBase:New({
         id = 51514,
@@ -131,8 +127,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     self.icefury = TRB.Classes.Shaman.OverloadSpell:New({
         id = 462818,
         resource = 10,
-        isTalent = true,
-        primalFracture = true
+        isTalent = true
     })
     self.stormkeeper = TRB.Classes.SpellBase:New({
         id = 191634,
@@ -163,11 +158,6 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 462443,
         isTalent = true,
         duration = 3
-    })
-    
-    self.primalFracture = TRB.Classes.SpellBase:New({ -- T30 4P
-        id = 410018,
-        resourcePercent = 1.5
     })
 
     return self

@@ -154,10 +154,6 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
-				primalFracture = {
-					color = "FFFF9900",
-					enabled = true
-				},
 			},
 				threshold = {
 				under = {
@@ -663,23 +659,6 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, false)
 	
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.primalFractureBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Border_Option_primalFractureBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.primalFractureBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxPrimalFracture"])
-	f.tooltip = L["ShamanElementalCheckboxPrimalFractureTooltip"]
-	f:SetChecked(spec.colors.bar.primalFracture.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.primalFracture.enabled = self:GetChecked()
-	end)
-
-	controls.colors.primalFracture = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerPrimalFracture"], spec.colors.bar.primalFracture.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.primalFracture
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "primalFracture")
-	end)]]
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 1, yCoord)
 

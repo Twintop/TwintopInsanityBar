@@ -1911,6 +1911,7 @@ local function UpdateResourceBar()
 					-- Evaluate the curve with current power level to get the right color
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
+				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				primaryNode:SetColor(barColor)
