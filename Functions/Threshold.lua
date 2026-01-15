@@ -169,7 +169,7 @@ end
 
 
 
-function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings)
+function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings, hasIcon)
 	if settings.comboPoints == nil then
 		return
 	end
@@ -194,7 +194,48 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 	threshold.texture:SetAllPoints(threshold)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Show()
-	threshold.hasIcon = false
+	threshold.hasIcon = hasIcon
+
+	if hasIcon == true then
+		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
+		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
+---@diagnostic disable-next-line: inject-field
+		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")
+		threshold.icon.texture:SetAllPoints(threshold.icon)
+---@diagnostic disable-next-line: inject-field
+		threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
+		threshold.icon.cooldown:SetAllPoints(threshold.icon)
+		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
+		threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
+
+		if settings.thresholds.icons.border < 1 then
+---@diagnostic disable-next-line: missing-fields
+			threshold.icon:SetBackdrop({
+---@diagnostic disable-next-line: missing-fields
+				insets = {0, 0, 0, 0}
+			})
+		else
+---@diagnostic disable-next-line: missing-fields
+			threshold.icon:SetBackdrop({
+				edgeFile = "Interface\\Buttons\\WHITE8X8",
+				tile = true,
+				tileSize = 4,
+				edgeSize = settings.thresholds.icons.border,
+---@diagnostic disable-next-line: missing-fields
+				insets = {0, 0, 0, 0}
+			})
+		end
+		threshold.icon:SetBackdropColor(0, 0, 0, 0)
+		threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
+
+		if settings.thresholds.icons.enabled then
+			threshold.icon:Show()
+			SetThresholdIconSizeAndPosition(settings, threshold)
+		else
+			threshold.icon:Hide()
+		end
+	end
 	
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.comboPoints.border, true)
 end

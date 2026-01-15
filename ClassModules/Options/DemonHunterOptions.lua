@@ -411,7 +411,10 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 			thresholdDictionary = {
 				voidRay = {
 					enabled = true,
-				}
+				},
+				collapsingStarThreshold = {
+					enabled = true,
+				},
 			}
 		},
 		maxResource = {
@@ -1936,6 +1939,16 @@ local function DevourerConstructThresholdPanel(parent)
 
 	controls.colors.threshold = {}
 
+	yCoord = yCoord - 30
+	controls.checkBoxes.collapsingStarThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Threshold_Option_collapsingStar", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.collapsingStarThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerThresholdCheckboxCollapsingStar"])
+	f.tooltip = L["DemonHunterDevourerThresholdCheckboxCollapsingStarTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.collapsingStarThreshold.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.collapsingStarThreshold.enabled = self:GetChecked()
+	end)
 	
 	yCoord = yCoord - 30
 	controls.checkBoxes.voidRayThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Threshold_Option_voidRay", parent, "ChatConfigCheckButtonTemplate")

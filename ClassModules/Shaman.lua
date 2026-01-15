@@ -72,8 +72,6 @@ local function FillSpecializationCache()
 	specCache.elemental.snapshotData.snapshots[spells.stormkeeper.id] = TRB.Classes.Snapshot:New(spells.stormkeeper)
 	---@type TRB.Classes.Snapshot
 	specCache.elemental.snapshotData.snapshots[spells.echoesOfGreatSundering.id] = TRB.Classes.Snapshot:New(spells.echoesOfGreatSundering)
-	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.primalFracture.id] = TRB.Classes.Snapshot:New(spells.primalFracture)
 
 
 	-- Enhancement
@@ -204,7 +202,6 @@ local function FillSpellData_Elemental()
 		{ variable = "#icefury", icon = spells.icefury.icon, description = spells.icefury.name, printInSettings = true },
 		{ variable = "#lavaBurst", icon = spells.lavaBurst.icon, description = spells.lavaBurst.name, printInSettings = true },
 		{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
-		{ variable = "#primalFracture", icon = spells.primalFracture.icon, description = spells.primalFracture.name, printInSettings = true },
 		{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
 	}
 	specCache.elemental.barTextVariables.values = {
@@ -440,7 +437,7 @@ local function ConstructResourceBar(settings)
 
 	-- Enhancement uses secondary bar (Maelstrom Weapon); Elemental/Restoration do not.
 	if barGroups and barGroups.secondary then
-		if TRB.Data.character.specId == 2 and TRB.Details.addonData.build ~= "64914" then
+		if TRB.Data.character.specId == 2 then
 			local maxStacks = TRB.Data.character.maxResource2 or 10
 			
 			-- Determine display node count based on compressed view setting
@@ -529,11 +526,7 @@ local function RefreshLookupData_Elemental()
 
 	--$eogsTime
 	local _eogsTime = snapshots[spells.echoesOfGreatSundering.id].buff:GetRemainingTime(currentTime)
-	local eogsTime = TRB.Functions.BarText:TimerPrecision(_eogsTime)
-
-	--$pfTime
-	local _pfTime = snapshots[spells.primalFracture.id].buff:GetRemainingTime(currentTime)
-	local pfTime = TRB.Functions.BarText:TimerPrecision(_pfTime)]]
+	local eogsTime = TRB.Functions.BarText:TimerPrecision(_eogsTime)]]
 
 	--$ascendanceTime
 	local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
@@ -736,16 +729,6 @@ local function FillSnapshotDataCasting(spell, resourceMod)
 
 	resourceMod = resourceMod or 0
 	local resourceMultMod = 1
-
-	if snapshotData.snapshots[spells.primalFracture.id].buff.isActive then
-		if spell.id == spells.lavaBurst.id or
-			spell.id == spells.lightningBolt.id or
-			spell.id == spells.icefury.id or
-			spell.id == spells.frostShock.id
-			then
-			resourceMultMod = spells.primalFracture.attributes.resourcePercent
-		end
-	end
 
 	local currentTime = GetTime()
 	if spell.resource ~= nil and spell.resource > 0 then
@@ -1157,7 +1140,7 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.secondary ~= "never" then
 				refreshText = true
 				-- Update Maelstrom Weapon stacks using BarNodes
-				if TRB.Details.addonData.build ~= "64914" and barGroups.secondary then
+				if barGroups.secondary then
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					local maxStacks = spells.maelstromWeapon.maxStacks
 					local currentStacks = snapshots[spells.maelstromWeapon.id].buff.applications
@@ -1383,7 +1366,6 @@ local function SwitchSpec()
 		lookup["#icefury"] = spells.icefury.icon
 		lookup["#lavaBurst"] = spells.lavaBurst.icon
 		lookup["#lightningBolt"] = spells.lightningBolt.icon
-		lookup["#primalFracture"] = spells.primalFracture.icon
 		lookup["#stormkeeper"] = spells.stormkeeper.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
@@ -1614,16 +1596,14 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		
-		if TRB.Details.addonData.build ~= "64914" then
-			local maxComboPoints = 10
-			local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName] and TRB.Data.specCache[TRB.Data.character.specName].settings
-			if maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = maxComboPoints
-				if barGroups and barGroups.secondary and sharedSettings then
-					barGroups.secondary:Show()
-					TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
-				end
+		local maxComboPoints = 10
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName] and TRB.Data.specCache[TRB.Data.character.specName].settings
+		if maxComboPoints ~= TRB.Data.character.maxResource2 then
+			TRB.Data.character.maxResource2 = maxComboPoints
+			if barGroups and barGroups.secondary and sharedSettings then
+				barGroups.secondary:Show()
+				TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -1645,15 +1625,10 @@ function TRB.Functions.Class:EventRegistration()
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
-		TRB.Data.resourceFactor = 1
-		if TRB.Details.addonData.build ~= "64914" then
-			TRB.Data.resource2 = "SPELL"
-			TRB.Data.resource2Id = TRB.Data.spellsData.spells.maelstromWeapon.id
-			TRB.Data.resource2Factor = 1
-		else
-			TRB.Data.resource2 = nil
-			TRB.Data.resource2Id = nil
-		end
+		TRB.Data.resourceFactor = 1		
+		TRB.Data.resource2 = "SPELL"
+		TRB.Data.resource2Id = TRB.Data.spellsData.spells.maelstromWeapon.id
+		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1697,7 +1672,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine secondary bar visibility independently
 			-- Only Enhancement (specId == 2) uses the secondary (Maelstrom Weapon) bar
 			local showSecondary = false
-			if not forceHideAll and TRB.Data.character.specId == 2 and TRB.Details.addonData.build ~= "64914" then
+			if not forceHideAll and TRB.Data.character.specId == 2 then
 				if sharedSettings.displayBar.secondary == "always" then
 					showSecondary = true
 				elseif sharedSettings.displayBar.secondary == "combat" then
@@ -1865,10 +1840,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$eogsTime" then
 			if snapshots[spells.echoesOfGreatSundering.id].buff.isActive then
 				valid = true
-			end
-		elseif var == "$pfTime" then
-			if snapshots[spells.primalFracture.id].buff.isActive then
-				valid = true
 			end]]
 		elseif var == "$ascendanceTime" then
 			if snapshots[spells.ascendance.id].buff.isActive then
@@ -1897,13 +1868,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			-- Do not compare resource percent as it may be a secret value
 			valid = false
 		elseif var == "$comboPoints" or var == "$maelstromWeapon" then
-			if TRB.Details.addonData.build ~= "64914" then
-				valid = true
-			end
+			valid = true
 		elseif var == "$comboPointsMax"or var == "$maelstromWeaponMax" then
-			if TRB.Details.addonData.build ~= "64914" then
-				valid = true
-			end
+			valid = true
 		elseif var == "$ascendanceTime" then
 			if snapshots[spells.ascendance.id].buff.isActive then
 				valid = true

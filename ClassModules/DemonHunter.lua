@@ -147,6 +147,10 @@ local function FillSpecializationCache()
 	specCache.devourer.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.devourer.snapshotData.snapshots[spells.voidRay.id] = TRB.Classes.Snapshot:New(spells.voidRay)
+	---@type TRB.Classes.Snapshot
+	specCache.devourer.snapshotData.snapshots[spells.soulFragments.id] = TRB.Classes.Snapshot:New(spells.soulFragments, nil, "always")
+	---@type TRB.Classes.Snapshot
+	specCache.devourer.snapshotData.snapshots[spells.collapsingStar.id] = TRB.Classes.Snapshot:New(spells.collapsingStar, nil, "always")
 end
 
 local function Setup_Havoc()
@@ -445,7 +449,7 @@ local function ConstructResourceBar(settings)
 				end
 			end
 		end
-	elseif TRB.Data.character.specId == 3 then -- Devourer - has secondary bar (Soul Fragments percentage)
+	elseif TRB.Data.character.specId == 3 then -- Devourer - has secondary bar (Soul Fragments/Collapsing Star)
 		if barGroups and barGroups.secondary then
 			-- Set up the secondary bar structure, but don't show it yet
 			-- HideResourceBar() will determine visibility based on settings
@@ -453,6 +457,12 @@ local function ConstructResourceBar(settings)
 			local sfNode = barGroups.secondary:GetNode(1)
 			if sfNode then
 				sfNode:SetMinMax(0, 50)
+				
+				-- Create 1 threshold for Collapsing Star
+				sfNode:ClearThresholds()
+				local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetResourceFrame())
+				TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
+				sfNode:RegisterThreshold(thresholdFrame)
 			end
 		end
 	end
@@ -671,6 +681,9 @@ local function RefreshLookupData_Devourer()
 	local _soulFragments = snapshotData.attributes.resource2
 	local soulFragments = string.format("%s", _soulFragments)
 
+	--$soulFragmentsMax
+	local _soulFragmentsMax = snapshotData.attributes.maxResource2 or 0
+	local soulFragmentsMax = string.format("%s", _soulFragmentsMax)
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -682,9 +695,9 @@ local function RefreshLookupData_Devourer()
 	lookup["$soulFragments"] = soulFragments
 	lookup["$comboPoints"] = soulFragments
 	lookup["$collapsingStars"] = soulFragments
-	lookup["$soulFragmentsMax"] = TRB.Data.character.maxResource2Value
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Value
-	lookup["$collapsingStarsMax"] = TRB.Data.character.maxResource2Value
+	lookup["$soulFragmentsMax"] = soulFragmentsMax
+	lookup["$comboPointsMax"] = soulFragmentsMax
+	lookup["$collapsingStarsMax"] = soulFragmentsMax
 	lookup["$metaTime"] = ""
 	lookup["$metamorphosisTime"] = ""
 	lookup["$voidMetaTime"] = ""
@@ -700,9 +713,9 @@ local function RefreshLookupData_Devourer()
 	lookupLogic["$soulFragments"] = _soulFragments
 	lookupLogic["$comboPoints"] = _soulFragments
 	lookupLogic["$collapsingStars"] = _soulFragments
-	lookupLogic["$soulFragmentsMax"] = TRB.Data.character.maxResource2Value
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Value
-	lookupLogic["$collapsingStarsMax"] = TRB.Data.character.maxResource2Value
+	lookupLogic["$soulFragmentsMax"] = soulFragmentsMax
+	lookupLogic["$comboPointsMax"] = soulFragmentsMax
+	lookupLogic["$collapsingStarsMax"] = soulFragmentsMax
 	lookupLogic["$metaTime"] = 0
 	lookupLogic["$metamorphosisTime"] = 0
 	lookupLogic["$voidMetaTime"] = 0
@@ -838,14 +851,24 @@ local function UpdateSnapshot_Devourer()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local _
 	
+	snapshotData.attributes.resource2 = snapshotData.snapshots[spells.soulFragments.id].buff.applications
+	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
+		snapshotData.attributes.resource2 = snapshotData.snapshots[spells.collapsingStar.id].buff.applications
+	end
+
+	snapshotData.attributes.maxResource2 = spells.soulFragments.attributes.maxResource
+	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
+		snapshotData.attributes.maxResource2 = spells.collapsingStar.attributes.maxResource
+	end
+
 	-- Devourer Soul Fragments max is fixed.
-	TRB.Data.character.maxResource2Value = 50
+	--[[TRB.Data.character.maxResource2Value = 50
 
 	local blizzSfBar = _G["DemonHunterSoulFragmentsBar"]
 	if blizzSfBar ~= nil then
 		local sfCurrent = blizzSfBar:GetValue()
 		snapshotData.attributes.resource2 = sfCurrent
-	end
+	end]]
 end
 
 local function UpdateResourceBar()
@@ -1295,9 +1318,8 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.secondary ~= "never" then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 				-- Soul Fragments bar (Devourer fixed max)
-				local current = snapshotData.attributes.resource2 or 0
-				local max = 50
-				local sfScaleValid = true
+				local current = snapshotData.attributes.resource2
+				local max = snapshotData.attributes.maxResource2
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border
@@ -1309,7 +1331,6 @@ local function UpdateResourceBar()
 					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
 				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
 					cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
-					max = 30
 				end
 
 				local cpBR = cpBackgroundRed
@@ -1319,11 +1340,46 @@ local function UpdateResourceBar()
 				-- Update secondary bar (Soul Fragments)
 				if barGroups.secondary then
 					local sfNode = barGroups.secondary:GetNode(1)
-					if sfNode and sfScaleValid then
+					if sfNode then
 						TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary", sfNode, current, max)
 						sfNode:SetBorderColor(cpBorderColor)
 						sfNode:SetColor(cpColor)
 						sfNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+						
+						-- Collapsing Star threshold (only visible when buff is active)
+						local thresholds = sfNode:GetThresholds()
+						local sfResourceFrame = sfNode:GetResourceFrame()
+						local spell = spells.collapsingStarThreshold
+						if thresholds[1] and specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled then
+							local showThreshold = false
+							local thresholdColor = specCacheSettings.colors.threshold.over.color
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+							
+							if snapshots[spells.collapsingStar.id].buff.isActive then
+								showThreshold = true
+								local collapsingStarSnapshot = snapshots[spells.collapsingStar.id]
+								local resourceAmount = spells.collapsingStarThreshold.resource
+
+								-- Determine usability based on buff applications
+								if collapsingStarSnapshot.buff.applications >= resourceAmount then
+									thresholdColor = specCacheSettings.colors.threshold.over.color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+								else
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+								
+								thresholds[1]:SetFrameLevel(frameLevel)
+								thresholds[1]:Show()
+								
+								-- Set the threshold color using the proper method
+								TRB.Functions.Color:SetThresholdColor(thresholds[1], thresholdColor, true)
+								
+								TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, snapshotData.attributes.maxResource2)
+							else
+								thresholds[1]:Hide()
+							end
+						end
 					end
 				end
 			end
@@ -1446,6 +1502,12 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "devourer"
 			TRB.Functions.Class:EventRegistration()
 			ConstructResourceBar(specCache.devourer.settings)
+
+			C_Timer.After(0, function()
+				C_Timer.After(0.05, function()
+					TRB.Data.snapshotData.snapshots[spells.soulFragments.id].buff:Refresh()
+				end)
+			end)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil

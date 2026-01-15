@@ -9,6 +9,22 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon is still underway! If you have any interest in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
+---
+
+# 12.0.0.0-beta13 (2026-01-15)
+## Demon Hunter
+### [#491](#491) Devourer
+
+- Switch Soul Fragments and Collapsing Star tracking to be driven by buff data now that their spells have been whitelisted.
+- Add a threshold line to the Collapsing Star bar showing when it is able to be used (30 stacks).
+
+## Shaman
+### [#484](#484) Enhancement
+
+- Remove safeguards around Maelstrom Weapon tracking now that its spell has been whitelisted on all active PTR and Beta builds.
+
+---
+
 # 12.0.0.0-beta12 (2026-01-14)
 ## [#462](#462) General
 
