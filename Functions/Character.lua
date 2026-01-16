@@ -587,16 +587,20 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.Character:ResetCaches()
 end
 
+function TRB.Functions.Character:ResetColorCaches()
+	TRB.Data.cache.colors.border = {}
+	TRB.Data.cache.colors.bar = {}
+	TRB.Data.cache.colors.backdrop = {}
+end 
+
 function TRB.Functions.Character:ResetCaches()
 	TRB.Data.cache.barText = {}
 	TRB.Data.cache.symbols = {}
 	TRB.Data.cache.barTextTree = {}
-	TRB.Data.cache.colors.border = {}
-	TRB.Data.cache.colors.bar = {}
-	TRB.Data.cache.colors.backdrop = {}
 	TRB.Data.cache.values.bar = {}
 	TRB.Data.cache.values.resource = {}
 	TRB.Data.cache.values.threshold = {}
+	TRB.Functions.Character:ResetColorCaches()
 	-- We don't do range check cache reset here since we need to track what we've enabled and clean it up when we change specs
 	--TRB.Data.cache.values.range = {}
 	TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, TRB.Data.talents)

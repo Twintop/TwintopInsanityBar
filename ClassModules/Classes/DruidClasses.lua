@@ -9,6 +9,9 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@class TRB.Classes.Druid.DruidBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public frenziedRegeneration TRB.Classes.SpellThreshold
 ---@field public ironfur TRB.Classes.SpellThreshold
+---@field public ferociousBiteMinimum TRB.Classes.SpellComboPointThreshold
+---@field public ferociousBiteMaximum TRB.Classes.SpellComboPointThreshold
+---@field public shred TRB.Classes.SpellComboPointThreshold
 ---@field public rake TRB.Classes.SpellComboPointThreshold
 ---@field public rip TRB.Classes.SpellComboPointThreshold
 ---@field public maim TRB.Classes.SpellComboPointThreshold
@@ -38,6 +41,28 @@ function TRB.Classes.Druid.DruidBaseSpells:New()
     })
 
     -- Cat Form abilities
+    self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
+        id = 22568,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPoints = true,
+        settingKey = "ferociousBiteMinimum",
+        isSnowflake = true
+    })
+    self.ferociousBiteMaximum = TRB.Classes.SpellComboPointThreshold:New({
+        id = 22568,
+        primaryResourceType = Enum.PowerType.Energy,
+        primaryResourceTypeMod = 2,
+        comboPoints = true,
+        settingKey = "ferociousBiteMaximum",
+        isSnowflake = true
+    })
+    self.shred = TRB.Classes.SpellComboPointThreshold:New({
+        id = 5221,
+        primaryResourceType = Enum.PowerType.Energy,
+        comboPointsGenerated = 1,
+        settingKey = "shred",
+        isClearcasting = true
+    })
     self.rake = TRB.Classes.SpellComboPointThreshold:New({
         id = 1822,
         debuffId = 155722,
@@ -279,9 +304,6 @@ end
 ---@field public circleOfLifeAndDeath TRB.Classes.SpellBase
 ---@field public apexPredatorsCraving TRB.Classes.SpellBase
 ---@field public empoweredShapeshifting TRB.Classes.SpellBase
----@field public ferociousBiteMinimum TRB.Classes.SpellComboPointThreshold
----@field public ferociousBiteMaximum TRB.Classes.SpellComboPointThreshold
----@field public shred TRB.Classes.SpellComboPointThreshold
 ---@field public swipe TRB.Classes.SpellComboPointThreshold
 ---@field public primalWrath TRB.Classes.SpellComboPointThreshold
 ---@field public moonfire TRB.Classes.SpellComboPointThreshold
@@ -300,28 +322,6 @@ function TRB.Classes.Druid.FeralSpells:New()
     self = setmetatable(base:New(),  TRB.Classes.Druid.FeralSpells) --[[@as TRB.Classes.Druid.FeralSpells]]
 
     -- Feral Spec Baseline Abilities
-    self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
-        id = 22568,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPoints = true,
-        settingKey = "ferociousBiteMinimum",
-        isSnowflake = true
-    })
-    self.ferociousBiteMaximum = TRB.Classes.SpellComboPointThreshold:New({
-        id = 22568,
-        primaryResourceType = Enum.PowerType.Energy,
-        primaryResourceTypeMod = 2,
-        comboPoints = true,
-        settingKey = "ferociousBiteMaximum",
-        isSnowflake = true
-    })
-    self.shred = TRB.Classes.SpellComboPointThreshold:New({
-        id = 5221,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 1,
-        settingKey = "shred",
-        isClearcasting = true
-    })
     self.swipe = TRB.Classes.SpellComboPointThreshold:New({
         id = 106785,
         primaryResourceType = Enum.PowerType.Energy,
@@ -587,6 +587,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             true -- isPrimary
         )
 
+        -- Combo Points (5 nodes) - for form-based switching to Cat form
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_ComboPoint",
+            5,
+            false -- not primary
+        )
+
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
             UIParent,
@@ -638,6 +646,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             true -- isPrimary
         )
 
+        -- Combo Points (5 nodes) - for form-based switching to Cat form
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_ComboPoint",
+            5,
+            false -- not primary
+        )
+
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
             UIParent,
@@ -653,6 +669,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Combo Points (5 nodes) - for form-based switching to Cat form
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_ComboPoint",
+            5,
+            false -- not primary
         )
 
         -- Health bar (1 node)
@@ -677,11 +701,21 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = true
             },
+            secondary = {
+                maxNodes = 5,
+                isPrimary = false,
+                resourceType = "ComboPoints"
+            },
             health = {
                 maxNodes = 1,
                 isPrimary = false,
                 resourceType = "Health"
-            }
+            },
+            mana = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Mana"
+            },
         }
     elseif specId == 2 then -- Feral
         return {
@@ -706,6 +740,11 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = true
             },
+            secondary = {
+                maxNodes = 5,
+                isPrimary = false,
+                resourceType = "ComboPoints"
+            },
             health = {
                 maxNodes = 1,
                 isPrimary = false,
@@ -717,6 +756,11 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            secondary = {
+                maxNodes = 5,
+                isPrimary = false,
+                resourceType = "ComboPoints"
             },
             health = {
                 maxNodes = 1,

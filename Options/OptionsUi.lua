@@ -4207,26 +4207,50 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Screen"],
 		}
 	elseif (classId == 11 and specId == 1) then -- Balance Druid (mana bar support)
-		relativeToFrame[L["ManaBar"]] = "ManaBar"
-		relativeToFrameList = {
-			L["MainResourceBar"],
-			L["ManaBar"],
-			L["HealthBar"],
-			L["Screen"],
-		}
-	elseif (classId == 11 and specId == 2) then -- Feral Druid
+		relativeToFrame[L["AstralPowerBar"]] = "AstralPowerBar"
+		relativeToFrame[L["RageBar"]] = "RageBar"
+		relativeToFrame[L["EnergyBar"]] = "EnergyBar"
+		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"
 		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"
 		relativeToFrame[L["ComboPoint2"]] = "ComboPoint_2"
 		relativeToFrame[L["ComboPoint3"]] = "ComboPoint_3"
 		relativeToFrame[L["ComboPoint4"]] = "ComboPoint_4"
 		relativeToFrame[L["ComboPoint5"]] = "ComboPoint_5"
+		relativeToFrame[L["ManaBar"]] = "ManaBar"
 		relativeToFrameList = {
 			L["MainResourceBar"],
+			L["AstralPowerBar"],
+			L["RageBar"],
+			L["EnergyBar"],
 			L["ComboPoint1"],
 			L["ComboPoint2"],
 			L["ComboPoint3"],
 			L["ComboPoint4"],
 			L["ComboPoint5"],
+			L["ManaBar"],
+			L["HealthBar"],
+			L["Screen"],
+		}
+	elseif (classId == 11 and specId > 1 and specId <= 4) then -- Non-Balance Druid
+		relativeToFrame[L["RageBar"]] = "RageBar"
+		relativeToFrame[L["EnergyBar"]] = "EnergyBar"
+		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"
+		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"
+		relativeToFrame[L["ComboPoint2"]] = "ComboPoint_2"
+		relativeToFrame[L["ComboPoint3"]] = "ComboPoint_3"
+		relativeToFrame[L["ComboPoint4"]] = "ComboPoint_4"
+		relativeToFrame[L["ComboPoint5"]] = "ComboPoint_5"
+		relativeToFrame[L["ManaBar"]] = "ManaBar"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["RageBar"],
+			L["EnergyBar"],
+			L["ComboPoint1"],
+			L["ComboPoint2"],
+			L["ComboPoint3"],
+			L["ComboPoint4"],
+			L["ComboPoint5"],
+			L["ManaBar"],
 			L["HealthBar"],
 			L["Screen"],
 		}
