@@ -21,6 +21,118 @@ local BALANCE_MAX_ASTRAL_POWER = 140
 local FERAL_MAX_ENERGY = 160
 local GUARDIAN_MAX_RAGE = 100
 
+
+---Loads default bar text settings for Balance
+---@param baseSpecId number
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function SharedLoadDefaultBarTextSettings(baseSpecId,classic)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+	}
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$energy",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=20,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "EnergyBar",
+				relativeToFrameName = L["EnergyBar"]
+			}
+		})
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="$rage",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=20,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "RageBar",
+				relativeToFrameName = L["RageBar"]
+			}
+		})
+	else
+		table.insert(textSettings,
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="$energy",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "EnergyBar",
+				relativeToFrameName = L["EnergyBar"]
+			}
+		})
+		table.insert(textSettings,
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="$rage",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "RageBar",
+				relativeToFrameName = L["RageBar"]
+			}
+		})
+	end
+
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("manaBar", classic)
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	return textSettings
+end
+
 --[[ 
 	Balance Defaults
 ]]
@@ -42,23 +154,22 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$eclipseTime}[#eclipse $eclipseTime]",
+			text="{$casting}[#casting$casting+]$astralPower",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=14,
+			fontSize=20,
 			color = "FFFFFFFF",
 			position = {
 				xPos = -2,
 				yPos = 0,
 				relativeTo = "RIGHT",
 				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
+				relativeToFrame = "AstralPowerBar",
+				relativeToFrameName = L["AstralPowerBar"]
 			}
 		})
-	else
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
@@ -78,18 +189,62 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 				yPos = 0,
 				relativeTo = "CENTER",
 				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
+				relativeToFrame = "AstralPowerBar",
+				relativeToFrameName = L["AstralPowerBar"]
+			}
+		})
+	else
+		table.insert(textSettings,
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="$astralPower",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "AstralPowerBar",
+				relativeToFrameName = L["AstralPowerBar"]
+			}
+		})
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$eclipseTime}[#eclipse $eclipseTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "AstralPowerBar",
+				relativeToFrameName = L["AstralPowerBar"]
 			}
 		})
 	end
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
-	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-
-	local manaBarTextSettings = TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
-	for k,v in pairs(manaBarTextSettings) do table.insert(textSettings, v) end
-
+	local sharedTextSettings = SharedLoadDefaultBarTextSettings(1, classic)
+	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.Druid.BalanceLoadDefaultBarTextSettings = BalanceLoadDefaultBarTextSettings
@@ -384,8 +539,6 @@ local function FeralLoadExtraBarTextSettings(classic)
 		}
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
-	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 
@@ -397,8 +550,60 @@ local function FeralLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local extraTextSettings = FeralLoadExtraBarTextSettings(classic)
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$berserkTime}[#berserk$berserkTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "EnergyBar",
+				relativeToFrameName = L["EnergyBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$berserkTime}[#berserk$berserkTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "EnergyBar",
+				relativeToFrameName = L["EnergyBar"]
+			}
+		})
+	end
 
+	local sharedTextSettings = SharedLoadDefaultBarTextSettings(2, classic)
+	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
+
+	local extraTextSettings = FeralLoadExtraBarTextSettings(classic)
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
@@ -588,8 +793,58 @@ local function GuardianLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
-	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	if classic then
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$berserkTime}[#berserk$berserkTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "RageBar",
+				relativeToFrameName = L["RageBar"]
+			}
+		})
+	else
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text="{$berserkTime}[#berserk$berserkTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "RageBar",
+				relativeToFrameName = L["RageBar"]
+			}
+		})
+	end
+
+	local sharedTextSettings = SharedLoadDefaultBarTextSettings(3, classic)
+	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.Druid.GuardianLoadDefaultBarTextSettings = GuardianLoadDefaultBarTextSettings
@@ -732,8 +987,32 @@ local function RestorationLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
-	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	table.insert(textSettings, {
+		useDefaultFontColor = false,
+		useDefaultFontFace = false,
+		useDefaultFontSize = false,
+		enabled = true,
+		name = L["PositionMiddle"],
+		guid = TRB.Functions.String:Guid(),
+		text="{$incarnationTime}[#incarnation$incarnationTime]",
+		fontFace="Fonts\\FRIZQT__.TTF",
+		fontFaceName="Friz Quadrata TT",
+		fontJustifyHorizontal = "CENTER",
+		fontJustifyHorizontalName = L["PositionCenter"],
+		fontSize=14,
+		color = "FFFFFFFF",
+		position = {
+			xPos = 0,
+			yPos = 0,
+			relativeTo = "CENTER",
+			relativeToName = L["PositionCenter"],
+			relativeToFrame = "ManaBar",
+			relativeToFrameName = L["ManaBar"]
+		}
+	})
+
+	local sharedTextSettings = SharedLoadDefaultBarTextSettings(4, classic)
+	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
 TRB.Options.Druid.RestorationLoadDefaultBarTextSettings = RestorationLoadDefaultBarTextSettings

@@ -454,7 +454,8 @@ local function FillSpellData_Guardian()
 	specCache.guardian.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true }
+		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
 	}
 
 	specCache.guardian.barTextVariables.values = {
@@ -590,7 +591,7 @@ local function FillSpellData_Restoration()
 		{ variable = "$rage", description = L["DruidGuardianBatTextVariable_rage"], printInSettings = true, color = false },
 		{ variable = "$rageMax", description = L["DruidGuardianBatTextVariable_rageMax"], printInSettings = true, color = false },
 
-		{ variable = "$incarnationTime", description = L["DruidRestorationBarTextVariable_incarnationTime"], printInSettings = false, color = false },
+		{ variable = "$incarnationTime", description = L["DruidRestorationBarTextVariable_incarnationTime"], printInSettings = true, color = false },
 
 		{ variable = "$efflorescenceTime", description = L["DruidRestorationBarTextVariable_efflorescenceTime"], printInSettings = true, color = false },
 	}
@@ -1289,7 +1290,7 @@ local function RefreshLookupData_Unified()
 	
 	-- Get all resource values from snapshot attributes
 	local energy = snapshotData.attributes.energy or 0
-	local rage = snapshotData.attributes.rage or 0
+	local rage = snapshotData.attributes.rageModified or 0
 	local mana = snapshotData.attributes.mana or 0
 	local astralPower = snapshotData.attributes.astralPower or 0
 	local comboPoints = snapshotData.attributes.comboPoints or 0
@@ -2733,15 +2734,17 @@ local function SwitchSpec()
 		FillSpellData_Guardian()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.guardian)
 
-		--local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		--local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Unified
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.guardian)
 
-		TRB.Data.lookup = {}
+		local lookup = TRB.Data.lookup or {}
+		lookup["#berserk"] = spells.berserk.icon
+		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
 		-- Set talents before EventRegistration since CheckCharacter uses it

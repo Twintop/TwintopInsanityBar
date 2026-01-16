@@ -1155,7 +1155,8 @@ end
 
 ---@alias trbIncludeResourceType
 ---| '"resource"' # Generic $resource centered
----| '"mana"' # $mana% left, $mana / $manaMax right
+---| '"mana"' # $mana% left, $mana / $manaMax right on Resource Bar
+---| '"manaBar"' # $mana% left, $mana right on Mana Bar
 
 ---Adds default bar text that is used globally
 ---@param includeResourceType trbIncludeResourceType?
@@ -1164,6 +1165,13 @@ end
 function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResourceType, classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
+
+	local relativeToFrame = "Resource"
+	local relativeToFrameName = L["MainResourceBar"]
+	if includeResourceType == "manaBar" then
+		relativeToFrame = "ManaBar"
+		relativeToFrameName = L["ManaBar"]
+	end
 
 	if includeResourceType == "resource" then
 		if classic then
@@ -1216,7 +1224,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				}
 			})
 		end
-	elseif includeResourceType == "mana" then
+	elseif includeResourceType == "mana" or includeResourceType == "manaBar" then
 		if classic then
 			table.insert(textSettings, {
 				useDefaultFontColor = false,
@@ -1237,8 +1245,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 					yPos = 0,
 					relativeTo = "RIGHT",
 					relativeToName = L["PositionRight"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
+					relativeToFrame = relativeToFrame,
+					relativeToFrameName = relativeToFrameName
 				}
 			})
 		else
@@ -1262,8 +1270,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 					yPos = 0,
 					relativeTo = "LEFT",
 					relativeToName = L["PositionLeft"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
+					relativeToFrame = relativeToFrame,
+					relativeToFrameName = relativeToFrameName
 				}
 			})
 			table.insert(textSettings, {
@@ -1285,8 +1293,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 					yPos = 0,
 					relativeTo = "RIGHT",
 					relativeToName = L["PositionRight"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
+					relativeToFrame = relativeToFrame,
+					relativeToFrameName = relativeToFrameName
 				}
 			})
 		end
