@@ -1651,3 +1651,10 @@ L["DemonHunterDevourerThresholdCheckboxCollapsingStarTooltip"] = "This will show
 
 L["DruidCheckboxEnableFormSwitching"] = "Switch bars based on shapeshift form"
 L["DruidCheckboxEnableFormSwitchingTooltip"] = "When enabled, the bar will switch to show the resource bar that best represents your current shapeshift form (e.g., Cat Form shows Energy/Combo Points, Bear Form shows Rage). When disabled, the bar always shows your spec's primary resource arrangement."
+L["AstralPowerBar"] = "Astral Power Bar"
+L["EnergyBar"] = "Energy Bar"
+L["EssenceThresholdAudio"] = "Essence Threshold"
+L["EvokerAudioCheckboxSecondaryThreshold"] = "Play audio cue when at or below X Essence"
+L["EvokerAudioCheckboxSecondaryThresholdTooltip"] = "Play an audio cue when your current Essence drops at or below the configured value to the right."
+L["RageBar"] = "Rage Bar"
+L["SecondaryThresholdValueTitle"] = "At or Below X %s Threshold"

@@ -51,6 +51,7 @@ local function FillSpecializationCache()
 
 	specCache.devastation.snapshotData.attributes.manaRegen = 0
 	specCache.devastation.snapshotData.audio = {
+		secondaryThresholdPlayed = false
 	}
 
 	specCache.devastation.barTextVariables = {
@@ -86,6 +87,7 @@ local function FillSpecializationCache()
 
 	specCache.preservation.snapshotData.attributes.manaRegen = 0
 	specCache.preservation.snapshotData.audio = {
+		secondaryThresholdPlayed = false
 	}
 
 	specCache.preservation.barTextVariables = {
@@ -123,7 +125,8 @@ local function FillSpecializationCache()
 	specCache.augmentation.snapshotData.attributes.manaRegen = 0
 	specCache.augmentation.snapshotData.attributes.extendsEbonMight = false
 	specCache.augmentation.snapshotData.audio = {
-		playedEbonMightCue = false
+		playedEbonMightCue = false,
+		secondaryThresholdPlayed = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.augmentation.snapshotData.snapshots[spells.ebonMight.id] = TRB.Classes.Snapshot:New(spells.ebonMight)
@@ -774,6 +777,24 @@ local function UpdateResourceBar()
 		return
 	end
 
+	local function UpdateEssenceOuter(specSettings, specCacheSettings)
+		local refreshTextEssence = false
+		
+		if specSettings.displayBar.secondary ~= "never" then
+			refreshTextEssence = true
+			UpdateEssence(specSettings, specCacheSettings)
+		end
+
+		if specSettings.audio.secondaryThreshold.enabled and not snapshotData.audio.secondaryThresholdPlayed and snapshotData.attributes.resource2 <= specSettings.audio.secondaryThreshold.configuration.thresholdValue then
+			snapshotData.audio.secondaryThresholdPlayed = true
+			PlaySoundFile(specSettings.audio.secondaryThreshold.sound, coreSettings.audio.channel.channel)
+		elseif snapshotData.attributes.resource2 > specSettings.audio.secondaryThreshold.configuration.thresholdValue then
+			snapshotData.audio.secondaryThresholdPlayed = false
+		end
+
+		return refreshTextEssence
+	end
+
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.devastation
 		local specCacheSettings = TRB.Data.specCache.devastation.settings
@@ -806,10 +827,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
-				refreshText = true
-				UpdateEssence(specSettings, specCacheSettings)
-			end
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
 			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
@@ -851,10 +869,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
-				refreshText = true
-				UpdateEssence(specSettings, specCacheSettings)
-			end
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
 			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
@@ -948,10 +963,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
-				refreshText = true
-				UpdateEssence(specSettings, specCacheSettings)
-			end
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
 			if specSettings.displayBar.health ~= "never" then
 				refreshText = true

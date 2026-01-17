@@ -52,6 +52,7 @@ addonData.libs.LibSmoothMove = LibStub:GetLibrary("LibSmoothMove-1.0")
 TRB.Details.addonData = addonData
 
 -- Some class functions get referenced by other methods. These live in a consistent location but are actually created in the class modules.
+TRB.Functions = TRB.Functions or {}
 TRB.Functions.Class = {}
 
 -- Working data

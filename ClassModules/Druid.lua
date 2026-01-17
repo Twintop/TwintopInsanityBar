@@ -721,13 +721,16 @@ local function UpdateShapeshiftForm()
 	if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 		TRB.Functions.Class:CheckCharacter()
 	end
-	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
-	TRB.Functions.Character:ResetColorCaches()
 	
-	TRB.Data.cache.values.frame = {}
-	TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
+	if TRB.Data.snapshotData ~= nil and TRB.Data.snapshotData.snapshots ~= nil then
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:ResetColorCaches()
+		
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
+	end
 end
 
 local shapeshiftFrame = CreateFrame("Frame")
@@ -2994,7 +2997,7 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResource = TRB.Data.character.maxAstralPower
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.LunarPower, false)
 		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
-		GetCurrentMoonSpell()
+		pcall(GetCurrentMoonSpell)
 
 		--TRB.Data.snapshotData.snapshots[TRB.Data.spellsData.spells.moonkinForm.id].buff:Initialize(nil, true)
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings

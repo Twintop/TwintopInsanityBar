@@ -175,6 +175,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public enabled boolean
 ---@field public sound string
 ---@field public soundName string
+---@field public configuration table?
 
 ---@class TRB.Classes.Settings.GenericTrackingOverX
 ---@field public enabled boolean

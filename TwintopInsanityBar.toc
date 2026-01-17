@@ -14,8 +14,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.0.0.0
-## X-ReleaseType: beta13
-## X-ReleaseDate: 2026-01-16
+## X-ReleaseType: beta14
+## X-ReleaseDate: 2026-01-18
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -41,8 +41,6 @@ Libs\LibStub.lua
 Libs\CallbackHandler-1.0.lua
 Libs\LibSharedMedia-3.0.lua
 Libs\LibSmoothMove-1.0.lua
-Libs\base64.lua
-Libs\json.lua
 Libs\LibMarkdown\LibMarkdown.xml
 Libs\LibScrollingTable\lib-st.xml
 #Libs\LibAdvFlight-1.0\lib.xml

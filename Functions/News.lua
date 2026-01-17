@@ -11,6 +11,23 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-beta14 (2026-01-18)
+## General
+
+- [#437](#437) Update import/export strings to use Blizzard's built-in `C_EncodingUtil` methods instead of 3rd party libraries.
+- [#437](#437) Implement a import/export string version that also uses Deflate compression to shrink import string sizes considerably. Previous import strings will continue to work as before.
+- Add import/export API functions to allow other addons or external tools to programmatically import/export settings configurations.
+
+## Druid
+
+- [#297](#297) Add support for displaying the resource bar that is most appropriate to your current shapeshift form. This feature pulls from the related specialization's resource bar settings. For example, when in Bear Form as a Balance Druid, the Astral Power bar will be replaced with a Rage bar that uses settings from the Guardian specialization configuration.
+
+## Evoker
+
+- Add a new optional audio cue when your Essence drops at or below a configured threshold.
+
+---
+
 # 12.0.0.0-beta13 (2026-01-16)
 ## Demon Hunter
 ### [#491](#491) Devourer

@@ -5,6 +5,7 @@ TRB.Functions.IO = {}
 TRB.Data = TRB.Data or {}
 
 local EXPORT_STRING_PREFIX = "!TRB!"
+local EXPORT_STRING_PREFIX2 = "!TRBv2!"
 
 local function ExportConfigurationSections(classId, specId, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 	local configuration = {
@@ -367,6 +368,16 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	return configuration
 end
 
+---Gets an export configuration table for the specified class and spec.
+---@param classId integer? # Class to export. If nil, exports all classes. Both classId and specId must be nil to export all classes/specs.
+---@param specId integer? # Specialization to export. If nil, exports all specs for the class.
+---@param includeBarDisplay boolean? # Include all values found on the Bar Display tab. Defaults to true.
+---@param includeThresholds boolean? # Include all values found on the Thresholds tab. Defaults to true.
+---@param includeFontAndText boolean? # Include all values found on the Font & Text tab. Defaults to true.
+---@param includeAudioAndTracking boolean? # Include all values found on the Audio & Tracking tab. Defaults to true.
+---@param includeBarText boolean? # Include all values found on the Bar Text tab. Defaults to true.
+---@param includeCore boolean? # Should the export also include core settings not tied to a class/spec? Defaults to false.
+---@return table
 local function ExportGetConfiguration(classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 	local settings = TRB.Data.settings or {}
 	if includeBarDisplay == nil then
@@ -637,6 +648,13 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Restoration
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
+		-- Mage
+		-- Arcane
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Fire
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Frost
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Warlock
 		-- Affliction
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
@@ -688,37 +706,50 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 end
 
 local function Export(configuration)
-	local json = TRB.Functions.Libs:GetJsonLibrary()
-	local base64 = TRB.Functions.Libs:GetBase64Library()
+	local encoded = C_EncodingUtil.SerializeJSON(configuration)
+	local compressed = C_EncodingUtil.CompressString(encoded, Enum.CompressionMethod.Deflate)
+	local base64 = C_EncodingUtil.EncodeBase64(compressed)
 
-	local encoded = json.encode(configuration)
-	local output = base64.encode(encoded)
-
-	return EXPORT_STRING_PREFIX .. output
+	return EXPORT_STRING_PREFIX2 .. base64
 end
 
-function TRB.Functions.IO:Import(input)
-	local json = TRB.Functions.Libs:GetJsonLibrary()
-	local base64 = TRB.Functions.Libs:GetBase64Library()
-
+---Handles importing a configuration string.
+---@param input string
+---@return integer # Status code of the result of the import. 1 = Success (`/reload` required), -1 = Base64 decode error, -2 = Decompression error, -3 = JSON decode error, -4 = Invalid configuration structure, -5 = Merge error.
+local function HandleImport(input)
 	local prefix = string.sub(input, 1, 5)
+	local prefixV2 = string.sub(input, 1, 7)
+	local exportVersion = nil
 
-	if prefix == EXPORT_STRING_PREFIX then
+	if prefixV2 == EXPORT_STRING_PREFIX2 then
+		exportVersion = 2
+		input = string.sub(input, 8)
+	elseif prefix == EXPORT_STRING_PREFIX then
 		input = string.sub(input, 6)
+		exportVersion = 1
 	end
 
-	local decoded, configuration, mergedSettings, result
+	local decoded, decompressed, configuration, mergedSettings, result
 
-	result, decoded = pcall(base64.decode, input)
+	result, decoded = pcall(C_EncodingUtil.DecodeBase64, input)
 
 	if not result then
 		return -1
 	end
 
-	result, configuration = pcall(json.decode, decoded)
+	if exportVersion == 2 then
+		result, decompressed = pcall(C_EncodingUtil.DecompressString, decoded, Enum.CompressionMethod.Deflate)
+		
+		if not result then
+			return -2
+		end
+		decoded = decompressed
+	end
 
-	if not result then
-		return -2
+	result, configuration = pcall(C_EncodingUtil.DeserializeJSON, decoded)
+
+	if not result or type(configuration) ~= "table" then
+		return -3
 	end
 
 	if not (configuration.core ~= nil or
@@ -776,7 +807,7 @@ function TRB.Functions.IO:Import(input)
 			configuration.evoker.preservation ~= nil or
 			configuration.evoker.augmentation ~= nil)
 		)) then
-		return -3
+		return -4
 	end
 
 	local existingSettings = TRB.Data.settings
@@ -817,15 +848,38 @@ function TRB.Functions.IO:Import(input)
 	result, mergedSettings = pcall(TableMergeWrapper, existingSettings, configuration)
 
 	if not result then
-		return -4
+		return -5
 	end
 
 	TRB.Data.settings = mergedSettings
 	return 1
 end
 
-function TRB.Functions.IO:ExportPopup(exportMessage, classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
+function TRB.Functions.IO:Import(input)
+	return HandleImport(input)
+end
+
+---Gets an export configuration table for the specified class and spec.
+---@param classId integer? # Class to export. If nil, exports all classes. Both classId and specId must be nil to export all classes/specs.
+---@param specId integer? # Specialization to export. If nil, exports all specs for the class.
+---@param includeBarDisplay boolean? # Include all values found on the Bar Display tab. Defaults to true.
+---@param includeThresholds boolean? # Include all values found on the Thresholds tab. Defaults to true.
+---@param includeFontAndText boolean? # Include all values found on the Font & Text tab. Defaults to true.
+---@param includeAudioAndTracking boolean? # Include all values found on the Audio & Tracking tab. Defaults to true.
+---@param includeBarText boolean? # Include all values found on the Bar Text tab. Defaults to true.
+---@param includeCore boolean? # Should the export also include core settings not tied to a class/spec? Defaults to false.
+---@return string
+local function HandleExport(classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 	local configuration = ExportGetConfiguration(classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 	local output = Export(configuration)
+	return output
+end
+
+function TRB.Functions.IO:ExportPopup(exportMessage, classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
+	local output = HandleExport(classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 	StaticPopup_Show("TwintopResourceBar_Export", nil, nil, { message = exportMessage, exportString = output})
 end
+
+Twintop_API = TwintopAPI or {}
+Twintop_API.ExportConfiguration = HandleExport
+Twintop_API.ImportConfiguration = HandleImport
