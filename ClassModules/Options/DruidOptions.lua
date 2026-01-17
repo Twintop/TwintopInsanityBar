@@ -292,7 +292,8 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			secondary = "combat",
 			health = "combat",
 			mana = "never",
-			dragonriding = true
+			dragonriding = true,
+			enableFormSwitching = true
 		},
 		endOfEclipse = {
 			enabled=true,
@@ -683,7 +684,8 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			primary = "combat",
 			secondary = "combat",
 			health = "combat",
-			dragonriding = true
+			dragonriding = true,
+			enableFormSwitching = true
 		},
 		overcap = {
 			mode = "relative",
@@ -889,7 +891,8 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 			primary = "combat",
 			secondary = "combat",
 			health = "combat",
-			dragonriding = true
+			dragonriding = true,
+			enableFormSwitching = true
 		},
 		overcap = {
 			mode = "relative",
@@ -1031,7 +1034,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			primary = "combat",
 			secondary = "combat",
 			health = "combat",
-			dragonriding = true
+			dragonriding = true,
+			enableFormSwitching = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -1249,7 +1253,27 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true, true)
 
-	yCoord = yCoord - 90
+	yCoord = yCoord - 70
+	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.enableFormSwitching
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
+	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
+	f:SetChecked(spec.displayBar.enableFormSwitching)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.enableFormSwitching = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+			TRB.Functions.Class:CheckCharacter()
+		end
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:ResetColorCaches()
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(11, 1)
+	end)
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
 
 	yCoord = yCoord - 30
@@ -1871,7 +1895,27 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
 
-	yCoord = yCoord - 90
+	yCoord = yCoord - 70
+	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.enableFormSwitching
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
+	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
+	f:SetChecked(spec.displayBar.enableFormSwitching)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.enableFormSwitching = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+			TRB.Functions.Class:CheckCharacter()
+		end
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:ResetColorCaches()
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(11, 2)
+	end)
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
@@ -2513,6 +2557,26 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 70
+	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.enableFormSwitching
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
+	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
+	f:SetChecked(spec.displayBar.enableFormSwitching)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.enableFormSwitching = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+			TRB.Functions.Class:CheckCharacter()
+		end
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:ResetColorCaches()
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(11, 3)
+	end)
+
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])	
 
 	yCoord = yCoord - 30
@@ -3027,8 +3091,27 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 
+	yCoord = yCoord - 70
+	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.enableFormSwitching
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
+	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
+	f:SetChecked(spec.displayBar.enableFormSwitching)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.enableFormSwitching = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+			TRB.Functions.Class:CheckCharacter()
+		end
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:ResetColorCaches()
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(11, 4)
+	end)
 
-	yCoord = yCoord - 90
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30

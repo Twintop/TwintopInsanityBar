@@ -104,7 +104,6 @@ if locale == "enGB" then
     L["ShamanManaCheckboxAscendanceEndTooltip"] = "Changes the bar colour when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["ShamanElementalCheckboxAscendanceEnd"] = "Ascendance colour change when ending enabled"
     L["ShamanElementalCheckboxAscendanceEndTooltip"] = "Changes the bar colour when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-    L["ShamanElementalCheckboxPrimalFractureTooltip"] = "This will change the bar border colour when you have the Primal Fracture (T30 4P) buff."
     L["ShamanElementalTextColorsHeader"] = "Maelstrom Text Colours"
     L["ShamanElementalCheckboxThresholdOverTooltip"] = "This will change the Maelstrom text colour when you are able to cast Earth Shock or Earthquake"
     L["MaelstromWeaponCheckboxUseHighestForAll"] = "Use highest Maelstrom Weapon colour for all?"

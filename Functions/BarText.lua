@@ -1096,6 +1096,11 @@ end
 function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	classId = classId or TRB.Data.character.classId
 	specId = specId or TRB.Data.character.specId
+
+	-- Don't do this if we're not modifying the current spec's bar text
+	if classId ~= TRB.Data.character.classId or specId ~= TRB.Data.character.specId then
+		return
+	end
 	
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
 	local settings = TRB.Data.specCache[specName].settings

@@ -3,6 +3,11 @@ if TRB.Data.character.classId ~= 11 then --Only do this if we're on a Druid!
 	return
 end
 
+local ASTRAL_POWER_RESOURCE_FACTOR = 10
+local ENERGY_RESOURCE_FACTOR = 1
+local RAGE_RESOURCE_FACTOR = 10
+local MANA_RESOURCE_FACTOR = 1
+
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 
@@ -734,6 +739,13 @@ shapeshiftFrame:SetScript("OnEvent", UpdateShapeshiftForm)
 ---@param formName string The current shapeshift form name
 ---@return integer specIdForSettings The spec ID whose settings should be used
 local function GetFormSpecForSettings(specId, formName)
+	-- Check if form switching is enabled for the active spec
+	local activeSpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[specId]
+	local settings = TRB.Data.settings.druid[activeSpecName]
+	if settings and settings.displayBar and settings.displayBar.enableFormSwitching == false then
+		return specId -- Return active spec, don't switch based on form
+	end
+
 	-- Cat Form → Feral settings
 	if formName == "cat" then
 		return 2 -- Feral
@@ -969,8 +981,8 @@ local function RefreshLookupData_Balance()
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resource"] = currentAstralPower
 	lookup["$astralPower"] = currentAstralPower
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$astralPowerMax"] = TRB.Data.character.maxResource
+	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+	lookup["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookup["$casting"] = castingAstralPower
 	lookup["#moon"] = currentMoonIcon
 	lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
@@ -991,8 +1003,8 @@ local function RefreshLookupData_Balance()
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	lookupLogic["$resource"] = normalizedAstralPower
 	lookupLogic["$astralPower"] = normalizedAstralPower
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+	lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$casting"] = currentAstralPower
 	lookupLogic["$eclipseTime"] = _eclispeTime
 	lookupLogic["$mana"] = normalizedMana
@@ -1079,10 +1091,10 @@ local function RefreshLookupData_Feral()
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
+	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookup["$resource"] = currentEnergy
 	lookup["$casting"] = castingEnergy
-	lookup["$energyMax"] = TRB.Data.character.maxResource
+	lookup["$energyMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookup["$energy"] = currentEnergy
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -1096,10 +1108,10 @@ local function RefreshLookupData_Feral()
 	
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+	lookupLogic["$energyMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$energy"] = snapshotData.attributes.resource
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -1176,8 +1188,8 @@ local function RefreshLookupData_Guardian()
 	local lookup = TRB.Data.lookup or {}
 	lookup["$resource"] = currentRage
 	lookup["$rage"] = currentRage
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$rageMax"] = TRB.Data.character.maxResource
+	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+	lookup["$rageMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookup["$casting"] = castingRage
 	lookup["$berserkTime"] = berserkTime
 	lookup["$incarnationTime"] = berserkTime
@@ -1186,8 +1198,8 @@ local function RefreshLookupData_Guardian()
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$rage"] = snapshotData.attributes.resource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$rageMax"] = TRB.Data.character.maxResource
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+	lookupLogic["$rageMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$berserkTime"] = _berserkTime
 	lookupLogic["$incarnationTime"] = _berserkTime
@@ -1295,26 +1307,28 @@ local function RefreshLookupData_Unified()
 	local astralPower = snapshotData.attributes.astralPower or 0
 	local comboPoints = snapshotData.attributes.comboPoints or 0
 	
-	-- Color configuration based on current form's spec
-	local currentResourceColor = sharedSettings.colors.text.current.color
-	local castingResourceColor = sharedSettings.colors.text.casting.color
+	-- Resource color configuration
+	local astralPowerColor =  TRB.Data.settings.druid.balance.colors.text.current.color
+	local energyColor =  TRB.Data.settings.druid.feral.colors.text.current.color
+	local rageColor =  TRB.Data.settings.druid.guardian.colors.text.current.color
+	local manaColor =  TRB.Data.settings.druid.restoration.colors.text.current.color
 	
 	-- Energy variables ($energy, $energyMax)
-	local energyFormatted = string.format("|c%s%s|r", currentResourceColor, energy)
+		local energyFormatted = string.format("|c%s%s|r", energyColor, energy)
 	lookup["$energy"] = energyFormatted
-	lookup["$energyMax"] = TRB.Data.character.maxEnergy
+	lookup["$energyMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
 	lookupLogic["$energy"] = energy
-	lookupLogic["$energyMax"] = TRB.Data.character.maxEnergy
+	lookupLogic["$energyMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
 	
 	-- Rage variables ($rage, $rageMax)
-	local rageFormatted = string.format("|c%s%s|r", currentResourceColor, rage)
+	local rageFormatted = string.format("|c%s%s|r", rageColor, rage)
 	lookup["$rage"] = rageFormatted
-	lookup["$rageMax"] = TRB.Data.character.maxRage
+	lookup["$rageMax"] = TRB.Data.character.maxRage  / RAGE_RESOURCE_FACTOR
 	lookupLogic["$rage"] = rage
-	lookupLogic["$rageMax"] = TRB.Data.character.maxRage
+	lookupLogic["$rageMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
 	
 	-- Mana variables ($mana, $manaMax, $manaPercent)
-	local manaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or currentResourceColor
+	local manaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or manaColor
 	local manaFormatted = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(mana))
 	local manaMaxFormatted = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxMana))
 	local manaPrecision = 1
@@ -1324,16 +1338,16 @@ local function RefreshLookupData_Unified()
 	lookup["$manaMax"] = manaMaxFormatted
 	lookup["$manaPercent"] = manaPercentFormatted
 	lookupLogic["$mana"] = mana
-	lookupLogic["$manaMax"] = TRB.Data.character.maxMana
+	lookupLogic["$manaMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
 	lookupLogic["$manaPercent"] = manaPercent
 	
 	-- Astral Power variables ($astralPower, $astralPowerMax) - Balance only
 	if specId == 1 then
-		local astralPowerFormatted = string.format("|c%s%s|r", currentResourceColor, astralPower)
+		local astralPowerFormatted = string.format("|c%s%s|r", astralPowerColor, astralPower)
 		lookup["$astralPower"] = astralPowerFormatted
-		lookup["$astralPowerMax"] = TRB.Data.character.maxAstralPower
+		lookup["$astralPowerMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 		lookupLogic["$astralPower"] = astralPower
-		lookupLogic["$astralPowerMax"] = TRB.Data.character.maxAstralPower
+		lookupLogic["$astralPowerMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 	end
 	
 	-- Combo Points variables ($comboPoints, $comboPointsMax)
@@ -1345,32 +1359,27 @@ local function RefreshLookupData_Unified()
 	-- Primary $resource and $resourceMax - mapped to current form's resource
 	if currentForm == "cat" then
 		lookup["$resource"] = energyFormatted
-		lookup["$resourceMax"] = TRB.Data.character.maxEnergy
+		lookup["$resourceMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
 		lookupLogic["$resource"] = energy
-		lookupLogic["$resourceMax"] = TRB.Data.character.maxEnergy
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
 	elseif currentForm == "bear" then
 		lookup["$resource"] = rageFormatted
-		lookup["$resourceMax"] = TRB.Data.character.maxRage
+		lookup["$resourceMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
 		lookupLogic["$resource"] = rage
-		lookupLogic["$resourceMax"] = TRB.Data.character.maxRage
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
 	elseif currentForm == "moonkin" and specId == 1 then
-		local astralPowerFormatted = string.format("|c%s%s|r", currentResourceColor, astralPower)
+		local astralPowerFormatted = string.format("|c%s%s|r", astralPowerColor, astralPower)
 		lookup["$resource"] = astralPowerFormatted
-		lookup["$resourceMax"] = TRB.Data.character.maxAstralPower
+		lookup["$resourceMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 		lookupLogic["$resource"] = astralPower
-		lookupLogic["$resourceMax"] = TRB.Data.character.maxAstralPower
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 	else
 		-- Humanoid/other forms use mana
 		lookup["$resource"] = manaFormatted
-		lookup["$resourceMax"] = TRB.Data.character.maxMana
+		lookup["$resourceMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
 		lookupLogic["$resource"] = mana
-		lookupLogic["$resourceMax"] = TRB.Data.character.maxMana
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
 	end
-	
-	-- $casting (simplified for now - will need form-specific logic if needed)
-	local castingFormatted = string.format("|c%s%s|r", castingResourceColor, snapshotData.casting.resourceFinal or 0)
-	lookup["$casting"] = castingFormatted
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal or 0
 
 	-- Call the spec-specific lookup function to fill in spec-specific variables
 	-- (like $eclipseTime, $berserkTime, $incarnationTime, etc.)
@@ -1643,29 +1652,28 @@ local function UpdateResourceBar()
 	local displaySpecId = GetFormSpecForSettings(activeSpecId, currentForm)
 	local displaySpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[displaySpecId]
 	
-	-- Determine which resource to display based on form
+	-- Determine which resource to display based on displaySpecId (respects enableFormSwitching setting)
 	local displayResource = snapshotData.attributes.resource -- default
 	local displayResourceType = TRB.Data.resource -- default
 	local displayResourceFactor = TRB.Data.resourceFactor or 1 -- default
 	local displayMaxResource = TRB.Data.character.maxResource -- default
 	
-	if currentForm == "cat" then
+	if displaySpecId == 2 then -- Feral uses Energy
 		displayResource = snapshotData.attributes.energy or 0
 		displayResourceType = Enum.PowerType.Energy
 		displayResourceFactor = 1
 		displayMaxResource = TRB.Data.character.maxEnergy
-	elseif currentForm == "bear" then
+	elseif displaySpecId == 3 then -- Guardian uses Rage
 		displayResource = snapshotData.attributes.rage or 0
 		displayResourceType = Enum.PowerType.Rage
 		displayResourceFactor = 10
 		displayMaxResource = TRB.Data.character.maxRage
-	elseif currentForm == "moonkin" and activeSpecId == 1 then
+	elseif displaySpecId == 1 then -- Balance uses Astral Power
 		displayResource = snapshotData.attributes.astralPower or 0
 		displayResourceType = Enum.PowerType.LunarPower
 		displayResourceFactor = 10
 		displayMaxResource = TRB.Data.character.maxAstralPower
-	else
-		-- Humanoid/other forms use mana
+	else -- Restoration uses Mana
 		displayResource = snapshotData.attributes.mana or 0
 		displayResourceType = Enum.PowerType.Mana
 		displayResourceFactor = 1
@@ -1742,9 +1750,11 @@ local function UpdateResourceBar()
 	end
 
 	local function ConstructComboPointsGeneric()
-		-- Combo points update (when in Cat form)
-		if currentForm == "cat" and formSpecSettings.displayBar.secondary ~= "never" then
-			-- Use Feral's combo point settings (specSettings points to Feral when in Cat form)
+		-- Combo points update (when displaying Feral bar configuration)
+		-- Only show combo points when displaySpecId == 2 (Feral), which means form switching is enabled and we're in Cat form
+		-- This ensures formSpecSettings points to Feral settings (which has comboPoints defined)
+		if displaySpecId == 2 and formSpecSettings.displayBar.secondary ~= "never" then
+			-- Use Feral's combo point settings (formSpecSettings points to Feral when displaySpecId == 2)
 			local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(formSpecSettings.colors.comboPoints.background, true)
 			
 			for x = 1, TRB.Data.character.maxComboPoints do
@@ -2290,7 +2300,8 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
-			if currentForm == "cat" and specSettings.displayBar.secondary ~= "never" then
+			-- Show combo points when in Cat form, OR when displaySpecId is Feral (enableFormSwitching disabled)
+			if (currentForm == "cat" or displaySpecId == 2) and specSettings.displayBar.secondary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -3176,7 +3187,7 @@ function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.LunarPower -- Primary spec resource
-		TRB.Data.resourceFactor = 10
+		TRB.Data.resourceFactor = ASTRAL_POWER_RESOURCE_FACTOR
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
 		primaryResourceToken = "LUNAR_POWER"
@@ -3188,7 +3199,7 @@ function TRB.Functions.Class:EventRegistration()
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy -- Primary spec resource
-		TRB.Data.resourceFactor = 1
+		TRB.Data.resourceFactor = ENERGY_RESOURCE_FACTOR
 		TRB.Data.resource2 = Enum.PowerType.ComboPoints
 		TRB.Data.resource2Factor = 1
 		primaryResourceToken = "ENERGY"
@@ -3199,7 +3210,7 @@ function TRB.Functions.Class:EventRegistration()
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.druid.guardian == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Rage -- Primary spec resource
-		TRB.Data.resourceFactor = 10
+		TRB.Data.resourceFactor = RAGE_RESOURCE_FACTOR
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
 		primaryResourceToken = "RAGE"
@@ -3211,7 +3222,7 @@ function TRB.Functions.Class:EventRegistration()
 	elseif TRB.Data.character.specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana -- Primary spec resource
-		TRB.Data.resourceFactor = 1
+		TRB.Data.resourceFactor = MANA_RESOURCE_FACTOR
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
 		primaryResourceToken = "MANA"
@@ -3265,16 +3276,16 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Determine secondary bar visibility independently
-			-- Feral (specId == 2) uses the secondary (Combo Points) bar
-			-- Also show combo points when in Cat form regardless of active spec
+			-- Combo points should show whenever the energy bar is being shown (Feral spec or Cat form)
+			-- and should respect their visibility setting
 			local showSecondary = false
 			local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
-			if not forceHideAll and currentForm == "cat" then
-				-- When not in Feral spec but in Cat form, use Feral's secondary bar settings
-				local secondarySettings = sharedSettings
-				if TRB.Data.character.specId ~= 2 and currentForm == "cat" then
-					secondarySettings = TRB.Data.specCache.feral.settings
-				end
+			local displaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, currentForm)
+			
+			-- Show combo points when displaySpecId is Feral (energy bar is shown)
+			if not forceHideAll and displaySpecId == 2 then
+				-- Use Feral's secondary bar settings for visibility
+				local secondarySettings = TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings or sharedSettings
 				
 				if secondarySettings.displayBar.secondary == "always" then
 					showSecondary = true
@@ -3296,8 +3307,10 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Determine mana bar visibility independently (Balance only)
+			-- Show mana bar when displaySpecId is Balance (1), not just when in Moonkin form
+			-- This ensures mana bar persists when form switching is disabled
 			local showMana = false
-			if TRB.Data.character.specId == 1 and currentForm == "moonkin" and not forceHideAll and sharedSettings.displayBar.mana ~= nil then
+			if TRB.Data.character.specId == 1 and displaySpecId == 1 and not forceHideAll and sharedSettings.displayBar.mana ~= nil then
 				if sharedSettings.displayBar.mana == "always" then
 					showMana = true
 				elseif sharedSettings.displayBar.mana == "combat" then
@@ -3537,10 +3550,12 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 
 	local normalizedRelativeFrame = string.gsub(relativeToFrame or "", "_", "")
 	local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+	local displaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, currentForm)
 	
-	-- Form-based bar aliases - map to primary bar when in matching form
+	-- Form-based bar aliases - map to primary bar when displaying matching spec
 	if normalizedRelativeFrame == "EnergyBar" then
-		if currentForm == "cat" then
+		-- Energy bar is shown when displaySpecId is Feral (2)
+		if displaySpecId == 2 then
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
 				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
@@ -3551,7 +3566,8 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 	
 	if normalizedRelativeFrame == "RageBar" then
-		if currentForm == "bear" then
+		-- Rage bar is shown when displaySpecId is Guardian (3)
+		if displaySpecId == 3 then
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
 				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
@@ -3562,7 +3578,8 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 	
 	if normalizedRelativeFrame == "AstralPowerBar" then
-		if currentForm == "moonkin" and TRB.Data.character.specId == 1 then
+		-- Astral Power bar is shown when displaySpecId is Balance (1)
+		if displaySpecId == 1 then
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
 				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
@@ -3594,19 +3611,20 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 
 	if normalizedRelativeFrame == "ManaBar" then
-		if currentForm == "moonkin" and TRB.Data.character.specId == 1 then
-			if barGroups and barGroups.mana then
-				local manaNode = barGroups.mana:GetNode(1)
-				if manaNode then
-					local isVisible = barGroups.mana.isVisible and manaNode.isVisible
-					return manaNode:GetResourceFrame(), true, isVisible
-				end
-			end
-		elseif currentForm ~= "cat" and currentForm ~= "bear" then
+		-- Mana bar is shown when displaySpecId is Restoration (4) or Balance (1) with mana bar enabled
+		if displaySpecId == 4 then
+			-- Restoration uses primary bar for mana
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
 				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
 				return primaryNode:GetResourceFrame(), true, isVisible
+			end
+		elseif displaySpecId == 1 and barGroups.mana then
+			-- Balance uses separate mana bar (when in moonkin form)
+			local manaNode = barGroups.mana:GetNode(1)
+			if manaNode then
+				local isVisible = barGroups.mana.isVisible and manaNode.isVisible
+				return manaNode:GetResourceFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -3615,7 +3633,8 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	local comboPointPrefix = "ComboPoint"
 	if string.sub(normalizedRelativeFrame, 1, string.len(comboPointPrefix)) == comboPointPrefix then
 		local comboPoint = tonumber(string.sub(normalizedRelativeFrame, string.len(comboPointPrefix) + 1))
-		if comboPoint and barGroups.secondary then
+		-- Combo points are shown when displaySpecId is Feral (2)
+		if comboPoint and barGroups.secondary and displaySpecId == 2 then
 			local cpNode = barGroups.secondary:GetNode(comboPoint)
 			if cpNode then
 				local isVisible = barGroups.secondary.isVisible and cpNode.isVisible
