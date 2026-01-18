@@ -117,6 +117,14 @@ Many specs have a secondary resource displayed as individual nodes above or belo
 
 A dedicated health bar is available for all specs, providing an at-a-glance view of your current health with customizable color thresholds.
 
+### Druid Shapeshifting
+
+Switch between Astral Power, Energy + Combo Points, Rage, and Mana bars to match your current Druid shapeshift form -- including unique bar text and threshold lines.
+
+### Void Metamorphosis and Collapsing Star Bar
+
+Devourer Demon Hunter have a bar that tracks both Void Metamorphosis and Collapsing Star, based on current buffs, in addition to a Fury bar.
+
 ### Secondary Mana Bar
 
 Some DPS specs that may need to off-heal in a pinch have a secondary mana bar available (disabled by default):
