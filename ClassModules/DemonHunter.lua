@@ -1189,6 +1189,7 @@ local function UpdateResourceBar()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 		local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
 		local metaUsable = snapshotData.snapshots[spells.soulFragments.id].buff.applications >= spells.soulFragments.attributes.maxResource
+		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 
 		if barGroups and barGroups.primary then
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
@@ -1308,7 +1309,7 @@ local function UpdateResourceBar()
 
 				if specSettings.colors.comboPoints.voidMetamorphosisReady.enabled and metaUsable then
 					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
-				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
+				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and collapsingStarUsable then
 					cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
 				end
 
