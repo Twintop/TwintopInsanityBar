@@ -597,7 +597,7 @@ local function RefreshLookupData_Vengeance()
 	local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
 
 	--$soulFragments
-	local _soulFragments = snapshotData.attributes.resource2 or 0
+	local _soulFragments = snapshotData.attributes.resource2
 	local soulFragments = string.format("%s", _soulFragments)
 
 	----------------------------
@@ -614,8 +614,8 @@ local function RefreshLookupData_Vengeance()
 	lookup["$voidMetamorphosisTime"] = metamorphosisTime
 	lookup["$soulFragments"] = soulFragments
 	lookup["$comboPoints"] = soulFragments
-	lookup["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource --TRB.Data.character.maxResource2Value
-	lookup["$comboPointsMax"] = spells.soulFragments.attributes.maxResource --TRB.Data.character.maxResource2Value
+	lookup["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource
+	lookup["$comboPointsMax"] = spells.soulFragments.attributes.maxResource
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -630,8 +630,8 @@ local function RefreshLookupData_Vengeance()
 	lookupLogic["$voidMetamorphosisTime"] = _metamorphosisTime
 	lookupLogic["$soulFragments"] = _soulFragments
 	lookupLogic["$comboPoints"] = _soulFragments
-	lookupLogic["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource --TRB.Data.character.maxResource2Value
-	lookupLogic["$comboPointsMax"] = spells.soulFragments.attributes.maxResource --TRB.Data.character.maxResource2Value
+	lookupLogic["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource
+	lookupLogic["$comboPointsMax"] = spells.soulFragments.attributes.maxResource
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -684,7 +684,7 @@ local function RefreshLookupData_Devourer()
 	local soulFragments = string.format("%s", _soulFragments)
 
 	--$soulFragmentsMax
-	local _soulFragmentsMax = snapshotData.attributes.maxResource2 or 0
+	local _soulFragmentsMax = snapshotData.attributes.maxResource2
 	local soulFragmentsMax = string.format("%s", _soulFragmentsMax)
 	----------------------------
 
@@ -848,6 +848,8 @@ local function UpdateSnapshot_Devourer()
 	snapshotData.attributes.maxResource2 = spells.soulFragments.attributes.maxResource
 	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
 		snapshotData.attributes.maxResource2 = spells.collapsingStar.attributes.maxResource
+	elseif talents:IsTalentActive(spells.soulGlutton) then
+		snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.soulGlutton.attributes.maxResourceMod
 	end
 end
 
@@ -1188,7 +1190,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Devourer()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 		local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
-		local metaUsable = snapshotData.snapshots[spells.soulFragments.id].buff.applications >= spells.soulFragments.attributes.maxResource
+		local metaUsable = snapshotData.snapshots[spells.soulFragments.id].buff.applications >= snapshotData.attributes.maxResource2
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 
 		if barGroups and barGroups.primary then

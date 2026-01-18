@@ -208,6 +208,10 @@ end
 ---@class TRB.Classes.DemonHunter.DevourerSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public metamorphosis TRB.Classes.SpellBase -- Void Metamorphosis but keeping it simple naming to re-use existing code
 ---@field public voidRay TRB.Classes.SpellThreshold
+---@field public soulFragments TRB.Classes.SpellBase
+---@field public soulGlutton TRB.Classes.SpellBase
+---@field public collapsingStar TRB.Classes.SpellBase
+---@field public collapsingStarThreshold TRB.Classes.SpellThreshold
 TRB.Classes.DemonHunter.DevourerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.DemonHunter.DevourerSpells.__index = TRB.Classes.DemonHunter.DevourerSpells
 
@@ -240,6 +244,11 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 	self.soulFragments = TRB.Classes.SpellBase:New({
 		id = 1225789,
 		maxResource = 50
+	})
+	self.soulGlutton = TRB.Classes.SpellBase:New({
+		id = 1247534,
+		isTalent = true,
+		maxResourceMod = -15
 	})
 	self.collapsingStar = TRB.Classes.SpellBase:New({
 		id = 1227702,
