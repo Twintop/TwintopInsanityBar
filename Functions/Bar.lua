@@ -890,8 +890,8 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 	local valueIsSecret = issecretvalue(value)
 	local maxResourceIsSecret = maxResource and issecretvalue(maxResource) or false
 
-	if not valueIsSecret and not maxResourceIsSecret and 
-	   TRB.Data.cache.values.bar[key].value == value and 
+	if not valueIsSecret and not maxResourceIsSecret and
+	   not issecretvalue(TRB.Data.cache.values.bar[key].value) and TRB.Data.cache.values.bar[key].value == value and
 	   TRB.Data.cache.values.bar[key].maxResource == maxResource then
 		return
 	end
