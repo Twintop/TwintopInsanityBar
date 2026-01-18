@@ -294,7 +294,8 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         settingKey = "boomstick",
         isTalent = true,
         hasCooldown = true,
-        cooldown = 45
+        cooldown = 45,
+        rangeCheck = false
     })
     -- TODO: Implement Boomstick cooldown to also incorporate Lethal Calibration
     self.hatchetToss = TRB.Classes.SpellThreshold:New({
