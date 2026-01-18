@@ -1790,6 +1790,14 @@ local function UpdateResourceBar()
 			return true
 		end
 	end
+	
+	-- Use form-appropriate resource for display
+	local currentResource = displayResource
+	local maxPrimaryBarResourceUnnormalized = displayMaxResource
+	if formSpecCacheSettings.maxResource ~= nil and formSpecCacheSettings.maxResource.enabled == true and formSpecCacheSettings.maxResource.value > 0 then
+		maxPrimaryBarResourceUnnormalized = math.min(formSpecCacheSettings.maxResource.value * displayResourceFactor, maxPrimaryBarResourceUnnormalized)
+	end
+	local maxPrimaryBarResource = maxPrimaryBarResourceUnnormalized / displayResourceFactor
 
 	if TRB.Data.character.specId == 1 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
@@ -1807,14 +1815,6 @@ local function UpdateResourceBar()
 				local flashBar = false
 				local barBorderColor = specSettings.colors.bar.border
 
-				-- Use form-appropriate resource for display
-				local currentResource = displayResource
-
-				local maxPrimaryBarResourceUnnormalized = displayMaxResource
-				local maxPrimaryBarResource = displayMaxResource / displayResourceFactor
-				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
-					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value * displayResourceFactor, maxPrimaryBarResourceUnnormalized)
-				end
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
@@ -2054,14 +2054,6 @@ local function UpdateResourceBar()
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-				-- Use form-appropriate resource for display
-				local currentResource = displayResource
-
-				local maxPrimaryBarResourceUnnormalized = displayMaxResource
-				local maxPrimaryBarResource = displayMaxResource / displayResourceFactor
-				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
-					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value * displayResourceFactor, maxPrimaryBarResourceUnnormalized)
-				end
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
@@ -2381,14 +2373,6 @@ local function UpdateResourceBar()
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
-				-- Use form-appropriate resource for display
-				local currentResource = displayResource
-
-				local maxPrimaryBarResourceUnnormalized = displayMaxResource
-				local maxPrimaryBarResource = displayMaxResource / displayResourceFactor
-				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
-					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value * displayResourceFactor, maxPrimaryBarResourceUnnormalized)
-				end
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
@@ -2554,20 +2538,12 @@ local function UpdateResourceBar()
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
-				-- Use form-appropriate resource for display
-				local currentResource = displayResource
-				local barBorderColor = formSpecSettings.colors.bar.border
-			
-				local maxPrimaryBarResourceUnnormalized = displayMaxResource
-				local maxPrimaryBarResource = displayMaxResource / displayResourceFactor
-				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
-					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value * displayResourceFactor, maxPrimaryBarResourceUnnormalized)
-				end
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
+				local barBorderColor = formSpecSettings.colors.bar.border
 				local barColor = specSettings.colors.bar.base
 
 				-- Use simple colors when in non-native form
