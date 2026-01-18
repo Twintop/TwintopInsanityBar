@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 12.0.0.0-beta15 (2026-01-19)
+## Demon Hunter
+### Devourer
+
+- Modify Void Metamorphosis and Collapsing Star tracking to account for slightly different behavior on Beta versus PTR.
+
+## Evoker
+
+- Improve guarding against invalid Essence regen values.
+
+---
+
 # 12.0.0.0-beta14 (2026-01-18)
 ## General
 

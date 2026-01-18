@@ -145,6 +145,8 @@ local function FillSpecializationCache()
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.devourer.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis, nil, "always")
+	-----@type TRB.Classes.Snapshot
+	--specCache.devourer.snapshotData.snapshots[spells.voidMetamorphosis.id] = TRB.Classes.Snapshot:New(spells.voidMetamorphosis, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.devourer.snapshotData.snapshots[spells.voidRay.id] = TRB.Classes.Snapshot:New(spells.voidRay)
 	---@type TRB.Classes.Snapshot
@@ -788,19 +790,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = math.max(resource, 0)
 				casting.resourceFinal = casting.resourceRaw]]
 			end
-		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-			if spellId == spells.metamorphosis.castId then
-				snapshotData.snapshots[spells.metamorphosis.id].buff:InitializeCustomSimple()
-				snapshotData.snapshots[spells.metamorphosis.id].buff.attributes.triggeredTime = currentTime
-			end
-		elseif event == "UNIT_MODEL_CHANGED" then
-			--Void Metamorphosis form change detected
-			local leeway = 0.2
-			if snapshotData.snapshots[spells.metamorphosis.id].buff.isActive and
-				(snapshotData.snapshots[spells.metamorphosis.id].buff.attributes.triggeredTime == nil or
-				snapshotData.snapshots[spells.metamorphosis.id].buff.attributes.triggeredTime + leeway < currentTime) then
-				snapshotData.snapshots[spells.metamorphosis.id].buff:Reset()
-			end
 		end
 	end
 end
@@ -860,15 +849,6 @@ local function UpdateSnapshot_Devourer()
 	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
 		snapshotData.attributes.maxResource2 = spells.collapsingStar.attributes.maxResource
 	end
-
-	-- Devourer Soul Fragments max is fixed.
-	--[[TRB.Data.character.maxResource2Value = 50
-
-	local blizzSfBar = _G["DemonHunterSoulFragmentsBar"]
-	if blizzSfBar ~= nil then
-		local sfCurrent = blizzSfBar:GetValue()
-		snapshotData.attributes.resource2 = sfCurrent
-	end]]
 end
 
 local function UpdateResourceBar()
@@ -1206,6 +1186,9 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.devourer
 		local specCacheSettings = TRB.Data.specCache.devourer.settings
 		UpdateSnapshot_Devourer()
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+		local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
+		local metaUsable = snapshotData.snapshots[spells.soulFragments.id].buff.applications >= spells.soulFragments.attributes.maxResource
 
 		if barGroups and barGroups.primary then
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
@@ -1217,8 +1200,7 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.primary ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
-				local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
+
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1316,7 +1298,6 @@ local function UpdateResourceBar()
 			end
 
 			if specSettings.displayBar.secondary ~= "never" then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 				-- Soul Fragments bar (Devourer fixed max)
 				local current = snapshotData.attributes.resource2
 				local max = snapshotData.attributes.maxResource2
@@ -1325,9 +1306,7 @@ local function UpdateResourceBar()
 				local cpBorderColor = specSettings.colors.comboPoints.border
 				local cpColor = specSettings.colors.comboPoints.base
 
-				local metaUsable = spells.metamorphosis:IsUsable()
-
-				if specSettings.colors.comboPoints.voidMetamorphosisReady.enabled and not snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
+				if specSettings.colors.comboPoints.voidMetamorphosisReady.enabled and metaUsable then
 					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
 				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and snapshots[spells.metamorphosis.id].buff.isActive and metaUsable then
 					cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
@@ -1355,7 +1334,7 @@ local function UpdateResourceBar()
 							local thresholdColor = specCacheSettings.colors.threshold.over.color
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							
-							if snapshots[spells.collapsingStar.id].buff.isActive then
+							if metaActive then
 								showThreshold = true
 								local collapsingStarSnapshot = snapshots[spells.collapsingStar.id]
 								local resourceAmount = spells.collapsingStarThreshold.resource

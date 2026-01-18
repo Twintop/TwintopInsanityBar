@@ -217,9 +217,9 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.DemonHunter.DevourerSpells) --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 	--Demon Hunter Class Baseline Abilities
 	self.metamorphosis = TRB.Classes.SpellBase:New({
-		id = 1217605,
+		id = 1217607,
 		castId = 1217605,
-		isTalent = false,
+		isTalent = true,
 		baseline = true
 	})
 	self.voidRay = TRB.Classes.SpellThreshold:New({
@@ -233,6 +233,10 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 		resource = 100
 	})
 	-- Really Void Metamorphosis but splitting out for tracking
+	--self.voidMetamorphosis = TRB.Classes.SpellBase:New({
+	--	id = 1217607,
+	--	isTalent = true
+	--})
 	self.soulFragments = TRB.Classes.SpellBase:New({
 		id = 1225789,
 		maxResource = 50

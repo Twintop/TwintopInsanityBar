@@ -428,10 +428,15 @@ local function RefreshLookupData_Devastation()
 	local sharedSettings = TRB.Data.specCache["devastation"].settings
 	--Spec specific implementation
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
+	local regen, _ = GetPowerRegenForPowerType(Enum.PowerType.Essence)
+
+	if regen == nil or regen == 0 then
+		regen = 1
+	end
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
+	snapshotData.attributes.essenceRegen, _ = 1 / regen
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
 	local currentManaColor = sharedSettings.colors.text.current.color
@@ -499,10 +504,15 @@ local function RefreshLookupData_Preservation()
 	local sharedSettings = TRB.Data.specCache["preservation"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
+	local regen, _ = GetPowerRegenForPowerType(Enum.PowerType.Essence)
+
+	if regen == nil or regen == 0 then
+		regen = 1
+	end
 
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
+	snapshotData.attributes.essenceRegen, _ = 1 / regen
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
 	local currentManaColor = sharedSettings.colors.text.current.color
@@ -575,9 +585,15 @@ local function RefreshLookupData_Augmentation()
 	--Spec specific implementation
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
+	local regen, _ = GetPowerRegenForPowerType(Enum.PowerType.Essence)
+
+	if regen == nil or regen == 0 then
+		regen = 1
+	end
+
 	-- This probably needs to be pulled every refresh
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-	snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
+	snapshotData.attributes.essenceRegen, _ = 1 / regen
 	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
 	local currentManaColor = sharedSettings.colors.text.current.color
