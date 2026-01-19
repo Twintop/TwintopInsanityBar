@@ -9,6 +9,8 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon is still underway! If you have any interest in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
+---
+
 # 12.0.0.0-beta16 (2026-01-20)
 ## Demon Hunter
 ### Devourer
@@ -26,7 +28,7 @@ local content = [====[
 
 ### Survival
 
-- Add Takedown bar change and bar text variable `$takedownTime`. This also includes a second color change when Takedown is about to expire (configurable in the Options UI).
+- [#511](#511) Add Takedown bar change and bar text variable `$takedownTime`. This also includes a second color change when Takedown is about to expire (configurable in the Options UI).
 
 ## Monk
 ### Brewmaster
