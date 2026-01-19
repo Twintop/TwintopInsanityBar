@@ -158,6 +158,7 @@ Many specs can track important buff status and timers via color changes and dire
 | Havoc/Vengeance/Devourer Demon Hunter | (Void) Metamorphosis |
 | Beast Mastery Hunter | Beast Cleave, Bestial Wrath |
 | Marksmanship Hunter | Trueshot |
+| Survival Hunter | Takedown |
 | Elemental/Enhancement/Restoration Shaman | Ascendance |
 | Augmentation Evoker | Ebon Might |
 
