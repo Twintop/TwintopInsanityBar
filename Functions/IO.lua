@@ -24,7 +24,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
 			elseif specId == 2 then -- Fury
-				configuration.endOfEnrage = settings.endOfEnrage
 			elseif specId == 3 then -- Protection
 				-- Export defensives bar settings
 				configuration.bars = configuration.bars or {}
@@ -52,10 +51,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
+				configuration.endOfBestialWrath = settings.endOfBestialWrath
 			elseif specId == 2 then -- Marksmanship
 				configuration.endOfTrueshot = settings.endOfTrueshot
-				configuration.steadyFocus = settings.steadyFocus
 			elseif specId == 3 then -- Survival
+				configuration.endOfTakedown = settings.endOfTakedown
 			end
 		elseif classId == 4 then -- Rogue
 			if specId == 1 then -- Assassination

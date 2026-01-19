@@ -247,4 +247,7 @@ if locale == "enGB" then
     L["StaggerBarThresholdHeavyTooltip"] = "Stagger percentage at which the bar colour transitions from Medium to Heavy."
     L["StaggerBarThresholdMediumTooltip"] = "Stagger percentage at which the bar colour transitions from Light to Medium."
     L["WarriorCheckboxThresholdOvercapTooltip"] = "This will change the Rage text colour when your Rage is at or above the configured overcap threshold."
+    L["HunterSurvivalCheckboxTakedownEnd"] = "Change colour at the end of Takedown"
+    L["HunterSurvivalCheckboxTakedownEndTooltip"] = "Changes the bar colour when Takedown is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["HunterSurvivalCheckboxTakedownTooltip"] = "Changes the bar colour when Takedown is active."
 end

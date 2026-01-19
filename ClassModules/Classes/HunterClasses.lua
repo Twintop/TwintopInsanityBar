@@ -148,7 +148,6 @@ end
 ---@field public rapidFire TRB.Classes.SpellBase
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public cantMissWontMiss TRB.Classes.SpellBase
----@field public lockAndLoad TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public aimedShot TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
@@ -218,12 +217,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         isSnowflake = true
     })
 
-    -- TODO: Bulletstorm support?
-    self.lockAndLoad = TRB.Classes.SpellBase:New({
-        id = 194594,
-        isTalent = true
-    })
-
     -- Dark Ranger
     self.blackArrow = TRB.Classes.SpellThreshold:New({
         id = 466930,
@@ -264,6 +257,8 @@ end
 ---@class TRB.Classes.Hunter.SurvivalSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public killCommand TRB.Classes.SpellBase
 ---@field public wildfireBomb TRB.Classes.SpellBase
+---@field public takedown TRB.Classes.SpellBase
+---@field public cantMissWontMiss TRB.Classes.SpellBase
 ---@field public boomstick TRB.Classes.SpellThreshold
 ---@field public hatchetToss TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
@@ -315,6 +310,18 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         isTalent = true,
         hasCharges = true,
         hasCooldown = true
+    })
+    self.takedown = TRB.Classes.SpellBase:New({
+        id = 1250646,
+        isTalent = true,
+        duration = 8,
+    })
+
+    -- Sentinel
+    self.cantMissWontMiss = TRB.Classes.SpellThreshold:New({
+        id = 1253830,
+        isTalent = true,
+        duration = 2
     })
 
     return self
