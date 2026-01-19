@@ -105,11 +105,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.fury.snapshotData.snapshots[spells.impendingVictory.id] = TRB.Classes.Snapshot:New(spells.impendingVictory)
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[spells.enrage.id] = TRB.Classes.Snapshot:New(spells.enrage)
-	---@type TRB.Classes.Snapshot
 	specCache.fury.snapshotData.snapshots[spells.whirlwind.id] = TRB.Classes.Snapshot:New(spells.whirlwind)
-	--[[---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[spells.ravager.id] = TRB.Classes.Snapshot:New(spells.ravager)]]
 	---@type TRB.Classes.Snapshot
 	specCache.fury.snapshotData.snapshots[spells.bladestorm.id] = TRB.Classes.Snapshot:New(spells.bladestorm)
 	---@type TRB.Classes.Snapshot
@@ -250,7 +246,6 @@ local function FillSpellData_Fury()
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
 		{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = spells.bladestorm.name, printInSettings = true },
-		{ variable = "#enrage", icon = spells.enrage.icon, description = spells.enrage.name, printInSettings = true },
 		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
@@ -1104,10 +1099,6 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base
 
-				if snapshots[spells.enrage.id].buff:GetRemainingTime(currentTime) > 0 then
-					barColor = specSettings.colors.bar.enrage
-				end
-
 				local barBorderColor = specSettings.colors.bar.border
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
@@ -1312,7 +1303,6 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		local lookup = TRB.Data.lookup or {}
 		lookup["#bladestorm"] = spells.bladestorm.icon
-		lookup["#enrage"] = spells.enrage.icon
 		lookup["#execute"] = spells.execute.icon
 		lookup["#impendingVictory"] = spells.impendingVictory.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
@@ -1702,33 +1692,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 
 	if TRB.Data.character.specId == 1 then --Arms
 	elseif TRB.Data.character.specId == 2 then --Fury
-		--[[if var == "$enrageTime" then
-			if snapshots[spells.enrage.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$whirlwindTime" then
-			if snapshots[spells.whirlwind.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$whirlwindStacks" then
-			if snapshots[spells.whirlwind.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$bladestormTicks" then
-			if snapshots[spells.bladestorm.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$bladestormResource" or var == "$bladestormRage" then
-			if snapshots[spells.bladestorm.id].buff.isActive then
-				valid = true
-			end
-		end]]
 	elseif TRB.Data.character.specId == 3 then --Protection
-		--[[if var == "$ignorePainAbsorb" then
-			if snapshots[spells.ignorePain.id].buff.customProperties["absorb"] > 0 then
-				valid = true
-			end
-		else]]if var == "$ignorePainTime" then
+		if var == "$ignorePainTime" then
 			if snapshots[spells.ignorePain.id].buff.isActive then
 				valid = true
 			end

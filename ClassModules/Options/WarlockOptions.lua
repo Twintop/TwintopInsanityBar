@@ -20,7 +20,7 @@ local function AfflictionLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
@@ -105,7 +105,7 @@ local function DemonologyLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
@@ -188,7 +188,7 @@ local function DestructionLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
@@ -999,7 +999,7 @@ local function DemonologyConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.demonologyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_OptionsnamePrefix", UIParent)
+	interfaceSettingsFrame.demonologyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_".. namePrefix, UIParent)
 	interfaceSettingsFrame.demonologyDisplayPanel.name = L["WarlockDemonologyFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.demonologyDisplayPanel.parent = parent.name
@@ -1365,7 +1365,7 @@ local function DestructionConstructBarTextDisplayPanel(parent, cache)
 end
 
 local function DestructionConstructOptionsPanel(cache)
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 2)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 3)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
@@ -1380,7 +1380,7 @@ local function DestructionConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.destructionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warlock_Destruction", UIParent)
+	interfaceSettingsFrame.destructionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_".. namePrefix, UIParent)
 	interfaceSettingsFrame.destructionDisplayPanel.name = L["WarlockDestructionFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.destructionDisplayPanel.parent = parent.name
@@ -1390,7 +1390,7 @@ local function DestructionConstructOptionsPanel(cache)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockDestructionFull"], oUi.xCoord, yCoord-5)	
 	
-	controls.checkBoxes.destructionWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Destruction_destructionWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.destructionWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .. "_destructionWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.destructionWarlockEnabled
 	f:SetPoint("TOPLEFT", 320, yCoord-10)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -1420,19 +1420,19 @@ local function DestructionConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	--[[
 		This spec doesn't use Threshold Lines. Make the width 1 instead of 100
 	]]
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
 	--[[
 		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
 	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Destruction_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
@@ -1446,7 +1446,7 @@ local function DestructionConstructOptionsPanel(cache)
 			PanelTemplates_TabResize(tabs[i], 0)
 			PanelTemplates_DeselectTab(tabs[i])
 			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Warlock_Destruction_LayoutPanel" .. i, parent)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_".. namePrefix .. "_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
