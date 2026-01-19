@@ -904,7 +904,12 @@ local function UpdateSnapshot_Brewmaster()
 	UpdateSnapshot()
 
 	snapshotData.attributes.stagger = UnitStagger("player")
-	snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.healthMax
+
+	if issecretvalue(snapshotData.attributes.stagger) then
+		snapshotData.attributes.stagger = 0
+	else
+		snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.healthMax
+	end
 	UpdateStaggerColor()
 
 	snapshots[spells.expelHarm.id].cooldown:GetRemainingTime(currentTime)
