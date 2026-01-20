@@ -733,7 +733,7 @@ if locale == "ruRU" then
     L["MaxResourceEnabledTooltip"] = "Если этот флажок установлен, максимальное значение панели ресурсов будет ограничено заданным значением."
     L["MaxResourceHeader"] = "Максимальное значение бара"
     L["MaxResourceValue"] = "Максимальное значение %s"
-    L["MidnightBarTextResetMessage"] = "TRB: В связи с существенными изменениями в тексте полосы от The War Within до Midnight, настройки текста полосы %s были сброшены до значений по умолчанию."
+    L["MidnightBarTextResetMessage"] = "TRB: |cFFFF5555В связи с существенными изменениями в тексте полосы от The War Within до Midnight, настройки текста полосы |r%s|cFFFF5555 были сброшены до значений по умолчанию.|r"
     L["MonkBrewmasterBarTextVariable_casting"] = "Энергия, получаемая от применения заклинаний (строитель/расходник)"
     L["MonkBrewmasterBarTextVariable_energy"] = "Текущая энергия"
     L["MonkBrewmasterBarTextVariable_energyMax"] = "Максимальная энергия"

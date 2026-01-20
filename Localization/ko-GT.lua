@@ -733,7 +733,7 @@ if locale == "koKR" then
     L["MaxResourceEnabledTooltip"] = "이 옵션을 선택하면 리소스 바의 최대값이 설정된 값으로 제한됩니다."
     L["MaxResourceHeader"] = "최대 막대 값"
     L["MaxResourceValue"] = "최대 %s 값"
-    L["MidnightBarTextResetMessage"] = "TRB: The War Within에서 Midnight으로 변경되면서 악보 텍스트가 대폭 수정되었으므로, %s 악보 텍스트 설정이 기본값으로 재설정되었습니다."
+    L["MidnightBarTextResetMessage"] = "TRB: |cFFFF5555The War Within에서 Midnight으로 변경되면서 악보 텍스트가 대폭 수정되었으므로, |r%s|cFFFF5555 악보 텍스트 설정이 기본값으로 재설정되었습니다.|r"
     L["MonkBrewmasterBarTextVariable_casting"] = "하드캐스팅 주문에서 얻는 에너지 생성/소비"
     L["MonkBrewmasterBarTextVariable_energy"] = "현재 에너지"
     L["MonkBrewmasterBarTextVariable_energyMax"] = "최대 에너지"

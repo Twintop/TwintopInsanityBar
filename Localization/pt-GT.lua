@@ -733,7 +733,7 @@ if locale == "ptBR" or locale == "ptPT" then
     L["MaxResourceEnabledTooltip"] = "Quando selecionada, a opção limitará o valor máximo da barra de recursos ao valor definido."
     L["MaxResourceHeader"] = "Valor máximo da barra"
     L["MaxResourceValue"] = "Valor máximo em %s"
-    L["MidnightBarTextResetMessage"] = "TRB: Devido a mudanças significativas no texto das barras entre The War Within e Midnight, as configurações de texto da barra %s foram redefinidas para os valores padrão."
+    L["MidnightBarTextResetMessage"] = "TRB: |cFFFF5555Devido a mudanças significativas no texto das barras entre The War Within e Midnight, as configurações de texto da barra |r%s|cFFFF5555 foram redefinidas para os valores padrão.|r"
     L["MonkBrewmasterBarTextVariable_casting"] = "Energia de Construtor/Gasto proveniente de Feitiços de Conjuração Direta"
     L["MonkBrewmasterBarTextVariable_energy"] = "Energia atual"
     L["MonkBrewmasterBarTextVariable_energyMax"] = "Energia máxima"

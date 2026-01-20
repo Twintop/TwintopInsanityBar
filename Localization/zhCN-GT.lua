@@ -733,7 +733,7 @@ if locale == "zhCN" then
     L["MaxResourceEnabledTooltip"] = "选中后，资源条的最大值将限制为设定的值。"
     L["MaxResourceHeader"] = "最大柱状值"
     L["MaxResourceValue"] = "最大百分比值"
-    L["MidnightBarTextResetMessage"] = "TRB：由于从《战争之内》到《午夜》的栏目文字发生了大量变化，%s 栏目文字设置已重置为默认值。"
+    L["MidnightBarTextResetMessage"] = "TRB：|cFFFF5555由于从《战争之内》到《午夜》的栏目文字发生了大量变化，|r%s|cFFFF5555 栏目文字设置已重置为默认值。|r"
     L["MonkBrewmasterBarTextVariable_casting"] = "施法过程中消耗的能量（建造者/消耗者）"
     L["MonkBrewmasterBarTextVariable_energy"] = "当前能量"
     L["MonkBrewmasterBarTextVariable_energyMax"] = "最大能量"

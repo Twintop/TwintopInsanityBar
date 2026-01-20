@@ -733,7 +733,7 @@ if locale == "deDE" then
     L["MaxResourceEnabledTooltip"] = "Wenn diese Option aktiviert ist, wird der Maximalwert der Ressourcenleiste auf den festgelegten Wert begrenzt."
     L["MaxResourceHeader"] = "Maximaler Balkenwert"
     L["MaxResourceValue"] = "Maximaler %s-Wert"
-    L["MidnightBarTextResetMessage"] = "TRB: Aufgrund umfangreicher Änderungen im Balkentext von The War Within zu Midnight wurden die Balkentexteinstellungen %s auf die Standardwerte zurückgesetzt."
+    L["MidnightBarTextResetMessage"] = "TRB: |cFFFF5555Aufgrund umfangreicher Änderungen im Balkentext von The War Within zu Midnight wurden die Balkentexteinstellungen |r%s|cFFFF5555 auf die Standardwerte zurückgesetzt.|r"
     L["MonkBrewmasterBarTextVariable_casting"] = "Aufbau-/Verbrauchsenergie durch das Wirken von Zaubern"
     L["MonkBrewmasterBarTextVariable_energy"] = "Aktuelle Energie"
     L["MonkBrewmasterBarTextVariable_energyMax"] = "Maximale Energie"
