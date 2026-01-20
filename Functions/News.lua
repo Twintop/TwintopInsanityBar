@@ -21,8 +21,6 @@ local content = [====[
 ---
 
 # 12.0.0.0-release (2026-01-20)
-
-
 ## [#468](#468) General
 ### New Features
 
@@ -52,8 +50,6 @@ local content = [====[
 - Smooth bar update functionality restored using Blizzard's built-in methods.
 - Bar border and resource text overcap notifications via color change continue to work.
 
----
-
 ## Death Knight
 ### [#499](#499) Blood, [#500](#500) Frost, and [#501](#501) Unholy
 
@@ -62,8 +58,6 @@ local content = [====[
 - Runes can be sorted by cooldown remaining or position.
 - Bar text variables for rune timing (`$rune1Time` through `$rune6Time`) and readiness (`$rune1Ready` through `$rune6Ready`).
 - Threshold lines for Runic Power spending abilities (Death Coil, Death Strike, Raise Ally, and spec-specific abilities).
-
----
 
 ## Demon Hunter
 ### [#466](#466) Havoc
@@ -82,8 +76,6 @@ local content = [====[
 - Void Metamorphosis tracking with bar color change and `$voidMeta` bar text variable (and synonyms).
 - Collapsing Star bar with threshold line showing when usable (30 stacks).
 - Support for Soul Glutton talent reducing Void Metamorphosis threshold.
-
----
 
 ## Druid
 ### General
@@ -111,8 +103,6 @@ local content = [====[
 - Adjusted Incarnation: Tree of Life tracking for Midnight compatibility.
 - Updated Efflorescence detection with support for the Lifetreading talent.
 
----
-
 ## Evoker
 ### [#471](#471) Devastation, [#472](#472) Preservation, and [#473](#473) Augmentation
 
@@ -122,8 +112,6 @@ local content = [====[
 ### [#473](#473) Augmentation
 
 - Add Ebon Might tracking via `$ebonMightTime` with configurable bar color changes and audio cue when hardcast ability won't complete in time.
-
----
 
 ## Hunter
 ### [#474](#474) Beast Mastery
@@ -143,8 +131,6 @@ local content = [====[
 - Add threshold line support for Boomstick and Hatchet Toss.
 - Removed Arcane Shot, Wildfire Bomb, and Steady Shot.
 
----
-
 ## Mage
 
 - Add full support for the Arcane, Fire, and Frost specializations.
@@ -156,8 +142,6 @@ local content = [====[
 ### [#503](#503) Fire and [#504](#504) Frost
 
 - Add support for tracking Mana.
-
----
 
 ## Monk
 ### [#494](#494) Brewmaster
@@ -178,8 +162,6 @@ local content = [====[
 - Adjusted Chi tracking for Midnight compatibility.
 - Add Soothing Mist as threshold line (disabled by default).
 
----
-
 ## Paladin
 ### [#479](#479) Holy
 
@@ -190,8 +172,6 @@ local content = [====[
 
 - Add full support for the Protection and Retribution specializations.
 - Add support for tracking Mana and Holy Power.
-
----
 
 ## Priest
 ### [#465](#465) Discipline
@@ -213,8 +193,6 @@ local content = [====[
 - Add Entropic Rift tracking via `$entropicRiftTime` and `$entropicRiftExtensionsRemaining` with optional bar border color change.
 - Updated Mind Flay and Halo Insanity generation values.
 
----
-
 ## Rogue
 
 - Adjusted Combo Point tracking for Midnight compatibility, including Charged Combo Points.
@@ -233,8 +211,6 @@ local content = [====[
 
 - Removed Shuriken Tornado.
 
----
-
 ## Shaman
 ### [#483](#483) Elemental
 
@@ -251,8 +227,6 @@ local content = [====[
 
 - Adjusted Ascendance tracking for Midnight compatibility with Preeminence support.
 
----
-
 ## Warlock
 
 - Adjusted Soul Shard tracking for Midnight compatibility.
@@ -264,8 +238,6 @@ local content = [====[
 ### [#495](#495) Demonology and [#496](#496) Destruction
 
 - Add full support for the Demonology and Destruction specializations.
-
----
 
 ## Warrior
 ### [#487](#487) Arms and [#488](#488) Fury
