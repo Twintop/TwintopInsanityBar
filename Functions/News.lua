@@ -24,11 +24,11 @@ local content = [====[
 ## [#468](#468) General
 ### New Features
 
-- **[#297](#297)** Completely rebuilt the bar construction, control, and rendering system for greater flexibility and future features.
-- **[#297](#297)** Add an optional Mana Bar for Balance Druid, Shadow Priest, and Elemental Shaman, including new bar text variables `$mana`, `$manaMax`, and `$manaPercent`.
-- **[#505](#505)** Add an optional player health bar, including new bar text variables `$health`, `$healthMax`, and `$healthPercent`.
-- **[#195](#195)** Allow primary, secondary, and health bars to be independently shown Always, In Combat, or Never.
-- **[#437](#437)** Updated import/export to use Blizzard's `C_EncodingUtil` with Deflate compression for smaller string sizes. Previous import strings remain compatible.
+- [#297](#297) Completely rebuilt the bar construction, control, and rendering system for greater flexibility and future features.
+- [#297](#297) Add an optional Mana Bar for Balance Druid, Shadow Priest, and Elemental Shaman, including new bar text variables `$mana`, `$manaMax`, and `$manaPercent`.
+- [#505](#505) Add an optional player health bar, including new bar text variables `$health`, `$healthMax`, and `$healthPercent`.
+- [#195](#195) Allow primary, secondary, and health bars to be independently shown Always, In Combat, or Never.
+- [#437](#437) Updated import/export to use Blizzard's `C_EncodingUtil` with Deflate compression for smaller string sizes. Previous import strings remain compatible.
 - Add import/export API functions for external addon/tool integration.
 - Add `$inCombatTime` bar text variable showing elapsed time since entering combat.
 - Add under-the-hood support for tracking custom fixed-duration cooldowns.
@@ -78,9 +78,8 @@ local content = [====[
 - Support for Soul Glutton talent reducing Void Metamorphosis threshold.
 
 ## Druid
-### General
 
-- **[#297](#297)** Add support for displaying the resource bar appropriate to your current shapeshift form (e.g., Rage bar in Bear Form as Balance).
+- [#297](#297) Add support for displaying the resource bar appropriate to your current shapeshift form (e.g., Rage bar in Bear Form as Balance).
 
 ### [#468](#468) Balance
 
@@ -198,7 +197,7 @@ local content = [====[
 - Adjusted Combo Point tracking for Midnight compatibility, including Charged Combo Points.
 - Removed Slice and Dice tracking and bar color changes.
 
-### [#480](#480) Assassination, [#481](#481) Outlaw, and [#482](#482) Subtlety
+### [#480](#480) Assassination
 
 - Removed Echoing Reprimand.
 
