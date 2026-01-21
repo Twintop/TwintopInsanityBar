@@ -21,6 +21,10 @@ local content = [====[
 ---
 
 # 12.0.0.1-release (2026-01-21)
+## General
+
+- Fix a Lua error that could occur when adjusting the spacing of Combo Points (and other similar secondary resources).
+
 ## Warrior
 ### Protection
 

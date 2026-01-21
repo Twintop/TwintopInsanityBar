@@ -1306,8 +1306,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			spec.comboPoints.spacing = value
 
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-				TRB.Functions.Bar:SetPosition(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barContainerFrame)
-				TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[TRB.Data.character.specName].settings)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 			end
 		end)
 	end
@@ -3620,8 +3619,6 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end
-			else
-				TRB.Functions.Bar:SetMinMax(TRB.Data.specCache[specNameInner].settings)
 			end
 		end
 	end)
