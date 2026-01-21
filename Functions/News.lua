@@ -26,6 +26,10 @@ local content = [====[
 - Fix a Lua error that could occur when adjusting the spacing of Combo Points (and other similar secondary resources).
 - Temporarily re-add settings upgrade support for versions of the bar as far back as 7.3.5.
 
+### Localization
+
+- Regenerate the Google Translate localization file for Russian to help address strange bar behavior and Lua errors.
+
 ## Death Knight
 
 - [#517](#517) Add a new optional Rune color change to alert you when you are overcapping Rune regeneration (i.e., fewer than 3 Runes on cooldown while in combat).
