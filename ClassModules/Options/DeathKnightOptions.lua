@@ -262,6 +262,10 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				background="66000000",
 				base="FFC41E3A",
 				cooldown="FFCCCCCC",
+				overcap = {
+					color = "FFFF4500",
+					enabled = false
+				},
 				sortRunes = true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -407,6 +411,10 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				background="66000000",
 				base="FF368BC1",
 				cooldown="FFCCCCCC",
+				overcap = {
+					color = "FFFF4500",
+					enabled = false
+				},
 				sortRunes = true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -545,6 +553,10 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				background="66000000",
 				base="FFA6FF49",
 				cooldown="FFCCCCCC",
+				overcap = {
+					color = "FFFF4500",
+					enabled = false
+				},
 				sortRunes = true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -779,6 +791,23 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.runeOvercapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_comboPointsOvercapEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.runeOvercapEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxOvercapEnabled"])
+	f.tooltip = L["DeathKnightRunesCheckboxOvercapEnabledTooltip"]
+	f:SetChecked(spec.colors.comboPoints.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.overcap.enabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -1230,6 +1259,23 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.runeOvercapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_comboPointsOvercapEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.runeOvercapEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxOvercapEnabled"])
+	f.tooltip = L["DeathKnightRunesCheckboxOvercapEnabledTooltip"]
+	f:SetChecked(spec.colors.comboPoints.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.overcap.enabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -1697,6 +1743,23 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.runeOvercapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_comboPointsOvercapEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.runeOvercapEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxOvercapEnabled"])
+	f.tooltip = L["DeathKnightRunesCheckboxOvercapEnabledTooltip"]
+	f:SetChecked(spec.colors.comboPoints.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.overcap.enabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overcap")
 	end)
 
 	yCoord = yCoord - 30

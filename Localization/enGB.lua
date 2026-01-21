@@ -250,4 +250,6 @@ if locale == "enGB" then
     L["HunterSurvivalCheckboxTakedownEnd"] = "Change colour at the end of Takedown"
     L["HunterSurvivalCheckboxTakedownEndTooltip"] = "Changes the bar colour when Takedown is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["HunterSurvivalCheckboxTakedownTooltip"] = "Changes the bar colour when Takedown is active."
+    L["DeathKnightRunesCheckboxOvercapEnabled"] = "Change Rune colour when overcapping"
+    L["DeathKnightRunesCheckboxOvercapEnabledTooltip"] = "When enabled, ready runes will change colour when fewer than 3 runes are on cooldown while in combat."
 end

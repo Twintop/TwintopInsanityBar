@@ -875,6 +875,18 @@ local function UpdateRunes(specSettings, specCacheSettings)
 
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+
+	-- Count runes on cooldown for overcap detection
+	local runesOnCooldown = 0
+	for i = 1, TRB.Data.character.maxResource2 do
+		if not runes[i].ready then
+			runesOnCooldown = runesOnCooldown + 1
+		end
+	end
+
+	-- Check if we should show overcap warning (fewer than 3 runes on cooldown while in combat)
+	local overcapSettings = specSettings.colors.comboPoints.overcap
+	local showOvercap = overcapSettings and overcapSettings.enabled and TRB.Data.character.inCombat and runesOnCooldown < 3
 	
 	for x = 1, TRB.Data.character.maxResource2 do
 		local rune = runes[x]
@@ -886,6 +898,9 @@ local function UpdateRunes(specSettings, specCacheSettings)
 
 		if not rune.ready then
 			cpColor = specSettings.colors.comboPoints.cooldown
+		elseif showOvercap then
+			-- Rune is ready and we're overcapping - use overcap color
+			cpColor = overcapSettings.color
 		end
 		
 
