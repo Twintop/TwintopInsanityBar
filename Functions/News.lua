@@ -20,6 +20,15 @@ local content = [====[
 
 ---
 
+# 12.0.0.1-release (2026-01-21)
+## Warrior
+### Protection
+
+- [#530](#530) Ensure that the duration of Shield Block is extended rather than reset when using multiple charges.
+- [#530](#530) Properly account for Enduring Defenses talent when calculating Shield Block duration.
+
+---
+
 # 12.0.0.0-release (2026-01-20)
 ## [#468](#468) General
 ### New Features

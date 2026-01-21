@@ -46,7 +46,7 @@ function TRB.Classes.Warrior.WarriorBaseSpells:New()
 		baseline = true,
 		hasCooldown = true,
 		rangeCheck = false,
-		duration = 8
+		duration = 6
 	})
 
     return self
@@ -299,6 +299,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 end
 
 ---@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
+---@field public enduringDefenses TRB.Classes.SpellBase
 ---@field public ignorePain TRB.Classes.SpellThreshold
 ---@field public rend TRB.Classes.SpellThreshold
 ---@field public revenge TRB.Classes.SpellThreshold
@@ -353,6 +354,12 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 	})
 
 	-- Protection Abilites
+	self.enduringDefenses = TRB.Classes.SpellBase:New({
+		id = 386027,
+		isTalent = true,
+		durationModPerRank = 1
+	})
+
 	self.suddenDeath = TRB.Classes.SpellBase:New({
 		id = 52437,
 		talentId = 29725,

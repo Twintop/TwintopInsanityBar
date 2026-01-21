@@ -702,7 +702,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.shieldBlock.castId then
-				snapshotData.snapshots[spells.shieldBlock.id].buff:InitializeCustom(spells.shieldBlock.duration, currentTime)
+				local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
+				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
 			elseif spellId == spells.ignorePain.castId then
 				snapshotData.snapshots[spells.ignorePain.id].buff:InitializeCustom(spells.ignorePain.duration, currentTime)
 				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime)
