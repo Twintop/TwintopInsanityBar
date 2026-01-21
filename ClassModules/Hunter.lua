@@ -95,8 +95,6 @@ local function FillSpecializationCache()
 
 	specCache.marksmanship.snapshotData.attributes.resourceRegen = 0
 	specCache.marksmanship.snapshotData.audio = {
-		playedKillShotCue = false,
-		playedAimedShotCue = true
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
@@ -1075,62 +1073,29 @@ local function UpdateResourceBar()
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
-
-							if specSettings.audio.aimedShot.enabled and (not snapshotData.audio.playedAimedShotCue) and snapshots[spells.aimedShot.id].cooldown:IsUsable() then
-								local remainingCd = snapshots[spells.aimedShot.id].cooldown:GetRemainingTime()
-								local timeThreshold = 0
-								local spellInfo = C_Spell.GetSpellInfo(spell.id) --[[@as SpellInfo]]
-								local castTime = spellInfo.castTime / 1000
-								if specSettings.audio.aimedShot.mode == "gcd" then
-									timeThreshold = gcd * specSettings.audio.aimedShot.gcds
-								elseif specSettings.audio.aimedShot.mode == "time" then
-									timeThreshold = specSettings.audio.aimedShot.time
-								end
-
-								timeThreshold = timeThreshold + castTime
-
-								if snapshots[spell.id].cooldown.charges == 2 or timeThreshold >= remainingCd then
-									snapshotData.audio.playedAimedShotCue = true
-									PlaySoundFile(specSettings.audio.aimedShot.sound, coreSettings.audio.channel.channel)
-								end
-							elseif snapshots[spell.id].cooldown.charges == 2 then
-								snapshotData.audio.playedAimedShotCue = true
-							end
 						elseif spell.id == spells.killShot.id and not talents:IsTalentActive(spells.blackArrow) then
 							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								snapshotData.audio.playedKillShotCue = false
 							elseif isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
-								if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
-									snapshotData.audio.playedKillShotCue = true
-									PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
-								end
 							else
 								-- Hide the threshold if we can't use it
 								showThreshold = false
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								snapshotData.audio.playedKillShotCue = false
 							end
-						elseif spell.id == spells.blackArrow.id and talents:IsTalentActive(spells.blackArrow) then			
+						elseif spell.id == spells.blackArrow.id and talents:IsTalentActive(spells.blackArrow) then
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specCacheSettings.colors.threshold.unusable.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								snapshotData.audio.playedKillShotCue = false
 							elseif isUsable then
-								if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
-									snapshotData.audio.playedKillShotCue = true
-									PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
-								end
 								thresholdColor = specCacheSettings.colors.threshold.over.color
 							else
 								-- Hide the threshold if we can't use it
 								showThreshold = false
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								snapshotData.audio.playedKillShotCue = false
 							end
 						elseif spell.id == spells.wailingArrow.id then
 							if not snapshots[spells.trueshot.id].buff.isActive then

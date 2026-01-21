@@ -24,6 +24,12 @@ local content = [====[
 ## General
 
 - Fix a Lua error that could occur when adjusting the spacing of Combo Points (and other similar secondary resources).
+- Temporarily re-add settings upgrade support for versions of the bar as far back as 7.3.5.
+
+## Hunter
+### Marksmanship
+
+- Fix Lua errors due to outdated audio cue checks.
 
 ## Warrior
 ### Protection
