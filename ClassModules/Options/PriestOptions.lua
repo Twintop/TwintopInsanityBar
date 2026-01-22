@@ -148,29 +148,7 @@ end
 local function HolyLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$apotheosisTime}[#apotheosis$apotheosisTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
+		TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("apotheosisTime", "apotheosis", classic, "CENTER", "CENTER"),
 	}
 
 	local extraTextSettings = HolyLoadExtraBarTextSettings(classic)
@@ -322,55 +300,7 @@ local function ShadowLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	if classic then
-		table.insert(textSettings, {
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$vfTime}[#voidform$vfTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		})
-	else
-		table.insert(textSettings, {
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$vfTime}[#voidform$vfTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		})
-	end
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("vfTime", "voidform", classic, "CENTER", "RIGHT"))
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end

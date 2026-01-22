@@ -3626,6 +3626,156 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 	return yCoord
 end
 
+---Generates the "End Of" buff color options UI (active buff color checkbox + color picker, ending color checkbox + color picker)
+---@param parent Frame # The parent frame
+---@param controls table # The controls table
+---@param spec table # The spec settings table
+---@param classId integer # Class ID
+---@param specId integer # Spec ID
+---@param yCoord number # Current Y coordinate
+---@param config table # Configuration table with: endOfKey, activeColorKey, endColorKey, checkboxLabel, checkboxTooltip, activeColorLabel, endColorLabel, additionalColors (optional)
+---@return number # Updated Y coordinate
+function TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, classId, specId, yCoord, config)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+
+	-- Active buff color checkbox + color picker
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.colors = controls.colors or {}
+
+	controls.checkBoxes[config.activeColorKey .. "BarChange"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Bar_Option_" .. config.activeColorKey .. "Change", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes[config.activeColorKey .. "BarChange"]
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(config.checkboxLabel)
+	f.tooltip = config.checkboxTooltip
+	f:SetChecked(spec.colors.bar[config.activeColorKey].enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar[config.activeColorKey].enabled = self:GetChecked()
+	end)
+
+	controls.colors[config.activeColorKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, config.activeColorLabel, spec.colors.bar[config.activeColorKey].color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors[config.activeColorKey]
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, config.activeColorKey)
+	end)
+
+	-- End of buff color checkbox + color picker
+	yCoord = yCoord - 30
+	controls.checkBoxes["endOf" .. config.endOfKey] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Bar_Option_" .. config.endOfKey .. "ColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes["endOf" .. config.endOfKey]
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(config.endCheckboxLabel)
+	f.tooltip = config.endCheckboxTooltip
+	f:SetChecked(spec.endOf[config.endOfKey].enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.endOf[config.endOfKey].enabled = self:GetChecked()
+	end)
+
+	controls.colors[config.endColorKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, config.endColorLabel, spec.colors.bar[config.endColorKey].color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors[config.endColorKey]
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, config.endColorKey)
+	end)
+
+	-- Additional colors (optional)
+	if config.additionalColors ~= nil then
+		for _, colorConfig in ipairs(config.additionalColors) do
+			yCoord = yCoord - 30
+			controls.checkBoxes[colorConfig.key .. "Change"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Bar_Option_" .. colorConfig.key .. "Change", parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes[colorConfig.key .. "Change"]
+			f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+			getglobal(f:GetName() .. 'Text'):SetText(colorConfig.checkboxLabel)
+			f.tooltip = colorConfig.checkboxTooltip
+			f:SetChecked(spec.colors.bar[colorConfig.key].enabled)
+			f:SetScript("OnClick", function(self, ...)
+				spec.colors.bar[colorConfig.key].enabled = self:GetChecked()
+			end)
+
+			controls.colors[colorConfig.key] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorConfig.colorLabel, spec.colors.bar[colorConfig.key].color, 300, 25, oUi.xCoord2, yCoord)
+			f = controls.colors[colorConfig.key]
+			local capturedKey = colorConfig.key
+			f:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, capturedKey)
+			end)
+		end
+	end
+
+	return yCoord
+end
+
+---Generates the "End Of" buff configuration options UI (GCD/Time radio buttons and sliders)
+---@param parent Frame # The parent frame
+---@param controls table # The controls table
+---@param spec table # The spec settings table
+---@param classId integer # Class ID
+---@param specId integer # Spec ID
+---@param yCoord number # Current Y coordinate
+---@param config table # Configuration table with: endOfKey, sectionHeader, gcdRadioLabel, gcdSliderLabel, timeRadioLabel, timeSliderLabel, gcdSliderMax (optional), timeSliderMax (optional)
+---@return number # Updated Y coordinate
+function TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, classId, specId, yCoord, config)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+
+	local endOfSettings = spec.endOf[config.endOfKey]
+	local gcdSliderMax = config.gcdSliderMax or 30
+	local timeSliderMax = config.timeSliderMax or 15
+
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, config.sectionHeader, oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+
+	controls.checkBoxes["endOf" .. config.endOfKey .. "ModeGCDs"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_endOf" .. config.endOfKey .. "_modeGCDs", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes["endOf" .. config.endOfKey .. "ModeGCDs"]
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(config.gcdRadioLabel)
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if endOfSettings.mode == "gcd" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes["endOf" .. config.endOfKey .. "ModeGCDs"]:SetChecked(true)
+		controls.checkBoxes["endOf" .. config.endOfKey .. "ModeTime"]:SetChecked(false)
+		endOfSettings.mode = "gcd"
+	end)
+
+	controls["endOf" .. config.endOfKey .. "GCDs"] = TRB.Functions.OptionsUi:BuildSlider(parent, config.gcdSliderLabel, 0.5, gcdSliderMax, endOfSettings.gcdsMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls["endOf" .. config.endOfKey .. "GCDs"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		endOfSettings.gcdsMax = value
+	end)
+
+	yCoord = yCoord - 60
+	controls.checkBoxes["endOf" .. config.endOfKey .. "ModeTime"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_endOf" .. config.endOfKey .. "_modeTime", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes["endOf" .. config.endOfKey .. "ModeTime"]
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(config.timeRadioLabel)
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if endOfSettings.mode == "time" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes["endOf" .. config.endOfKey .. "ModeGCDs"]:SetChecked(false)
+		controls.checkBoxes["endOf" .. config.endOfKey .. "ModeTime"]:SetChecked(true)
+		endOfSettings.mode = "time"
+	end)
+
+	controls["endOf" .. config.endOfKey .. "Time"] = TRB.Functions.OptionsUi:BuildSlider(parent, config.timeSliderLabel, 0, timeSliderMax, endOfSettings.timeMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls["endOf" .. config.endOfKey .. "Time"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		endOfSettings.timeMax = value
+	end)
+
+	return yCoord
+end
+
 function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName

@@ -20,6 +20,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.textures = settings.textures
 		configuration.colors.bar = settings.colors.bar
 		configuration.overcap = settings.overcap
+		configuration.endOf = settings.endOf
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
