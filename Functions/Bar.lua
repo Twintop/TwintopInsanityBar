@@ -300,8 +300,61 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	end
 
 	-- Configure secondary bar groups (combo points, arcane charges, runes, etc.)
-	if barGroups.secondary and settings.comboPoints then
-		self:ConstructSecondaryBarGroup(settings, barGroups.primary, barGroups.secondary, false)
+	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
+	-- but they DO have a secondary bar group for combo points when in cat form.
+	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
+	local hasComboPointSettings = settings.comboPoints
+	local feralSettingsForDruid = nil
+	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
+		feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+		if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
+			hasComboPointSettings = true
+		end
+	end
+
+	if barGroups.secondary and hasComboPointSettings then
+		-- DRUID SPECIAL CASE: All Druid specs share Feral's combo point settings.
+		-- When on a non-Feral Druid spec, use Feral's combo point configuration
+		-- so that changes made in Feral options are reflected immediately.
+		local effectiveSettings = settings
+		if TRB.Data.character.classId == 11 and (TRB.Data.character.specId ~= 2 or not settings.comboPoints) then
+			local feralSettings = feralSettingsForDruid or (TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings)
+			if feralSettings and feralSettings.comboPoints then
+				-- Create a shallow copy with Feral's combo point settings
+				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
+				effectiveSettings = {}
+				for k, v in pairs(settings) do
+					effectiveSettings[k] = v
+				end
+				effectiveSettings.comboPoints = feralSettings.comboPoints
+				-- Create a new textures table with current spec's textures, then override combo point textures
+				if feralSettings.textures then
+					local newTextures = {}
+					if settings.textures then
+						for k, v in pairs(settings.textures) do
+							newTextures[k] = v
+						end
+					end
+					newTextures.comboPointsBar = feralSettings.textures.comboPointsBar
+					newTextures.comboPointsBorder = feralSettings.textures.comboPointsBorder
+					newTextures.comboPointsBackground = feralSettings.textures.comboPointsBackground
+					effectiveSettings.textures = newTextures
+				end
+				-- Create a new colors table with current spec's colors, then override combo point colors
+				if feralSettings.colors and feralSettings.colors.comboPoints then
+					local newColors = {}
+					if settings.colors then
+						for k, v in pairs(settings.colors) do
+							newColors[k] = v
+						end
+					end
+					newColors.comboPoints = feralSettings.colors.comboPoints
+					effectiveSettings.colors = newColors
+				end
+			end
+		end
+
+		self:ConstructSecondaryBarGroup(effectiveSettings, barGroups.primary, barGroups.secondary, false)
 		-- Demon Hunter Devourer: secondary is a true 0..50 bar, and values may be "secret".
 		-- Keep the node min/max in that range so SetValue() works without scaling/clamping.
 		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 then
@@ -318,7 +371,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 				local thresholds = node:GetThresholds()
 				if thresholds and #thresholds > 0 then
 					for _, threshold in ipairs(thresholds) do
-						TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings)
+						TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, effectiveSettings)
 					end
 				end
 			end
@@ -327,8 +380,10 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 	-- Clear threshold color cache so AdjustThresholdDisplay recalculates colors correctly
 	-- This fixes a bug where moving the bar caused threshold colors to reset and stay wrong
+	-- Also clear colors cache in general
 	if TRB.Data.cache and TRB.Data.cache.values then
 		TRB.Data.cache.values.threshold = {}
+		TRB.Functions.Character:ResetColorCaches()
 	end
 
 	-- Configure health bar group (apply appearance immediately to ensure textures are set)
@@ -338,6 +393,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)
 	self:ApplyCustomBarGroupsLayout(settings, barGroups)
+	
+	-- There may be class-specific updates needed after layout changes. Only run this if we're not looping.
+	if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+		TRB.Functions.Class:CheckCharacter()
+	end
 end
 
 ---Applies textures/colors to existing bar groups (OOP system only).
@@ -374,15 +434,66 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		end
 	end
 
-	if barGroups.secondary and settings.comboPoints then
+	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
+	-- but they DO have a secondary bar group for combo points when in cat form.
+	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
+	local hasComboPointSettings = settings.comboPoints
+	local feralSettingsForDruid = nil
+	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
+		feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+		if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
+			hasComboPointSettings = true
+		end
+	end
+
+	if barGroups.secondary and hasComboPointSettings then
+		-- DRUID SPECIAL CASE: All Druid specs share Feral's combo point settings.
+		local effectiveSettings = settings
+		if TRB.Data.character.classId == 11 and (TRB.Data.character.specId ~= 2 or not settings.comboPoints) then
+			local feralSettings = feralSettingsForDruid or (TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings)
+			if feralSettings and feralSettings.comboPoints then
+				-- Create a shallow copy with Feral's combo point settings
+				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
+				effectiveSettings = {}
+				for k, v in pairs(settings) do
+					effectiveSettings[k] = v
+				end
+				effectiveSettings.comboPoints = feralSettings.comboPoints
+				-- Create a new textures table with current spec's textures, then override combo point textures
+				if feralSettings.textures then
+					local newTextures = {}
+					if settings.textures then
+						for k, v in pairs(settings.textures) do
+							newTextures[k] = v
+						end
+					end
+					newTextures.comboPointsBar = feralSettings.textures.comboPointsBar
+					newTextures.comboPointsBorder = feralSettings.textures.comboPointsBorder
+					newTextures.comboPointsBackground = feralSettings.textures.comboPointsBackground
+					effectiveSettings.textures = newTextures
+				end
+				-- Create a new colors table with current spec's colors, then override combo point colors
+				if feralSettings.colors and feralSettings.colors.comboPoints then
+					local newColors = {}
+					if settings.colors then
+						for k, v in pairs(settings.colors) do
+							newColors[k] = v
+						end
+					end
+					newColors.comboPoints = feralSettings.colors.comboPoints
+					effectiveSettings.colors = newColors
+				end
+			end
+		end
+
 		local isDevourer = TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3
 		for i = 1, barGroups.secondary.maxNodes do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
 				node:SetTextures(
-					settings.textures.comboPointsBar,
-					settings.textures.comboPointsBorder,
-					settings.textures.comboPointsBackground
+					effectiveSettings.textures.comboPointsBar,
+					effectiveSettings.textures.comboPointsBorder,
+					effectiveSettings.textures.comboPointsBackground
 				)
 
 				-- Secondary node min/max belongs with appearance (initial construct / appearance updates),
@@ -392,9 +503,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				else
 					node:SetMinMax(0, 1)
 				end
-				node:SetBorderColor(settings.colors.comboPoints.border)
-				node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-				node:SetColor(settings.colors.comboPoints.base)
+				node:SetBorderColor(effectiveSettings.colors.comboPoints.border)
+				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background)
+				node:SetColor(effectiveSettings.colors.comboPoints.base)
 				node:SetFrameLevels(
 					frameLevels.cpContainer,
 					frameLevels.cpBorder,

@@ -847,34 +847,10 @@ local function ConstructResourceBar(settings)
 			end
 		end
 
-		-- CRITICAL: For non-Feral specs, use Feral settings for secondary bar positioning
-		-- This ensures combo points appear in Cat form for all specs
-		local secondarySettings = settings
-		if TRB.Data.character.specId ~= 2 and barGroups.secondary then
-			-- Use Feral's settings for combo points configuration
-			local feralSettings = TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
-			if feralSettings and feralSettings.comboPoints then
-				-- ConstructBarGroups needs comboPoints settings to position the secondary bar
-				-- Temporarily inject Feral's combo points settings into current spec's settings
-				local originalComboPoints = settings.comboPoints
-				settings.comboPoints = feralSettings.comboPoints
-				settings.textures = settings.textures or {}
-				settings.textures.comboPointsBar = feralSettings.textures.comboPointsBar
-				settings.textures.comboPointsBorder = feralSettings.textures.comboPointsBorder
-				settings.textures.comboPointsBackground = feralSettings.textures.comboPointsBackground
-				settings.colors = settings.colors or {}
-				settings.colors.comboPoints = feralSettings.colors.comboPoints
-				
-				TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
-				
-				-- Restore original settings
-				settings.comboPoints = originalComboPoints
-			else
-				TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
-			end
-		else
-			TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
-		end
+		-- ConstructBarGroups now handles the Druid special case internally:
+		-- For non-Feral Druids, it looks up Feral's combo point settings from specCache
+		-- and creates a new merged settings object without modifying the original.
+		TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -1300,6 +1276,11 @@ local function RefreshLookupData_Unified()
 		return -- Cannot proceed without settings
 	end
 	
+	-- Guard: Ensure colors table exists
+	if not sharedSettings.colors then
+		return -- Cannot proceed without color settings
+	end
+	
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	
@@ -1331,7 +1312,8 @@ local function RefreshLookupData_Unified()
 	lookupLogic["$rageMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
 	
 	-- Mana variables ($mana, $manaMax, $manaPercent)
-	local manaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or manaColor
+	local manaColorOverride = sharedSettings.colors.text and sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color
+	local manaColor = manaColorOverride or manaColor
 	local manaFormatted = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(mana))
 	local manaMaxFormatted = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxMana))
 	local manaPrecision = 1
@@ -1684,9 +1666,28 @@ local function UpdateResourceBar()
 	end
 	
 	local formSpecSettings = classSettings[displaySpecName]
-	local formSpecCacheSettings = TRB.Data.specCache[displaySpecName].settings
+	local formSpecCache = TRB.Data.specCache[displaySpecName]
+	local formSpecCacheSettings = formSpecCache and formSpecCache.settings
+	
+	-- If the form's spec cache settings aren't available, fall back to current spec's settings
+	if formSpecCacheSettings == nil then
+		formSpecCacheSettings = TRB.Data.specCache[TRB.Data.character.specName] and TRB.Data.specCache[TRB.Data.character.specName].settings
+		if formSpecCacheSettings == nil then
+			return -- Cannot proceed without settings
+		end
+	end
 
 	local function ConstructPrimaryGeneric(maxPrimaryBarResource)
+		-- Guard: Skip threshold processing if the form's spec doesn't define thresholds
+		if formSpecCacheSettings.thresholds == nil or formSpecCacheSettings.thresholds.properties == nil then
+			return
+		end
+		
+		-- Guard: Ensure colors.threshold exists for threshold coloring
+		if formSpecCacheSettings.colors == nil or formSpecCacheSettings.colors.threshold == nil then
+			return
+		end
+		
 		-- Get resourceFrame and thresholds from the BarNode
 		local resourceFrame = primaryNode:GetResourceFrame()
 		local thresholds = primaryNode:GetThresholds()
@@ -2968,154 +2969,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxAstralPower = UnitPowerMax("player", Enum.PowerType.LunarPower, true)
 	TRB.Data.character.maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 
-	if TRB.Data.character.specId == 1 then
-		TRB.Data.character.specName = "balance"
-		TRB.Data.character.maxResource = TRB.Data.character.maxAstralPower
-		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.LunarPower, false)
-		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
-		pcall(GetCurrentMoonSpell)
-
-		--TRB.Data.snapshotData.snapshots[TRB.Data.spellsData.spells.moonkinForm.id].buff:Initialize(nil, true)
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
-
-		if sharedSettings ~= nil and barGroups then
-			if barGroups.primary then
-				TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
-			end
-			
-			-- Configure secondary bar for combo points (used when in Cat form)
-			if barGroups.secondary and TRB.Data.character.maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
-				-- Use Feral settings for combo point configuration
-				local feralSettings = TRB.Data.specCache.feral.settings
-				barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
-				barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-				barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, feralSettings.comboPoints.fullWidth, "HORIZONTAL")
-				barGroups.secondary:ApplyLayout(
-					feralSettings.bar.width,
-					feralSettings.comboPoints.width,
-					feralSettings.comboPoints.height,
-					feralSettings.comboPoints.border
-				)
-				-- Apply textures and colors to all nodes
-				local frameLevels = TRB.Data.constants.frameLevels
-				for i = 1, TRB.Data.character.maxComboPoints do
-					local node = barGroups.secondary:GetNode(i)
-					if node then
-						node:SetTextures(
-							feralSettings.textures.comboPointsBar,
-							feralSettings.textures.comboPointsBorder,
-							feralSettings.textures.comboPointsBackground
-						)
-						node:SetMinMax(0, 1)
-						node:SetBorderColor(feralSettings.colors.comboPoints.border)
-						node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background)
-						node:SetColor(feralSettings.colors.comboPoints.base)
-						node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
-					end
-				end
-			end
-		end
-	elseif TRB.Data.character.specId == 2 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-		TRB.Data.character.specName = "feral"
-		TRB.Data.character.maxResource = TRB.Data.character.maxEnergy
-		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Energy, false)
-		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
-
-		if sharedSettings ~= nil then
-			if TRB.Data.character.maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
-				if barGroups and barGroups.primary then
-					TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
-				end
-				-- Rebuild secondary bar layout when combo point count changes
-				if barGroups and barGroups.secondary then
-					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
-					barGroups.secondary:ApplyLayout(
-						sharedSettings.bar.width,
-						sharedSettings.comboPoints.width,
-						sharedSettings.comboPoints.height,
-						sharedSettings.comboPoints.border
-					)
-					-- Apply textures and colors to any newly created nodes
-					local frameLevels = TRB.Data.constants.frameLevels
-					for i = 1, TRB.Data.character.maxComboPoints do
-						local node = barGroups.secondary:GetNode(i)
-						if node then
-							node:SetTextures(
-								sharedSettings.textures.comboPointsBar,
-								sharedSettings.textures.comboPointsBorder,
-								sharedSettings.textures.comboPointsBackground
-							)
-							node:SetMinMax(0, 1)
-							node:SetBorderColor(sharedSettings.colors.comboPoints.border)
-							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background)
-							node:SetColor(sharedSettings.colors.comboPoints.base)
-							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
-						end
-					end
-				end
-			end
-		end
-
-		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then
-			TRB.Data.character.pandemicModifier = spells.circleOfLifeAndDeath.attributes.modifier
-		end
-	elseif TRB.Data.character.specId == 3 then
-		TRB.Data.character.specName = "guardian"
-		TRB.Data.character.maxResource = TRB.Data.character.maxRage
-		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Rage, false)
-		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
-
-		if sharedSettings ~= nil and barGroups then
-			if barGroups.primary then
-				TRB.Functions.Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
-			end
-			
-			-- Configure secondary bar for combo points (used when in Cat form)
-			if barGroups.secondary and TRB.Data.character.maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
-				-- Use Feral settings for combo point configuration
-				local feralSettings = TRB.Data.specCache.feral.settings
-				barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
-				barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-				barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, feralSettings.comboPoints.fullWidth, "HORIZONTAL")
-				barGroups.secondary:ApplyLayout(
-					feralSettings.bar.width,
-					feralSettings.comboPoints.width,
-					feralSettings.comboPoints.height,
-					feralSettings.comboPoints.border
-				)
-				-- Apply textures and colors to all nodes
-				local frameLevels = TRB.Data.constants.frameLevels
-				for i = 1, TRB.Data.character.maxComboPoints do
-					local node = barGroups.secondary:GetNode(i)
-					if node then
-						node:SetTextures(
-							feralSettings.textures.comboPointsBar,
-							feralSettings.textures.comboPointsBorder,
-							feralSettings.textures.comboPointsBackground
-						)
-						node:SetMinMax(0, 1)
-						node:SetBorderColor(feralSettings.colors.comboPoints.border)
-						node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background)
-						node:SetColor(feralSettings.colors.comboPoints.base)
-						node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
-					end
-				end
-			end
-		end
-	elseif TRB.Data.character.specId == 4 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
-		TRB.Data.character.specName = "restoration"
-		TRB.Data.character.maxResource = TRB.Data.character.maxMana
-		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
-		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
+	local function SetupSharedSettingsForSpec()
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
 		if sharedSettings ~= nil and barGroups then
@@ -3128,34 +2982,74 @@ function TRB.Functions.Class:CheckCharacter()
 				TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
 				-- Use Feral settings for combo point configuration
 				local feralSettings = TRB.Data.specCache.feral.settings
-				barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
-				barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-				barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, feralSettings.comboPoints.fullWidth, "HORIZONTAL")
-				barGroups.secondary:ApplyLayout(
-					feralSettings.bar.width,
-					feralSettings.comboPoints.width,
-					feralSettings.comboPoints.height,
-					feralSettings.comboPoints.border
-				)
-				-- Apply textures and colors to all nodes
-				local frameLevels = TRB.Data.constants.frameLevels
-				for i = 1, TRB.Data.character.maxComboPoints do
-					local node = barGroups.secondary:GetNode(i)
-					if node then
-						node:SetTextures(
-							feralSettings.textures.comboPointsBar,
-							feralSettings.textures.comboPointsBorder,
-							feralSettings.textures.comboPointsBackground
-						)
-						node:SetMinMax(0, 1)
-						node:SetBorderColor(feralSettings.colors.comboPoints.border)
-						node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background)
-						node:SetColor(feralSettings.colors.comboPoints.base)
-						node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+
+				if feralSettings ~= nil and feralSettings.comboPoints ~= nil then
+					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
+					barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
+					barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, feralSettings.comboPoints.fullWidth, "HORIZONTAL")
+					barGroups.secondary:ApplyLayout(
+						feralSettings.bar.width,
+						feralSettings.comboPoints.width,
+						feralSettings.comboPoints.height,
+						feralSettings.comboPoints.border
+					)
+					-- Apply textures and colors to all nodes
+					local frameLevels = TRB.Data.constants.frameLevels
+					for i = 1, TRB.Data.character.maxComboPoints do
+						local node = barGroups.secondary:GetNode(i)
+						if node then
+							node:SetTextures(
+								feralSettings.textures.comboPointsBar,
+								feralSettings.textures.comboPointsBorder,
+								feralSettings.textures.comboPointsBackground
+							)
+							node:SetMinMax(0, 1)
+							node:SetBorderColor(feralSettings.colors.comboPoints.border)
+							node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background)
+							node:SetColor(feralSettings.colors.comboPoints.base)
+							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+						end
 					end
 				end
 			end
 		end
+	end
+
+	if TRB.Data.character.specId == 1 then
+		TRB.Data.character.specName = "balance"
+		TRB.Data.character.maxResource = TRB.Data.character.maxAstralPower
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.LunarPower, false)
+		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
+		pcall(GetCurrentMoonSpell)
+
+		SetupSharedSettingsForSpec()
+	elseif TRB.Data.character.specId == 2 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+		TRB.Data.character.specName = "feral"
+		TRB.Data.character.maxResource = TRB.Data.character.maxEnergy
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Energy, false)
+		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
+		
+		SetupSharedSettingsForSpec()
+		
+		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then
+			TRB.Data.character.pandemicModifier = spells.circleOfLifeAndDeath.attributes.modifier
+		end
+	elseif TRB.Data.character.specId == 3 then
+		TRB.Data.character.specName = "guardian"
+		TRB.Data.character.maxResource = TRB.Data.character.maxRage
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Rage, false)
+		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
+		
+		SetupSharedSettingsForSpec()
+	elseif TRB.Data.character.specId == 4 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+		TRB.Data.character.specName = "restoration"
+		TRB.Data.character.maxResource = TRB.Data.character.maxMana
+		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
+		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
+
+		SetupSharedSettingsForSpec()
 	end
 end
 
@@ -3266,12 +3160,14 @@ function TRB.Functions.Class:HideResourceBar(force)
 				-- Use Feral's secondary bar settings for visibility
 				local secondarySettings = TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings or sharedSettings
 				
-				if secondarySettings.displayBar.secondary == "always" then
-					showSecondary = true
-				elseif secondarySettings.displayBar.secondary == "combat" then
-					showSecondary = affectingCombat or inVehicle
+				if secondarySettings ~= nil and secondarySettings.displayBar ~= nil then
+					if secondarySettings.displayBar.secondary == "always" then
+						showSecondary = true
+					elseif secondarySettings.displayBar.secondary == "combat" then
+						showSecondary = affectingCombat or inVehicle
+					end
+					-- "never" means showSecondary stays false
 				end
-				-- "never" means showSecondary stays false
 			end
 
 			-- Determine health bar visibility independently

@@ -26,6 +26,11 @@ local content = [====[
 
 - [#531](#531) Temporarily disable the Russian Google Translate localization file to help address strange bar behavior and Lua errors.
 
+## Druid
+
+- [#534](#534) Fix how the shared bars for Druids are constructed to ensure that the correct settings are applied for each form, especially when making modifications to the configuration of another form's settings.
+- [#539](#539) Fix Lua errors that would occur when logging in as non-Feral in Cat Form.
+
 ---
 
 # 12.0.0.1-release (2026-01-22)
