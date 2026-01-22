@@ -64,7 +64,7 @@ Localization\koKR.lua
 Localization\pt-GT.lua
 Localization\ptBR.lua
 Localization\ptPT.lua
-Localization\ru-GT.lua
+#Localization\ru-GT.lua
 Localization\ruRU.lua
 Localization\zhCN-GT.lua
 Localization\zhCN.lua
