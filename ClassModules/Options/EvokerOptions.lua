@@ -191,8 +191,10 @@ TRB.Options.Evoker.DevastationLoadDefaultBarTextSettings = DevastationLoadDefaul
 local function DevastationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -303,8 +305,10 @@ TRB.Options.Evoker.PreservationLoadDefaultBarTextSettings = PreservationLoadDefa
 local function PreservationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -456,8 +460,10 @@ TRB.Options.Evoker.AugmentationLoadDefaultBarTextSettings = AugmentationLoadDefa
 local function AugmentationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",

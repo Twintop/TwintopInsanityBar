@@ -40,6 +40,7 @@ TRB.Options.Rogue.AssassinationLoadDefaultBarTextSettings = AssassinationLoadDef
 local function AssassinationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -247,6 +248,7 @@ TRB.Options.Rogue.OutlawLoadDefaultBarTextSettings = OutlawLoadDefaultBarTextSet
 local function OutlawLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -462,6 +464,7 @@ TRB.Options.Rogue.SubtletyLoadDefaultBarTextSettings = SubtletyLoadDefaultBarTex
 local function SubtletyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},

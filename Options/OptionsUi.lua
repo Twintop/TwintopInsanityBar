@@ -3825,6 +3825,42 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		TRB.Data.snapshotData.attributes.cacheRefresh = true
 	end)
 
+	if (classId == nil and specId == nil) or -- Global
+		(classId == 2) or -- Paladin
+		(classId == 5) or -- Priest
+		(classId == 7) or -- Shaman
+		(classId == 8) or -- Mage
+		(classId == 9) or -- Warlock
+		(classId == 10 and specId == 2) or -- Monk Mistweaver
+		(classId == 11) or -- Druid
+		(classId == 13) -- Evoker
+		then
+		title = L["ManaDecimalPrecision"]
+		controls.precisionMana = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.precision.mana, 1, 0,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.precisionMana:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			spec.precision.mana = value
+			TRB.Data.snapshotData.attributes.cacheRefresh = true
+		end)
+	end
+
+	yCoord = yCoord - 60
+
+	title = L["HealthDecimalPrecision"]
+	controls.precisionHealth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.precision.health, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.precisionHealth:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.precision.health = value
+		TRB.Data.snapshotData.attributes.cacheRefresh = true
+	end)
+
+
 	return yCoord
 end
 

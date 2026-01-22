@@ -68,8 +68,10 @@ TRB.Options.Shaman.ElementalLoadDefaultBarTextSettings = ElementalLoadDefaultBar
 local function ElementalLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		thresholds = {
 			properties = {
@@ -251,8 +253,10 @@ TRB.Options.Shaman.EnhancementLoadDefaultBarTextSettings = EnhancementLoadDefaul
 local function EnhancementLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -387,8 +391,10 @@ TRB.Options.Shaman.RestorationLoadDefaultBarTextSettings = RestorationLoadDefaul
 local function RestorationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",

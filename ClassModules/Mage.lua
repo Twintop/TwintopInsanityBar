@@ -446,7 +446,7 @@ local function RefreshLookupData_Arcane()
 	local castingManaColor = TRB.Data.settings.mage.arcane.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.mage.arcane.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -507,7 +507,7 @@ local function RefreshLookupData_Fire()
 	local castingManaColor = TRB.Data.settings.mage.fire.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.mage.fire.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -560,7 +560,7 @@ local function RefreshLookupData_Frost()
 	local castingManaColor = TRB.Data.settings.mage.frost.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.mage.frost.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal

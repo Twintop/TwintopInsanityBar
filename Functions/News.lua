@@ -22,6 +22,10 @@ local content = [====[
 
 # 12.0.0.2-release (2026-01-23)
 ## General
+
+- [#519](#519) Add decimal precision settings for Health percentage bar text.
+- [#532](#532) Add decimal precision settings for Mana percentage bar text.
+
 ### Localization
 
 - [#531](#531) Temporarily disable the Russian Google Translate localization file to help address strange bar behavior and Lua errors.

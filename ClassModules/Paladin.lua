@@ -454,7 +454,7 @@ local function RefreshLookupData_Holy()
 	local castingManaColor = TRB.Data.settings.paladin.holy.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.paladin.holy.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -521,7 +521,7 @@ local function RefreshLookupData_Protection()
 	local castingManaColor = TRB.Data.settings.paladin.protection.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.paladin.protection.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -582,7 +582,7 @@ local function RefreshLookupData_Retribution()
 	local castingManaColor = TRB.Data.settings.paladin.retribution.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.paladin.retribution.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal

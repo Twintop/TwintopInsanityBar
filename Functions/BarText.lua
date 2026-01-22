@@ -832,9 +832,10 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local healthMaxRaw = snapshotData.attributes.healthMax-- or UnitHealthMax("player")
 	local healthPercentRaw = snapshotData.attributes.healthPercent-- or UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
 
+	local healthPrecision = settings.precision.health or 1
 	local health = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthRaw))
 	local healthMax = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthMaxRaw))
-	local healthPercent = string.format("%.1f", healthPercentRaw)
+	local healthPercent = string.format("%." .. healthPrecision .. "f", healthPercentRaw)
 
 	lookup["$health"] = health
 	lookup["$healthMax"] = healthMax

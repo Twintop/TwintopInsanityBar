@@ -37,8 +37,10 @@ TRB.Options.Paladin.HolyLoadDefaultBarTextSettings = HolyLoadDefaultBarTextSetti
 local function HolyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -127,8 +129,10 @@ TRB.Options.Paladin.ProtectionLoadDefaultBarTextSettings = ProtectionLoadDefault
 local function ProtectionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -210,8 +214,10 @@ TRB.Options.Paladin.RetributionLoadDefaultBarTextSettings = RetributionLoadDefau
 local function RetributionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",

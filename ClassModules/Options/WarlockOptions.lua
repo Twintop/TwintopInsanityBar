@@ -33,8 +33,10 @@ TRB.Options.Warlock.AfflictionLoadDefaultBarTextSettings = AfflictionLoadDefault
 local function AfflictionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -118,8 +120,10 @@ TRB.Options.Warlock.DemonologyLoadDefaultBarTextSettings = DemonologyLoadDefault
 local function DemonologyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -201,8 +205,10 @@ TRB.Options.Warlock.DestructionLoadDefaultBarTextSettings = DestructionLoadDefau
 local function DestructionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 0,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -1322,6 +1328,8 @@ local function DestructionConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 3, yCoord)
 end
 
 local function DestructionConstructAudioAndTrackingPanel(parent)

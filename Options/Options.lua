@@ -163,19 +163,7 @@ local function ConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 	
-	local title = ""
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, nil, nil, yCoord)
-
-	title = L["GlobalResourceDecimalPrecision"]
-	controls.precisionResource = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.precision.resource, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.precisionResource:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.precision.resource = value
-		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)
 end
 
 local function ConstructMiscellaneousPanel(parent)
@@ -823,12 +811,12 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 12.48)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 16.23)
+	local localeText2 = string.format(percentFormat, 12.50)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 16.25)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 15.24)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 15.20)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)

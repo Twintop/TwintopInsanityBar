@@ -44,6 +44,7 @@ TRB.Options.Warrior.ArmsLoadDefaultBarTextSettings = ArmsLoadDefaultBarTextSetti
 local function ArmsLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -209,6 +210,7 @@ TRB.Options.Warrior.FuryLoadDefaultBarTextSettings = FuryLoadDefaultBarTextSetti
 local function FuryLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -424,6 +426,7 @@ TRB.Options.Warrior.ProtectionLoadDefaultBarTextSettings = ProtectionLoadDefault
 local function ProtectionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -974,18 +977,6 @@ local function ArmsConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 1, yCoord)
-
-	--[[
-	title = L["WarriorRageDecimalPrecision"]
-	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.precision.resource, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.precision.resource = value
-		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)]]
 end
 
 local function ArmsConstructAudioAndTrackingPanel(parent)
@@ -1497,17 +1488,6 @@ local function FuryConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 2, yCoord)
-
-	--[[title = L["WarriorRageDecimalPrecision"]
-	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.precision.resource, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.precision.resource = value
-		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)]]
 end
 
 local function FuryConstructAudioAndTrackingPanel(parent)
@@ -2047,17 +2027,6 @@ local function ProtectionConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 3, yCoord)
-
-	--[[title = L["WarriorRageDecimalPrecision"]
-	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.precision.resource, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.precision.resource = value
-		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)]]
 end
 
 local function ProtectionConstructAudioAndTrackingPanel(parent)

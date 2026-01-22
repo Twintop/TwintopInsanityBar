@@ -89,8 +89,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 			healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 			precision = {
+				health = 1,
 				secondary = 2,
-				resource = 0
+				resource = 0,
+				mana = 1
 			},
 			colors = {
 				text = {
@@ -1460,6 +1462,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 							-- Change to new bar text format
 							if specValue.hastePrecision ~= nil or specValue.resourcePrecision ~= nil then
 								specValue.precision = {
+			health = 1,
 									secondary = specValue.hastePrecision or 0,
 									resource = specValue.resourcePrecision or 0
 								}

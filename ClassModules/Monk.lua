@@ -594,7 +594,7 @@ local function RefreshLookupData_Mistweaver()
 	local castingManaColor = TRB.Data.settings.monk.mistweaver.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.monk.mistweaver.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal

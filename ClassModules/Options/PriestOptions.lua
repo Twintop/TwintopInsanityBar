@@ -52,8 +52,10 @@ TRB.Options.Priest.DisciplineLoadDefaultBarTextSettings = DisciplineLoadDefaultB
 local function DisciplineLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -189,8 +191,10 @@ TRB.Options.Priest.HolyLoadDefaultBarTextSettings = HolyLoadDefaultBarTextSettin
 local function HolyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -391,8 +395,10 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		thresholds = {
 			properties = {
@@ -2269,19 +2275,6 @@ local function ShadowConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 10
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 5, 3, yCoord)
-
-	--[[
-	title = L["PriestShadowInsanityDecimalPrecision"]
-	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.precision.resource, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.precision.resource = value
-		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)
-	]]
 end
 
 local function ShadowConstructAudioAndTrackingPanel(parent)

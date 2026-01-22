@@ -73,6 +73,7 @@ TRB.Options.DemonHunter.HavocLoadDefaultBarTextSettings = HavocLoadDefaultBarTex
 local function HavocLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -224,6 +225,7 @@ TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSettings = VengeanceLoadDefau
 local function VengeanceLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -399,6 +401,7 @@ TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSettings = DevourerLoadDefault
 local function DevourerLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},

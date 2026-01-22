@@ -88,6 +88,7 @@ TRB.Options.Monk.BrewmasterLoadDefaultBarTextSettings = BrewmasterLoadDefaultBar
 local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -267,8 +268,10 @@ TRB.Options.Monk.MistweaverLoadDefaultBarTextSettings = MistweaverLoadDefaultBar
 local function MistweaverLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
 			primary = "combat",
@@ -359,6 +362,7 @@ TRB.Options.Monk.WindwalkerLoadDefaultBarTextSettings = WindwalkerLoadDefaultBar
 local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},

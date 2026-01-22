@@ -538,7 +538,7 @@ local function RefreshLookupData_Elemental()
 	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
 
 	--$manaMax
@@ -610,7 +610,7 @@ local function RefreshLookupData_Enhancement()
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -680,7 +680,7 @@ local function RefreshLookupData_Restoration()
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
