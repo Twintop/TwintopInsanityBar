@@ -39,6 +39,11 @@ local content = [====[
 
 - [#540](#540) Ensure that the "Flash bar" checkbox state is respected.
 
+## Warlock
+### Destruction
+
+- [#536](#536) Restore missing border color settings for Soul Shards.
+
 ---
 
 # 12.0.0.1-release (2026-01-22)
