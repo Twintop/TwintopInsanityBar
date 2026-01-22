@@ -1960,7 +1960,7 @@ local function UpdateResourceBar()
 						end -- shouldProcessThreshold
 					end
 					
-					if specSettings.colors.bar.flashSsEnabled and spells.starsurge:IsUsable() then-- currentResource >= spells.starsurge:GetPrimaryResourceCost() then
+					if specSettings.colors.bar.flashEnabled and spells.starsurge:IsUsable() then-- currentResource >= spells.starsurge:GetPrimaryResourceCost() then
 						flashBar = true
 					end
 
