@@ -304,8 +304,9 @@ end
 ---Computes the time remaining on the Snapshot and also refreshes data related to ticks if the spell supports it
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 ---@param useLeeway boolean? # If true, use the included leeway value for offsetting the remainingTime slightly.
+---@param force boolean? # If true, forces a recalculation even if called multiple times in the same timestamp.
 ---@return number # Duration remaining on the Snapshot
-function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
+function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway, force)
 	currentTime = currentTime or GetTime()
 
 	-- Handle pause mode with max duration tracking
@@ -338,7 +339,7 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 		return self.previousRemaining
 	end
 
-    if self.lastRefreshGetTime == currentTime then
+    if not force and self.lastRefreshGetTime == currentTime then
         return self.remaining
 	end
 
@@ -409,7 +410,7 @@ function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStack
 	else
 		self.applications = 0
 	end
-	self:GetRemainingTime()
+	self:GetRemainingTime(nil, nil, true)
 end
 
 ---Initializes the buff with custom endTime and duration values
@@ -428,12 +429,13 @@ end
 ---@param duration number # How much time to add
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
 function TRB.Classes.SnapshotBuff:AddTimeOrInitializeCustom(duration, startTime)
+	self:GetRemainingTime()
 	if not self.isActive then
 		self:InitializeCustom(duration, startTime)
 	else
-		self.endTime = self.endTime + duration
-		self.duration = self.duration + duration
-		self:GetRemainingTime()
+		self.duration = self.remaining + duration
+		self.endTime = startTime + self.duration
+		self:GetRemainingTime(nil, nil, true)
 	end
 end
 
@@ -711,7 +713,7 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 	if remainingTime <= 0 then
 		remainingTime = 0
 		self.onCooldown = false
-	elseif self.charges > 0 then
+	elseif not issecretvalue(self.charges) and self.charges > 0 then
 		self.onCooldown = false
 	else
 		self.onCooldown = true

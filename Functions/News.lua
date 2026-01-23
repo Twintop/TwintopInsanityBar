@@ -21,6 +21,10 @@ local content = [====[
 ---
 
 # 12.0.0.3-release (2026-01-23)
+## General
+
+- Adjust how manual tracking of buffs handles increases to duration. Now, when a duration increase occurs, the overall duration of the buff is reset to be the remaining duration.
+
 ## Mage
 ### Arcane
 
@@ -30,6 +34,11 @@ local content = [====[
 ### Enhancement
 
 - [#545](#545) Fix Maelstrom Weapon overflow (stacks 6-10) color settings not being saved correctly.
+
+## Warrior
+### Protection
+
+- [#543](#543) Add support for Heavy Repercussions and Shield Charge as a source of Shield Block duration.
 
 ---
 
