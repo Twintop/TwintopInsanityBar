@@ -347,7 +347,6 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				solar="FFFFEE00",
 				celestial="FF4A95CE",
 				eclipse1GCD="FFFF0000",
-				moonkinFormMissing="FFFF0000",
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
@@ -1330,13 +1329,6 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "eclipse1GCD")
 	end)
-
-	--[[yCoord = yCoord - 30
-	controls.colors.moonkinFormMissing = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerMoonkinMissing"], spec.colors.bar.moonkinFormMissing, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.moonkinFormMissing
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "moonkinFormMissing")
-	end)]]
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)

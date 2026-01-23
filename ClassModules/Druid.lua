@@ -243,8 +243,6 @@ local function FillSpellData_Balance()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-		{ variable = "#moonkinForm", icon = spells.moonkinForm.icon, description = spells.moonkinForm.name, printInSettings = true },
-
 		{ variable = "#wrath", icon = spells.wrath.icon, description = spells.wrath.name, printInSettings = true },
 		{ variable = "#starfire", icon = spells.starfire.icon, description = spells.starfire.name, printInSettings = true },
 		
@@ -327,7 +325,6 @@ local function FillSpellData_Balance()
 		{ variable = "$rage", description = L["DruidGuardianBatTextVariable_rage"], printInSettings = true, color = false },
 		{ variable = "$rageMax", description = L["DruidGuardianBatTextVariable_rageMax"], printInSettings = true, color = false },
 
-		--{ variable = "$moonkinForm", description = L["DruidBalanceBarTextVariable_moonkinForm"], printInSettings = true, color = false },
 		{ variable = "$eclipse", description = L["DruidBalanceBarTextVariable_eclipse"], printInSettings = true, color = false },
 		{ variable = "$eclipseTime", description = L["DruidBalanceBarTextVariable_eclipseTime"], printInSettings = true, color = false },
 		{ variable = "$lunar", description = L["DruidBalanceBarTextVariable_lunar"], printInSettings = true, color = false },
@@ -337,6 +334,9 @@ local function FillSpellData_Balance()
 		{ variable = "$solarEclipse", description = "", printInSettings = false, color = false },
 		{ variable = "$eclipseSolar", description = "", printInSettings = false, color = false },
 		{ variable = "$celestialAlignment", description = L["DruidBalanceBarTextVariable_celestialAlignment"], printInSettings = true, color = false },
+		
+		{ variable = "$starsurgeUsable", description = L["DruidBalanceBarTextVariable_starsurgeUsable"], printInSettings = true, color = false },
+		{ variable = "$starfallUsable", description = L["DruidBalanceBarTextVariable_starfallUsable"], printInSettings = true, color = false },
 	}
 end
 
@@ -874,22 +874,27 @@ local function GetEclipseRemainingTime()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local remainingTime = 0
 	local icon = nil
+	local spellId = nil
 
 	if snapshotData.snapshots[spells.celestialAlignment.id].buff.isActive then
 		remainingTime = snapshotData.snapshots[spells.celestialAlignment.id].buff.remaining
 		icon = spells.celestialAlignment.icon
+		spellId = spells.celestialAlignment.id
 	elseif snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
 		remainingTime = snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.remaining
 		icon = spells.incarnationChosenOfElune.icon
+		spellId = spells.incarnationChosenOfElune.id
 	elseif snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
 		remainingTime = snapshotData.snapshots[spells.eclipseSolar.id].buff.remaining
 		icon = spells.eclipseSolar.icon
+		spellId = spells.eclipseSolar.id
 	elseif snapshotData.snapshots[spells.eclipseLunar.id].buff.isActive then
 		remainingTime = snapshotData.snapshots[spells.eclipseLunar.id].buff.remaining
 		icon = spells.eclipseLunar.icon
+		spellId = spells.eclipseLunar.id
 	end
 
-	return remainingTime, icon
+	return remainingTime, icon, spellId
 end
 
 local function RefreshLookupData_Balance()
@@ -905,8 +910,12 @@ local function RefreshLookupData_Balance()
 	local currentAstralPowerColor = sharedSettings.colors.text.current.color
 	local castingAstralPowerColor = sharedSettings.colors.text.casting.color
 
+	-- $starsurgeUsable and $starfallUsable
+	local _starsurgeUsable = spells.starsurge:IsUsable() or spells.starsurge:IsFree()
+	local _starfallUsable = spells.starfall:IsUsable() or spells.starfall:IsFree()
+
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled and (spells.starsurge:IsUsable() or spells.starfall:IsUsable()) then
+		if sharedSettings.colors.text.overThreshold.enabled and (_starsurgeUsable or _starfallUsable) then
 			currentAstralPowerColor = sharedSettings.colors.text.overThreshold.color
 			castingAstralPowerColor = sharedSettings.colors.text.overThreshold.color
 		end
@@ -935,8 +944,11 @@ local function RefreshLookupData_Balance()
 	--New Moon
 	
 	--$eclipseTime
-	local _eclispeTime, eclipseIcon = GetEclipseRemainingTime()
+	local _eclispeTime, eclipseIcon, eclipseSpellId = GetEclipseRemainingTime()
 	local eclipseTime = TRB.Functions.BarText:TimerPrecision(_eclispeTime)
+	
+	local _nonEclipseTime = 0
+	local nonEclipseTime = TRB.Functions.BarText:TimerPrecision(0)
 
 	-- Mana lookups (Balance uses mana as secondary resource display)
 	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
@@ -974,6 +986,8 @@ local function RefreshLookupData_Balance()
 	lookup["$solarEclipse"] = ""
 	lookup["$eclipseSolar"] = ""
 	lookup["$celestialAlignment"] = ""
+	lookup["$starsurgeUsable"] = ""
+	lookup["$starfallUsable"] = ""
 	lookup["$mana"] = currentMana
 	lookup["$manaMax"] = manaMax
 	lookup["$manaPercent"] = manaPercent
@@ -986,9 +1000,31 @@ local function RefreshLookupData_Balance()
 	lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$casting"] = currentAstralPower
 	lookupLogic["$eclipseTime"] = _eclispeTime
+	lookupLogic["$eclipse"] = _eclispeTime > 0
+	lookupLogic["$lunar"] = false
+	lookupLogic["$lunarEclipse"] = false
+	lookupLogic["$eclipseLunar"] = false
+	lookupLogic["$solar"] = false
+	lookupLogic["$solarEclipse"] = false
+	lookupLogic["$eclipseSolar"] = false
+	lookupLogic["$celestialAlignment"] = false
+	lookupLogic["$starsurgeUsable"] = _starsurgeUsable
+	lookupLogic["$starfallUsable"] = _starfallUsable
 	lookupLogic["$mana"] = normalizedMana
 	lookupLogic["$manaMax"] = normalizedManaMax
 	lookupLogic["$manaPercent"] = _manaPercent
+
+	if eclipseSpellId == spells.eclipseLunar.id then
+		lookupLogic["$lunar"] = true
+		lookupLogic["$lunarEclipse"] = true
+		lookupLogic["$eclipseLunar"] = true
+	elseif eclipseSpellId == spells.eclipseSolar.id then
+		lookupLogic["$solar"] = true
+		lookupLogic["$solarEclipse"] = true
+		lookupLogic["$eclipseSolar"] = true
+	elseif eclipseSpellId == spells.celestialAlignment.id or eclipseSpellId == spells.incarnationChosenOfElune.id then
+		lookupLogic["$celestialAlignment"] = true
+	end
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -2644,7 +2680,6 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#wrath"] = spells.wrath.icon
-		lookup["#moonkinForm"] = spells.moonkinForm.icon
 		lookup["#starsurge"] = spells.starsurge.icon
 		lookup["#starfall"] = spells.starfall.icon
 		lookup["#celestialAlignment"] = spells.celestialAlignment.icon
@@ -3335,11 +3370,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	if TRB.Data.character.specId == 1 then -- Balance
-		--[[if var == "$moonkinForm" then
-			if snapshots[spells.moonkinForm.id].buff.isActive then
-				valid = true
-			end
-		else]]if var == "$eclipse" then
+		if var == "$eclipse" then
 			if snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
 				valid = true
 			end
@@ -3357,6 +3388,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$eclipseTime" then
 			if snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$starsurgeUsable" then
+			if spells.starsurge:IsUsable() or spells.starsurge:IsFree() then
+				valid = true
+			end
+		elseif var == "$starfallUsable" then
+			if spells.starfall:IsUsable() or spells.starfall:IsFree() then
 				valid = true
 			end
 		end

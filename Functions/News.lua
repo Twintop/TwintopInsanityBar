@@ -28,6 +28,11 @@ local content = [====[
 - Restore the missing Soul Fragment/Collapsing Star bar's background color setting.
 - Clean up some localization strings.
 
+## Druid
+### Balance
+
+- [#546](#546) Add bar text logic variables `$starsurgeUsable` and `$starfallUsable` to indicate when Starsurge and Starfall can be used.
+
 ---
 
 # 12.0.0.3-release (2026-01-23)
