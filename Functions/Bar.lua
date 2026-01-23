@@ -303,7 +303,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
 	-- but they DO have a secondary bar group for combo points when in cat form.
 	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
-	local hasComboPointSettings = settings.comboPoints
+	local hasComboPointSettings = settings.comboPoints ~= nil
 	local feralSettingsForDruid = nil
 	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
 		feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
@@ -322,6 +322,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			if feralSettings and feralSettings.comboPoints then
 				-- Create a shallow copy with Feral's combo point settings
 				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
+---@diagnostic disable-next-line: missing-fields
 				effectiveSettings = {}
 				for k, v in pairs(settings) do
 					effectiveSettings[k] = v
@@ -437,7 +438,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
 	-- but they DO have a secondary bar group for combo points when in cat form.
 	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
-	local hasComboPointSettings = settings.comboPoints
+	local hasComboPointSettings = settings.comboPoints ~= nil
 	local feralSettingsForDruid = nil
 	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
 		feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
@@ -454,6 +455,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if feralSettings and feralSettings.comboPoints then
 				-- Create a shallow copy with Feral's combo point settings
 				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
+---@diagnostic disable-next-line: missing-fields
 				effectiveSettings = {}
 				for k, v in pairs(settings) do
 					effectiveSettings[k] = v
