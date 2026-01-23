@@ -21,19 +21,28 @@ local content = [====[
 ---
 
 # 12.0.0.4-release (2026-01-24)
+## General
+### Import/Export
+
+- Fix an issue when exporting entire categories of settings for all specs at once.
+
 ## Demon Hunter
 ### Devourer
 
+- [#546](#546) Add bar text logic variables `$voidRayUsable` and `$collapsingStarUsable` to indicate when Void Ray and Collapsing Star can be used.
+- [#546](#546) Add `#collapsingStar` icon variable.
 - Add dedicated bar color for when Collapsing Star is active.
 - Restore the missing Soul Fragment/Collapsing Star bar's background color setting.
 - Clean up some localization strings.
-- [#546](#546) Add bar text logic variables `$voidRayUsable` and `$collapsingStarUsable` to indicate when Void Ray and Collapsing Star can be used.
-- [#546](#546) Add `#collapsingStar` icon variable.
 
 ## Druid
 ### Balance
 
 - [#546](#546) Add bar text logic variables `$starsurgeUsable` and `$starfallUsable` to indicate when Starsurge and Starfall can be used.
+
+## Paladin
+
+- [#542](#542) Add two new audio cues for when Holy Power is at or above a configured threshold. These default to 3 and 5 Holy Power.
 
 ## Priest
 ### Shadow

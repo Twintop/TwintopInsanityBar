@@ -1669,3 +1669,11 @@ L["ShamanElementalBarTextVariable_elementalBlastUsable"] = "Is Elemental Blast o
 L["ShamanElementalBarTextVariable_earthquakeUsable"] = "Is Earthquake currently able to be cast? LOGIC VARIABLE ONLY!"
 L["DemonHunterDevourerBarTextVariable_voidRayUsable"] = "Is Void Ray currently able to be cast (always false during Void Metamorphosis)? LOGIC VARIABLE ONLY!"
 L["DemonHunterDevourerBarTextVariable_collapsingStarUsable"] = "Is Collapsing Star currently able to be cast (30+ stacks)? LOGIC VARIABLE ONLY!"
+
+L["PaladinAudioHolyPowerThreshold1"] = "Holy Power Threshold 1"
+L["PaladinAudioCheckboxHolyPowerThreshold1"] = "Play audio cue when at or above X Holy Power (Threshold 1)"
+L["PaladinAudioCheckboxHolyPowerThreshold1Tooltip"] = "Play an audio cue when your current Holy Power reaches or exceeds the configured value to the right."
+L["PaladinAudioHolyPowerThreshold2"] = "Holy Power Threshold 2"
+L["PaladinAudioCheckboxHolyPowerThreshold2"] = "Play audio cue when at or above X Holy Power (Threshold 2)"
+L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"] = "Play an audio cue when your current Holy Power reaches or exceeds the configured value to the right."
+L["PaladinHolyPowerThresholdSliderTitle"] = "At or Above X Holy Power"

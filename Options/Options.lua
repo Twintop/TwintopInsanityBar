@@ -475,6 +475,18 @@ local function ConstructGlobalOptionsPanel()
 	ConstructMiscellaneousPanel(tabsheets[5].scrollFrame.scrollChild)
 end
 
+---comment
+---@param parent Frame
+---@param yCoord integer
+---@param controls table
+---@param classId integer?
+---@param specId integer?
+---@param labelLocalization string
+---@param classOrSpecLocalization string
+---@param includeThreshold boolean?
+---@param includeAudioTracking boolean?
+---@param includeButtons boolean?
+---@return integer
 local function ConstructImportExportRow(parent, yCoord, controls, classId, specId, labelLocalization, classOrSpecLocalization, includeThreshold, includeAudioTracking, includeButtons)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -505,7 +517,7 @@ local function ConstructImportExportRow(parent, yCoord, controls, classId, specI
 	else
 		exportInnerMessage = L["ExportMessagePrefix"] .. " " .. classOrSpecLocalization
 		yCoord = yCoord - 25
-		controls.labels["export_" .. namePrefix .. ""] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 	end
 
 	if includeButtons then
@@ -539,7 +551,7 @@ local function ConstructImportExportRow(parent, yCoord, controls, classId, specI
 		if includeAudioTracking then
 			controls["export_" .. namePrefix .. "_AudioAndTracking"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 			controls["export_" .. namePrefix .. "_AudioAndTracking"]:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false,false, true, false, false)
+				TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 			end)
 		end
 
@@ -690,7 +702,7 @@ local function ConstructImportExportPanel()
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageGlobalOptionsOnly"] .. ".", nil, -1, false, false, false, false, false, true)
 	end)
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, nil, nil, L["ExportMessageAllClassesSpecs"], L["ExportMessageAllClassesSpecs"])
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, nil, nil, L["ExportMessageAllClassesSpecs"], L["ExportMessageAllClassesSpecs"], true, true)
 
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, nil, L["DeathKnight"], L["DeathKnight"], true, false)
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 1, L["DeathKnightBlood"], L["DeathKnightBloodFull"], true, false)
@@ -728,10 +740,10 @@ local function ConstructImportExportPanel()
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 2, L["MonkMistweaver"], L["MonkMistweaverFull"], false, false)
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 3, L["MonkWindwalker"], L["MonkWindwalkerFull"], true, false)
 	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, nil, L["Paladin"], L["Paladin"], false, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 1, L["PaladinHoly"], L["PaladinHolyFull"], false, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 2, L["PaladinProtection"], L["PaladinProtectionFull"], false, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 3, L["PaladinRetribution"], L["PaladinRetributionFull"], false, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, nil, L["Paladin"], L["Paladin"], false, true)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 1, L["PaladinHoly"], L["PaladinHolyFull"], false, true)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 2, L["PaladinProtection"], L["PaladinProtectionFull"], false, true)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 3, L["PaladinRetribution"], L["PaladinRetributionFull"], false, true)
 	
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, nil, L["Priest"], L["Priest"])
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 1, L["PriestDiscipline"], L["PriestDisciplineFull"], false)
@@ -811,12 +823,12 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 12.50)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 16.25)
+	local localeText2 = string.format(percentFormat, 12.38)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 16.09)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 15.20)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 15.05)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.39)

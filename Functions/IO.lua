@@ -7,6 +7,16 @@ TRB.Data = TRB.Data or {}
 local EXPORT_STRING_PREFIX = "!TRB!"
 local EXPORT_STRING_PREFIX2 = "!TRBv2!"
 
+---comment
+---@param classId integer
+---@param specId integer
+---@param settings unknown
+---@param includeBarDisplay boolean
+---@param includeThresholds boolean
+---@param includeFontAndText boolean
+---@param includeAudioAndTracking boolean
+---@param includeBarText boolean
+---@return table
 local function ExportConfigurationSections(classId, specId, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 	local configuration = {
 		colors = {},
@@ -379,7 +389,8 @@ end
 ---@param includeCore boolean? # Should the export also include core settings not tied to a class/spec? Defaults to false.
 ---@return table
 local function ExportGetConfiguration(classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
-	local settings = TRB.Data.settings or {}
+	local settings = TRB.Data.settings
+
 	if includeBarDisplay == nil then
 		includeBarDisplay = true
 	end
@@ -594,108 +605,108 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 		-- Warrior
 		-- Arms
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Fury
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Protection
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Paladin
 		-- Holy
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Protection
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Retribution
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Hunter
 		-- Beast Mastery
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Marksmanship
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Survival
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Rogue
 		-- Assassination
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Outlaw
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Subtlety
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Priest
 		-- Discipline
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Holy
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Shadow
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Death Knight
 		-- Blood
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Frost
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Unholy
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Shaman
 		-- Elemental
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Enhancement
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Restoration
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Mage
 		-- Arcane
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Fire
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Frost
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Warlock
 		-- Affliction
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Demonology
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Destruction
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Monk
 		-- Brewmaster
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Mistweaver
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Windwalker
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		
 		-- Druid
 		-- Balance
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Feral
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Guardian
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Restoration
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 4, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 4, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Demon Hunter
 		-- Havoc
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Vengeance
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Devourer
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		
 		-- Evoker
 		-- Devastation
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 1, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Preservation
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 2, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Augmentation
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 3, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
 	end
 
 	if includeCore then
