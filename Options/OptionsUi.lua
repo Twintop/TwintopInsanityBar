@@ -4567,7 +4567,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	
 	yCoord = yCoord - 100
 	title = L["FontSize"]
-	local fontSize = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, 6, 72, 18, 1, 0,
+	local fontSize = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, 6, 300, 18, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	fontSize:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)

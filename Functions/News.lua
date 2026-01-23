@@ -20,6 +20,14 @@ local content = [====[
 
 ---
 
+# 12.0.0.5-release (2026-01-24)
+## Druid
+### Feral
+
+- [#549](#549) Re-enable Apex Predator's Craving detection. This allows for bar color change, audio cue, and threshold usable notifications to function again.
+
+---
+
 # 12.0.0.4-release (2026-01-24)
 ## General
 ### Import/Export

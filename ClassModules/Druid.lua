@@ -114,6 +114,7 @@ local function FillSpecializationCache()
 	specCache.feral.snapshotData.attributes.resourceRegen = 0
 	specCache.feral.snapshotData.attributes.comboPoints = 0
 	specCache.feral.snapshotData.audio = {
+		apexPredatorsCravingCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
@@ -1598,6 +1599,23 @@ local function UpdateBerserkIncomingComboPoints()
 	end
 end
 
+---Checks if Apex Predator's Craving is active by comparing its current energy cost to its base cost
+---@return boolean # True if Apex Predator's Craving is active (energy cost is free)
+local function IsApexPredatorsCravingActive()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	if spells == nil or spells.apexPredatorsCraving == nil then
+		return false
+	end
+
+	local baseEnergyCost = spells.apexPredatorsCraving.attributes.baseEnergyCost
+	if baseEnergyCost == nil or baseEnergyCost < 0 then
+		return false
+	end
+
+	local currentCost = spells.ferociousBiteMinimum:GetPrimaryResourceCost(true) or 0
+	return currentCost == 0 and currentCost < baseEnergyCost
+end
+
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 end
@@ -1620,9 +1638,21 @@ local function UpdateSnapshot_Feral()
 	UpdateSnapshot()
 	UpdateBerserkIncomingComboPoints()
 	
-	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
-	local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
+	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
+	--[[local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
 	local currentTime = GetTime()]]
+
+	local currentApcCost = spells.ferociousBiteMinimum:GetPrimaryResourceCost(true) or 0
+	if currentApcCost > 0 then
+		local baseEnergyCost = spells.apexPredatorsCraving.attributes.baseEnergyCost
+		if baseEnergyCost == nil then
+			-- First time seeing a non-zero cost, store it
+			spells.apexPredatorsCraving.attributes.baseEnergyCost = currentApcCost
+		elseif currentApcCost >= baseEnergyCost then
+			-- We captured a reduced cost initially, overwrite with the higher (true base) cost
+			spells.apexPredatorsCraving.attributes.baseEnergyCost = currentApcCost
+		end
+	end
 end
 
 local function UpdateSnapshot_Guardian()
@@ -2099,6 +2129,8 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
+				local apcActive = IsApexPredatorsCravingActive()
+
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
 					barColor = formSpecSettings.colors.bar.base
@@ -2161,14 +2193,14 @@ local function UpdateResourceBar()
 									if snapshots[spells.ravageMinimum.id].buff.isActive then
 										showThreshold = false
 									elseif spell.id == spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
-										if isUsable then--currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										if isUsable or apcActive then
 											thresholdColor = specCacheSettings.colors.threshold.over.color
 										else
 											thresholdColor = specCacheSettings.colors.threshold.under.color
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
-										if isUsable then--currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										if isUsable or apcActive then
 											thresholdColor = specCacheSettings.colors.threshold.over.color
 										else
 											thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2179,14 +2211,14 @@ local function UpdateResourceBar()
 									if not snapshots[spells.ravageMinimum.id].buff.isActive then
 										showThreshold = false
 									elseif spell.id == spells.ravageMinimum.id and spell.settingKey == "ravageMinimum" then
-										if isUsable then--currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										if isUsable or apcActive then
 											thresholdColor = specCacheSettings.colors.threshold.over.color
 										else
 											thresholdColor = specCacheSettings.colors.threshold.under.color
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == spells.ravageMaximum.id and spell.settingKey == "ravageMaximum" then
-										if isUsable then--currentResource >= resourceAmount or snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+										if isUsable or apcActive then
 											thresholdColor = specCacheSettings.colors.threshold.over.color
 										else
 											thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2307,10 +2339,18 @@ local function UpdateResourceBar()
 
 						if snapshotData.attributes.resource2 == 5 and spells.ferociousBiteMaximum:IsUsable() then
 							barColor = specSettings.colors.bar.maxBite
-						end
+						end						
 
-						if snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
+						if apcActive then
 							barColor = specSettings.colors.bar.apexPredator
+
+							if specSettings.audio.apexPredatorsCraving.enabled and not snapshotData.audio.apexPredatorsCravingCue then
+								snapshotData.audio.apexPredatorsCravingCue = true
+								PlaySoundFile(specSettings.audio.apexPredatorsCraving.sound, coreSettings.audio.channel.channel)
+							end
+						else
+							-- Reset audio cues when Apex Predator's Craving is no longer active
+							snapshotData.audio.apexPredatorsCravingCue = false
 						end
 					end
 

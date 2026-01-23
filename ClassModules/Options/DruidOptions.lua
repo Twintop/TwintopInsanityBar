@@ -1921,13 +1921,12 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "maxBite")
 	end)
 
-	--[[
 	yCoord = yCoord - 30
 	controls.colors.apexPredator = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerApexPredatorsCraving"], spec.colors.bar.apexPredator, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.apexPredator
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apexPredator")
-	end)]]
+	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
