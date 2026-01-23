@@ -1313,6 +1313,8 @@ local function UpdateResourceBar()
 					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
 				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and collapsingStarUsable then
 					cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
+				elseif metaActive then
+					cpColor = specSettings.colors.comboPoints.collapsingStar.color
 				end
 
 				local cpBR = cpBackgroundRed

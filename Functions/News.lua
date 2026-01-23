@@ -20,6 +20,16 @@ local content = [====[
 
 ---
 
+# 12.0.0.4-release (2026-01-24)
+## Demon Hunter
+### Devourer
+
+- Add dedicated bar color for when Collapsing Star is active.
+- Restore the missing Soul Fragment/Collapsing Star bar's background color setting.
+- Clean up some localization strings.
+
+---
+
 # 12.0.0.3-release (2026-01-23)
 ## General
 

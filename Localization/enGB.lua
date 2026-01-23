@@ -218,7 +218,7 @@ if locale == "enGB" then
     L["DemonHunterDevourerCheckboxVoidMetamorphosisReadyTooltip"] = "This will change the bar colour when Void Metamorphosis is ready."
     L["DemonHunterDevourerCheckboxVoidMetamorphosisTooltip"] = "This will change the bar colour when you enter Void Metamorphosis."
     L["DemonHunterDevourerColorPickerSoulFragmentBorder"] = "Soul Fragment Border Colour"
-    L["DemonHunterDevourerHeaderSoulFragmentColors"] = "Soul Fragment Colours"
+    L["DemonHunterDevourerHeaderSoulFragmentColors"] = "Soul Fragment and Collapsing Star Colours"
     L["DruidBalanceCheckboxThresholdOvercapTooltip"] = "This will change the Astral Power text colour when your Astral Power is at or above the configured overcap threshold."
     L["DruidFeralCheckboxThresholdOvercapTooltip"] = "This will change the Energy text colour when your Energy is at or above the configured overcap threshold."
     L["DruidGuardianCheckboxThresholdOvercapTooltip"] = "This will change the Rage text colour when your Rage is at or above the configured overcap threshold."
