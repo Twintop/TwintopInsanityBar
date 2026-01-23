@@ -27,11 +27,25 @@ local content = [====[
 - Add dedicated bar color for when Collapsing Star is active.
 - Restore the missing Soul Fragment/Collapsing Star bar's background color setting.
 - Clean up some localization strings.
+- [#546](#546) Add bar text logic variables `$voidRayUsable` and `$collapsingStarUsable` to indicate when Void Ray and Collapsing Star can be used.
+- [#546](#546) Add `#collapsingStar` icon variable.
 
 ## Druid
 ### Balance
 
 - [#546](#546) Add bar text logic variables `$starsurgeUsable` and `$starfallUsable` to indicate when Starsurge and Starfall can be used.
+
+## Priest
+### Shadow
+
+- [#546](#546) Add bar text logic variable `$shadowWordMadnessUsable` to indicate when Shadow Word: Madness can be used.
+- [#546](#546) Fix `#shadowWordMadness` and `#swm` icon variables.
+
+## Shaman
+### Elemental
+
+- [#546](#546) Add bar text logic variables `$earthShockUsable`, `$elementalBlastUsable`, and `$earthquakeUsable` to indicate when Earth Shock/Elemental Blast and Earthquake can be used.
+- [#546](#546) Add `#earthShock` and `#earthquake` icon variables.
 
 ---
 

@@ -197,6 +197,8 @@ local function FillSpellData_Elemental()
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 		{ variable = "#chainLightning", icon = spells.chainLightning.icon, description = spells.chainLightning.name, printInSettings = true },
 		{ variable = "#elementalBlast", icon = spells.elementalBlast.icon, description = spells.elementalBlast.name, printInSettings = true },
+		{ variable = "#earthShock", icon = spells.earthShock.icon, description = spells.earthShock.name, printInSettings = true },
+		{ variable = "#earthquake", icon = spells.earthquake.icon, description = spells.earthquake.name, printInSettings = true },
 		{ variable = "#eogs", icon = spells.echoesOfGreatSundering.icon, description = spells.echoesOfGreatSundering.name, printInSettings = true },
 		{ variable = "#frostShock", icon = spells.frostShock.icon, description = spells.frostShock.name, printInSettings = true },
 		{ variable = "#icefury", icon = spells.icefury.icon, description = spells.icefury.name, printInSettings = true },
@@ -259,6 +261,10 @@ local function FillSpellData_Elemental()
 		{ variable = "$skTime", description = L["ShamanElementalBarTextVariable_skTime"], printInSettings = true, color = false },]]
 
 		{ variable = "$ascendanceTime", description = L["ShamanElementalBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
+
+		{ variable = "$earthShockUsable", description = L["ShamanElementalBarTextVariable_earthShockUsable"], printInSettings = true, color = false },
+		{ variable = "$elementalBlastUsable", description = L["ShamanElementalBarTextVariable_elementalBlastUsable"], printInSettings = true, color = false },
+		{ variable = "$earthquakeUsable", description = L["ShamanElementalBarTextVariable_earthquakeUsable"], printInSettings = true, color = false },
 
 		--[[{ variable = "$eogsTime", description = L["ShamanElementalBarTextVariable_eogsTime"], printInSettings = true, color = false },
 
@@ -483,8 +489,12 @@ local function RefreshLookupData_Elemental()
 		maelstromThreshold = math.min(maelstromThreshold, spells.elementalBlast:GetPrimaryResourceCost())
 	end
 
+	-- $earthShockUsable, $elementalBlastUsable (synonyms), $earthquakeUsable
+	local _earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
+	local _earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
+
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled and (spells.earthShock:IsUsable() or spells.elementalBlast:IsUsable()) then
+		if sharedSettings.colors.text.overThreshold.enabled and _earthShockUsable then
 			currentMaelstromColor = sharedSettings.colors.text.overThreshold.color
 			castingMaelstromColor = sharedSettings.colors.text.overThreshold.color
 		end
@@ -558,6 +568,9 @@ local function RefreshLookupData_Elemental()
 	lookup["$maelstromMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingMaelstrom
 	lookup["$ascendanceTime"] = ascendanceTime
+	lookup["$earthShockUsable"] = ""
+	lookup["$elementalBlastUsable"] = ""
+	lookup["$earthquakeUsable"] = ""
 	--[[
 	lookup["$ifStacks"] = icefuryStacks
 	lookup["$ifTime"] = icefuryTime
@@ -578,6 +591,9 @@ local function RefreshLookupData_Elemental()
 	lookupLogic["$maelstromMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$ascendanceTime"] = _ascendanceTime
+	lookupLogic["$earthShockUsable"] = _earthShockUsable
+	lookupLogic["$elementalBlastUsable"] = _earthShockUsable
+	lookupLogic["$earthquakeUsable"] = _earthquakeUsable
 	--[[
 	lookupLogic["$ifStacks"] = icefuryStacks
 	lookupLogic["$ifTime"] = icefuryTime
@@ -1360,6 +1376,8 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ascendance"] = spells.ascendance.icon
 		lookup["#chainLightning"] = spells.chainLightning.icon
+		lookup["#earthShock"] = spells.earthShock.icon
+		lookup["#earthquake"] = spells.earthquake.icon
 		lookup["#elementalBlast"] = spells.elementalBlast.icon
 		lookup["#eogs"] = spells.echoesOfGreatSundering.icon
 		lookup["#frostShock"] = spells.frostShock.icon
@@ -1843,6 +1861,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end]]
 		elseif var == "$ascendanceTime" then
 			if snapshots[spells.ascendance.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$earthShockUsable" or var == "$elementalBlastUsable" then
+			if (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree())) then
+				valid = true
+			end
+		elseif var == "$earthquakeUsable" then
+			if (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree())) then
 				valid = true
 			end
 		elseif var == "$mana" then

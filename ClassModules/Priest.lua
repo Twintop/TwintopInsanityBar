@@ -607,6 +607,8 @@ local function FillSpellData_Shadow()
 
 		{ variable = "$vfTime", description = L["PriestShadowBarTextVariable_vfTime"], printInSettings = true, color = false },
 
+		{ variable = "$shadowWordMadnessUsable", description = L["PriestShadowBarTextVariable_shadowWordMadnessUsable"], printInSettings = true, color = false },
+
 		--[[{ variable = "$siTime", description = L["PriestShadowBarTextVariable_siTime"], printInSettings = true, color = false },
 		
 		{ variable = "$mindBlastCharges", description = L["PriestShadowBarTextVariable_mindBlastCharges"], printInSettings = true, color = false },
@@ -966,8 +968,11 @@ local function RefreshLookupData_Shadow()
 	local currentInsanityColor = sharedSettings.colors.text.current.color
 	local castingInsanityColor = sharedSettings.colors.text.casting.color
 
+	-- $shadowWordMadnessUsable
+	local _shadowWordMadnessUsable = spells.shadowWordMadness:IsUsable() or spells.shadowWordMadness:IsFree()
+
 	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled and spells.shadowWordMadness:IsUsable() then-- normalizedInsanity >= insanityThreshold then
+		if sharedSettings.colors.text.overThreshold.enabled and _shadowWordMadnessUsable then
 			currentInsanityColor = sharedSettings.colors.text.overThreshold.color
 			--castingInsanityColor = sharedSettings.colors.text.overThreshold.color
 		end
@@ -1123,6 +1128,7 @@ local function RefreshLookupData_Shadow()
 	lookup["$entropicRiftTime"] = entropicRiftTime
 	lookup["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
 	lookup["$vfTime"] = voidformTime
+	lookup["$shadowWordMadnessUsable"] = ""
 	lookup["$mana"] = currentMana
 	lookup["$manaMax"] = manaMax
 	lookup["$manaPercent"] = manaPercent
@@ -1158,6 +1164,7 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$entropicRiftTime"] = _entropicRiftTime
 	lookupLogic["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
 	lookupLogic["$vfTime"] = _voidformTime
+	lookupLogic["$shadowWordMadnessUsable"] = _shadowWordMadnessUsable
 	lookupLogic["$mana"] = normalizedMana
 	lookupLogic["$manaMax"] = normalizedManaMax
 	lookupLogic["$manaPercent"] = _manaPercent
@@ -2085,6 +2092,9 @@ local function SwitchSpec()
 		lookup["#sotv"] = spells.screamsOfTheVoid.icon
 		lookup["#screamsOfTheVoid"] = spells.screamsOfTheVoid.icon
 		lookup["#entropicRift"] = spells.entropicRift.icon
+		lookup["#swm"] = spells.shadowWordMadness.icon
+		lookup["#shadowWordMadness"] = spells.shadowWordMadness.icon
+		lookup["#halo"] = spells.halo.icon
 		--[[
 		lookup["#si"] = spells.shadowyInsight.icon
 		lookup["#shadowyInsight"] = spells.shadowyInsight.icon
@@ -2101,7 +2111,6 @@ local function SwitchSpec()
 		lookup["#cthun"] = spells.idolOfCthun.icon
 		lookup["#idolOfCthun"] = spells.idolOfCthun.icon
 		lookup["#loi"] = spells.idolOfCthun.icon
-		lookup["#halo"] = spells.halo.icon
 		lookup["#hv"] = spells.horrificVisions.icon
 		lookup["#horrificVisions"] = spells.horrificVisions.icon]]
 
@@ -2644,6 +2653,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$sotvTime" then
 			if snapshots[spells.screamsOfTheVoid.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$shadowWordMadnessUsable" then
+			if spells.shadowWordMadness:IsUsable() or spells.shadowWordMadness:IsFree() then
 				valid = true
 			end
 		--[[elseif var == "$siTime" then
