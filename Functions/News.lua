@@ -20,8 +20,11 @@ local content = [====[
 
 ---
 
-# 12.0.0.3-release (2026-01-24)
-## General
+# 12.0.0.3-release (2026-01-23)
+## Mage
+### Arcane
+
+- [#547](#547) Fix infinite loop causing Lua errors when trying to build the bar.
 
 ## Shaman
 ### Enhancement

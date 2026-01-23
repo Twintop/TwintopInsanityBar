@@ -1037,13 +1037,11 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "mage"
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
-	local oldMaxResource2 = TRB.Data.character.maxResource2
-	TRB.Data.character.maxResource2 = 1
-	local sharedSettings = nil
+
 	if TRB.Data.character.specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 		TRB.Data.character.specName = "arcane"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
 
 		-- Arcane Charges max is always 4 (fixed game value).
 		local maxComboPoints = 4
@@ -1061,21 +1059,10 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "fire"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.maxResource2 = 1
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "frost"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
-	end
-
-	-- If maxResource2 was previously unset and we just initialized it (or it changed),
-	-- ensure the secondary group is laid out/styled immediately for Arcane.
-	if TRB.Data.character.specId == 1 and sharedSettings ~= nil and oldMaxResource2 ~= TRB.Data.character.maxResource2 then
-		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-		if barGroups and barGroups.secondary then
-			barGroups.secondary:Show()
-			TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
-			TRB.Functions.Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
-		end
+		TRB.Data.character.maxResource2 = 1
 	end
 end
 
