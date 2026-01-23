@@ -1207,7 +1207,7 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints.overflowBase = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"], spec.colors.comboPoints.overflowBase.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.overflowBase
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints.overflowBase, controls.colors.comboPoints.overflowBase, "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overflowBase")
 	end)
 
 	yCoord = yCoord - 30

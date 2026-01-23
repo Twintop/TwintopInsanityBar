@@ -20,6 +20,16 @@ local content = [====[
 
 ---
 
+# 12.0.0.3-release (2026-01-24)
+## General
+
+## Shaman
+### Enhancement
+
+- [#545](#545) Fix Maelstrom Weapon overflow (stacks 6-10) color settings not being saved correctly.
+
+---
+
 # 12.0.0.2-release (2026-01-23)
 ## General
 
