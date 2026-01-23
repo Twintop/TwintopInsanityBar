@@ -321,6 +321,10 @@ local function FillSpellData_Retribution()
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 		
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
+		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
 
