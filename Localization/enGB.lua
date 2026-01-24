@@ -252,4 +252,8 @@ if locale == "enGB" then
     L["HunterSurvivalCheckboxTakedownTooltip"] = "Changes the bar colour when Takedown is active."
     L["DeathKnightRunesCheckboxOvercapEnabled"] = "Change Rune colour when overcapping"
     L["DeathKnightRunesCheckboxOvercapEnabledTooltip"] = "When enabled, ready runes will change colour when fewer than 3 runes are on cooldown while in combat."
+    L["MonkBrewmasterCheckboxInvokeNiuzao"] = "Change bar colour when Invoke Niuzao is active"
+    L["MonkBrewmasterCheckboxInvokeNiuzaoTooltip"] = "Changes the bar colour when Invoke Niuzao, the Black Ox is active."
+    L["MonkBrewmasterCheckboxInvokeNiuzaoEnd"] = "Change bar colour when Invoke Niuzao is ending"
+    L["MonkBrewmasterCheckboxInvokeNiuzaoEndTooltip"] = "Changes the bar colour when Invoke Niuzao, the Black Ox is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 end

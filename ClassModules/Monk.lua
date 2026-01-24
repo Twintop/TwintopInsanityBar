@@ -61,6 +61,8 @@ local function FillSpecializationCache()
 	specCache.brewmaster.snapshotData.snapshots[spells.cracklingJadeLightning.id] = TRB.Classes.Snapshot:New(spells.cracklingJadeLightning)
 	---@type TRB.Classes.Snapshot
 	specCache.brewmaster.snapshotData.snapshots[spells.kegSmash.id] = TRB.Classes.Snapshot:New(spells.kegSmash)
+	---@type TRB.Classes.Snapshot
+	specCache.brewmaster.snapshotData.snapshots[spells.invokeNiuzao.id] = TRB.Classes.Snapshot:New(spells.invokeNiuzao)
 
 	specCache.brewmaster.snapshotData.attributes.resourceRegen = 0
 	specCache.brewmaster.snapshotData.audio = {
@@ -178,7 +180,8 @@ local function FillSpellData_Brewmaster()
 	specCache.brewmaster.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true }
+		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+		{ variable = "#niuzao", icon = spells.invokeNiuzao.icon, description = L["MonkBrewmasterBarTextIcon_niuzao"], printInSettings = true },
 	}
 	specCache.brewmaster.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -225,6 +228,8 @@ local function FillSpellData_Brewmaster()
 
 		{ variable = "$stagger", description = L["MonkBrewmasterBarTextVariable_stagger"], printInSettings = true, color = false },
 		{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false },
+
+		{ variable = "$niuzaoTime", description = L["MonkBrewmasterBarTextVariable_niuzaoTime"], printInSettings = true, color = false },
 	}
 end
 
@@ -507,6 +512,7 @@ local function RefreshLookupData_Brewmaster()
 	local sharedSettings = TRB.Data.specCache["brewmaster"].settings
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
+	local currentTime = GetTime()
 
 	local currentEnergyColor = sharedSettings.colors.text.current.color
 	local castingEnergyColor = sharedSettings.colors.text.casting.color
@@ -558,6 +564,10 @@ local function RefreshLookupData_Brewmaster()
 	local stagger = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
 	local staggerPercent = string.format("|c%s%.1f|r", staggerColor, _staggerPercent * 100)
 
+	--$niuzaoTime
+	local _niuzaoTime = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
+	local niuzaoTime = TRB.Functions.BarText:TimerPrecision(_niuzaoTime)
+
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -568,6 +578,7 @@ local function RefreshLookupData_Brewmaster()
 	lookup["$casting"] = castingEnergy
 	lookup["$stagger"] = stagger
 	lookup["$staggerPercent"] = staggerPercent
+	lookup["$niuzaoTime"] = niuzaoTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -578,6 +589,7 @@ local function RefreshLookupData_Brewmaster()
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$stagger"] = _stagger
 	lookupLogic["$staggerPercent"] = _staggerPercent
+	lookupLogic["$niuzaoTime"] = _niuzaoTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -745,6 +757,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				local cooldown = spells.detox.cooldown
 
 				snapshotData.snapshots[spells.detox.id].cooldown:InitializeCustom(cooldown, currentTime)
+			elseif spellId == spells.invokeNiuzao.id then
+				snapshotData.snapshots[spells.invokeNiuzao.id].buff:InitializeCustom(spells.invokeNiuzao.duration, currentTime)
 			end
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if spellId == spells.cracklingJadeLightning.castId then
@@ -1031,6 +1045,29 @@ local function UpdateResourceBar()
 
 					local barBorderColor = specSettings.colors.bar.border
 					local barColor = specSettings.colors.bar.base
+
+					-- Invoke Niuzao bar color change
+					if specSettings.colors.bar.invokeNiuzao.enabled and snapshots[spells.invokeNiuzao.id].buff.isActive then
+						local niuzaoTimeLeft = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
+						local timeThreshold = 0
+						local useEndOfNiuzaoColor = false
+
+						if specSettings.endOf.invokeNiuzao.enabled then
+							useEndOfNiuzaoColor = true
+							if specSettings.endOf.invokeNiuzao.mode == "gcd" then
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+								timeThreshold = gcd * specSettings.endOf.invokeNiuzao.gcdsMax
+							elseif specSettings.endOf.invokeNiuzao.mode == "time" then
+								timeThreshold = specSettings.endOf.invokeNiuzao.timeMax
+							end
+						end
+
+						if useEndOfNiuzaoColor and niuzaoTimeLeft <= timeThreshold then
+							barColor = specSettings.colors.bar.invokeNiuzaoEnd.color
+						else
+							barColor = specSettings.colors.bar.invokeNiuzao.color
+						end
+					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
@@ -1368,7 +1405,9 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Brewmaster
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.brewmaster.settings)
 
-		TRB.Data.lookup = {}
+		local lookup = TRB.Data.lookup or {}
+		lookup["#niuzao"] = spells.invokeNiuzao.icon
+		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
 		if TRB.Data.barConstructedForSpec ~= "brewmaster" then
@@ -1859,7 +1898,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local spells
 	local settings = nil
 
-	if TRB.Data.character.specId == 2 then
+	if TRB.Data.character.specId == 1 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+		settings = TRB.Data.settings.monk.brewmaster
+	elseif TRB.Data.character.specId == 2 then
 		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		settings = TRB.Data.settings.monk.mistweaver
 	elseif TRB.Data.character.specId == 3 then
@@ -1885,6 +1927,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$staggerPercent" then
 			if snapshotData.attributes.staggerPercent ~= nil and snapshotData.attributes.staggerPercent > 0 then
+				valid = true
+			end
+		elseif var == "$niuzaoTime" then
+			if snapshots[spells.invokeNiuzao.id].buff.isActive then
 				valid = true
 			end
 		end

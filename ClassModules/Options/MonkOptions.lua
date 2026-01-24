@@ -75,6 +75,8 @@ local function BrewmasterLoadDefaultBarTextSettings(classic)
 		},
 	}
 
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("niuzaoTime", "niuzao", classic, "CENTER", "RIGHT"))
+
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
@@ -149,6 +151,9 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 			health = "always",
 			dragonriding = true
 		},
+		endOf = {
+			invokeNiuzao = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
+		},
 		overcap = {
 			mode = "relative",
 			relative = 0,
@@ -185,6 +190,13 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				borderOvercap="FFFF0000",
 				background="66000000",
 				base="FFFFFF00",
+				invokeNiuzao = {
+					color = "FF8B6914",
+					enabled = true
+				},
+				invokeNiuzaoEnd = {
+					color = "FFFF0000"
+				},
 			},
 			bars = {
 				stagger = {
@@ -674,6 +686,20 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
+	-- Invoke Niuzao color options
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 10, 1, yCoord, {
+		endOfKey = "invokeNiuzao",
+		activeColorKey = "invokeNiuzao",
+		endColorKey = "invokeNiuzaoEnd",
+		checkboxLabel = L["MonkBrewmasterCheckboxInvokeNiuzao"],
+		checkboxTooltip = L["MonkBrewmasterCheckboxInvokeNiuzaoTooltip"],
+		activeColorLabel = L["MonkBrewmasterColorPickerInvokeNiuzao"],
+		endCheckboxLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoEnd"],
+		endCheckboxTooltip = L["MonkBrewmasterCheckboxInvokeNiuzaoEndTooltip"],
+		endColorLabel = L["MonkBrewmasterColorPickerInvokeNiuzaoEnd"],
+	})
+
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
@@ -690,8 +716,17 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
 	end
 
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
+
+	-- Invoke Niuzao configuration options
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 10, 1, yCoord, {
+		endOfKey = "invokeNiuzao",
+		sectionHeader = L["MonkBrewmasterEndOfInvokeNiuzaoConfigurationHeader"],
+		gcdRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoGcds"],
+		gcdSliderLabel = L["MonkBrewmasterInvokeNiuzaoGcds"],
+		timeRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoTime"],
+		timeSliderLabel = L["MonkBrewmasterInvokeNiuzaoTime"],
+	})
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], BREWMASTER_MAX_ENERGY)
