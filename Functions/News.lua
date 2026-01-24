@@ -20,6 +20,14 @@ local content = [====[
 
 ---
 
+# 12.0.0.7-release (2026-01-25)
+## Paladin
+### Retribution
+
+- Ensure the bar background color setting is for Mana is present in options.
+
+---
+
 # 12.0.0.6-release (2026-01-24)
 ## General
 
@@ -39,11 +47,6 @@ local content = [====[
 ### Guardian
 
 - Fix an issue where changing the text colors under the "Font & Text" tab would cause Lua errors. If you're impacted by this, contact Twintop for an import string fix or reset the Guardian bar to default.
-
-## Paladin
-### Retribution
-
-- Ensure the bar background color setting is for Mana is present in options.
 
 ---
 
