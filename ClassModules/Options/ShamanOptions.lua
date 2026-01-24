@@ -26,29 +26,7 @@ local ELEMENTAL_MAX_MAELSTROM = 175
 local function ElementalLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$ascendanceTime}[#ascendance$ascendanceTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
+		TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("ascendanceTime", "ascendance", classic, "CENTER", "RIGHT"),
 	}
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
@@ -215,29 +193,7 @@ end
 local function EnhancementLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$ascendanceTime}[#ascendance$ascendanceTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
+		TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("ascendanceTime", "ascendance", classic, "CENTER", "CENTER"),
 	}
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
@@ -353,29 +309,7 @@ end
 local function RestorationLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
-		{
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$ascendanceTime}[#ascendance$ascendanceTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
-			}
-		},
+		TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("ascendanceTime", "ascendance", classic, "CENTER", "CENTER"),
 	}
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)

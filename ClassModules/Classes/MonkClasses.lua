@@ -21,6 +21,7 @@ TRB.Classes.Monk = TRB.Classes.Monk or {}
 ---@field public paralysis TRB.Classes.SpellThreshold
 ---@field public soothingMist TRB.Classes.SpellThreshold
 --Spec Talents
+---@field public invokeNiuzao TRB.Classes.SpellBase
 ---@field public jadeFlash TRB.Classes.SpellBase
 ---@field public kegSmash TRB.Classes.SpellThreshold
 TRB.Classes.Monk.BrewmasterSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -118,6 +119,13 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 	})
 
 	-- Brewmaster Spec Talents
+	self.invokeNiuzao = TRB.Classes.SpellBase:New({
+		id = 132578,
+		isTalent = true,
+		hasCooldown = true,
+		cooldown = 180,
+		duration = 25
+	})
 	self.kegSmash = TRB.Classes.SpellThreshold:New({
 		id = 121253,
 		primaryResourceType = Enum.PowerType.Energy,

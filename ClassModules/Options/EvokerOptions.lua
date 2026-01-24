@@ -175,6 +175,8 @@ local function DevastationLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("dragonrageTime", "dragonrage", classic, "CENTER", "CENTER"))
+
 	local extraTextSettings = EvokerLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
@@ -202,6 +204,9 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 			health = "always",
 			dragonriding = true
 		},
+		endOf = {
+			dragonrage = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
+		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -221,6 +226,13 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
+				dragonrage = {
+					color = "FFFF6B00",
+					enabled = true
+				},
+				dragonrageEnd = {
+					color = "FFFF0000"
+				},
 			},
 			comboPoints = {
 				border="FF246759",
@@ -724,6 +736,20 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
 
+	-- Dragonrage color options
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 13, 1, yCoord, {
+		endOfKey = "dragonrage",
+		activeColorKey = "dragonrage",
+		endColorKey = "dragonrageEnd",
+		checkboxLabel = L["EvokerDevastationCheckboxDragonrage"],
+		checkboxTooltip = L["EvokerDevastationCheckboxDragonrageTooltip"],
+		activeColorLabel = L["EvokerDevastationColorPickerDragonrage"],
+		endCheckboxLabel = L["EvokerDevastationCheckboxDragonrageEnd"],
+		endCheckboxTooltip = L["EvokerDevastationCheckboxDragonrageEndTooltip"],
+		endColorLabel = L["EvokerDevastationColorPickerDragonrageEnd"],
+	})
+
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
@@ -784,6 +810,16 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 1, yCoord)
+
+	-- Dragonrage configuration options
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 1, yCoord, {
+		endOfKey = "dragonrage",
+		sectionHeader = L["EvokerDevastationEndOfDragonrageConfigurationHeader"],
+		gcdRadioLabel = L["EvokerDevastationCheckboxDragonrageGcds"],
+		gcdSliderLabel = L["EvokerDevastationDragonrageGcds"],
+		timeRadioLabel = L["EvokerDevastationCheckboxDragonrageTime"],
+		timeSliderLabel = L["EvokerDevastationDragonrageTime"],
+	})
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
 end

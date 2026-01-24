@@ -21,6 +21,16 @@ local content = [====[
 ---
 
 # 12.0.0.7-release (2026-01-25)
+## Evoker
+### Devastation
+
+- [#523](#523) Add Dragonrage buff tracking via bar change and `$dragonrageTime` bar text variable with configurable expiration warning. This includes support for extensions via the Animosity talent.
+
+## Monk
+### Brewmaster
+
+- [#518](#518) Add Invoke Niuzao, the Black Ox buff tracking via bar change and `$niuzaoTime` bar text variable with configurable expiration warning.
+
 ## Paladin
 ### Retribution
 

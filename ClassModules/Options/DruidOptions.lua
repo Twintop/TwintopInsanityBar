@@ -552,55 +552,7 @@ local function FeralLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	if classic then
-		table.insert(textSettings, {
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$berserkTime}[#berserk$berserkTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "EnergyBar",
-				relativeToFrameName = L["EnergyBar"]
-			}
-		})
-	else
-		table.insert(textSettings, {
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$berserkTime}[#berserk$berserkTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "EnergyBar",
-				relativeToFrameName = L["EnergyBar"]
-			}
-		})
-	end
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("berserkTime", "berserk", classic, "CENTER", "RIGHT"))
 
 	local sharedTextSettings = SharedLoadDefaultBarTextSettings(2, classic)
 	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
@@ -798,55 +750,7 @@ local function GuardianLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	if classic then
-		table.insert(textSettings, {
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionMiddle"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$berserkTime}[#berserk$berserkTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "CENTER",
-			fontJustifyHorizontalName = L["PositionCenter"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = 0,
-				yPos = 0,
-				relativeTo = "CENTER",
-				relativeToName = L["PositionCenter"],
-				relativeToFrame = "RageBar",
-				relativeToFrameName = L["RageBar"]
-			}
-		})
-	else
-		table.insert(textSettings, {
-			useDefaultFontColor = false,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			enabled = true,
-			name = L["PositionRight"],
-			guid = TRB.Functions.String:Guid(),
-			text="{$berserkTime}[#berserk$berserkTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize=14,
-			color = "FFFFFFFF",
-			position = {
-				xPos = -2,
-				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "RageBar",
-				relativeToFrameName = L["RageBar"]
-			}
-		})
-	end
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("berserkTime", "berserk", classic, "CENTER", "RIGHT"))
 
 	local sharedTextSettings = SharedLoadDefaultBarTextSettings(3, classic)
 	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
@@ -995,29 +899,7 @@ local function RestorationLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	table.insert(textSettings, {
-		useDefaultFontColor = false,
-		useDefaultFontFace = false,
-		useDefaultFontSize = false,
-		enabled = true,
-		name = L["PositionMiddle"],
-		guid = TRB.Functions.String:Guid(),
-		text="{$incarnationTime}[#incarnation$incarnationTime]",
-		fontFace="Fonts\\FRIZQT__.TTF",
-		fontFaceName="Friz Quadrata TT",
-		fontJustifyHorizontal = "CENTER",
-		fontJustifyHorizontalName = L["PositionCenter"],
-		fontSize=14,
-		color = "FFFFFFFF",
-		position = {
-			xPos = 0,
-			yPos = 0,
-			relativeTo = "CENTER",
-			relativeToName = L["PositionCenter"],
-			relativeToFrame = "ManaBar",
-			relativeToFrameName = L["ManaBar"]
-		}
-	})
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("incarnationTime", "incarnation", classic, "CENTER", "CENTER"))
 
 	local sharedTextSettings = SharedLoadDefaultBarTextSettings(4, classic)
 	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end

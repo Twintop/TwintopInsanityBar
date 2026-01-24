@@ -8,6 +8,10 @@ TRB.Classes.Evoker = TRB.Classes.Evoker or {}
 
 
 ---@class TRB.Classes.Evoker.DevastationSpells : TRB.Classes.SpecializationSpellsBase
+---@field public dragonrage TRB.Classes.SpellBase
+---@field public animosity TRB.Classes.SpellBase
+---@field public fireBreath TRB.Classes.SpellBase
+---@field public eternitySurge TRB.Classes.SpellBase
 TRB.Classes.Evoker.DevastationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Evoker.DevastationSpells.__index = TRB.Classes.Evoker.DevastationSpells
 
@@ -15,6 +19,31 @@ function TRB.Classes.Evoker.DevastationSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Evoker.DevastationSpells) --[[@as TRB.Classes.Evoker.DevastationSpells]]
+
+	-- Devastation Spec Talents
+	self.dragonrage = TRB.Classes.SpellBase:New({
+		id = 375087,
+		isTalent = true,
+		isBuff = true,
+		hasCooldown = true,
+		cooldown = 120,
+		duration = 18
+	})
+	self.animosity = TRB.Classes.SpellBase:New({
+		id = 375797,
+		isTalent = true,
+		durationMod = 5,
+		durationPerCastMod = 0.75
+	})
+	self.fireBreath = TRB.Classes.SpellBase:New({
+		id = 382266,
+		baseline = true
+	})
+	self.eternitySurge = TRB.Classes.SpellBase:New({
+		id = 382411,
+		talentId = 359073,
+		isTalent = true
+	})
 
 	return self
 end

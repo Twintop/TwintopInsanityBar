@@ -2242,6 +2242,80 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 	return textures
 end
 
+---Gets default settings for "End Of" buff tracking configuration
+---@param mode "gcd"|"time" # Whether to use GCD count or time for the threshold
+---@param gcdsMax number # Number of GCDs for the threshold (when mode is "gcd")
+---@param timeMax number # Seconds for the threshold (when mode is "time")
+---@return TRB.Classes.Settings.GenericTrackingOverX
+function TRB.Functions.Settings:DefaultEndOfSettings(mode, gcdsMax, timeMax)
+	return {
+		enabled = true,
+		mode = mode or "gcd",
+		gcdsMax = gcdsMax or 2,
+		timeMax = timeMax or 3.0
+	}
+end
+
+---Creates a default bar text entry for buff time display with icon
+---@param variable string # The bar text variable name without $ (e.g., "bestialWrathTime")
+---@param icon string # The icon reference without # (e.g., "bestialWrath")
+---@param classic boolean # Whether to use classic layout
+---@param classicPosition "LEFT"|"CENTER"|"RIGHT"? # Position for classic layout (default: CENTER)
+---@param regularPosition "LEFT"|"CENTER"|"RIGHT"? # Position for regular layout (default: RIGHT)
+---@return TRB.Classes.Settings.DisplayTextEntry
+function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, classic, classicPosition, regularPosition)
+	classicPosition = classicPosition or "CENTER"
+	regularPosition = regularPosition or "RIGHT"
+
+	---@param position "LEFT"|"CENTER"|"RIGHT"
+	---@return TRB.Classes.Settings.DisplayTextEntry
+	local function BuildEntry(position)
+		local xPos = 0
+		local name = L["PositionMiddle"]
+		local fontJustifyHorizontalName = L["PositionCenter"]
+
+		if position == "LEFT" then
+			xPos = 2
+			name = L["PositionLeft"]
+			fontJustifyHorizontalName = L["PositionLeft"]
+		elseif position == "RIGHT" then
+			xPos = -2
+			name = L["PositionRight"]
+			fontJustifyHorizontalName = L["PositionRight"]
+		end
+
+		return {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = name,
+			guid = TRB.Functions.String:Guid(),
+			text = "{$" .. variable .. "}[#" .. icon .. "$" .. variable .. "]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = position,
+			fontJustifyHorizontalName = fontJustifyHorizontalName,
+			fontSize = 14,
+			color = "FFFFFFFF",
+			position = {
+				xPos = xPos,
+				yPos = 0,
+				relativeTo = position,
+				relativeToName = fontJustifyHorizontalName,
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		}
+	end
+
+	if classic then
+		return BuildEntry(classicPosition)
+	else
+		return BuildEntry(regularPosition)
+	end
+end
+
 ---Gets the default settings for threshold icons
 ---@return table
 function TRB.Functions.Settings:DefaultThresholdIconmSettings()
