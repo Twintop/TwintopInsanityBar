@@ -41,7 +41,7 @@ function TRB.Classes.Evoker.DevastationSpells:New()
 	})
 	self.eternitySurge = TRB.Classes.SpellBase:New({
 		id = 382411,
-        talentId = 359073,
+		talentId = 359073,
 		isTalent = true
 	})
 
