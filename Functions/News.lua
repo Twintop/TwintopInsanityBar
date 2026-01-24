@@ -30,6 +30,11 @@ local content = [====[
 
 - [#550](#550) Fix Soul Fragments not always updating when changing talents or zoning into/out of instances.
 
+## Druid
+### Guardian
+
+- Fix an issue where changing the text colors under the "Font & Text" tab would cause Lua errors. If you're impacted by this, contact Twintop for an import string fix or reset the Guardian bar to default.
+
 ---
 
 # 12.0.0.5-release (2026-01-24)
