@@ -20,6 +20,18 @@ local content = [====[
 
 ---
 
+# 12.0.0.6-release (2026-01-24)
+## General
+
+- Modify default visibility options for bars to be "Always" instead of "In Combat".
+
+## Demon Hunter
+### Devourer
+
+- [#550](#550) Fix Soul Fragments not always updating when changing talents or zoning into/out of instances.
+
+---
+
 # 12.0.0.5-release (2026-01-24)
 ## Druid
 ### Feral

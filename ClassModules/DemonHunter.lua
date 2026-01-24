@@ -1460,7 +1460,7 @@ local function SwitchSpec()
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
 		lookup["#voidMeta"] = spells.metamorphosis.icon
-		--lookup["#soulFragments"] = spells.soulFragments.icon
+		lookup["#soulFragments"] = spells.soulFragments.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1474,11 +1474,14 @@ local function SwitchSpec()
 		specCache.devourer.talents:GetTalents()
 		FillSpellData_Devourer()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devourer)
+		-- For whatever reason, this gets reset as Vengeance's specId after when going from Vengeance to Devourer. Manually re-set it.
+		TRB.Data.character.specId = 3
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
-		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+		snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devourer
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.devourer.settings)
@@ -1493,17 +1496,13 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
+		snapshotData.snapshots[spells.soulFragments.id].buff:Refresh()
+
 		if TRB.Data.barConstructedForSpec ~= "devourer" then
 			talents = specCache.devourer.talents
 			TRB.Data.barConstructedForSpec = "devourer"
 			TRB.Functions.Class:EventRegistration()
 			ConstructResourceBar(specCache.devourer.settings)
-
-			C_Timer.After(0, function()
-				C_Timer.After(0.05, function()
-					TRB.Data.snapshotData.snapshots[spells.soulFragments.id].buff:Refresh()
-				end)
-			end)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
