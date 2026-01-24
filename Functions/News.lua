@@ -25,6 +25,11 @@ local content = [====[
 
 - Modify default visibility options for bars to be "Always" instead of "In Combat".
 
+## Death Knight
+### Unholy
+
+- Ensure the bar background color setting is for Runic Power is present in options.
+
 ## Demon Hunter
 ### Devourer
 
