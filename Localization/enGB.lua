@@ -96,7 +96,7 @@ if locale == "enGB" then
     L["PriestShadowCheckboxInstantMindBlast"] = "Instant Mind Blast colour change enabled"
     L["PriestShadowCheckboxInstantMindBlastTooltip"] = "This will change the bar colour when Mind Blast is able to be cast instantly due to a Shadowy Insight proc."
     L["PriestShadowCheckboxMindFlayInsanityTooltip"] = "This will change the bar border colour when you are able to cast Mind Flay: Insanity"
-    L["PriestShadowCheckboxMindDevourerTooltip"] = "This will change the bar border colour when you are able to cast Devouring Plague for 0 Insanity cost via a Mind Devourer proc."
+    L["PriestShadowCheckboxMindDevourerTooltip"] = "This will change the bar border colour when you are able to cast Shadow Word: Madness for 0 Insanity cost via a Mind Devourer proc."
     L["PriestShadowTextColorsHeader"] = "Insanity Text Colours"
     L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text colour when you are able to cast Devouring Plague"
     L["PriestShadowHeaderHasteThreshold"] = "Haste Threshold Colours in Voidform"
