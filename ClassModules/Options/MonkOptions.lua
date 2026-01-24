@@ -144,9 +144,9 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			stagger = "combat",
-			health = "combat",
+			primary = "always",
+			stagger = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -274,9 +274,9 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -404,9 +404,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {

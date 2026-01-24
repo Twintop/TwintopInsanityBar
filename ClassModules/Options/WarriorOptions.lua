@@ -98,9 +98,9 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -252,9 +252,9 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -474,10 +474,10 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
-			defensives = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
+			defensives = "always",
 			dragonriding = true
 		},
 		overcap = {
