@@ -256,8 +256,10 @@ TRB.Options.Druid.BalanceLoadDefaultBarTextSettings = BalanceLoadDefaultBarTextS
 local function BalanceLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		thresholds = {
 			properties = {
@@ -288,9 +290,9 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			mana = "never",
 			dragonriding = true,
 			enableFormSwitching = true
@@ -345,7 +347,6 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				solar="FFFFEE00",
 				celestial="FF4A95CE",
 				eclipse1GCD="FFFF0000",
-				moonkinFormMissing="FFFF0000",
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
@@ -571,8 +572,10 @@ TRB.Options.Druid.FeralLoadDefaultBarTextSettings = FeralLoadDefaultBarTextSetti
 local function FeralLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		thresholds = {
 			properties = {
@@ -633,9 +636,9 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true,
 			enableFormSwitching = true
 		},
@@ -763,8 +766,10 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		enabled = true,
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		thresholds = {
 			properties = {
@@ -792,9 +797,9 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true,
 			enableFormSwitching = true
 		},
@@ -909,13 +914,15 @@ TRB.Options.Druid.RestorationLoadDefaultBarTextSettings = RestorationLoadDefault
 local function RestorationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true,
 			enableFormSwitching = true
 		},
@@ -1205,13 +1212,6 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "eclipse1GCD")
 	end)
 
-	--[[yCoord = yCoord - 30
-	controls.colors.moonkinFormMissing = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerMoonkinMissing"], spec.colors.bar.moonkinFormMissing, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.moonkinFormMissing
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "moonkinFormMissing")
-	end)]]
-
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
@@ -1488,17 +1488,6 @@ local function BalanceConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 11, 1, yCoord)
-
-	title = L["DruidBalanceAstralPowerDecimalPrecision"]
-	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.precision.resource, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.precision.resource = value
-		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)
 end
 
 local function BalanceConstructAudioAndTrackingPanel(parent)
@@ -1814,13 +1803,12 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "maxBite")
 	end)
 
-	--[[
 	yCoord = yCoord - 30
 	controls.colors.apexPredator = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerApexPredatorsCraving"], spec.colors.bar.apexPredator, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.apexPredator
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apexPredator")
-	end)]]
+	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -2653,20 +2641,20 @@ local function GuardianConstructFontAndTextPanel(parent)
 	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianTextColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianTextColorPickerOverThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
 	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30

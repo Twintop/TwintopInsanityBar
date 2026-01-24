@@ -73,6 +73,7 @@ TRB.Options.DemonHunter.HavocLoadDefaultBarTextSettings = HavocLoadDefaultBarTex
 local function HavocLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -111,9 +112,9 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		endOfMetamorphosis = {
@@ -224,6 +225,7 @@ TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSettings = VengeanceLoadDefau
 local function VengeanceLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -254,9 +256,9 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		endOfMetamorphosis = {
@@ -399,6 +401,7 @@ TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSettings = DevourerLoadDefault
 local function DevourerLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -422,9 +425,9 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		endOfMetamorphosis = {
@@ -482,6 +485,9 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 				voidMetamorphosisReady = {
 					color = "FF431863",
 					enabled = true
+				},
+				collapsingStar = {
+					color = "FF443FAD",
 				},
 				collapsingStarReady = {
 					color = "FF431863",
@@ -1806,7 +1812,7 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceFury"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
@@ -1827,6 +1833,13 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.voidMetamorphosisReady
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "voidMetamorphosisReady")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.collapsingStar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceCollapsingStar"], spec.colors.comboPoints.collapsingStar.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.collapsingStar
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "collapsingStar")
 	end)
 
 	yCoord = yCoord - 30
@@ -1851,6 +1864,13 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 40

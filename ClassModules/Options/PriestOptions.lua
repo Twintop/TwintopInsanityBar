@@ -52,13 +52,15 @@ TRB.Options.Priest.DisciplineLoadDefaultBarTextSettings = DisciplineLoadDefaultB
 local function DisciplineLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -167,13 +169,15 @@ TRB.Options.Priest.HolyLoadDefaultBarTextSettings = HolyLoadDefaultBarTextSettin
 local function HolyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -321,8 +325,10 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 		hasteApproachingThreshold=135,
 		hasteThreshold=140,
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		thresholds = {
 			properties = {
@@ -350,9 +356,9 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			mana = "never",
 			dragonriding = true
 		},
@@ -827,7 +833,7 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight"], L["PriestAudioCheckboxSurgeOfLightTooltip"])
 end
@@ -1503,7 +1509,7 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
+	--yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight"], L["PriestAudioCheckboxSurgeOfLightTooltip"])
 	
@@ -2004,7 +2010,7 @@ local function ShadowConstructThresholdPanel(parent)
 	f = controls.checkBoxes.dpThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdShadowWordMadness"])
-	f.tooltip = L["PriestShadowThresholdshadowWordMadnessTooltip"]
+	f.tooltip = L["PriestShadowThresholdShadowWordMadnessTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.shadowWordMadness.enabled = self:GetChecked()
@@ -2014,8 +2020,8 @@ local function ShadowConstructThresholdPanel(parent)
 	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadness2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThreshold2Show
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdshadowWordMadness2x"])
-	f.tooltip = L["PriestShadowThresholdshadowWordMadness2xTooltip"]
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdShadowWordMadness2x"])
+	f.tooltip = L["PriestShadowThresholdShadowWordMadness2xTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness2.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.shadowWordMadness2.enabled = self:GetChecked()
@@ -2025,8 +2031,8 @@ local function ShadowConstructThresholdPanel(parent)
 	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadness3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThreshold3Show
 	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdshadowWordMadness3x"])
-	f.tooltip = L["PriestShadowThresholdshadowWordMadness3xTooltip"]
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdShadowWordMadness3x"])
+	f.tooltip = L["PriestShadowThresholdShadowWordMadness3xTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness3.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.shadowWordMadness3.enabled = self:GetChecked()
@@ -2199,19 +2205,6 @@ local function ShadowConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 10
 
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 5, 3, yCoord)
-
-	--[[
-	title = L["PriestShadowInsanityDecimalPrecision"]
-	controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.precision.resource, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.precision.resource = value
-		TRB.Data.snapshotData.attributes.cacheRefresh = true
-	end)
-	]]
 end
 
 local function ShadowConstructAudioAndTrackingPanel(parent)
@@ -2238,7 +2231,7 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "dpReady", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxShadowWordMadness"], L["PriestShadowAudioCheckboxshadowWordMadnessTooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "dpReady", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxShadowWordMadness"], L["PriestShadowAudioCheckboxShadowWordMadnessTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "mdProc", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxMindDevourer"], L["PriestShadowAudioCheckboxMindDevourerTooltip"])
 end

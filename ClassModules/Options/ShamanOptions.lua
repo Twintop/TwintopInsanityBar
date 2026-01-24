@@ -46,8 +46,10 @@ TRB.Options.Shaman.ElementalLoadDefaultBarTextSettings = ElementalLoadDefaultBar
 local function ElementalLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		thresholds = {
 			properties = {
@@ -75,9 +77,9 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			mana = "never",
 			dragonriding = true
 		},
@@ -207,13 +209,15 @@ TRB.Options.Shaman.EnhancementLoadDefaultBarTextSettings = EnhancementLoadDefaul
 local function EnhancementLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -321,13 +325,15 @@ TRB.Options.Shaman.RestorationLoadDefaultBarTextSettings = RestorationLoadDefaul
 local function RestorationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -1135,7 +1141,7 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints.overflowBase = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"], spec.colors.comboPoints.overflowBase.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.overflowBase
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints.overflowBase, controls.colors.comboPoints.overflowBase, "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overflowBase")
 	end)
 
 	yCoord = yCoord - 30

@@ -195,6 +195,7 @@ TRB.Options.DeathKnight.BloodLoadDefaultBarTextSettings = BloodLoadDefaultBarTex
 local function BloodLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -221,9 +222,9 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -338,6 +339,7 @@ TRB.Options.DeathKnight.FrostLoadDefaultBarTextSettings = FrostLoadDefaultBarTex
 local function FrostLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -370,9 +372,9 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -486,6 +488,7 @@ TRB.Options.DeathKnight.UnholyLoadDefaultBarTextSettings = UnholyLoadDefaultBarT
 local function UnholyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -512,9 +515,9 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -1710,6 +1713,13 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
+	
+	yCoord = yCoord - 30
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+	end)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], true, false)

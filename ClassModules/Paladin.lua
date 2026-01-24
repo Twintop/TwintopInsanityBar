@@ -50,6 +50,8 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.attributes.manaRegen = 0
 	specCache.holy.snapshotData.audio = {
 		innervateCue = false,
+		holyPowerThreshold1Played = false,
+		holyPowerThreshold2Played = false,
 	}
 
 	specCache.holy.barTextVariables = {
@@ -80,6 +82,8 @@ local function FillSpecializationCache()
 
 	specCache.protection.snapshotData.attributes.manaRegen = 0
 	specCache.protection.snapshotData.audio = {
+		holyPowerThreshold1Played = false,
+		holyPowerThreshold2Played = false,
 	}
 
 	specCache.protection.barTextVariables = {
@@ -110,6 +114,8 @@ local function FillSpecializationCache()
 
 	specCache.retribution.snapshotData.attributes.manaRegen = 0
 	specCache.retribution.snapshotData.audio = {
+		holyPowerThreshold1Played = false,
+		holyPowerThreshold2Played = false,
 	}
 
 	specCache.retribution.barTextVariables = {
@@ -315,6 +321,10 @@ local function FillSpellData_Retribution()
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 		
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
+		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
 
@@ -454,7 +464,7 @@ local function RefreshLookupData_Holy()
 	local castingManaColor = TRB.Data.settings.paladin.holy.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.paladin.holy.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -521,7 +531,7 @@ local function RefreshLookupData_Protection()
 	local castingManaColor = TRB.Data.settings.paladin.protection.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.paladin.protection.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -582,7 +592,7 @@ local function RefreshLookupData_Retribution()
 	local castingManaColor = TRB.Data.settings.paladin.retribution.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = TRB.Data.settings.paladin.retribution.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -735,6 +745,42 @@ local function UpdateResourceBar()
 					holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
 			end
+		end
+
+		-- Holy Power threshold audio cues
+		local coreSettings = TRB.Data.settings.core
+		local threshold1 = specSettings.audio.holyPowerThreshold1
+		local threshold2 = specSettings.audio.holyPowerThreshold2
+		local threshold1Value = threshold1.configuration.thresholdValue
+		local threshold2Value = threshold2.configuration.thresholdValue
+		
+		local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.holyPowerThreshold1Played and currentHolyPower >= threshold1Value
+		local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.holyPowerThreshold2Played and currentHolyPower >= threshold2Value
+
+		-- If both would fire, mark both as played but only play the higher threshold's sound
+		-- If equal, play threshold 1's sound
+		if threshold1ShouldFire and threshold2ShouldFire then
+			snapshotData.audio.holyPowerThreshold1Played = true
+			snapshotData.audio.holyPowerThreshold2Played = true
+			if threshold2Value > threshold1Value then
+				PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+			else
+				PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+			end
+		elseif threshold2ShouldFire then
+			snapshotData.audio.holyPowerThreshold2Played = true
+			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+		elseif threshold1ShouldFire then
+			snapshotData.audio.holyPowerThreshold1Played = true
+			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+		end
+
+		-- Reset flags independently when Holy Power drops below respective threshold
+		if currentHolyPower < threshold1Value then
+			snapshotData.audio.holyPowerThreshold1Played = false
+		end
+		if currentHolyPower < threshold2Value then
+			snapshotData.audio.holyPowerThreshold2Played = false
 		end
 	end
 

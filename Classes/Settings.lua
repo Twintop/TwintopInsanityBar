@@ -67,8 +67,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public height number
 
 ---@class TRB.Classes.Settings.Precision
+---@field public health integer
 ---@field public secondary integer
 ---@field public resource integer
+---@field public mana integer?
 
 ---@class TRB.Classes.Settings.ColorEntry
 ---@field public color string

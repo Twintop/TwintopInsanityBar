@@ -704,6 +704,21 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			if spellId == spells.shieldBlock.castId then
 				local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
 				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
+			elseif spellId == spells.shieldCharge.id then -- Button press
+				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = true
+				C_Timer.After(0, function()
+					C_Timer.After((1 + (TRB.Data.character.latency * 2)), function()
+						if snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed then
+							local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
+							snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
+							snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false
+						end
+					end)
+				end)
+			elseif spellId == spells.shieldCharge.castId then -- Stun
+				local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
+				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
+				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false
 			elseif spellId == spells.ignorePain.castId then
 				snapshotData.snapshots[spells.ignorePain.id].buff:InitializeCustom(spells.ignorePain.duration, currentTime)
 				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime)
@@ -711,6 +726,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					snapshotData.snapshots[spells.ignorePain.id].buff:SetAuraInstanceId(bufferEntry)
 				else
 					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.ignorePain.id].buff)
+				end
+			elseif spellId == spells.shieldSlam.id then
+				if talents:IsTalentActive(spells.heavyRepercussions) and snapshotData.snapshots[spells.shieldBlock.id].buff.isActive then
+					local duration = spells.heavyRepercussions.attributes.durationMod
+					snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
 				end
 			end
 		end

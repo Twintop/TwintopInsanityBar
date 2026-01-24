@@ -233,7 +233,6 @@ if locale == "frFR" then
     L["PriestShadowHasteMediumToHigh"] = "Seuil Moy. à Haute Hâte% en Forme du Vide"
     L["PriestShadowHeaderEndOfVoidformConfiguration"] = "Configuration de fin de Forme du Vide"
     L["PriestShadowHeaderHasteThreshold"] = "Couleur du Seuil de Hâte en Forme du Vide"
-    L["PriestShadowInsanityDecimalPrecision"] = "Précision décimale de l'insanité"
     L["PriestShadowTextColorsHeader"] = "Couleurs de texte d'Insanité"
     L["PriestShadowThresholdCheckboxOnlyCurrentNext"] = "Montrer uniquement la ligne de seuil actuelle + suivante"
     L["PriestShadowVoidformGcds"] = "GCDs Forme du Vide - 0.75sec"

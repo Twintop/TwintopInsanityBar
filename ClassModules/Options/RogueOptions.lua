@@ -40,6 +40,7 @@ TRB.Options.Rogue.AssassinationLoadDefaultBarTextSettings = AssassinationLoadDef
 local function AssassinationLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -120,9 +121,9 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -247,6 +248,7 @@ TRB.Options.Rogue.OutlawLoadDefaultBarTextSettings = OutlawLoadDefaultBarTextSet
 local function OutlawLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -328,9 +330,9 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -462,6 +464,7 @@ TRB.Options.Rogue.SubtletyLoadDefaultBarTextSettings = SubtletyLoadDefaultBarTex
 local function SubtletyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -547,9 +550,9 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {

@@ -88,6 +88,7 @@ TRB.Options.Monk.BrewmasterLoadDefaultBarTextSettings = BrewmasterLoadDefaultBar
 local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -143,9 +144,9 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			stagger = "combat",
-			health = "combat",
+			primary = "always",
+			stagger = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {
@@ -267,13 +268,15 @@ TRB.Options.Monk.MistweaverLoadDefaultBarTextSettings = MistweaverLoadDefaultBar
 local function MistweaverLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -359,6 +362,7 @@ TRB.Options.Monk.WindwalkerLoadDefaultBarTextSettings = WindwalkerLoadDefaultBar
 local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -400,9 +404,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		overcap = {

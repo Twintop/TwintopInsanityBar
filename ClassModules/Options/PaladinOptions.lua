@@ -37,13 +37,15 @@ TRB.Options.Paladin.HolyLoadDefaultBarTextSettings = HolyLoadDefaultBarTextSetti
 local function HolyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -88,11 +90,23 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			innervate={
-				name = L["Innervate"],
+			holyPowerThreshold1={
+				name = L["PaladinAudioHolyPowerThreshold1"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			holyPowerThreshold2={
+				name = L["PaladinAudioHolyPowerThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -127,13 +141,15 @@ TRB.Options.Paladin.ProtectionLoadDefaultBarTextSettings = ProtectionLoadDefault
 local function ProtectionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -178,6 +194,24 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			holyPowerThreshold1={
+				name = L["PaladinAudioHolyPowerThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			holyPowerThreshold2={
+				name = L["PaladinAudioHolyPowerThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -210,13 +244,15 @@ TRB.Options.Paladin.RetributionLoadDefaultBarTextSettings = RetributionLoadDefau
 local function RetributionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -261,6 +297,24 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			holyPowerThreshold1={
+				name = L["PaladinAudioHolyPowerThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			holyPowerThreshold2={
+				name = L["PaladinAudioHolyPowerThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -564,6 +618,30 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold1", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold1"], L["PaladinAudioCheckboxHolyPowerThreshold1Tooltip"])
+
+	controls.holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold2", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold2"], L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"])
+
+	controls.holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function HolyConstructBarTextDisplayPanel(parent, cache)
@@ -649,10 +727,7 @@ local function HolyConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120	, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -660,9 +735,9 @@ local function HolyConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines or Audio & Tracking options. Don't let these tabs be made/rendered.
+			This spec doesn't use Threshold Lines. Don't let these tabs be made/rendered.
 		]]
-		if i == 2 or i == 4 then
+		if i == 2 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -688,7 +763,7 @@ local function HolyConstructOptionsPanel(cache)
 	HolyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--HolyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	HolyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--HolyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	HolyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	HolyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	HolyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -966,6 +1041,30 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold1", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold1"], L["PaladinAudioCheckboxHolyPowerThreshold1Tooltip"])
+
+	controls.holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold2", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold2"], L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"])
+
+	controls.holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function ProtectionConstructBarTextDisplayPanel(parent, cache)
@@ -1051,10 +1150,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -1064,7 +1160,7 @@ local function ProtectionConstructOptionsPanel(cache)
 		--[[
 			This spec doesn't use Threshold Lines or Audio & Tracking options. Don't let these tabs be made/rendered.
 		]]
-		if i == 2 or i == 4 then
+		if i == 2 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -1090,7 +1186,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	ProtectionConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--ProtectionConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	ProtectionConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--ProtectionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	ProtectionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	ProtectionConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	ProtectionConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1223,6 +1319,13 @@ local function RetributionConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 30
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+	end)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"], false, false)
@@ -1360,6 +1463,30 @@ local function RetributionConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold1", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold1"], L["PaladinAudioCheckboxHolyPowerThreshold1Tooltip"])
+
+	controls.holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold2", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold2"], L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"])
+
+	controls.holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function RetributionConstructBarTextDisplayPanel(parent, cache)
@@ -1445,10 +1572,7 @@ local function RetributionConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -1458,7 +1582,7 @@ local function RetributionConstructOptionsPanel(cache)
 		--[[
 			This spec doesn't use Threshold Lines or Audio & Tracking options. Don't let these tabs be made/rendered.
 		]]
-		if i == 2 or i == 4 then
+		if i == 2 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -1484,7 +1608,7 @@ local function RetributionConstructOptionsPanel(cache)
 	RetributionConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--RetributionConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	RetributionConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--RetributionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	RetributionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	RetributionConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	RetributionConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end

@@ -995,7 +995,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
@@ -1024,7 +1026,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 		controls.borderWidth.EditBox:SetText(tostring(borderSize))
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
@@ -1048,7 +1052,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.xPos = value
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
@@ -1063,7 +1069,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.yPos = value
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
@@ -1079,7 +1087,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.border = value
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			AdjustBarBorder()
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -1111,7 +1121,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.dragAndDrop = self:GetChecked()
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil and TRB.Frames.barGroups.primary ~= nil then
 				TRB.Frames.barGroups.primary:SetDragAndDrop(TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop, TRB.Data.specCache[TRB.Data.character.specName].settings)
 			end
@@ -1239,7 +1251,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].xPos = value
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
@@ -1255,7 +1269,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].yPos = value
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
@@ -1273,7 +1289,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].border = value
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
@@ -1305,7 +1323,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.spacing = value
 
-			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 			end
 		end)
@@ -1349,7 +1369,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		end
 		barRelativeTo:SetDefaultText(spec[settingKey].relativeToName)
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
@@ -1385,7 +1407,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
 		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(tostring(maxBorderSize))
 		
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
@@ -2975,7 +2999,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		end
 		thresholdIconRelativeTo:SetDefaultText(spec.thresholds.icons.relativeToName)
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end
@@ -3001,7 +3027,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 
 		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
 		
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
@@ -3016,7 +3044,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.desaturated = self:GetChecked()
 		
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
@@ -3042,7 +3072,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 		
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
@@ -3065,7 +3097,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
 		
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
@@ -3079,7 +3113,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.xPos = value
 		
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
@@ -3091,7 +3127,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.yPos = value
 		
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
@@ -3114,7 +3152,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
 		controls.thresholdIconWidth.MinLabel:SetText(tostring(minsliderWidth))
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
@@ -3126,7 +3166,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.properties.width = value
 
-		if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil) then
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
@@ -3232,7 +3274,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 			spec.colors.threshold.outOfRange.show = self:GetChecked()
 
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
-			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
+			if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
 				if not spec.colors.threshold.outOfRange.show or (spec.colors.threshold.outOfRange.show and spec.colors.threshold.outOfRange.enabled) then
 					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 				else
@@ -3249,7 +3293,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 		f:SetChecked(spec.colors.threshold.outOfRange.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or (classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
+			if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
 				if not spec.colors.threshold.outOfRange.show or (spec.colors.threshold.outOfRange.show and spec.colors.threshold.outOfRange.enabled) then
 					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 				else
@@ -3928,6 +3974,42 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		spec.precision.secondary = value
 		TRB.Data.snapshotData.attributes.cacheRefresh = true
 	end)
+
+	if (classId == nil and specId == nil) or -- Global
+		(classId == 2) or -- Paladin
+		(classId == 5) or -- Priest
+		(classId == 7) or -- Shaman
+		(classId == 8) or -- Mage
+		(classId == 9) or -- Warlock
+		(classId == 10 and specId == 2) or -- Monk Mistweaver
+		(classId == 11) or -- Druid
+		(classId == 13) -- Evoker
+		then
+		title = L["ManaDecimalPrecision"]
+		controls.precisionMana = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.precision.mana, 1, 0,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.precisionMana:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			spec.precision.mana = value
+			TRB.Data.snapshotData.attributes.cacheRefresh = true
+		end)
+	end
+
+	yCoord = yCoord - 60
+
+	title = L["HealthDecimalPrecision"]
+	controls.precisionHealth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.precision.health, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.precisionHealth:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.precision.health = value
+		TRB.Data.snapshotData.attributes.cacheRefresh = true
+	end)
+
 
 	return yCoord
 end
@@ -4635,7 +4717,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	
 	yCoord = yCoord - 100
 	title = L["FontSize"]
-	local fontSize = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, 6, 72, 18, 1, 0,
+	local fontSize = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, 6, 300, 18, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	fontSize:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)

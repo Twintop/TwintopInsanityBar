@@ -300,6 +300,9 @@ end
 
 ---@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
 ---@field public enduringDefenses TRB.Classes.SpellBase
+---@field public shieldCharge TRB.Classes.SpellBase
+---@field public heavyRepercussions TRB.Classes.SpellBase
+---@field public shieldSlam TRB.Classes.SpellBase
 ---@field public ignorePain TRB.Classes.SpellThreshold
 ---@field public rend TRB.Classes.SpellThreshold
 ---@field public revenge TRB.Classes.SpellThreshold
@@ -359,6 +362,21 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		isTalent = true,
 		durationModPerRank = 1
 	})
+	self.shieldCharge = TRB.Classes.SpellBase:New({
+		id = 385952,
+		castId = 385954,
+		isTalent = true
+	})
+	self.heavyRepercussions = TRB.Classes.SpellBase:New({
+		id = 203177,
+		isTalent = true,
+		durationMod = 1
+	})
+	self.shieldSlam = TRB.Classes.SpellBase:New({
+		id = 23922,
+		isTalent = false,
+		baseline = true
+	})
 
 	self.suddenDeath = TRB.Classes.SpellBase:New({
 		id = 52437,
@@ -396,6 +414,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		isTalent = true,
 		rangeCheck = false
 	})
+
 
 	return self
 end

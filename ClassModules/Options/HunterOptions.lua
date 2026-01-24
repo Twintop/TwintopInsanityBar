@@ -41,6 +41,7 @@ TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSettings = BeastMasteryLoadDefa
 local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -85,9 +86,9 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		endOfBestialWrath = {
@@ -217,6 +218,7 @@ TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSettings = MarksmanshipLoadDefa
 local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -261,9 +263,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		endOfTrueshot = {
@@ -378,6 +380,7 @@ TRB.Options.Hunter.SurvivalLoadDefaultBarTextSettings = SurvivalLoadDefaultBarTe
 local function SurvivalLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
 			resource = 0
 		},
@@ -413,9 +416,9 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		endOfTakedown = {

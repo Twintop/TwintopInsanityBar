@@ -75,9 +75,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
 			},
 			displayBar = {
-				primary = "combat",
-				secondary = "combat",
-				health = "combat",
+				primary = "always",
+				secondary = "always",
+				health = "always",
 				dragonriding = true
 			},
 			overcap = {
@@ -89,8 +89,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 			healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 			precision = {
+				health = 1,
 				secondary = 2,
-				resource = 0
+				resource = 0,
+				mana = 1
 			},
 			colors = {
 				text = {
@@ -1460,6 +1462,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 							-- Change to new bar text format
 							if specValue.hastePrecision ~= nil or specValue.resourcePrecision ~= nil then
 								specValue.precision = {
+			health = 1,
 									secondary = specValue.hastePrecision or 0,
 									resource = specValue.resourcePrecision or 0
 								}
@@ -1650,7 +1653,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 		-- Migrate old format to new format
 		---@type trbBarVisibility
-		local primaryValue = "combat"
+		local primaryValue = "always"
 		if displayBar.alwaysShow == true then
 			primaryValue = "always"
 		elseif displayBar.neverShow == true then
@@ -1658,7 +1661,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 		-- Set new values
 		displayBar.primary = primaryValue
-		displayBar.secondary = "combat"
+		displayBar.secondary = "always"
 		-- Remove old keys
 		displayBar.alwaysShow = nil
 		displayBar.notZeroShow = nil
@@ -1784,7 +1787,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 						if specSettings.displayBar and specSettings.displayBar.secondary and not specSettings.displayBar.stagger then
 							specSettings.displayBar.stagger = specSettings.displayBar.secondary
 						elseif specSettings.displayBar and not specSettings.displayBar.stagger then
-							specSettings.displayBar.stagger = "combat"
+							specSettings.displayBar.stagger = "always"
 						end
 					end
 
@@ -1856,7 +1859,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specSettings.displayBar.defensives = specSettings.displayBar.secondary
 							specSettings.displayBar.secondary = nil
 						elseif specSettings.displayBar and not specSettings.displayBar.defensives then
-							specSettings.displayBar.defensives = "combat"
+							specSettings.displayBar.defensives = "always"
 						end
 
 						-- Ensure bars.defensives exists (fallback if no migration source)

@@ -33,13 +33,15 @@ TRB.Options.Warlock.AfflictionLoadDefaultBarTextSettings = AfflictionLoadDefault
 local function AfflictionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -118,13 +120,15 @@ TRB.Options.Warlock.DemonologyLoadDefaultBarTextSettings = DemonologyLoadDefault
 local function DemonologyLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 2,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -201,13 +205,15 @@ TRB.Options.Warlock.DestructionLoadDefaultBarTextSettings = DestructionLoadDefau
 local function DestructionLoadDefaultSettings(includeBarText, classic)
 	local settings = {
 		precision = {
+			health = 1,
 			secondary = 0,
-			resource = 0
+			resource = 0,
+			mana = 1
 		},
 		displayBar = {
-			primary = "combat",
-			secondary = "combat",
-			health = "combat",
+			primary = "always",
+			secondary = "always",
+			health = "always",
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -1262,6 +1268,16 @@ local function DestructionConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
+	
+	yCoord = yCoord - 40
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsBorderColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Destruction_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
@@ -1322,6 +1338,8 @@ local function DestructionConstructFontAndTextPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 3, yCoord)
 end
 
 local function DestructionConstructAudioAndTrackingPanel(parent)

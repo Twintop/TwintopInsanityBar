@@ -20,11 +20,132 @@ local content = [====[
 
 ---
 
+# 12.0.0.7-release (2026-01-25)
+## Paladin
+### Retribution
+
+- Ensure the bar background color setting is for Mana is present in options.
+
+---
+
+# 12.0.0.6-release (2026-01-24)
+## General
+
+- Modify default visibility options for bars to be "Always" instead of "In Combat".
+
+## Death Knight
+### Unholy
+
+- Ensure the bar background color setting is for Runic Power is present in options.
+
+## Demon Hunter
+### Devourer
+
+- [#550](#550) Fix Soul Fragments not always updating when changing talents or zoning into/out of instances.
+
+## Druid
+### Guardian
+
+- Fix an issue where changing the text colors under the "Font & Text" tab would cause Lua errors. If you're impacted by this, contact Twintop for an import string fix or reset the Guardian bar to default.
+
+---
+
+# 12.0.0.5-release (2026-01-24)
+## Druid
+### Feral
+
+- [#549](#549) Re-enable Apex Predator's Craving detection. This allows for bar color change, audio cue, and threshold usable notifications to function again.
+
+## Paladin
+### Retribution
+
+- Fix health bar text variables `$health`, `$healthMax`, and `$healthPercent` not working.
+
+---
+
+# 12.0.0.4-release (2026-01-24)
+## General
+### Import/Export
+
+- Fix an issue when exporting entire categories of settings for all specs at once.
+
+## Demon Hunter
+### Devourer
+
+- [#546](#546) Add bar text logic variables `$voidRayUsable` and `$collapsingStarUsable` to indicate when Void Ray and Collapsing Star can be used.
+- [#546](#546) Add `#collapsingStar` icon variable.
+- Add dedicated bar color for when Collapsing Star is active.
+- Restore the missing Soul Fragment/Collapsing Star bar's background color setting.
+- Clean up some localization strings.
+
+## Druid
+### Balance
+
+- [#546](#546) Add bar text logic variables `$starsurgeUsable` and `$starfallUsable` to indicate when Starsurge and Starfall can be used.
+
+## Paladin
+
+- [#542](#542) Add two new audio cues for when Holy Power is at or above a configured threshold. These default to 3 and 5 Holy Power.
+
+## Priest
+### Shadow
+
+- [#546](#546) Add bar text logic variable `$shadowWordMadnessUsable` to indicate when Shadow Word: Madness can be used.
+- [#546](#546) Fix `#shadowWordMadness` and `#swm` icon variables.
+
+## Shaman
+### Elemental
+
+- [#546](#546) Add bar text logic variables `$earthShockUsable`, `$elementalBlastUsable`, and `$earthquakeUsable` to indicate when Earth Shock/Elemental Blast and Earthquake can be used.
+- [#546](#546) Add `#earthShock` and `#earthquake` icon variables.
+
+---
+
+# 12.0.0.3-release (2026-01-23)
+## General
+
+- Adjust how manual tracking of buffs handles increases to duration. Now, when a duration increase occurs, the overall duration of the buff is reset to be the remaining duration.
+
+## Mage
+### Arcane
+
+- [#547](#547) Fix infinite loop causing Lua errors when trying to build the bar.
+
+## Shaman
+### Enhancement
+
+- [#545](#545) Fix Maelstrom Weapon overflow (stacks 6-10) color settings not being saved correctly.
+
+## Warrior
+### Protection
+
+- [#543](#543) Add support for Heavy Repercussions and Shield Charge as a source of Shield Block duration.
+
+---
+
 # 12.0.0.2-release (2026-01-23)
 ## General
+
+- [#519](#519) Add decimal precision settings for Health percentage bar text.
+- [#532](#532) Add decimal precision settings for Mana percentage bar text.
+
 ### Localization
 
 - [#531](#531) Temporarily disable the Russian Google Translate localization file to help address strange bar behavior and Lua errors.
+
+## Druid
+
+- [#534](#534) Fix how the shared bars for Druids are constructed to ensure that the correct settings are applied for each form, especially when making modifications to the configuration of another form's settings.
+- [#539](#539) Fix Lua errors that would occur when logging in as non-Feral in Cat Form.
+
+### Balance
+
+- [#540](#540) Ensure that the "Flash bar" checkbox state is respected.
+
+## Warlock
+### Destruction
+
+- [#536](#536) Restore missing border color settings for Soul Shards.
 
 ---
 

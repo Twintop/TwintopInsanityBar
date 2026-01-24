@@ -443,7 +443,7 @@ local function RefreshLookupData_Devastation()
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -519,7 +519,7 @@ local function RefreshLookupData_Preservation()
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
@@ -600,7 +600,7 @@ local function RefreshLookupData_Augmentation()
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
 	--$mana
-	local manaPrecision = specSettings.manaPrecision or 1
+	local manaPrecision = sharedSettings.precision.mana or 1
 	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal

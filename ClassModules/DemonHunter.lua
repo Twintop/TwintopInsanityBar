@@ -338,6 +338,7 @@ local function FillSpellData_Devourer()
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
+		{ variable = "#collapsingStar", icon = spells.collapsingStar.icon, description = spells.collapsingStar.name, printInSettings = true },
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
@@ -395,6 +396,8 @@ local function FillSpellData_Devourer()
 		{ variable = "$metamorphosisTime", description = "", printInSettings = false, color = false },
 		{ variable = "$voidMetaTime", description = "", printInSettings = false, color = false },
 		{ variable = "$voidMetamorphosisTime", description = "", printInSettings = false, color = false },
+		{ variable = "$voidRayUsable", description = L["DemonHunterDevourerBarTextVariable_voidRayUsable"], printInSettings = true, color = false },
+		{ variable = "$collapsingStarUsable", description = L["DemonHunterDevourerBarTextVariable_collapsingStarUsable"], printInSettings = true, color = false },
 	}
 end
 
@@ -686,6 +689,10 @@ local function RefreshLookupData_Devourer()
 	--$soulFragmentsMax
 	local _soulFragmentsMax = snapshotData.attributes.maxResource2
 	local soulFragmentsMax = string.format("%s", _soulFragmentsMax)
+
+	-- $voidRayUsable (false while Metamorphosis is active), $collapsingStarUsable
+	local _voidRayUsable = (not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable())
+	local _collapsingStarUsable = snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -704,6 +711,8 @@ local function RefreshLookupData_Devourer()
 	lookup["$metamorphosisTime"] = ""
 	lookup["$voidMetaTime"] = ""
 	lookup["$voidMetamorphosisTime"] = ""
+	lookup["$voidRayUsable"] = ""
+	lookup["$collapsingStarUsable"] = ""
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -722,6 +731,8 @@ local function RefreshLookupData_Devourer()
 	lookupLogic["$metamorphosisTime"] = 0
 	lookupLogic["$voidMetaTime"] = 0
 	lookupLogic["$voidMetamorphosisTime"] = 0
+	lookupLogic["$voidRayUsable"] = _voidRayUsable
+	lookupLogic["$collapsingStarUsable"] = _collapsingStarUsable
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1313,6 +1324,8 @@ local function UpdateResourceBar()
 					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
 				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and collapsingStarUsable then
 					cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
+				elseif metaActive then
+					cpColor = specSettings.colors.comboPoints.collapsingStar.color
 				end
 
 				local cpBR = cpBackgroundRed
@@ -1447,7 +1460,7 @@ local function SwitchSpec()
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
 		lookup["#voidMeta"] = spells.metamorphosis.icon
-		--lookup["#soulFragments"] = spells.soulFragments.icon
+		lookup["#soulFragments"] = spells.soulFragments.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1461,16 +1474,20 @@ local function SwitchSpec()
 		specCache.devourer.talents:GetTalents()
 		FillSpellData_Devourer()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devourer)
+		-- For whatever reason, this gets reset as Vengeance's specId after when going from Vengeance to Devourer. Manually re-set it.
+		TRB.Data.character.specId = 3
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
-		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+		snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devourer
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.devourer.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#collapsingStar"] = spells.collapsingStar.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
 		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
@@ -1479,17 +1496,13 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
+		snapshotData.snapshots[spells.soulFragments.id].buff:Refresh()
+
 		if TRB.Data.barConstructedForSpec ~= "devourer" then
 			talents = specCache.devourer.talents
 			TRB.Data.barConstructedForSpec = "devourer"
 			TRB.Functions.Class:EventRegistration()
 			ConstructResourceBar(specCache.devourer.settings)
-
-			C_Timer.After(0, function()
-				C_Timer.After(0.05, function()
-					TRB.Data.snapshotData.snapshots[spells.soulFragments.id].buff:Refresh()
-				end)
-			end)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1868,6 +1881,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		elseif var == "$comboPointsMax"or var == "$soulFragmentsMax" or var == "$collapsingStarMax" then
 			valid = true
+		elseif var == "$voidRayUsable" then
+			if (not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable()) then
+				valid = true
+			end
+		elseif var == "$collapsingStarUsable" then
+			if snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource then
+				valid = true
+			end
 		end
 	end
 	

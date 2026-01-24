@@ -110,7 +110,6 @@ end
 ---@class TRB.Classes.Druid.BalanceSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public moonfire TRB.Classes.SpellBase
 ---@field public starfire TRB.Classes.SpellBase
----@field public moonkinForm TRB.Classes.SpellBase
 ---@field public sunfire TRB.Classes.SpellBase
 ---@field public wrath TRB.Classes.SpellBase
 ---@field public eclipseSolar TRB.Classes.SpellBase
@@ -179,11 +178,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         isTalent = true,
         baseline = true,
         isSnowflake = true
-    })
-    self.moonkinForm = TRB.Classes.SpellBase:New({
-        id = 24858,
-        isTalent = true,
-        baseline = true
     })
     self.sunfire = TRB.Classes.SpellBase:New({
         id = 164815,
