@@ -53,6 +53,8 @@ local function FillSpecializationCache()
 	specCache.devastation.snapshotData.audio = {
 		secondaryThresholdPlayed = false
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.devastation.snapshotData.snapshots[spells.dragonrage.id] = TRB.Classes.Snapshot:New(spells.dragonrage)
 
 	specCache.devastation.barTextVariables = {
 		icons = {},
@@ -157,6 +159,7 @@ local function FillSpellData_Devastation()
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+		{ variable = "#dragonrage", icon = spells.dragonrage.icon, description = spells.dragonrage.name, printInSettings = true },
 	}
 	specCache.devastation.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -207,6 +210,8 @@ local function FillSpellData_Devastation()
 		{ variable = "$essenceRegenTime", description = L["EvokerDevastationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerDevastationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+
+		{ variable = "$dragonrageTime", description = L["EvokerDevastationBarTextVariable_dragonrageTime"], printInSettings = true, color = false },
 	}
 end
 
@@ -464,6 +469,10 @@ local function RefreshLookupData_Devastation()
 	end
 	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
+	--$dragonrageTime
+	local _dragonrageTime = snapshots[spells.dragonrage.id].buff:GetRemainingTime(currentTime)
+	local dragonrageTime = TRB.Functions.BarText:TimerPrecision(_dragonrageTime)
+
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -478,6 +487,7 @@ local function RefreshLookupData_Devastation()
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$essenceMax"] = TRB.Data.character.maxResource
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookup["$dragonrageTime"] = dragonrageTime
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -493,6 +503,7 @@ local function RefreshLookupData_Devastation()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookupLogic["$dragonrageTime"] = _dragonrageTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -671,12 +682,31 @@ end
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
-function TRB.Functions.Class:SpellCast(event, spellId)
+function TRB.Functions.Class:SpellCast(event, spellId, ...)
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
+	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 1 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+		local snapshots = snapshotData.snapshots
+		if event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.dragonrage.id then
+				snapshots[spells.dragonrage.id].buff:InitializeCustom(spells.dragonrage.duration, currentTime)
+				snapshots[spells.dragonrage.id].buff.attributes["empoweredCasts"] = 0
+			end
+		elseif event == "UNIT_SPELLCAST_EMPOWER_STOP" then
+			if snapshots[spells.dragonrage.id].buff.isActive and talents:IsTalentActive(spells.animosity) then
+				local success = ...
+				if success and (spellId == spells.fireBreath.id or spellId == spells.eternitySurge.id) then
+					local mod = spells.animosity.attributes.durationPerCastMod ^ (snapshots[spells.dragonrage.id].buff.attributes["empoweredCasts"] or 0)
+					local increasedDuration = mod * spells.animosity.attributes.durationMod
+					snapshots[spells.dragonrage.id].buff:AddTimeOrInitializeCustom(increasedDuration, currentTime)
+					snapshots[spells.dragonrage.id].buff.attributes["empoweredCasts"] = snapshots[spells.dragonrage.id].buff.attributes["empoweredCasts"] + 1
+				end
+			end
+		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_EMPOWER_START" then
@@ -825,6 +855,7 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+				local snapshots = snapshotData.snapshots
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
 				local currentResource = snapshotData.attributes.resourceModified
@@ -834,6 +865,31 @@ local function UpdateResourceBar()
 				if primaryNode then
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				end
+
+				-- Dragonrage bar color changes
+				if specSettings.colors.bar.dragonrage.enabled and snapshots[spells.dragonrage.id].buff.isActive then
+					local dragonrageTimeLeft = snapshots[spells.dragonrage.id].buff:GetRemainingTime(currentTime)
+					local dragonrageTimeThreshold = 0
+					local useEndOfDragonrageColor = false
+
+					if specSettings.endOf.dragonrage.enabled then
+						useEndOfDragonrageColor = true
+						if specSettings.endOf.dragonrage.mode == "gcd" then
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							dragonrageTimeThreshold = gcd * specSettings.endOf.dragonrage.gcdsMax
+						elseif specSettings.endOf.dragonrage.mode == "time" then
+							dragonrageTimeThreshold = specSettings.endOf.dragonrage.timeMax
+						end
+					end
+
+					if useEndOfDragonrageColor and dragonrageTimeLeft <= dragonrageTimeThreshold then
+						-- Dragonrage is ending soon
+						barColor = specSettings.colors.bar.dragonrageEnd.color
+					else
+						-- Dragonrage is active
+						barColor = specSettings.colors.bar.dragonrage.color
+					end
 				end
 
 				if primaryNode then
@@ -1024,6 +1080,7 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.devastation.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#dragonrage"] = spells.dragonrage.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1428,7 +1485,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		return false
 	end
 
-	if TRB.Data.character.specId == 1 then --Devastation			
+	if TRB.Data.character.specId == 1 then --Devastation
+		if var == "$dragonrageTime" then
+			if snapshots[spells.dragonrage.id].buff.isActive then
+				valid = true
+			end
+		end
 	elseif TRB.Data.character.specId == 2 then --Preservation
 	elseif TRB.Data.character.specId == 3 then -- Augmentation
 		if var == "$ebonMightTime" then

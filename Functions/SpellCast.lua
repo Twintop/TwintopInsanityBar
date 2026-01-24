@@ -9,7 +9,7 @@ TRB.Functions.SpellCast = {}
 ---@param unit UnitToken
 ---@param castGuid string
 ---@param spellId integer
-local function SpellCastEvent(self, event, unit, castGuid, spellId)
+local function SpellCastEvent(self, event, unit, castGuid, spellId, ...)
 	if unit ~= "player" then
 		return
 	end
@@ -23,6 +23,10 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId)
 			TRB.Functions.Character:ResetCastingSnapshotData() -- Always reset on channel stop to avoid secrets
 		elseif casting.spellId == spellId and TRB.Functions.Character.ResetCastingSnapshotData ~= nil then
 			TRB.Functions.Character:ResetCastingSnapshotData()
+		end
+
+		if event == "UNIT_SPELLCAST_EMPOWER_STOP" then
+			TRB.Functions.Class:SpellCast(event, spellId, ...)
 		end
 		return
 	elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
