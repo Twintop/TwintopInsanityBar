@@ -27,8 +27,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.bar = settings.bar
 		configuration.healthBar = settings.healthBar
 		configuration.displayBar = settings.displayBar
-		configuration.textures = settings.textures
-		configuration.colors.bar = settings.colors.bar
+		configuration.textures = settings.textures or {}
+		configuration.colors.bar = settings.colors and settings.colors.bar
 		configuration.overcap = settings.overcap
 		configuration.endOf = settings.endOf
 
@@ -51,13 +51,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 2 then -- Paladin
 			if specId == 1 then -- Holy
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Protection
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Retribution
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 3 then -- Hunters
@@ -70,13 +70,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 4 then -- Rogue
 			if specId == 1 then -- Assassination
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Outlaw
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Subtlety
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			end 
 		elseif classId == 5 then -- Priests
@@ -104,13 +104,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 6 then -- Death Knight
 			if specId == 1 then -- Blood
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Frost
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Unholy
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 7 then -- Shaman
@@ -129,7 +129,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
 				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
 			elseif specId == 2 then -- Enhancement
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 				configuration.endOfAscendance = settings.endOfAscendance
 			elseif specId == 3 then -- Restoration
@@ -137,20 +137,20 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 8 then -- Mage
 			if specId == 1 then -- Arcane
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Fire
 			elseif specId == 3 then -- Frost
 			end
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Demonology
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Destruction
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 10 then -- Monk
@@ -169,7 +169,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.textures.staggerBackgroundName = settings.textures and settings.textures.staggerBackgroundName
 			elseif specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 11 then -- Druids
@@ -188,7 +188,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
 				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
 			elseif specId == 2 then -- Feral
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Guardian
 				-- No special bar display configuration for Guardian
@@ -200,23 +200,23 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Havoc
 				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 			elseif specId == 2 then -- Vengeance
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 			elseif specId == 3 then -- Devourer
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Preservation
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Augmentation
-				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 				configuration.endOfEbonMight = settings.endOfEbonMight
 			end
@@ -225,13 +225,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 
 	if includeThresholds then
 		configuration.thresholds = settings.thresholds
-		configuration.colors.threshold = settings.colors.threshold
+		configuration.colors.threshold = settings.colors and settings.colors.threshold
 	end
 
 	if includeFontAndText then
-		configuration.colors.text = settings.colors.text
+		configuration.colors.text = settings.colors and settings.colors.text
 		configuration.precision = settings.precision
-		configuration.displayText.default = settings.displayText.default
+		configuration.displayText.default = settings.displayText and settings.displayText.default
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
@@ -373,7 +373,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	end
 
 	if includeBarText then
-		configuration.displayText.barText = settings.displayText.barText or {}
+		configuration.displayText.barText = settings.displayText and settings.displayText.barText or {}
 	end
 
 	return configuration
