@@ -20,6 +20,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.8-release (2026-01-26)
+## General
+
+- [#555](#555) Fix a Lua error when attempting to export settings for a class that doesn't yet have any configuration.
+
+---
+
 # 12.0.0.7-release (2026-01-25)
 ## Evoker
 ### Devastation
