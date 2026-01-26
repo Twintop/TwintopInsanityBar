@@ -595,8 +595,6 @@ local function FillSpellData_Shadow()
 		{ variable = "$manaPercent", description = L["PriestHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
 
-		{ variable = "$mdTime", description = L["PriestShadowBarTextVariable_mdTime"], printInSettings = true, color = false },
-
 		{ variable = "$mfiTime", description = L["PriestShadowBarTextVariable_mfiTime"], printInSettings = true, color = false },
 		{ variable = "$mfiStacks", description = L["PriestShadowBarTextVariable_mfiStacks"], printInSettings = true, color = false },
 
@@ -1018,11 +1016,7 @@ local function RefreshLookupData_Shadow()
 	if target ~= nil then
 		_hvStacks = target.spells[spells.horrificVisions.id].stacks or 0
 	end
-	local hvStacks = string.format("%.0f", _hvStacks)
-
-	--$mdTime
-	local _mdTime = snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
-	local mdTime = TRB.Functions.BarText:TimerPrecision(_mdTime)]]
+	local hvStacks = string.format("%.0f", _hvStacks)]]
 	
 	--$mfiTime
 	local _mfiTime = 0
@@ -1132,7 +1126,7 @@ local function RefreshLookupData_Shadow()
 	lookup["$mana"] = currentMana
 	lookup["$manaMax"] = manaMax
 	lookup["$manaPercent"] = manaPercent
-	--[[lookup["$mdTime"] = mdTime
+	--[[
 	lookup["$spTime"] = spTime
 	lookup["$mmTime"] = spTime
 	lookup["$spStacks"] = spStacks
@@ -1168,7 +1162,7 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$mana"] = normalizedMana
 	lookupLogic["$manaMax"] = normalizedManaMax
 	lookupLogic["$manaPercent"] = _manaPercent
-	--[[lookupLogic["$mdTime"] = _mdTime
+	--[[
 	lookupLogic["$spTime"] = _spTime
 	lookupLogic["$mmTime"] = _spTime
 	lookupLogic["$spStacks"] = spStacks
@@ -2639,10 +2633,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				target.spells[spells.vampiricTouch.id].stacks > 0 then
 				valid = true
 			end]]
-		elseif var == "$mdTime" then
-			if snapshots[spells.mindDevourer.id].buff.isActive then
-				valid = true
-			end
 		elseif var == "$mfiTime" then
 			if snapshots[spells.mindFlayInsanity.id].buff.isActive then
 				valid = true

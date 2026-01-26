@@ -233,6 +233,10 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				dragonrageEnd = {
 					color = "FFFF0000"
 				},
+				essenceBurst = {
+					color = "FFFCE58E",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border="FF246759",
@@ -280,6 +284,12 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					thresholdValue = 2
 				}
+			},
+			essenceBurst={
+				name = L["EvokerEssenceBurst"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -348,6 +358,10 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				background="66000000",
 				base="FF0000FF",
 				innervate="FF00FF00",
+				essenceBurst = {
+					color = "FFFCE58E",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border="FF246759",
@@ -385,6 +399,12 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					thresholdValue = 2
 				}
+			},
+			essenceBurst={
+				name = L["EvokerEssenceBurst"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -513,7 +533,11 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				ebonMightDropDuringCast = {
 					color = "FF550000",
 					enabled = true
-				}
+				},
+				essenceBurst = {
+					color = "FFFCE58E",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border="FF246759",
@@ -567,6 +591,12 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					thresholdValue = 2
 				}
+			},
+			essenceBurst={
+				name = L["EvokerEssenceBurst"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
 		endOfEbonMight = {
@@ -760,6 +790,23 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], false, false)
 	
+	yCoord = yCoord - 30
+	controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.essenceBurstBorderChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerEssenceBurst"])
+	f.tooltip = L["EvokerCheckboxEssenceBurstTooltip"]
+	f:SetChecked(spec.colors.bar.essenceBurst.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
+	end)
+
+	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.essenceBurst
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
+	end)
+
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerEssenceColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
@@ -880,6 +927,9 @@ local function DevastationConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurst"], L["EvokerAudioCheckboxEssenceBurstTooltip"])
+	
 	local yCoord2 = yCoord - 20
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "secondaryThreshold", spec, classId, specId, yCoord, L["EvokerAudioCheckboxSecondaryThreshold"], L["EvokerAudioCheckboxSecondaryThresholdTooltip"])
@@ -1165,6 +1215,23 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], false, true)
+	
+	yCoord = yCoord - 30
+	controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.essenceBurstBorderChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerEssenceBurst"])
+	f.tooltip = L["EvokerCheckboxEssenceBurstTooltip"]
+	f:SetChecked(spec.colors.bar.essenceBurst.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
+	end)
+
+	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.essenceBurst
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
+	end)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerEssenceColorsHeader"], oUi.xCoord, yCoord)
@@ -1299,6 +1366,9 @@ local function PreservationConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurst"], L["EvokerAudioCheckboxEssenceBurstTooltip"])
+
 	local yCoord2 = yCoord - 20
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "secondaryThreshold", spec, classId, specId, yCoord, L["EvokerAudioCheckboxSecondaryThreshold"], L["EvokerAudioCheckboxSecondaryThresholdTooltip"])
@@ -1638,6 +1708,23 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], false, false)
+	
+	yCoord = yCoord - 30
+	controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.essenceBurstBorderChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerEssenceBurst"])
+	f.tooltip = L["EvokerCheckboxEssenceBurstTooltip"]
+	f:SetChecked(spec.colors.bar.essenceBurst.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
+	end)
+
+	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.essenceBurst
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
+	end)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerEssenceColorsHeader"], oUi.xCoord, yCoord)
@@ -1793,6 +1880,8 @@ local function AugmentationConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurst"], L["EvokerAudioCheckboxEssenceBurstTooltip"])
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "ebonMightEnding", spec, classId, specId, yCoord, L["EvokerAugmentationAudioCheckboxEbonMightEnding"], L["EvokerAugmentationAudioCheckboxEbonMightEndingTooltip"])
 

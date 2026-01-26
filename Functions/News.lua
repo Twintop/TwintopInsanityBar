@@ -20,6 +20,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.9-release (2026-01-26)
+## Evoker
+
+- [#524](#524) Re-enable Essence Burst detection. This allows for bar border color change and audio cue to function again. The border color change is enabled by default, whereas the audio cue is disabled by default.
+
+---
+
 # 12.0.0.8-release (2026-01-26)
 ## General
 

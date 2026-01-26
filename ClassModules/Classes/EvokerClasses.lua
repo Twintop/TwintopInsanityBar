@@ -19,8 +19,12 @@ function TRB.Classes.Evoker.DevastationSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Evoker.DevastationSpells) --[[@as TRB.Classes.Evoker.DevastationSpells]]
-
-	-- Devastation Spec Talents
+    
+    self.essenceBurst = TRB.Classes.SpellBase:New({
+        id = 359618
+    })
+	
+    -- Devastation Spec Talents
 	self.dragonrage = TRB.Classes.SpellBase:New({
 		id = 375087,
 		isTalent = true,
@@ -57,7 +61,19 @@ function TRB.Classes.Evoker.PreservationSpells:New()
 	---@type TRB.Classes.Healer.HealerSpells
 	local base = TRB.Classes.Healer.HealerSpells
 	self = setmetatable(base:New(), TRB.Classes.Evoker.PreservationSpells) --[[@as TRB.Classes.Evoker.PreservationSpells]]
-	-- Evoker Class Talents		
+    
+    self.essenceBurst = TRB.Classes.SpellBase:New({
+        id = 369299
+    })
+	
+    --[[self.eruption = TRB.Classes.SpellBase:New({
+        id = 395160,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Essence,
+        settingKey = "eruption",
+    })]]
+
+    -- Evoker Class Talents		
 	
 	-- Preservation Spec Talents
     
@@ -69,7 +85,7 @@ end
 
 ---@class TRB.Classes.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public ebonMight TRB.Classes.SpellBase
----@field public erruption TRB.Classes.SpellBase
+---@field public eruption TRB.Classes.SpellBase
 ---@field public emeraldBlossom TRB.Classes.SpellBase
 ---@field public dreamOfSpring TRB.Classes.SpellBase
 TRB.Classes.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -80,20 +96,24 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Evoker.AugmentationSpells) --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
+    self.essenceBurst = TRB.Classes.SpellBase:New({
+        id = 392268
+    })
+
     self.ebonMight = TRB.Classes.SpellBase:New({
         id = 395296,
         talentId = 395152,
         isBuff = true,
         isTalent = true
     })
-	self.erruption = TRB.Classes.SpellBase:New({
+	self.eruption = TRB.Classes.SpellBase:New({
         id = 395160,
         isTalent = true
     })
 
     self.emeraldBlossom = TRB.Classes.SpellBase:New({
         id = 355913,
-        baseline = true
+        baseline = true,
     })
     self.dreamOfSpring = TRB.Classes.SpellBase:New({
         id = 414969,

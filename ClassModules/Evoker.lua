@@ -51,6 +51,7 @@ local function FillSpecializationCache()
 
 	specCache.devastation.snapshotData.attributes.manaRegen = 0
 	specCache.devastation.snapshotData.audio = {
+		essenceBurstPlayed = false,
 		secondaryThresholdPlayed = false
 	}
 	---@type TRB.Classes.Snapshot
@@ -89,6 +90,7 @@ local function FillSpecializationCache()
 
 	specCache.preservation.snapshotData.attributes.manaRegen = 0
 	specCache.preservation.snapshotData.audio = {
+		essenceBurstPlayed = false,
 		secondaryThresholdPlayed = false
 	}
 
@@ -127,6 +129,7 @@ local function FillSpecializationCache()
 	specCache.augmentation.snapshotData.attributes.manaRegen = 0
 	specCache.augmentation.snapshotData.attributes.extendsEbonMight = false
 	specCache.augmentation.snapshotData.audio = {
+		essenceBurstPlayed = false,
 		playedEbonMightCue = false,
 		secondaryThresholdPlayed = false
 	}
@@ -721,7 +724,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			casting:SnapshotSpell()
 		elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			-- Track if we're casting an ability that extends Ebon Might
-			if spellId == spells.erruption.id then
+			if spellId == spells.eruption.id then
 				snapshotData.attributes.extendsEbonMight = true
 				casting:SnapshotSpell()
 			elseif spellId == spells.emeraldBlossom.id and talents:IsTalentActive(spells.dreamOfSpring.talentId) then
@@ -738,6 +741,47 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			casting:Reset()
 		end
 	end
+end
+
+---Updates data based on spell events
+local function HandleSpellEvents(self, event, ...)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]	
+	local essenceBurstSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells|TRB.Classes.Evoker.PreservationSpells|TRB.Classes.Evoker.AugmentationSpells]]
+	local essenceBurstDetectionId = essenceBurstSpells.essenceBurst.id
+
+	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
+		local spellId = ...
+		if spellId == essenceBurstDetectionId then -- Essence Burst
+			if snapshotData.attributes.essenceBurstActive ~= true then
+				local specSettings = TRB.Data.settings.evoker[TRB.Data.character.specName]
+				if specSettings.audio.essenceBurst.enabled and not snapshotData.audio.essenceBurstPlayed then
+					PlaySoundFile(specSettings.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
+					snapshotData.audio.essenceBurstPlayed = true
+				end
+			end
+			snapshotData.attributes.essenceBurstActive = true
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
+		local spellId = ...
+		if spellId == essenceBurstDetectionId then -- Essence Burst
+			snapshotData.attributes.essenceBurstActive = false
+			snapshotData.audio.essenceBurstPlayed = false
+		end
+	end
+end
+
+
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 end
 
 local function UpdateSnapshot()
@@ -852,7 +896,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary ~= "never" and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 				local snapshots = snapshotData.snapshots
@@ -862,10 +906,8 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
-				if primaryNode then
-					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
-				end
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 
 				-- Dragonrage bar color changes
 				if specSettings.colors.bar.dragonrage.enabled and snapshots[spells.dragonrage.id].buff.isActive then
@@ -892,11 +934,15 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if primaryNode then
-					primaryNode:SetBorderColor(barBorderColor)
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				if snapshotData.attributes.essenceBurstActive then
+					if specSettings.colors.bar.essenceBurst.enabled then
+						barBorderColor = specSettings.colors.bar.essenceBurst.color
+					end
 				end
+
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -925,20 +971,24 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary ~= "never" and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
 				local barBorderColor = specSettings.colors.bar.border
-
 				local barColor = specSettings.colors.bar.base
 
-				if primaryNode then
-					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					primaryNode:SetBorderColor(barBorderColor)
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				if snapshotData.attributes.essenceBurstActive then
+					if specSettings.colors.bar.essenceBurst.enabled then
+						barBorderColor = specSettings.colors.bar.essenceBurst.color
+					end
 				end
+
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -968,7 +1018,7 @@ local function UpdateResourceBar()
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary ~= "never" and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 				local targetData = snapshotData.targetData
@@ -977,10 +1027,8 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border
 
-				if primaryNode then
-					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
-				end
+				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 
 				-- Ebon Might bar color changes
 				if snapshots[spells.ebonMight.id].buff.isActive then
@@ -1028,11 +1076,15 @@ local function UpdateResourceBar()
 					snapshotData.audio.playedEbonMightCue = false
 				end
 
-				if primaryNode then
-					primaryNode:SetBorderColor(barBorderColor)
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				if snapshotData.attributes.essenceBurstActive then
+					if specSettings.colors.bar.essenceBurst.enabled then
+						barBorderColor = specSettings.colors.bar.essenceBurst.color
+					end
 				end
+
+				primaryNode:SetBorderColor(barBorderColor)
+				primaryNode:SetColor(barColor)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -1321,6 +1373,7 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
+	TRB.Functions.Class:EnableEvents()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1341,6 +1394,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = 1
 	else -- This should never happen
 		TRB.Data.specSupported = false
+		TRB.Functions.Class:DisableEvents()
 	end
 
 	TRB.Functions.Character:EventRegistration()

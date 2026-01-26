@@ -192,7 +192,6 @@ if locale == "frFR" then
     L["AudioChannelAmbience"] = "Ambiance"
     L["BarText"] = "Texte de barre"
     L["PriestShadowBarTextVariable_casting"] = "Insanité obtenue de sorts lancées"
-    L["PriestShadowBarTextVariable_mdTime"] = "Temps restant sur l'amélioration Dévoreur d'esprit"
     L["PriestShadowBarTextVariable_mfiStacks"] = "Nombre de cumul de l'amélioration Fouet Mental: Insanité "
     L["PriestShadowBarTextVariable_mfiTime"] = "Temps restant sur l'amélioration Fouet Mental: Insanité "
     L["PriestShadowBarTextVariable_mindBlastCharges"] = "Nombre actuel de charge d'Attaque Mental"
