@@ -42,6 +42,7 @@ end
 
 ---@class TRB.Classes.Priest.HealerSpells : TRB.Classes.Healer.HealerSpells
 ---@field public flashHeal TRB.Classes.SpellBase
+---@field public surgeOfLight TRB.Classes.SpellBase
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
@@ -59,6 +60,9 @@ function TRB.Classes.Priest.HealerSpells:New()
 		attributes = {
 			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
 		}
+	})
+	self.surgeOfLight = TRB.Classes.SpellBase:New({
+		id = 114255
 	})
 
 	return self

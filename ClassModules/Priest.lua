@@ -125,7 +125,7 @@ local function FillSpecializationCache()
 	specCache.discipline.snapshotData.attributes.manaRegen = 0
 	specCache.discipline.snapshotData.audio = {
 		innervateCue = false,
-		surgeOfLightCue = false
+		surgeOfLightPlayed = false
 	}
 	--[[---@type TRB.Classes.Snapshot
 	specCache.discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
@@ -173,7 +173,7 @@ local function FillSpecializationCache()
 		innervateCue = false,
 		resonantWordsCue = false,
 		lightweaverCue = false,
-		surgeOfLightCue = false,
+		surgeOfLightPlayed = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis, nil, "sometimes")
@@ -1439,21 +1439,49 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
----Checks if Surge of Light is active by comparing Flash Heal's current mana cost to its base cost
----@return boolean # True if Surge of Light is active (Flash Heal cost is reduced)
-local function IsSurgeOfLightActive()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
-	if spells == nil or spells.flashHeal == nil then
-		return false
+---Updates data based on spell events
+local function HandleSpellEvents(self, event, ...)
+	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+			if spellId == spells.surgeOfLight.id then -- Surge of Light
+				if snapshotData.attributes.surgeOfLightActive ~= true then
+					local specSettings = TRB.Data.settings.priest[TRB.Data.character.specName]
+					if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightPlayed then
+						PlaySoundFile(specSettings.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
+						snapshotData.audio.surgeOfLightPlayed = true
+					end
+				end
+				snapshotData.attributes.surgeOfLightActive = true
+			end
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+			if spellId == spells.surgeOfLight.id then -- Surge of Light
+				snapshotData.attributes.surgeOfLightActive = false
+				snapshotData.audio.surgeOfLightPlayed = false
+			end
+		end
 	end
+end
 
-	local baseManaCost = spells.flashHeal.attributes.baseManaCost
-	if baseManaCost == nil or baseManaCost <= 0 then
-		return false
-	end
 
-	local currentCost = spells.flashHeal:GetPrimaryResourceCost(true) or 0
-	return currentCost < baseManaCost
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 end
 
 local function UpdateSnapshot()
@@ -1587,18 +1615,10 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 
 				-- Detect Surge of Light via Flash Heal mana cost reduction
-				if IsSurgeOfLightActive() then
+				if snapshotData.attributes.surgeOfLightActive then
 					if specSettings.colors.bar.surgeOfLightBorderChange1 then
 						barBorderColor = specSettings.colors.bar.surgeOfLight
 					end
-
-					if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightCue then
-						snapshotData.audio.surgeOfLightCue = true
-						PlaySoundFile(specSettings.audio.surgeOfLight.sound, coreSettings.audio.channel.channel)
-					end
-				else
-					-- Reset audio cues when Surge of Light is no longer active
-					snapshotData.audio.surgeOfLightCue = false
 				end
 
 				--[[if snapshots[spells.shadowCovenant.id].buff.isActive then
@@ -1647,18 +1667,10 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border
 
 				-- Detect Surge of Light via Flash Heal mana cost reduction
-				if IsSurgeOfLightActive() then
+				if snapshotData.attributes.surgeOfLightActive then
 					if specSettings.colors.bar.surgeOfLightBorderChange1 then
 						barBorderColor = specSettings.colors.bar.surgeOfLight
 					end
-
-					if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightCue then
-						snapshotData.audio.surgeOfLightCue = true
-						PlaySoundFile(specSettings.audio.surgeOfLight.sound, coreSettings.audio.channel.channel)
-					end
-				else
-					-- Reset audio cue when Surge of Light is no longer active
-					snapshotData.audio.surgeOfLightCue = false
 				end
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
@@ -2359,19 +2371,21 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
-
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
+		TRB.Functions.Class:DisableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Insanity
 		TRB.Data.resourceFactor = 100
@@ -2379,6 +2393,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = nil
 	else
 		TRB.Data.specSupported = false
+		TRB.Functions.Class:DisableEvents()
 	end
 
 	TRB.Functions.Character:EventRegistration()
