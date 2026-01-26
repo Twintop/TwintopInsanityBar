@@ -847,7 +847,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.beastMastery
 		local specCacheSettings = TRB.Data.specCache.beastMastery.settings
 		UpdateSnapshot_BeastMastery()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
@@ -1023,7 +1022,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.marksmanship
 		local specCacheSettings = TRB.Data.specCache.marksmanship.settings
 		UpdateSnapshot_Marksmanship()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
@@ -1201,7 +1199,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.survival
 		local specCacheSettings = TRB.Data.specCache.survival.settings
 		UpdateSnapshot_Survival()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then

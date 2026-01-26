@@ -1710,3 +1710,10 @@ L["EvokerAudioCheckboxEssenceBurstTooltip"] = "Play an audio cue when an Essence
 L["EvokerCheckboxEssenceBurstTooltip"] = "This will change the bar border color when you have Essence Burst."
 L["EvokerColorPickerEssenceBurst"] = "Border when you have Essence Burst"
 L["EvokerEssenceBurst"] = "Essence Burst"
+
+-- Edit Mode Integration
+L["TRBAddonName"] = "Twintop's Resource Bar"
+L["EditModeEnableForLayout"] = "Enable for this layout"
+L["EditModeEnableForLayoutTooltip"] = "When enabled, Edit Mode will control the bar's position for this layout instead of using per-spec or global settings."
+L["EditModePositionOverrideNotice"] = "If Edit Mode integration is enabled for the current UI layout, the Horizontal and Vertical position settings below will be ignored."
+L["DefaultFontSettingsNotice"] = "These settings only apply to bar text areas configured to use default font settings under the Bar Text tab."

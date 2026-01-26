@@ -20,7 +20,11 @@ local content = [====[
 
 ---
 
-# 12.0.0.9-release (2026-01-26)
+# 12.0.0.9-release (2026-01-27)
+## General
+
+- [#528](#528) Add Edit Mode integration for bar positioning. When enabled for a layout, Edit Mode will control the bar's position instead of per-spec or global settings. This can be toggled via Edit Mode per layout.
+
 ## Evoker
 
 - [#524](#524) Re-enable Essence Burst detection. This allows for bar border color change and audio cue to function again. The border color change is enabled by default, whereas the audio cue is disabled by default.

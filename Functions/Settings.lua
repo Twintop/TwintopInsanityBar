@@ -293,6 +293,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				}
 			},
 			experimental = {
+			},
+			editMode = {
+				layouts = {}
 			}
 		},
 		deathknight = {
@@ -1356,8 +1359,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 			xPos = 0,
 			yPos = -200,
 			border = 4,
-			dragAndDrop = false,
-			pinToPersonalResourceDisplay = false
+			dragAndDrop = false
 		}
 		TwintopInsanityBarSettings.core.comboPoints = {
 			width = 25,
@@ -1939,8 +1941,7 @@ function TRB.Functions.Settings:DefaultBarDimensions(classic)
 		xPos = 0,
 		yPos = -200,
 		border = border,
-		dragAndDrop = false,
-		pinToPersonalResourceDisplay = false
+		dragAndDrop = false
 	}
 end
 

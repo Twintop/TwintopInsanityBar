@@ -738,6 +738,17 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 		return
 	end
 
+	-- Don't enable drag-and-drop if Edit Mode is active and layout is enabled
+	if enabled and TRB.Functions.EditMode then
+		if TRB.Functions.EditMode:IsInEditMode() then
+			enabled = false
+		elseif TRB.Functions.EditMode:IsLayoutEnabled() then
+			-- When Edit Mode is enabled for this layout, disable legacy drag-and-drop
+			-- since Edit Mode will handle positioning
+			enabled = false
+		end
+	end
+
 	self.containerFrame:SetMovable(enabled)
 	self.containerFrame:EnableMouse(enabled)
 

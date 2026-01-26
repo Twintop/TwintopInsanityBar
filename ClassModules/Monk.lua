@@ -969,9 +969,6 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.brewmaster.settings
 		UpdateSnapshot_Brewmaster()
 
-		if barGroups and barGroups.primary then
-			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
-		end
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
@@ -1160,9 +1157,6 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.mistweaver.settings
 		UpdateSnapshot_Mistweaver()
 
-		if barGroups and barGroups.primary then
-			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
-		end
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
@@ -1210,9 +1204,6 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.windwalker.settings
 		UpdateSnapshot_Windwalker()
 
-		if barGroups and barGroups.primary then
-			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
-		end
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then

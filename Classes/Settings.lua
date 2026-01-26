@@ -129,7 +129,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public yPos number
 ---@field public border integer
 ---@field public dragAndDrop boolean
----@field public pinToPersonalResourceDisplay boolean
 
 ---@class TRB.Classes.Settings.SecondaryBar
 ---@field public width number

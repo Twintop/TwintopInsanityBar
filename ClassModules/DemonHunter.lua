@@ -888,10 +888,6 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.havoc.settings
 		UpdateSnapshot_Havoc()
 
-		if barGroups and barGroups.primary then
-			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
-		end
-
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
 
@@ -1034,10 +1030,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.vengeance
 		local specCacheSettings = TRB.Data.specCache.vengeance.settings
 		UpdateSnapshot_Vengeance()
-
-		if barGroups and barGroups.primary then
-			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
-		end
 
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()
@@ -1203,10 +1195,6 @@ local function UpdateResourceBar()
 		local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
 		local metaUsable = snapshotData.snapshots[spells.soulFragments.id].buff.applications >= snapshotData.attributes.maxResource2
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
-
-		if barGroups and barGroups.primary then
-			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
-		end
 
 		if snapshotData.attributes.isTracking then
 			TRB.Functions.Bar:HideResourceBar()

@@ -788,7 +788,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.holy
 		local specCacheSettings = TRB.Data.specCache.holy.settings
 		UpdateSnapshot_Holy()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -825,7 +824,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.protection
 		local specCacheSettings = TRB.Data.specCache.protection.settings
 		UpdateSnapshot_Protection()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -862,7 +860,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.retribution
 		local specCacheSettings = TRB.Data.specCache.retribution.settings
 		UpdateSnapshot_Retribution()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then

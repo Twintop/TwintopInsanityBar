@@ -158,16 +158,6 @@ end
 
 
 
----Sets the positioning of the `containerFrame` with respect to the Personal Resource Display
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param containerFrame frame
-function TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(settings, containerFrame)
-	--[[if settings.bar.pinToPersonalResourceDisplay then
-		containerFrame:ClearAllPoints()
-		containerFrame:SetPoint("CENTER", C_NamePlate.GetNamePlateForUnit("player"), "CENTER", settings.bar.xPos, settings.bar.yPos)
-	end]]
-end
-
 ---Sets the position of the `containerFrame`
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param containerFrame frame
@@ -196,6 +186,11 @@ TRB.Frames.barGroups = TRB.Frames.barGroups or {}
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
+	-- Clear the Edit Mode registered frame reference since the frame is being destroyed
+	if TRB.Functions.EditMode and TRB.Functions.EditMode.ClearRegisteredFrame then
+		TRB.Functions.EditMode:ClearRegisteredFrame()
+	end
+
 	if TRB.Frames.barGroups then
 		for key, group in pairs(TRB.Frames.barGroups) do
 			if group and group.Destroy then
@@ -218,8 +213,18 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	TRB.Data.cache.colors.border = {}
 	TRB.Data.cache.colors.backdrop = {}
 
+	-- Initialize Edit Mode if not yet done (safe to call multiple times)
+	if TRB.Functions.EditMode and TRB.Functions.EditMode.Initialize then
+		TRB.Functions.EditMode:Initialize()
+	end
+
 	self:ApplyBarGroupsLayout(settings, barGroups)
 	self:ApplyBarGroupsAppearance(settings, barGroups)
+
+	-- Register the primary bar with Edit Mode
+	if barGroups.primary and TRB.Functions.EditMode then
+		TRB.Functions.EditMode:RegisterPrimaryBar(barGroups.primary:GetContainerFrame())
+	end
 
 	-- Create bar text frames (essential for bar text display)
 	TRB.Functions.BarText:CreateBarTextFrames()
@@ -246,8 +251,20 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 		-- First, position and size the group container (parent of nodes)
 		-- This must be done BEFORE positioning child nodes
+		-- Check if Edit Mode should control positioning
+		local editModePosition = TRB.Functions.EditMode:GetActivePosition()
 		primary.containerFrame:ClearAllPoints()
-		primary.containerFrame:SetPoint("CENTER", UIParent, "CENTER", settings.bar.xPos, settings.bar.yPos)
+		if editModePosition and editModePosition.point then
+			-- Edit Mode position: Use the exact same 3-argument SetPoint that LibEditMode uses
+			-- This is critical because normalizePosition calculates x,y relative to the anchor point
+			-- and the 3-argument SetPoint(point, x, y) is equivalent to SetPoint(point, parent, point, x, y)
+			primary.containerFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
+		else
+			-- Legacy position: Always uses CENTER anchor
+			local xPos = settings.bar.xPos or 0
+			local yPos = settings.bar.yPos or -200
+			primary.containerFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
+		end
 		primary.containerFrame:SetWidth(settings.bar.width - (settings.bar.border * 2))
 		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
 

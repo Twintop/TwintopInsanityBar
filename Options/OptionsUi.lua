@@ -953,6 +953,14 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 	controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarPositionSize"], oUi.xCoord, yCoord)
 
+	-- Show Edit Mode informational notice
+	yCoord = yCoord - 30
+	controls.editModeNotice = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	controls.editModeNotice:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	controls.editModeNotice:SetWidth(550)
+	controls.editModeNotice:SetJustifyH("LEFT")
+	controls.editModeNotice:SetText("|cFFCCCCCC" .. L["EditModePositionOverrideNotice"] .. "|r")
+
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
@@ -3834,9 +3842,17 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	controls.dropDown.fonts = {}
 
 	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultBarTextFontSettingsHeader"], oUi.xCoord, yCoord)
+
+	-- Show informational notice about how default font settings work
 	yCoord = yCoord - 30
+	controls.defaultFontNotice = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	controls.defaultFontNotice:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	controls.defaultFontNotice:SetWidth(550)
+	controls.defaultFontNotice:SetJustifyH("LEFT")
+	controls.defaultFontNotice:SetText("|cFFCCCCCC" .. L["DefaultFontSettingsNotice"] .. "|r")
 
 	if specId ~= nil and classId ~= nil then
+		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
 		controls.checkBoxes.useGlobal = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_displayText", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobal
@@ -3850,8 +3866,8 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		end)
-		yCoord = yCoord - 30
 	end
+	yCoord = yCoord - 30
 
 	FillFontCache()
 

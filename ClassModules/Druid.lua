@@ -1871,7 +1871,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.balance
 		local specCacheSettings = TRB.Data.specCache["balance"].settings
 		UpdateSnapshot_Balance()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
@@ -2113,7 +2112,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.feral
 		local specCacheSettings = TRB.Data.specCache["feral"].settings
 		UpdateSnapshot_Feral()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
@@ -2442,7 +2440,6 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache["guardian"].settings
 		UpdateSnapshot_Guardian()
 
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
@@ -2607,7 +2604,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.restoration
 		local specCacheSettings = TRB.Data.specCache.restoration.settings
 		UpdateSnapshot_Restoration()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then

@@ -946,7 +946,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.blood
 		local specCacheSettings = TRB.Data.specCache.blood.settings
 		UpdateSnapshot_Blood()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1051,7 +1050,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.frost
 		local specCacheSettings = TRB.Data.specCache.frost.settings
 		UpdateSnapshot_Frost()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1156,7 +1154,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.unholy
 		local specCacheSettings = TRB.Data.specCache.unholy.settings
 		UpdateSnapshot_Unholy()
-		TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specCacheSettings, barGroups.primary:GetContainerFrame())
 		TRB.Functions.Bar:HideResourceBar()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then

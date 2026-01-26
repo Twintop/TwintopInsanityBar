@@ -15,7 +15,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.0.0.9
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-01-26
+## X-ReleaseDate: 2026-01-27
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -43,6 +43,8 @@ Libs\LibSharedMedia-3.0.lua
 Libs\LibSmoothMove-1.0.lua
 Libs\LibMarkdown\LibMarkdown.xml
 Libs\LibScrollingTable\lib-st.xml
+Libs\LibEditMode\LibEditMode.lua
+Libs\LibEditMode\embed.xml
 #Libs\LibAdvFlight-1.0\lib.xml
 
 Localization\Localization.lua
@@ -105,6 +107,7 @@ Functions\Bar.lua
 Functions\BarText.lua
 Functions\Character.lua
 Functions\Color.lua
+Functions\EditMode.lua
 Functions\Item.lua
 Functions\IO.lua
 Functions\LibSharedMedia.lua
