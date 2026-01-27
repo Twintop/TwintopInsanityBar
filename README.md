@@ -52,6 +52,16 @@ Every bar can be shown or hidden independently:
 - Pixel-precise positioning with horizontal and vertical offsets
 - Drag-and-drop repositioning
 
+### Edit Mode Integration
+
+Full integration with WoW's native Edit Mode system, allowing you to position and manage the resource bar alongside other UI elements:
+
+- **Per-Layout Settings** - Edit Mode configuration is saved separately for each HUD layout, so you can have different positions and settings for each
+- **Free Position Mode** - Place the bar anywhere on screen with drag-and-drop positioning while in Edit Mode
+- **Anchor to Cooldown Manager** - Optionally anchor the bar above or below Blizzard's Cooldown Manager Essential Abilities frame to keep it aligned with your HUD
+- **Match Cooldown Manager Width** - When anchored to the Cooldown Manager, optionally match its width for a cohesive look
+- **Vertical Offset** - Fine-tune vertical spacing when anchored to the Cooldown Manager
+
 ### Colors
 
 - Separate color settings for bar fill, border, and background
