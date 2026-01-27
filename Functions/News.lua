@@ -25,6 +25,10 @@ local content = [====[
 
 - [#558](#558) Prevent Lua errors during Rune cooldown tracking when the API returns unexpected secret values.
 
+## Druid
+
+- [#561](#561) Fix an issue where switching forms with Edit Mode enabled would cause the bar to change position.
+
 ---
 
 # 12.0.0.9-release (2026-01-27)

@@ -166,9 +166,20 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		return
 	end
 
-	containerFrame:ClearAllPoints()
-	containerFrame:SetPoint("CENTER", UIParent)
-	containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	---containerFrame:ClearAllPoints()
+	---containerFrame:SetPoint("CENTER", UIParent)
+	---containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	
+	-- Check if Edit Mode should control positioning
+	local editModePosition = TRB.Functions.EditMode:GetActivePosition()
+	if editModePosition and editModePosition.point then
+		-- Edit Mode position: Use the same 3-argument SetPoint that LibEditMode uses
+		containerFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
+	else
+		-- Legacy position: Uses CENTER anchor
+		containerFrame:SetPoint("CENTER", UIParent)
+		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	end
 
 	TRB.Functions.Threshold:RedrawThresholdLines()
 end

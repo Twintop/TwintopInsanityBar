@@ -1698,9 +1698,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 						for k,v in pairs(healthBarText) do table.insert(specSettings.displayText.barText, v) end
 					end
 
-					-- Migrate mana bar settings for Shadow Priest, Balance Druid, and Elemental Shaman
+					-- Migrate mana bar settings for Shadow Priest and Elemental Shaman, Balance Druid is excluded.
 					local isManaBarSpec = (className == "priest" and specName == "shadow") or
-						(className == "druid" and specName == "balance") or
 						(className == "shaman" and specName == "elemental")
 
 					if isManaBarSpec and specSettings.textures and not specSettings.manaBar then

@@ -26,7 +26,7 @@ local GUARDIAN_MAX_RAGE = 100
 ---@param baseSpecId number
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
-local function SharedLoadDefaultBarTextSettings(baseSpecId,classic)
+local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
 	}
