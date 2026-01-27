@@ -636,9 +636,12 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
 		barGroups.secondary:Show()
 		
+		-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
+		local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+		
 		-- Apply layout to position all nodes correctly
 		barGroups.secondary:ApplyLayout(
-			settings.bar.width,
+			effectiveWidth,
 			settings.comboPoints.width,
 			settings.comboPoints.height,
 			settings.comboPoints.border
@@ -2226,8 +2229,12 @@ function TRB.Functions.Class:CheckCharacter()
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
 				barGroups.secondary:SetNodeCount(maxComboPoints)
 				barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
+				
+				-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
+				local effectiveWidth = (barGroups and barGroups.effectiveWidth) or sharedSettings.bar.width
+				
 				barGroups.secondary:ApplyLayout(
-					sharedSettings.bar.width,
+					effectiveWidth,
 					sharedSettings.comboPoints.width,
 					sharedSettings.comboPoints.height,
 					sharedSettings.comboPoints.border

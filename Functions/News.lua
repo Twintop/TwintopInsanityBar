@@ -23,6 +23,7 @@ local content = [====[
 # 12.0.0.11-release (2026-01-28)
 ## General
 
+- [#528](#528) Add Edit Mode options to bind the bar position to the Cooldown Manager's Essential frame and match its width.
 - [#528](#528) Show all bars available to the current spec that are sometimes or always visible while in Edit Mode.
 
 ---

@@ -415,9 +415,12 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
 		barGroups.secondary:Show()
 		
+		-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
+		local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+		
 		-- Apply layout to position all nodes correctly
 		barGroups.secondary:ApplyLayout(
-			settings.bar.width,
+			effectiveWidth,
 			settings.comboPoints.width,
 			settings.comboPoints.height,
 			settings.comboPoints.border

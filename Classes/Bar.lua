@@ -749,26 +749,53 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 		end
 	end
 
-	self.containerFrame:SetMovable(enabled)
-	self.containerFrame:EnableMouse(enabled)
+	-- When using the wrapper frame system, make the wrapper movable instead of the container
+	-- The wrapper is the parent of all bars, so moving it moves everything
+	local wrapperFrame = TRB.Functions.EditMode and TRB.Functions.EditMode:GetWrapperFrame()
+	local targetFrame = wrapperFrame or self.containerFrame
+
+	targetFrame:SetMovable(enabled)
+	targetFrame:EnableMouse(enabled)
+
+	-- Helper function to recursively enable/disable mouse on all descendants
+	local function setMouseOnDescendants(frame, mouseEnabled)
+		for _, child in pairs({frame:GetChildren()}) do
+			child:EnableMouse(mouseEnabled)
+			setMouseOnDescendants(child, mouseEnabled)
+		end
+	end
+
+	-- When using wrapper and enabling drag, disable mouse on ALL descendant frames
+	-- so clicks pass through to the wrapper frame for dragging
+	if wrapperFrame then
+		if enabled then
+			-- Disable mouse on all bar frames so wrapper receives clicks
+			setMouseOnDescendants(wrapperFrame, false)
+		else
+			-- Re-enable mouse on bar frames (they need it for normal operation)
+			-- Note: Individual frames may need mouse enabled for tooltips, etc.
+			self.containerFrame:EnableMouse(true)
+		end
+	end
 
 	if enabled and settings then
-		self.containerFrame:SetScript("OnMouseDown", function(frame, button)
+		targetFrame:SetScript("OnMouseDown", function(frame, button)
 			if button == "LeftButton" and not frame.isMoving then
 				frame:StartMoving()
 				frame.isMoving = true
 			end
 		end)
 
-		self.containerFrame:SetScript("OnMouseUp", function(frame, button)
+		targetFrame:SetScript("OnMouseUp", function(frame, button)
 			if button == "LeftButton" and frame.isMoving then
 				frame:StopMovingOrSizing()
+				-- Save position of the wrapper/bar
 				TRB.Functions.Bar:GetPosition(settings)
 				frame.isMoving = false
 			end
 		end)
 
-		self.containerFrame:SetScript("OnHide", function(frame)
+		targetFrame:SetScript("OnHide", function(frame)
 			if frame.isMoving then
 				frame:StopMovingOrSizing()
 				TRB.Functions.Bar:GetPosition(settings)
@@ -776,9 +803,9 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 			end
 		end)
 	else
-		self.containerFrame:SetScript("OnMouseDown", nil)
-		self.containerFrame:SetScript("OnMouseUp", nil)
-		self.containerFrame:SetScript("OnHide", nil)
+		targetFrame:SetScript("OnMouseDown", nil)
+		targetFrame:SetScript("OnMouseUp", nil)
+		targetFrame:SetScript("OnHide", nil)
 	end
 end
 

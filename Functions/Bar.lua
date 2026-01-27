@@ -164,9 +164,15 @@ function TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 end
 
 function TRB.Functions.Bar:GetPosition(settings)
-	-- Use BarGroups system if available
+	-- Use wrapper frame if available (for proper position in wrapper-based system)
+	-- Fall back to BarGroups primary container if no wrapper
 	local containerFrame
-	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+	
+	-- Try to get the wrapper frame first (it's the parent of all bars and what moves)
+	local wrapperFrame = TRB.Functions.EditMode and TRB.Functions.EditMode:GetWrapperFrame()
+	if wrapperFrame then
+		containerFrame = wrapperFrame
+	elseif TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 		containerFrame = TRB.Frames.barGroups.primary:GetContainerFrame()
 	end
 
@@ -251,7 +257,8 @@ function TRB.Functions.Bar:DestroyBarGroups()
 
 	if TRB.Frames.barGroups then
 		for key, group in pairs(TRB.Frames.barGroups) do
-			if group and group.Destroy then
+			-- Only destroy BarGroup objects (skip numeric properties like effectiveWidth)
+			if type(group) == "table" and group.Destroy then
 				group:Destroy()
 			end
 		end
@@ -302,36 +309,103 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
 
+	-- Check for Cooldown Manager width matching
+	local effectiveWidth = settings.bar.width
+	local cdmWidthMatching = TRB.Functions.EditMode:IsWidthMatchingEnabled()
+	if cdmWidthMatching then
+		local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+		if cdmWidth then
+			effectiveWidth = cdmWidth
+		end
+	end
+
+	-- Store effectiveWidth on barGroups for use by secondary bar construction
+	barGroups.effectiveWidth = effectiveWidth
+
+	-- Check if Edit Mode layout is enabled for this layout
+	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
+
+	-- Get anchor mode for CDM positioning
+	-- Note: GetAnchorMode() returns "none" if layout is not enabled
+	local anchorMode = TRB.Functions.EditMode:GetAnchorMode()
+	local anchorOffset = TRB.Functions.EditMode:GetAnchorOffset()
+
+	-- Determine if we're using CDM anchoring
+	-- CDM anchoring requires:
+	-- 1. Edit Mode layout is enabled ("Enable for this layout" checked)
+	-- 2. Anchor mode is not "none" ("Anchor To" set to Above/Below CDM)
+	-- 3. CDM frame is available
+	local useCdmAnchoring = editModeLayoutEnabled and anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable()
+
+	-- Get or create the wrapper frame for Edit Mode
+	local wrapperFrame = TRB.Functions.EditMode:GetOrCreateWrapperFrame()
+
 	-- Configure the primary bar group
 	if barGroups.primary then
 		local primary = barGroups.primary
 		local primaryNode = primary:GetNode(1)
 
-		-- First, position and size the group container (parent of nodes)
-		-- This must be done BEFORE positioning child nodes
-		-- Check if Edit Mode should control positioning
-		local editModePosition = TRB.Functions.EditMode:GetActivePosition()
+		-- Parent the primary container to the wrapper frame
+		-- This ensures when the wrapper is dragged in Edit Mode, all bars move with it
+		if wrapperFrame and primary.containerFrame:GetParent() ~= wrapperFrame then
+			primary.containerFrame:SetParent(wrapperFrame)
+		end
+
+		-- Position the primary container WITHIN the wrapper
+		-- The primary bar is positioned at a fixed location within the wrapper
+		-- Secondary bars anchor to the primary, so the wrapper size will be calculated after
 		primary.containerFrame:ClearAllPoints()
-		if editModePosition and editModePosition.point then
-			-- Edit Mode position: Use the exact same 3-argument SetPoint that LibEditMode uses
-			-- This is critical because normalizePosition calculates x,y relative to the anchor point
-			-- and the 3-argument SetPoint(point, x, y) is equivalent to SetPoint(point, parent, point, x, y)
-			primary.containerFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
+		-- Primary bar is at the top of the wrapper (secondary bars go below)
+		primary.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
+		
+		primary.containerFrame:SetWidth(effectiveWidth - (settings.bar.border * 2))
+		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
+
+		-- Now position the WRAPPER frame based on the three use cases:
+		-- Use Case 1: Edit Mode disabled -> Legacy position (settings.bar.xPos/yPos)
+		-- Use Case 2: Edit Mode enabled + Free Position -> Edit Mode saved position
+		-- Use Case 3: Edit Mode enabled + CDM anchor -> Anchor to CDM frame
+		wrapperFrame:ClearAllPoints()
+
+		if useCdmAnchoring then
+			-- Use Case 3: CDM anchoring - anchor wrapper to CDM frame
+			-- The real anchor will be refined by ApplyCooldownManagerAnchoring after all bars are laid out
+			local cdmFrame = TRB.Functions.EditMode:GetCooldownManagerFrame()
+			if cdmFrame then
+				if anchorMode == "above" then
+					wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, anchorOffset)
+				else
+					wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -anchorOffset)
+				end
+			else
+				-- Fallback if CDM frame not available
+				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
+			end
+		elseif editModeLayoutEnabled then
+			-- Use Case 2: Edit Mode enabled + Free Position
+			-- Use the position saved by LibEditMode for this layout
+			local editModePosition = TRB.Functions.EditMode:GetActivePosition()
+			if editModePosition and editModePosition.point then
+				wrapperFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
+			else
+				-- No saved Edit Mode position yet, use legacy position as default
+				local xPos = settings.bar.xPos or 0
+				local yPos = settings.bar.yPos or -200
+				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
+			end
 		else
-			-- Legacy position: Always uses CENTER anchor
+			-- Use Case 1: Edit Mode disabled - use legacy position
 			local xPos = settings.bar.xPos or 0
 			local yPos = settings.bar.yPos or -200
-			primary.containerFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
+			wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
 		end
-		primary.containerFrame:SetWidth(settings.bar.width - (settings.bar.border * 2))
-		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
 
 		if primaryNode then
 			-- Set frame strata
 			primary:SetFrameStrata(strata)
 
 			-- Set dimensions (stores values and sizes border/resource frames)
-			primaryNode:SetDimensions(settings.bar.width, settings.bar.height, settings.bar.border)
+			primaryNode:SetDimensions(effectiveWidth, settings.bar.height, settings.bar.border)
 
 			-- Set frame levels
 			primaryNode:SetFrameLevels(
@@ -351,14 +425,22 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			primaryNode:PositionResourceFrame()
 
 			-- Set min/max values
-			local max = TRB.Data.character.maxResource or settings.bar.width
+			local max = TRB.Data.character.maxResource or effectiveWidth
 			if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
 				max = math.min(settings.maxResource.value * TRB.Data.resourceFactor, TRB.Data.character.maxResource or max)
 			end
 			primaryNode:SetMinMax(0, max)
 
-			-- Enable drag and drop
-			primary:SetDragAndDrop(settings.bar.dragAndDrop, settings)
+			-- Enable drag and drop:
+			-- Use Case 1: Edit Mode disabled -> Legacy drag-and-drop uses settings.bar.dragAndDrop
+			-- Use Case 2: Edit Mode enabled + Free Position -> Edit Mode handles positioning, no legacy drag
+			-- Use Case 3: Edit Mode enabled + CDM anchor -> No drag, anchored to CDM
+			-- Summary: If Edit Mode is enabled, disable legacy drag (Edit Mode or CDM handles it)
+			if editModeLayoutEnabled then
+				primary:SetDragAndDrop(false, settings)
+			else
+				primary:SetDragAndDrop(settings.bar.dragAndDrop, settings)
+			end
 
 			-- Show the primary bar (now parented directly to UIParent)
 			primary:Show()
@@ -373,6 +455,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			end
 		end
 	end
+
 
 	-- Configure secondary bar groups (combo points, arcane charges, runes, etc.)
 	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
@@ -469,12 +552,73 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)
 	self:ApplyCustomBarGroupsLayout(settings, barGroups)
+
+	-- Apply CDM anchoring if enabled (must be done after all bars are laid out)
+	-- This calculates the bounding box of all visible bars and positions relative to CDM
+	if anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable() and barGroups.primary then
+		self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
+	else
+		-- Even when not using CDM anchoring, update wrapper size for proper Edit Mode selection box
+		TRB.Functions.EditMode:UpdateWrapperSize(settings)
+	end
 	
 	-- There may be class-specific updates needed after layout changes. Only run this if we're not looping.
 	if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 		TRB.Functions.Class:CheckCharacter()
 	end
 end
+
+---Applies Cooldown Manager anchoring to the bar groups
+---This updates the wrapper frame size and re-anchors it to the CDM frame
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param anchorMode string # "above" or "below"
+---@param anchorOffset number # Vertical offset in pixels
+---@param effectiveWidth number # The width being used (may be CDM-matched)
+---@param settings table? # Settings for dimension calculations
+function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
+	local primary = barGroups.primary
+	if not primary or not primary.containerFrame then
+		return
+	end
+
+	-- Get the CDM frame for anchoring
+	local cdmFrame = TRB.Functions.EditMode:GetCooldownManagerFrame()
+	if not cdmFrame then
+		return
+	end
+
+	-- Get the wrapper frame (which is the parent of all bars)
+	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame()
+	if not wrapperFrame then
+		return
+	end
+
+	-- Calculate wrapper layout from settings (doesn't rely on screen coordinates)
+	local totalWidth, totalHeight, extendAbove, extendBelow = TRB.Functions.EditMode:CalculateWrapperLayout(settings, false)
+	
+	-- Update wrapper frame size to encompass all bars
+	-- Use effectiveWidth for width (matches CDM if "Match CDM Width" is enabled)
+	wrapperFrame:SetWidth(effectiveWidth)
+	wrapperFrame:SetHeight(totalHeight)
+
+	-- Reposition the primary bar within the wrapper to account for bars above it
+	-- The primary bar should be offset down by extendAbove
+	local primaryFrame = primary.containerFrame
+	primaryFrame:ClearAllPoints()
+	primaryFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -extendAbove)
+
+	-- Now anchor the wrapper to the CDM frame, horizontally centered
+	wrapperFrame:ClearAllPoints()
+
+	if anchorMode == "above" then
+		-- Position wrapper above CDM, centered horizontally
+		wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, anchorOffset)
+	else -- "below"
+		-- Position wrapper below CDM, centered horizontally
+		wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -anchorOffset)
+	end
+end
+
 
 ---Applies textures/colors to existing bar groups (OOP system only).
 ---This is intentionally separate from layout so moving/resizing doesn't inadvertently reset bar colors.
@@ -656,6 +800,10 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		return
 	end
 
+	-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
+	local barGroups = TRB.Frames.barGroups
+	local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
 
@@ -736,7 +884,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 	if groupSettings.fullWidth then
 		xPos = 0
-		groupWidth = settings.bar.width
+		groupWidth = effectiveWidth
 		if topBottom == "BOTTOM" then
 			setPoint = "TOP"
 			setPointRelativeTo = "BOTTOM"
@@ -770,7 +918,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	if config.useApplyLayout then
 		-- Multi-node layout (combo points, runes, etc.)
 		targetGroup:ApplyLayout(
-			settings.bar.width,
+			effectiveWidth,
 			groupSettings.width,
 			groupSettings.height,
 			groupSettings.border

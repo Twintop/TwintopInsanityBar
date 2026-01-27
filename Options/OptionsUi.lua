@@ -2051,6 +2051,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, cont
 			local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
 			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			TRB.Functions.EditMode:UpdateWrapperSize(settings)
 			TRB.Functions.Bar:HideResourceBar()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -2826,6 +2827,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		local function HealthVisibilitySetSelected(newValue)
 			spec.displayBar.health = newValue
 			controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+			-- Reapply layout to adjust positioning for the visibility change
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			end
 			TRB.Functions.Bar:HideResourceBar()
 		end
 
@@ -2856,6 +2862,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		local function SecondaryVisibilitySetSelected(newValue)
 			spec.displayBar.secondary = newValue
 			controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+			-- Reapply layout to adjust positioning for the visibility change
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			end
 			TRB.Functions.Bar:HideResourceBar()
 		end
 
@@ -2891,6 +2902,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 				TRB.Data.specCache[TRB.Data.character.specName].settings.displayBar.mana = newValue
 			end
 			controls.dropDown.manaVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+			-- Reapply layout to adjust positioning for the visibility change
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			end
 			TRB.Functions.Bar:HideResourceBar()
 		end
 
