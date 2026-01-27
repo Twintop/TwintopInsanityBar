@@ -20,6 +20,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.10-release (2026-01-27)
+## Death Knight
+
+- [#558](#558) Prevent Lua errors during Rune cooldown tracking when the API returns unexpected secret values.
+
+---
+
 # 12.0.0.9-release (2026-01-27)
 ## General
 

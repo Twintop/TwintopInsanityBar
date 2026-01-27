@@ -43,6 +43,12 @@ local function UpdateRune(runeIndex, refresh)
 
 	if refresh == true then
 		local startTime, duration, ready = GetRuneCooldown(runeIndex)
+		
+		-- Sometimes these values come back as secrets when they shouldn't be -- bail out and try again next frame to prevent Lua errors
+		if issecretvalue(startTime) or issecretvalue(duration) or issecretvalue(ready) then
+			return
+		end
+
 		rune.startTime = startTime
 		rune.duration = duration
 		rune.ready = ready
