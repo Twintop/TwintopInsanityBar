@@ -25,6 +25,11 @@ local content = [====[
 
 - [#558](#558) Prevent Lua errors during Rune cooldown tracking when the API returns unexpected secret values.
 
+## Demon Hunter
+### Devourer
+
+- [#550](#550) Fix an issue where Soul Fragment tracking would become stuck when switching talents.
+
 ## Druid
 
 - [#561](#561) Fix an issue where switching forms with Edit Mode enabled would cause the bar to change position.

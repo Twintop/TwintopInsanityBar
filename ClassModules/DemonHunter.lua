@@ -1492,6 +1492,12 @@ local function SwitchSpec()
 			TRB.Functions.Class:EventRegistration()
 			ConstructResourceBar(specCache.devourer.settings)
 		end
+
+		C_Timer.After(0, function()
+			C_Timer.After(0.05, function()
+				snapshotData.snapshots[spells.soulFragments.id].buff:Refresh()
+			end)
+		end)
 	else
 		TRB.Data.barConstructedForSpec = nil
 	end
