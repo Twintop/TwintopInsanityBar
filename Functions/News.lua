@@ -20,6 +20,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.11-release (2026-01-28)
+## General
+
+- [#528](#528) Show all bars available to the current spec that are sometimes or always visible while in Edit Mode.
+
+---
+
 # 12.0.0.10-release (2026-01-27)
 ## Death Knight
 

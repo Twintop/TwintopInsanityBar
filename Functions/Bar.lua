@@ -71,6 +71,53 @@ function TRB.Functions.Bar:HideResourceBar(force)
 		force = true
 	end
 
+	-- If Edit Mode is active, ensure bars stay visible so they can be repositioned
+	-- Primary bar ALWAYS shows; other bars show unless configured to "never" display
+	if TRB.Functions.EditMode and TRB.Functions.EditMode:IsInEditMode() then
+		local barGroups = TRB.Frames.barGroups
+		local displayBar = nil
+		if TRB.Data.specCache and TRB.Data.character.specName then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+			if specSettings and specSettings.settings then
+				displayBar = specSettings.settings.displayBar
+			end
+		end
+
+		if barGroups then
+			-- Primary bar ALWAYS shows - it's required for positioning
+			if barGroups.primary then
+				barGroups.primary:Show()
+			end
+			-- Show secondary bar (combo points, etc.) unless set to "never"
+			if barGroups.secondary and (displayBar == nil or displayBar.secondary ~= "never") then
+				barGroups.secondary:Show()
+				local maxNodes = TRB.Data.character.maxResource2 or barGroups.secondary.maxNodes or 5
+				barGroups.secondary:ShowNodes(maxNodes)
+			end
+			-- Show health bar unless set to "never"
+			if barGroups.health and (displayBar == nil or displayBar.health ~= "never") then
+				barGroups.health:Show()
+			end
+			-- Show mana bar (Balance Druid, Shadow Priest, Elemental Shaman) unless set to "never"
+			if barGroups.mana and (displayBar == nil or displayBar.mana ~= "never") then
+				barGroups.mana:Show()
+			end
+			-- Show stagger bar (Brewmaster Monk) unless set to "never"
+			if barGroups.stagger and (displayBar == nil or displayBar.stagger ~= "never") then
+				barGroups.stagger:Show()
+			end
+			-- Show defensives bar (Protection Warrior) unless set to "never"
+			if barGroups.defensives and (displayBar == nil or displayBar.defensives ~= "never") then
+				barGroups.defensives:Show()
+			end
+		end
+		-- Set isTracking to true so bar text updates
+		if TRB.Data.snapshotData and TRB.Data.snapshotData.attributes then
+			TRB.Data.snapshotData.attributes.isTracking = true
+		end
+		return
+	end
+
 	TRB.Functions.Class:HideResourceBar(force)
 end
 
