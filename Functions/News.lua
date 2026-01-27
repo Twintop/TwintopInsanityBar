@@ -26,6 +26,11 @@ local content = [====[
 - [#528](#528) Add Edit Mode options to bind the bar position to the Cooldown Manager's Essential frame and match its width.
 - [#528](#528) Show all bars available to the current spec that are sometimes or always visible while in Edit Mode.
 
+## Demon Hunter
+### Devourer
+
+- [#563](#563) Add Surrender to the Void talent support, increasing maximum Soul Fragments by 50 in PvP.
+
 ---
 
 # 12.0.0.10-release (2026-01-27)

@@ -859,8 +859,14 @@ local function UpdateSnapshot_Devourer()
 	snapshotData.attributes.maxResource2 = spells.soulFragments.attributes.maxResource
 	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
 		snapshotData.attributes.maxResource2 = spells.collapsingStar.attributes.maxResource
-	elseif talents:IsTalentActive(spells.soulGlutton) then
-		snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.soulGlutton.attributes.maxResourceMod
+	else
+		if talents:IsTalentActive(spells.soulGlutton) then
+			snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.soulGlutton.attributes.maxResourceMod
+		end
+
+		if TRB.Data.character.isPvp and talents:IsTalentActive(spells.surrenderToTheVoid) then
+			snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.surrenderToTheVoid.attributes.maxResourceMod
+		end
 	end
 end
 

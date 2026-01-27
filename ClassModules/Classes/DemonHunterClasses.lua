@@ -212,6 +212,7 @@ end
 ---@field public soulGlutton TRB.Classes.SpellBase
 ---@field public collapsingStar TRB.Classes.SpellBase
 ---@field public collapsingStarThreshold TRB.Classes.SpellThreshold
+---@field public surrenderToTheVoid TRB.Classes.SpellBase
 TRB.Classes.DemonHunter.DevourerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.DemonHunter.DevourerSpells.__index = TRB.Classes.DemonHunter.DevourerSpells
 
@@ -262,6 +263,14 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 		isTalent = true,
 		rangeCheck = false,
 		resource = 30
+	})
+
+	--PvP
+	self.surrenderToTheVoid = TRB.Classes.SpellBase:New({
+		id = 1261423,
+		isTalent = true,
+		isPvp = true,
+		maxResourceMod = 50
 	})
 
 	return self
