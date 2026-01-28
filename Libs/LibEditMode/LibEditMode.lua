@@ -1,4 +1,4 @@
-local MINOR = 13
+local MINOR = 14
 local lib = LibStub:NewLibrary('LibEditMode', MINOR)
 if not lib then
 	-- this or a newer version is already loaded
@@ -7,6 +7,10 @@ end
 
 lib.internal = {} -- internal methods, do not use directly
 local internal = lib.internal
+
+-- keep a variable stored for the latest version, used to avoid hooks and events
+-- firing for older versions of the library when it has been "globally" upgraded with LibStub
+lib.hookVersion = MINOR
 
 lib.frameSelections = lib.frameSelections or {}
 lib.frameCallbacks = lib.frameCallbacks or {}
@@ -169,9 +173,8 @@ local function onMouseDown(self) -- replacement for EditModeSystemMixin:SelectSy
 		return
 	end
 
-	resetDialogs()
-	resetSelection()
-	EditModeManagerFrame:ClearSelectedSystem() -- possible taint
+	EventRegistry:TriggerEvent('EditModeExternal.hideDialog')
+	EditModeManagerFrame:ClearSelectedSystem() -- taint
 
 	if not self.isSelected then
 		self.parent:SetMovable(true)
@@ -237,7 +240,6 @@ local function onSpecChanged(_, unit)
 	onEditModeChanged(nil, C_EditMode.GetLayouts())
 end
 
-local layoutCopySource
 local function onEditModeLayoutChanged()
 	local layoutInfo = C_EditMode.GetLayouts()
 	local layouts = layoutInfo.layouts
@@ -248,7 +250,7 @@ local function onEditModeLayoutChanged()
 		for index, layout in next, layouts do
 			if not lib.layoutCache[index] then
 				for _, callback in next, lib.anonCallbacksCreate do
-					securecallfunction(callback, layout.layoutName, index, layoutCopySource and layoutCopySource.layoutName)
+					securecallfunction(callback, layout.layoutName, index, lib._layoutCopySource and lib._layoutCopySource.layoutName)
 				end
 			end
 		end
@@ -296,54 +298,80 @@ local function onEditModeLayoutChanged()
 		end
 	end
 
-	layoutCopySource = nil
+	lib._layoutCopySource = nil
 	lib.layoutCache = layouts
 end
 
-local isManagerHooked = false
-
-local function hookManager()
+do -- deal with hooks and events
 	-- listen for layout changes
-	EventRegistry:RegisterFrameEventAndCallback('EDIT_MODE_LAYOUTS_UPDATED', onEditModeChanged)
-	EventRegistry:RegisterFrameEventAndCallback('PLAYER_SPECIALIZATION_CHANGED', onSpecChanged)
-	EventRegistry:RegisterCallback('EditMode.SavedLayouts', onEditModeLayoutChanged)
+	EventRegistry:RegisterFrameEventAndCallback('EDIT_MODE_LAYOUTS_UPDATED', function(...)
+		if lib.hookVersion == MINOR then
+			onEditModeChanged(...)
+		end
+	end)
+
+	EventRegistry:RegisterFrameEventAndCallback('PLAYER_SPECIALIZATION_CHANGED', function(...)
+		if lib.hookVersion == MINOR then
+			onSpecChanged(...)
+		end
+	end)
+	EventRegistry:RegisterCallback('EditMode.SavedLayouts', function(...)
+		if lib.hookVersion == MINOR then
+			onEditModeLayoutChanged(...)
+		end
+	end)
 
 	-- hook EditMode shown state, since QuickKeybindMode will hide/show EditMode
-	EditModeManagerFrame:HookScript('OnShow', onEditModeEnter)
-	EditModeManagerFrame:HookScript('OnHide', onEditModeExit)
+	EditModeManagerFrame:HookScript('OnShow', function(...)
+		if lib.hookVersion == MINOR then
+			onEditModeEnter(...)
+		end
+	end)
+	EditModeManagerFrame:HookScript('OnHide', function(...)
+		if lib.hookVersion == MINOR then
+			onEditModeExit(...)
+		end
+	end)
 
 	-- we don't want any custom frames dangling around
-	EditModeSystemSettingsDialog:HookScript('OnHide', resetDialogs)
+	EditModeSystemSettingsDialog:HookScript('OnHide', function(...)
+		if lib.hookVersion == MINOR then
+			resetDialogs(...)
+		end
+	end)
 
 	-- unselect our selections whenever a system is selected and try to add an extension
 	hooksecurefunc(EditModeManagerFrame, 'SelectSystem', function(_, systemFrame)
-		resetDialogs()
-		resetSelection()
+		if lib.hookVersion == MINOR then
+			resetDialogs()
+			resetSelection()
 
-		if internal.dialog then
-			internal.dialog:Reset()
-		end
+			if internal.dialog then
+				internal.dialog:Reset() -- can this be moved to resetDialogs ?
+			end
 
-		local systemID = systemFrame.system
-		local subSystemID = systemFrame.systemIndex
-		local isKnownSystem = lib.systemSettings[systemID] or lib.systemButtons[systemID]
-		local isKnownSubSystem = subSystemID and ((lib.subSystemSettings[systemID] and lib.subSystemSettings[systemID][subSystemID]) or (lib.subSystemButtons[systemID] and lib.subSystemButtons[systemID][subSystemID]))
-		if isKnownSystem or isKnownSubSystem then
-			internal.extension:Update(systemID, isKnownSubSystem and subSystemID or nil)
+			local systemID = systemFrame.system
+			local subSystemID = systemFrame.systemIndex
+			local isKnownSystem = lib.systemSettings[systemID] or lib.systemButtons[systemID]
+			local isKnownSubSystem = subSystemID and ((lib.subSystemSettings[systemID] and lib.subSystemSettings[systemID][subSystemID]) or (lib.subSystemButtons[systemID] and lib.subSystemButtons[systemID][subSystemID]))
+			if isKnownSystem or isKnownSubSystem then
+				internal.extension:Update(systemID, isKnownSubSystem and subSystemID or nil)
+			end
 		end
 	end)
 
 	hooksecurefunc(EditModeManagerFrame, 'ShowNewLayoutDialog', function(_, sourceLayout)
-		layoutCopySource = sourceLayout
+		if lib.hookVersion == MINOR then
+			lib._layoutCopySource = sourceLayout
+		end
 	end)
-
-	-- fetch layout info in case EDIT_MODE_LAYOUTS_UPDATED already fired
-	if lib.layoutCache then
-		onEditModeChanged(nil, C_EditMode.GetLayouts()) -- introduces a little latency
-	end
-
-	isManagerHooked = true
 end
+
+-- custom global callback hook that all addons that add custom dialogs should respond to
+EventRegistry:RegisterCallback('EditModeExternal.hideDialog', function()
+	resetDialogs()
+	resetSelection()
+end)
 
 --[[ LibEditMode:AddFrame(_frame, callback, default_) ![](https://img.shields.io/badge/function-blue)
 Register a frame to be controlled by the Edit Mode.
@@ -385,8 +413,9 @@ function lib:AddFrame(frame, callback, default, name)
 			resetSelection()
 		end)
 
-		if not isManagerHooked then
-			hookManager()
+		-- fetch layout info in case EDIT_MODE_LAYOUTS_UPDATED already fired
+		if lib.layoutCache then
+			onEditModeChanged(nil, C_EditMode.GetLayouts()) -- introduces a little latency
 		end
 	end
 end
@@ -520,8 +549,9 @@ function lib:AddSystemSettings(systemID, settings, subSystemID)
 		internal.extension = internal:CreateExtension()
 	end
 
-	if not isManagerHooked then
-		hookManager()
+	-- fetch layout info in case EDIT_MODE_LAYOUTS_UPDATED already fired
+	if lib.layoutCache then
+		onEditModeChanged(nil, C_EditMode.GetLayouts()) -- introduces a little latency
 	end
 end
 
@@ -599,8 +629,9 @@ function lib:AddSystemSettingsButtons(systemID, buttons, subSystemID)
 		internal.extension = internal:CreateExtension()
 	end
 
-	if not isManagerHooked then
-		hookManager()
+	-- fetch layout info in case EDIT_MODE_LAYOUTS_UPDATED already fired
+	if lib.layoutCache then
+		onEditModeChanged(nil, C_EditMode.GetLayouts()) -- introduces a little latency
 	end
 end
 
@@ -766,11 +797,13 @@ Table containing the following entries:
 | default  | default value for the setting          | any                         | yes      |
 | get      | getter for the current value           | function                    | yes      |
 | set      | setter for the new value               | function                    | yes      |
-| disabled | whether the setting should be disabled | boolean                     | no       |
+| disabled | whether the setting should be disabled | boolean/function            | no       |
+| hidden   | whether the setting should be hidden   | boolean/function            | no       |
 
 - The getter passes `layoutName` as the sole argument and expects a value in return.
 - The setter passes (`layoutName`, `newValue`, `fromReset`) and expects no returns.
 - The description is shown in a tooltip.
+- The `disabled` and `hidden` options, if added as functions, must return a boolean
 
 Depending on the setting type there are additional required and optional entries:
 
@@ -817,6 +850,22 @@ Table containing the following entries:
 The `default` field and the getter expects a [ColorMixin](https://warcraft.wiki.gg/wiki/ColorMixin) object, and the setter will pass one as its value.  
 Even if `hasOpacity` is set to `false` (which is the default value) the ColorMixin object will contain an alpha value, this is the default behavior of the ColorMixin.
 
+### Divider
+
+| key       | value                            | type    | required | default |
+|:----------|:---------------------------------|:--------|:---------|:--------|
+| hideLabel | whether or not to hide the label | boolean | no       | false   |
+
+### Expander
+
+| key            | value                            | type    | required | default |
+|:---------------|:---------------------------------|:--------|:---------|:--------|
+| hideArrow      | whether or not to hide the arrow | boolean | no       | false   |
+| expandedLabel  | text to display when expanded    | string  | no       |         |
+| collapsedLabel | text to display when collapsed   | string  | no       |         |
+
+For `expandedLabel` or `collapsedLabel` to work _both_ have to be defined. Otherwise the setting `name` will be used.
+
 ## ButtonObject ![](https://img.shields.io/badge/object-teal)
 
 Table containing the following entries:
@@ -835,6 +884,7 @@ One of:
 - `Slider`
 - `Divider`
 - `ColorPicker`
+- `Expander`
 --]]
 lib.SettingType = CopyTable(Enum.EditModeSettingDisplayType)
 lib.SettingType.ColorPicker = 10 -- leave some room for blizzard expansion
