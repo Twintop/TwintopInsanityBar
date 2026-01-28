@@ -76,7 +76,7 @@ end
 ---@param threshold frame
 ---@param settings table
 function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
-	if threshold.icon == nil then
+	if threshold == nil or threshold.icon == nil then
 		return
 	end
 
@@ -463,62 +463,64 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				return false
 			end
 		end
-
-		if threshold.texture == nil or threshold.icon == nil then
-			TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
-		end
-
-		TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
-
-		local thresholdUsable = false
-
-		if not spell.hasCooldown then
-			frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
-		end
 		
-		TRB.Functions.Threshold:Show(key, threshold)
-
-		-- Only check this first one as if one is different then all will be different
-		if cache.frameLevel ~= frameLevel then
-			local effectiveLevel = frameLevel - pairOffset
-			local thresholdFrameLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetLine
-			local thresholdIconLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetIcon
-			local thresholdIconCooldownLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetCooldown
-
-			threshold:SetFrameLevel(thresholdFrameLevel)
-			threshold.icon:SetFrameLevel(thresholdIconLevel)
-			threshold.icon.cooldown:SetFrameLevel(thresholdIconCooldownLevel)
-
-			cache.frameLevel = frameLevel
-		end
-
-		if cache.color ~= thresholdColor then
-			TRB.Functions.Color:SetThresholdColor(threshold, thresholdColor, true)
-			cache.color = thresholdColor
-		end
-
-		if currentFrameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
-			thresholdUsable = true
-		end
-		
-		if settings.thresholds.icons.desaturated == true then
-			if cache.desaturated ~= (not thresholdUsable or outOfRange) then
-				threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
-				cache.desaturated = not thresholdUsable or outOfRange
+		if threshold ~= nil then
+			if threshold.texture == nil or threshold.icon == nil then
+				TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
 			end
-		else
-			if cache.desaturated ~= false then
-				threshold.icon.texture:SetDesaturated(false)
-				cache.desaturated = false
+
+			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
+
+			local thresholdUsable = false
+
+			if not spell.hasCooldown then
+				frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
 			end
-		end
-		
-		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
-			threshold.icon.cooldown:SetCooldown(snapshot.cooldown.startTime, snapshot.cooldown.duration)
-			cache.cooldown = true
-		elseif cache.cooldown then
-			threshold.icon.cooldown:SetCooldown(0, 0)
-			cache.cooldown = false
+			
+			TRB.Functions.Threshold:Show(key, threshold)
+
+			-- Only check this first one as if one is different then all will be different
+			if cache.frameLevel ~= frameLevel then
+				local effectiveLevel = frameLevel - pairOffset
+				local thresholdFrameLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetLine
+				local thresholdIconLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetIcon
+				local thresholdIconCooldownLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetCooldown
+
+				threshold:SetFrameLevel(thresholdFrameLevel)
+				threshold.icon:SetFrameLevel(thresholdIconLevel)
+				threshold.icon.cooldown:SetFrameLevel(thresholdIconCooldownLevel)
+
+				cache.frameLevel = frameLevel
+			end
+
+			if cache.color ~= thresholdColor then
+				TRB.Functions.Color:SetThresholdColor(threshold, thresholdColor, true)
+				cache.color = thresholdColor
+			end
+
+			if currentFrameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
+				thresholdUsable = true
+			end
+			
+			if settings.thresholds.icons.desaturated == true then
+				if cache.desaturated ~= (not thresholdUsable or outOfRange) then
+					threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
+					cache.desaturated = not thresholdUsable or outOfRange
+				end
+			else
+				if cache.desaturated ~= false then
+					threshold.icon.texture:SetDesaturated(false)
+					cache.desaturated = false
+				end
+			end
+			
+			if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
+				threshold.icon.cooldown:SetCooldown(snapshot.cooldown.startTime, snapshot.cooldown.duration)
+				cache.cooldown = true
+			elseif cache.cooldown then
+				threshold.icon.cooldown:SetCooldown(0, 0)
+				cache.cooldown = false
+			end
 		end
 	else
 		TRB.Functions.Threshold:Hide(key, threshold)

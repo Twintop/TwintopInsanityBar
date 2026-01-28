@@ -3049,7 +3049,12 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 			
 			-- Configure secondary bar for combo points (used when in Cat form)
-			if barGroups.secondary then
+			-- Check if form switching is enabled for this spec
+			local specSettings = TRB.Data.settings.druid[TRB.Data.character.specName]
+			local enableFormSwitching = specSettings == nil or specSettings.displayBar == nil or specSettings.displayBar.enableFormSwitching ~= false
+			
+			-- Only configure combo points for Feral, or for other specs when form switching is enabled
+			if barGroups.secondary and (TRB.Data.character.specId == 2 or enableFormSwitching) then
 				TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
 				-- Use Feral settings for combo point configuration
 				local feralSettings = TRB.Data.specCache.feral.settings

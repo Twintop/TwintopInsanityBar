@@ -571,6 +571,19 @@ TRB.Classes.Druid.BarGroupsFactory.__index = TRB.Classes.Druid.BarGroupsFactory
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
 function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
     local barGroups = {}
+    
+    -- Check if form switching is enabled for non-Feral specs
+    local specNames = { [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" }
+    local specName = specNames[specId]
+    local druidSettings = TRB.Data.settings and TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
+    -- enableFormSwitching defaults to true. Only skip secondary bar if explicitly set to false.
+    local enableFormSwitching = true
+    if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
+        enableFormSwitching = false
+    end
+    
+    -- For Feral, always create secondary bar. For others, only if form switching is enabled.
+    local createSecondary = (specId == 2) or enableFormSwitching
 
     if specId == 1 then -- Balance
         -- Primary Astral Power bar only (1 node)
@@ -582,12 +595,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
         )
 
         -- Combo Points (5 nodes) - for form-based switching to Cat form
-        barGroups.secondary = TRB.Classes.BarGroup:New(
-            UIParent,
-            "TwintopResourceBarFrame_ComboPoint",
-            5,
-            false -- not primary
-        )
+        if createSecondary then
+            barGroups.secondary = TRB.Classes.BarGroup:New(
+                UIParent,
+                "TwintopResourceBarFrame_ComboPoint",
+                5,
+                false -- not primary
+            )
+        end
 
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
@@ -641,12 +656,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
         )
 
         -- Combo Points (5 nodes) - for form-based switching to Cat form
-        barGroups.secondary = TRB.Classes.BarGroup:New(
-            UIParent,
-            "TwintopResourceBarFrame_ComboPoint",
-            5,
-            false -- not primary
-        )
+        if createSecondary then
+            barGroups.secondary = TRB.Classes.BarGroup:New(
+                UIParent,
+                "TwintopResourceBarFrame_ComboPoint",
+                5,
+                false -- not primary
+            )
+        end
 
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
@@ -666,12 +683,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
         )
 
         -- Combo Points (5 nodes) - for form-based switching to Cat form
-        barGroups.secondary = TRB.Classes.BarGroup:New(
-            UIParent,
-            "TwintopResourceBarFrame_ComboPoint",
-            5,
-            false -- not primary
-        )
+        if createSecondary then
+            barGroups.secondary = TRB.Classes.BarGroup:New(
+                UIParent,
+                "TwintopResourceBarFrame_ComboPoint",
+                5,
+                false -- not primary
+            )
+        end
 
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(

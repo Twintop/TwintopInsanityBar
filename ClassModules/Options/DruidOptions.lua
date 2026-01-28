@@ -1151,6 +1151,18 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- Clear all caches before rebuilding
+		TRB.Functions.Character:ResetCaches()
+		TRB.Data.cache.colors.border = {}
+		TRB.Data.cache.colors.backdrop = {}
+		-- Destroy and recreate bar groups to add/remove secondary bar
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 			TRB.Functions.Class:CheckCharacter()
 		end
@@ -1775,6 +1787,16 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- Clear all caches before rebuilding
+		TRB.Functions.Character:ResetCaches()
+		-- Destroy and recreate bar groups to add/remove secondary bar
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 			TRB.Functions.Class:CheckCharacter()
 		end
@@ -2435,6 +2457,18 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- Clear all caches before rebuilding
+		TRB.Functions.Character:ResetCaches()
+		TRB.Data.cache.colors.border = {}
+		TRB.Data.cache.colors.backdrop = {}
+		-- Destroy and recreate bar groups to add/remove secondary bar
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 			TRB.Functions.Class:CheckCharacter()
 		end
@@ -2970,6 +3004,18 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- Clear all caches before rebuilding
+		TRB.Functions.Character:ResetCaches()
+		TRB.Data.cache.colors.border = {}
+		TRB.Data.cache.colors.backdrop = {}
+		-- Destroy and recreate bar groups to add/remove secondary bar
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 			TRB.Functions.Class:CheckCharacter()
 		end

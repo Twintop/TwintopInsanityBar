@@ -461,12 +461,28 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
 	-- but they DO have a secondary bar group for combo points when in cat form.
 	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
+	-- However, if enableFormSwitching is disabled, skip the secondary bar entirely for non-Feral.
 	local hasComboPointSettings = settings.comboPoints ~= nil
 	local feralSettingsForDruid = nil
 	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
-		feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
-		if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
-			hasComboPointSettings = true
+		-- Check if form switching is enabled for this Druid spec
+		-- enableFormSwitching defaults to true. Only skip secondary bar if explicitly set to false.
+		local specName = TRB.Data.character.specName
+		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
+		local enableFormSwitching = true
+		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+		
+		if enableFormSwitching then
+			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
+			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+			if not feralSettingsForDruid then
+				feralSettingsForDruid = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
+			if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
+				hasComboPointSettings = true
+			end
 		end
 	end
 
@@ -476,7 +492,14 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		-- so that changes made in Feral options are reflected immediately.
 		local effectiveSettings = settings
 		if TRB.Data.character.classId == 11 and (TRB.Data.character.specId ~= 2 or not settings.comboPoints) then
-			local feralSettings = feralSettingsForDruid or (TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings)
+			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
+			local feralSettings = feralSettingsForDruid
+			if not feralSettings then
+				feralSettings = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+			end
+			if not feralSettings then
+				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
 			if feralSettings and feralSettings.comboPoints then
 				-- Create a shallow copy with Feral's combo point settings
 				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
@@ -535,6 +558,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 				end
 			end
 		end
+	elseif barGroups.secondary then
+		-- No combo point settings for this spec/configuration - hide the secondary bar
+		barGroups.secondary:Hide()
 	end
 
 	-- Clear threshold color cache so AdjustThresholdDisplay recalculates colors correctly
@@ -657,12 +683,28 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
 	-- but they DO have a secondary bar group for combo points when in cat form.
 	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
+	-- However, if enableFormSwitching is disabled, skip the secondary bar entirely for non-Feral.
 	local hasComboPointSettings = settings.comboPoints ~= nil
 	local feralSettingsForDruid = nil
 	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
-		feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
-		if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
-			hasComboPointSettings = true
+		-- Check if form switching is enabled for this Druid spec
+		-- enableFormSwitching defaults to true. Only skip if explicitly set to false.
+		local specName = TRB.Data.character.specName
+		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
+		local enableFormSwitching = true
+		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+		
+		if enableFormSwitching then
+			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
+			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+			if not feralSettingsForDruid then
+				feralSettingsForDruid = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
+			if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
+				hasComboPointSettings = true
+			end
 		end
 	end
 
@@ -670,7 +712,14 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		-- DRUID SPECIAL CASE: All Druid specs share Feral's combo point settings.
 		local effectiveSettings = settings
 		if TRB.Data.character.classId == 11 and (TRB.Data.character.specId ~= 2 or not settings.comboPoints) then
-			local feralSettings = feralSettingsForDruid or (TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings)
+			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
+			local feralSettings = feralSettingsForDruid
+			if not feralSettings then
+				feralSettings = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+			end
+			if not feralSettings then
+				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
 			if feralSettings and feralSettings.comboPoints then
 				-- Create a shallow copy with Feral's combo point settings
 				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
