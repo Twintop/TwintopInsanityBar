@@ -757,25 +757,9 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 	targetFrame:SetMovable(enabled)
 	targetFrame:EnableMouse(enabled)
 
-	-- Helper function to recursively enable/disable mouse on all descendants
-	local function setMouseOnDescendants(frame, mouseEnabled)
-		for _, child in pairs({frame:GetChildren()}) do
-			child:EnableMouse(mouseEnabled)
-			setMouseOnDescendants(child, mouseEnabled)
-		end
-	end
-
-	-- When using wrapper and enabling drag, disable mouse on ALL descendant frames
-	-- so clicks pass through to the wrapper frame for dragging
+	-- Also disable mouse on container if using wrapper (so clicks pass through to wrapper)
 	if wrapperFrame then
-		if enabled then
-			-- Disable mouse on all bar frames so wrapper receives clicks
-			setMouseOnDescendants(wrapperFrame, false)
-		else
-			-- Re-enable mouse on bar frames (they need it for normal operation)
-			-- Note: Individual frames may need mouse enabled for tooltips, etc.
-			self.containerFrame:EnableMouse(true)
-		end
+		self.containerFrame:EnableMouse(false)
 	end
 
 	if enabled and settings then

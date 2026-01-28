@@ -837,17 +837,17 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 
-	local localeText3 = "unfung; Google Translate"
+	local localeText3 = "unfung"
 	localeText3 = localeText3 .. "\n" .. "Twintop"
 	localeText3 = localeText3 .. "\n" .. "Twintop"
-	localeText3 = localeText3 .. "\n" .. "Traductor de Google — Se necesita traductor!"
-	localeText3 = localeText3 .. "\n" .. "Traductor de Google — Se necesita traductor!"
-	localeText3 = localeText3 .. "\n" .. "Koroshy; Google Translate"
-	localeText3 = localeText3 .. "\n" .. "Google Translate — Traduttore necessario!"
-	localeText3 = localeText3 .. "\n" .. "Google 번역 — 번역기가 필요합니다!"
-	localeText3 = localeText3 .. "\n" .. "Google Tradutor — Precisa-se de tradutor!"
-	localeText3 = localeText3 .. "\n" .. "Google Tradutor — Precisa-se de tradutor!"
-	localeText3 = localeText3 .. "\n" .. "Google Translate — Требуется переводчик!"
+	localeText3 = localeText3 .. "\n" .. "Se necesita traductor!"
+	localeText3 = localeText3 .. "\n" .. "Se necesita traductor!"
+	localeText3 = localeText3 .. "\n" .. "Koroshy"
+	localeText3 = localeText3 .. "\n" .. "Traduttore necessario!"
+	localeText3 = localeText3 .. "\n" .. "번역기가 필요합니다!"
+	localeText3 = localeText3 .. "\n" .. "Precisa-se de tradutor!"
+	localeText3 = localeText3 .. "\n" .. "Precisa-se de tradutor!"
+	localeText3 = localeText3 .. "\n" .. "Требуется переводчик!"
 	localeText3 = localeText3 .. "\n" .. " "
 	localeText3 = localeText3 .. "\n" .. " "
 
@@ -862,8 +862,8 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText4 = localeText4 .. "\n" .. " "
 	localeText4 = localeText4 .. "\n" .. " "
 	localeText4 = localeText4 .. "\n" .. " "
-	localeText4 = localeText4 .. "\n" .. "谷歌翻译 — 需要翻译！"
-	localeText4 = localeText4 .. "\n" .. "谷歌翻譯 — 需要翻譯！"
+	localeText4 = localeText4 .. "\n" .. "需要翻译！"
+	localeText4 = localeText4 .. "\n" .. "需要翻譯！"
 
 
 	yCoord = yCoord - 170
