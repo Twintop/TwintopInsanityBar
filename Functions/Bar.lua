@@ -352,11 +352,16 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		end
 
 		-- Position the primary container WITHIN the wrapper
-		-- The primary bar is positioned at a fixed location within the wrapper
-		-- Secondary bars anchor to the primary, so the wrapper size will be calculated after
+		-- When Edit Mode layout is enabled: primary bar at TOP, wrapper encompasses all bars
+		-- When Edit Mode layout is disabled: primary bar at CENTER, wrapper matches primary bar (legacy behavior)
 		primary.containerFrame:ClearAllPoints()
-		-- Primary bar is at the top of the wrapper (secondary bars go below)
-		primary.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
+		if editModeLayoutEnabled then
+			-- Edit Mode: Primary bar is at the top of the wrapper (secondary bars accounted for via extendAbove)
+			primary.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
+		else
+			-- Legacy: Primary bar is centered within the wrapper (secondary bars anchor relative to primary)
+			primary.containerFrame:SetPoint("CENTER", wrapperFrame, "CENTER", 0, 0)
+		end
 		
 		primary.containerFrame:SetWidth(effectiveWidth - (settings.bar.border * 2))
 		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
@@ -398,6 +403,8 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			local xPos = settings.bar.xPos or 0
 			local yPos = settings.bar.yPos or -200
 			wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
+			-- Legacy mode: wrapper matches primary bar dimensions exactly
+			wrapperFrame:SetSize(effectiveWidth, settings.bar.height)
 		end
 
 		if primaryNode then

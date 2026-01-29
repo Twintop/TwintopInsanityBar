@@ -118,6 +118,28 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings)
 		return
 	end
 
+	-- Check if Edit Mode layout is enabled for this layout
+	local editModeLayoutEnabled = self:IsLayoutEnabled()
+
+	-- When Edit Mode layout is disabled, the wrapper should match the primary bar exactly.
+	-- Secondary bars anchor to the primary bar container (not the wrapper), so they will
+	-- position correctly relative to the center of the primary bar.
+	-- When Edit Mode layout is enabled, the wrapper encompasses all bars for proper selection box.
+	if not editModeLayoutEnabled then
+		-- Legacy mode: wrapper matches primary bar dimensions, primary bar fills wrapper
+		local effectiveWidth = (barGroups.effectiveWidth) or (settings and settings.bar and settings.bar.width) or 100
+		local primaryHeight = (settings and settings.bar and settings.bar.height) or 100
+		editModeWrapperFrame:SetSize(effectiveWidth, primaryHeight)
+
+		-- Primary bar centered within the wrapper (legacy behavior)
+		local primaryFrame = barGroups.primary.containerFrame
+		primaryFrame:ClearAllPoints()
+		primaryFrame:SetPoint("CENTER", editModeWrapperFrame, "CENTER", 0, 0)
+		return
+	end
+
+	-- Edit Mode layout is enabled - encompass all bars for proper selection box
+
 	-- In Edit Mode, include all bars (even hidden ones)
 	local includeHidden = self:IsInEditMode()
 

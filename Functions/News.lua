@@ -20,6 +20,23 @@ local content = [====[
 
 ---
 
+# 12.0.0.12-release (2026-01-29)
+## General
+
+- Fix an issue with health bar sizing not updating when changing settings.
+- [#528](#528) Fix a bug with how bars are positioned when Edit Mode is disabled.
+- Upgrade LibEditMode to version 14.
+
+### Localization
+
+- Remove the Google Translate generated localizations due to continued poor quality. If you're interested in helping with translations, please join the [Discord server](https://discord.gg/eThqxM78xm) and let Twintop know!
+
+## Druid
+
+- [#528](#528) Fix various issues with with how and where bars would be positioned when changing shapeshifting options with Edit Mode enabled and different bar visibility settings.
+
+---
+
 # 12.0.0.11-release (2026-01-28)
 ## General
 
