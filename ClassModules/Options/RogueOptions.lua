@@ -968,7 +968,7 @@ local function AssassinationConstructThresholdPanel(parent)
 		spec.thresholds.thresholdDictionary.crimsonTempest.enabled = self:GetChecked()
 	end)
 
-	yCoord2 = yCoord2 - 25
+	yCoord = yCoord - 25
 	controls.checkBoxes.fanOfKnivesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_fanOfKnives", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.fanOfKnivesThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
