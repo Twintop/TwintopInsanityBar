@@ -31,6 +31,10 @@ local content = [====[
 
 - Remove the Google Translate generated localizations due to continued poor quality. If you're interested in helping with translations, please join the [Discord server](https://discord.gg/eThqxM78xm) and let Twintop know!
 
+## Death Knight
+
+- [#564](#564) Add additional gaurds around Rune cooldown calculations to prevent Lua errors.
+
 ## Druid
 
 - [#528](#528) Fix various issues with with how and where bars would be positioned when changing shapeshifting options with Edit Mode enabled and different bar visibility settings.

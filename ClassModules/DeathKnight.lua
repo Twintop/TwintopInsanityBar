@@ -49,9 +49,9 @@ local function UpdateRune(runeIndex, refresh)
 			return
 		end
 
-		rune.startTime = startTime
-		rune.duration = duration
-		rune.ready = ready
+		rune.startTime = startTime or 0
+		rune.duration = duration or 0
+		rune.ready = ready or rune.startTime == 0
 
 		if rune.ready then
 			rune.remaining = 0
