@@ -264,4 +264,6 @@ if locale == "enGB" then
     -- Stagger Bar Enhancements (Brewmaster Monk)
     L["StaggerBarColorExtreme"] = "Extremely Heavy Stagger Colour"
     L["StaggerBarThresholdExtremeTooltip"] = "Stagger percentage at which the bar colour transitions from Heavy to Extremely Heavy."
+
+    L["PaladinHolyCheckboxInfusionOfLightTooltip"] = "This will change the bar border colour when you have Infusion of Light."
 end

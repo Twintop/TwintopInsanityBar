@@ -67,6 +67,10 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				border="FF000099",
 				background="66000000",
 				base="FF0000FF",
+				infusionOfLight={
+					color="FFFCE58E",
+					enabled=true
+				},
 			},
 			comboPoints = {
 				border="FFAF9942",
@@ -107,6 +111,12 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					thresholdValue = 5
 				}
+			},
+			infusionOfLight={
+				name = L["PaladinHolyInfusionOfLight"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -485,6 +495,23 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], false, true)
 
+	yCoord = yCoord - 30
+	controls.checkBoxes.infusionOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_infusionOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.infusionOfLightBorderChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyInfusionOfLight"])
+	f.tooltip = L["PaladinHolyCheckboxInfusionOfLightTooltip"]
+	f:SetChecked(spec.colors.bar.infusionOfLight.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.infusionOfLight.enabled = self:GetChecked()
+	end)
+
+	controls.colors.infusionOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyColorPickerInfusionOfLight"], spec.colors.bar.infusionOfLight.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.infusionOfLight
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.infusionOfLight, controls.colors, "infusionOfLight", "color")
+	end)
+
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinHolyPowerColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
@@ -642,6 +669,8 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.audio["holyPowerThreshold2"].configuration.thresholdValue = value
 	end)
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "infusionOfLight", spec, classId, specId, yCoord, L["PaladinHolyAudioCheckboxInfusionOfLight"], L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"])
 end
 
 local function HolyConstructBarTextDisplayPanel(parent, cache)

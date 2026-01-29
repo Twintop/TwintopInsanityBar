@@ -114,6 +114,10 @@ end
 ---@field private _isUsable boolean # Is the spell usable currently
 ---@field private _insufficientPower boolean # Is there insufficient power to cast the spell currently
 ---@field private _cacheKey string # Key used to cache the primary resource cost of the spell
+---@field private _lastCastTimeCheck number? # Timestamp of the last time a cast time check was done
+---@field private _lastCastTimeValue number # Current cast time of the spell in seconds
+---@field private _baseCastTime number? # Base (first non-zero) cast time seen, used to detect procs
+---@field private _isInstantCurrently boolean # Is this ability instant cast currently when it usually has a cast time?
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 
@@ -213,6 +217,10 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 	self.texture = ""
 
 	self._isFreeCurrently = false
+	self._lastCastTimeCheck = 0
+	self._lastCastTimeValue = 0
+	self._baseCastTime = nil
+	self._isInstantCurrently = false
 
 	return self
 end
@@ -357,6 +365,85 @@ end
 ---@return boolean
 function TRB.Classes.SpellBase:IsFree()
 	return self._isFreeCurrently
+end
+
+local castTimeEmbargoTimespan = 0.05
+
+---Gets the current cast time of the spell in seconds.
+---@return number # Cast time of the spell in seconds (0 = instant).
+function TRB.Classes.SpellBase:GetCastTime()
+	local currentTime = GetTime()
+	if (self._lastCastTimeCheck or 0) + castTimeEmbargoTimespan > currentTime then
+		self._lastCastTimeCheck = currentTime
+		return self._lastCastTimeValue
+	end
+
+	local cacheKey = self.id
+	if TRB.Data.cache.values.castTime[cacheKey] == nil then
+		local spellInfo = C_Spell.GetSpellInfo(self.id)
+		if spellInfo ~= nil and spellInfo.castTime ~= nil then
+			local value = spellInfo.castTime / 1000 -- Convert ms to seconds
+			self._lastCastTimeValue = value
+			TRB.Data.cache.values.castTime[cacheKey] = value
+
+			-- Track the base (first non-zero) cast time to detect procs
+			if value > 0 and self._baseCastTime == nil then
+				self._baseCastTime = value
+			end
+
+			-- Determine if the spell is currently instant when it normally has a cast time
+			if self._baseCastTime ~= nil and self._baseCastTime > 0 then
+				self._isInstantCurrently = (value == 0)
+			else
+				self._isInstantCurrently = false
+			end
+
+			return value
+		end
+	else
+		local cachedValue = TRB.Data.cache.values.castTime[cacheKey]
+		self._lastCastTimeValue = cachedValue
+
+		-- Update instant status based on cached value
+		if self._baseCastTime ~= nil and self._baseCastTime > 0 then
+			self._isInstantCurrently = (cachedValue == 0)
+		else
+			self._isInstantCurrently = false
+		end
+
+		return cachedValue
+	end
+
+	return self._lastCastTimeValue
+end
+
+---Gets the base (unmodified) cast time of the spell in seconds.
+---This is the first non-zero cast time observed, used as a reference to detect procs.
+---@return number? # Base cast time in seconds, or nil if never observed.
+function TRB.Classes.SpellBase:GetBaseCastTime()
+	return self._baseCastTime
+end
+
+---Determines if the spell's cast time has been modified from its base value (e.g., by a proc).
+---@return boolean # True if the current cast time differs from the base cast time.
+function TRB.Classes.SpellBase:IsCastTimeModified()
+	if self._baseCastTime == nil then
+		return false
+	end
+	return self._lastCastTimeValue ~= self._baseCastTime
+end
+
+---Is this ability instant cast currently when it normally has a cast time?
+---@return boolean
+function TRB.Classes.SpellBase:IsInstant()
+	return self._isInstantCurrently
+end
+
+---Resets the cast time tracking state.
+function TRB.Classes.SpellBase:ResetCastTime()
+	self._baseCastTime = nil
+	self._lastCastTimeValue = 0
+	self._isInstantCurrently = false
 end
 
 local spellUsableEmbargoTimespan = 0.05

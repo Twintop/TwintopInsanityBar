@@ -52,6 +52,7 @@ local function FillSpecializationCache()
 		innervateCue = false,
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
+		infusionOfLightPlayed = false,
 	}
 
 	specCache.holy.barTextVariables = {
@@ -684,7 +685,10 @@ end
 
 local function UpdateSnapshot_Holy()
 	local currentTime = GetTime()
-	UpdateSnapshot()	
+	UpdateSnapshot()
+	
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	spells.flashOfLight:GetCastTime()
 end
 
 local function UpdateSnapshot_Protection()
@@ -801,6 +805,21 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 				local barBorderColor = specSettings.colors.bar.border
 				local barColor = specSettings.colors.bar.base
+
+				-- Check for Infusion of Light (Flash of Light becomes instant)
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+				if spells.flashOfLight:IsInstant() then
+					if specSettings.colors.bar.infusionOfLight.enabled then
+						barBorderColor = specSettings.colors.bar.infusionOfLight.color
+					end
+					if specSettings.audio.infusionOfLight.enabled and not snapshotData.audio.infusionOfLightPlayed then
+						PlaySoundFile(specSettings.audio.infusionOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
+						snapshotData.audio.infusionOfLightPlayed = true
+					end
+				else
+					snapshotData.audio.infusionOfLightPlayed = false
+				end
+
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)

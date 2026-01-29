@@ -1742,3 +1742,10 @@ L["StaggerBarThresholdExtreme"] = "Extremely Heavy Stagger Threshold"
 L["StaggerBarThresholdExtremeTooltip"] = "Stagger percentage at which the bar color transitions from Heavy to Extremely Heavy."
 L["StaggerLevelExtremeCheckbox"] = "Extremely Heavy Stagger"
 L["StaggerLevelExtremeTooltip"] = "Show a threshold line on the Stagger bar at the Extremely Heavy Stagger level."
+
+-- Infusion of Light (Holy Paladin)
+L["PaladinHolyInfusionOfLight"] = "Infusion of Light"
+L["PaladinHolyCheckboxInfusionOfLightTooltip"] = "This will change the bar border color when you have Infusion of Light (Flash of Light becomes instant)."
+L["PaladinHolyColorPickerInfusionOfLight"] = "Border when you have Infusion of Light"
+L["PaladinHolyAudioCheckboxInfusionOfLight"] = "Play audio cue when Infusion of Light procs"
+L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Play an audio cue when an Infusion of Light proc occurs. This will only play once per proc."

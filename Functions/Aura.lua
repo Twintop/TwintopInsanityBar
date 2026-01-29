@@ -15,6 +15,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 	-- Short circuit this for now
 	if unit == "player" then
 		TRB.Data.cache.values.resource = {}
+		TRB.Data.cache.values.castTime = {}
 		--return
 	elseif unit ~= "player" then
 		return
@@ -24,6 +25,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 		--Only do a full refresh of buffs for now
 		snapshotData:RefreshAllBuffs()
 		TRB.Data.cache.values.resource = {}
+		TRB.Data.cache.values.castTime = {}
 		return
 	end
 
@@ -52,6 +54,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 					end
 				end
 				TRB.Data.cache.values.resource = {}
+				TRB.Data.cache.values.castTime = {}
 			end
 		else
 			-- This code works but has a fundamental flaw: UNIT_AURA only gives updates for the player, pet, and visible nameplates.
@@ -90,6 +93,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 				end
 			end
 			TRB.Data.cache.values.resource = {}
+			TRB.Data.cache.values.castTime = {}
 		else
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
 				local target = targetData.auraInstanceIds[v]
@@ -118,6 +122,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 			end
 
 			TRB.Data.cache.values.resource = {}
+			TRB.Data.cache.values.castTime = {}
 		else
 			for _, v in pairs(info.removedAuraInstanceIDs) do
 				local target = targetData.auraInstanceIds[v]

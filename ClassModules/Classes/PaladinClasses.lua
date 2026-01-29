@@ -8,6 +8,7 @@ TRB.Classes.Paladin = TRB.Classes.Paladin or {}
 
 
 ---@class TRB.Classes.Paladin.HolySpells : TRB.Classes.Healer.HealerSpells
+---@field flashOfLight TRB.Classes.SpellBase
 TRB.Classes.Paladin.HolySpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Paladin.HolySpells.__index = TRB.Classes.Paladin.HolySpells
 
@@ -22,6 +23,10 @@ function TRB.Classes.Paladin.HolySpells:New()
     -- Paladin Class Talents		
     
     -- Holy Spec Talents
+    self.flashOfLight = TRB.Classes.SpellBase:New({
+        id = 19750,
+        baseline = true
+    })
 
     return self
 end

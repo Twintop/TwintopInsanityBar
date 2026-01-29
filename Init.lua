@@ -157,6 +157,7 @@ TRB.Data.cache.values = {
 	bar = {},
 	threshold = {},
 	resource = {},
+	castTime = {},
 	frame = {},
 	range = {}
 }
