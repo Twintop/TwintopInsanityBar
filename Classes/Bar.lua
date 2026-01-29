@@ -853,6 +853,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 
 	-- Threshold color options (required when colorCurveType is "step" or "linear")
 	self.thresholdLevels = config.thresholdLevels
+	self.maxThresholdPercent = config.maxThresholdPercent -- Max percentage for threshold sliders (default 100 if nil)
 	self.colorTypeLabel = config.colorTypeLabel
 	self.colorTypeStepLabel = config.colorTypeStepLabel
 	self.colorTypeLinearLabel = config.colorTypeLinearLabel
@@ -1131,11 +1132,13 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = "step", -- Green -> Yellow -> Red based on stagger level
 		visibilityKey = "stagger",
+		maxThresholdPercent = 1000, -- Allow thresholds up to 1000% (matches max stagger scale)
 		-- Threshold color configuration - pass resolved localized strings, NOT keys
 		thresholdLevels = {
 			{ key = "low", colorLabel = L["StaggerBarColorLight"] },
 			{ key = "medium", colorLabel = L["StaggerBarColorMedium"], sliderLabel = L["StaggerBarThresholdMedium"], sliderTooltip = L["StaggerBarThresholdMediumTooltip"] },
-			{ key = "heavy", colorLabel = L["StaggerBarColorHeavy"], sliderLabel = L["StaggerBarThresholdHeavy"], sliderTooltip = L["StaggerBarThresholdHeavyTooltip"] }
+			{ key = "heavy", colorLabel = L["StaggerBarColorHeavy"], sliderLabel = L["StaggerBarThresholdHeavy"], sliderTooltip = L["StaggerBarThresholdHeavyTooltip"] },
+			{ key = "extreme", colorLabel = L["StaggerBarColorExtreme"], sliderLabel = L["StaggerBarThresholdExtreme"], sliderTooltip = L["StaggerBarThresholdExtremeTooltip"] }
 		},
 		colorTypeLabel = L["StaggerBarColorType"],
 		colorTypeStepLabel = L["StaggerBarColorTypeStep"],

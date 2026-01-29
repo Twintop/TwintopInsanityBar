@@ -138,6 +138,9 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				},
 				heavy = {
 					enabled = true,
+				},
+				extreme = {
+					enabled = true,
 				}
 			}
 		},
@@ -162,7 +165,10 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
-			stagger = TRB.Functions.Settings:DefaultStaggerBarDimensions(classic),
+			stagger = TRB.Functions.Table:Merge(
+				TRB.Functions.Settings:DefaultStaggerBarDimensions(classic),
+				{ maxScale = 1.0 }
+			),
 		},
 		colors = {
 			text = {
@@ -205,7 +211,8 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					type = "step",
 					low = { color = "FF85FF85", threshold = 0.0 },
 					medium = { color = "FFFFFAB8", threshold = 0.30 },
-					heavy = { color = "FFFF6B6B", threshold = 0.60 }
+					heavy = { color = "FFFF6B6B", threshold = 0.60 },
+					extreme = { color = "FFBB1111", threshold = 1.0 }
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -716,6 +723,20 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
 	end
 
+	-- Maximum Stagger Scale slider
+	controls.staggerMaxScaleSlider = TRB.Functions.OptionsUi:BuildPercentageSlider(parent, L["StaggerBarMaxScaleSlider"], 100, 1000, spec.bars.stagger.maxScale or 1.0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.staggerMaxScaleSlider.tooltip = L["StaggerBarMaxScaleTooltip"]
+	controls.staggerMaxScaleSlider:SetScript("OnValueChanged", function(self, value)
+		local displayValue = TRB.Functions.Number:RoundTo(value, 0)
+		self.EditBox:SetText(displayValue .. "%")
+		-- Store as decimal (e.g., 100% -> 1.0, 200% -> 2.0)
+		spec.bars.stagger.maxScale = value / 100
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
 
 	-- Invoke Niuzao configuration options
@@ -901,6 +922,20 @@ local function BrewmasterConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.stagger.heavy.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.heavy.enabled = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.staggerExtremeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_staggerExtreme", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.staggerExtremeThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["StaggerLevelExtremeCheckbox"])
+	f.tooltip = L["StaggerLevelExtremeTooltip"]
+	f:SetChecked(spec.thresholds.stagger.extreme.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.stagger.extreme.enabled = self:GetChecked()
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end

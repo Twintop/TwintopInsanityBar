@@ -21,6 +21,13 @@ local content = [====[
 
 - [#570](#570) Fix Lua errors when switching specializations.
 
+## Monk
+### Brewmaster
+
+- [#520](#520) Add support for an "Extremely Heavy Stagger" threshold and color to the Stagger bar.
+- [#520](#520) Add support for setting the maximum stagger percentage represented by the bar to be greater than 100% of maximum health.
+- Fix an issue where the Stagger bar would not display thresholds correctly when using Edit Mode and setting the bar to be the same width as the Cooldown Manager.
+
 ---
 
 # 12.0.0.13-release (2026-01-29)

@@ -435,7 +435,7 @@ local function ConstructResourceBar(settings)
 			if barGroups.stagger then
 				TRB.Data.character.maxResource2 = 1
 				
-				-- Create thresholds on the Stagger bar (for Medium and Heavy Stagger thresholds)
+				-- Create thresholds on the Stagger bar (for Medium, Heavy, and Extreme Stagger thresholds)
 				-- Layout and appearance are handled by the generic ApplyCustomBarGroupsLayout/Appearance
 				local staggerNode = barGroups.stagger:GetNode(1)
 				if staggerNode then
@@ -447,7 +447,7 @@ local function ConstructResourceBar(settings)
 					local thresholdHeight = staggerSettings and staggerSettings.height or 24
 					local borderColor = staggerColors and staggerColors.border and staggerColors.border.color
 					
-					for _ = 1, 2 do
+					for _ = 1, 3 do
 						local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetResourceFrame())
 						TRB.Functions.Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor)
 						staggerNode:RegisterThreshold(thresholdFrame)
@@ -865,6 +865,18 @@ local function UpdateStaggerColor()
 		end
 	end
 
+	-- Extreme stagger color and threshold
+	local extremeR, extremeG, extremeB, extremeA = 0.73, 0.07, 0.07, 1 -- default deep red for extreme stagger
+	local extremeThreshold = 1.0
+	if staggerBarSettings.extreme then
+		if staggerBarSettings.extreme.color then
+			extremeR, extremeG, extremeB, extremeA = TRB.Functions.Color:GetRGBAFromString(staggerBarSettings.extreme.color, true)
+		end
+		if staggerBarSettings.extreme.threshold then
+			extremeThreshold = staggerBarSettings.extreme.threshold
+		end
+	end
+
 	-- Curve type
 	if staggerBarSettings.type == "linear" then
 		curveType = Enum.LuaCurveType.Linear
@@ -893,6 +905,7 @@ local function UpdateStaggerColor()
 			end
 		end
 
+		-- Ensure thresholds are in ascending order
 		if mediumThreshold >= heavyThreshold then
 			mediumThreshold = heavyThreshold - 0.000001
 		end
@@ -901,10 +914,15 @@ local function UpdateStaggerColor()
 			lightThreshold = mediumThreshold - 0.000001
 		end
 
+		if heavyThreshold >= extremeThreshold then
+			heavyThreshold = extremeThreshold - 0.000001
+		end
+
 		curve:SetType(curveType)
 		curve:AddPoint(lightThreshold, CreateColor(lightR, lightG, lightB, lightA))
 		curve:AddPoint(mediumThreshold, CreateColor(mediumR, mediumG, mediumB, mediumA))
 		curve:AddPoint(heavyThreshold, CreateColor(heavyR, heavyG, heavyB, heavyA))
+		curve:AddPoint(extremeThreshold, CreateColor(extremeR, extremeG, extremeB, extremeA))
 	end
 
 	-- Evaluate the curve at current stagger percent
@@ -1091,19 +1109,24 @@ local function UpdateResourceBar()
 				if barGroups and barGroups.stagger then
 					local staggerNode = barGroups.stagger:GetNode(1)
 					if staggerNode then
-						-- Set Stagger bar value as percentage of max health
-						staggerNode:SetMinMax(0, snapshotData.attributes.healthMax)
-						staggerNode:SetValue(snapshotData.attributes.stagger)
-
 						-- Get stagger colors and dimensions from the new custom bar structure
 						local staggerSettings = specSettings.bars and specSettings.bars.stagger or {}
 						local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
 						local staggerBorder = staggerSettings.border or 2
 						
-						-- Calculate effective width (respects fullWidth setting)
+						-- Get max scale (default 1.0 = 100% of max health)
+						local maxScale = staggerSettings.maxScale or 1.0
+						local scaledMaxHealth = snapshotData.attributes.healthMax * maxScale
+						
+						-- Set Stagger bar value with scaled max
+						staggerNode:SetMinMax(0, scaledMaxHealth)
+						staggerNode:SetValue(snapshotData.attributes.stagger)
+						
+						-- Calculate effective width (respects fullWidth setting and Edit Mode CDM width matching)
 						local staggerWidth
 						if staggerSettings.fullWidth then
-							staggerWidth = specSettings.bar.width
+							-- When fullWidth is enabled, use effectiveWidth (which accounts for CDM width matching)
+							staggerWidth = (barGroups and barGroups.effectiveWidth) or specSettings.bar.width
 						else
 							staggerWidth = staggerSettings.width
 						end
@@ -1127,18 +1150,30 @@ local function UpdateResourceBar()
 						if staggerThresholds[1] then
 							local mediumThreshold = staggerColors.medium and staggerColors.medium.threshold or 0.30
 							local mediumColor = staggerColors.medium and staggerColors.medium.color
-							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled or false
+							-- Hide threshold if it exceeds the bar's max scale
+							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled and mediumThreshold <= maxScale or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[1], mediumColor, true)
-							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetContainerFrame(), mediumThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax, staggerWidth, staggerBorder)
+							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetContainerFrame(), mediumThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
 						end
 
 						-- Heavy Stagger threshold (configurable position, discrete color)
 						if staggerThresholds[2] then
 							local heavyThreshold = staggerColors.heavy and staggerColors.heavy.threshold or 0.60
 							local heavyColor = staggerColors.heavy and staggerColors.heavy.color
-							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled or false
+							-- Hide threshold if it exceeds the bar's max scale
+							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled and heavyThreshold <= maxScale or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[2], heavyColor, true)
-							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetContainerFrame(), heavyThreshold * snapshotData.attributes.healthMax, snapshotData.attributes.healthMax, staggerWidth, staggerBorder)
+							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetContainerFrame(), heavyThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
+						end
+
+						-- Extremely Heavy Stagger threshold (configurable position, discrete color)
+						if staggerThresholds[3] then
+							local extremeThreshold = staggerColors.extreme and staggerColors.extreme.threshold or 1.0
+							local extremeColor = staggerColors.extreme and staggerColors.extreme.color
+							-- Hide threshold if it exceeds the bar's max scale
+							local showExtremeThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.extreme and specSettings.thresholds.stagger.extreme.enabled and extremeThreshold <= maxScale or false
+							TRB.Functions.Color:SetThresholdColor(staggerThresholds[3], extremeColor, true)
+							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold3", staggerThresholds[3], showExtremeThreshold, staggerNode:GetContainerFrame(), extremeThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
 						end
 					end
 				end

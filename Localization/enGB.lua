@@ -260,4 +260,8 @@ if locale == "enGB" then
     L["EvokerDevastationCheckboxDragonrageTooltip"] = "Changes the bar colour when Dragonrage is active."
     L["EvokerDevastationCheckboxDragonrageEnd"] = "Change bar colour when Dragonrage is ending"
     L["EvokerDevastationCheckboxDragonrageEndTooltip"] = "Changes the bar colour when Dragonrage is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+
+    -- Stagger Bar Enhancements (Brewmaster Monk)
+    L["StaggerBarColorExtreme"] = "Extremely Heavy Stagger Colour"
+    L["StaggerBarThresholdExtremeTooltip"] = "Stagger percentage at which the bar colour transitions from Heavy to Extremely Heavy."
 end

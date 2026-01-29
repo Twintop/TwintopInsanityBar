@@ -1729,7 +1729,16 @@ L["EditModeAnchorOffset"] = "Vertical Offset"
 L["EditModeAnchorOffsetTooltip"] = "Adjusts the vertical distance between the bar and the Cooldown Manager. Positive values move the bar away from the Cooldown Manager."
 
 -- Edit Mode Reset
-L["EditModeSettings"] = "Edit Mode Settings"
+L["EditModeSettings"] = "Edit Mode"
 L["ResetEditModeDataButton"] = "Reset Edit Mode Data"
 L["ResetEditModeDataDialog"] = "Do you want to reset all Edit Mode layout data stored by Twintop's Resource Bar? This will clear all bar positions associated with Edit Mode layouts. This will |cFFFF0000reload your UI|r!"
 L["TabResetDefaults"] = "Reset Defaults"
+
+-- Stagger Bar Enhancements (Brewmaster Monk)
+L["StaggerBarMaxScaleSlider"] = "Stagger Bar as % of Max Health"
+L["StaggerBarMaxScaleTooltip"] = "Maximum percentage of your maximum health to display on the Stagger bar. Values above this will show as a full bar."
+L["StaggerBarColorExtreme"] = "Extremely Heavy Stagger Color"
+L["StaggerBarThresholdExtreme"] = "Extremely Heavy Stagger Threshold"
+L["StaggerBarThresholdExtremeTooltip"] = "Stagger percentage at which the bar color transitions from Heavy to Extremely Heavy."
+L["StaggerLevelExtremeCheckbox"] = "Extremely Heavy Stagger"
+L["StaggerLevelExtremeTooltip"] = "Show a threshold line on the Stagger bar at the Extremely Heavy Stagger level."

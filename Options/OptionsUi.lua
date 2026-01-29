@@ -272,6 +272,182 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	return f
 end
 
+---Builds a slider that displays and accepts percentage values but stores decimal values.
+---For example, displays "30%" but stores 0.30 internally.
+---@param parent Frame
+---@param title string
+---@param minPercent number # Minimum value in percentage (e.g., 0 for 0%)
+---@param maxPercent number # Maximum value in percentage (e.g., 100 for 100%, or 1000 for 1000%)
+---@param defaultDecimalValue number # Default value as a decimal (e.g., 0.30 for 30%)
+---@param stepPercent number # Step size in percentage (e.g., 1 for 1%)
+---@param numDecimalPlaces integer # Decimal places to show in the percentage display (e.g., 0 for "30%", 2 for "30.00%")
+---@param sizeX number
+---@param sizeY number
+---@param posX number
+---@param posY number
+---@return table|BackdropTemplate|Slider
+function TRB.Functions.OptionsUi:BuildPercentageSlider(parent, title, minPercent, maxPercent, defaultDecimalValue, stepPercent, numDecimalPlaces, sizeX, sizeY, posX, posY)
+	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
+---@diagnostic disable-next-line: inject-field
+	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
+	f:SetPoint("TOPLEFT", posX+18, posY)
+	f:SetMinMaxValues(minPercent, maxPercent)
+	f:SetValueStep(stepPercent)
+	f:SetSize(sizeX-36, sizeY)
+	f:EnableMouseWheel(true)
+	f:SetObeyStepOnDrag(true)
+	f:SetOrientation("HORIZONTAL")
+	---@diagnostic disable-next-line: missing-fields
+	f:SetBackdrop({
+	   bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
+	   edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
+	   tile = true,
+	   edgeSize = 8,
+	   tileSize = 8,
+	   insets = {left = 3, right = 3, top = 6, bottom = 6}
+	})
+	f:SetBackdropBorderColor(0.7, 0.7, 0.7, 1.0)
+	f:SetScript("OnEnter", function(self)
+		self:SetBackdropBorderColor(1, 1, 1, 1)
+	end)
+	f:SetScript("OnLeave", function(self)
+		self:SetBackdropBorderColor(0.7, 0.7, 0.7, 1.0)
+	end)
+	f:SetScript("OnValueChanged", function(self, value)
+		-- Display as percentage with % suffix
+		local displayValue = TRB.Functions.Number:RoundTo(value, numDecimalPlaces)
+		self.EditBox:SetText(displayValue .. "%")
+	end)
+	---@diagnostic disable-next-line: inject-field
+	f.MinLabel = f:CreateFontString(nil, "OVERLAY")
+	f.MinLabel:SetFontObject(GameFontHighlightSmall)
+	f.MinLabel:SetSize(0, 14)
+	---@diagnostic disable-next-line: redundant-parameter
+	f.MinLabel:SetWordWrap(false)
+	f.MinLabel:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 0, -1)
+---@diagnostic disable-next-line: param-type-mismatch
+	f.MinLabel:SetText(minPercent .. "%")
+	---@diagnostic disable-next-line: inject-field
+	f.MaxLabel = f:CreateFontString(nil, "OVERLAY")
+	f.MaxLabel:SetFontObject(GameFontHighlightSmall)
+	f.MaxLabel:SetSize(0, 14)
+	---@diagnostic disable-next-line: redundant-parameter
+	f.MaxLabel:SetWordWrap(false)
+	f.MaxLabel:SetPoint("TOPRIGHT", f, "BOTTOMRIGHT", 0, -1)
+---@diagnostic disable-next-line: param-type-mismatch
+	f.MaxLabel:SetText(maxPercent .. "%")
+	---@diagnostic disable-next-line: inject-field
+	f.Title = f:CreateFontString(nil, "OVERLAY")
+	f.Title:SetFontObject(GameFontNormal)
+	f.Title:SetSize(0, 14)
+	---@diagnostic disable-next-line: redundant-parameter
+	f.Title:SetWordWrap(false)
+	f.Title:SetPoint("BOTTOM", f, "TOP")
+	f.Title:SetText(title)
+	---@diagnostic disable-next-line: inject-field
+	f.Thumb = f:CreateTexture(nil, "ARTWORK")
+	f.Thumb:SetSize(32, 32)
+	f.Thumb:SetTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
+	f:SetThumbTexture(f.Thumb)
+
+	local eb = f.EditBox
+	eb:EnableMouseWheel(true)
+	eb:SetAutoFocus(false)
+	eb:SetNumeric(false)
+	eb:SetJustifyH("CENTER")
+	eb:SetFontObject(GameFontHighlightSmall)
+	eb:SetSize(50, 14)
+---@diagnostic disable-next-line: param-type-mismatch
+	eb:SetPoint("Top", f, "Bottom", 0, -1)
+	eb:SetTextInsets(4, 4, 0, 0)
+	---@diagnostic disable-next-line: missing-fields
+	eb:SetBackdrop({
+		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
+		tile = true,
+		edgeSize = 1,
+		tileSize = 5
+	})
+	eb:SetBackdropColor(0, 0, 0, 1)
+	eb:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+	eb:SetScript("OnEnter", function(self)
+		self:SetBackdropBorderColor(0.4, 0.4, 0.4, 1.0)
+	end)
+	eb:SetScript("OnLeave", function(self)
+		self:SetBackdropBorderColor(0.2, 0.2, 0.2, 1.0)
+	end)
+	eb:SetScript("OnMouseWheel", function(self, delta)
+		if delta > 0 then
+			f:SetValue(f:GetValue() + f:GetValueStep())
+		else
+			f:SetValue(f:GetValue() - f:GetValueStep())
+		end
+	end)
+	eb:SetScript("OnEscapePressed", function(self)
+		self:ClearFocus()
+	end)
+	eb:SetScript("OnEnterPressed", function(self)
+		-- Parse the input, stripping any % suffix and converting to number
+		local inputText = self:GetText()
+		inputText = inputText:gsub("%%", "") -- Remove % sign if present
+		local value = tonumber(inputText)
+		if value then
+			local min, max = f:GetMinMaxValues()
+			if value >= min and value <= max then
+				f:SetValue(value)
+			elseif value < min then
+				f:SetValue(min)
+			elseif value > max then
+				f:SetValue(max)
+			end
+			value = TRB.Functions.Number:RoundTo(f:GetValue(), numDecimalPlaces)
+			eb:SetText(value .. "%")
+		else
+			-- Invalid input, reset to current value
+			local currentValue = TRB.Functions.Number:RoundTo(f:GetValue(), numDecimalPlaces)
+			eb:SetText(currentValue .. "%")
+		end
+		self:ClearFocus()
+	end)
+	eb:SetScript("OnEditFocusLost", function(self)
+		self:HighlightText(0, 0)
+	end)
+	eb:SetScript("OnEditFocusGained", function(self)
+		self:HighlightText(0, -1)
+	end)
+	---@diagnostic disable-next-line: inject-field
+	f.Plus = CreateFrame("Button", nil, f)
+	f.Plus:SetSize(18, 18)
+	f.Plus:RegisterForClicks("AnyUp")
+	f.Plus:SetPoint("LEFT", f, "RIGHT", 0, 0)
+	f.Plus:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
+	f.Plus:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+	f.Plus:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIcon-BlinkHilight")
+	f.Plus:SetScript("OnClick", function(self)
+		f:SetValue(f:GetValue() + f:GetValueStep())
+	end)
+	---@diagnostic disable-next-line: inject-field
+	f.Minus = CreateFrame("Button", nil, f)
+	f.Minus:SetSize(18, 18)
+	f.Minus:RegisterForClicks("AnyUp")
+	f.Minus:SetPoint("RIGHT", f, "LEFT", 0, 0)
+	f.Minus:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
+	f.Minus:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
+	f.Minus:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIcon-BlinkHilight")
+	f.Minus:SetScript("OnClick", function(self)
+		f:SetValue(f:GetValue() - f:GetValueStep())
+	end)
+
+	-- Set initial value (convert decimal to percentage for display)
+	local initialPercent = defaultDecimalValue * 100
+	f:SetValue(initialPercent)
+---@diagnostic disable-next-line: param-type-mismatch
+	eb:SetText(TRB.Functions.Number:RoundTo(initialPercent, numDecimalPlaces) .. "%")
+	eb:SetCursorPosition(0)
+
+	return f
+end
+
 function TRB.Functions.OptionsUi:BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
 	local f = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", xPos, yPos)
@@ -1943,22 +2119,25 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	end
 	
 	-- Build threshold sliders (skip first one - no slider needed for base/low)
+	-- Use percentage sliders: display percentages, store as decimals
+	-- Default max is 100%, but can be overridden by barTypeDef.maxThresholdPercent (e.g., 1000 for stagger)
+	local maxThresholdPercent = barTypeDef.maxThresholdPercent or 100
 	for i, thresholdLevel in ipairs(thresholdLevels) do
 		local thresholdKey = thresholdLevel.key
 		if i > 1 and colorSettings[thresholdKey] and colorSettings[thresholdKey].threshold ~= nil then
 			-- Use resolved sliderLabel string from thresholdLevel, or fall back to generic formatted label
 			local sliderLabel = thresholdLevel.sliderLabel or string.format(L["CustomBarThreshold"], displayName, thresholdKey:gsub("^%l", string.upper))
-			controls[barTypeDef.key .. thresholdKey .. "Threshold"] = TRB.Functions.OptionsUi:BuildSlider(parent, sliderLabel, 
-				0, 1, colorSettings[thresholdKey].threshold, 0.01, 2,
+			controls[barTypeDef.key .. thresholdKey .. "Threshold"] = TRB.Functions.OptionsUi:BuildPercentageSlider(parent, sliderLabel, 
+				0, maxThresholdPercent, colorSettings[thresholdKey].threshold, 1, 0,
 				oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 			if thresholdLevel.sliderTooltip then
 				controls[barTypeDef.key .. thresholdKey .. "Threshold"].tooltip = thresholdLevel.sliderTooltip
 			end
 			controls[barTypeDef.key .. thresholdKey .. "Threshold"]:SetScript("OnValueChanged", function(self, value)
-				value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-				value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-				self.EditBox:SetText(value)
-				colorSettings[thresholdKey].threshold = value
+				-- Slider value is in percentage (0-maxThresholdPercent), store as decimal
+				local displayValue = TRB.Functions.Number:RoundTo(value, 0)
+				self.EditBox:SetText(displayValue .. "%")
+				colorSettings[thresholdKey].threshold = value / 100
 				triggerChange()
 			end)
 			yCoord = yCoord - 60
