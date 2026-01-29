@@ -1727,3 +1727,9 @@ L["EditModeMatchCDMWidth"] = "Match Cooldown Manager Anchor Width"
 L["EditModeMatchCDMWidthTooltip"] = "When enabled, the bar's width will automatically match the width of the Cooldown Manager (Essential Cooldowns). The Cooldown Manager must be enabled in WoW's Options > Advanced Options for this to work."
 L["EditModeAnchorOffset"] = "Vertical Offset"
 L["EditModeAnchorOffsetTooltip"] = "Adjusts the vertical distance between the bar and the Cooldown Manager. Positive values move the bar away from the Cooldown Manager."
+
+-- Edit Mode Reset
+L["EditModeSettings"] = "Edit Mode Settings"
+L["ResetEditModeDataButton"] = "Reset Edit Mode Data"
+L["ResetEditModeDataDialog"] = "Do you want to reset all Edit Mode layout data stored by Twintop's Resource Bar? This will clear all bar positions associated with Edit Mode layouts. This will |cFFFF0000reload your UI|r!"
+L["TabResetDefaults"] = "Reset Defaults"

@@ -403,6 +403,38 @@ local function ConstructMiscellaneousPanel(parent)
 
 end
 
+local function ConstructResetDefaultsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+
+	StaticPopupDialogs["TwintopResourceBar_ResetEditModeData"] = {
+		text = L["ResetEditModeDataDialog"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.core.editMode.layouts = {}
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EditModeSettings"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.buttons.resetEditModeData = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetEditModeDataButton"], oUi.xCoord, yCoord, 200, 30)
+	controls.buttons.resetEditModeData:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_ResetEditModeData")
+	end)
+end
+
 local function ConstructGlobalOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
@@ -445,6 +477,7 @@ local function ConstructGlobalOptionsPanel()
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
 	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabMiscellaneous"], 5, parent, 100, tabs[4])
+	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
@@ -473,6 +506,7 @@ local function ConstructGlobalOptionsPanel()
 	ConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
 	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 	ConstructMiscellaneousPanel(tabsheets[5].scrollFrame.scrollChild)
+	ConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
 
 ---comment

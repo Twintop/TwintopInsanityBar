@@ -13,6 +13,10 @@ local content = [====[
 ---
 
 # 12.0.0.14-release (2026-01-30)
+## General
+
+- [#572](#572) Add a new "Reset Edit Mode Data" button under the "Reset Defaults" tab in Global Options, allowing you to clear all stored Edit Mode layout data for the bar.
+
 ## Druid
 
 - [#570](#570) Fix Lua errors when switching specializations.
