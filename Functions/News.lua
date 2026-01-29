@@ -29,7 +29,7 @@ local content = [====[
 
 ### Localization
 
-- Update some strings to improve behavioral clarity around bar font settings.
+- [#567](#567) Update some strings to improve behavioral clarity around bar font settings.
 - Remove the Google Translate generated localizations due to continued poor quality. If you're interested in helping with translations, please join the [Discord server](https://discord.gg/eThqxM78xm) and let Twintop know!
 
 ## Death Knight
