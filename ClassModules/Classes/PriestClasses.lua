@@ -461,7 +461,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		duration = 20
 	})
 	self.improvedVoidform = TRB.Classes.SpellBase:New({
-		id = 341540,
+		id = 341240,
 		isTalent = true,
 		resource = 60
 	})

@@ -20,6 +20,14 @@ local content = [====[
 
 ---
 
+# 12.0.0.13-release (2026-01-30)
+## Priest
+### Shadow
+
+- Fix Improved Voidform talent ID.
+
+---
+
 # 12.0.0.12-release (2026-01-29)
 ## General
 
