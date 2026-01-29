@@ -12,11 +12,10 @@ local content = [====[
 
 ---
 
-### Congratulations! You survived the Addon Apocalypse. You had us worried there for a bit -- dust yourself off and get back to raiding!*
+# 12.0.0.14-release (2026-01-30)
+## Druid
 
----
-
-### Bar text for all specializations has been reset to new defaults to accommodate API changes.
+- [#570](#570) Fix Lua errors when switching specializations.
 
 ---
 

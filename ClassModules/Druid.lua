@@ -506,7 +506,6 @@ local function FillSpellData_Guardian()
 		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DruidRestorationBarTextVariable_casting"], printInSettings = true, color = false },
 
 		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false },
 		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false },
@@ -1152,8 +1151,7 @@ local function RefreshLookupData_Guardian()
 
 	--Spec specific implementation
 
-	local currentRageColor = sharedSettings.colors.text.current.color
-	local castingRageColor = sharedSettings.colors.text.casting.color
+	local currentRageColor = TRB.Data.settings.druid.guardian.colors.text.current.color
 
 	if TRB.Data.character.inCombat then
 		if sharedSettings.colors.text.overThreshold.enabled then
@@ -1167,7 +1165,6 @@ local function RefreshLookupData_Guardian()
 
 			if _overThreshold then
 				currentRageColor = sharedSettings.colors.text.overThreshold.color
-				castingRageColor = sharedSettings.colors.text.overThreshold.color
 			end
 		end
 	end
@@ -1182,10 +1179,8 @@ local function RefreshLookupData_Guardian()
 		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
-		castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
 	else
 		currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
-		castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	end
 
 	
@@ -1206,7 +1201,6 @@ local function RefreshLookupData_Guardian()
 	lookup["$rage"] = currentRage
 	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookup["$rageMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookup["$casting"] = castingRage
 	lookup["$berserkTime"] = berserkTime
 	lookup["$incarnationTime"] = berserkTime
 	TRB.Data.lookup = lookup
@@ -1216,7 +1210,6 @@ local function RefreshLookupData_Guardian()
 	lookupLogic["$rage"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$rageMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$berserkTime"] = _berserkTime
 	lookupLogic["$incarnationTime"] = _berserkTime
 	TRB.Data.lookupLogic = lookupLogic
@@ -3406,10 +3399,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		valid = false
 	elseif var == "$resourceMax" or var == "$rageMax" then
 		valid = true
-	elseif var == "$casting" then
-		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-			valid = true
-		end
 	end
 
 	if TRB.Data.character.specId == 1 then -- Balance
@@ -3441,6 +3430,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if spells.starfall:IsUsable() or spells.starfall:IsFree() then
 				valid = true
 			end
+		elseif var == "$casting" then
+			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
 		end
 	elseif TRB.Data.character.specId == 2 then -- Feral
 		if var == "$berserkTime" or var == "$incarnationTime" then
@@ -3463,6 +3456,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if IsStealthed() then
 				valid = true
 			end
+		elseif var == "$casting" then
+			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
 		end
 	elseif TRB.Data.character.specId == 3 then -- Guardian
 		if var == "$berserkTime" or var == "$incarnationTime" then
@@ -3474,16 +3471,16 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		if var == "$resourcePercent" then
 			-- Do not compare resource percent as it may be a secret value
 			valid = false
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
 		elseif var == "$efflorescenceTime" then
 			if snapshots[spells.efflorescence.id].buff.isActive then
 				valid = true
 			end
 		elseif var == "$incarnationTime" then
 			if snapshots[spells.incarnationTreeOfLife.id].buff.isActive  then
+				valid = true
+			end
+		elseif var == "$casting" then
+			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
 				valid = true
 			end
 		end

@@ -447,7 +447,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
 				end
 			else
-				if outOfRange then
+				if outOfRange and threshold then
 					TRB.Functions.Threshold:Hide(key, threshold)
 					return false
 				end
@@ -459,7 +459,9 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		-- Check if the threshold is unusable 
 		if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
 			if not TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings) then
-				TRB.Functions.Threshold:Hide(key, threshold)
+				if threshold then
+					TRB.Functions.Threshold:Hide(key, threshold)
+				end
 				return false
 			end
 		end
@@ -539,7 +541,7 @@ function TRB.Functions.Threshold:Hide(key, threshold)
 	end
 	]]
 	
-	if threshold:IsVisible() then
+	if threshold and threshold:IsVisible() then
 		threshold:Hide()
 	end
 end

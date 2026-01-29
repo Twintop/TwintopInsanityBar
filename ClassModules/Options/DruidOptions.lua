@@ -821,9 +821,6 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				current = {
 					color = "FFFF0000"
 				},
-				casting = {
-					color = "FFFFFFFF"
-				},
 				passive = {
 					color = "FFEA3C53"
 				},
