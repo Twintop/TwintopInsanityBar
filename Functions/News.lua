@@ -20,7 +20,12 @@ local content = [====[
 
 ---
 
-# 12.0.0.13-release (2026-01-30)
+# 12.0.0.13-release (2026-01-29)
+## General
+
+- [#571](#571) Fix positioning errors when using classic X/Y positioning.
+- [#571](#571) Fix visibility issues when the Primary Resource Bar is set to "Never" and the Secondary or Health Bar is set to "Always".
+
 ## Priest
 ### Shadow
 

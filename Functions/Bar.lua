@@ -211,27 +211,46 @@ end
 
 
 
----Sets the position of the `containerFrame`
+---Sets the position of the bar system
+---In the new BarGroups architecture, this positions the WRAPPER frame, not the container
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param containerFrame frame
+---@param containerFrame frame # Deprecated parameter, kept for API compatibility. The wrapper frame is used instead.
 function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	if settings == nil then
 		return
 	end
 
-	---containerFrame:ClearAllPoints()
-	---containerFrame:SetPoint("CENTER", UIParent)
-	---containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+	-- In the new BarGroups architecture, position is applied to the WRAPPER frame.
+	-- The primary container is a CHILD of the wrapper at CENTER/0,0.
+	-- Setting position on the container would cause a multiplicative offset bug.
+	local wrapperFrame = TRB.Functions.EditMode and TRB.Functions.EditMode:GetWrapperFrame()
+	local targetFrame = wrapperFrame or containerFrame
 	
-	-- Check if Edit Mode should control positioning
+	-- Check if Edit Mode layout is enabled
+	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
+	
+	-- Check anchor mode - if CDM anchoring is active, don't override position here
+	-- CDM anchoring is handled by ApplyBarGroupsLayout and ApplyCooldownManagerAnchoring
+	local anchorMode = TRB.Functions.EditMode:GetAnchorMode()
+	if editModeLayoutEnabled and anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable() then
+		-- CDM anchoring is active - position is controlled by ApplyBarGroupsLayout
+		-- Just redraw thresholds and return
+		TRB.Functions.Threshold:RedrawThresholdLines()
+		return
+	end
+	
+	-- Check if Edit Mode should control positioning (free position mode)
 	local editModePosition = TRB.Functions.EditMode:GetActivePosition()
 	if editModePosition and editModePosition.point then
-		-- Edit Mode position: Use the same 3-argument SetPoint that LibEditMode uses
-		containerFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
+		-- Edit Mode position: Use the saved Edit Mode position
+		targetFrame:ClearAllPoints()
+		targetFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
 	else
-		-- Legacy position: Uses CENTER anchor
-		containerFrame:SetPoint("CENTER", UIParent)
-		containerFrame:SetPoint("CENTER", settings.bar.xPos, settings.bar.yPos)
+		-- Legacy position: Uses CENTER anchor with xPos/yPos offset
+		local xPos = settings.bar.xPos or 0
+		local yPos = settings.bar.yPos or -200
+		targetFrame:ClearAllPoints()
+		targetFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
 	end
 
 	TRB.Functions.Threshold:RedrawThresholdLines()

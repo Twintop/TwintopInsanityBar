@@ -959,6 +959,10 @@ local function UpdateResourceBar()
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 
+	-- Always call HideResourceBar first to ensure visibility is correctly determined
+	-- even if we return early due to missing data
+	TRB.Functions.Bar:HideResourceBar()
+
 	if TRB.Data.character.maxResource == nil then
 		return
 	end
@@ -971,8 +975,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.brewmaster
 		local specCacheSettings = TRB.Data.specCache.brewmaster.settings
 		UpdateSnapshot_Brewmaster()
-
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1160,8 +1162,6 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.mistweaver.settings
 		UpdateSnapshot_Mistweaver()
 
-		TRB.Functions.Bar:HideResourceBar()
-
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
@@ -1206,8 +1206,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.windwalker
 		local specCacheSettings = TRB.Data.specCache.windwalker.settings
 		UpdateSnapshot_Windwalker()
-
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then

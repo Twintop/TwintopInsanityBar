@@ -881,6 +881,10 @@ local function UpdateResourceBar()
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 
+	-- Always call HideResourceBar first to ensure visibility is correctly determined
+	-- even if we return early due to missing data
+	TRB.Functions.Bar:HideResourceBar()
+
 	if TRB.Data.character.maxResource == nil then
 		return
 	end
@@ -895,8 +899,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Havoc()
 
 		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
-
 			if specSettings.displayBar.primary ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
@@ -1038,8 +1040,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Vengeance()
 
 		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
-
 			if specSettings.displayBar.primary ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
@@ -1203,8 +1203,6 @@ local function UpdateResourceBar()
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 
 		if snapshotData.attributes.isTracking then
-			TRB.Functions.Bar:HideResourceBar()
-
 			if specSettings.displayBar.primary ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true

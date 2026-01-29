@@ -1680,6 +1680,10 @@ local function UpdateResourceBar()
 	local snapshots = snapshotData.snapshots
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
+	-- Always call HideResourceBar first to ensure visibility is correctly determined
+	-- even if we return early due to missing data
+	TRB.Functions.Bar:HideResourceBar()
+
 	if not (barGroups and barGroups.primary) then
 		return
 	end
@@ -1871,7 +1875,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.balance
 		local specCacheSettings = TRB.Data.specCache["balance"].settings
 		UpdateSnapshot_Balance()
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -2112,7 +2115,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.feral
 		local specCacheSettings = TRB.Data.specCache["feral"].settings
 		UpdateSnapshot_Feral()
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -2440,8 +2442,6 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache["guardian"].settings
 		UpdateSnapshot_Guardian()
 
-		TRB.Functions.Bar:HideResourceBar()
-
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
@@ -2604,7 +2604,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.restoration
 		local specCacheSettings = TRB.Data.specCache.restoration.settings
 		UpdateSnapshot_Restoration()
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if formSpecSettings.displayBar.primary ~= "never" then

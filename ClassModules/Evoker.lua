@@ -859,6 +859,10 @@ local function UpdateResourceBar()
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local primaryNode = barGroups and barGroups.primary and barGroups.primary:GetNode(1)
 
+	-- Always call HideResourceBar first to ensure visibility is correctly determined
+	-- even if we return early due to missing data
+	TRB.Functions.Bar:HideResourceBar()
+
 	if TRB.Data.character.maxResource == nil or TRB.Data.character.maxResource2 == nil then
 		return
 	end
@@ -889,8 +893,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.devastation
 		local specCacheSettings = TRB.Data.specCache.devastation.settings
 		UpdateSnapshot_Devastation()
-
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" and primaryNode then
@@ -962,8 +964,6 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.preservation.settings
 		UpdateSnapshot_Preservation()
 
-		TRB.Functions.Bar:HideResourceBar()
-
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" and primaryNode then
 				refreshText = true
@@ -1005,8 +1005,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.augmentation
 		local specCacheSettings = TRB.Data.specCache.augmentation.settings
 		UpdateSnapshot_Augmentation()
-
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" and primaryNode then

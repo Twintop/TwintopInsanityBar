@@ -826,6 +826,10 @@ local function UpdateResourceBar()
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
+	-- Always call HideResourceBar first to ensure visibility is correctly determined
+	-- even if we return early due to missing data
+	TRB.Functions.Bar:HideResourceBar()
+
 	if not (barGroups and barGroups.primary) then
 		return
 	end
@@ -847,7 +851,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.beastMastery
 		local specCacheSettings = TRB.Data.specCache.beastMastery.settings
 		UpdateSnapshot_BeastMastery()
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1022,7 +1025,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.marksmanship
 		local specCacheSettings = TRB.Data.specCache.marksmanship.settings
 		UpdateSnapshot_Marksmanship()
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1199,7 +1201,6 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.survival
 		local specCacheSettings = TRB.Data.specCache.survival.settings
 		UpdateSnapshot_Survival()
-		TRB.Functions.Bar:HideResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
