@@ -841,6 +841,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				base="FFFF0000",
 				berserk = {
 					color = "FFFFCC55",
+					enabled = true
 				},
 				berserkEnd = {
 					color = "FFFF5555",
@@ -2478,13 +2479,23 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])	
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 30
-	controls.colors.incarnation = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianColorPickerIncarnation"], spec.colors.bar.berserk.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.incarnation
+	controls.checkBoxes.berserkColor = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_berserk_Color", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.berserkColor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianCheckboxBerserk"])
+	f.tooltip = L["DruidGuardianCheckboxBerserkTooltip"]
+	f:SetChecked(spec.colors.bar.berserk.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.berserk.enabled = self:GetChecked()
+	end)
+
+	controls.colors.berserk = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianColorPickerIncarnation"], spec.colors.bar.berserk.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.berserk
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "incarnation")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "berserk")
 	end)
 
 	yCoord = yCoord - 30

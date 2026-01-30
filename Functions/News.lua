@@ -13,6 +13,12 @@ local content = [====[
 ---
 
 # 12.0.0.15-release (2026-01-30)
+## Druid
+### Guardian
+
+- [#575](#575) Fix Berserk bar color change giving a Lua error.
+- Add checkbox to enable/disable the Berserk bar color change.
+
 ## Paladin
 ### Holy
 

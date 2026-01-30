@@ -176,6 +176,8 @@ if locale == "enGB" then
     L["PriestShadowCheckboxCritMindBlastTooltip"] = "This will change the bar border colour when your next Mind Blast has a 100% chance to critically strike."
     L["WarriorProtectionTextColorsHeader"] = "Rage Text Colours"
     L["WarriorProtectionCheckboxThresholdOverTooltip"] = "This will change the Rage text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+    L["DruidGuardianCheckboxBerserk"] = "Change bar colour when Berserk is active"
+    L["DruidGuardianCheckboxBerserkTooltip"] = "This will change the bar colour when Berserk or Incarnation: Guardian of Ursoc is active."
     L["DruidGuardianCheckboxBerserkEnd"] = "Change bar colour at the end of Berserk"
     L["DruidGuardianCheckboxBerserkEndTooltip"] = "Changes the bar colour when Berserk is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["MageArcaneChargesCheckboxUseHighestForAll"] = "Use highest Arcane Charge colour for all?"

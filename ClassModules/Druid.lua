@@ -2555,7 +2555,7 @@ local function UpdateResourceBar()
 
 						if useEndOfBerserkColor and snapshotBuff.remaining <= timeThreshold then
 							barColor = specSettings.colors.bar.berserkEnd.color
-						else
+						elseif specSettings.colors.bar.berserk.enabled then
 							barColor = specSettings.colors.bar.berserk.color
 						end
 					end
