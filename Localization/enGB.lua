@@ -266,4 +266,9 @@ if locale == "enGB" then
     L["StaggerBarThresholdExtremeTooltip"] = "Stagger percentage at which the bar colour transitions from Heavy to Extremely Heavy."
 
     L["PaladinHolyCheckboxInfusionOfLightTooltip"] = "This will change the bar border colour when you have Infusion of Light."
+
+    -- Additional British English translations
+    L["BarTextInstructions1"] = "For more detailed information about Bar Text customisation, see the TRB Wiki on GitHub.\n\n"
+    L["StaggerBarColorType"] = "Colour Transition Type"
+    L["EvokerCheckboxEssenceBurstTooltip"] = "This will change the bar border colour when you have Essence Burst."
 end

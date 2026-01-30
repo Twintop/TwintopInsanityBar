@@ -18,6 +18,11 @@ local content = [====[
 
 - [#559](#559) Add optional bar border color change and audio cue when Infusion of Light is active.
 
+## Rogue
+### Assassination
+
+- [#574](#574) Fix threshold options layout to prevent overlapping. (Koroshy)
+
 ---
 
 # 12.0.0.14-release (2026-01-30)
