@@ -1796,7 +1796,7 @@ local function UpdateResourceBar()
 					local resourceAmount = spell:GetPrimaryResourceCost()
 					local isUsable = spell:IsUsable()
 					local showThreshold = true
-					local thresholdColor = specCacheSettings.colors.threshold.over.color
+					local thresholdColor = specCacheSettings.colors.threshold.over.color --[[@as string?]]
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
 					
@@ -1824,8 +1824,25 @@ local function UpdateResourceBar()
 							elseif specCacheSettings.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow then
 								showThreshold = false
 							else
-								thresholdColor = specCacheSettings.colors.threshold.under.color
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								-- Use ColorCurve to dynamically change threshold color based on resource
+								local baseCost = resourceAmount / spell.primaryResourceTypeMod
+								local thresholdCurve = TRB.Functions.Color:BuildMulticastThresholdCurve(
+									spell.primaryResourceTypeMod,
+									baseCost,
+									specCacheSettings.colors.threshold.under.color,
+									specCacheSettings.colors.threshold.over.color
+								)
+								local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
+								frameLevel = isUsable and TRB.Data.constants.frameLevels.thresholdOver or TRB.Data.constants.frameLevels.thresholdUnder
+								local curveApplied = TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(
+									spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+								)
+								if curveApplied then
+									thresholdColor = nil -- Skip normal color application
+								else
+									-- No valid target or out of range - use under color (AdjustThresholdDisplay handles out-of-range override)
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+								end
 							end
 						elseif spell.settingKey == spells.shadowWordMadness3--[[@as TRB.Classes.SpellThreshold]].settingKey then
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -1835,8 +1852,25 @@ local function UpdateResourceBar()
 							elseif specCacheSettings.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow then
 								showThreshold = false
 							else
-								thresholdColor = specCacheSettings.colors.threshold.under.color
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								-- Use ColorCurve to dynamically change threshold color based on resource
+								local baseCost = resourceAmount / spell.primaryResourceTypeMod
+								local thresholdCurve = TRB.Functions.Color:BuildMulticastThresholdCurve(
+									spell.primaryResourceTypeMod,
+									baseCost,
+									specCacheSettings.colors.threshold.under.color,
+									specCacheSettings.colors.threshold.over.color
+								)
+								local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
+								frameLevel = isUsable and TRB.Data.constants.frameLevels.thresholdOver or TRB.Data.constants.frameLevels.thresholdUnder
+								local curveApplied = TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(
+									spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+								)
+								if curveApplied then
+									thresholdColor = nil -- Skip normal color application
+								else
+									-- No valid target or out of range - use under color (AdjustThresholdDisplay handles out-of-range override)
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+								end
 							end
 						end
 					elseif resourceAmount == 0 then

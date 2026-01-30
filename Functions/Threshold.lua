@@ -420,6 +420,99 @@ function TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings)
 	)
 end
 
+---Applies a ColorCurve-based color to a multicast threshold (e.g., 2x/3x spell costs).
+---This method checks for valid target and range before applying the curve color.
+---If no valid target or out of range, it returns false so the caller can fall back to normal color handling.
+---@param spell TRB.Classes.SpellThreshold # The spell threshold being processed
+---@param threshold table # The threshold frame
+---@param thresholdCurve table # The ColorCurve created by BuildMulticastThresholdCurve
+---@param resourceType number # The resource type (e.g., TRB.Data.resource or Enum.PowerType.*)
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase # The spec settings
+---@param iconCurve table? # Optional icon vertex color curve for desaturation mimicry
+---@param currentFrameLevel integer # The frame level for this threshold (thresholdOver, thresholdUnder, etc.)
+---@param pairOffset integer # Offset for stacking multiple thresholds
+---@param isUsable boolean # Whether the base (1x) threshold is usable (has enough resources)
+---@return boolean # True if curve color was applied, false if caller should use normal color handling
+function TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(spell, threshold, thresholdCurve, resourceType, settings, iconCurve, currentFrameLevel, pairOffset, isUsable)
+	if not threshold or not thresholdCurve then
+		return false
+	end
+
+	local outOfRange = not spell:GetIsSpellInRange()
+	local thresholdColor = nil
+	local frameLevel = currentFrameLevel
+
+	-- Check if we're out of range
+	if TRB.Data.character.inCombat and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) then
+		if settings.colors.threshold.outOfRange.show then
+			if outOfRange and settings.colors.threshold.outOfRange.enabled then
+				thresholdColor = settings.colors.threshold.outOfRange.color
+				frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
+			end
+		else
+			if outOfRange and threshold then
+				TRB.Functions.Threshold:Hide(spell.settingKey, threshold)
+				return false
+			end
+		end
+	else
+		outOfRange = false
+	end
+
+	-- Apply frame levels
+	local effectiveLevel = frameLevel - pairOffset
+	local thresholdFrameLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetLine
+	local thresholdIconLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetIcon
+	local thresholdIconCooldownLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetCooldown
+
+	threshold:SetFrameLevel(thresholdFrameLevel)
+	if threshold.icon then
+		threshold.icon:SetFrameLevel(thresholdIconLevel)
+		if threshold.icon.cooldown then
+			threshold.icon.cooldown:SetFrameLevel(thresholdIconCooldownLevel)
+		end
+	end
+
+	-- Handle desaturation and icon vertex color
+	-- When base threshold is NOT usable or out of range: use SetDesaturated(true) and reset vertex color to white
+	-- When usable and in range: use iconCurve for vertex color (gray->white transition), don't use SetDesaturated
+	if threshold.icon and threshold.icon.texture then
+		if not isUsable or outOfRange then
+			-- Not usable or out of range - use standard desaturation if enabled, reset vertex color
+			if settings.thresholds.icons.desaturated == true then
+				threshold.icon.texture:SetDesaturated(true)
+			end
+			threshold.icon.texture:SetVertexColor(1, 1, 1, 1) -- Reset to white
+		else
+			-- Usable and in range - DON'T desaturate, use iconCurve for vertex color
+			threshold.icon.texture:SetDesaturated(false)
+			-- Apply icon vertex color curve if provided (for desaturation mimicry)
+			if iconCurve and settings.thresholds.icons.desaturated then
+				local iconColorResult = TRB.Functions.Color:EvaluateMulticastThresholdCurve(iconCurve, resourceType)
+				if iconColorResult then
+					TRB.Functions.Color:SetIconVertexColorFromCurve(threshold, iconColorResult)
+				end
+			else
+				threshold.icon.texture:SetVertexColor(1, 1, 1, 1) -- Reset to white if no curve
+			end
+		end
+	end
+
+	-- If we have an out-of-range color, use that instead of the curve
+	if thresholdColor ~= nil then
+		TRB.Functions.Color:SetThresholdColor(threshold, thresholdColor, true)
+		return true
+	end
+
+	-- Valid target and in range - apply the curve color
+	local curveColorResult = TRB.Functions.Color:EvaluateMulticastThresholdCurve(thresholdCurve, resourceType)
+	if curveColorResult then
+		TRB.Functions.Color:SetThresholdColorFromCurve(threshold, curveColorResult)
+	end
+
+	return true
+end
+
 ---Adjusts the display level, color, and cooldown status of a threshold and its icon.
 ---@param spell TRB.Classes.SpellThreshold
 ---@param key string
@@ -495,7 +588,8 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				cache.frameLevel = frameLevel
 			end
 
-			if cache.color ~= thresholdColor then
+			-- Only apply color if thresholdColor is provided (nil means color is handled externally via curve)
+			if thresholdColor ~= nil and cache.color ~= thresholdColor then
 				TRB.Functions.Color:SetThresholdColor(threshold, thresholdColor, true)
 				cache.color = thresholdColor
 			end
@@ -504,15 +598,18 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				thresholdUsable = true
 			end
 			
-			if settings.thresholds.icons.desaturated == true then
-				if cache.desaturated ~= (not thresholdUsable or outOfRange) then
-					threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
-					cache.desaturated = not thresholdUsable or outOfRange
-				end
-			else
-				if cache.desaturated ~= false then
-					threshold.icon.texture:SetDesaturated(false)
-					cache.desaturated = false
+			-- Only apply desaturation if thresholdColor is provided (nil means desaturation is handled externally via curve)
+			if thresholdColor ~= nil then
+				if settings.thresholds.icons.desaturated == true then
+					if cache.desaturated ~= (not thresholdUsable or outOfRange) then
+						threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
+						cache.desaturated = not thresholdUsable or outOfRange
+					end
+				else
+					if cache.desaturated ~= false then
+						threshold.icon.texture:SetDesaturated(false)
+						cache.desaturated = false
+					end
 				end
 			end
 			

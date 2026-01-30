@@ -14,6 +14,10 @@ local content = [====[
 
 # 12.0.0.15-release (2026-01-30)
 ## Druid
+### Balance
+
+- [#509](#509) Restore, via a workaround, the ability to shade the 2x and 3x Starsurge threshold lines as usable when you have an appropriate amount of Astral Power.
+
 ### Guardian
 
 - [#575](#575) Fix Berserk bar color change giving a Lua error.
@@ -23,6 +27,11 @@ local content = [====[
 ### Holy
 
 - [#559](#559) Add optional bar border color change and audio cue when Infusion of Light is active.
+
+## Priest
+### Shadow
+
+- [#509](#509) Restore, via a workaround, the ability to shade the 2x and 3x Shadow Word: Madness threshold lines as usable when you have an appropriate amount of Insanity.
 
 ## Rogue
 ### Assassination

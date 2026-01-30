@@ -345,3 +345,144 @@ function TRB.Functions.Color:BuildOvercapCurve(specSettings, normalColor, overca
 	cache[cacheKey] = colorCurve
 	return colorCurve
 end
+
+-- Multicast threshold ColorCurve cache
+TRB.Data.cache.multicastThresholdCurves = TRB.Data.cache.multicastThresholdCurves or {}
+
+---Builds a threshold ColorCurve for multicast thresholds (2x, 3x) that transitions from underColor to overColor
+---at the specified cost percentage. Uses the existing cache infrastructure.
+---@param costMultiplier number # The cost multiplier (2 for 2x, 3 for 3x)
+---@param baseCost number # The base cost of the spell (1x cost)
+---@param underColor string # ARGB hex color for when player cannot afford
+---@param overColor string # ARGB hex color for when player can afford
+---@return LuaColorCurveObject? colorCurve # A ColorCurve object ready for use with UnitPowerPercent
+function TRB.Functions.Color:BuildMulticastThresholdCurve(costMultiplier, baseCost, underColor, overColor)
+	local cache = TRB.Data.cache.multicastThresholdCurves
+	
+	-- Use maxResourceUnmodified to match UnitPowerPercent's internal calculation
+	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
+	
+	-- Calculate the threshold percentage where the multicast becomes affordable
+	local thresholdCost = baseCost * costMultiplier
+	local thresholdPercent = thresholdCost / maxResource
+	
+	-- Handle edge case: if threshold is 0 or negative, return nil to skip curve evaluation
+	if thresholdPercent <= 0 then
+		return nil
+	end
+	
+	local cacheKey = tostring(costMultiplier) .. "_" .. tostring(baseCost) .. "_" .. tostring(maxResource) .. "_" .. underColor .. "_" .. overColor
+	
+	if cache[cacheKey] then
+		return cache[cacheKey]
+	end
+	
+	local underR, underG, underB, underA = TRB.Functions.Color:GetRGBAFromString(underColor, true)
+	local overR, overG, overB, overA = TRB.Functions.Color:GetRGBAFromString(overColor, true)
+	
+	local underColorObj = CreateColor(underR, underG, underB, underA)
+	local overColorObj = CreateColor(overR, overG, overB, overA)
+	
+	local colorCurve = C_CurveUtil.CreateColorCurve()
+	colorCurve:SetType(Enum.LuaCurveType.Step)
+	colorCurve:AddPoint(0, underColorObj)
+	colorCurve:AddPoint(thresholdPercent, overColorObj)
+	
+	cache[cacheKey] = colorCurve
+	return colorCurve
+end
+
+---Clears the multicast threshold ColorCurve cache (call when settings change)
+function TRB.Functions.Color:ClearMulticastThresholdCurveCache()
+	TRB.Data.cache.multicastThresholdCurves = {}
+end
+
+---Evaluates a multicast threshold curve using UnitPowerPercent and returns the color object
+---Uses UnitPowerPercent to safely handle secret resource values in Midnight
+---@param colorCurve table # The ColorCurve to evaluate
+---@param resourceType number # The Enum.PowerType for the resource (e.g., Enum.PowerType.Insanity)
+---@return table|nil # The color object result from UnitPowerPercent, or nil if evaluation fails
+function TRB.Functions.Color:EvaluateMulticastThresholdCurve(colorCurve, resourceType)
+	-- Use UnitPowerPercent with the curve to safely evaluate against secret resource values
+	-- Returns a color object that can be passed directly to SetColorTexture/GetRGBA
+	return UnitPowerPercent("player", resourceType, true, colorCurve)
+end
+
+---Sets threshold color from a curve-evaluated color object
+---This handles secret values from Midnight's hidden resource system
+---@param frame table # The threshold frame
+---@param colorResult table # The color object from UnitPowerPercent curve evaluation
+---@param classId number|nil # Optional class ID filter
+---@param specId number|nil # Optional spec ID filter  
+function TRB.Functions.Color:SetThresholdColorFromCurve(frame, colorResult, classId, specId)
+	if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
+		if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
+			return
+		end
+		-- Create texture if it doesn't exist yet (can happen with dynamically created thresholds)
+		if frame.texture == nil then
+			frame.texture = frame:CreateTexture(nil, "OVERLAY")
+			frame.texture:SetAllPoints(frame)
+		end
+		-- Pass the color directly to SetColorTexture via GetRGBA - WoW API handles secret values
+		frame.texture:SetColorTexture(colorResult:GetRGBA())
+		if frame.icon ~= nil and frame.hasIcon == true then
+			frame.icon:SetBackdropBorderColor(colorResult:GetRGBA())
+		end
+	end
+end
+
+---Builds a ColorCurve for icon vertex colors to mimic desaturation behavior
+---Below threshold: gray (desaturated look), at/above threshold: white (full color)
+---@param costMultiplier number # The multiplier for the spell cost (2 for 2x, 3 for 3x)
+---@param baseCost number # The base cost of the spell (1x cost)
+---@return LuaColorCurveObject? colorCurve # A ColorCurve for vertex colors
+function TRB.Functions.Color:BuildIconVertexColorCurve(costMultiplier, baseCost)
+	local cache = TRB.Data.cache.iconVertexColorCurves
+	if cache == nil then
+		TRB.Data.cache.iconVertexColorCurves = {}
+		cache = TRB.Data.cache.iconVertexColorCurves
+	end
+	
+	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
+	local thresholdCost = baseCost * costMultiplier
+	local thresholdPercent = thresholdCost / maxResource
+	
+	if thresholdPercent <= 0 then
+		return nil
+	end
+	
+	local cacheKey = tostring(costMultiplier) .. "_" .. tostring(baseCost) .. "_" .. tostring(maxResource) .. "_vertex"
+	
+	if cache[cacheKey] then
+		return cache[cacheKey]
+	end
+	
+	-- Gray color for "desaturated" look (below threshold)
+	local grayColor = CreateColor(0.5, 0.5, 0.5, 1)
+	-- White color for full saturation (at/above threshold)
+	local whiteColor = CreateColor(1, 1, 1, 1)
+	
+	local colorCurve = C_CurveUtil.CreateColorCurve()
+	colorCurve:SetType(Enum.LuaCurveType.Step)
+	colorCurve:AddPoint(0, grayColor)
+	colorCurve:AddPoint(thresholdPercent, whiteColor)
+	
+	cache[cacheKey] = colorCurve
+	return colorCurve
+end
+
+---Sets icon vertex color from a curve-evaluated color object
+---Used to mimic desaturation when threshold icons can't use SetDesaturated with secret values
+---@param frame table # The threshold frame with an icon
+---@param colorResult table # The color object from UnitPowerPercent curve evaluation
+function TRB.Functions.Color:SetIconVertexColorFromCurve(frame, colorResult)
+	if frame == nil or frame.icon == nil or frame.icon.texture == nil then
+		return
+	end
+	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
+		return
+	end
+	local r, g, b, a = colorResult:GetRGBA()
+	frame.icon.texture:SetVertexColor(r, g, b, a)
+end
