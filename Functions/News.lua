@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.0.16-release (2026/01/31)
+## Druid
+### Balance
+
+- [#579](#579) Fix an issue with playing Starsurge or Starfall ready audio cues.
+
+---
+
 # 12.0.0.15-release (2026-01-30)
 ## Druid
 ### Balance

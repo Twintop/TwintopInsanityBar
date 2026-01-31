@@ -62,8 +62,7 @@ local function FillSpecializationCache()
 	
 	specCache.balance.snapshotData.audio = {
 		playedSsCue = false,
-		playedSfCue = false,
-		playedstarweaverCue = false
+		playedSfCue = false
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.balance.snapshotData.snapshots[spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(spells.eclipseSolar)
@@ -1932,17 +1931,14 @@ local function UpdateResourceBar()
 									end
 									
 									if showThreshold then
-										if isUsable and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
-											snapshotData.audio.playedstarweaverCue = true
-											snapshotData.audio.playedSfCue = true
-											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
-										elseif specSettings.audio.ssReady.enabled and snapshotData.audio.playedSsCue == false then
-											snapshotData.audio.playedSsCue = true
-											PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
+										if isUsable then
+											if specSettings.audio.ssReady.enabled and snapshotData.audio.playedSsCue == false then
+												snapshotData.audio.playedSsCue = true
+												PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
+											end
+										else
+											snapshotData.audio.playedSsCue = false
 										end
-									else
-										snapshotData.audio.playedSsCue = false
-										snapshotData.audio.playedstarweaverCue = false
 									end
 								elseif spell.settingKey == spells.starsurge2.settingKey then
 									if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then
@@ -2001,15 +1997,15 @@ local function UpdateResourceBar()
 										thresholdColor = specCacheSettings.colors.threshold.under.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-
+									
 									if showThreshold then
-										if isUsable and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
-											snapshotData.audio.playedstarweaverCue = true
-											snapshotData.audio.playedSfCue = true
-											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
-										elseif specSettings.audio.sfReady.enabled and snapshotData.audio.playedSfCue == false then
-											snapshotData.audio.playedSfCue = true
-											PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
+										if isUsable then
+											if specSettings.audio.sfReady.enabled and snapshotData.audio.playedSfCue == false then
+												snapshotData.audio.playedSfCue = true
+												PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
+											end
+										else
+											snapshotData.audio.playedSfCue = false
 										end
 									end
 								end
