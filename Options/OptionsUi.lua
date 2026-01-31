@@ -2998,6 +2998,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	local function PrimaryVisibilitySetSelected(newValue)
 		spec.displayBar.primary = newValue
 		controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+		-- Reapply layout to adjust positioning for the visibility change
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.specName].settings)
+		end
 		TRB.Functions.Bar:HideResourceBar()
 	end
 

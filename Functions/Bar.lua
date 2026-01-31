@@ -645,8 +645,13 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 		return
 	end
 
+	-- CRITICAL: In Edit Mode, include ALL bars (even hidden ones) in wrapper calculations.
+	-- This ensures the Edit Mode selection box encompasses all bars, not just visible ones.
+	-- DO NOT hardcode `false` - use IsInEditMode() to prevent regression.
+	local includeHidden = TRB.Functions.EditMode:IsInEditMode()
+
 	-- Calculate wrapper layout from settings (doesn't rely on screen coordinates)
-	local totalWidth, totalHeight, extendAbove, extendBelow = TRB.Functions.EditMode:CalculateWrapperLayout(settings, false)
+	local totalWidth, totalHeight, extendAbove, extendBelow = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 	
 	-- Update wrapper frame size to encompass all bars
 	-- Use effectiveWidth for width (matches CDM if "Match CDM Width" is enabled)
@@ -660,14 +665,15 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 	primaryFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -extendAbove)
 
 	-- Now anchor the wrapper to the CDM frame, horizontally centered
+	-- Include a 1px base gap to prevent border/CDM overlap regardless of strata
 	wrapperFrame:ClearAllPoints()
 
 	if anchorMode == "above" then
 		-- Position wrapper above CDM, centered horizontally
-		wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, anchorOffset)
+		wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, -1 + anchorOffset)
 	else -- "below"
 		-- Position wrapper below CDM, centered horizontally
-		wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -anchorOffset)
+		wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -1 - anchorOffset)
 	end
 end
 

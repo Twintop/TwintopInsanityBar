@@ -17,6 +17,7 @@ local content = [====[
 
 - [#578](#578) Fix an issue with default and supported font settings for non-Latin based languages.
 - Stop the `/trb` command from attempting to execute while in combat as it will always result in Lua errors and fail.
+- Make some adjustments to Edit Mode positioning when changing primary visibility settings.
 
 ## Druid
 ### Balance

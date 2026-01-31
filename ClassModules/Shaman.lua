@@ -1643,7 +1643,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1		
 		TRB.Data.resource2 = "SPELL"
-		TRB.Data.resource2Id = TRB.Data.spellsData.spells.maelstromWeapon.id
+		TRB.Data.resource2Id = TRB.Data.specCache["enhancement"].spellsData.spells.maelstromWeapon.id
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
 		TRB.Data.specSupported = true
