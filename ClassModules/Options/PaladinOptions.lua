@@ -84,8 +84,8 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -194,8 +194,8 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -297,8 +297,8 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,

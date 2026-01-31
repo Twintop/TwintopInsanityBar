@@ -50,7 +50,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				revivePet = {
 					enabled = false,
@@ -168,8 +168,8 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -227,7 +227,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				arcaneShot = {
 					enabled = true,
@@ -336,8 +336,8 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -389,7 +389,7 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				revivePet = {
 					enabled = false,
@@ -494,8 +494,8 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,

@@ -1113,9 +1113,19 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	local entries = TRB.Functions.Table:Length(displayText.barText)
 	local frameCount = 0
 	if entries > 0 then
+		if displayText.default.fontFace == nil or displayText.default.fontFace == "" or displayText.default.fontFaceName == nil or displayText.default.fontFaceName == "" then
+			displayText.default.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+			displayText.default.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+		end
+
 		frameCount = 1
 		for i = 1, entries do
 			local e = displayText.barText[i]
+
+			if e.fontFace == nil or e.fontFace == "" or e.fontFaceName == nil or e.fontFaceName == "" then
+				e.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+				e.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+			end
 
 			local fontFace = e.fontFace
 			local fontSize = e.fontSize
@@ -1148,13 +1158,16 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			
 			if textFrames[frameCount] == nil then
 				textFrames[frameCount] = CreateFrame("Frame", "TwintopResourceBarFrame_TextFrame"..frameCount, relativeToFrame)
-				---@diagnostic disable-next-line: inject-field
-				textFrames[frameCount].font = TRB.Frames.textFrames[frameCount]:CreateFontString(nil, "BACKGROUND")
 			end
 
 			textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 			textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 
+---@diagnostic disable-next-line: undefined-field
+			if textFrames[frameCount].font == nil then
+				---@diagnostic disable-next-line: inject-field
+				textFrames[frameCount].font = TRB.Frames.textFrames[frameCount]:CreateFontString(nil, "BACKGROUND")
+			end
 ---@diagnostic disable-next-line: undefined-field
 			local font = textFrames[frameCount].font
 

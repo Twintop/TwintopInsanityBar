@@ -35,8 +35,8 @@ local function BrewmasterLoadDefaultBarTextSettings(classic)
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
 			text="$staggerPercent%",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
@@ -58,8 +58,8 @@ local function BrewmasterLoadDefaultBarTextSettings(classic)
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
 			text="$stagger",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
@@ -99,7 +99,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				cracklingJadeLightning = {
 					enabled = false,
@@ -235,8 +235,8 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -333,8 +333,8 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -390,7 +390,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				cracklingJadeLightning = {
 					enabled = false,
@@ -500,8 +500,8 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,

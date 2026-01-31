@@ -49,7 +49,7 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				-- Rogue
 				ambush = {
@@ -200,8 +200,8 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -257,7 +257,7 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 			-- Rogue
 				ambush = {
@@ -415,8 +415,8 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -473,7 +473,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				-- Rogue
 				-- Technically a Rogue ability but missing from Assassination and Outlaw
@@ -631,8 +631,8 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,

@@ -56,7 +56,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				earthShock = {
 					enabled = true,
@@ -159,8 +159,8 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -280,8 +280,8 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -367,8 +367,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,

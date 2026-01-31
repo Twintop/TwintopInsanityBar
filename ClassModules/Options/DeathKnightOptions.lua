@@ -27,7 +27,7 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 	local textSettings = {
 		{
 			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
@@ -45,12 +45,12 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "LEFT",
 			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
 		},
 		{
 			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
@@ -68,12 +68,12 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "LEFT",
 			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
 		},
 		{
 			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
@@ -91,12 +91,12 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "LEFT",
 			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
 		},
 		{
 			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
@@ -114,12 +114,12 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "LEFT",
 			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
 		},
 		{
 			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
@@ -137,12 +137,12 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "LEFT",
 			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
 		},
 		{
 			enabled = true,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
@@ -160,7 +160,7 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "LEFT",
 			useDefaultFontSize = false,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
 		}
 	}
@@ -204,7 +204,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				deathCoil = {
 					enabled = true
@@ -293,8 +293,8 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -348,7 +348,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				deathCoil = {
 					enabled = false
@@ -443,8 +443,8 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -497,7 +497,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				deathCoil = {
 					enabled = true
@@ -586,8 +586,8 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,

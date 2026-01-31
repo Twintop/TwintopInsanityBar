@@ -39,8 +39,8 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
 			text="$energy",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=20,
@@ -62,8 +62,8 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
 			text="$rage",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=20,
@@ -87,8 +87,8 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
 			text="$energy",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "CENTER",
 			fontJustifyHorizontalName = L["PositionCenter"],
 			fontSize=16,
@@ -111,8 +111,8 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
 			text="$rage",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "CENTER",
 			fontJustifyHorizontalName = L["PositionCenter"],
 			fontSize=16,
@@ -155,8 +155,8 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
 			text="{$casting}[#casting$casting+]$astralPower",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=20,
@@ -178,8 +178,8 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
 			text="{$eclipseTime}[#eclipse $eclipseTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "CENTER",
 			fontJustifyHorizontalName = L["PositionCenter"],
 			fontSize=14,
@@ -203,8 +203,8 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
 			text="$astralPower",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "CENTER",
 			fontJustifyHorizontalName = L["PositionCenter"],
 			fontSize=16,
@@ -226,8 +226,8 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
 			text="{$eclipseTime}[#eclipse $eclipseTime]",
-			fontFace="Fonts\\FRIZQT__.TTF",
-			fontFaceName="Friz Quadrata TT",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
@@ -266,7 +266,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			specProperties = {
 				starsurgeThresholdOnlyOverShow = false,
 			},
@@ -375,8 +375,8 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -393,12 +393,6 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			},
 			sfReady={
 				name = L["DruidBalanceAudioStarfallReady"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			starweaversReady={
-				name = L["DruidBalanceAudioStarweaverReady"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
@@ -427,12 +421,12 @@ local function FeralLoadExtraBarTextSettings(classic)
 		{
 			enabled = true,
 			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionCenter"],
 			text = "{$predatorRevealedNextCp=($comboPoints+1)&$comboPoints=0}[$predatorRevealedTickTime]{$incarnationNextCp=($comboPoints+1)&$comboPoints=0}[$incarnationTickTime]",
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			name = "CP1",
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -450,7 +444,7 @@ local function FeralLoadExtraBarTextSettings(classic)
 		{
 			enabled = true,
 			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionCenter"],
@@ -468,12 +462,12 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontal = "CENTER",
 			useDefaultFontSize = false,
 			fontSize = 14,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 		},
 		{
 			enabled = true,
 			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionCenter"],
@@ -491,12 +485,12 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontal = "CENTER",
 			useDefaultFontSize = false,
 			fontSize = 14,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 		},
 		{
 			enabled = true,
 			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionCenter"],
@@ -514,12 +508,12 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontal = "CENTER",
 			useDefaultFontSize = false,
 			fontSize = 14,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 		},
 		{
 			enabled = true,
 			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionCenter"],
@@ -537,7 +531,7 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontal = "CENTER",
 			useDefaultFontSize = false,
 			fontSize = 14,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 		}
 	}
 
@@ -582,7 +576,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
             thresholdDictionary = {
 				brutalSlash = {
 					enabled = false,
@@ -711,8 +705,8 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -776,7 +770,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				ironfur = {
 					enabled = true,
@@ -867,8 +861,8 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -965,8 +959,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,

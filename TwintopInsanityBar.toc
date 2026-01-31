@@ -93,6 +93,7 @@ ClassModules\Classes\ShamanClasses.lua
 ClassModules\Classes\WarlockClasses.lua
 ClassModules\Classes\WarriorClasses.lua
 
+Functions\Table.lua
 Functions\Aura.lua
 Functions\Bar.lua
 Functions\BarText.lua
@@ -106,7 +107,6 @@ Functions\Number.lua
 Functions\Settings.lua
 Functions\SpellCast.lua
 Functions\String.lua
-Functions\Table.lua
 Functions\Talent.lua
 Functions\Threshold.lua
 

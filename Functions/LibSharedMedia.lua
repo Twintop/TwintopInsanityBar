@@ -9,7 +9,7 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 	--[[
 		Other addons can add/remove/alter entries in the LibSharedMedia. As a result, sometimes a previously usable asset
 		goes missing or gets renamed. Do some logic checks here to fix common errors instead of causing the bar to blow
-		up with LUA errors or show default neon-green textures.
+		up with Lua errors or show default neon-green textures.
 	]]
 	
 	-- Text

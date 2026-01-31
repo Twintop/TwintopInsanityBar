@@ -53,7 +53,7 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = false,
@@ -157,8 +157,8 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -219,7 +219,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = true,
@@ -312,8 +312,8 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
@@ -351,12 +351,12 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$ignorePainTime}[$ignorePainTime]",
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontSize = 14,
 			name = "Ignore Pain",
 			position = {
@@ -374,12 +374,12 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 		},
 		{
 			useDefaultFontColor = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$shieldBlockTime}[$shieldBlockTime -] $shieldBlockCharges/$shieldBlockMaxCharges",
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontSize = 14,
 			name = "Shield Block",
 			position = {
@@ -435,7 +435,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				width = 2,
 				overlapBorder=true
 			},
-			icons = TRB.Functions.Settings:DefaultThresholdIconmSettings(),
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = false,
@@ -540,8 +540,8 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 		},
 		displayText={
 			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,

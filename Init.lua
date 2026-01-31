@@ -63,10 +63,7 @@ TRB.Data = {}
 TRB.Data.constants = {
 	borderWidthFactor = 4,
 	defaultSettings = {
-		fonts = {
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			fontFaceName = "Friz Quadrata TT",
-		},
+		fonts = {}, -- This will get populated by Functions\Settings.lua
 		textures = {
 			background="Interface\\Tooltips\\UI-Tooltip-Background",
 			backgroundName="Blizzard Tooltip",
