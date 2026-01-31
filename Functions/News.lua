@@ -12,7 +12,7 @@ local content = [====[
 
 ---
 
-# 12.0.0.16-release (2026/01/31)
+# 12.0.0.16-release (2026-01-31)
 ## General
 
 - [#578](#578) Fix an issue with default and supported font settings for non-Latin based languages.
