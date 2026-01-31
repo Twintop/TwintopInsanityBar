@@ -1751,3 +1751,5 @@ L["PaladinHolyCheckboxInfusionOfLightTooltip"] = "This will change the bar borde
 L["PaladinHolyColorPickerInfusionOfLight"] = "Border when you have Infusion of Light"
 L["PaladinHolyAudioCheckboxInfusionOfLight"] = "Play audio cue when Infusion of Light procs"
 L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Play an audio cue when an Infusion of Light proc occurs. This will only play once per proc."
+
+L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555ERROR:|r Cannot open options via the slash command while in combat."

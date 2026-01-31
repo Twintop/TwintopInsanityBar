@@ -282,6 +282,10 @@ function SlashCmdList.TWINTOP(msg)
 	elseif cmd == "news" then
 		TRB.Functions.News:Show()
 	else
+		if InCombatLockdown() then
+			print(L["CannotOpenOptionsInCombat"])
+			return
+		end
 		if TRB.Data.barConstructedForSpec == nil then
 			Settings.OpenToCategory(TRB.Details.addonCategory.main.ID)
 		else
