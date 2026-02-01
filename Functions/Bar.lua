@@ -869,11 +869,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- Apply custom bar group appearances from the registry (stagger, defensives, mana, etc.)
 	self:ApplyCustomBarGroupsAppearance(settings, barGroups)
 
-	-- Trigger resource bar updates to ensure all colors are applied from current spec settings
-	-- Only do this if the spec is supported (enabled in settings) to avoid Lua errors on disabled specs
-	if TRB.Data.specSupported and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
+	-- Note: TriggerResourceBarUpdates is NOT called here because this function may be called
+	-- from EventRegistration before talents/spells are set up. The caller is responsible for
+	-- triggering updates after all setup is complete.
 end
 
 ---Configuration for constructing an anchored bar group
