@@ -19,7 +19,7 @@ local content = [====[
 
 ### Localization
 
-- [#589](#589) Improved translation coverage added for German (deDE) by SanTM! Thank you so much for your help!
+- [#589](#589) Improved translation coverage for German (deDE) by SanTM! Thank you so much for your help!
 
 ---
 
