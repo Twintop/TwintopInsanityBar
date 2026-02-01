@@ -288,12 +288,17 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 		end
 	end
 
+	-- Use effective width from barGroups if available (for CDM width matching)
+	-- Otherwise fall back to settings.bar.width
+	local effectiveWidth = settings.bar.width
+	if TRB.Frames.barGroups and TRB.Frames.barGroups.effectiveWidth then
+		effectiveWidth = TRB.Frames.barGroups.effectiveWidth
+	end
+
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource then
-		--local _, max = parentFrame:GetMinMaxValues()
-		--local factor = (max - (settings.bar.border * 2)) / maxResource
-		--local max = TRB.Data.character.maxResourceUnmodified
-		local factor = (settings.bar.width - (settings.comboPoints.border * 2)) / maxResource
+	-- Include effectiveWidth in cache check so thresholds update when CDM width changes
+	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then
+		local factor = (effectiveWidth - (settings.comboPoints.border * 2)) / maxResource
 
 		if growRight then
 			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
@@ -302,6 +307,7 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 		end
 		TRB.Data.cache.values.threshold[key].value = value
 		TRB.Data.cache.values.threshold[key].maxResource = maxResource
+		TRB.Data.cache.values.threshold[key].effectiveWidth = effectiveWidth
 	end
 
 	if TRB.Data.cache.values.threshold[key].icon ~= thresholdLine.icon then

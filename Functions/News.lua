@@ -18,6 +18,11 @@ local content = [====[
 
 - [#585](#585) Complete translation added for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
+## Demon Hunter
+### Vengeance
+
+- [#586](#586) Fix an issue where the segments for Soul Fragments would not render correctly when automatically matching the width of the Cooldown Manager in Edit Mode.
+
 ---
 
 # 12.0.0.16-release (2026-01-31)
