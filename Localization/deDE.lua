@@ -5,7 +5,6 @@ local locale = GetLocale()
 if locale == "deDE" then
     local L = TRB.Localization
 	
--- Generelle Einstellungen
     L["TwintopsResourceBar"] = "Twintop's Resource Bar"
     L["OK"] = "OK"
     L["Cancel"] = "Abbrechen"
@@ -17,8 +16,6 @@ if locale == "deDE" then
     L["Released"] = "Veröffentlicht"
     L["SupportedSpecs"] = "Unterstützte Spezialisierungen (Midnight)"
 
--- Options.lua
---- Global Options
     L["BarTextInstructions1"] = "Für weitere Informationen über die Leisten Text Anpassungen, gehe in das TRB Wiki auf GitHub.\n\n"
     L["BarTextInstructions2"] = "Fur bedingte Darstellung (nur wenn $VARIABLE aktiv/nicht Null):\n {$VARIABLE}[$VARIABLE ist TRUE output]\n\n"
     L["BarTextInstructions3"] = "Boolean AND (&), OR (|), NOT (!), und Klammern, werden für die bedingte Darstellung unterstützt:\n {$A&$B}[Beide sind TRUE output]\n {$A|$B}[Eine oder beide sind TRUE output]\n {!$A}[$A ist FALSE output]\n {!$A&($B|$C)}[$A ist FALSE und $B oder $C ist TRUE output]\n\n"
@@ -30,7 +27,7 @@ if locale == "deDE" then
     L["GlobalOptions"] = "Globale Optionen"
     L["TimerPrecision"] = "Timer Genauigkeit"
     L["TimerBelowPrecision"] = "Zeit unter X Sek Genauigkeit"
-	L["TimerAbovePrecision"] = "Zeit über X Sek Genauigkeit"
+    L["TimerAbovePrecision"] = "Zeit über X Sek Genauigkeit"
     L["TimerPrecisionThreshold"] = "Genauigkeits Grenze (Sekunden)"
     L["CharacterPlayerSettings"] = "Charakter und Spieler Einstellungen"
     L["DataRefreshRate"] = "Charakterdaten Aktualisierungsrate (Sekunden)"
@@ -42,7 +39,6 @@ if locale == "deDE" then
     L["ExperimentalFeatures"] = "Experimentelle Features"
     L["ShowNewsPopup"] = "Zeige News PopUp"
 
---- Import/Export
     L["Import"] = "Importieren"
     L["Export"] = "Exportieren"
     L["ImportSettingsConfiguration"] = "Konfiguration der Import Einstellungen"
@@ -64,15 +60,11 @@ if locale == "deDE" then
     L["ExportMessageGlobalOptionsOnly"] = "Nur globale Optionen"
 
 
--- OptionsUi.lua
---- ToggleCheckboxOnOff
     L["Enabled"] = "Aktiviert"
     L["Disabled"] = "Deaktiviert"
 
---- Abilities and items
     L["Innervate"] = "Gelassenheit"
 
---- GenerateBarDimensionsOptions
     L["BarPositionSize"] = "Leisten Position und Größe"
     L["BarWidth"] = "Leisten Breite"
     L["BarHeight"] = "Leisten Höhe"
@@ -83,7 +75,6 @@ if locale == "deDE" then
     L["DragAndDropEnabled"] = "Drag & Drop Platzierung aktiviert"
     L["DragAndDropTooltip"] = "Deaktiviere Drag & Drop der Leiste um sie nicht aus Versehen zu verschieben.\n\nWenn 'An persönliche Resourcen Anzeige anheften' aktiviert ist, wird dieser Wert ignoriert und kann nicht geändert werden."
  
---- GenerateComboPointDimensionsOptions
     L["SecondaryPositionAndSize"] = "%s Position und Größe"
     L["SecondaryWidth"] = "%s Breite"
     L["SecondaryHeight"] = "%s Höhe"
@@ -93,9 +84,8 @@ if locale == "deDE" then
     L["SecondaryRelativeTo"] = "Relative Position von %s zu %s Leiste"
     L["SecondaryFullBarWidth"] = "%s sind komplette Leisten Breiten?"
     L["SecondaryFullBarWidthTooltip"] = "Macht, dass die %s Leisten die gleiche Gesamtbreite der Leiste einnehmen, die Abstände sind entsprechend dem %s Abstand (oberhalb). Die horizontalen Positionseinstellungen und der oberhalb gesetzte Wert werden ignoriert und die Breite der %s Leisten wird automatisch berechnet."
-	L["SecondarySpacing"] = "%s Abstand"
+    L["SecondarySpacing"] = "%s Abstand"
 
---- GenerateBarTexturesOptions
     L["BarTexturesHeader"] = "Leisten Texturen"
     L["MainBarTexture"] = "Haupt Leisten Textur"
     L["SecondaryBarTexture"] = "%s Leisten Textur"
@@ -109,48 +99,38 @@ if locale == "deDE" then
     L["TextureLock"] = "Benutze dieselbe (entsprechende) Textur für alle Leisten, Rahmen und Hintergründe"
     L["TextureLockTooltip"] = "Hierdurch wird die Textur für jede Art der Textur so festgelegt, dass sie gleich ist. Z.B.: Alle Leisten Texturen werden gleich sein, alle Rahmen Texturen werden gleich sein und alle Hintergrund Texturen werden gleich sein."
  
---- GenerateBarDisplayOptions
     L["BarDisplayHeader"] = "Leisten Anzeige"
     L["FlashAlpha"] = "%s Blink Alpha"
     L["FlashPeriod"] = "%s Blink Dauer (Sek.)"
     L["FlashBar"] = "Aufblinken der Leiste, wenn %s benutzbar ist"
     L["FlashBarTooltip"] = "Dies lässt die Leiste aufblinken, wenn %s gezaubert werden kann."
  
---- GenerateThresholdLineIconsOptions
     L["ThresholdIconRelativePosition"] = "Relative Position der Schwellenwert Icons"
     L["ThresholdIconShow"] = "Zeige Fähigkeiten Icons an den Schwellenwerten?"
-	L["ThresholdIconShowTooltip"] = "Wenn ausgewählt, dann werden Icons an den Linien der jeweiligen Schwellenwerten angezeigt. Einstellungen für Größe und Platzierung dieser Icons sind weiter unten."
+    L["ThresholdIconShowTooltip"] = "Wenn ausgewählt, dann werden Icons an den Linien der jeweiligen Schwellenwerten angezeigt. Einstellungen für Größe und Platzierung dieser Icons sind weiter unten."
     L["ThresholdIconDesaturate"] = "Entsättige Icons, wenn nicht benutzbar"
-	L["ThresholdIconDesaturateTooltip"] = "Wenn ausgewählt, dann werden Icons ungesättigt angezeigt sofern eine Fähigkeit nicht nutzbar ist (am Abklingen, nicht genug Ressourcen, fehlende Voraussetzungen, etc.)."
+    L["ThresholdIconDesaturateTooltip"] = "Wenn ausgewählt, dann werden Icons ungesättigt angezeigt sofern eine Fähigkeit nicht nutzbar ist (am Abklingen, nicht genug Ressourcen, fehlende Voraussetzungen, etc.)."
     L["ThresholdIconWidth"] = "Schwellenwert Icon Breite"
     L["ThresholdIconHeight"] = "Schwellenwert Icon Höhe"
-	L["ThresholdIconHorizontal"] = "Schwellenwert Icon Horizontal (Relativ)"
-	L["ThresholdIconVertical"] = "Schwellenwert Icon Vertikal (Relativ)"
-	L["ThresholdIconBorderWidth"] = "Schwellenwert Icon Randweite"
+    L["ThresholdIconHorizontal"] = "Schwellenwert Icon Horizontal (Relativ)"
+    L["ThresholdIconVertical"] = "Schwellenwert Icon Vertikal (Relativ)"
+    L["ThresholdIconBorderWidth"] = "Schwellenwert Icon Randweite"
 
---- GeneratePotionOnCooldownConfigurationOptions
 
---- Thresholds
 
-	L["ThresholdLinesHeader"] = "Schwellenwert Linien"
+    L["ThresholdLinesHeader"] = "Schwellenwert Linien"
 
---- GenerateThresholdLinesForHealers
 
---- GenerateBarColorOptions
-	L["BarColorsChangingHeader"] = "Balken Farben + Veränderungen"
+    L["BarColorsChangingHeader"] = "Balken Farben + Veränderungen"
 
---- GenerateBarBorderColorOptions
-	L["BarBorderColorsChangingHeader"] = "Balken Rand Farben + Veränderungen"
-	L["BorderColorBase"] = "Rand ist normal/basis Rand"
+    L["BarBorderColorsChangingHeader"] = "Balken Rand Farben + Veränderungen"
+    L["BorderColorBase"] = "Rand ist normal/basis Rand"
 
---- GenerateOvercapOptions	
 
---- GenerateDefaultFontOptions
-	L["DefaultBarTextFontSettingsHeader"] = "Geteilter Balken Schriftart Einstellungen"
-	L["DefaultFontColor"] = "Geteilte Schriftart Farbe"
+    L["DefaultBarTextFontSettingsHeader"] = "Geteilter Balken Schriftart Einstellungen"
+    L["DefaultFontColor"] = "Geteilte Schriftart Farbe"
     L["DefaultFontSize"] = "Standardschriftgröße"
 
---- GenerateBarTextEditor
     L["AddNewBarTextArea"] = "Neuen Leistentext hinzufügen"
     L["Name"] = "Name"
     L["BarTextEntryEnabledTooltip"] = "Ist dieser Leistentext aktiviert und wird angezeigt?"
@@ -202,19 +182,18 @@ if locale == "deDE" then
     L["HolyWordChastiseCharge1"] = "Segenswort: Züchtigung"
     L["RelativePositionBarTextHeader"] = "Relative Position von Leistentext zu der ausgewählten Leiste"
     L["FontFaceHeader"] = "Schriftart"
-	L["UseDefaultFontFace"] = "Nutze geteilte Schriftart"
-	L["UseDefaultFontFaceTooltip"] = "Nutze bei diesem Balkentext die geteilte Schriftart anstatt der hierüber eingestellten."
+    L["UseDefaultFontFace"] = "Nutze geteilte Schriftart"
+    L["UseDefaultFontFaceTooltip"] = "Nutze bei diesem Balkentext die geteilte Schriftart anstatt der hierüber eingestellten."
     L["FontSize"] = "Schriftgröße"
-	L["UseDefaultFontSize"] = "Nutze geteilte Schriftgröße"
-	L["UseDefaultFontSizeTooltip"] = "Nutze bei diesem Balkentext die geteilte Schriftgröße anstatt der hierüber eingestellten."
+    L["UseDefaultFontSize"] = "Nutze geteilte Schriftgröße"
+    L["UseDefaultFontSizeTooltip"] = "Nutze bei diesem Balkentext die geteilte Schriftgröße anstatt der hierüber eingestellten."
     L["FontColor"] = "Schriftfarbe"
-	L["UseDefaultFontColor"] = "Nutze geteilte Schriftfarbe"
-	L["UseDefaultFontColorTooltip"] = "Nutze bei diesem Balkentext die geteilte Schriftfarbe anstatt der hierüber eingestellten."
+    L["UseDefaultFontColor"] = "Nutze geteilte Schriftfarbe"
+    L["UseDefaultFontColorTooltip"] = "Nutze bei diesem Balkentext die geteilte Schriftfarbe anstatt der hierüber eingestellten."
     L["BarText"] = "Leistentext"
     L["NewBarTextEntry"] = "Neuer Leistentext Eintrag"
     L["BarTextDeleteConfirmation"] = "Bist du sicher, dass du '%s' löschen willst?"
 
---- Options dropdowns
     L["StrataBackground"] = "Hintergrund"
     L["StrataLow"] = "Niedrig"
     L["StrataMedium"] = "Mittel"
@@ -229,7 +208,6 @@ if locale == "deDE" then
     L["AudioChannelAmbience"] = "Umgebung"
     L["AudioChannelDialog"] = "Dialog"
 
---- Positional dropdowns
     L["PositionAbove"] = "Oberhalb"
     L["PositionAboveLeft"] = "Oberhalb - Links"
     L["PositionAboveMiddle"] = "Oberhalb - Mitte"
@@ -249,143 +227,137 @@ if locale == "deDE" then
     L["PositionBottom"] = "Unten"
     L["PositionBottomRight"] = "Unten Rechts"
 
--- Warnings
-	L["LSMInvalidFont"] = "TRB: |cFFFF5555Ungültige Schriftart (%s Balkentext '%s'): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Schriftart.|r"
-	L["LSMInvalidBarBackgroundTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Balkenhintergrund): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
-	L["LSMInvalidBarBorderTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Balkenrand): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
-	L["LSMInvalidBarResourceTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s resource bar): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
-	L["LSMInvalidComboPointBackgroundTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkte Hintergrund): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
-	L["LSMInvalidComboPointBorderTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkto Rand): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
-	L["LSMInvalidComboPointResourceTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkte Balken): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
-	L["LSMInvalidSoundNameBoth"] = "TRB: |cFFFF5555Ungültiger Sound (%s '%s'): '|r%s|cFFFF5555'. Zurücksetzen zum Standard Sound.|r"
-	L["LSMInvalidSoundNameOnlySoundName"] = "TRB: |cFFFF5555Ungültiger Sound (%s): '|r%s|cFFFF5555'. Zurücksetzen zum Standard Sound.|r"
-	L["LSMInvalidSoundNameOnlyName"] = "TRB: |cFFFF5555Ungültiger Sound (%s '%s'). Zurücksetzen zum Standard Sound.|r"
-	L["LSMInvalidSound"] = "TRB: |cFFFF5555Ungültiger Sound (%s). Zurücksetzen zum Standard Sound.|r"
+    L["LSMInvalidFont"] = "TRB: |cFFFF5555Ungültige Schriftart (%s Balkentext '%s'): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Schriftart.|r"
+    L["LSMInvalidBarBackgroundTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Balkenhintergrund): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
+    L["LSMInvalidBarBorderTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Balkenrand): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
+    L["LSMInvalidBarResourceTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s resource bar): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
+    L["LSMInvalidComboPointBackgroundTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkte Hintergrund): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
+    L["LSMInvalidComboPointBorderTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkto Rand): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
+    L["LSMInvalidComboPointResourceTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkte Balken): '|r%s|cFFFF5555'. Zurücksetzen zur Standard Textur.|r"
+    L["LSMInvalidSoundNameBoth"] = "TRB: |cFFFF5555Ungültiger Sound (%s '%s'): '|r%s|cFFFF5555'. Zurücksetzen zum Standard Sound.|r"
+    L["LSMInvalidSoundNameOnlySoundName"] = "TRB: |cFFFF5555Ungültiger Sound (%s): '|r%s|cFFFF5555'. Zurücksetzen zum Standard Sound.|r"
+    L["LSMInvalidSoundNameOnlyName"] = "TRB: |cFFFF5555Ungültiger Sound (%s '%s'). Zurücksetzen zum Standard Sound.|r"
+    L["LSMInvalidSound"] = "TRB: |cFFFF5555Ungültiger Sound (%s). Zurücksetzen zum Standard Sound.|r"
 
 
--- LibSharedMedia entries
-	L["LSMSoundWilhelmScream"] = "TRB: Wilhelms Schrei"
-	L["LSMSoundBoxingArenaGong"] = "TRB: Box Match Gong"
-	L["LSMSoundAirHorn"] = "TRB: Lufthupe"
+    L["LSMSoundWilhelmScream"] = "TRB: Wilhelms Schrei"
+    L["LSMSoundBoxingArenaGong"] = "TRB: Box Match Gong"
+    L["LSMSoundAirHorn"] = "TRB: Lufthupe"
 
--- Bar text
     L["BarTextNewline"] = "Neue Zeile einfügen. Alternative zum Enter drücken."
-	L["BarTextInvalidIfElseLogic"] = "{UNGÜLTIG WENN/DANN LOGIK}"
+    L["BarTextInvalidIfElseLogic"] = "{UNGÜLTIG WENN/DANN LOGIK}"
 
-	L["CheckboxEnabledQuestion"] = "Aktiviert?"
-	L["DecimalPrecisionHeader"] = "Dezimal Genauigkeit"
-	L["SecondaryDecimalPrecision"] = "Sekundärer Wert Dezimal Genauigkeit"
-	L["ResetBarDialog"] = "Möchtest du Twintop's Resource Bar auf die |cFFFFAAAAStandard Einstellungen zurücksetzen|r? Nur die %s Einstellungen werden angepasst. Das wird dein UI |cFFFF0000neuladen |r!"
-	L["ResetBarTextSimple"] = "Zurücksetzen Balken Text (Einfach)"
-	L["ResetBarTextSimpleDialog"] = "Möchtest du Twintop's Resource Bar Text (beinhaltet Schriftart, Schriftgröße und Text Informationen) auf die Standard (Simpel) Einstellungen zurücksetzen? Nur die %s Einstellungen werden angepasst."
-	L["ResetResourceBarToDefaultsHeader"] = "Setze die Ressourcen Balken zum Standard zurück"
-	L["ResetToDefaultsHeader"] = "Auf Standard zurücksetzen"
-	L["ResetResourceBarTextHeader"] = "Setze den Ressourcen Balken Text zum Standard zurück"
-	L["ExportMessageExportBarDisplay"] = "Exportiere Balken Aussehen"
-	L["ExportMessageExportFontText"] = "Exportiere Schriftart & Text"
-	L["ExportMessageExportAudioTracking"] = "Exportiere Audio & Verfolgung"
-	L["ExportMessageExportBarText"] = "Exportiere Balken Text"
-	L["ResourceSoulFragments"] = "Seelen Fragmente"
-	L["ColorPickerUnfilledBarBackground"] = "Nicht gefüllter Balkenhintergrund"
-	L["AbilityThresholdLinesHeader"] = "Fähigkeiten Schwellenwert Linien"
-	L["ThresholdUnderMinimum"] = "Unter Mindestvoraussetzungen %s"
-	L["ThresholdOverMinimum"] = "Über Höchstvoraussetzungen %s"
-	L["ThresholdUnusable"] = "Fähigkeit ist nicht nutzbar Schwellenwert Linie"
-	L["ThresholdOutOfRange"] = "Ausserhalb der Reichweite des aktuellen Ziels um Fähigkeit zu nutzen"
-	L["ThresholdOutOfRangeCheckboxTooltip"] = "Wenn ausgewählt, werden während des Kampfes Schwellenwert Linien die Farbe ändern sofern du nicht in der Lage bist die Fähigkeit zu nutzen, weil du ausserhalb der Reichweite deines aktuellen Ziels bist."
-	L["ThresholdOverlapBorderCheckbox"] = "Sollen Schwellenwert Linien den Balkenrand überlappen?"
-	L["ThresholdOverlapBorderCheckboxTooltip"] = "Wenn ausgewählt, werden Schwellenwert Linien über die gesamte Höhe des Balkens reichen und die Ränder überlappen."
-	L["AudioOptionsHeader"] = "Audio Einstellungen"
-	L["BarDisplayTextCustomizationHeader"] = "Balken Aussehen Text Einstellungen"
-	L["IsBarEnabledForSpecTooltip"] = "Ist Twintop's Resource Bar aktiviert für %s"
-	L["ExportSpecialization"] = "Exportiere Spezialisierungen"
-	L["TabBarDisplay"] = "Balken Aussehen"
-	L["TabFontText"] = "Schriftart & Text"
-	L["TabAudioTracking"] = "Audio & Verfolgung"
-	L["TabBarText"] = "Balken Text"
-	L["TabResetDefaults"] = "Standard zurücksetzen"
+    L["CheckboxEnabledQuestion"] = "Aktiviert?"
+    L["DecimalPrecisionHeader"] = "Dezimal Genauigkeit"
+    L["SecondaryDecimalPrecision"] = "Sekundärer Wert Dezimal Genauigkeit"
+    L["ResetBarDialog"] = "Möchtest du Twintop's Resource Bar auf die |cFFFFAAAAStandard Einstellungen zurücksetzen|r? Nur die %s Einstellungen werden angepasst. Das wird dein UI |cFFFF0000neuladen |r!"
+    L["ResetBarTextSimple"] = "Zurücksetzen Balken Text (Einfach)"
+    L["ResetBarTextSimpleDialog"] = "Möchtest du Twintop's Resource Bar Text (beinhaltet Schriftart, Schriftgröße und Text Informationen) auf die Standard (Simpel) Einstellungen zurücksetzen? Nur die %s Einstellungen werden angepasst."
+    L["ResetResourceBarToDefaultsHeader"] = "Setze die Ressourcen Balken zum Standard zurück"
+    L["ResetToDefaultsHeader"] = "Auf Standard zurücksetzen"
+    L["ResetResourceBarTextHeader"] = "Setze den Ressourcen Balken Text zum Standard zurück"
+    L["ExportMessageExportBarDisplay"] = "Exportiere Balken Aussehen"
+    L["ExportMessageExportFontText"] = "Exportiere Schriftart & Text"
+    L["ExportMessageExportAudioTracking"] = "Exportiere Audio & Verfolgung"
+    L["ExportMessageExportBarText"] = "Exportiere Balken Text"
+    L["ResourceSoulFragments"] = "Seelen Fragmente"
+    L["ColorPickerUnfilledBarBackground"] = "Nicht gefüllter Balkenhintergrund"
+    L["AbilityThresholdLinesHeader"] = "Fähigkeiten Schwellenwert Linien"
+    L["ThresholdUnderMinimum"] = "Unter Mindestvoraussetzungen %s"
+    L["ThresholdOverMinimum"] = "Über Höchstvoraussetzungen %s"
+    L["ThresholdUnusable"] = "Fähigkeit ist nicht nutzbar Schwellenwert Linie"
+    L["ThresholdOutOfRange"] = "Ausserhalb der Reichweite des aktuellen Ziels um Fähigkeit zu nutzen"
+    L["ThresholdOutOfRangeCheckboxTooltip"] = "Wenn ausgewählt, werden während des Kampfes Schwellenwert Linien die Farbe ändern sofern du nicht in der Lage bist die Fähigkeit zu nutzen, weil du ausserhalb der Reichweite deines aktuellen Ziels bist."
+    L["ThresholdOverlapBorderCheckbox"] = "Sollen Schwellenwert Linien den Balkenrand überlappen?"
+    L["ThresholdOverlapBorderCheckboxTooltip"] = "Wenn ausgewählt, werden Schwellenwert Linien über die gesamte Höhe des Balkens reichen und die Ränder überlappen."
+    L["AudioOptionsHeader"] = "Audio Einstellungen"
+    L["BarDisplayTextCustomizationHeader"] = "Balken Aussehen Text Einstellungen"
+    L["IsBarEnabledForSpecTooltip"] = "Ist Twintop's Resource Bar aktiviert für %s"
+    L["ExportSpecialization"] = "Exportiere Spezialisierungen"
+    L["TabBarDisplay"] = "Balken Aussehen"
+    L["TabFontText"] = "Schriftart & Text"
+    L["TabAudioTracking"] = "Audio & Verfolgung"
+    L["TabBarText"] = "Balken Text"
+    L["TabResetDefaults"] = "Reset Defaults"
 
--- DemonHunterOptions
-	L["DemonHunterHavocColorPickerMetamorphosis"] = "Furor während Metamorphose aktiv ist"
-	L["DemonHunterHavocColorPickerMetamorphosisEnding"] = "Furor wenn Metamorphose zu ende geht"
-	L["DemonHunterHavocCheckboxEndOfMetamorphosis"] = "Verändere Balken Farbe am Ende der Metamorphose"
-	L["DemonHunterHavocCheckboxEndOfMetamorphosisTooltip"] = "Verändere die Balken Farbe wenn Metamorphose zu ende geht in den nächsten X GCDs oder fest eingestellter Zeit. Wähle welches du möchtest von den Einstellungen unten."
-	L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweep"] = "Klingentanz / Todesfeger"
-	L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweepTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Klingentanz zu benutzen. Während du in der Metamorphose bist wird es dir für Todesfeger angezeigt."
-	L["DemonHunterHavocThresholdCheckboxChaosNova"] = "Chaosnova (ohne Entfesselte Macht)"
-	L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Chaosnova zu benutzen. Wird nur angezeigt wenn Entfesselte Macht nicht geskillt wurde."
-	L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"] = "Chaosstoß / Vernichtung"
-	L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Chaosstoß zu benutzen. Während du in der Metamorphose bist wird es dir für Vernichtung angezeigt."
-	L["DemonHunterHavocThresholdCheckboxEyeBeam"] = "Augenstrahl"
-	L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Augenstrahl zu benutzen."
-	L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "Gleve werfen (Wuterfüllte Würfe)"
-	L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Gleve werfen zu benutzen. Wird nur angezeigt wenn Wuterfüllte Würfe geskillt wurde."
-	L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"] = "Ende der Metamorphose Einstellungen"
-	L["DemonHunterHavocCheckboxMetamorphosisGcds"] = "GCDs bis Metamorphose endet"
-	L["DemonHunterHavocMetamorphosisGcds"] = "Metamorphose GCDs - 0.75Sek Grenze"
-	L["DemonHunterHavocCheckboxMetamorphosisTime"] = "Zeit bis Metamorphose endet"
-	L["DemonHunterHavocMetamorphosisTime"] = "Metamorphose Zeit verbleibend (Sek)"
-	L["DemonHunterHavocTextColorsHeader"] = "Furor Text Farben"
-	L["DemonHunterHavocTextColorPickerCurrent"] = "Aktueller Furor"
-	L["DemonHunterHavocColorPickerThresholdOver"] = "Genug Furor haben um irgendeine aktivierte Schwellenwert Fähigkeit einzusetzen."
-	L["DemonHunterHavocCheckboxThresholdOverTooltip"] = "Das hier ändert deine Furor Text Farbe wenn du in der Lage bist eine Fähigkeit einzusetzen, wo du den Schwellenwert in 'Balken Anzeige' aktiviert hast"
-	L["DemonHunterVengeanceColorPickerMetamorphosis"] = "Furor während Metamorphose aktiv ist"
-	L["DemonHunterVengeanceColorPickerMetamorphosisEnding"] = "Furor wenn Metamorphose endet"
-	L["DemonHunterVengeanceCheckboxEndOfMetamorphosis"] = "Verändere Balken Farbe am Ende der Metamorphose"
-	L["DemonHunterVengeanceCheckboxEndOfMetamorphosisTooltip"] = "Verändere die Balken Farbe wenn Metamorphose zu ende geht in den nächsten X GCDs oder fest eingestellter Zeit. Wähle welches du möchtest von den Einstellungen unten."
-	L["DemonHunterVengeanceHeaderSoulFragmentColors"] = "Seelenfragmente Farben"
-	L["DemonHunterVengeanceColorPickerSoulFragmentBorder"] = "Seelenfragmente Rand"
-	L["DemonHunterVengeanceColorPickerSoulFragmentPenultimate"] = "Vorletztes Seelenfragment"
-	L["DemonHunterVengeanceColorPickerSoulFragmentFinal"] = "Letztes Seelenfragment"
-	L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "Nutze höchste Seelenfragment Farbe für alle?"
-	L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "Wenn ausgewählt, wird die höchste Seenframent Farbe für alle Seelenfragmente genutzt. z.B. wenn du 4 von 5 Seelenfragmenten hast, wird die Farbe vom letzten Seelenfragment genutzt, anstatt des vorletzten Seelenfragmentes."
-	L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "Nicht gefüllter Seelenfragment Hintergrund"
-	L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "Chaosnova"
-	L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Chaosnova zu benutzen."
-	L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "Dämonische Verwüstung"
-	L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Dämonische Verwüstung zu benutzen. Wird nur angezeigt wenn Dämonische Verwüstung geskillt wurde."
-	L["DemonHunterVengeanceThresholdCheckboxSoulCleave"] = "Seelenspalter"
-	L["DemonHunterVengeanceThresholdCheckboxSoulCleaveTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Seelenspalter zu benutzen."
-	L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"] = "Seelenbombe"
-	L["DemonHunterVengeanceThresholdCheckboxSpiritBombTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Seelenbombe zu benutzen."
-	L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"] = "Ende der Metamorphose Einstellung"
-	L["DemonHunterVengeanceCheckboxMetamorphosisGcds"] = "GCDs bis Metamorphose endet"
-	L["DemonHunterVengeanceMetamorphosisGcds"] = "Metamorphose GCDs - 0.75Sek Grenze"
-	L["DemonHunterVengeanceCheckboxMetamorphosisTime"] = "Zeit bis Metamorphose endet"
-	L["DemonHunterVengeanceMetamorphosisTime"] = "Metamorphose Zeit verbleibend (Sek)"
-	L["DemonHunterVengeanceTextColorsHeader"] = "Furor Text Farben"
-	L["DemonHunterVengeanceTextColorPickerCurrent"] = "Aktueller Furor"
-	L["DemonHunterVengeanceColorPickerThresholdOver"] = "Genug Furor haben um irgendeine aktivierte Schwellenwert Fähigkeit einzusetzen."
-	L["DemonHunterVengeanceCheckboxThresholdOverTooltip"] = "Das hier ändert deine Furor Text Farbe wenn du in der Lage bist eine Fähigkeit einzusetzen, wo du den Schwellenwert in 'Balken Anzeige' aktiviert hast"
+    L["DemonHunterHavocColorPickerMetamorphosis"] = "Furor während Metamorphose aktiv ist"
+    L["DemonHunterHavocColorPickerMetamorphosisEnding"] = "Furor wenn Metamorphose zu ende geht"
+    L["DemonHunterHavocCheckboxEndOfMetamorphosis"] = "Verändere Balken Farbe am Ende der Metamorphose"
+    L["DemonHunterHavocCheckboxEndOfMetamorphosisTooltip"] = "Verändere die Balken Farbe wenn Metamorphose zu ende geht in den nächsten X GCDs oder fest eingestellter Zeit. Wähle welches du möchtest von den Einstellungen unten."
+    L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweep"] = "Klingentanz / Todesfeger"
+    L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweepTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Klingentanz zu benutzen. Während du in der Metamorphose bist wird es dir für Todesfeger angezeigt."
+    L["DemonHunterHavocThresholdCheckboxChaosNova"] = "Chaosnova (ohne Entfesselte Macht)"
+    L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Chaosnova zu benutzen. Wird nur angezeigt wenn Entfesselte Macht nicht geskillt wurde."
+    L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"] = "Chaosstoß / Vernichtung"
+    L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Chaosstoß zu benutzen. Während du in der Metamorphose bist wird es dir für Vernichtung angezeigt."
+    L["DemonHunterHavocThresholdCheckboxEyeBeam"] = "Augenstrahl"
+    L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Augenstrahl zu benutzen."
+    L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "Gleve werfen (Wuterfüllte Würfe)"
+    L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Gleve werfen zu benutzen. Wird nur angezeigt wenn Wuterfüllte Würfe geskillt wurde."
+    L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"] = "Ende der Metamorphose Einstellungen"
+    L["DemonHunterHavocCheckboxMetamorphosisGcds"] = "GCDs bis Metamorphose endet"
+    L["DemonHunterHavocMetamorphosisGcds"] = "Metamorphose GCDs - 0.75Sek Grenze"
+    L["DemonHunterHavocCheckboxMetamorphosisTime"] = "Zeit bis Metamorphose endet"
+    L["DemonHunterHavocMetamorphosisTime"] = "Metamorphose Zeit verbleibend (Sek)"
+    L["DemonHunterHavocTextColorsHeader"] = "Furor Text Farben"
+    L["DemonHunterHavocTextColorPickerCurrent"] = "Aktueller Furor"
+    L["DemonHunterHavocColorPickerThresholdOver"] = "Genug Furor haben um irgendeine aktivierte Schwellenwert Fähigkeit einzusetzen."
+    L["DemonHunterHavocCheckboxThresholdOverTooltip"] = "Das hier ändert deine Furor Text Farbe wenn du in der Lage bist eine Fähigkeit einzusetzen, wo du den Schwellenwert in 'Balken Anzeige' aktiviert hast"
+    L["DemonHunterVengeanceColorPickerMetamorphosis"] = "Furor während Metamorphose aktiv ist"
+    L["DemonHunterVengeanceColorPickerMetamorphosisEnding"] = "Furor wenn Metamorphose endet"
+    L["DemonHunterVengeanceCheckboxEndOfMetamorphosis"] = "Verändere Balken Farbe am Ende der Metamorphose"
+    L["DemonHunterVengeanceCheckboxEndOfMetamorphosisTooltip"] = "Verändere die Balken Farbe wenn Metamorphose zu ende geht in den nächsten X GCDs oder fest eingestellter Zeit. Wähle welches du möchtest von den Einstellungen unten."
+    L["DemonHunterVengeanceHeaderSoulFragmentColors"] = "Seelenfragmente Farben"
+    L["DemonHunterVengeanceColorPickerSoulFragmentBorder"] = "Seelenfragmente Rand"
+    L["DemonHunterVengeanceColorPickerSoulFragmentPenultimate"] = "Vorletztes Seelenfragment"
+    L["DemonHunterVengeanceColorPickerSoulFragmentFinal"] = "Letztes Seelenfragment"
+    L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "Nutze höchste Seelenfragment Farbe für alle?"
+    L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "Wenn ausgewählt, wird die höchste Seenframent Farbe für alle Seelenfragmente genutzt. z.B. wenn du 4 von 5 Seelenfragmenten hast, wird die Farbe vom letzten Seelenfragment genutzt, anstatt des vorletzten Seelenfragmentes."
+    L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "Nicht gefüllter Seelenfragment Hintergrund"
+    L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "Chaosnova"
+    L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Chaosnova zu benutzen."
+    L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "Dämonische Verwüstung"
+    L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Dämonische Verwüstung zu benutzen. Wird nur angezeigt wenn Dämonische Verwüstung geskillt wurde."
+    L["DemonHunterVengeanceThresholdCheckboxSoulCleave"] = "Seelenspalter"
+    L["DemonHunterVengeanceThresholdCheckboxSoulCleaveTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Seelenspalter zu benutzen."
+    L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"] = "Seelenbombe"
+    L["DemonHunterVengeanceThresholdCheckboxSpiritBombTooltip"] = "Das hier zeigt eine Linie auf dem Balken an, an der Stelle wo du genug Furor besitzt um Seelenbombe zu benutzen."
+    L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"] = "Ende der Metamorphose Einstellung"
+    L["DemonHunterVengeanceCheckboxMetamorphosisGcds"] = "GCDs bis Metamorphose endet"
+    L["DemonHunterVengeanceMetamorphosisGcds"] = "Metamorphose GCDs - 0.75Sek Grenze"
+    L["DemonHunterVengeanceCheckboxMetamorphosisTime"] = "Zeit bis Metamorphose endet"
+    L["DemonHunterVengeanceMetamorphosisTime"] = "Metamorphose Zeit verbleibend (Sek)"
+    L["DemonHunterVengeanceTextColorsHeader"] = "Furor Text Farben"
+    L["DemonHunterVengeanceTextColorPickerCurrent"] = "Aktueller Furor"
+    L["DemonHunterVengeanceColorPickerThresholdOver"] = "Genug Furor haben um irgendeine aktivierte Schwellenwert Fähigkeit einzusetzen."
+    L["DemonHunterVengeanceCheckboxThresholdOverTooltip"] = "Das hier ändert deine Furor Text Farbe wenn du in der Lage bist eine Fähigkeit einzusetzen, wo du den Schwellenwert in 'Balken Anzeige' aktiviert hast"
 
-	L["ColorPickerStealth"] = "Randfarbe wenn du unsichtbar bist (durch jegliche Fähgikeit oder Proc)"
-	L["ComboPointColorsHeader"] = "Combopunkte Farben"
-	L["ComboPointColorPickerBorder"] = "Combopunkte Rand"
-	L["ComboPointColorPickerPenultimate"] = "Vorletzter Combopunkt"
-	L["ComboPointColorPickerFinal"] = "Letzter Combopunkt"
-	L["ComboPointCheckboxUseHighestForAll"] = "Nutze höchste Combopunkte Farbe für alle?"
-	L["ComboPointCheckboxUseHighestForAllTooltip"] = "Wenn ausgewählt, wird die höchste Combopunkte Farbe für alle Combopunkte genutzt. z.B. wenn du 4 von 5 Combopunkten hast, wird die Farbe vom letzten Combopunkt genutzt, anstatt des vorletzten Combopunktes."
-	L["ComboPointColorPickerBackground"] = "Nicht gefüllter Combopunkte Hintergrund"
-	L["ComboPointsCheckboxAlwaysDefaultBackground"] = "Nutze immer den ungefüllten Standard Hintergrund."
-	L["ThresholdCategoryBuildersLabel"] = "Erzeuger"
-	L["ThresholdCategoryFinishersLabel"] = "Verbraucher"
-	L["EnergyTextColorsHeader"] = "Energie Text Farben"
-	L["ColorPickerCurrentEnergy"] = "Aktuelle Energie"
-	L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"] = "Genug Energie haben um irgendeine aktivierte Schwellenwert Fähigkeit einzusetzen."
-	L["CheckboxThresholdOverTooltip"] = "Das hier ändert deine Energie Text Farbe wenn du in der Lage bist eine Fähigkeit einzusetzen, wo du den Schwellenwert in 'Balken Anzeige' aktiviert hast"
-	L["HealerManaTextColorsHeader"] = "Mana Text Farben"
-	L["HealerColorPickerCurrentMana"] = "Aktuelles Mana"
-	L["HealerColorPickerCastingMana"] = "ausgegebenes Mana durch gezauberte Fähigkeiten"
-	L["HealerAudioCheckboxInnervate"] = "Spiele Sound wenn du Anregen erhälst"
-	L["HealerAudioCheckboxInnervateTooltip"] = "Dieser Sound wird gespielt wenn du Anregen von einem hilfreichen Druiden bekommst"
+    L["ColorPickerStealth"] = "Randfarbe wenn du unsichtbar bist (durch jegliche Fähgikeit oder Proc)"
+    L["ComboPointColorsHeader"] = "Combopunkte Farben"
+    L["ComboPointColorPickerBorder"] = "Combopunkte Rand"
+    L["ComboPointColorPickerPenultimate"] = "Vorletzter Combopunkt"
+    L["ComboPointColorPickerFinal"] = "Letzter Combopunkt"
+    L["ComboPointCheckboxUseHighestForAll"] = "Nutze höchste Combopunkte Farbe für alle?"
+    L["ComboPointCheckboxUseHighestForAllTooltip"] = "Wenn ausgewählt, wird die höchste Combopunkte Farbe für alle Combopunkte genutzt. z.B. wenn du 4 von 5 Combopunkten hast, wird die Farbe vom letzten Combopunkt genutzt, anstatt des vorletzten Combopunktes."
+    L["ComboPointColorPickerBackground"] = "Nicht gefüllter Combopunkte Hintergrund"
+    L["ComboPointsCheckboxAlwaysDefaultBackground"] = "Nutze immer den ungefüllten Standard Hintergrund."
+    L["ThresholdCategoryBuildersLabel"] = "Erzeuger"
+    L["ThresholdCategoryFinishersLabel"] = "Verbraucher"
+    L["EnergyTextColorsHeader"] = "Energie Text Farben"
+    L["ColorPickerCurrentEnergy"] = "Aktuelle Energie"
+    L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"] = "Genug Energie haben um irgendeine aktivierte Schwellenwert Fähigkeit einzusetzen."
+    L["CheckboxThresholdOverTooltip"] = "Das hier ändert deine Energie Text Farbe wenn du in der Lage bist eine Fähigkeit einzusetzen, wo du den Schwellenwert in 'Balken Anzeige' aktiviert hast"
+    L["HealerManaTextColorsHeader"] = "Mana Text Farben"
+    L["HealerColorPickerCurrentMana"] = "Aktuelles Mana"
+    L["HealerColorPickerCastingMana"] = "ausgegebenes Mana durch gezauberte Fähigkeiten"
+    L["HealerAudioCheckboxInnervate"] = "Spiele Sound wenn du Anregen erhälst"
+    L["HealerAudioCheckboxInnervateTooltip"] = "Dieser Sound wird gespielt wenn du Anregen von einem hilfreichen Druiden bekommst"
 
-	L["DPSManaTextColorsHeader"] = "Mana Text Farben"
-	L["DPSColorPickerCurrentMana"] = "Aktuelles Mana"
+    L["DPSManaTextColorsHeader"] = "Mana Text Farben"
+    L["DPSColorPickerCurrentMana"] = "Aktuelles Mana"
 
--- DruidOptions
 L["DruidBalanceAudioStarsurgeReady"] = "Starsurge Ready"
 L["DruidBalanceAudioStarfallReady"] = "Starfall Ready"
-L["DruidBalanceAudioStarweaverReady"] = "Starweaver Ready"
 L["DruidBalanceStarsurge"] = "Starsurge"
 L["DruidBalanceColorPickerEclipseSolar"] = "Eclipse (Solar) is Active"
 L["DruidBalanceColorPickerEclipseLunar"] = "Eclipse (Lunar) is Active"
@@ -466,7 +438,6 @@ L["DruidRestorationIncarnationGcds"] = "Incarnation GCDs - 0.75sec Floor"
 L["DruidRestorationCheckboxIncarnationTime"] = "Time until Incarnation ends"
 L["DruidRestorationIncarnationTime"] = "Incarnation Time Remaining (sec)"
 
--- EvokerOptions
 L["EvokerEssenceColorsHeader"] = "Essence Colors"
 L["EvokerColorPickerEssenceBorderHeader"] = "Essence's border"
 L["EvokerEssenceColorPickerPenultimate"] = "Penultimate Essence"
@@ -480,7 +451,6 @@ L["ThresholdCategoryDamageDealing"] = "Damage Dealing"
 L["ThresholdCategoryPetAndUtility"] = "Pet and Utility"
 L["ThresholdCategoryPvpAbilities"] = "PvP Abilities"
 
--- HunterOptions
 L["HunterThresholdCheckboxRevivePet"] = "Revive Pet"
 L["HunterThresholdCheckboxRevivePetTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Revive Pet."
 L["HunterThresholdCheckboxScareBeast"] = "Scare Beast"
@@ -533,7 +503,6 @@ L["HunterMarksmanshipAimedShotTime"] = "Time (sec)"
 
 
 
--- MonkOptions
 L["ChiColorsHeader"] = "Chi Colors"
 L["ChiColorPickerBorder"] = "Chi's border"
 L["ChiColorPickerPenultimate"] = "Penultimate Chi"
@@ -562,7 +531,6 @@ L["MonkWindwalkerThresholdCheckboxParalysisTooltip"] = "This will show the verti
 L["MonkWindwalkerThresholdCheckboxVivify"] = "Vivify"
 L["MonkWindwalkerThresholdCheckboxVivifyTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Vivify."
 
--- PriestOptions
 L["PriestHolyAudioResonantWords"] = "Resonant Words"
 L["PriestHolyAudioLightweaver"] = "Lightweaver"
 L["PriestShadowAudioMindDevourer"] = "Mind Devourer Proc"
@@ -663,7 +631,6 @@ L["PriestShadowAudioCheckboxShadowWordMadnessTooltip"] = "Play an audio cue when
 L["PriestShadowAudioCheckboxMindDevourer"] = "Play audio cue when a Mind Devourer proc occurs"
 L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "Play an audio cue when a Mind Devourer proc occurs. This supercedes the regular Devouring Plague audio sound."
 
--- ShamanOptions
 L["ResourceMaelstromWeapon"] = "Maelstrom Weapon"
 L["ShamanManaColorPickerAscendance"] = "Mana while in Ascendance"
 L["ShamanManaColorPickerAscendanceEnd"] = "Mana when Ascendance is ending (as configured)"
@@ -702,7 +669,6 @@ L["MaelstromWeaponCheckboxUseHighestForAll"] = "Use highest Maelstrom Weapon col
 L["MaelstromWeaponCheckboxUseHighestForAllTooltip"] = "When checked, the highest Maelstrom Weapon's color will be used for all Maelstrom Weapon. E.g., if you have maximum 10 Maelstrom Weapon and currently have 9, the Penultimate color will be used for all Maelstrom Weapon instead of just the second to last."
 L["MaelstromWeaponColorPickerBackground"] = "Unfilled Maelstrom Weapon background"
 
--- WarriorOptions
 L["WarriorAudioSuddenDeathProc"] = "Sudden Death Proc"
 L["WarriorTextColorsHeader"] = "Rage Text Colors"
 L["WarriorColorPickerTextCurrent"] = "Current Rage"
@@ -749,7 +715,6 @@ L["WarriorFuryThresholdSlamTooltip"] = "This will show the vertical line on the 
 L["WarriorFuryThresholdThunderClap"] = "Thunder Clap"
 L["WarriorFuryThresholdThunderClapTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Thunder Clap."
 
--- RogueOptions
 L["RogueAssassinationAudioBlindsideProc"] = "Blindside Proc"
 L["RogueOutlawAudioOpportunityProc"] = "Opportunity Proc"
 L["RogueColorPickerEchoingReprimand"] = "Combo Point when Supercharged"
@@ -1106,7 +1071,6 @@ L["WarlockManaTextColorsHeader"] = "Mana Text Colors"
 L["WarlockColorPickerCurrentMana"] = "Current Mana"
 L["WarlockColorPickerCastingMana"] = "Mana spent from hardcasting spells"
 
--- 11.0
 L["HunterBeastMasteryThresholdCheckboxBlackArrow"] = "Black Arrow"
 L["HunterBeastMasteryThresholdCheckboxBlackArrowTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Black Arrow."
 L["HunterMarksmanshipThresholdCheckboxBlackArrow"] = "Black Arrow"
@@ -1257,9 +1221,7 @@ L["WarriorProtectionBarTextVariable_shieldBlockCharges"] = "Number of charges of
 L["WarriorProtectionBarTextVariable_shieldBlockMaxCharges"] = "Maximum number of charges of Shield Block"
 L["WarriorColorPickerThresholdOver"] = "Have enough Rage to use any enabled threshold ability"
 
---[[
-    Midnight additions
-]]
+-- Midnight additions
 
 L["DemonHunterDevourerCheckboxVoidMetamorphosis"] = "Change color during Void Metamorphosis"
 L["DemonHunterDevourerCheckboxVoidMetamorphosisTooltip"] = "This will change the bar color when you enter Void Metamorphosis."
@@ -1311,17 +1273,14 @@ L["WarlockDemonologyBarTextVariable_casting"] = "Mana from Hardcasting Spells"
 L["WarlockDemonologyBarTextVariable_soulShards"] = "Current Soul Shards"
 L["WarlockDemonologyBarTextVariable_soulShardsMax"] = "Maximum Soul Shards"
 
--- Protection Paladin
 L["PaladinProtectionManaTextColorsHeader"] = "Mana Text Colors"
 L["PaladinProtectionColorPickerCurrentMana"] = "Current Mana"
 L["PaladinProtectionColorPickerCastingMana"] = "Mana spent from hardcasting spells"
 
--- Retribution Paladin
 L["PaladinRetributionManaTextColorsHeader"] = "Mana Text Colors"
 L["PaladinRetributionColorPickerCurrentMana"] = "Current Mana"
 L["PaladinRetributionColorPickerCastingMana"] = "Mana spent from hardcasting spells"
 
--- Death Knight
 L["Rune1"] = "Rune 1"
 L["Rune2"] = "Rune 2"
 L["Rune3"] = "Rune 3"
@@ -1395,7 +1354,6 @@ L["MageArcaneChargesColorPickerBackground"] = "Unfilled Arcane Charge background
 L["MageArcaneChargesColorPickerFinal"] = "Final Arcane Charge"
 L["MageArcaneChargesColorPickerPenultimate"] = "Penultimate Arcane Charge"
 
--- Bar Visibility Dropdown Options
 L["ShowBarVisibilityPrimary"] = "%s Bar Visibility"
 L["ShowBarVisibilitySecondary"] = "%s Visibility"
 L["ShowBarVisibilityAlways"] = "Always"
@@ -1445,14 +1403,12 @@ L["DruidGuardianCheckboxBerserkTime"] = "Time until Berserk ends"
 L["DruidGuardianColorPickerBerserkEnd"] = "Rage when Berserk is ending (as configured)"
 L["DruidGuardianEndOfBerserkConfigurationHeader"] = "End of Berserk Configuration"
 
--- Health Bar
 L["HealthBar"] = "Health Bar"
 L["ShowBarVisibilityHealth"] = "Health Bar Visibility"
 L["BarTextVariable_health"] = "Current health"
 L["BarTextVariable_healthMax"] = "Maximum health"
 L["BarTextVariable_healthPercent"] = "Current health percentage"
 
--- Texture Section Headers
 L["BarTexturesSectionHeader"] = "Bar Textures"
 L["BorderTexturesSectionHeader"] = "Border Textures"
 L["BackgroundTexturesSectionHeader"] = "Background Textures"
@@ -1460,7 +1416,6 @@ L["HealthBarTexture"] = "Health Bar Texture"
 L["HealthBorderTexture"] = "Health Border Texture"
 L["HealthBackgroundTexture"] = "Health Background (Empty Bar) Texture"
 
--- Health Bar Color Curve
 L["HealthBarColorHeader"] = "Health Bar Colors"
 L["HealthBarColorType"] = "Color Transition Type"
 L["HealthBarColorTypeStep"] = "Step"
@@ -1473,7 +1428,6 @@ L["HealthBarThresholdMediumTooltip"] = "Health percentage at which the bar color
 L["HealthBarThresholdHigh"] = "High Health Threshold"
 L["HealthBarThresholdHighTooltip"] = "Health percentage at which the bar color transitions from Medium to High."
 
--- Stagger Bar Color Curve
 L["StaggerBarColorHeader"] = "Stagger Bar Colors"
 L["StaggerBarColorType"] = "Color Transition Type"
 L["StaggerBarColorTypeStep"] = "Step"
@@ -1488,19 +1442,16 @@ L["StaggerBarThresholdMediumTooltip"] = "Stagger percentage at which the bar col
 L["StaggerBarThresholdHeavy"] = "Heavy Stagger Threshold"
 L["StaggerBarThresholdHeavyTooltip"] = "Stagger percentage at which the bar color transitions from Medium to Heavy."
 
--- Stagger Levels Threshold Lines
 L["StaggerLevelsHeader"] = "Stagger Levels"
 L["StaggerLevelMediumCheckbox"] = "Medium Stagger"
 L["StaggerLevelMediumTooltip"] = "Show a threshold line on the Stagger bar at the Medium Stagger level."
 L["StaggerLevelHeavyCheckbox"] = "Heavy Stagger"
 L["StaggerLevelHeavyTooltip"] = "Show a threshold line on the Stagger bar at the Heavy Stagger level."
 
--- Health Bar Position and Size
 
 L["LSMStatusBarClean"] = "TRB: Clean"
 L["LSMStatusBarSmoother"] = "TRB: Smoother"
 
--- Reset Defaults Panel - Classic/Compact options
 L["ResetToClassic"] = "Reset to Classic"
 L["ResetBarClassicDialog"] = "Do you want to reset the %s resource bar to |cFFFFAAAAclassic|r defaults? This will also reset bar text settings. This will |cFFFF0000reload your UI|r!"
 L["ResetBarTextCompact"] = "Reset Bar Text (Compact)"
@@ -1536,7 +1487,6 @@ L["ManaBarBorderTexture"] = "Mana Bar Border Texture"
 L["ManaBarBackgroundTexture"] = "Mana Bar Background Texture"
 L["ManaBarTextColor"] = "Mana bar text color"
 
--- Custom Bar System
 L["CustomBarColorHeader"] = "%s Colors"
 L["CustomBarColorBar"] = "%s bar"
 L["CustomBarColorBorder"] = "%s border"
@@ -1547,7 +1497,6 @@ L["CustomBarTextureBorder"] = "%s Border Texture"
 L["CustomBarTextureBackground"] = "%s Background Texture"
 L["ShowBarVisibilityCustom"] = "%s Visibility"
 
--- Evoker Augmentation Ebon Might
 L["EvokerAugmentationCheckboxEbonMight"] = "Change when Ebon Might is active"
 L["EvokerAugmentationCheckboxEbonMightTooltip"] = "Changes the bar color when you have the Ebon Might buff."
 L["EvokerAugmentationColorPickerEbonMight"] = "Mana when Ebon Might is active"
@@ -1595,7 +1544,6 @@ L["ShamanEnhancementCheckboxMaelstromWeaponCompressedView"] = "Use 5-node compre
 L["ShamanEnhancementCheckboxMaelstromWeaponCompressedViewTooltip"] = "When enabled, displays 5 nodes where stacks 1-5 fill with the base color and stacks 6-10 overwrite from the left with the overflow color. When disabled, displays all 10 nodes individually."
 L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"] = "Maelstrom Weapon overflow (stacks 6-10)"
 
--- Overcap text color
 L["BorderColorOvercap"] = "Border when you are overcapped on %s"
 L["BorderColorOvercapToggle"] = "Change border color when overcapping"
 L["BorderColorOvercapToggleTooltip"] = "This will change the bar's border color when you are already above or your current hardcast spell will result in overcapping %s (as configured)."
@@ -1683,7 +1631,6 @@ L["PaladinAudioCheckboxHolyPowerThreshold2"] = "Play audio cue when at or above 
 L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"] = "Play an audio cue when your current Holy Power reaches or exceeds the configured value to the right."
 L["PaladinHolyPowerThresholdSliderTitle"] = "At or Above X Holy Power"
 
--- End Of Invoke Niuzao for Monk Brewmaster
 L["MonkBrewmasterBarTextVariable_niuzaoTime"] = "Duration remaining of Invoke Niuzao, the Black Ox"
 L["MonkBrewmasterBarTextIcon_niuzao"] = "Invoke Niuzao, the Black Ox"
 L["MonkBrewmasterCheckboxInvokeNiuzao"] = "Change bar color when Invoke Niuzao is active"
@@ -1698,7 +1645,6 @@ L["MonkBrewmasterInvokeNiuzaoGcds"] = "Invoke Niuzao GCDs - 0.75sec Floor"
 L["MonkBrewmasterCheckboxInvokeNiuzaoTime"] = "Time until Invoke Niuzao ends"
 L["MonkBrewmasterInvokeNiuzaoTime"] = "Invoke Niuzao Time Remaining (sec)"
 
--- End Of Dragonrage for Evoker Devastation
 L["EvokerDevastationBarTextVariable_dragonrageTime"] = "Duration remaining of Dragonrage"
 L["EvokerDevastationCheckboxDragonrage"] = "Change bar color when Dragonrage is active"
 L["EvokerDevastationCheckboxDragonrageTooltip"] = "Changes the bar color when Dragonrage is active."
@@ -1717,13 +1663,11 @@ L["EvokerCheckboxEssenceBurstTooltip"] = "This will change the bar border color 
 L["EvokerColorPickerEssenceBurst"] = "Border when you have Essence Burst"
 L["EvokerEssenceBurst"] = "Essence Burst"
 
--- Edit Mode Integration
 L["TRBAddonName"] = "Twintop's Resource Bar"
 L["EditModeEnableForLayout"] = "Enable for this layout"
 L["EditModeEnableForLayoutTooltip"] = "When enabled, Edit Mode will control the bar's position for this layout instead of using per-spec or global settings."
 L["EditModePositionOverrideNotice"] = "If Edit Mode integration is enabled for the current UI layout, the Horizontal and Vertical position settings below will be ignored."
 L["DefaultFontSettingsNotice"] = "These settings only apply to bar text areas configured to use shared font settings under the Bar Text tab."
--- Edit Mode - Cooldown Manager Integration
 L["EditModeAnchorTo"] = "Anchor To"
 L["EditModeAnchorToTooltip"] = "Anchor the bar relative to the Cooldown Manager. The Cooldown Manager (Essential Cooldowns) must be enabled in WoW's Options > Advanced Options for this to work. If the Cooldown Manager is not available, free positioning will be used instead."
 L["EditModeAnchorFreePosition"] = "Free Position"
@@ -1734,13 +1678,10 @@ L["EditModeMatchCDMWidthTooltip"] = "When enabled, the bar's width will automati
 L["EditModeAnchorOffset"] = "Vertical Offset"
 L["EditModeAnchorOffsetTooltip"] = "Adjusts the vertical distance between the bar and the Cooldown Manager. Positive values move the bar away from the Cooldown Manager."
 
--- Edit Mode Reset
 L["EditModeSettings"] = "Edit Mode"
 L["ResetEditModeDataButton"] = "Reset Edit Mode Data"
 L["ResetEditModeDataDialog"] = "Do you want to reset all Edit Mode layout data stored by Twintop's Resource Bar? This will clear all bar positions associated with Edit Mode layouts. This will |cFFFF0000reload your UI|r!"
-L["TabResetDefaults"] = "Reset Defaults"
 
--- Stagger Bar Enhancements (Brewmaster Monk)
 L["StaggerBarMaxScaleSlider"] = "Stagger Bar as % of Max Health"
 L["StaggerBarMaxScaleTooltip"] = "Maximum percentage of your maximum health to display on the Stagger bar. Values above this will show as a full bar."
 L["StaggerBarColorExtreme"] = "Extremely Heavy Stagger Color"
@@ -1749,7 +1690,6 @@ L["StaggerBarThresholdExtremeTooltip"] = "Stagger percentage at which the bar co
 L["StaggerLevelExtremeCheckbox"] = "Extremely Heavy Stagger"
 L["StaggerLevelExtremeTooltip"] = "Show a threshold line on the Stagger bar at the Extremely Heavy Stagger level."
 
--- Infusion of Light (Holy Paladin)
 L["PaladinHolyInfusionOfLight"] = "Infusion of Light"
 L["PaladinHolyCheckboxInfusionOfLightTooltip"] = "This will change the bar border color when you have Infusion of Light (Flash of Light becomes instant)."
 L["PaladinHolyColorPickerInfusionOfLight"] = "Border when you have Infusion of Light"

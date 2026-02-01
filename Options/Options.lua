@@ -857,7 +857,7 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 11.41)
+	local localeText2 = string.format(percentFormat, 20.13)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 16.16)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
@@ -871,7 +871,7 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 
-	local localeText3 = "unfung"
+	local localeText3 = "SanTM, unfung"
 	localeText3 = localeText3 .. "\n" .. "Twintop"
 	localeText3 = localeText3 .. "\n" .. "Twintop"
 	localeText3 = localeText3 .. "\n" .. "Se necesita traductor!"

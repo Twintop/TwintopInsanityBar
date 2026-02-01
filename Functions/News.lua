@@ -17,6 +17,10 @@ local content = [====[
 
 - Fix an issue where talents wouldn't load correctly, causing Lua errors.
 
+### Localization
+
+- [#589](#589) Improved translation coverage added for German (deDE) by SanTM! Thank you so much for your help!
+
 ---
 
 # 12.0.0.17-release (2026-02-02)

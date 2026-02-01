@@ -1252,9 +1252,7 @@ L["WarriorProtectionBarTextVariable_shieldBlockCharges"] = "Number of charges of
 L["WarriorProtectionBarTextVariable_shieldBlockMaxCharges"] = "Maximum number of charges of Shield Block"
 L["WarriorColorPickerThresholdOver"] = "Have enough Rage to use any enabled threshold ability"
 
---[[
-    Midnight additions
-]]
+-- Midnight additions
 
 L["DemonHunterDevourerCheckboxVoidMetamorphosis"] = "Change color during Void Metamorphosis"
 L["DemonHunterDevourerCheckboxVoidMetamorphosisTooltip"] = "This will change the bar color when you enter Void Metamorphosis."
