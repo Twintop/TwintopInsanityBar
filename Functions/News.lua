@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.0.17-release (2026-02-01)
+## General
+### Localization
+
+- [#585](#585) Complete translation added for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+---
+
 # 12.0.0.16-release (2026-01-31)
 ## General
 

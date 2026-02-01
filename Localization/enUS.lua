@@ -381,7 +381,6 @@ L["DPSColorPickerCurrentMana"] = "Current Mana"
 -- DruidOptions
 L["DruidBalanceAudioStarsurgeReady"] = "Starsurge Ready"
 L["DruidBalanceAudioStarfallReady"] = "Starfall Ready"
-L["DruidBalanceAudioStarweaverReady"] = "Starweaver Ready"
 L["DruidBalanceStarsurge"] = "Starsurge"
 L["DruidBalanceColorPickerEclipseSolar"] = "Eclipse (Solar) is Active"
 L["DruidBalanceColorPickerEclipseLunar"] = "Eclipse (Lunar) is Active"
@@ -1734,7 +1733,6 @@ L["EditModeAnchorOffsetTooltip"] = "Adjusts the vertical distance between the ba
 L["EditModeSettings"] = "Edit Mode"
 L["ResetEditModeDataButton"] = "Reset Edit Mode Data"
 L["ResetEditModeDataDialog"] = "Do you want to reset all Edit Mode layout data stored by Twintop's Resource Bar? This will clear all bar positions associated with Edit Mode layouts. This will |cFFFF0000reload your UI|r!"
-L["TabResetDefaults"] = "Reset Defaults"
 
 -- Stagger Bar Enhancements (Brewmaster Monk)
 L["StaggerBarMaxScaleSlider"] = "Stagger Bar as % of Max Health"

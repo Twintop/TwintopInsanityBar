@@ -857,18 +857,18 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 11.53)
+	local localeText2 = string.format(percentFormat, 11.41)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 16.16)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 14.07)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 13.92)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.38)
 
 	local localeText3 = "unfung"
@@ -896,7 +896,7 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText4 = localeText4 .. "\n" .. " "
 	localeText4 = localeText4 .. "\n" .. " "
 	localeText4 = localeText4 .. "\n" .. " "
-	localeText4 = localeText4 .. "\n" .. "需要翻译！"
+	localeText4 = localeText4 .. "\n" .. "M.O.S.S"
 	localeText4 = localeText4 .. "\n" .. "需要翻譯！"
 
 
