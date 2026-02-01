@@ -413,6 +413,11 @@ end
 local function ConstructResourceBar(settings)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
+	-- Don't construct bars for disabled specs
+	if not TRB.Data.specSupported then
+		return
+	end
+
 	-- Create thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
@@ -1963,7 +1968,67 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil, true, false
 end
 
+---Recreates thresholds and secondary bar setup when re-enabling a previously disabled spec
+---Demon Hunter override: handles primary bar + secondary bar setup for Vengeance/Devourer
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
+	-- Primary bar thresholds
+	if barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			local existingThresholds = primaryNode:GetThresholds()
+			local thresholdSpells = TRB.Data.cache.thresholdSpells
+			if thresholdSpells and #thresholdSpells > 0 and (not existingThresholds or #existingThresholds ~= #thresholdSpells) then
+				primaryNode:ClearThresholds()
+				for _ = 1, #thresholdSpells do
+					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+					TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
+					primaryNode:RegisterThreshold(thresholdFrame)
+				end
+			end
+		end
+	end
+
+	-- Vengeance: Soul Fragments bar with 5 threshold dividers (0-6 scale)
+	if TRB.Data.character.specId == 2 and barGroups.secondary then
+		barGroups.secondary:SetNodeCount(1)
+		local sfNode = barGroups.secondary:GetNode(1)
+		if sfNode then
+			sfNode:SetMinMax(0, 6) -- 0-6 Soul Fragments
+			local existingThresholds = sfNode:GetThresholds()
+			if not existingThresholds or #existingThresholds ~= 5 then
+				sfNode:ClearThresholds()
+				for _ = 1, 5 do
+					local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetResourceFrame())
+					TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
+					sfNode:RegisterThreshold(thresholdFrame)
+				end
+			end
+		end
+	end
+
+	-- Devourer: Soul Fragments bar with 1 threshold for Collapsing Star (0-50 scale)
+	if TRB.Data.character.specId == 3 and barGroups.secondary then
+		barGroups.secondary:SetNodeCount(1)
+		local sfNode = barGroups.secondary:GetNode(1)
+		if sfNode then
+			sfNode:SetMinMax(0, 50) -- 0-50 for Collapsing Star
+			local existingThresholds = sfNode:GetThresholds()
+			if not existingThresholds or #existingThresholds ~= 1 then
+				sfNode:ClearThresholds()
+				local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetResourceFrame())
+				TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
+				sfNode:RegisterThreshold(thresholdFrame)
+			end
+		end
+	end
+end
+
 function TRB.Functions.Class:TriggerResourceBarUpdates()
+	if not TRB.Data.specSupported then
+		return
+	end
 	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return

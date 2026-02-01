@@ -71,6 +71,22 @@ function TRB.Functions.Bar:HideResourceBar(force)
 		force = true
 	end
 
+	-- If spec is not supported (disabled), hide all bars immediately and skip all other logic
+	if not TRB.Data.specSupported then
+		local barGroups = TRB.Frames.barGroups
+		if barGroups then
+			for _, group in pairs(barGroups) do
+				if type(group) == "table" and group.Hide then
+					group:Hide()
+				end
+			end
+		end
+		if TRB.Data.snapshotData and TRB.Data.snapshotData.attributes then
+			TRB.Data.snapshotData.attributes.isTracking = false
+		end
+		return
+	end
+
 	-- If Edit Mode is active, ensure bars stay visible so they can be repositioned
 	-- Primary bar ALWAYS shows; other bars show unless configured to "never" display
 	if TRB.Functions.EditMode and TRB.Functions.EditMode:IsInEditMode() then
@@ -293,6 +309,11 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		return
 	end
 
+	-- Don't construct bars if spec is not supported (disabled in settings)
+	if not TRB.Data.specSupported then
+		return
+	end
+
 	-- Clear color caches to ensure fresh application on bar construction
 	TRB.Data.cache.colors.border = {}
 	TRB.Data.cache.colors.backdrop = {}
@@ -322,6 +343,11 @@ end
 ---@param barGroups table<string, TRB.Classes.BarGroup>
 function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if settings == nil or settings.bar == nil or barGroups == nil then
+		return
+	end
+
+	-- Don't apply layout if spec is not supported (disabled in settings)
+	if not TRB.Data.specSupported then
 		return
 	end
 
@@ -789,6 +815,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		end
 
 		local isDevourer = TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3
+		local isVengeance = TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2
 		for i = 1, barGroups.secondary.maxNodes do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
@@ -802,6 +829,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				-- not with layout (move/resize), to avoid clamping current values.
 				if isDevourer and i == 1 then
 					node:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
+				elseif isVengeance and i == 1 then
+					node:SetMinMax(0, 6) -- 0-6 Soul Fragments
 				else
 					node:SetMinMax(0, 1)
 				end
@@ -841,7 +870,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	self:ApplyCustomBarGroupsAppearance(settings, barGroups)
 
 	-- Trigger resource bar updates to ensure all colors are applied from current spec settings
-	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+	-- Only do this if the spec is supported (enabled in settings) to avoid Lua errors on disabled specs
+	if TRB.Data.specSupported and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 end
@@ -1097,9 +1127,14 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		end
 	end
 
-	-- Show the group and active nodes
-	targetGroup:Show()
-	targetGroup:ShowNodes(nodes)
+	-- Show the group and active nodes only if spec is supported (enabled)
+	-- This prevents health bars and other anchored bars from showing when the spec is disabled
+	if TRB.Data.specSupported then
+		targetGroup:Show()
+		targetGroup:ShowNodes(nodes)
+	else
+		targetGroup:Hide()
+	end
 end
 
 ---Constructs a secondary bar group (combo points, arcane charges, etc.)

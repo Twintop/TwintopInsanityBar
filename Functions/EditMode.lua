@@ -560,6 +560,9 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 	-- We call ApplyBarGroupsLayout directly rather than ReapplyCooldownManagerLayout
 	-- because LibEditMode:GetActiveLayoutName() may not be available during early init.
 	C_Timer.After(1.0, function()
+		if not TRB.Data.specSupported then
+			return
+		end
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
 			if specSettings and specSettings.settings then
@@ -910,6 +913,9 @@ end
 ---Helper function to reapply bar layout when CDM changes
 ---@param layoutName string? # Optional layout name override
 local function ReapplyCooldownManagerLayout(layoutName)
+	if not TRB.Data.specSupported then
+		return
+	end
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		return

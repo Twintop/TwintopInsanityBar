@@ -645,6 +645,11 @@ end
 local function ConstructResourceBar(settings)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
+	-- Don't construct bars for disabled specs
+	if not TRB.Data.specSupported then
+		return
+	end
+
 	-- Create thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
@@ -2822,6 +2827,9 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
+	if not TRB.Data.specSupported then
+		return
+	end
 	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return

@@ -49,6 +49,8 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	local containerName = self.name .. "_Container"
 	self.containerFrame = CreateFrame("Frame", containerName, parent, "BackdropTemplate")
 	self.containerFrame:SetFrameStrata("BACKGROUND")
+	-- Hide the container by default - nodes should only be shown explicitly
+	self.containerFrame:Hide()
 
 	-- Create border frame
 	local borderName = self.name .. "_Border"
@@ -418,6 +420,8 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 	end
 	self.containerFrame = CreateFrame("Frame", containerName, parent, "BackdropTemplate")
 	self.containerFrame:SetFrameStrata("BACKGROUND")
+	-- Hide the container by default - bars should only be shown explicitly
+	self.containerFrame:Hide()
 
 	-- Create all nodes upfront
 	for i = 1, self.maxNodes do

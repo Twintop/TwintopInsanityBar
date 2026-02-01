@@ -414,6 +414,11 @@ end
 local function ConstructResourceBar(settings)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
+	-- Don't construct bars for disabled specs
+	if not TRB.Data.specSupported then
+		return
+	end
+
 	-- Create thresholds on the primary BarNode
 	if barGroups and barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
@@ -2074,7 +2079,55 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil, true, false
 end
 
+---Recreates thresholds when re-enabling a previously disabled spec
+---Monk override: handles primary bar + Brewmaster stagger bar thresholds
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
+	-- Primary bar thresholds
+	if barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			local existingThresholds = primaryNode:GetThresholds()
+			local thresholdSpells = TRB.Data.cache.thresholdSpells
+			if thresholdSpells and #thresholdSpells > 0 and (not existingThresholds or #existingThresholds ~= #thresholdSpells) then
+				primaryNode:ClearThresholds()
+				for _ = 1, #thresholdSpells do
+					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+					TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
+					primaryNode:RegisterThreshold(thresholdFrame)
+				end
+			end
+		end
+	end
+
+	-- Brewmaster: Stagger bar thresholds (Medium, Heavy, Extreme)
+	if TRB.Data.character.specId == 1 and barGroups.stagger then
+		local staggerNode = barGroups.stagger:GetNode(1)
+		if staggerNode then
+			local existingThresholds = staggerNode:GetThresholds()
+			if not existingThresholds or #existingThresholds ~= 3 then
+				staggerNode:ClearThresholds()
+				local staggerSettings = settings.bars and settings.bars["stagger"]
+				local staggerColors = settings.colors and settings.colors.bars and settings.colors.bars.stagger
+				local thresholdWidth = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
+				local thresholdHeight = staggerSettings and staggerSettings.height or 24
+				local borderColor = staggerColors and staggerColors.border and staggerColors.border.color
+				
+				for _ = 1, 3 do
+					local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetResourceFrame())
+					TRB.Functions.Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor)
+					staggerNode:RegisterThreshold(thresholdFrame)
+				end
+			end
+		end
+	end
+end
+
 function TRB.Functions.Class:TriggerResourceBarUpdates()
+	if not TRB.Data.specSupported then
+		return
+	end
 	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3 then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return

@@ -962,6 +962,35 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 	TRB.Data.cache.thresholdSpells = thresholdSpells
 end
 
+---Default implementation of RecreateThresholds. Class modules can override this
+---to handle spec-specific thresholds on secondary bars, stagger bars, etc.
+---This is called when re-enabling a previously disabled spec.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
+	-- Primary bar thresholds (generic implementation)
+	if barGroups.primary then
+		local primaryNode = barGroups.primary:GetNode(1)
+		if primaryNode then
+			local existingThresholds = primaryNode:GetThresholds()
+			local thresholdSpells = TRB.Data.cache.thresholdSpells
+			-- Check if thresholds need to be created (either empty or wrong count)
+			if thresholdSpells and #thresholdSpells > 0 and (not existingThresholds or #existingThresholds ~= #thresholdSpells) then
+				primaryNode:ClearThresholds()
+				for _ = 1, #thresholdSpells do
+					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+					TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
+					primaryNode:RegisterThreshold(thresholdFrame)
+				end
+			end
+		end
+	end
+	-- Class modules should override this function to also handle:
+	-- - Secondary bar thresholds (combo point dividers, soul fragment dividers, etc.)
+	-- - Stagger bar thresholds (Brewmaster Monk)
+	-- - Other custom bar thresholds
+end
+
 function TRB.Functions.Character:EventRegistration()
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
@@ -1006,6 +1035,39 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+
+		-- Reapply bar appearance when re-enabling a previously disabled spec
+		if barGroups and TRB.Data.specCache and TRB.Data.character.specName then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+			if specSettings and specSettings.settings then
+				-- Initialize Edit Mode if not yet done (required for CDM anchoring/width matching)
+				if TRB.Functions.EditMode and TRB.Functions.EditMode.Initialize then
+					TRB.Functions.EditMode:Initialize()
+				end
+
+				-- Recreate thresholds if they don't exist (happens when spec was disabled on initial load)
+				-- This calls into a class-module-overridable function to handle spec-specific thresholds
+				if TRB.Functions.Class.RecreateThresholds then
+					TRB.Functions.Class:RecreateThresholds(specSettings.settings, barGroups)
+				end
+
+				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(specSettings.settings, barGroups)
+
+				-- Register the primary bar with Edit Mode (required for CDM anchoring)
+				if barGroups.primary and TRB.Functions.EditMode then
+					TRB.Functions.EditMode:RegisterPrimaryBar(barGroups.primary:GetContainerFrame())
+				end
+
+				TRB.Functions.BarText:CreateBarTextFrames()
+				TRB.Functions.BarText:Hide(specSettings.settings)
+				TRB.Functions.Class:HideResourceBar()
+
+				-- Trigger a full bar update to display thresholds and bar text
+				-- (AdjustThresholdDisplay is called during TriggerResourceBarUpdates)
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
 	else
 		targetsTimerFrame:SetScript("OnUpdate", nil)
 		timerFrame:SetScript("OnUpdate", nil)
@@ -1022,6 +1084,18 @@ function TRB.Functions.Character:EventRegistration()
 			end
 			if barGroups.secondary then
 				barGroups.secondary:Hide()
+			end
+			if barGroups.health then
+				barGroups.health:Hide()
+			end
+			if barGroups.mana then
+				barGroups.mana:Hide()
+			end
+			if barGroups.stagger then
+				barGroups.stagger:Hide()
+			end
+			if barGroups.defensives then
+				barGroups.defensives:Hide()
 			end
 		end
 	end
