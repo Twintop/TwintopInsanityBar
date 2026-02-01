@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.18-release (2026-02-02)
+## General
+
+- Fix an issue where talents wouldn't load correctly, causing Lua errors.
+
+---
+
 # 12.0.0.17-release (2026-02-02)
 ## General
 

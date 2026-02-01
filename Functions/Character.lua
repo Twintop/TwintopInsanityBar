@@ -1037,6 +1037,8 @@ function TRB.Functions.Character:EventRegistration()
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 
 		-- Reapply bar appearance when re-enabling a previously disabled spec
+		-- Note: TriggerResourceBarUpdates is NOT called here because talents/spells may not be set yet.
+		-- The class module's SwitchSpec or ConstructResourceBar handles the full update after setup is complete.
 		if barGroups and TRB.Data.specCache and TRB.Data.character.specName then
 			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
 			if specSettings and specSettings.settings then
@@ -1062,10 +1064,6 @@ function TRB.Functions.Character:EventRegistration()
 				TRB.Functions.BarText:CreateBarTextFrames()
 				TRB.Functions.BarText:Hide(specSettings.settings)
 				TRB.Functions.Class:HideResourceBar()
-
-				-- Trigger a full bar update to display thresholds and bar text
-				-- (AdjustThresholdDisplay is called during TriggerResourceBarUpdates)
-				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
 	else
