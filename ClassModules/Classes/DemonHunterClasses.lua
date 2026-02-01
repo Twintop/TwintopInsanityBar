@@ -253,11 +253,14 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 	})
 	self.collapsingStar = TRB.Classes.SpellBase:New({
 		id = 1227702,
+		talentId = 1221167,
+		isTalent = true,
 		maxResource = 40,
 	})
 	self.collapsingStarThreshold = TRB.Classes.SpellThreshold:New({
 		id = 1227750,
 		buffId = 1227702,
+		talentId = 1221167,
 		settingKey = "collapsingStarThreshold",
 		hasCooldown = false,
 		isTalent = true,

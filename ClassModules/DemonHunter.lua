@@ -690,6 +690,15 @@ local function RefreshLookupData_Devourer()
 	local _soulFragmentsMax = snapshotData.attributes.maxResource2
 	local soulFragmentsMax = string.format("%s", _soulFragmentsMax)
 
+	-- If Metamorphosis is active and Collapsing Star talent is not selected, Soul Fragments (Collapsing Star values, really) are disabled
+	local metaActive = snapshotData.snapshots[spells.metamorphosis.id].buff.isActive
+	if metaActive and not talents:IsTalentActive(spells.collapsingStar) then
+		_soulFragments = 0
+		soulFragments = ""
+		_soulFragmentsMax = 0
+		soulFragmentsMax = ""
+	end
+
 	-- $voidRayUsable (false while Metamorphosis is active), $collapsingStarUsable
 	local _voidRayUsable = (not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable())
 	local _collapsingStarUsable = snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
@@ -851,20 +860,17 @@ local function UpdateSnapshot_Devourer()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local _
 	
-	snapshotData.attributes.resource2 = snapshotData.snapshots[spells.soulFragments.id].buff.applications
 	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
 		snapshotData.attributes.resource2 = snapshotData.snapshots[spells.collapsingStar.id].buff.applications
-	end
-
-	snapshotData.attributes.maxResource2 = spells.soulFragments.attributes.maxResource
-	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
 		snapshotData.attributes.maxResource2 = spells.collapsingStar.attributes.maxResource
 	else
+		snapshotData.attributes.resource2 = snapshotData.snapshots[spells.soulFragments.id].buff.applications
+		snapshotData.attributes.maxResource2 = spells.soulFragments.attributes.maxResource
 		if talents:IsTalentActive(spells.soulGlutton) then
 			snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.soulGlutton.attributes.maxResourceMod
 		end
 
-		if TRB.Data.character.isPvp and talents:IsTalentActive(spells.surrenderToTheVoid) then
+		if talents:IsTalentActive(spells.surrenderToTheVoid) then
 			snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.surrenderToTheVoid.attributes.maxResourceMod
 		end
 	end
@@ -1342,7 +1348,7 @@ local function UpdateResourceBar()
 							local thresholdColor = specCacheSettings.colors.threshold.over.color
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							
-							if metaActive then
+							if metaActive and talents:IsTalentActive(spells.collapsingStar) then
 								showThreshold = true
 								local collapsingStarSnapshot = snapshots[spells.collapsingStar.id]
 								local resourceAmount = spells.collapsingStarThreshold.resource
@@ -1875,10 +1881,16 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			valid = true
 		end
 	elseif TRB.Data.character.specId == 3 then --Devourer
-		if var == "$comboPoints" or var == "$soulFragments" or var == "$collapsingStar" then
+		if var == "$comboPoints" then
 			valid = true
-		elseif var == "$comboPointsMax"or var == "$soulFragmentsMax" or var == "$collapsingStarMax" then
+		elseif var == "$comboPointsMax" then
 			valid = true
+		elseif var == "$soulFragments" or var == "$soulFragmentsMax" then
+			valid = true
+		elseif var == "$collapsingStar" or var == "$collapsingStarMax" then
+			if talents:IsTalentActive(spells.collapsingStar) and snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
+				valid = true
+			end
 		elseif var == "$voidRayUsable" then
 			if (not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable()) then
 				valid = true

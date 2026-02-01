@@ -23,6 +23,10 @@ local content = [====[
 
 - [#586](#586) Fix an issue where the segments for Soul Fragments would not render correctly when automatically matching the width of the Cooldown Manager in Edit Mode.
 
+### Devourer
+
+- [#587](#587) When not talented into Collapsing Star, change the value of `$soulFragments` to be blank and prevent the Collapsing Star threshold line from displaying.
+
 ---
 
 # 12.0.0.16-release (2026-01-31)
