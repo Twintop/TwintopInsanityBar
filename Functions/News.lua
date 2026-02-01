@@ -12,8 +12,11 @@ local content = [====[
 
 ---
 
-# 12.0.0.17-release (2026-02-01)
+# 12.0.0.17-release (2026-02-02)
 ## General
+
+- [#588](#588) Fix an issue where bars would still appear even when the specialization was disabled in settings.
+
 ### Localization
 
 - [#585](#585) Complete translation added for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
