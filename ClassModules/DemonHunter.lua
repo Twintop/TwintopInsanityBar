@@ -2026,7 +2026,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if not TRB.Data.specSupported then
+	if not TRB.Data.specSupported or talents == nil then
 		return
 	end
 	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3 then

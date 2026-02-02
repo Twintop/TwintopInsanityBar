@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.19-release (2026-02-02)
+## General
+
+- Add additional protections to stop Lua errors when talents are not yet loaded.
+
+---
+
 # 12.0.0.18-release (2026-02-02)
 ## General
 
