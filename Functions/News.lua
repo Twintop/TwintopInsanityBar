@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.0.20-release (2026-02-03)
+## General
+### Localization
+
+- [#594](#594) Completed translation coverage for German (deDE) by Triplehxh! Thank you so much for your help!
+
+---
+
 # 12.0.0.19-release (2026-02-02)
 ## General
 
