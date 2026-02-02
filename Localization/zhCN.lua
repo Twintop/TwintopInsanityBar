@@ -16,7 +16,7 @@ if locale == "zhCN" then
     L["Author"] = "作者"
     L["Version"] = "版本"
     L["Released"] = "发布日期"
-    L["SupportedSpecs"] = "支持专精（Midnight版本）"
+    L["SupportedSpecs"] = "支持专精（至暗之夜）"
 
     L["BarTextInstructions1"] = "如需了解资源条文字自定义的详细说明，查阅GitHub上的TRB维基文档。\n\n"
     L["BarTextInstructions2"] = "条件显示规则（仅当$VARIABLE生效/非零时显示）：\n    {$VARIABLE}[$VARIABLE为真时显示的内容]\n\n"
@@ -1652,4 +1652,7 @@ if locale == "zhCN" then
     L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "圣光灌注触发时播放音效，每次触发仅播放一次。"
 
     L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555错误：|r战斗中无法通过斜杠命令打开设置界面。"
+
+    L["CheckboxEnableForAllSpecs"] = "为所有专精启用此功能"
+    L["CheckboxEnableForAllSpecsTooltip"] = "勾选该选项后，此项全局设置会对所有职业下的每一种专精生效启用；取消勾选后，则对全部职业与专精禁用该设置。"
 end
