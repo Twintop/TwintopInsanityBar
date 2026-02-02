@@ -10,6 +10,196 @@ local function GetUseGlobalSettingsColor()
 	return 100/255, 225/255, 200/225
 end
 
+-- Mapping of all class names to their spec names for bulk global toggle iteration
+local allClassSpecs = {
+	deathknight = { "blood", "frost", "unholy" },
+	demonhunter = { "havoc", "vengeance", "devourer" },
+	druid = { "balance", "feral", "guardian", "restoration" },
+	evoker = { "devastation", "preservation", "augmentation" },
+	hunter = { "beastMastery", "marksmanship", "survival" },
+	mage = { "arcane", "fire", "frost" },
+	monk = { "brewmaster", "mistweaver", "windwalker" },
+	paladin = { "holy", "protection", "retribution" },
+	priest = { "discipline", "holy", "shadow" },
+	rogue = { "assassination", "outlaw", "subtlety" },
+	shaman = { "elemental", "enhancement", "restoration" },
+	warlock = { "affliction", "demonology", "destruction" },
+	warrior = { "arms", "fury", "protection" }
+}
+
+-- Mapping from settings key to checkbox frame suffix
+local settingKeyToCheckboxSuffix = {
+	bar = "barDimensions",
+	comboPoints = "comboPoints",
+	healthBar = "healthBar",
+	textures = "textures",
+	displayBar = "displayBar",
+	thresholdIcons = "thresholdIcons",
+	thresholdColors = "thresholdColors",
+	displayText = "displayText",
+	textColors = "textColors",
+	precision = "precision"
+}
+
+---Sets a checkbox to tristate visual mode
+---@param checkbox CheckButton # The checkbox to update
+---@param state boolean|nil # true = checked, false = unchecked, nil = mixed/desaturated
+local function SetCheckboxTriState(checkbox, state)
+	if not checkbox then return end
+	local check = checkbox:GetCheckedTexture()
+	if state == true then
+		checkbox:SetChecked(true)
+		if check then
+			check:SetDesaturated(false)
+			check:SetVertexColor(1, 1, 1, 1)
+		end
+	elseif state == nil then
+		-- Mixed/indeterminate state - show a desaturated checkmark
+		checkbox:SetChecked(true)
+		if check then
+			check:SetDesaturated(true)
+			check:SetVertexColor(0.6, 0.6, 0.6, 0.8)
+		end
+	else
+		checkbox:SetChecked(false)
+		if check then
+			check:SetDesaturated(false)
+			check:SetVertexColor(1, 1, 1, 1)
+		end
+	end
+end
+
+---Gets the aggregate state of a global setting across all class/specs
+---@param settingKey string # The setting key (e.g., "bar", "comboPoints", "textures")
+---@return boolean|nil # true if all enabled, false if all disabled, nil if mixed
+local function GetAllSpecsGlobalState(settingKey)
+	local global = TRB.Data.settings.core.global
+	local allTrue = true
+	local allFalse = true
+	
+	for className, specs in pairs(allClassSpecs) do
+		if global[className] then
+			for _, specName in ipairs(specs) do
+				if global[className][specName] and global[className][specName][settingKey] ~= nil then
+					if global[className][specName][settingKey] then
+						allFalse = false
+					else
+						allTrue = false
+					end
+				end
+			end
+		end
+	end
+	
+	if allTrue then
+		return true
+	elseif allFalse then
+		return false
+	else
+		return nil -- Mixed state
+	end
+end
+
+---Sets a global setting for all class/specs and updates related UI checkboxes
+---@param settingKey string # The setting key (e.g., "bar", "comboPoints", "textures")
+---@param value boolean # The value to set
+local function SetAllSpecsGlobalSetting(settingKey, value)
+	local global = TRB.Data.settings.core.global
+	local checkboxSuffix = settingKeyToCheckboxSuffix[settingKey]
+	
+	-- Update settings for all class/specs
+	for className, specs in pairs(allClassSpecs) do
+		if global[className] then
+			for _, specName in ipairs(specs) do
+				if global[className][specName] and global[className][specName][settingKey] ~= nil then
+					global[className][specName][settingKey] = value
+				end
+			end
+		end
+	end
+	
+	-- Update all existing per-spec checkboxes in the UI (only for current class)
+	local currentClassName = TRB.Data.character.className
+	if checkboxSuffix and currentClassName and allClassSpecs[currentClassName] then
+		-- Get the proper capitalized class name for frame naming
+		local capitalizedClassName, _ = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, nil)
+		for _, specName in ipairs(allClassSpecs[currentClassName]) do
+			local frameName = "TwintopResourceBar_" .. capitalizedClassName .. "_" .. specName .. "_useGlobal_" .. checkboxSuffix
+			local checkbox = _G[frameName]
+			if checkbox then
+				checkbox:SetChecked(value)
+			end
+		end
+	end
+	
+	-- Refresh caches for all specs of the current class
+	if currentClassName and allClassSpecs[currentClassName] then
+		for _, specName in ipairs(allClassSpecs[currentClassName]) do
+			TRB.Functions.Character:FillSpecializationCacheSettings(currentClassName, specName)
+		end
+	end
+	
+	-- Trigger bar updates for current spec
+	TRB.Functions.Character:ResetCaches()
+	if TRB.Frames.barGroups ~= nil then
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:HideResourceBar()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	else
+		TRB.Functions.Bar:Construct()
+	end
+end
+
+---Builds a bulk global toggle checkbox for the Global Options panel
+---@param parent Frame # Parent frame
+---@param controls table # Controls table to store the checkbox
+---@param controlKey string # Key to store in controls.checkBoxes
+---@param settingKey string # The global setting key (e.g., "bar", "comboPoints")
+---@param yCoord number # Y coordinate for positioning
+---@return number # Updated Y coordinate
+function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, controlKey, settingKey, yCoord)
+	local f = nil
+	
+	yCoord = yCoord - 30
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.checkBoxes[controlKey] = CreateFrame("CheckButton", "TwintopResourceBar_Global_enableAll_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes[controlKey]
+	f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnableForAllSpecs"])
+	getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+	f.tooltip = L["CheckboxEnableForAllSpecsTooltip"]
+	
+	-- Set initial tristate based on current values
+	local currentState = GetAllSpecsGlobalState(settingKey)
+	SetCheckboxTriState(f, currentState)
+	
+	-- Store the setting key for the click handler
+	f.settingKey = settingKey
+	
+	f:SetScript("OnClick", function(self, ...)
+		-- Get current tristate: Unchecked->Checked, Mixed->Checked, Checked->Unchecked
+		local currentState = GetAllSpecsGlobalState(self.settingKey)
+		local newValue
+		if currentState == true then
+			newValue = false
+		else
+			-- Both false and nil (mixed) go to true
+			newValue = true
+		end
+		
+		SetAllSpecsGlobalSetting(self.settingKey, newValue)
+		
+		-- Update this checkbox's visual state
+		SetCheckboxTriState(self, newValue)
+	end)
+	
+	return yCoord
+end
+
 local sounds = {}
 local soundsList = {}
 local soundPairs = {}
@@ -1163,6 +1353,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 				end)
 			end
 		end)
+	else
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllBarDimensions", "bar", yCoord)
 	end
 
 	yCoord = yCoord - 40
@@ -1389,6 +1582,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 				end)
 			end
 		end)
+	elseif globalSettingKey and classId == nil and specId == nil then
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKey:gsub("^%l", string.upper), globalSettingKey, yCoord)
 	end
 
 	-- Width and Height sliders
@@ -2380,6 +2576,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				TRB.Functions.Bar:Construct()
 			end
 		end)
+	else
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllTextures", "textures", yCoord)
 	end
 	
 	controls.dropDown.textures = {}
@@ -2957,6 +3156,9 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 				TRB.Functions.Bar:Construct()
 			end
 		end)
+	else
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayBar", "displayBar", yCoord)
 	end
 
 	yCoord = yCoord - 30
@@ -3194,6 +3396,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
 		end)
+	else
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdIcons", "thresholdIcons", yCoord)
 	end
 	
 	yCoord = yCoord - 20
@@ -3461,6 +3666,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
 		end)
+	elseif classId == nil and specId == nil then
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdColors", "thresholdColors", yCoord)
 	end
 
 	if under == true then
@@ -4086,6 +4294,9 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		end)
+	else
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayText", "displayText", yCoord)
 	end
 	yCoord = yCoord - 30
 
@@ -4197,6 +4408,10 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			TRB.Data.snapshotData.attributes.cacheRefresh = true
 		end)
+	else
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllPrecision", "precision", yCoord)
+		yCoord = yCoord + 25 -- Offset adjustment for consistency with per-spec layout
 	end
 	yCoord = yCoord - 50
 
