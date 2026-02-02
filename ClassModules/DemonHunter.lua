@@ -115,6 +115,8 @@ local function FillSpecializationCache()
 	specCache.vengeance.snapshotData.snapshots[spells.felDevastation.id] = TRB.Classes.Snapshot:New(spells.felDevastation)
 	---@type TRB.Classes.Snapshot
 	specCache.vengeance.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
+	---@type TRB.Classes.Snapshot
+	specCache.vengeance.snapshotData.snapshots[spells.artOfTheGlaive.id] = TRB.Classes.Snapshot:New(spells.artOfTheGlaive)
 	
 	-- Devourer
 	specCache.devourer.Global_TwintopResourceBar = {
@@ -819,6 +821,25 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
+
+local function DemonHunterEvent(self, event, ...)
+	if event == "SPELL_UPDATE_USES" then
+		if TRB.Data.character.specId == 2 then
+			local spellId, _ = ...
+			
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			if spellId == spells.spiritBomb.id and talents:IsTalentActive(spells.artOfTheGlaive) and TRB.Data.character.inCombat then
+				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+				-- Get Soul Fragment count via Spirit Bomb's GetSpellCastCount (returns 0-6)
+				local soulFragments = C_Spell.GetSpellCastCount(spells.spiritBomb.id) or 0
+				snapshotData.attributes.resource2 = soulFragments
+			end
+		end
+	end
+end
+local soulFragmentsFrame = CreateFrame("Frame")
+soulFragmentsFrame:SetScript("OnEvent", DemonHunterEvent)
+
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 	local currentTime = GetTime()
@@ -852,10 +873,6 @@ local function UpdateSnapshot_Vengeance()
 	
 	-- Vengeance Soul Fragments max is 6
 	TRB.Data.character.maxResource2Value = 6
-
-	-- Get Soul Fragment count via Spirit Bomb's GetSpellCastCount (returns 0-5)
-	local soulFragments = C_Spell.GetSpellCastCount(spells.spiritBomb.id) or 0
-	snapshotData.attributes.resource2 = soulFragments
 end
 
 local function UpdateSnapshot_Devourer()
@@ -1410,7 +1427,7 @@ end
 local function SwitchSpec()
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
-
+	soulFragmentsFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	if TRB.Data.character.specId == 1 then
 		specCache.havoc.talents:GetTalents()
 		FillSpellData_Havoc()
@@ -1466,6 +1483,8 @@ local function SwitchSpec()
 		lookup["#soulFragments"] = spells.soulFragments.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+		
+		soulFragmentsFrame:RegisterEvent("SPELL_UPDATE_USES")
 
 		if TRB.Data.barConstructedForSpec ~= "vengeance" then
 			talents = specCache.vengeance.talents

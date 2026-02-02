@@ -400,13 +400,14 @@ end
 ---@param duration number # How long the buff will last
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
 ---@param hasStacks boolean? # Should the buff be marked as having stacks
-function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStacks)
+---@param stacks integer? # Number of stacks to set when initializing
+function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStacks, stacks)
 	local startTime = startTime or GetTime()
 	self.duration = duration
 	self.endTime = startTime + duration
 	self.isCustom = true
 	if hasStacks then
-		self.applications = 1
+		self.applications = stacks or 1
 	else
 		self.applications = 0
 	end
@@ -443,25 +444,27 @@ end
 ---@param duration number # How long the buff will last
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
 ---@param refreshTime boolean? # Should the endTime be refreshed to now + duration
-function TRB.Classes.SnapshotBuff:AddStackOrInitializeCustom(duration, startTime, refreshTime)
+---@param stacks integer? # Number of stacks to add when initializing
+function TRB.Classes.SnapshotBuff:AddStackOrInitializeCustom(duration, startTime, refreshTime, stacks)
 	if refreshTime == nil then
 		refreshTime = false
 	end
 	if not self.isActive then
-		self:InitializeCustom(duration, startTime, true)
+		self:InitializeCustom(duration, startTime, true, stacks)
 	else
-		self:AddStack(refreshTime)
+		self:AddStack(refreshTime, stacks)
 	end
 end
 
 ---Adds a new stack (application) to the buff
 ---@param refreshTime boolean? # Should the endTime be refreshed to now + duration
-function TRB.Classes.SnapshotBuff:AddStack(refreshTime)
+---@param stacks integer? # Number of stacks to add
+function TRB.Classes.SnapshotBuff:AddStack(refreshTime, stacks)
 	if refreshTime == nil then
 		refreshTime = false
 	end
 	if self.isActive and (self.parent.spell.maxStacks == nil or self.applications < self.parent.spell.maxStacks) then
-		self.applications = self.applications + 1
+		self.applications = self.applications + (stacks or 1)
 		if refreshTime then
 			self.endTime = GetTime() + self.duration
 			self:GetRemainingTime()

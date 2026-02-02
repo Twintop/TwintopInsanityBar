@@ -18,6 +18,11 @@ local content = [====[
 
 - [#594](#594) Completed translation coverage for German (deDE) by Triplehxh! Thank you so much for your help!
 
+## Demon Hunter
+### Vengeance
+
+- [#514](#514) Update method of tracking Soul Fragments to be event driven.
+
 ---
 
 # 12.0.0.19-release (2026-02-02)

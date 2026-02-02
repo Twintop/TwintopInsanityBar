@@ -128,6 +128,7 @@ end
 ---@field public soulFragments TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
 ---@field public vengefulBeast TRB.Classes.SpellBase
+---@field public artOfTheGlaive TRB.Classes.SpellBase
 ---@field public soulCleave TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public felDevastation TRB.Classes.SpellThreshold
@@ -199,6 +200,15 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 		isTalent = true,
 		isSnowflake = true,
 		rangeCheck = false
+	})
+
+	-- Aldrachi Reaver
+	self.artOfTheGlaive = TRB.Classes.SpellBase:New({
+		id = 442290,
+		buffId = 444661,
+		isTalent = true,
+		duration = 30,
+		maxStacks = 20
 	})
 
 	return self
