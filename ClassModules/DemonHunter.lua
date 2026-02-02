@@ -828,7 +828,7 @@ local function DemonHunterEvent(self, event, ...)
 			local spellId, _ = ...
 			
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
-			if spellId == spells.spiritBomb.id and talents:IsTalentActive(spells.artOfTheGlaive) and TRB.Data.character.inCombat then
+			if spellId == spells.spiritBomb.id then
 				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 				-- Get Soul Fragment count via Spirit Bomb's GetSpellCastCount (returns 0-6)
 				local soulFragments = C_Spell.GetSpellCastCount(spells.spiritBomb.id) or 0
