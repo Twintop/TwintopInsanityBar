@@ -21,6 +21,7 @@ local content = [====[
 ### Localization
 
 - [#594](#594) Completed translation coverage for German (deDE) by Triplehxh! Thank you so much for your help!
+- [#595](#595) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Demon Hunter
 ### Vengeance
