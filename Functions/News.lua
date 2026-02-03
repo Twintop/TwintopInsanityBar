@@ -12,8 +12,11 @@ local content = [====[
 
 ---
 
-# 12.0.0.20-release (2026-02-03)
+# 12.0.0.20-release (2026-02-04)
 ## General
+
+- [#528](#528) Fix Edit Mode positioning issues when loading in or changing specializations. Thanks to Supra for help with debugging.
+
 ### Localization
 
 - [#594](#594) Completed translation coverage for German (deDE) by Triplehxh! Thank you so much for your help!
