@@ -1751,5 +1751,5 @@ L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Play an audio cue when an
 L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555ERROR:|r Cannot open options via the slash command while in combat."
 
 -- Bulk Global Toggle Checkboxes
-L["CheckboxEnableForAllSpecs"] = "Enable for ALL Specs"
+L["CheckboxEnableForAllSpecs"] = "Enable for all specializations"
 L["CheckboxEnableForAllSpecsTooltip"] = "When checked, enables this global setting for all specializations across all classes. When unchecked, disables it for all."

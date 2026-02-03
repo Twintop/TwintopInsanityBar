@@ -15,6 +15,7 @@ local content = [====[
 # 12.0.0.20-release (2026-02-04)
 ## General
 
+- [#516](#516) Add checkbox to enable/disable a global setting for all classes and specializations. This is available from the "Global Options" screen. Changes are immediately reflected across all specializations.
 - [#528](#528) Fix Edit Mode positioning issues when loading in or changing specializations. Thanks to Supra for help with debugging.
 
 ### Localization

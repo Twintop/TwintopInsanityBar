@@ -58,7 +58,7 @@ local function SetCheckboxTriState(checkbox, state)
 		checkbox:SetChecked(true)
 		if check then
 			check:SetDesaturated(true)
-			check:SetVertexColor(0.6, 0.6, 0.6, 0.8)
+			check:SetVertexColor(0.8, 0.8, 0.8, 1)
 		end
 	else
 		checkbox:SetChecked(false)
@@ -198,6 +198,18 @@ function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls,
 	end)
 	
 	return yCoord
+end
+
+---Refreshes the bulk global toggle checkbox state based on current per-spec settings
+---Call this after changing a per-spec "Use global settings" checkbox
+---@param settingKey string # The global setting key (e.g., "bar", "comboPoints", "textures")
+function TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox(settingKey)
+	local frameName = "TwintopResourceBar_Global_enableAll_" .. settingKey
+	local checkbox = _G[frameName]
+	if checkbox then
+		local currentState = GetAllSpecsGlobalState(settingKey)
+		SetCheckboxTriState(checkbox, currentState)
+	end
 end
 
 local sounds = {}
@@ -1352,6 +1364,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("bar")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -1581,6 +1594,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox(globalSettingKey)
 		end)
 	elseif globalSettingKey and classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
@@ -2575,6 +2589,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			else
 				TRB.Functions.Bar:Construct()
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textures")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -3155,6 +3170,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			else
 				TRB.Functions.Bar:Construct()
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayBar")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -3395,6 +3411,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("thresholdIcons")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -3665,6 +3682,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("thresholdColors")
 		end)
 	elseif classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
@@ -4293,6 +4311,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 			TRB.Data.settings.core.global[lowerClassName][specName].displayText = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayText")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -4375,6 +4394,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 		TRB.Data.settings.core.global[lowerClassName][specName].textColors = self:GetChecked()
 		TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textColors")
 	end)
 
 	return yCoord
@@ -4407,6 +4427,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			TRB.Data.snapshotData.attributes.cacheRefresh = true
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("precision")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
