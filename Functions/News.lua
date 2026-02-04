@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.0.21-release (2026-02-05)
+## General
+
+- [#596](#596) Fix an issue with secondary resource nodes not adjusting to be the correct width when talents change while using Edit Mode.
+
+---
+
 # 12.0.0.20-release (2026-02-04)
 ## General
 

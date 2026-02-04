@@ -591,14 +591,22 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 		return
 	end
 
+	-- Store the display node count so ApplyBarGroupsLayout respects compressed view
+	-- when it runs from delayed timers
+	self.lastRebuildNodeCount = displayNodes
+
 	-- Set node count and apply layout
 	self:SetNodeCount(displayNodes)
 	self:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
 	self:Show()
 
+	-- Use effectiveWidth (CDM-matched) if available, otherwise fall back to settings.bar.width
+	local barGroups = TRB.Frames.barGroups
+	local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+
 	-- Apply layout to position all nodes correctly
 	self:ApplyLayout(
-		settings.bar.width,
+		effectiveWidth,
 		settings.comboPoints.width,
 		settings.comboPoints.height,
 		settings.comboPoints.border

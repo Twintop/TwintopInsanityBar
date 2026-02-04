@@ -2230,6 +2230,9 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 			-- Rebuild secondary bar layout when combo point count changes
 			if barGroups and barGroups.secondary then
+				-- Clear cached node count so ApplyBarGroupsLayout uses the new maxResource2
+				barGroups.secondary.lastRebuildNodeCount = nil
+				
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
 				barGroups.secondary:SetNodeCount(maxComboPoints)
 				barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
