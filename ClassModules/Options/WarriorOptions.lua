@@ -309,7 +309,8 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 					color = "FFFF0000"
 				},
 				enrage = {
-					color = "FFFFCC55"
+					color = "FFFFCC55",
+					enabled = true
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),

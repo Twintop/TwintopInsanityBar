@@ -342,9 +342,9 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				borderOvercap = { color = "FFFF0000", enabled = true },
 				background = { color = "66000000" },
 				base = { color = "FFFF7C0A" },
-				lunar = { color = "FF144D72" },
-				solar = { color = "FFFFEE00" },
-				celestial = { color = "FF4A95CE" },
+				lunar = { color = "FF144D72", enabled = true },
+				solar = { color = "FFFFEE00", enabled = true },
+				celestial = { color = "FF4A95CE", enabled = true },
 				eclipse1GCD = { color = "FFFF0000" },
 				flashAlpha=0.70,
 				flashPeriod=0.5,
@@ -666,12 +666,12 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			bar = {
 				border = { color = "FFFF7C0A" },
 				borderOvercap = { color = "FFFF0000", enabled = true },
-				borderStealth = { color = "FF000000" },
+				borderStealth = { color = "FF000000", enabled = true },
 				background = { color = "66000000" },
 				base = { color = "FFFFFF00" },
-				clearcasting = { color = "FF4A95CE" },
-				maxBite = { color = "FF009900" },
-				apexPredator = { color = "FFE75480" }
+				clearcasting = { color = "FF4A95CE", enabled = true },
+				maxBite = { color = "FF009900", enabled = true },
+				apexPredator = { color = "FFE75480", enabled = true }
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			comboPoints = {
@@ -835,7 +835,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				berserkEnd = {
-					color = "FFFF5555",
+					color = "FFFF5555"
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -939,9 +939,9 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				border = { color = "FF000099" },
 				background = { color = "66000000" },
 				base = { color = "FF0000FF" },
-				noEfflorescence = { color = "FFFF0000" },
-				clearcasting = { color = "FF4A95CE" },
-				incarnation = { color = "FF005500" },
+				noEfflorescence = { color = "FFFF0000", enabled = true },
+				clearcasting = { color = "FF4A95CE", enabled = true },
+				incarnation = { color = "FF005500", enabled = true },
 				incarnationEnd = { color = "FFDD5500" }
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -1167,6 +1167,16 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.solar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Solar_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.solar
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxSolar"])
+	f.tooltip = L["DruidBalanceCheckboxSolarTooltip"]
+	f:SetChecked(spec.colors.bar.solar.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.solar.enabled = self:GetChecked()
+	end)
+
 	controls.colors.solar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerEclipseSolar"], spec.colors.bar.solar.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.solar
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1174,6 +1184,16 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.lunar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Lunar_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.lunar
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxLunar"])
+	f.tooltip = L["DruidBalanceCheckboxLunarTooltip"]
+	f:SetChecked(spec.colors.bar.lunar.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.lunar.enabled = self:GetChecked()
+	end)
+
 	controls.colors.lunar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerEclipseLunar"], spec.colors.bar.lunar.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.lunar
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1181,6 +1201,16 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.celestial = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Celestial_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.celestial
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxCelestial"])
+	f.tooltip = L["DruidBalanceCheckboxCelestialTooltip"]
+	f:SetChecked(spec.colors.bar.celestial.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.celestial.enabled = self:GetChecked()
+	end)
+
 	controls.colors.celestial = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerCelestialAlignment"], spec.colors.bar.celestial.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.celestial
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1801,6 +1831,16 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.clearcasting = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Clearcasting_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.clearcasting
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxClearcasting"])
+	f.tooltip = L["DruidFeralCheckboxClearcastingTooltip"]
+	f:SetChecked(spec.colors.bar.clearcasting.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.clearcasting.enabled = self:GetChecked()
+	end)
+
 	controls.colors.clearcasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerClearcasting"], spec.colors.bar.clearcasting.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.clearcasting
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1808,6 +1848,16 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.maxBite = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_MaxBite_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.maxBite
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxMaxBite"])
+	f.tooltip = L["DruidFeralCheckboxMaxBiteTooltip"]
+	f:SetChecked(spec.colors.bar.maxBite.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.maxBite.enabled = self:GetChecked()
+	end)
+
 	controls.colors.maxBite = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerMaxBite"], spec.colors.bar.maxBite.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.maxBite
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1815,6 +1865,16 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.apexPredator = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_ApexPredator_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.apexPredator
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxApexPredator"])
+	f.tooltip = L["DruidFeralCheckboxApexPredatorTooltip"]
+	f:SetChecked(spec.colors.bar.apexPredator.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.apexPredator.enabled = self:GetChecked()
+	end)
+
 	controls.colors.apexPredator = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerApexPredatorsCraving"], spec.colors.bar.apexPredator.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.apexPredator
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1832,6 +1892,16 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], true, false)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.borderStealth = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_BorderStealth_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.borderStealth
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxBorderStealth"])
+	f.tooltip = L["CheckboxBorderStealthTooltip"]
+	f:SetChecked(spec.colors.bar.borderStealth.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.borderStealth.enabled = self:GetChecked()
+	end)
+
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderStealth
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3030,6 +3100,16 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.noEfflorescence = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_NoEfflorescence_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.noEfflorescence
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidRestorationCheckboxNoEfflorescence"])
+	f.tooltip = L["DruidRestorationCheckboxNoEfflorescenceTooltip"]
+	f:SetChecked(spec.colors.bar.noEfflorescence.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.noEfflorescence.enabled = self:GetChecked()
+	end)
+
 	controls.colors.noEfflorescence = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidRestorationColorPickerNoEfflorescence"], spec.colors.bar.noEfflorescence.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.noEfflorescence
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3044,6 +3124,16 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.incarnation = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Incarnation_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.incarnation
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidRestorationCheckboxIncarnation"])
+	f.tooltip = L["DruidRestorationCheckboxIncarnationTooltip"]
+	f:SetChecked(spec.colors.bar.incarnation.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.incarnation.enabled = self:GetChecked()
+	end)
+
 	controls.colors.incarnation = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidRestorationColorPickerIncarnation"], spec.colors.bar.incarnation.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.incarnation
 	f:SetScript("OnMouseDown", function(self, button, ...)

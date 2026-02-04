@@ -357,7 +357,7 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				border = { color = "FF000099" },
 				background = { color = "66000000" },
 				base = { color = "FF0000FF" },
-				innervate = { color = "FF00FF00" },
+				innervate = { color = "FF00FF00", enabled = true },
 				essenceBurst = {
 					color = "FFFCE58E",
 					enabled = true
@@ -527,8 +527,7 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				inEbonMight1GCD = {
-					color = "FFFF0000",
-					enabled = true
+					color = "FFFF0000"
 				},
 				ebonMightDropDuringCast = {
 					color = "FF550000",

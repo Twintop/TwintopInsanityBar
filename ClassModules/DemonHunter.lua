@@ -1028,7 +1028,7 @@ local function UpdateResourceBar()
 
 						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
 							barColor = specSettings.colors.bar.metamorphosisEnding.color
-						else
+						elseif specSettings.colors.bar.metamorphosis.enabled then
 							barColor = specSettings.colors.bar.metamorphosis.color
 						end
 					end
@@ -1155,7 +1155,7 @@ local function UpdateResourceBar()
 
 						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
 							barColor = specSettings.colors.bar.metamorphosisEnding.color
-						else
+						elseif specSettings.colors.bar.metamorphosis.enabled then
 							barColor = specSettings.colors.bar.metamorphosis.color
 						end
 					end

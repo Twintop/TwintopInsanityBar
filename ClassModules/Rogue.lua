@@ -1263,7 +1263,7 @@ local function UpdateResourceBar()
 				end
 
 				if primaryNode then
-					if IsStealthed() or stealthViaBuff then
+					if specSettings.colors.bar.borderStealth.enabled and (IsStealthed() or stealthViaBuff) then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
@@ -1554,7 +1554,7 @@ local function UpdateResourceBar()
 				end
 
 				if primaryNode then
-					if IsStealthed() or stealthViaBuff then
+					if specSettings.colors.bar.borderStealth.enabled and (IsStealthed() or stealthViaBuff) then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					--[[elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == true and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderRtbGood)
@@ -1835,11 +1835,12 @@ local function UpdateResourceBar()
 				end
 
 				if primaryNode then
-					if snapshots[spells.symbolsOfDeath.id].buff.isActive and
+					if specSettings.colors.bar.borderShadowcraft.enabled and
+						snapshots[spells.symbolsOfDeath.id].buff.isActive and
 						snapshots[spells.shadowTechniques.id].buff.applications >= TRB.Data.character.maxResource2 and
 						talents:IsTalentActive(spells.shadowcraft) then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderShadowcraft.color)
-					elseif stealthViaBuff or IsStealthed() then
+					elseif specSettings.colors.bar.borderStealth.enabled and (stealthViaBuff or IsStealthed()) then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)

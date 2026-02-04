@@ -149,7 +149,6 @@ if locale == "enGB" then
     L["CheckboxUseGlobalTooltip_TextColors"] = "When checked, the global settings for resource text colours will be used."
     L["GlobalTextColorsHeader"] = "Resource Text Colours"
     L["GlobalCheckboxThresholdOverTooltip"] = "This will change the Resource text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
-    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "This will change the bar border colour when Explosive Shot is off cooldown."
     L["ThresholdLineColorsHeader"] = "Threshold Line Colours"
     L["ThresholdLineColorsForDpsAndTanksHeader"] = "Threshold Line Colours for DPS and Tanks"
     L["CheckboxUseGlobalTooltip_ThresholdColors"] = "When checked, the global settings for threshold colours will be used. The global setting used varies by specialisation role."
@@ -273,4 +272,12 @@ if locale == "enGB" then
     L["BarTextInstructions1"] = "For more detailed information about Bar Text customisation, see the TRB Wiki on GitHub.\n\n"
     L["StaggerBarColorType"] = "Colour Transition Type"
     L["EvokerCheckboxEssenceBurstTooltip"] = "This will change the bar border colour when you have Essence Burst."
+
+    -- Bar Color Enabled Checkboxes
+    L["PriestHolyCheckboxApotheosisTooltip"] = "This will change the bar colour when you have Apotheosis active."
+    L["PriestShadowCheckboxVoidformTooltip"] = "This will change the bar colour when you have Voidform active."
+    L["ShamanElementalCheckboxEarthShockTooltip"] = "This will change the bar colour when you have enough Maelstrom to use Earth Shock or Elemental Blast."
+    L["ShamanElementalCheckboxAscendanceTooltip"] = "This will change the bar colour when you have Ascendance active."
+    L["ShamanManaCheckboxAscendanceTooltip"] = "This will change the bar colour when you have Ascendance active."
+    L["RogueCheckboxStealthTooltip"] = "This will change the bar border colour when you are stealthed."
 end

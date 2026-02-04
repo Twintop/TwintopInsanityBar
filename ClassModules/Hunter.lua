@@ -1169,7 +1169,7 @@ local function UpdateResourceBar()
 
 					if useEndOfTrueshotColor and snapshots[spells.trueshot.id].buff:GetRemainingTime() <= timeThreshold then
 						barColor = specSettings.colors.bar.trueshotEnding.color
-					else
+					elseif specSettings.colors.bar.trueshot.enabled then
 						barColor = specSettings.colors.bar.trueshot.color
 					end
 				end

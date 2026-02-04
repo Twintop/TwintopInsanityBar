@@ -163,7 +163,8 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				borderStealth = {
-					color = "FF000000"
+					color = "FF000000",
+					enabled = true
 				},
 				background = {
 					color = "66000000"
@@ -394,13 +395,16 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				borderStealth = {
-					color = "FF000000"
+					color = "FF000000",
+					enabled = true
 				},
 				borderRtbBad = {
-					color = "FFFF8888"
+					color = "FFFF8888",
+					enabled = true
 				},
 				borderRtbGood = {
-					color = "FF00FF00"
+					color = "FF00FF00",
+					enabled = true
 				},
 				background = {
 					color = "66000000"
@@ -640,10 +644,12 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				borderStealth = {
-					color = "FF000000"
+					color = "FF000000",
+					enabled = true
 				},
 				borderShadowcraft = {
-					color = "FF431863"
+					color = "FF431863",
+					enabled = true
 				},
 				background = {
 					color = "66000000"
@@ -901,6 +907,16 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], true, false)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.borderStealth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Bar_Option_borderStealthColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.borderStealth
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueCheckboxStealth"])
+	f.tooltip = L["RogueCheckboxStealthTooltip"]
+	f:SetChecked(spec.colors.bar.borderStealth.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.borderStealth.enabled = self:GetChecked()
+	end)
+
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderStealth
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1658,6 +1674,16 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.borderStealth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Bar_Option_borderStealthColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.borderStealth
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueCheckboxStealth"])
+	f.tooltip = L["RogueCheckboxStealthTooltip"]
+	f:SetChecked(spec.colors.bar.borderStealth.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.borderStealth.enabled = self:GetChecked()
+	end)
+
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderStealth
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2408,6 +2434,16 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.borderStealth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Bar_Option_borderStealthColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.borderStealth
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["RogueCheckboxStealth"])
+	f.tooltip = L["RogueCheckboxStealthTooltip"]
+	f:SetChecked(spec.colors.bar.borderStealth.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.borderStealth.enabled = self:GetChecked()
+	end)
+
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderStealth
 	f:SetScript("OnMouseDown", function(self, button, ...)

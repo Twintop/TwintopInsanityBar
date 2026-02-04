@@ -1343,7 +1343,7 @@ local function UpdateResourceBar()
 						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
 					elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
-					elseif snapshots[spells.danceOfChiJi.id].buff.isActive then
+					elseif specSettings.colors.bar.borderChiJi.enabled and snapshots[spells.danceOfChiJi.id].buff.isActive then
 						barBorderColor = specSettings.colors.bar.borderChiJi.color
 					end
 

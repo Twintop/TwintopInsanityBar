@@ -229,7 +229,8 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 					color = "FF0000FF"
 				},
 				apotheosis = {
-					color = "FFFADA5E"
+					color = "FFFADA5E",
+					enabled = true
 				},
 				apotheosisEnd = {
 					color = "FFFF0000"
@@ -479,10 +480,12 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					color = "FF763BAF"
 				},
 				shadowWordMadnessUsable = {
-					color = "FF5C2F89"
+					color = "FF5C2F89",
+					enabled = true
 				},
 				shadowWordMadnessUsableCasting = {
-					color = "FFFFFFFF"
+					color = "FFFFFFFF",
+					enabled = true
 				},
 				critMindBlast = {
 					color = "FFC2A3E0",
@@ -501,7 +504,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				inVoidform = {
-					color = "FF431863"
+					color = "FF431863",
+					enabled = true
 				},
 				inVoidform1GCD = {
 					color = "FFFF0000"
@@ -1239,6 +1243,16 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.apotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Bar_Option_apotheosisColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.apotheosis
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxApotheosis"])
+	f.tooltip = L["PriestHolyCheckboxApotheosisTooltip"]
+	f:SetChecked(spec.colors.bar.apotheosis.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.apotheosis.enabled = self:GetChecked()
+	end)
+
 	controls.colors.apotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosis"], spec.colors.bar.apotheosis.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.apotheosis
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1868,6 +1882,16 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.inVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_inVoidformColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.inVoidform
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxVoidform"])
+	f.tooltip = L["PriestShadowCheckboxVoidformTooltip"]
+	f:SetChecked(spec.colors.bar.inVoidform.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.inVoidform.enabled = self:GetChecked()
+	end)
+
 	controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidform"], spec.colors.bar.inVoidform.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inVoidform		
 	f:SetScript("OnMouseDown", function(self, button, ...)

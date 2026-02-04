@@ -329,7 +329,8 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 					color = "FFFF8040"
 				},
 				trueshot = {
-					color = "FF00B60E"
+					color = "FF00B60E",
+					enabled = true
 				},
 				trueshotEnding = {
 					color = "FFFF0000"
@@ -1304,6 +1305,16 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.trueshotBarChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Bar_Option_trueshotChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.trueshotBarChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxTrueshot"])
+	f.tooltip = L["HunterMarksmanshipCheckboxTrueshotTooltip"]
+	f:SetChecked(spec.colors.bar.trueshot.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.trueshot.enabled = self:GetChecked()
+	end)
+
 	controls.colors.trueshot = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerTrueshot"], spec.colors.bar.trueshot.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.trueshot
 	f:SetScript("OnMouseDown", function(self, button, ...)

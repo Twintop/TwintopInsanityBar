@@ -137,10 +137,12 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					color = "FF0055FF"
 				},
 				earthShock = {
-					color = "FF00096A"
+					color = "FF00096A",
+					enabled = true
 				},
 				inAscendance = {
-					color = "FFFA8128"
+					color = "FFFA8128",
+					enabled = true
 				},
 				inAscendance1GCD = {
 					color = "FFFF0000"
@@ -266,7 +268,8 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 					color = "FF0000FF"
 				},
 				inAscendance = {
-					color = "FFFA8128"
+					color = "FFFA8128",
+					enabled = true
 				},
 				inAscendance1GCD = {
 					color = "FFFF0000"
@@ -401,7 +404,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					color = "FF0000FF"
 				},
 				inAscendance = {
-					color = "FFFA8128"
+					color = "FFFA8128",
+					enabled = true
 				},
 				inAscendance1GCD = {
 					color = "FFFF0000"
@@ -603,6 +607,16 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.earthShock = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Bar_Option_earthShockColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.earthShock
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxEarthShock"])
+	f.tooltip = L["ShamanElementalCheckboxEarthShockTooltip"]
+	f:SetChecked(spec.colors.bar.earthShock.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.earthShock.enabled = self:GetChecked()
+	end)
+
 	controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthShock"], spec.colors.bar.earthShock.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.earthShock
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -610,6 +624,16 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.inAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Bar_Option_inAscendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.inAscendance
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxAscendance"])
+	f.tooltip = L["ShamanElementalCheckboxAscendanceTooltip"]
+	f:SetChecked(spec.colors.bar.inAscendance.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.inAscendance.enabled = self:GetChecked()
+	end)
+
 	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance		
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1138,6 +1162,16 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.inAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_Bar_Option_inAscendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.inAscendance
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendance"])
+	f.tooltip = L["ShamanManaCheckboxAscendanceTooltip"]
+	f:SetChecked(spec.colors.bar.inAscendance.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.inAscendance.enabled = self:GetChecked()
+	end)
+
 	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1628,6 +1662,16 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.inAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Bar_Option_inAscendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.inAscendance
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendance"])
+	f.tooltip = L["ShamanManaCheckboxAscendanceTooltip"]
+	f:SetChecked(spec.colors.bar.inAscendance.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.inAscendance.enabled = self:GetChecked()
+	end)
+
 	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance		
 	f:SetScript("OnMouseDown", function(self, button, ...)

@@ -165,7 +165,8 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 					color = "FFC942FD"
 				},
 				metamorphosis = {
-					color = "FF67F100"
+					color = "FF67F100",
+					enabled = true
 				},
 				metamorphosisEnding = {
 					color = "FFFF0000"
@@ -324,7 +325,8 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 					color = "FFC942FD"
 				},
 				metamorphosis = {
-					color = "FF67F100"
+					color = "FF67F100",
+					enabled = true
 				},
 				metamorphosisEnding = {
 					color = "FFFF0000"
@@ -745,6 +747,16 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.metamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Metamorphosis_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.metamorphosis
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocCheckboxMetamorphosis"])
+	f.tooltip = L["DemonHunterHavocCheckboxMetamorphosisTooltip"]
+	f:SetChecked(spec.colors.bar.metamorphosis.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.metamorphosis.enabled = self:GetChecked()
+	end)
+
 	controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerMetamorphosis"], spec.colors.bar.metamorphosis.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.metamorphosis
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1284,6 +1296,16 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.metamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Metamorphosis_CB", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.metamorphosis
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceCheckboxMetamorphosis"])
+	f.tooltip = L["DemonHunterVengeanceCheckboxMetamorphosisTooltip"]
+	f:SetChecked(spec.colors.bar.metamorphosis.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.metamorphosis.enabled = self:GetChecked()
+	end)
+
 	controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerMetamorphosis"], spec.colors.bar.metamorphosis.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.metamorphosis
 	f:SetScript("OnMouseDown", function(self, button, ...)

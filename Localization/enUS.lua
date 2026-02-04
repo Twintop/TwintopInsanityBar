@@ -1161,10 +1161,6 @@ L["HunterBeastMasteryAudioBeastCleaveDown"] = "Beast Cleave buff lost"
 L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Play audio cue when Beast Cleave buff is lost"
 L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Play an audio cue when you lose an active Beast Cleave buff. This sound will only be played once."
 
-L["HunterSurvivalCheckboxExplosiveShot"] = "Change when Explosive Shot is off cooldown"
-L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "This will change the bar border color when Explosive Shot is off cooldown."
-L["HunterSurvivalColorPickerExplosiveShot"] = "Border when Explosive Shot is off cooldown"
-
 L["TabThresholds"] = "Threshold Lines"
 L["ThresholdLinePositionHeader"] = "Threshold Line and Icon Position and Size"
 L["ThresholdLineColorsHeader"] = "Threshold Line Colors"
@@ -1753,3 +1749,17 @@ L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555ERROR:|r Cannot open options vi
 -- Bulk Global Toggle Checkboxes
 L["CheckboxEnableForAllSpecs"] = "Enable for all specializations"
 L["CheckboxEnableForAllSpecsTooltip"] = "When checked, enables this global setting for all specializations across all classes. When unchecked, disables it for all."
+
+-- Bar Color Enabled Checkboxes
+L["PriestHolyCheckboxApotheosis"] = "Apotheosis"
+L["PriestHolyCheckboxApotheosisTooltip"] = "This will change the bar color when you have Apotheosis active."
+L["PriestShadowCheckboxVoidform"] = "Voidform"
+L["PriestShadowCheckboxVoidformTooltip"] = "This will change the bar color when you have Voidform active."
+L["ShamanElementalCheckboxEarthShock"] = "Earth Shock / Elemental Blast threshold"
+L["ShamanElementalCheckboxEarthShockTooltip"] = "This will change the bar color when you have enough Maelstrom to use Earth Shock or Elemental Blast."
+L["ShamanElementalCheckboxAscendance"] = "Ascendance"
+L["ShamanElementalCheckboxAscendanceTooltip"] = "This will change the bar color when you have Ascendance active."
+L["ShamanManaCheckboxAscendance"] = "Ascendance"
+L["ShamanManaCheckboxAscendanceTooltip"] = "This will change the bar color when you have Ascendance active."
+L["RogueCheckboxStealth"] = "Stealth"
+L["RogueCheckboxStealthTooltip"] = "This will change the bar border color when you are stealthed."

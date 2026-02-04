@@ -1027,7 +1027,7 @@ local function UpdateResourceBar()
 					maelstromThreshold = math.min(maelstromThreshold, spells.elementalBlast:GetPrimaryResourceCost())
 				end
 
-				if anyUsable then
+				if anyUsable and specSettings.colors.bar.earthShock.enabled then
 					barColor = specSettings.colors.bar.earthShock.color
 					if specSettings.colors.bar.flashEnabled then
 						TRB.Functions.Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
@@ -1061,7 +1061,7 @@ local function UpdateResourceBar()
 
 					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
 						barColor = specSettings.colors.bar.inAscendance1GCD.color
-					else
+					elseif specSettings.colors.bar.inAscendance.enabled then
 						barColor = specSettings.colors.bar.inAscendance.color
 					end
 				end
@@ -1148,7 +1148,7 @@ local function UpdateResourceBar()
 
 					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
 						barColor = specSettings.colors.bar.inAscendance1GCD.color
-					else
+					elseif specSettings.colors.bar.inAscendance.enabled then
 						barColor = specSettings.colors.bar.inAscendance.color
 					end
 				end
@@ -1323,7 +1323,7 @@ local function UpdateResourceBar()
 
 					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
 						barColor = specSettings.colors.bar.inAscendance1GCD.color
-					else
+					elseif specSettings.colors.bar.inAscendance.enabled then
 						barColor = specSettings.colors.bar.inAscendance.color
 					end
 				end

@@ -1722,10 +1722,12 @@ local function UpdateResourceBar()
 
 					if useEndOfApotheosisColor and snapshots[spells.apotheosis.id].buff.remaining <= timeThreshold then
 						barColor = specSettings.colors.bar.apotheosisEnd.color
-					else
+					elseif specSettings.colors.bar.apotheosis.enabled then
 						barColor = specSettings.colors.bar.apotheosis.color
 					end
-				elseif barColor == nil then
+				end
+				
+				if barColor == nil then
 					barColor = specSettings.colors.bar.base.color
 				end
 
@@ -1946,15 +1948,19 @@ local function UpdateResourceBar()
 
 					if useEndOfVoidformColor and timeLeft <= timeThreshold then
 						barColor = specSettings.colors.bar.inVoidform1GCD.color
-					elseif spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
+					elseif specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
 						barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
-					else
+					elseif specSettings.colors.bar.inVoidform.enabled then
 						barColor = specSettings.colors.bar.inVoidform.color
 					end
-				elseif spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
-					barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
-				else
-					barColor = specSettings.colors.bar.base.color
+				end
+				
+				if barColor == nil then
+					if specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
+						barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
+					else
+						barColor = specSettings.colors.bar.base.color
+					end
 				end
 				
 				if overcapBorderCurve then

@@ -2076,12 +2076,16 @@ local function UpdateResourceBar()
 
 						if useEndOfEclipseColor and GetEclipseRemainingTime() <= timeThreshold then
 							barColor = specSettings.colors.bar.eclipse1GCD.color
-						else
-							if snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive) then
+						elseif snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive) then
+							if specSettings.colors.bar.celestial.enabled then
 								barColor = specSettings.colors.bar.celestial.color
-							elseif snapshots[spells.eclipseSolar.id].buff.isActive then
+							end
+						elseif snapshots[spells.eclipseSolar.id].buff.isActive then
+							if specSettings.colors.bar.solar.enabled then
 								barColor = specSettings.colors.bar.solar.color
-							else
+							end
+						else
+							if specSettings.colors.bar.lunar.enabled then
 								barColor = specSettings.colors.bar.lunar.color
 							end
 						end
@@ -2361,16 +2365,18 @@ local function UpdateResourceBar()
 					if displaySpecId ~= TRB.Data.character.specId then
 						barColor = specSettings.colors.bar.base.color
 					else
-						if snapshots[spells.clearcasting.id].buff.remaining > 0 then
+						if specSettings.colors.bar.clearcasting.enabled and snapshots[spells.clearcasting.id].buff.remaining > 0 then
 							barColor = specSettings.colors.bar.clearcasting.color
 						end
 
-						if snapshotData.attributes.resource2 == 5 and spells.ferociousBiteMaximum:IsUsable() then
+						if specSettings.colors.bar.maxBite.enabled and snapshotData.attributes.resource2 == 5 and spells.ferociousBiteMaximum:IsUsable() then
 							barColor = specSettings.colors.bar.maxBite.color
 						end						
 
 						if apcActive then
-							barColor = specSettings.colors.bar.apexPredator.color
+							if specSettings.colors.bar.apexPredator.enabled then
+								barColor = specSettings.colors.bar.apexPredator.color
+							end
 
 							if specSettings.audio.apexPredatorsCraving.enabled and not snapshotData.audio.apexPredatorsCravingCue then
 								snapshotData.audio.apexPredatorsCravingCue = true
@@ -2383,7 +2389,7 @@ local function UpdateResourceBar()
 					end
 
 					local barBorderColor = specSettings.colors.bar.border.color
-					if IsStealthed() then
+					if specSettings.colors.bar.borderStealth.enabled and IsStealthed() then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					elseif specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
@@ -2652,7 +2658,7 @@ local function UpdateResourceBar()
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 				else
 					if (currentForm == "humanoid" or currentForm == "treeOfLife" or currentForm == "treant") then
-						if affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive then
+						if specSettings.colors.bar.noEfflorescence.enabled and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive then
 							barColor = specSettings.colors.bar.noEfflorescence.color
 						elseif snapshots[spells.incarnationTreeOfLife.id].buff.isActive and (talents:IsTalentActive(spells.cenariusGuidance) or snapshots[spells.clearcasting.id].buff.isActive) then
 							local timeThreshold = 0
@@ -2670,7 +2676,7 @@ local function UpdateResourceBar()
 
 							if useEndOfIncarnationColor and snapshots[spells.incarnationTreeOfLife.id].buff.remaining <= timeThreshold then
 								barColor = specSettings.colors.bar.incarnationEnd.color
-							else
+							elseif specSettings.colors.bar.incarnation.enabled then
 								barColor = specSettings.colors.bar.incarnation.color
 							end
 						end

@@ -483,7 +483,8 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				borderChiJi = {
-					color = "FF00FF00"
+					color = "FF00FF00",
+					enabled = true
 				},
 				background = {
 					color = "66000000"
