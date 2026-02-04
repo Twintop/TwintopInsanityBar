@@ -960,8 +960,8 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				if specSettings.colors.bar.bestialWrath.enabled and snapshotData.snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat then
 					local timeLeft = snapshots[spells.bestialWrath.id].buff.remaining
@@ -1000,15 +1000,15 @@ local function UpdateResourceBar()
 				end
 
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 		end
 
@@ -1044,7 +1044,7 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
@@ -1151,7 +1151,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 
 				if snapshots[spells.trueshot.id].buff.isActive then
 					local timeThreshold = 0
@@ -1168,23 +1168,23 @@ local function UpdateResourceBar()
 					end
 
 					if useEndOfTrueshotColor and snapshots[spells.trueshot.id].buff:GetRemainingTime() <= timeThreshold then
-						barColor = specSettings.colors.bar.trueshotEnding
+						barColor = specSettings.colors.bar.trueshotEnding.color
 					else
-						barColor = specSettings.colors.bar.trueshot
+						barColor = specSettings.colors.bar.trueshot.color
 					end
 				end
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 		end
 
@@ -1220,7 +1220,7 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
@@ -1281,7 +1281,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 
 				if snapshots[spells.takedown.id].buff.isActive then
 					local timeThreshold = 0
@@ -1306,15 +1306,15 @@ local function UpdateResourceBar()
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 		end
 

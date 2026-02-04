@@ -1011,7 +1011,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base
+					local barColor = specSettings.colors.bar.base.color
 					if snapshots[spells.metamorphosis.id].buff.isActive then
 						local timeThreshold = 0
 						local useEndOfMetamorphosisColor = false
@@ -1027,25 +1027,25 @@ local function UpdateResourceBar()
 						end
 
 						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
-							barColor = specSettings.colors.bar.metamorphosisEnding
+							barColor = specSettings.colors.bar.metamorphosisEnding.color
 						else
-							barColor = specSettings.colors.bar.metamorphosis
+							barColor = specSettings.colors.bar.metamorphosis.color
 						end
 					end
 
-					local barBorderColor = specSettings.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border.color
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
@@ -1138,7 +1138,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base
+					local barColor = specSettings.colors.bar.base.color
 					if snapshots[spells.metamorphosis.id].buff.isActive then
 						local timeThreshold = 0
 						local useEndOfMetamorphosisColor = false
@@ -1154,25 +1154,25 @@ local function UpdateResourceBar()
 						end
 
 						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
-							barColor = specSettings.colors.bar.metamorphosisEnding
+							barColor = specSettings.colors.bar.metamorphosisEnding.color
 						else
-							barColor = specSettings.colors.bar.metamorphosis
+							barColor = specSettings.colors.bar.metamorphosis.color
 						end
 					end
 
-					local barBorderColor = specSettings.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border.color
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
@@ -1183,9 +1183,9 @@ local function UpdateResourceBar()
 				local current = snapshotData.attributes.resource2 or 0
 				local max = TRB.Data.character.maxResource2Value or 6
 				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border.color
+				local cpColor = specSettings.colors.comboPoints.base.color
 
 				-- Update secondary bar (Soul Fragments with threshold dividers)
 				if barGroups.secondary then
@@ -1310,24 +1310,24 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base
+					local barColor = specSettings.colors.bar.base.color
 					if snapshots[spells.metamorphosis.id].buff.isActive and specSettings.colors.bar.voidMetamorphosis.enabled then
 						barColor = specSettings.colors.bar.voidMetamorphosis.color
 					end
 
-					local barBorderColor = specSettings.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border.color
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
@@ -1336,9 +1336,9 @@ local function UpdateResourceBar()
 				local current = snapshotData.attributes.resource2
 				local max = snapshotData.attributes.maxResource2
 				
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border
-				local cpColor = specSettings.colors.comboPoints.base
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border.color
+				local cpColor = specSettings.colors.comboPoints.base.color
 
 				if specSettings.colors.comboPoints.voidMetamorphosisReady.enabled and metaUsable then
 					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color

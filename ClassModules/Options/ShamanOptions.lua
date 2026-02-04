@@ -123,17 +123,31 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FF00008D",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FF0055FF",
-				earthShock="FF00096A",
-				inAscendance="FFFA8128",
-				inAscendance1GCD="FFFF0000",
-				flashAlpha=0.70,
-				flashPeriod=0.5,
-				flashEnabled=true,
+				border = {
+					color = "FF00008D"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF0055FF"
+				},
+				earthShock = {
+					color = "FF00096A"
+				},
+				inAscendance = {
+					color = "FFFA8128"
+				},
+				inAscendance1GCD = {
+					color = "FFFF0000"
+				},
+				flashAlpha = 0.70,
+				flashPeriod = 0.5,
+				flashEnabled = true,
 			},
 				threshold = {
 				under = {
@@ -164,7 +178,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -242,23 +256,43 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
-				inAscendance="FFFA8128",
-				inAscendance1GCD="FFFF0000",
+				border = {
+					color = "FF000099"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF0000FF"
+				},
+				inAscendance = {
+					color = "FFFA8128"
+				},
+				inAscendance1GCD = {
+					color = "FFFF0000"
+				},
 			},
 			comboPoints = {
-				border="ff0071df",
-				background="66000000",
-				base="ff55e2ff",
+				border = {
+					color = "FF0071DF"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF55E2FF"
+				},
 				overflowBase = {
 					color = "FF0077DD"
 				},
-				penultimate="FFFF9900",
-				final="FFFF0000",
-				sameColor=false,
-				compressedView=true
+				penultimate = {
+					color = "FFFF9900"
+				},
+				final = {
+					color = "FFFF0000"
+				},
+				sameColor = false,
+				compressedView = true
 			},
 			threshold = {
 				under = {
@@ -285,7 +319,7 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -357,11 +391,21 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
-				inAscendance="FFFA8128",
-				inAscendance1GCD="FFFF0000",
+				border = {
+					color = "FF000099"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF0000FF"
+				},
+				inAscendance = {
+					color = "FFFA8128"
+				},
+				inAscendance1GCD = {
+					color = "FFFF0000"
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
@@ -372,7 +416,7 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -559,17 +603,17 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
 
 	yCoord = yCoord - 30
-	controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthShock"], spec.colors.bar.earthShock, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthShock"], spec.colors.bar.earthShock.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.earthShock
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "earthShock")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.earthShock, controls.colors, "earthShock", "color")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance, controls.colors, "inAscendance", "color")
 	end)
 
 	yCoord = yCoord - 30
@@ -583,17 +627,17 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfAscendance.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance1GCD
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance1GCD, controls.colors, "inAscendance1GCD", "color")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1094,10 +1138,10 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance, controls.colors, "inAscendance", "color")
 	end)
 
 	yCoord = yCoord - 30
@@ -1111,20 +1155,20 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfAscendance.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance1GCD
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance1GCD, controls.colors, "inAscendance1GCD", "color")
 	end)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], false, false)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1132,10 +1176,10 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceMaelstromWeapon"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceMaelstromWeapon"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
 	controls.colors.comboPoints.overflowBase = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"], spec.colors.comboPoints.overflowBase.color, 300, 25, oUi.xCoord2, yCoord)
@@ -1145,29 +1189,29 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBorder"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerFinal"], spec.colors.comboPoints.final.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30
@@ -1584,10 +1628,10 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance, controls.colors, "inAscendance", "color")
 	end)
 
 	yCoord = yCoord - 30
@@ -1601,17 +1645,17 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfAscendance.enabled = self:GetChecked()
 	end)
 	
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance1GCD
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance1GCD, controls.colors, "inAscendance1GCD", "color")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40

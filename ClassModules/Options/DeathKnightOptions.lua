@@ -33,7 +33,7 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune1Time}[$rune1Time]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Rune1"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -56,7 +56,7 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune2Time}[$rune2Time]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Rune2"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -79,7 +79,7 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune3Time}[$rune3Time]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Rune3"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -102,7 +102,7 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune4Time}[$rune4Time]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Rune4"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -125,7 +125,7 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune5Time}[$rune5Time]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Rune5"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -148,7 +148,7 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune6Time}[$rune6Time]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Rune6"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -252,17 +252,33 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FF009ABD",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FF00D1FF",
+				border = {
+					color = "FF009ABD"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF00D1FF"
+				},
 			},
 			comboPoints = {
-				border="FF600000",
-				background="66000000",
-				base="FFC41E3A",
-				cooldown="FFCCCCCC",
+				border = {
+					color = "FF600000"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFC41E3A"
+				},
+				cooldown = {
+					color = "FFCCCCCC"
+				},
 				overcap = {
 					color = "FFFF4500",
 					enabled = false
@@ -298,7 +314,9 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -402,17 +420,33 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FF009ABD",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FF00D1FF",
+				border = {
+					color = "FF009ABD"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF00D1FF"
+				},
 			},
 			comboPoints = {
-				border="FF00426A",
-				background="66000000",
-				base="FF368BC1",
-				cooldown="FFCCCCCC",
+				border = {
+					color = "FF00426A"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF368BC1"
+				},
+				cooldown = {
+					color = "FFCCCCCC"
+				},
 				overcap = {
 					color = "FFFF4500",
 					enabled = false
@@ -448,7 +482,9 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -545,17 +581,33 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FF009ABD",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FF00D1FF",
+				border = {
+					color = "FF009ABD"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF00D1FF"
+				},
 			},
 			comboPoints = {
-				border="FF12721A",
-				background="66000000",
-				base="FFA6FF49",
-				cooldown="FFCCCCCC",
+				border = {
+					color = "FF12721A"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFA6FF49"
+				},
+				cooldown = {
+					color = "FFCCCCCC"
+				},
 				overcap = {
 					color = "FFFF4500",
 					enabled = false
@@ -591,7 +643,9 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -757,10 +811,10 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -771,29 +825,29 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorder"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30
@@ -1225,10 +1279,10 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1239,29 +1293,29 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30
@@ -1715,10 +1769,10 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
 	
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1730,29 +1784,29 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30

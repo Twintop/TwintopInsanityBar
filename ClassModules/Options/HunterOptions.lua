@@ -128,11 +128,19 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFAB5124",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FFFF8040",
+				border = {
+					color = "FFAB5124"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFFF8040"
+				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
@@ -173,7 +181,9 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -305,13 +315,25 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFAB5124",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FFFF8040",
-				trueshot="FF00B60E",
-				trueshotEnding="FFFF0000",
+				border = {
+					color = "FFAB5124"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFFF8040"
+				},
+				trueshot = {
+					color = "FF00B60E"
+				},
+				trueshotEnding = {
+					color = "FFFF0000"
+				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
@@ -341,7 +363,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -458,11 +482,19 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFAB5124",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FFFF8040",
+				border = {
+					color = "FFAB5124"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFFF8040"
+				},
 				takedown = {
 					color = "FF005500",
 					enabled = true
@@ -499,7 +531,9 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -697,10 +731,10 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1270,10 +1304,10 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 30
-	controls.colors.trueshot = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerTrueshot"], spec.colors.bar.trueshot, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.trueshot = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerTrueshot"], spec.colors.bar.trueshot.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.trueshot
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "trueshot")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "trueshot")
 	end)
 
 	yCoord = yCoord - 30
@@ -1287,17 +1321,17 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfTrueshot.enabled = self:GetChecked()
 	end)
 
-	controls.colors.trueshotEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerTrueshotEnd"], spec.colors.bar.trueshotEnding, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.trueshotEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerTrueshotEnd"], spec.colors.bar.trueshotEnding.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.trueshotEnding
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "trueshotEnding")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "trueshotEnding")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1953,10 +1987,10 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40

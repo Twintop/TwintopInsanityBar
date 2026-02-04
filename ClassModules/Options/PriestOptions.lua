@@ -78,20 +78,38 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
-				surgeOfLight="FFFCE58E",
-				shadowCovenant="FFC4A5E2",
-				surgeOfLightBorderChange1=true,
-				shadowCovenantBorderChange=true,
+				border = {
+					color = "FF000099"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF0000FF"
+				},
+				surgeOfLight = {
+					color = "FFFCE58E",
+					enabled = true
+				},
+				shadowCovenant = {
+					color = "FFC4A5E2",
+					enabled = true
+				},
 			},
 			comboPoints = {
-				border="FF000099",
-				base="FF000099", --required for generic combo point code
-				background="66000000",
-				powerWordRadiance="FFFFDD22",
-				powerWordRadianceEnabled = true
+				border = {
+					color = "FF000099"
+				},
+				base = {
+					color = "FF000099" --required for generic combo point code
+				},
+				background = {
+					color = "66000000"
+				},
+				powerWordRadiance = {
+					color = "FFFFDD22",
+					enabled = true
+				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
@@ -102,7 +120,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -201,38 +219,76 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
-				apotheosis="FFFADA5E",
-				apotheosisEnd="FFFF0000",
-				holyWordChastise="FFAAFFAA",
-				holyWordSanctify="FF55FF55",
-				holyWordSerenity="FF00FF00",
-				surgeOfLight="FFFCE58E",
-				resonantWords="FFAA00FF",
-				lightweaver="FF00FFFF",
-				surgeOfLightBorderChange1=true,
-				resonantWordsBorderChange=true,
-				lightweaverBorderChange=true,
-				holyWordChastiseEnabled=false,
-				holyWordSanctifyEnabled=true,
-				holyWordSerenityEnabled=true
+				border = {
+					color = "FF000099"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF0000FF"
+				},
+				apotheosis = {
+					color = "FFFADA5E"
+				},
+				apotheosisEnd = {
+					color = "FFFF0000"
+				},
+				holyWordChastise = {
+					color = "FFAAFFAA",
+					enabled = false
+				},
+				holyWordSanctify = {
+					color = "FF55FF55",
+					enabled = true
+				},
+				holyWordSerenity = {
+					color = "FF00FF00",
+					enabled = true
+				},
+				surgeOfLight = {
+					color = "FFFCE58E",
+					enabled = true
+				},
+				resonantWords = {
+					color = "FFAA00FF",
+					enabled = true
+				},
+				lightweaver = {
+					color = "FF00FFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
-				border="FF000099",
-				base="FF000099", --required for generic combo point code
-				background="66000000",
-				holyWordSerenity="FF00DDDD",
-				holyWordSerenityEnabled = true,
-				holyWordSanctify="FFFFDD22",
-				holyWordSanctifyEnabled = true,
-				holyWordChastise="FFFF8080",
-				holyWordChastiseEnabled = true,
-				completeCooldown="FF00B500",
-				completeCooldownEnabled=true,
-				sacredReverence="FF90FF64",
-				sacredReverenceEnabled=true
+				border = {
+					color = "FF000099"
+				},
+				base = {
+					color = "FF000099" --required for generic combo point code
+				},
+				background = {
+					color = "66000000"
+				},
+				holyWordSerenity = {
+					color = "FF00DDDD",
+					enabled = true
+				},
+				holyWordSanctify = {
+					color = "FFFFDD22",
+					enabled = true
+				},
+				holyWordChastise = {
+					color = "FFFF8080",
+					enabled = true
+				},
+				completeCooldown = {
+					color = "FF00B500",
+					enabled = true
+				},
+				sacredReverence = {
+					color = "FF90FF64",
+					enabled = true
+				}
 			},
 			threshold = {
 				over = {
@@ -256,7 +312,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -396,28 +452,43 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				manaBar = {
 					color = "FF0000FF"
 				},
-				hasteBelow="FFFFFFFF",
-				hasteApproaching="FFFFFF00",
-				hasteAbove="FF00FF00",
+				hasteBelow = { color = "FFFFFFFF" },
+				hasteApproaching = { color = "FFFFFF00" },
+				hasteAbove = { color = "FF00FF00" },
 				overcap = {
 					color = "FFFF0000",
 					enabled = true
 				},
 			},
 			bar = {
-				border="FF431863",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				borderMindFlayInsanity="FF00FF00",
-				background="66000000",
-				base="FF763BAF",
-				shadowWordMadnessUsable="FF5C2F89",
-				shadowWordMadnessUsableCasting="FFFFFFFF",
-				critMindBlast={
+				border = {
+					color = "FF431863"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				borderMindFlayInsanity = {
+					color = "FF00FF00",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF763BAF"
+				},
+				shadowWordMadnessUsable = {
+					color = "FF5C2F89"
+				},
+				shadowWordMadnessUsableCasting = {
+					color = "FFFFFFFF"
+				},
+				critMindBlast = {
 					color = "FFC2A3E0",
 					enabled = true
 				},
-				instantMindBlast={
+				instantMindBlast = {
 					color = "FFC2A3E0",
 					enabled = true
 				},
@@ -429,12 +500,15 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					color = "FF8A004C",
 					enabled = true
 				},
-				inVoidform="FF431863",
-				inVoidform1GCD="FFFF0000",
-				flashAlpha=0.70,
-				flashPeriod=0.5,
-				flashEnabled=true,
-				mindFlayInsanityBorderChange=true,
+				inVoidform = {
+					color = "FF431863"
+				},
+				inVoidform1GCD = {
+					color = "FFFF0000"
+				},
+				flashAlpha = 0.70,
+				flashPeriod = 0.5,
+				flashEnabled = true,
 			},
 			threshold = {
 				under = {
@@ -461,7 +535,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -661,10 +735,10 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -676,22 +750,22 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxShadowCovenant"])
 	f.tooltip = L["PriestDisciplineCheckboxShadowCovenantTooltip"]
-	f:SetChecked(spec.colors.bar.shadowCovenantBorderChange)
+	f:SetChecked(spec.colors.bar.shadowCovenant.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.shadowCovenantBorderChange = self:GetChecked()
+		spec.colors.bar.shadowCovenant.enabled = self:GetChecked()
 	end)
 	
 	controls.colors.shadowCovenant = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPickerShadowCovenant"], spec.colors.bar.shadowCovenant, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.shadowCovenant
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "shadowCovenant")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "shadowCovenant")
 	end)]]
 
 	yCoord = yCoord - 30
-	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.surgeOfLight
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "SurgeOfLight")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.surgeOfLight, controls.colors, "surgeOfLight", "color")
 	end)
 	
 	controls.checkBoxes.surgeOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Threshold_Option_surgeOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
@@ -699,9 +773,9 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight"])
 	f.tooltip = L["PriestCheckboxSurgeOfLightTooltip"]
-	f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
+	f:SetChecked(spec.colors.bar.surgeOfLight.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
+		spec.colors.bar.surgeOfLight.enabled = self:GetChecked()
 	end)
 
 	--[[
@@ -715,9 +789,9 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxEnablePowerWordRadiance"])
 	f.tooltip = L["PriestDisciplineCheckboxEnablePowerWordRadianceTooltip"]
-	f:SetChecked(spec.colors.comboPoints.powerWordRadianceEnabled)
+	f:SetChecked(spec.colors.comboPoints.powerWordRadiance.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.powerWordRadianceEnabled = self:GetChecked()
+		spec.colors.comboPoints.powerWordRadiance.enabled = self:GetChecked()
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 1 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
@@ -728,21 +802,21 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints.powerWordRadiance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.powerWordRadiance
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "powerWordRadiance")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "powerWordRadiance")
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordUnfilled"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)]]
 
 	yCoord = yCoord - 40
@@ -1119,15 +1193,15 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordChastise"])
 	f.tooltip = L["PriestHolyCheckboxHolyWordChastiseTooltip"]
-	f:SetChecked(spec.colors.bar.holyWordChastiseEnabled)
+	f:SetChecked(spec.colors.bar.holyWordChastise.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.holyWordChastiseEnabled = self:GetChecked()
+		spec.colors.bar.holyWordChastise.enabled = self:GetChecked()
 	end)
 
 	controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.bar.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.holyWordChastise
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordChastise")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordChastise")
 	end)
 
 	yCoord = yCoord - 30
@@ -1136,15 +1210,15 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordSanctify"])
 	f.tooltip = L["PriestHolyCheckboxHolyWordSanctifyTooltip"]
-	f:SetChecked(spec.colors.bar.holyWordSanctifyEnabled)
+	f:SetChecked(spec.colors.bar.holyWordSanctify.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.holyWordSanctifyEnabled = self:GetChecked()
+		spec.colors.bar.holyWordSanctify.enabled = self:GetChecked()
 	end)
 
 	controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.bar.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.holyWordSanctify
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordSanctify")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSanctify")
 	end)
 	
 	yCoord = yCoord - 30
@@ -1153,22 +1227,22 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordSerenity"])
 	f.tooltip = L["PriestHolyCheckboxHolyWordSerenityTooltip"]
-	f:SetChecked(spec.colors.bar.holyWordSerenityEnabled)
+	f:SetChecked(spec.colors.bar.holyWordSerenity.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.holyWordSerenityEnabled = self:GetChecked()
+		spec.colors.bar.holyWordSerenity.enabled = self:GetChecked()
 	end)
 
 	controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.bar.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.holyWordSerenity
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordSerenity")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSerenity")
 	end)]]
 
 	yCoord = yCoord - 30
-	controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosis"], spec.colors.bar.apotheosis, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosis"], spec.colors.bar.apotheosis.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inApotheosis
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosis")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.apotheosis, controls.colors, "inApotheosis", "color")
 	end)
 
 	yCoord = yCoord - 30
@@ -1182,17 +1256,17 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfApotheosis.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inApotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosisEnd"], spec.colors.bar.apotheosisEnd, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inApotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosisEnd"], spec.colors.bar.apotheosisEnd.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inApotheosisEnd
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosisEnd")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.apotheosisEnd, controls.colors, "inApotheosisEnd", "color")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1204,27 +1278,27 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight"])
 	f.tooltip = L["PriestCheckboxSurgeOfLightTooltip"]
-	f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
+	f:SetChecked(spec.colors.bar.surgeOfLight.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
+		spec.colors.bar.surgeOfLight.enabled = self:GetChecked()
 	end)
 
-	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.surgeOfLight
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "SurgeOfLight")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.surgeOfLight, controls.colors, "surgeOfLight", "color")
 	end)
 	
 	--[[controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerResonantWords"], spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-90)
 	f = controls.colors.resonantWords
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "resonantWords")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "resonantWords")
 	end)
 
 	controls.colors.lightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerLightweaver"], spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-120)
 	f = controls.colors.lightweaver
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "lightweaver")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "lightweaver")
 	end)
 	
 	yCoord = yCoord - 30
@@ -1233,9 +1307,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxResonantWords"])
 	f.tooltip = L["PriestHolyCheckboxResonantWordsTooltip"]
-	f:SetChecked(spec.colors.bar.resonantWordsBorderChange)
+	f:SetChecked(spec.colors.bar.resonantWords.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.resonantWordsBorderChange = self:GetChecked()
+		spec.colors.bar.resonantWords.enabled = self:GetChecked()
 	end)
 	
 	yCoord = yCoord - 30
@@ -1244,9 +1318,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxLightweaver"])
 	f.tooltip = L["PriestHolyCheckboxLightweaverTooltip"]
-	f:SetChecked(spec.colors.bar.lightweaverBorderChange)
+	f:SetChecked(spec.colors.bar.lightweaver.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.lightweaverBorderChange = self:GetChecked()
+		spec.colors.bar.lightweaver.enabled = self:GetChecked()
 	end)]]
 
 	--[[yCoord = yCoord - 40
@@ -1259,9 +1333,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordSerenity"])
 	f.tooltip = L["PriestHolyCheckboxEnableHolyWordSerenityTooltip"]
-	f:SetChecked(spec.colors.comboPoints.holyWordSerenityEnabled)
+	f:SetChecked(spec.colors.comboPoints.holyWordSerenity.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.holyWordSerenityEnabled = self:GetChecked()
+		spec.colors.comboPoints.holyWordSerenity.enabled = self:GetChecked()
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
@@ -1272,7 +1346,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.comboPoints.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.holyWordSerenity
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSerenity")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSerenity")
 	end)
 
 	yCoord = yCoord - 30
@@ -1281,9 +1355,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordSanctify"])
 	f.tooltip = L["PriestHolyCheckboxEnableHolyWordSanctifyTooltip"]
-	f:SetChecked(spec.colors.comboPoints.holyWordSanctifyEnabled)
+	f:SetChecked(spec.colors.comboPoints.holyWordSanctify.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.holyWordSanctifyEnabled = self:GetChecked()
+		spec.colors.comboPoints.holyWordSanctify.enabled = self:GetChecked()
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
@@ -1294,7 +1368,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.comboPoints.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.holyWordSanctify
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSanctify")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSanctify")
 	end)
 
 	yCoord = yCoord - 30
@@ -1303,9 +1377,9 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordChastise"])
 	f.tooltip = L["PriestHolyCheckboxEnableHolyWordChastiseTooltip"]
-	f:SetChecked(spec.colors.comboPoints.holyWordChastiseEnabled)
+	f:SetChecked(spec.colors.comboPoints.holyWordChastise.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.holyWordChastiseEnabled = self:GetChecked()
+		spec.colors.comboPoints.holyWordChastise.enabled = self:GetChecked()
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
@@ -1316,7 +1390,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.comboPoints.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.holyWordChastise
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordChastise")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordChastise")
 	end)
 
 	yCoord = yCoord - 30
@@ -1325,15 +1399,15 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxCompleteHolyWordCooldown"])
 	f.tooltip = L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"]
-	f:SetChecked(spec.colors.comboPoints.completeCooldownEnabled)
+	f:SetChecked(spec.colors.comboPoints.completeCooldown.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.completeCooldownEnabled = self:GetChecked()
+		spec.colors.comboPoints.completeCooldown.enabled = self:GetChecked()
 	end)
 
 	controls.colors.comboPoints.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerCompleteHolyWordCooldown"], spec.colors.comboPoints.completeCooldown, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.completeCooldown
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "sacredReverence")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "sacredReverence")
 	end)
 
 	yCoord = yCoord - 30
@@ -1342,29 +1416,29 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxSacredReverence"])
 	f.tooltip = L["PriestHolyCheckboxSacredReverenceTooltip"]
-	f:SetChecked(spec.colors.comboPoints.sacredReverenceEnabled)
+	f:SetChecked(spec.colors.comboPoints.sacredReverence.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.sacredReverenceEnabled = self:GetChecked()
+		spec.colors.comboPoints.sacredReverence.enabled = self:GetChecked()
 	end)
 
 	controls.colors.comboPoints.sacredReverence = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerSacredReverence"], spec.colors.comboPoints.sacredReverence, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.sacredReverence
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "sacredReverence")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "sacredReverence")
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorHolyWordBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorHolyWordUnfilled"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)]]
 
 	yCoord = yCoord - 40
@@ -1794,17 +1868,17 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 30
-	controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidform"], spec.colors.bar.inVoidform, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidform"], spec.colors.bar.inVoidform.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inVoidform		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inVoidform")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inVoidform, controls.colors, "inVoidform", "color")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.inVoidform1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidformEnd"], spec.colors.bar.inVoidform1GCD, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.inVoidform1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidformEnd"], spec.colors.bar.inVoidform1GCD.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inVoidform1GCD
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inVoidform1GCD, controls.colors, "inVoidform1GCD", "color")
 	end)
 
 	controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_vfColorChange", parent, "ChatConfigCheckButtonTemplate")
@@ -1818,10 +1892,10 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.shadowWordMadnessUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerShadowWordMadness"], spec.colors.bar.shadowWordMadnessUsable, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.shadowWordMadnessUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerShadowWordMadness"], spec.colors.bar.shadowWordMadnessUsable.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.shadowWordMadnessUsable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "shadowWordMadnessUsable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.shadowWordMadnessUsable, controls.colors, "shadowWordMadnessUsable", "color")
 	end)
 
 	--[[
@@ -1842,10 +1916,10 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
 	end)]]
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1857,15 +1931,15 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxMindFlayInsanity"])
 	f.tooltip = L["PriestShadowCheckboxMindFlayInsanityTooltip"]
-	f:SetChecked(spec.colors.bar.mindFlayInsanityBorderChange)
+	f:SetChecked(spec.colors.bar.borderMindFlayInsanity.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.mindFlayInsanityBorderChange = self:GetChecked()
+		spec.colors.bar.borderMindFlayInsanity.enabled = self:GetChecked()
 	end)
 
-	controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerMindFlayInsanity"], spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerMindFlayInsanity"], spec.colors.bar.borderMindFlayInsanity.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderMindFlayInsanity
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.borderMindFlayInsanity, controls.colors, "borderMindFlayInsanity", "color")
 	end)
 	yCoord = yCoord - 30
 	controls.checkBoxes.entropicRiftBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_entropicRiftBorderChange", parent, "ChatConfigCheckButtonTemplate")
@@ -2162,25 +2236,25 @@ local function ShadowConstructFontAndTextPanel(parent)
 		spec.hasteApproachingThreshold = value
 	end)
 
-	controls.colors.text.hasteBelow = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerHasteLow"], spec.colors.text.hasteBelow,
+	controls.colors.text.hasteBelow = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerHasteLow"], spec.colors.text.hasteBelow.color,
 												250, 25, oUi.xCoord2, yCoord+10)
 	f = controls.colors.text.hasteBelow
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "hasteBelow")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.hasteBelow, controls.colors.text, "hasteBelow", "color")
 	end)
 
-	controls.colors.text.hasteApproaching = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerHasteMedium"], spec.colors.text.hasteApproaching,
+	controls.colors.text.hasteApproaching = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerHasteMedium"], spec.colors.text.hasteApproaching.color,
 												250, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.text.hasteApproaching
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "hasteApproaching")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.hasteApproaching, controls.colors.text, "hasteApproaching", "color")
 	end)
 
-	controls.colors.text.hasteAbove = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerHasteHigh"], spec.colors.text.hasteAbove,
+	controls.colors.text.hasteAbove = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerHasteHigh"], spec.colors.text.hasteAbove.color,
 												250, 25, oUi.xCoord2, yCoord-70)
 	f = controls.colors.text.hasteAbove
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "hasteAbove")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.hasteAbove, controls.colors.text, "hasteAbove", "color")
 	end)
 
 	yCoord = yCoord - 60

@@ -151,7 +151,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					fontJustifyHorizontal = "LEFT",
 					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize = 18,
-					color = "FFFFFFFF",
+					color = {
+						color = "FFFFFFFF"
+					},
 				},
 				barText = {}
 			},
@@ -725,7 +727,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 									fontJustifyHorizontal = "LEFT",
 									fontJustifyHorizontalName = L["PositionLeft"],
 									fontSize=18,
-									color = "FFFFFFFF"
+									color = {
+										color = "FFFFFFFF"
+									}
 								}
 
 								if specValue.displayText.fontSizeLock then
@@ -848,7 +852,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontal = "CENTER",
 											useDefaultFontSize = false,
 											fontSize = 14,
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 										},
 										{
 											enabled = enabled,
@@ -858,7 +862,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											guid = TRB.Functions.String:Guid(),
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=1)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=0)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=1)||($incarnationNextCp=($comboPoints+2)&$comboPoints=0)}[$incarnationTickTime]",
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											name = "CP2",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -881,7 +885,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											guid = TRB.Functions.String:Guid(),
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=2)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=1)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=2)||($incarnationNextCp=($comboPoints+2)&$comboPoints=1)}[$incarnationTickTime]",
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											name = "CP3",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -904,7 +908,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											guid = TRB.Functions.String:Guid(),
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=3)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=2)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=3)||($incarnationNextCp=($comboPoints+2)&$comboPoints=2)}[$incarnationTickTime]",
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											name = "CP4",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -927,7 +931,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											guid = TRB.Functions.String:Guid(),
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=4)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=3)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=4)||($incarnationNextCp=($comboPoints+2)&$comboPoints=3)}[$incarnationTickTime]",
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											name = "CP5",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -972,7 +976,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											enabled = enabled,
 										},
 										{
@@ -983,7 +987,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSerenityTime&$hwSerenityCharges=1}[$hwSerenityTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = "HW Serenity 2",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1006,7 +1010,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSanctifyTime&$hwSanctifyCharges=0}[$hwSanctifyTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = "HW Sanctify 1",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1029,7 +1033,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSanctifyTime&$hwSanctifyCharges=1}[$hwSanctifyTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = "HW Sanctify 2",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1052,7 +1056,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwChastiseTime}[$hwChastiseTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = "HW Chastise",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1085,7 +1089,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=0}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence1"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1108,7 +1112,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=1}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence2"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1131,7 +1135,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=2}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence3"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1154,7 +1158,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=3}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence4"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1177,7 +1181,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=4}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence5"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1200,7 +1204,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=5}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence6"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1889,6 +1893,157 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specSettings.textures.defensivesBackgroundName = specSettings.textures.backgroundName
 						end
 					end
+
+					-- Migrate colors.bar.* from flat string format to table format { color = "..." }
+					-- Detection: colors.bar.base is a string instead of a table
+					if specSettings.colors and specSettings.colors.bar and type(specSettings.colors.bar.base) == "string" then
+						local oldColorsBar = specSettings.colors.bar
+						local newColorsBar = {}
+						
+						-- List of keys that have associated *Enabled flags
+						local keysWithEnableFlags = {
+							"overcap", "metamorphosis", "metamorphosisEnding", "borderStealth",
+							"holyWordChastise", "holyWordSanctify", "holyWordSerenity",
+							"inVoidform", "shadowWordMadnessUsable", "borderMindFlayInsanity",
+							"clearcasting", "apexPredator", "maxBite", "incarnation", "incarnationEnd",
+							"noEfflorescence", "solar", "lunar", "celestial", "eclipse1GCD",
+							"trueshot", "trueshotEnding", "earthShock", "inAscendance", "inAscendance1GCD",
+							"shadowCovenant", "SurgeOfLight", "apotheosis", "apotheosisEnd",
+							"resonantWords", "lightweaver", "borderRtbGood", "borderRtbBad",
+							"borderShadowcraft", "borderChiJi", "enrage"
+						}
+						local enableFlagLookup = {}
+						for _, key in ipairs(keysWithEnableFlags) do
+							enableFlagLookup[key] = true
+						end
+						
+						for key, value in pairs(oldColorsBar) do
+							-- Skip *Enabled keys - they will be merged into their parent
+							if string.match(key, "Enabled$") then
+								-- Skip, will be handled by parent key
+							elseif type(value) == "string" then
+								-- This is a color string, convert to table
+								local enabledKey = key .. "Enabled"
+								if enableFlagLookup[key] and oldColorsBar[enabledKey] ~= nil then
+									newColorsBar[key] = {
+										color = value,
+										enabled = oldColorsBar[enabledKey]
+									}
+								else
+									newColorsBar[key] = {
+										color = value
+									}
+								end
+							elseif type(value) == "table" then
+								-- Already migrated or is a sub-table, keep as-is
+								newColorsBar[key] = value
+							else
+								-- Boolean or other type (like showPassive, showCasting, consistentUnfilledColor)
+								newColorsBar[key] = value
+							end
+						end
+						
+						specSettings.colors.bar = newColorsBar
+					end
+
+					-- Migrate colors.comboPoints.* from flat string format to table format { color = "..." }
+					-- Detection: colors.comboPoints.base or colors.comboPoints.border is a string
+					if specSettings.colors and specSettings.colors.comboPoints then
+						local cpColors = specSettings.colors.comboPoints
+						-- Check if it needs migration (has flat string values for common keys)
+						local needsMigration = (cpColors.base and type(cpColors.base) == "string") or
+							(cpColors.border and type(cpColors.border) == "string") or
+							(cpColors.background and type(cpColors.background) == "string")
+						
+						if needsMigration then
+							local newCpColors = {}
+							
+							for key, value in pairs(cpColors) do
+								if type(value) == "string" then
+									-- This is a color string, convert to table
+									newCpColors[key] = {
+										color = value
+									}
+								elseif type(value) == "table" then
+									-- Already migrated or is a sub-table (like generation, spec), keep as-is
+									newCpColors[key] = value
+								else
+									-- Boolean or other type (like consistentUnfilledColor, type)
+									newCpColors[key] = value
+								end
+							end
+							
+							specSettings.colors.comboPoints = newCpColors
+						end
+					end
+
+					-- Migrate displayText.default.color from flat string to table format
+					if specSettings.displayText and specSettings.displayText.default and 
+					   specSettings.displayText.default.color and type(specSettings.displayText.default.color) == "string" then
+						specSettings.displayText.default.color = {
+							color = specSettings.displayText.default.color
+						}
+					end
+
+					-- Migrate old *BorderChange* and flat *Enabled flags to nested .enabled format
+					-- This runs after the color table migration above, so colors are already in { color = "..." } format
+					if specSettings.colors and specSettings.colors.bar then
+						local bar = specSettings.colors.bar
+						
+						-- Map of old enabled flag names to their corresponding color key
+						-- Format: oldFlagName = colorKey (the .enabled will be set on colors.bar[colorKey].enabled)
+						local enabledFlagMappings = {
+							-- Priest Discipline/Holy
+							surgeOfLightBorderChange1 = "surgeOfLight",
+							shadowCovenantBorderChange = "shadowCovenant",
+							-- Priest Holy
+							holyWordChastiseEnabled = "holyWordChastise",
+							holyWordSanctifyEnabled = "holyWordSanctify",
+							holyWordSerenityEnabled = "holyWordSerenity",
+							resonantWordsBorderChange = "resonantWords",
+							lightweaverBorderChange = "lightweaver",
+							-- Priest Shadow
+							mindFlayInsanityBorderChange = "borderMindFlayInsanity",
+						}
+						
+						for oldFlag, colorKey in pairs(enabledFlagMappings) do
+							if bar[oldFlag] ~= nil then
+								-- Ensure the color table exists
+								bar[colorKey] = bar[colorKey] or {}
+								if type(bar[colorKey]) == "table" then
+									bar[colorKey].enabled = bar[oldFlag]
+								end
+								bar[oldFlag] = nil
+							end
+						end
+					end
+
+					-- Migrate old flat *Enabled flags in comboPoints to nested .enabled format
+					if specSettings.colors and specSettings.colors.comboPoints then
+						local cp = specSettings.colors.comboPoints
+						
+						local cpEnabledFlagMappings = {
+							-- Priest Discipline
+							powerWordRadianceEnabled = "powerWordRadiance",
+							-- Priest Holy
+							holyWordSerenityEnabled = "holyWordSerenity",
+							holyWordSanctifyEnabled = "holyWordSanctify",
+							holyWordChastiseEnabled = "holyWordChastise",
+							completeCooldownEnabled = "completeCooldown",
+							sacredReverenceEnabled = "sacredReverence",
+						}
+						
+						for oldFlag, colorKey in pairs(cpEnabledFlagMappings) do
+							if cp[oldFlag] ~= nil then
+								-- Ensure the color table exists
+								cp[colorKey] = cp[colorKey] or {}
+								if type(cp[colorKey]) == "table" then
+									cp[colorKey].enabled = cp[oldFlag]
+								end
+								cp[oldFlag] = nil
+							end
+						end
+					end
 				end
 			end
 		end
@@ -2297,7 +2452,7 @@ function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, clas
 			fontJustifyHorizontal = position,
 			fontJustifyHorizontalName = fontJustifyHorizontalName,
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = xPos,
 				yPos = 0,
@@ -2390,7 +2545,7 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=13,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -2414,7 +2569,7 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 2,
 				yPos = 0,
@@ -2437,7 +2592,7 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -2472,7 +2627,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=13,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -2496,7 +2651,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 2,
 				yPos = 0,
@@ -2519,7 +2674,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -2569,7 +2724,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=20,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,
 					yPos = 0,
@@ -2594,7 +2749,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "CENTER",
 				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=16,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = 0,
 					yPos = 0,
@@ -2620,7 +2775,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,
 					yPos = 0,
@@ -2645,7 +2800,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=16,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = 2,
 					yPos = 0,
@@ -2668,7 +2823,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,
 					yPos = 0,

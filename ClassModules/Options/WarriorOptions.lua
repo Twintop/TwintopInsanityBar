@@ -131,11 +131,19 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFC21807",
-				overcapEnabled=true,
-				borderOvercap="FF800000",
-				background="66000000",
-				base="FFFF0000",
+				border = {
+					color = "FFC21807"
+				},
+				borderOvercap = {
+					color = "FF800000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFFF0000"
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -162,7 +170,9 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -285,12 +295,22 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFC21807",
-				overcapEnabled=true,
-				borderOvercap="FF800000",
-				background="66000000",
-				base="FFFF0000",
-				enrage="FFFFCC55",
+				border = {
+					color = "FFC21807"
+				},
+				borderOvercap = {
+					color = "FF800000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFFF0000"
+				},
+				enrage = {
+					color = "FFFFCC55"
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -317,7 +337,9 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -369,7 +391,7 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "LEFT",
 			useDefaultFontSize = false,
-			color = "ffffffff",
+			color = { color = "FFFFFFFF" },
 			enabled = true,
 		},
 		{
@@ -392,7 +414,7 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "LEFT",
 			useDefaultFontSize = false,
-			color = "ffffffff",
+			color = { color = "FFFFFFFF" },
 			enabled = true,
 		},
 	}
@@ -511,11 +533,19 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFC21807",
-				overcapEnabled=true,
-				borderOvercap="FF800000",
-				background="66000000",
-				base="FFFF0000",
+				border = {
+					color = "FFC21807"
+				},
+				borderOvercap = {
+					color = "FF800000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFFF0000"
+				},
 			},
 			bars = {
 				defensives = TRB.Functions.Settings:DefaultDefensivesBarColors(),
@@ -545,7 +575,9 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -737,10 +769,10 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1276,17 +1308,17 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
 
 	--[[yCoord = yCoord - 30
-	controls.colors.enrage = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorFuryColorPickerEnrage"], spec.colors.bar.enrage, 250, 25, oUi.xCoord2, yCoord)
+	controls.colors.enrage = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorFuryColorPickerEnrage"], spec.colors.bar.enrage.color, 250, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.enrage
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "enrage")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "enrage")
 	end)]]
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1793,10 +1825,10 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40

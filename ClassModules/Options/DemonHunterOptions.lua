@@ -35,7 +35,7 @@ local function SharedLoadDefaultBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -151,13 +151,25 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFA330C9",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FFC942FD",
-				metamorphosis="FF67F100",
-				metamorphosisEnding="FFFF0000"
+				border = {
+					color = "FFA330C9"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFC942FD"
+				},
+				metamorphosis = {
+					color = "FF67F100"
+				},
+				metamorphosisEnding = {
+					color = "FFFF0000"
+				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -188,7 +200,9 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -296,20 +310,42 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFA330C9",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FFC942FD",
-				metamorphosis = "FF67F100",
-				metamorphosisEnding="FFFF0000",
+				border = {
+					color = "FFA330C9"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFC942FD"
+				},
+				metamorphosis = {
+					color = "FF67F100"
+				},
+				metamorphosisEnding = {
+					color = "FFFF0000"
+				},
 			},
 			comboPoints = {
-				border="FF4C0065",
-				background="66000000",
-				base="FF9800D4",
-				penultimate="FFFF9900",
-				final="FFFF0000",
+				border = {
+					color = "FF4C0065"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF9800D4"
+				},
+				penultimate = {
+					color = "FFFF9900"
+				},
+				final = {
+					color = "FFFF0000"
+				},
 				sameColor=false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -341,7 +377,9 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -376,7 +414,7 @@ local function DevourerLoadDefaultBarTextSettings(classic)
 			fontJustifyHorizontal = "CENTER",
 			fontJustifyHorizontalName = L["PositionCenter"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 0,
 				yPos = 0,
@@ -465,22 +503,40 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FFA330C9",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FFC942FD",
+				border = {
+					color = "FFA330C9"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFC942FD"
+				},
 				voidMetamorphosis = {
 					color = "FF431863",
 					enabled = true
 				},
 			},
 			comboPoints = {
-				border="FF660088",
-				background="66000000",
-				base="FF9800FF",
-				penultimate="FFFF9900",
-				final="FFFF0000",
+				border = {
+					color = "FF660088"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF9800FF"
+				},
+				penultimate = {
+					color = "FFFF9900"
+				},
+				final = {
+					color = "FFFF0000"
+				},
 				sameColor=false,
 				voidMetamorphosisReady = {
 					color = "FF431863",
@@ -523,7 +579,9 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = {
+					color = "FFFFFFFF"
+				},
 			},
 			barText = {}
 		},
@@ -687,10 +745,10 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
-	controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerMetamorphosis"], spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerMetamorphosis"], spec.colors.bar.metamorphosis.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.metamorphosis
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosis")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosis")
 	end)
 
 	yCoord = yCoord - 30
@@ -704,17 +762,17 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfMetamorphosis.enabled = self:GetChecked()
 	end)
 
-	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
+	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding.color, 250, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.metamorphosisEnding
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1226,10 +1284,10 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
-	controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerMetamorphosis"], spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerMetamorphosis"], spec.colors.bar.metamorphosis.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.metamorphosis
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosis")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosis")
 	end)
 
 	yCoord = yCoord - 30
@@ -1243,17 +1301,17 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfMetamorphosis.enabled = self:GetChecked()
 	end)
 
-	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
+	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding.color, 250, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.metamorphosisEnding
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1265,16 +1323,16 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
@@ -1282,13 +1340,13 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
 	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
 	yCoord = yCoord - 30
@@ -1302,10 +1360,10 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)]]
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 40
@@ -1793,14 +1851,14 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.metamorphosisEnding
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
 	end)]]
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1812,10 +1870,10 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
 	yCoord = yCoord - 30
@@ -1860,17 +1918,17 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 40

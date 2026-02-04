@@ -497,9 +497,9 @@ local function ConstructResourceBar(settings)
 						settings.textures.comboPointsBackground
 					)
 					node:SetMinMax(0, 1)
-					node:SetBorderColor(settings.colors.comboPoints.border)
-					node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-					node:SetColor(settings.colors.comboPoints.base)
+					node:SetBorderColor(settings.colors.comboPoints.border.color)
+					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+					node:SetColor(settings.colors.comboPoints.base.color)
 					node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 				end
 			end
@@ -1068,8 +1068,8 @@ local function UpdateResourceBar()
 						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					end
 
-					local barBorderColor = specSettings.colors.bar.border
-					local barColor = specSettings.colors.bar.base
+					local barBorderColor = specSettings.colors.bar.border.color
+					local barColor = specSettings.colors.bar.base.color
 
 					-- Invoke Niuzao bar color change
 					if specSettings.colors.bar.invokeNiuzao.enabled and snapshots[spells.invokeNiuzao.id].buff.isActive then
@@ -1096,15 +1096,15 @@ local function UpdateResourceBar()
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
@@ -1212,8 +1212,8 @@ local function UpdateResourceBar()
 				if primaryNode then
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-					local barColor = specSettings.colors.bar.base
-					local barBorderColor = specSettings.colors.bar.border
+					local barColor = specSettings.colors.bar.base.color
+					local barBorderColor = specSettings.colors.bar.border.color
 
 					if specSettings.colors.bar.vivaciousVivification.enabled and affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive then
 						barColor = specSettings.colors.bar.vivaciousVivification.color
@@ -1222,7 +1222,7 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
@@ -1336,39 +1336,39 @@ local function UpdateResourceBar()
 						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					end
 
-					local barColor = specSettings.colors.bar.base
-					local barBorderColor = specSettings.colors.bar.border
+					local barColor = specSettings.colors.bar.base.color
+					local barBorderColor = specSettings.colors.bar.border.color
 
 					if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable() and TRB.Data.character.inCombat then
 						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
 					elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
 					elseif snapshots[spells.danceOfChiJi.id].buff.isActive then
-						barBorderColor = specSettings.colors.bar.borderChiJi
+						barBorderColor = specSettings.colors.bar.borderChiJi.color
 					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 			
 			if specSettings.displayBar.secondary ~= "never" then
 				refreshText = true
 				-- Update Chi using BarNodes
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
+					local cpBorderColor = specSettings.colors.comboPoints.border.color
+					local cpColor = specSettings.colors.comboPoints.base.color
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -1379,9 +1379,9 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 1, 1)
 								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate
+									cpColor = specSettings.colors.comboPoints.penultimate.color
 								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final
+									cpColor = specSettings.colors.comboPoints.final.color
 								end
 							else
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 0, 1)
@@ -1746,9 +1746,9 @@ function TRB.Functions.Class:CheckCharacter()
 								sharedSettings.textures.comboPointsBackground
 							)
 							node:SetMinMax(0, 1)
-							node:SetBorderColor(sharedSettings.colors.comboPoints.border)
-							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background)
-							node:SetColor(sharedSettings.colors.comboPoints.base)
+							node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
+							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
+							node:SetColor(sharedSettings.colors.comboPoints.base.color)
 							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 						end
 					end
