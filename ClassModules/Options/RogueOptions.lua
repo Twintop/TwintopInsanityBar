@@ -904,7 +904,7 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderStealth
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.borderStealth, controls.colors, "borderStealth", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderStealth")
 	end)
 
 	yCoord = yCoord - 40
@@ -1661,7 +1661,7 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderStealth
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.borderStealth, controls.colors, "borderStealth", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderStealth")
 	end)
 
 
@@ -2411,7 +2411,7 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderStealth
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.borderStealth, controls.colors, "borderStealth", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderStealth")
 	end)
 
 	yCoord = yCoord - 40

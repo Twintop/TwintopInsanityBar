@@ -606,14 +606,14 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthShock"], spec.colors.bar.earthShock.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.earthShock
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.earthShock, controls.colors, "earthShock", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthShock")
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance, controls.colors, "inAscendance", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
 	end)
 
 	yCoord = yCoord - 30
@@ -630,7 +630,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance1GCD
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance1GCD, controls.colors, "inAscendance1GCD", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 	end)
 
 	yCoord = yCoord - 30
@@ -1141,7 +1141,7 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance, controls.colors, "inAscendance", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
 	end)
 
 	yCoord = yCoord - 30
@@ -1158,7 +1158,7 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance1GCD
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance1GCD, controls.colors, "inAscendance1GCD", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 	end)
 
 	yCoord = yCoord - 40
@@ -1631,7 +1631,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance, controls.colors, "inAscendance", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
 	end)
 
 	yCoord = yCoord - 30
@@ -1648,7 +1648,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inAscendance1GCD
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inAscendance1GCD, controls.colors, "inAscendance1GCD", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 	end)
 
 	yCoord = yCoord - 30

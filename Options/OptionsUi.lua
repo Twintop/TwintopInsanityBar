@@ -727,11 +727,23 @@ end
 
 function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
 	if button == "LeftButton" then
-		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key].color, true)
+		-- Handle both table format { color = "FFRRGGBB" } and direct string format "FFRRGGBB"
+		local colorValue = colorTable[key]
+		local isNestedTable = type(colorValue) == "table" and colorValue.color ~= nil
+		local colorString = isNestedTable and colorValue.color or colorValue
+		
+		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
 			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
-			colorTable[key].color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+			local newColorString = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+			
+			-- Update the color in the appropriate format
+			if isNestedTable then
+				colorTable[key].color = newColorString
+			else
+				colorTable[key] = newColorString
+			end
 		
 			if frame ~= nil then
 				if frameType == "backdrop" then
@@ -747,15 +759,15 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 					-- Handle both single frame and array of frames
 					if type(frame) == "table" and frame[1] ~= nil then
 						for _, f in ipairs(frame) do
-							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, colorTable[key].color)
+							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, newColorString)
 						end
 					else
-						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key].color)
+						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, newColorString)
 					end
 				elseif frameType == "bar" then
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key].color)
+					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, newColorString)
 				elseif frameType == "threshold" then
-					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key].color, true, classId, specId)
+					TRB.Functions.Color:SetThresholdColor(frame, nil, newColorString, true, classId, specId)
 				end			
 			elseif frameType == "health" then
 				TRB.Functions.Character:UpdateHealthValues()
@@ -2154,7 +2166,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorValue, 300, 25, oUi.xCoord2, yCoord)
 					f = nodeControls.color
 					f:SetScript("OnMouseDown", function(self, button, ...)
-						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors, nodeControls, nodeKey, barTypeDef.key .. "_node")
+						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[nodeKey], nodeControls, "color", barTypeDef.key .. "_node")
 					end)
 				end
 				yCoord = yCoord - 30
@@ -5164,10 +5176,18 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	controls.colors = controls.colors or {}
 	controls.colors.barText = controls.colors.barText or {}
-	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontColor"], workingBarText.color.color,
+	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontColor"], (workingBarText.color and workingBarText.color.color) or "FFFFFFFF",
 																			250, 25, oUi.xCoord2, yCoord)
 	local barTextColor = controls.colors.barText.color
 	barTextColor:SetScript("OnMouseDown", function(self, button, ...)
+		-- Ensure color table is properly initialized before opening color picker
+		--[[if workingBarText.color == nil then
+			workingBarText.color = { color = "FFFFFFFF" }
+		elseif type(workingBarText.color) == "string" then
+			workingBarText.color = { color = workingBarText.color }
+		elseif workingBarText.color.color == nil then
+			workingBarText.color.color = "FFFFFFFF"
+		end]]
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, workingBarText, controls.colors.barText, "color")
 	end)
 
@@ -5279,7 +5299,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
 
 		fontSize:SetValue(workingBarText.fontSize)
-		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(workingBarText.color.color, true))
+		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString((workingBarText.color and workingBarText.color.color) or "FFFFFFFF", true))
 		barText:SetText(workingBarText.text)
 
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)

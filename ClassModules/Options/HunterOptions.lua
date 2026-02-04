@@ -707,8 +707,8 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.bestialWrath.enabled = self:GetChecked()
 	end)
 
-	controls.colors.barBestialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBestialWrath"], spec.colors.bar.bestialWrath.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.barBestialWrath
+	controls.colors.bestialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBestialWrath"], spec.colors.bar.bestialWrath.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.bestialWrath
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "bestialWrath")
 	end)
@@ -1963,8 +1963,8 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.takedown.enabled = self:GetChecked()
 	end)
 
-	controls.colors.barTakedown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerTakedown"], spec.colors.bar.takedown.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.barTakedown
+	controls.colors.takedown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerTakedown"], spec.colors.bar.takedown.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.takedown
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "takedown")
 	end)

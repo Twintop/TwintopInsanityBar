@@ -765,7 +765,7 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.surgeOfLight
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.surgeOfLight, controls.colors, "surgeOfLight", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight")
 	end)
 	
 	controls.checkBoxes.surgeOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Threshold_Option_surgeOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
@@ -1239,10 +1239,10 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 30
-	controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosis"], spec.colors.bar.apotheosis.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inApotheosis
+	controls.colors.apotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosis"], spec.colors.bar.apotheosis.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.apotheosis
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.apotheosis, controls.colors, "inApotheosis", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "apotheosis")
 	end)
 
 	yCoord = yCoord - 30
@@ -1256,10 +1256,10 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfApotheosis.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inApotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosisEnd"], spec.colors.bar.apotheosisEnd.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inApotheosisEnd
+	controls.colors.apotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosisEnd"], spec.colors.bar.apotheosisEnd.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.apotheosisEnd
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.apotheosisEnd, controls.colors, "inApotheosisEnd", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "apotheosisEnd")
 	end)
 
 	yCoord = yCoord - 30
@@ -1286,7 +1286,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.surgeOfLight
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.surgeOfLight, controls.colors, "surgeOfLight", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight")
 	end)
 	
 	--[[controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerResonantWords"], spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-90)
@@ -1871,14 +1871,14 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidform"], spec.colors.bar.inVoidform.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inVoidform		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inVoidform, controls.colors, "inVoidform", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform")
 	end)
 
 	yCoord = yCoord - 30
 	controls.colors.inVoidform1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidformEnd"], spec.colors.bar.inVoidform1GCD.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.inVoidform1GCD
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.inVoidform1GCD, controls.colors, "inVoidform1GCD", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
 	end)
 
 	controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_vfColorChange", parent, "ChatConfigCheckButtonTemplate")
@@ -1895,7 +1895,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.shadowWordMadnessUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerShadowWordMadness"], spec.colors.bar.shadowWordMadnessUsable.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.shadowWordMadnessUsable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.shadowWordMadnessUsable, controls.colors, "shadowWordMadnessUsable", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "shadowWordMadnessUsable")
 	end)
 
 	--[[
@@ -1939,7 +1939,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerMindFlayInsanity"], spec.colors.bar.borderMindFlayInsanity.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.borderMindFlayInsanity
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.borderMindFlayInsanity, controls.colors, "borderMindFlayInsanity", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
 	end)
 	yCoord = yCoord - 30
 	controls.checkBoxes.entropicRiftBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_entropicRiftBorderChange", parent, "ChatConfigCheckButtonTemplate")

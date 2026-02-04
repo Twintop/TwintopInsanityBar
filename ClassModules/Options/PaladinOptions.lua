@@ -557,7 +557,7 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.infusionOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyColorPickerInfusionOfLight"], spec.colors.bar.infusionOfLight.color, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.infusionOfLight
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar.infusionOfLight, controls.colors, "infusionOfLight", "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "infusionOfLight")
 	end)
 
 	yCoord = yCoord - 40
