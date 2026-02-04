@@ -3082,6 +3082,10 @@ function TRB.Functions.Class:CheckCharacter()
 			
 			-- Only configure combo points for Feral, or for other specs when form switching is enabled
 			if barGroups.secondary and (TRB.Data.character.specId == 2 or enableFormSwitching) then
+				-- Clear cached node count if combo point max changed, so the new value is used
+				if TRB.Data.character.maxResource2 ~= TRB.Data.character.maxComboPoints then
+					barGroups.secondary.lastRebuildNodeCount = nil
+				end
 				TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
 				-- Use Feral settings for combo point configuration
 				local feralSettings = TRB.Data.specCache.feral.settings

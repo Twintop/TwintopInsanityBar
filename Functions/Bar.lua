@@ -917,9 +917,13 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	local frameLevels = TRB.Data.constants.frameLevels
 
 	-- Determine node count
+	-- Priority: 1) config.nodeCount (explicit), 2) lastRebuildNodeCount (from RebuildNodes, respects compressed view), 3) maxResource2
 	local nodes
 	if config.nodeCount ~= nil then
 		nodes = config.nodeCount
+	elseif targetGroup.lastRebuildNodeCount ~= nil then
+		-- Use the node count from the last RebuildNodes call (respects compressed view)
+		nodes = targetGroup.lastRebuildNodeCount
 	else
 		nodes = TRB.Data.character.maxResource2
 		if nodes == nil or nodes == 0 then
