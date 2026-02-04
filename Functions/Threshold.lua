@@ -266,7 +266,7 @@ function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, h
 end
 
 function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
-	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
+	if not showThreshold or settings == nil or settings.comboPoints == nil or thresholdLine == nil then
 		-- Hide the threshold line if showThreshold is false
 		if thresholdLine and not showThreshold then
 			thresholdLine:Hide()
@@ -288,18 +288,24 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 		end
 	end
 
-	-- Use effective width from barGroups if available (for CDM width matching)
-	-- Otherwise fall back to settings.bar.width
-	local effectiveWidth = settings.bar.width
-	if TRB.Frames.barGroups and TRB.Frames.barGroups.effectiveWidth then
-		effectiveWidth = TRB.Frames.barGroups.effectiveWidth
+	-- Calculate effective width for the combo points bar
+	-- When fullWidth is enabled, use the bar's effectiveWidth (accounts for CDM width matching)
+	-- Otherwise use the comboPoints-specific width setting
+	local effectiveWidth
+	if settings.comboPoints.fullWidth then
+		effectiveWidth = (TRB.Frames.barGroups and TRB.Frames.barGroups.effectiveWidth) or (settings.bar and settings.bar.width) or settings.comboPoints.width
+	else
+		effectiveWidth = settings.comboPoints.width
 	end
+
+	local border = settings.comboPoints.border or 0
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	-- Include effectiveWidth in cache check so thresholds update when CDM width changes
 	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then
-		local factor = (effectiveWidth - (settings.comboPoints.border * 2)) / maxResource
+		local factor = (effectiveWidth - (border * 2)) / maxResource
 
+		thresholdLine:ClearAllPoints()
 		if growRight then
 			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
 		else

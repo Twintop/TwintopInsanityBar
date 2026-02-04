@@ -1198,10 +1198,15 @@ local function UpdateResourceBar()
 						
 						-- Position 5 threshold dividers at 1, 2, 3, 4, 5 to create 6 segments
 						local thresholds = sfNode:GetThresholds()
-						local sfResourceFrame = sfNode:GetResourceFrame()
+						local sfContainerFrame = sfNode:GetContainerFrame()
+						
+						-- Get threshold line color from comboPoints border
+						local thresholdColor = specSettings.colors.comboPoints.border.color
+						
 						for thresholdId = 1, 5 do
 							if thresholds[thresholdId] then
-								TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "soulFragment" .. thresholdId, thresholds[thresholdId], true, sfResourceFrame, thresholdId, max)
+								TRB.Functions.Color:SetThresholdColor(thresholds[thresholdId], thresholdColor, true)
+								TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "soulFragment" .. thresholdId, thresholds[thresholdId], true, sfContainerFrame, thresholdId, max)
 							end
 						end
 					end
