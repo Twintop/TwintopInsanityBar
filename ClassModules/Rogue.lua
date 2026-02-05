@@ -694,7 +694,7 @@ local function RefreshLookupData_Assassination()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
 				end
@@ -2230,9 +2230,6 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 			-- Rebuild secondary bar layout when combo point count changes
 			if barGroups and barGroups.secondary then
-				-- Clear cached node count so ApplyBarGroupsLayout uses the new maxResource2
-				barGroups.secondary.lastRebuildNodeCount = nil
-				
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
 				barGroups.secondary:SetNodeCount(maxComboPoints)
 				barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
