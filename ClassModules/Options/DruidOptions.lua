@@ -1830,6 +1830,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
 
+	--[[
 	yCoord = yCoord - 30
 	controls.checkBoxes.clearcasting = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Clearcasting_CB", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.clearcasting
@@ -1845,7 +1846,7 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f = controls.colors.clearcasting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "clearcasting")
-	end)
+	end)]]
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.maxBite = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_MaxBite_CB", parent, "ChatConfigCheckButtonTemplate")

@@ -1922,6 +1922,16 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "shadowWordMadnessUsable")
 	end)
 
+	controls.checkBoxes.shadowWordMadnessUsable = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Checkbox_ShadowWordMadnessUsable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.shadowWordMadnessUsable
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxShadowWordMadnessUsable"])
+	f.tooltip = L["PriestShadowCheckboxShadowWordMadnessUsableTooltip"]
+	f:SetChecked(spec.colors.bar.shadowWordMadnessUsable.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.shadowWordMadnessUsable.enabled = self:GetChecked()
+	end)
+
 	--[[
 	yCoord = yCoord - 30
 	controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerInstantMindBlast"], spec.colors.bar.instantMindBlast.color, 300, 25, oUi.xCoord2, yCoord)

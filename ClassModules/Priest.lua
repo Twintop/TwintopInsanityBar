@@ -1953,14 +1953,8 @@ local function UpdateResourceBar()
 					elseif specSettings.colors.bar.inVoidform.enabled then
 						barColor = specSettings.colors.bar.inVoidform.color
 					end
-				end
-				
-				if barColor == nil then
-					if specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
-						barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
-					else
-						barColor = specSettings.colors.bar.base.color
-					end
+				elseif specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
+					barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
 				end
 				
 				if overcapBorderCurve then

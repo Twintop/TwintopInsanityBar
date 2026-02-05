@@ -390,7 +390,7 @@ local function SurvivalLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
-	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("takedownTime", "takedown", classic, "CENTER", "CENTER"))
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("takedownTime", "takedown", classic, "CENTER", "RIGHT"))
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
@@ -2006,23 +2006,6 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, false)
-
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.explosiveShot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Border_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.explosiveShot
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxExplosiveShot"] )
-	f.tooltip = L["HunterSurvivalCheckboxExplosiveShotTooltip"]
-	f:SetChecked(spec.colors.bar.explosiveShot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.explosiveShot.enabled = self:GetChecked()
-	end)
-
-	controls.colors.explosiveShot = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerExplosiveShot"], spec.colors.bar.explosiveShot.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.explosiveShot
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "explosiveShot")
-	end)]]
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)

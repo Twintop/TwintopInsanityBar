@@ -990,7 +990,7 @@ local function UpdateResourceBar()
 				end
 
 				if spells.bestialWrath:IsUsable() then
-					if specSettings.colors.bar.flashEnabled then
+					if specSettings.colors.bar.flashEnabled and TRB.Data.character.inCombat then
 						TRB.Functions.Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					else
 						barGroups.primary:GetContainerFrame():SetAlpha(1.0)

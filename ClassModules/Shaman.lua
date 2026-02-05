@@ -1061,6 +1061,8 @@ local function UpdateResourceBar()
 
 					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
 						barColor = specSettings.colors.bar.inAscendance1GCD.color
+					elseif anyUsable and specSettings.colors.bar.earthShock.enabled then
+						barColor = specSettings.colors.bar.earthShock.color
 					elseif specSettings.colors.bar.inAscendance.enabled then
 						barColor = specSettings.colors.bar.inAscendance.color
 					end
