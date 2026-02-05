@@ -1030,13 +1030,13 @@ local function UpdateResourceBar()
 					local ebonMightTimeThreshold = 0
 					local useEndOfEbonMightColor = false
 
-					if specSettings.endOfEbonMight.enabled then
+					if specSettings.endOf.ebonMight.enabled then
 						useEndOfEbonMightColor = true
-						if specSettings.endOfEbonMight.mode == "gcd" then
+						if specSettings.endOf.ebonMight.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							ebonMightTimeThreshold = gcd * specSettings.endOfEbonMight.gcdsMax
-						elseif specSettings.endOfEbonMight.mode == "time" then
-							ebonMightTimeThreshold = specSettings.endOfEbonMight.timeMax
+							ebonMightTimeThreshold = gcd * specSettings.endOf.ebonMight.gcdsMax
+						elseif specSettings.endOf.ebonMight.mode == "time" then
+							ebonMightTimeThreshold = specSettings.endOf.ebonMight.timeMax
 						end
 					end
 
@@ -1058,12 +1058,12 @@ local function UpdateResourceBar()
 							snapshotData.audio.playedEbonMightCue = true
 							PlaySoundFile(specSettings.audio.ebonMightEnding.sound, coreSettings.audio.channel.channel)
 						end
-					elseif useEndOfEbonMightColor and specSettings.colors.bar.inEbonMight1GCD.enabled and ebonMightTimeLeft <= ebonMightTimeThreshold then
+					elseif useEndOfEbonMightColor and specSettings.colors.bar.ebonMightEnd.enabled and ebonMightTimeLeft <= ebonMightTimeThreshold then
 						-- Ebon Might is ending soon
-						barColor = specSettings.colors.bar.inEbonMight1GCD.color
-					elseif specSettings.colors.bar.inEbonMight.enabled then
+						barColor = specSettings.colors.bar.ebonMightEnd.color
+					elseif specSettings.colors.bar.ebonMight.enabled then
 						-- Ebon Might is active
-						barColor = specSettings.colors.bar.inEbonMight.color
+						barColor = specSettings.colors.bar.ebonMight.color
 						snapshotData.audio.playedEbonMightCue = false
 					end
 				else

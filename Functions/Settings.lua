@@ -3776,6 +3776,300 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.borderOvercapEnabled = nil
 		end
 	end
+
+	-- Port forward endOfMetamorphosis to endOf.metamorphosis for Demon Hunter Havoc
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.endOf == nil then
+
+		TwintopInsanityBarSettings.demonhunter.havoc.endOf = {
+			metamorphosis = TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis
+		}
+		TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis = nil
+
+		-- Migrate color key: metamorphosisEnding -> metamorphosisEnd
+		if TwintopInsanityBarSettings.demonhunter.havoc.colors and
+			TwintopInsanityBarSettings.demonhunter.havoc.colors.bar and
+			TwintopInsanityBarSettings.demonhunter.havoc.colors.bar.metamorphosisEnding ~= nil then
+			TwintopInsanityBarSettings.demonhunter.havoc.colors.bar.metamorphosisEnd =
+				TwintopInsanityBarSettings.demonhunter.havoc.colors.bar.metamorphosisEnding
+			TwintopInsanityBarSettings.demonhunter.havoc.colors.bar.metamorphosisEnding = nil
+		end
+	end
+
+	-- Port forward endOfMetamorphosis to endOf.metamorphosis for Demon Hunter Vengeance
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOf == nil then
+
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOf = {
+			metamorphosis = TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis
+		}
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis = nil
+
+		-- Migrate color key: metamorphosisEnding -> metamorphosisEnd
+		if TwintopInsanityBarSettings.demonhunter.vengeance.colors and
+			TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar and
+			TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar.metamorphosisEnding ~= nil then
+			TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar.metamorphosisEnd =
+				TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar.metamorphosisEnding
+			TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar.metamorphosisEnding = nil
+		end
+	end
+
+	-- Port forward endOfBestialWrath to endOf.bestialWrath for Hunter Beast Mastery
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery.endOfBestialWrath ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery.endOf == nil then
+
+		TwintopInsanityBarSettings.hunter.beastMastery.endOf = {
+			bestialWrath = TwintopInsanityBarSettings.hunter.beastMastery.endOfBestialWrath
+		}
+		TwintopInsanityBarSettings.hunter.beastMastery.endOfBestialWrath = nil
+		-- Note: bestialWrathEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfTrueshot to endOf.trueshot for Hunter Marksmanship
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship.endOfTrueshot ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship.endOf == nil then
+
+		TwintopInsanityBarSettings.hunter.marksmanship.endOf = {
+			trueshot = TwintopInsanityBarSettings.hunter.marksmanship.endOfTrueshot
+		}
+		TwintopInsanityBarSettings.hunter.marksmanship.endOfTrueshot = nil
+
+		-- Migrate color key: trueshotEnding -> trueshotEnd
+		if TwintopInsanityBarSettings.hunter.marksmanship.colors and
+			TwintopInsanityBarSettings.hunter.marksmanship.colors.bar and
+			TwintopInsanityBarSettings.hunter.marksmanship.colors.bar.trueshotEnding ~= nil then
+			TwintopInsanityBarSettings.hunter.marksmanship.colors.bar.trueshotEnd =
+				TwintopInsanityBarSettings.hunter.marksmanship.colors.bar.trueshotEnding
+			TwintopInsanityBarSettings.hunter.marksmanship.colors.bar.trueshotEnding = nil
+		end
+	end
+
+	-- Port forward endOfTakedown to endOf.takedown for Hunter Survival
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.survival ~= nil and
+		TwintopInsanityBarSettings.hunter.survival.endOfTakedown ~= nil and
+		TwintopInsanityBarSettings.hunter.survival.endOf == nil then
+
+		TwintopInsanityBarSettings.hunter.survival.endOf = {
+			takedown = TwintopInsanityBarSettings.hunter.survival.endOfTakedown
+		}
+		TwintopInsanityBarSettings.hunter.survival.endOfTakedown = nil
+		-- Note: takedownEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfAscendance to endOf.ascendance for Shaman Elemental
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental.endOfAscendance ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental.endOf == nil then
+
+		TwintopInsanityBarSettings.shaman.elemental.endOf = {
+			ascendance = TwintopInsanityBarSettings.shaman.elemental.endOfAscendance
+		}
+		TwintopInsanityBarSettings.shaman.elemental.endOfAscendance = nil
+
+		-- Migrate color keys: inAscendance -> ascendance, inAscendance1GCD -> ascendanceEnd
+		if TwintopInsanityBarSettings.shaman.elemental.colors and
+			TwintopInsanityBarSettings.shaman.elemental.colors.bar then
+			local bar = TwintopInsanityBarSettings.shaman.elemental.colors.bar
+			if bar.inAscendance ~= nil then
+				bar.ascendance = bar.inAscendance
+				bar.inAscendance = nil
+			end
+			if bar.inAscendance1GCD ~= nil then
+				bar.ascendanceEnd = bar.inAscendance1GCD
+				bar.inAscendance1GCD = nil
+			end
+		end
+	end
+
+	-- Port forward endOfAscendance to endOf.ascendance for Shaman Enhancement
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement.endOfAscendance ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement.endOf == nil then
+
+		TwintopInsanityBarSettings.shaman.enhancement.endOf = {
+			ascendance = TwintopInsanityBarSettings.shaman.enhancement.endOfAscendance
+		}
+		TwintopInsanityBarSettings.shaman.enhancement.endOfAscendance = nil
+
+		-- Migrate color keys: inAscendance -> ascendance, inAscendance1GCD -> ascendanceEnd
+		if TwintopInsanityBarSettings.shaman.enhancement.colors and
+			TwintopInsanityBarSettings.shaman.enhancement.colors.bar then
+			local bar = TwintopInsanityBarSettings.shaman.enhancement.colors.bar
+			if bar.inAscendance ~= nil then
+				bar.ascendance = bar.inAscendance
+				bar.inAscendance = nil
+			end
+			if bar.inAscendance1GCD ~= nil then
+				bar.ascendanceEnd = bar.inAscendance1GCD
+				bar.inAscendance1GCD = nil
+			end
+		end
+	end
+
+	-- Port forward endOfAscendance to endOf.ascendance for Shaman Restoration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration.endOfAscendance ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration.endOf == nil then
+
+		TwintopInsanityBarSettings.shaman.restoration.endOf = {
+			ascendance = TwintopInsanityBarSettings.shaman.restoration.endOfAscendance
+		}
+		TwintopInsanityBarSettings.shaman.restoration.endOfAscendance = nil
+
+		-- Migrate color keys: inAscendance -> ascendance, inAscendance1GCD -> ascendanceEnd
+		if TwintopInsanityBarSettings.shaman.restoration.colors and
+			TwintopInsanityBarSettings.shaman.restoration.colors.bar then
+			local bar = TwintopInsanityBarSettings.shaman.restoration.colors.bar
+			if bar.inAscendance ~= nil then
+				bar.ascendance = bar.inAscendance
+				bar.inAscendance = nil
+			end
+			if bar.inAscendance1GCD ~= nil then
+				bar.ascendanceEnd = bar.inAscendance1GCD
+				bar.inAscendance1GCD = nil
+			end
+		end
+	end
+
+	-- Port forward endOfApotheosis to endOf.apotheosis for Priest Holy
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.holy ~= nil and
+		TwintopInsanityBarSettings.priest.holy.endOfApotheosis ~= nil and
+		TwintopInsanityBarSettings.priest.holy.endOf == nil then
+
+		TwintopInsanityBarSettings.priest.holy.endOf = {
+			apotheosis = TwintopInsanityBarSettings.priest.holy.endOfApotheosis
+		}
+		TwintopInsanityBarSettings.priest.holy.endOfApotheosis = nil
+		-- Note: apotheosisEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfVoidform to endOf.voidform for Priest Shadow
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.shadow ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.endOfVoidform ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.endOf == nil then
+
+		TwintopInsanityBarSettings.priest.shadow.endOf = {
+			voidform = TwintopInsanityBarSettings.priest.shadow.endOfVoidform
+		}
+		TwintopInsanityBarSettings.priest.shadow.endOfVoidform = nil
+
+		-- Migrate color keys: inVoidform -> voidform, inVoidform1GCD -> voidformEnd
+		if TwintopInsanityBarSettings.priest.shadow.colors and
+			TwintopInsanityBarSettings.priest.shadow.colors.bar then
+			local bar = TwintopInsanityBarSettings.priest.shadow.colors.bar
+			if bar.inVoidform ~= nil then
+				bar.voidform = bar.inVoidform
+				bar.inVoidform = nil
+			end
+			if bar.inVoidform1GCD ~= nil then
+				bar.voidformEnd = bar.inVoidform1GCD
+				bar.inVoidform1GCD = nil
+			end
+		end
+	end
+
+	-- Port forward endOfEclipse to endOf.eclipse for Druid Balance
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.balance ~= nil and
+		TwintopInsanityBarSettings.druid.balance.endOfEclipse ~= nil and
+		TwintopInsanityBarSettings.druid.balance.endOf == nil then
+
+		-- Preserve celestialAlignmentOnly inside the new structure
+		TwintopInsanityBarSettings.druid.balance.endOf = {
+			eclipse = TwintopInsanityBarSettings.druid.balance.endOfEclipse
+		}
+		TwintopInsanityBarSettings.druid.balance.endOfEclipse = nil
+
+		-- Migrate color key: eclipse1GCD -> eclipseEnd
+		if TwintopInsanityBarSettings.druid.balance.colors and
+			TwintopInsanityBarSettings.druid.balance.colors.bar and
+			TwintopInsanityBarSettings.druid.balance.colors.bar.eclipse1GCD ~= nil then
+			TwintopInsanityBarSettings.druid.balance.colors.bar.eclipseEnd =
+				TwintopInsanityBarSettings.druid.balance.colors.bar.eclipse1GCD
+			TwintopInsanityBarSettings.druid.balance.colors.bar.eclipse1GCD = nil
+		end
+	end
+
+	-- Port forward endOfBerserk to endOf.berserk for Druid Guardian
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.guardian ~= nil and
+		TwintopInsanityBarSettings.druid.guardian.endOfBerserk ~= nil and
+		TwintopInsanityBarSettings.druid.guardian.endOf == nil then
+
+		TwintopInsanityBarSettings.druid.guardian.endOf = {
+			berserk = TwintopInsanityBarSettings.druid.guardian.endOfBerserk
+		}
+		TwintopInsanityBarSettings.druid.guardian.endOfBerserk = nil
+		-- Note: berserkEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfIncarnation to endOf.incarnation for Druid Restoration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.restoration ~= nil and
+		TwintopInsanityBarSettings.druid.restoration.endOfIncarnation ~= nil and
+		TwintopInsanityBarSettings.druid.restoration.endOf == nil then
+
+		TwintopInsanityBarSettings.druid.restoration.endOf = {
+			incarnation = TwintopInsanityBarSettings.druid.restoration.endOfIncarnation
+		}
+		TwintopInsanityBarSettings.druid.restoration.endOfIncarnation = nil
+		-- Note: incarnationEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfEbonMight to endOf.ebonMight for Evoker Augmentation
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.endOfEbonMight ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.endOf == nil then
+
+		TwintopInsanityBarSettings.evoker.augmentation.endOf = {
+			ebonMight = TwintopInsanityBarSettings.evoker.augmentation.endOfEbonMight
+		}
+		TwintopInsanityBarSettings.evoker.augmentation.endOfEbonMight = nil
+
+		-- Migrate color keys: inEbonMight -> ebonMight, inEbonMight1GCD -> ebonMightEnd
+		if TwintopInsanityBarSettings.evoker.augmentation.colors and
+			TwintopInsanityBarSettings.evoker.augmentation.colors.bar then
+			local bar = TwintopInsanityBarSettings.evoker.augmentation.colors.bar
+			if bar.inEbonMight ~= nil then
+				bar.ebonMight = bar.inEbonMight
+				bar.inEbonMight = nil
+			end
+			if bar.inEbonMight1GCD ~= nil then
+				bar.ebonMightEnd = bar.inEbonMight1GCD
+				bar.inEbonMight1GCD = nil
+			end
+		end
+	end
 end
 
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
@@ -4129,14 +4423,23 @@ end
 ---@param mode "gcd"|"time" # Whether to use GCD count or time for the threshold
 ---@param gcdsMax number # Number of GCDs for the threshold (when mode is "gcd")
 ---@param timeMax number # Seconds for the threshold (when mode is "time")
+---@param extraOptions table? # Optional table of additional options to merge into the result
 ---@return TRB.Classes.Settings.GenericTrackingOverX
-function TRB.Functions.Settings:DefaultEndOfSettings(mode, gcdsMax, timeMax)
-	return {
+function TRB.Functions.Settings:DefaultEndOfSettings(mode, gcdsMax, timeMax, extraOptions)
+	local settings = {
 		enabled = true,
 		mode = mode or "gcd",
 		gcdsMax = gcdsMax or 2,
 		timeMax = timeMax or 3.0
 	}
+
+	if extraOptions then
+		for k, v in pairs(extraOptions) do
+			settings[k] = v
+		end
+	end
+
+	return settings
 end
 
 ---Creates a default bar text entry for buff time display with icon

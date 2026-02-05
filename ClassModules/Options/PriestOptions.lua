@@ -429,11 +429,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 		bars = {
 			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
 		},
-		endOfVoidform = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			voidform = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		colors={
 			text = {
@@ -503,11 +500,11 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					color = "FF8A004C",
 					enabled = true
 				},
-				inVoidform = {
+				voidform = {
 					color = "FF431863",
 					enabled = true
 				},
-				inVoidform1GCD = {
+				voidformEnd = {
 					color = "FFFF0000"
 				},
 				flashAlpha = 0.70,
@@ -1882,38 +1879,24 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.inVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_inVoidformColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.inVoidform
+	controls.checkBoxes.voidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_voidformColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.voidform
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxVoidform"])
 	f.tooltip = L["PriestShadowCheckboxVoidformTooltip"]
-	f:SetChecked(spec.colors.bar.inVoidform.enabled)
+	f:SetChecked(spec.colors.bar.voidform.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.inVoidform.enabled = self:GetChecked()
+		spec.colors.bar.voidform.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidform"], spec.colors.bar.inVoidform.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inVoidform		
+	controls.colors.voidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidform"], spec.colors.bar.voidform.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.voidform		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "voidform")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.inVoidform1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidformEnd"], spec.colors.bar.inVoidform1GCD.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inVoidform1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
-	end)
-
-	controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_vfColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfVoidform
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxVoidformEnd"])
-	f.tooltip = L["PriestShadowCheckboxVoidformEndTooltip"]
-	f:SetChecked(spec.endOfVoidform.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfVoidform.enabled = self:GetChecked()
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "voidform", L["PriestShadowCheckboxVoidformEnd"], L["PriestShadowCheckboxVoidformEndTooltip"], L["PriestShadowColorPickerVoidformEnd"])
 
 	yCoord = yCoord - 30
 	controls.colors.shadowWordMadnessUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerShadowWordMadness"], spec.colors.bar.shadowWordMadnessUsable.color, 300, 25, oUi.xCoord2, yCoord)
@@ -2034,56 +2017,7 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderEndOfVoidformConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfVoidformModeGCDs = CreateFrame("CheckButton", "TRB_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfVoidformModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxVoidformGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfVoidform.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfVoidformModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfVoidformModeTime:SetChecked(false)
-		spec.endOfVoidform.mode = "gcd"
-	end)
-
-	title = L["PriestShadowVoidformGcds"]
-	controls.endOfVoidformGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfVoidform.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfVoidformGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfVoidform.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfVoidformModeTime = CreateFrame("CheckButton", "TRB_EOFV_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfVoidformModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxVoidformTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfVoidform.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfVoidformModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfVoidformModeTime:SetChecked(true)
-		spec.endOfVoidform.mode = "time"
-	end)
-
-	title = L["PriestShadowVoidformTime"]
-	controls.endOfVoidformTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfVoidform.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfVoidformTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfVoidform.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "voidform", L["PriestShadowHeaderEndOfVoidformConfiguration"], L["PriestShadowCheckboxVoidformGcds"], L["PriestShadowVoidformGcds"], L["PriestShadowCheckboxVoidformTime"], L["PriestShadowVoidformTime"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], SHADOW_MAX_INSANITY)

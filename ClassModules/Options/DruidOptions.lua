@@ -297,12 +297,8 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			dragonriding = true,
 			enableFormSwitching = true
 		},
-		endOfEclipse = {
-			enabled=true,
-			celestialAlignmentOnly=false,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			eclipse = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0, { celestialAlignmentOnly = false })
 		},
 		overcap = {
 			mode = "relative",
@@ -345,7 +341,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				lunar = { color = "FF144D72", enabled = true },
 				solar = { color = "FFFFEE00", enabled = true },
 				celestial = { color = "FF4A95CE", enabled = true },
-				eclipse1GCD = { color = "FFFF0000" },
+				eclipseEnd = { color = "FFFF0000" },
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
@@ -802,11 +798,8 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		endOfBerserk = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			berserk = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		colors = {
 			text = {
@@ -917,11 +910,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		endOfIncarnation = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			incarnation = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		colors={
 			text = {
@@ -1223,24 +1213,24 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxEndOfEclipse"])
 	f.tooltip = L["DruidBalanceCheckboxEndOfEclipseTooltip"]
-	f:SetChecked(spec.endOfEclipse.enabled)
+	f:SetChecked(spec.endOf.eclipse.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.endOfEclipse.enabled = self:GetChecked()
+		spec.endOf.eclipse.enabled = self:GetChecked()
 	end)
 	controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_EOE_CAO", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.endOfEclipseOnly
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxEndOfEclipseOnlyCelestial"])
 	f.tooltip = L["DruidBalanceCheckboxEndOfEclipseOnlyCelestialTooltip"]
-	f:SetChecked(spec.endOfEclipse.celestialAlignmentOnly)
+	f:SetChecked(spec.endOf.eclipse.celestialAlignmentOnly)
 	f:SetScript("OnClick", function(self, ...)
-		spec.endOfEclipse.celestialAlignmentOnly = self:GetChecked()
+		spec.endOf.eclipse.celestialAlignmentOnly = self:GetChecked()
 	end)
 
-	controls.colors.eclipse1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerEndOfEclipse"], spec.colors.bar.eclipse1GCD.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.eclipse1GCD
+	controls.colors.eclipseEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerEndOfEclipse"], spec.colors.bar.eclipseEnd.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.eclipseEnd
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "eclipse1GCD")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "eclipseEnd")
 	end)
 
 	yCoord = yCoord - 30
@@ -1260,56 +1250,7 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceHeaderEndOfEclipseConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfEclipseModeGCDs = CreateFrame("CheckButton", "TRB_EOE_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfEclipseModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxEclipseGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfEclipse.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfEclipseModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfEclipseModeTime:SetChecked(false)
-		spec.endOfEclipse.mode = "gcd"
-	end)
-
-	title = L["DruidBalanceEclipseGcds"]
-	controls.endOfEclipseGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 15, spec.endOfEclipse.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfEclipseGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfEclipse.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfEclipseModeTime = CreateFrame("CheckButton", "TRB_EOE_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfEclipseModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxEclipseTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfEclipse.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfEclipseModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfEclipseModeTime:SetChecked(true)
-		spec.endOfEclipse.mode = "time"
-	end)
-
-	title = L["DruidBalanceEclipseTime"]
-	controls.endOfEclipseTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 20, spec.endOfEclipse.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfEclipseTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfEclipse.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "eclipse", L["DruidBalanceHeaderEndOfEclipseConfiguration"], L["DruidBalanceCheckboxEclipseGcds"], L["DruidBalanceEclipseGcds"], L["DruidBalanceCheckboxEclipseTime"], L["DruidBalanceEclipseTime"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], BALANCE_MAX_ASTRAL_POWER)
@@ -2561,21 +2502,7 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfBerserk = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_endOfBerserk_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfBerserk
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianCheckboxBerserkEnd"])
-	f.tooltip = L["DruidGuardianCheckboxBerserkEndTooltip"]
-	f:SetChecked(spec.endOfBerserk.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfBerserk.enabled = self:GetChecked()
-	end)
-
-	controls.colors.berserkEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidGuardianColorPickerBerserkEnd"], spec.colors.bar.berserkEnd.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.berserkEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "berserkEnd")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "berserk", L["DruidGuardianCheckboxBerserkEnd"], L["DruidGuardianCheckboxBerserkEndTooltip"], L["DruidGuardianColorPickerBerserkEnd"])
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
@@ -2591,56 +2518,7 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidGuardianEndOfBerserkConfigurationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfBerserkModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_EOI_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfBerserkModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianCheckboxBerserkGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfBerserk.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfBerserkModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfBerserkModeTime:SetChecked(false)
-		spec.endOfBerserk.mode = "gcd"
-	end)
-
-	title = L["DruidGuardianBerserkGcds"]
-	controls.endOfBerserkGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfBerserk.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfBerserkGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfBerserk.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfBerserkModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_EOI_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfBerserkModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianCheckboxBerserkTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfBerserk.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfBerserkModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfBerserkModeTime:SetChecked(true)
-		spec.endOfBerserk.mode = "time"
-	end)
-
-	title = L["DruidGuardianBerserkTime"]
-	controls.endOfBerserkTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfBerserk.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfBerserkTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfBerserk.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "berserk", L["DruidGuardianEndOfBerserkConfigurationHeader"], L["DruidGuardianCheckboxBerserkGcds"], L["DruidGuardianBerserkGcds"], L["DruidGuardianCheckboxBerserkTime"], L["DruidGuardianBerserkTime"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], GUARDIAN_MAX_RAGE)
@@ -3142,21 +3020,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfIncarnation = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_EOI_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfIncarnation
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidRestorationCheckboxIncarnationEnd"])
-	f.tooltip = L["DruidRestorationCheckboxIncarnationEndTooltip"]
-	f:SetChecked(spec.endOfIncarnation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfIncarnation.enabled = self:GetChecked()
-	end)
-
-	controls.colors.incarnationEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidRestorationColorPickerIncarnationEnd"], spec.colors.bar.incarnationEnd.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.incarnationEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "incarnationEnd")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "incarnation", L["DruidRestorationCheckboxIncarnationEnd"], L["DruidRestorationCheckboxIncarnationEndTooltip"], L["DruidRestorationColorPickerIncarnationEnd"])
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
@@ -3172,56 +3036,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 4, yCoord)
 	
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidRestorationEndOfIncarnationConfigurationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfIncarnationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_EOI_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfIncarnationModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidRestorationCheckboxIncarnationGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfIncarnation.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfIncarnationModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfIncarnationModeTime:SetChecked(false)
-		spec.endOfIncarnation.mode = "gcd"
-	end)
-
-	title = L["DruidRestorationIncarnationGcds"]
-	controls.endOfIncarnationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfIncarnation.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfIncarnationGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfIncarnation.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfIncarnationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_EOI_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfIncarnationModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidRestorationCheckboxIncarnationTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfIncarnation.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfIncarnationModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfIncarnationModeTime:SetChecked(true)
-		spec.endOfIncarnation.mode = "time"
-	end)
-
-	title = L["DruidRestorationIncarnationTime"]
-	controls.endOfIncarnationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfIncarnation.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfIncarnationTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfIncarnation.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "incarnation", L["DruidRestorationEndOfIncarnationConfigurationHeader"], L["DruidRestorationCheckboxIncarnationGcds"], L["DruidRestorationIncarnationGcds"], L["DruidRestorationCheckboxIncarnationTime"], L["DruidRestorationIncarnationTime"])
 end
 
 local function RestorationConstructThresholdPanel(parent)

@@ -91,11 +91,8 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 			health = "always",
 			dragonriding = true
 		},
-		endOfBestialWrath = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			bestialWrath = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),
 		},
 		overcap = {
 			mode = "relative",
@@ -278,11 +275,8 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 			health = "always",
 			dragonriding = true
 		},
-		endOfTrueshot = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			trueshot = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),
 		},
 		overcap = {
 			mode = "relative",
@@ -332,7 +326,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 					color = "FF00B60E",
 					enabled = true
 				},
-				trueshotEnding = {
+				trueshotEnd = {
 					color = "FFFF0000"
 				},
 				flashAlpha=0.70,
@@ -446,11 +440,8 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			health = "always",
 			dragonriding = true
 		},
-		endOfTakedown = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			takedown = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),
 		},
 		overcap = {
 			mode = "relative",
@@ -715,21 +706,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfBestialWrath = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Bar_Option_bestialWrathColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfBestialWrath
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBestialWrathEnd"])
-	f.tooltip = L["HunterBeastMasteryCheckboxBestialWrathEndTooltip"]
-	f:SetChecked(spec.endOfBestialWrath.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfBestialWrath.enabled = self:GetChecked()
-	end)
-
-	controls.colors.bestialWrathEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBestialWrathEnd"], spec.colors.bar.bestialWrathEnd.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.bestialWrathEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "bestialWrathEnd")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "bestialWrath", L["HunterBeastMasteryCheckboxBestialWrathEnd"], L["HunterBeastMasteryCheckboxBestialWrathEndTooltip"], L["HunterBeastMasteryColorPickerBestialWrathEnd"])
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
@@ -763,57 +740,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterBeastMasteryHeaderEndOfBestialWrathConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-
-	controls.checkBoxes.endOfBestialWrathModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_endOfBestialWrath_modeGCDs", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfBestialWrathModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBestialWrathGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfBestialWrath.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfBestialWrathModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfBestialWrathModeTime:SetChecked(false)
-		spec.endOfBestialWrath.mode = "gcd"
-	end)
-
-	title = L["HunterBeastMasteryBestialWrathGcds"]
-	controls.endOfBestialWrathGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfBestialWrath.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfBestialWrathGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfBestialWrath.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfBestialWrathModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_endOfBestialWrath_modeTime", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfBestialWrathModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBestialWrathTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfBestialWrath.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfBestialWrathModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfBestialWrathModeTime:SetChecked(true)
-		spec.endOfBestialWrath.mode = "time"
-	end)
-
-	title = L["HunterBeastMasteryBestialWrathTime"]
-	controls.endOfBestialWrathTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfBestialWrath.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfBestialWrathTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfBestialWrath.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "bestialWrath", L["HunterBeastMasteryHeaderEndOfBestialWrathConfiguration"], L["HunterBeastMasteryCheckboxBestialWrathGcds"], L["HunterBeastMasteryBestialWrathGcds"], L["HunterBeastMasteryCheckboxBestialWrathTime"], L["HunterBeastMasteryBestialWrathTime"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], BEAST_MASTERY_MAX_FOCUS)
@@ -1322,21 +1249,7 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfTrueshot
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxEndOfTrueshot"])
-	f.tooltip = L["HunterMarksmanshipCheckboxEndOfTrueshotTooltip"]
-	f:SetChecked(spec.endOfTrueshot.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfTrueshot.enabled = self:GetChecked()
-	end)
-
-	controls.colors.trueshotEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerTrueshotEnd"], spec.colors.bar.trueshotEnding.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.trueshotEnding
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "trueshotEnding")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "trueshot", L["HunterMarksmanshipCheckboxEndOfTrueshot"], L["HunterMarksmanshipCheckboxEndOfTrueshotTooltip"], L["HunterMarksmanshipColorPickerTrueshotEnd"])
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
@@ -1352,56 +1265,7 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterMarksmanshipHeaderEndOfTrueshotConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfTrueshotModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxTrueshotGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfTrueshot.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfTrueshotModeTime:SetChecked(false)
-		spec.endOfTrueshot.mode = "gcd"
-	end)
-
-	title = L["HunterMarksmanshipTrueshotGcds"]
-	controls.endOfTrueshotGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfTrueshot.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfTrueshot.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfTrueshotModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxTrueshotTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfTrueshot.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfTrueshotModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfTrueshotModeTime:SetChecked(true)
-		spec.endOfTrueshot.mode = "time"
-	end)
-
-	title = L["HunterMarksmanshipTrueshotTime"]
-	controls.endOfTrueshotTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfTrueshot.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfTrueshot.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "trueshot", L["HunterMarksmanshipHeaderEndOfTrueshotConfiguration"], L["HunterMarksmanshipCheckboxTrueshotGcds"], L["HunterMarksmanshipTrueshotGcds"], L["HunterMarksmanshipCheckboxTrueshotTime"], L["HunterMarksmanshipTrueshotTime"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], MARKSMANSHIP_MAX_FOCUS)
@@ -1981,21 +1845,7 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfTakedown = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Bar_Option_takedownColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfTakedown
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxTakedownEnd"])
-	f.tooltip = L["HunterSurvivalCheckboxTakedownEndTooltip"]
-	f:SetChecked(spec.endOfTakedown.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfTakedown.enabled = self:GetChecked()
-	end)
-
-	controls.colors.takedownEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerTakedownEnd"], spec.colors.bar.takedownEnd.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.takedownEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "takedownEnd")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "takedown", L["HunterSurvivalCheckboxTakedownEnd"], L["HunterSurvivalCheckboxTakedownEndTooltip"], L["HunterSurvivalColorPickerTakedownEnd"])
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
@@ -2011,57 +1861,7 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvivalHeaderEndOfTakedownConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-
-	controls.checkBoxes.endOfTakedownModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_endOfTakedown_modeGCDs", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfTakedownModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxTakedownGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfTakedown.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfTakedownModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfTakedownModeTime:SetChecked(false)
-		spec.endOfTakedown.mode = "gcd"
-	end)
-
-	title = L["HunterSurvivalTakedownGcds"]
-	controls.endOfTakedownGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfTakedown.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfTakedownGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfTakedown.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfTakedownModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_endOfTakedown_modeTime", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfTakedownModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxTakedownTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfTakedown.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfTakedownModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfTakedownModeTime:SetChecked(true)
-		spec.endOfTakedown.mode = "time"
-	end)
-
-	title = L["HunterSurvivalTakedownTime"]
-	controls.endOfTakedownTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfTakedown.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfTakedownTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfTakedown.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "takedown", L["HunterSurvivalHeaderEndOfTakedownConfiguration"], L["HunterSurvivalCheckboxTakedownGcds"], L["HunterSurvivalTakedownGcds"], L["HunterSurvivalCheckboxTakedownTime"], L["HunterSurvivalTakedownTime"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], SURVIVAL_MAX_FOCUS)

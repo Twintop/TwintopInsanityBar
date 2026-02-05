@@ -968,13 +968,13 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfBestialWrathColor = false
 
-					if specSettings.endOfBestialWrath.enabled then
+					if specSettings.endOf.bestialWrath.enabled then
 						useEndOfBestialWrathColor = true
-						if specSettings.endOfBestialWrath.mode == "gcd" then
+						if specSettings.endOf.bestialWrath.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfBestialWrath.gcdsMax
-						elseif specSettings.endOfBestialWrath.mode == "time" then
-							timeThreshold = specSettings.endOfBestialWrath.timeMax
+							timeThreshold = gcd * specSettings.endOf.bestialWrath.gcdsMax
+						elseif specSettings.endOf.bestialWrath.mode == "time" then
+							timeThreshold = specSettings.endOf.bestialWrath.timeMax
 						end
 					end
 
@@ -1157,18 +1157,18 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfTrueshotColor = false
 
-					if specSettings.endOfTrueshot.enabled then
+					if specSettings.endOf.trueshot.enabled then
 						useEndOfTrueshotColor = true
-						if specSettings.endOfTrueshot.mode == "gcd" then
+						if specSettings.endOf.trueshot.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfTrueshot.gcdsMax
-						elseif specSettings.endOfTrueshot.mode == "time" then
-							timeThreshold = specSettings.endOfTrueshot.timeMax
+							timeThreshold = gcd * specSettings.endOf.trueshot.gcdsMax
+						elseif specSettings.endOf.trueshot.mode == "time" then
+							timeThreshold = specSettings.endOf.trueshot.timeMax
 						end
 					end
 
 					if useEndOfTrueshotColor and snapshots[spells.trueshot.id].buff:GetRemainingTime() <= timeThreshold then
-						barColor = specSettings.colors.bar.trueshotEnding.color
+						barColor = specSettings.colors.bar.trueshotEnd.color
 					elseif specSettings.colors.bar.trueshot.enabled then
 						barColor = specSettings.colors.bar.trueshot.color
 					end
@@ -1287,13 +1287,13 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfTakedownColor = false
 
-					if specSettings.endOfTakedown.enabled then
+					if specSettings.endOf.takedown.enabled then
 						useEndOfTakedownColor = true
-						if specSettings.endOfTakedown.mode == "gcd" then
+						if specSettings.endOf.takedown.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfTakedown.gcdsMax
-						elseif specSettings.endOfTakedown.mode == "time" then
-							timeThreshold = specSettings.endOfTakedown.timeMax
+							timeThreshold = gcd * specSettings.endOf.takedown.gcdsMax
+						elseif specSettings.endOf.takedown.mode == "time" then
+							timeThreshold = specSettings.endOf.takedown.timeMax
 						end
 					end
 

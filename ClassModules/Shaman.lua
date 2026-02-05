@@ -1049,22 +1049,22 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfAscendanceColor = false
 
-					if specSettings.endOfAscendance.enabled then
+					if specSettings.endOf.ascendance.enabled then
 						useEndOfAscendanceColor = true
-						if specSettings.endOfAscendance.mode == "gcd" then
+						if specSettings.endOf.ascendance.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfAscendance.gcdsMax
-						elseif specSettings.endOfAscendance.mode == "time" then
-							timeThreshold = specSettings.endOfAscendance.timeMax
+							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+						elseif specSettings.endOf.ascendance.mode == "time" then
+							timeThreshold = specSettings.endOf.ascendance.timeMax
 						end
 					end
 
 					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.inAscendance1GCD.color
+						barColor = specSettings.colors.bar.ascendanceEnd.color
 					elseif anyUsable and specSettings.colors.bar.earthShock.enabled then
 						barColor = specSettings.colors.bar.earthShock.color
-					elseif specSettings.colors.bar.inAscendance.enabled then
-						barColor = specSettings.colors.bar.inAscendance.color
+					elseif specSettings.colors.bar.ascendance.enabled then
+						barColor = specSettings.colors.bar.ascendance.color
 					end
 				end
 
@@ -1138,20 +1138,20 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfAscendanceColor = false
 
-					if specSettings.endOfAscendance.enabled then
+					if specSettings.endOf.ascendance.enabled then
 						useEndOfAscendanceColor = true
-						if specSettings.endOfAscendance.mode == "gcd" then
+						if specSettings.endOf.ascendance.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfAscendance.gcdsMax
-						elseif specSettings.endOfAscendance.mode == "time" then
-							timeThreshold = specSettings.endOfAscendance.timeMax
+							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+						elseif specSettings.endOf.ascendance.mode == "time" then
+							timeThreshold = specSettings.endOf.ascendance.timeMax
 						end
 					end
 
 					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.inAscendance1GCD.color
-					elseif specSettings.colors.bar.inAscendance.enabled then
-						barColor = specSettings.colors.bar.inAscendance.color
+						barColor = specSettings.colors.bar.ascendanceEnd.color
+					elseif specSettings.colors.bar.ascendance.enabled then
+						barColor = specSettings.colors.bar.ascendance.color
 					end
 				end
 
@@ -1313,20 +1313,20 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfAscendanceColor = false
 
-					if specSettings.endOfAscendance.enabled then
+					if specSettings.endOf.ascendance.enabled then
 						useEndOfAscendanceColor = true
-						if specSettings.endOfAscendance.mode == "gcd" then
+						if specSettings.endOf.ascendance.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfAscendance.gcdsMax
-						elseif specSettings.endOfAscendance.mode == "time" then
-							timeThreshold = specSettings.endOfAscendance.timeMax
+							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+						elseif specSettings.endOf.ascendance.mode == "time" then
+							timeThreshold = specSettings.endOf.ascendance.timeMax
 						end
 					end
 
 					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.inAscendance1GCD.color
-					elseif specSettings.colors.bar.inAscendance.enabled then
-						barColor = specSettings.colors.bar.inAscendance.color
+						barColor = specSettings.colors.bar.ascendanceEnd.color
+					elseif specSettings.colors.bar.ascendance.enabled then
+						barColor = specSettings.colors.bar.ascendance.color
 					end
 				end
 

@@ -1016,18 +1016,18 @@ local function UpdateResourceBar()
 						local timeThreshold = 0
 						local useEndOfMetamorphosisColor = false
 
-						if specSettings.endOfMetamorphosis.enabled then
+						if specSettings.endOf.metamorphosis.enabled then
 							useEndOfMetamorphosisColor = true
-							if specSettings.endOfMetamorphosis.mode == "gcd" then
+							if specSettings.endOf.metamorphosis.mode == "gcd" then
 								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-								timeThreshold = gcd * specSettings.endOfMetamorphosis.gcdsMax
-							elseif specSettings.endOfMetamorphosis.mode == "time" then
-								timeThreshold = specSettings.endOfMetamorphosis.timeMax
+								timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
+							elseif specSettings.endOf.metamorphosis.mode == "time" then
+								timeThreshold = specSettings.endOf.metamorphosis.timeMax
 							end
 						end
 
 						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
-							barColor = specSettings.colors.bar.metamorphosisEnding.color
+							barColor = specSettings.colors.bar.metamorphosisEnd.color
 						elseif specSettings.colors.bar.metamorphosis.enabled then
 							barColor = specSettings.colors.bar.metamorphosis.color
 						end
@@ -1143,18 +1143,18 @@ local function UpdateResourceBar()
 						local timeThreshold = 0
 						local useEndOfMetamorphosisColor = false
 
-						if specSettings.endOfMetamorphosis.enabled then
+						if specSettings.endOf.metamorphosis.enabled then
 							useEndOfMetamorphosisColor = true
-							if specSettings.endOfMetamorphosis.mode == "gcd" then
+							if specSettings.endOf.metamorphosis.mode == "gcd" then
 								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-								timeThreshold = gcd * specSettings.endOfMetamorphosis.gcdsMax
-							elseif specSettings.endOfMetamorphosis.mode == "time" then
-								timeThreshold = specSettings.endOfMetamorphosis.timeMax
+								timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
+							elseif specSettings.endOf.metamorphosis.mode == "time" then
+								timeThreshold = specSettings.endOf.metamorphosis.timeMax
 							end
 						end
 
 						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
-							barColor = specSettings.colors.bar.metamorphosisEnding.color
+							barColor = specSettings.colors.bar.metamorphosisEnd.color
 						elseif specSettings.colors.bar.metamorphosis.enabled then
 							barColor = specSettings.colors.bar.metamorphosis.color
 						end

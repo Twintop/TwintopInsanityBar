@@ -2064,18 +2064,18 @@ local function UpdateResourceBar()
 						local timeThreshold = 0
 						local useEndOfEclipseColor = false
 
-						if specSettings.endOfEclipse.enabled and (not specSettings.endOfEclipse.celestialAlignmentOnly or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive) then
+						if specSettings.endOf.eclipse.enabled and (not specSettings.endOf.eclipse.celestialAlignmentOnly or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive) then
 							useEndOfEclipseColor = true
-							if specSettings.endOfEclipse.mode == "gcd" then
+							if specSettings.endOf.eclipse.mode == "gcd" then
 								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-								timeThreshold = gcd * specSettings.endOfEclipse.gcdsMax
-							elseif specSettings.endOfEclipse.mode == "time" then
-								timeThreshold = specSettings.endOfEclipse.timeMax
+								timeThreshold = gcd * specSettings.endOf.eclipse.gcdsMax
+							elseif specSettings.endOf.eclipse.mode == "time" then
+								timeThreshold = specSettings.endOf.eclipse.timeMax
 							end
 						end
 
 						if useEndOfEclipseColor and GetEclipseRemainingTime() <= timeThreshold then
-							barColor = specSettings.colors.bar.eclipse1GCD.color
+							barColor = specSettings.colors.bar.eclipseEnd.color
 						elseif snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive) then
 							if specSettings.colors.bar.celestial.enabled then
 								barColor = specSettings.colors.bar.celestial.color
@@ -2584,13 +2584,13 @@ local function UpdateResourceBar()
 						local timeThreshold = 0
 						local useEndOfBerserkColor = false
 
-						if specSettings.endOfBerserk.enabled then
+						if specSettings.endOf.berserk.enabled then
 							useEndOfBerserkColor = true
-							if specSettings.endOfBerserk.mode == "gcd" then
+							if specSettings.endOf.berserk.mode == "gcd" then
 								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-								timeThreshold = gcd * specSettings.endOfBerserk.gcdsMax
-							elseif specSettings.endOfBerserk.mode == "time" then
-								timeThreshold = specSettings.endOfBerserk.timeMax
+								timeThreshold = gcd * specSettings.endOf.berserk.gcdsMax
+							elseif specSettings.endOf.berserk.mode == "time" then
+								timeThreshold = specSettings.endOf.berserk.timeMax
 							end
 						end
 
@@ -2664,13 +2664,13 @@ local function UpdateResourceBar()
 							local timeThreshold = 0
 							local useEndOfIncarnationColor = false
 
-							if specSettings.endOfIncarnation.enabled then
+							if specSettings.endOf.incarnation.enabled then
 								useEndOfIncarnationColor = true
-								if specSettings.endOfIncarnation.mode == "gcd" then
+								if specSettings.endOf.incarnation.mode == "gcd" then
 									local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-									timeThreshold = gcd * specSettings.endOfIncarnation.gcdsMax
-								elseif specSettings.endOfIncarnation.mode == "time" then
-									timeThreshold = specSettings.endOfIncarnation.timeMax
+									timeThreshold = gcd * specSettings.endOf.incarnation.gcdsMax
+								elseif specSettings.endOf.incarnation.mode == "time" then
+									timeThreshold = specSettings.endOf.incarnation.timeMax
 								end
 							end
 

@@ -1936,22 +1936,22 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfVoidformColor = false
 
-					if specSettings.endOfVoidform.enabled then
+					if specSettings.endOf.voidform.enabled then
 						useEndOfVoidformColor = true
-						if specSettings.endOfVoidform.mode == "gcd" then
+						if specSettings.endOf.voidform.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfVoidform.gcdsMax
-						elseif specSettings.endOfVoidform.mode == "time" then
-							timeThreshold = specSettings.endOfVoidform.timeMax
+							timeThreshold = gcd * specSettings.endOf.voidform.gcdsMax
+						elseif specSettings.endOf.voidform.mode == "time" then
+							timeThreshold = specSettings.endOf.voidform.timeMax
 						end
 					end
 
 					if useEndOfVoidformColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.inVoidform1GCD.color
+						barColor = specSettings.colors.bar.voidformEnd.color
 					elseif specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
 						barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
-					elseif specSettings.colors.bar.inVoidform.enabled then
-						barColor = specSettings.colors.bar.inVoidform.color
+					elseif specSettings.colors.bar.voidform.enabled then
+						barColor = specSettings.colors.bar.voidform.color
 					end
 				elseif specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
 					barColor = specSettings.colors.bar.shadowWordMadnessUsable.color

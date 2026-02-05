@@ -506,6 +506,9 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		endOf = {
+			ebonMight = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
+		},
 		colors = {
 			text = {
 				current = {
@@ -522,11 +525,11 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				border = { color = "FF000099" },
 				background = { color = "66000000" },
 				base = { color = "FF0000FF" },
-				inEbonMight = {
+				ebonMight = {
 					color = "FFFF9900",
 					enabled = true
 				},
-				inEbonMight1GCD = {
+				ebonMightEnd = {
 					color = "FFFF0000"
 				},
 				ebonMightDropDuringCast = {
@@ -597,12 +600,6 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
-		},
-		endOfEbonMight = {
-			enabled = true,
-			mode = "gcd",
-			gcdsMax = 2,
-			timeMax = 3.0
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -1648,38 +1645,24 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
 	
 	yCoord = yCoord - 30
-	controls.checkBoxes.inEbonMight = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_inEbonMight", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.inEbonMight
+	controls.checkBoxes.ebonMight = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMight", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ebonMight
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMight"])
 	f.tooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"]
-	f:SetChecked(spec.colors.bar.inEbonMight.enabled)
+	f:SetChecked(spec.colors.bar.ebonMight.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.inEbonMight.enabled = self:GetChecked()
+		spec.colors.bar.ebonMight.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inEbonMight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMight"], spec.colors.bar.inEbonMight.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inEbonMight
+	controls.colors.ebonMight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMight"], spec.colors.bar.ebonMight.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.ebonMight
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inEbonMight")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMight")
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfEbonMight = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_endOfEbonMight", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfEbonMight
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEndOfEbonMight"])
-	f.tooltip = L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"]
-	f:SetChecked(spec.colors.bar.inEbonMight1GCD.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.inEbonMight1GCD.enabled = self:GetChecked()
-	end)
-
-	controls.colors.inEbonMight1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightEnd"], spec.colors.bar.inEbonMight1GCD.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inEbonMight1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inEbonMight1GCD")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "ebonMight", L["EvokerAugmentationCheckboxEndOfEbonMight"], L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"], L["EvokerAugmentationColorPickerEbonMightEnd"])
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.ebonMightDropDuringCast = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightDropDuringCast", parent, "ChatConfigCheckButtonTemplate")
@@ -1778,49 +1761,7 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfEbonMightModeGCDs = CreateFrame("CheckButton", "TRB_EOEM_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfEbonMightModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationEndOfEbonMightGcdMode"])
-	if spec.endOfEbonMight.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfEbonMightModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfEbonMightModeTime:SetChecked(false)
-		spec.endOfEbonMight.mode = "gcd"
-	end)
-
-	controls.endOfEbonMightGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, L["EvokerAugmentationEndOfEbonMightGcdSlider"], 0.5, 10, spec.endOfEbonMight.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfEbonMightGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfEbonMight.gcdsMax = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfEbonMightModeTime = CreateFrame("CheckButton", "TRB_EOEM_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfEbonMightModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationEndOfEbonMightTimeMode"])
-	if spec.endOfEbonMight.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfEbonMightModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfEbonMightModeTime:SetChecked(true)
-		spec.endOfEbonMight.mode = "time"
-	end)
-
-	controls.endOfEbonMightTime = TRB.Functions.OptionsUi:BuildSlider(parent, L["EvokerAugmentationEndOfEbonMightTimeSlider"], 0, 15, spec.endOfEbonMight.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfEbonMightTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfEbonMight.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "ebonMight", L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"], L["EvokerAugmentationEndOfEbonMightGcdMode"], L["EvokerAugmentationEndOfEbonMightGcdSlider"], L["EvokerAugmentationEndOfEbonMightTimeMode"], L["EvokerAugmentationEndOfEbonMightTimeSlider"])
 end
 
 local function AugmentationConstructFontAndTextPanel(parent)

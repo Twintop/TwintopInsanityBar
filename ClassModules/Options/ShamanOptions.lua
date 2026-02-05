@@ -83,11 +83,8 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 			mana = "never",
 			dragonriding = true
 		},
-		endOfAscendance = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			ascendance = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		overcap = {
 			mode = "relative",
@@ -140,11 +137,11 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					color = "FF00096A",
 					enabled = true
 				},
-				inAscendance = {
+				ascendance = {
 					color = "FFFA8128",
 					enabled = true
 				},
-				inAscendance1GCD = {
+				ascendanceEnd = {
 					color = "FFFF0000"
 				},
 				flashAlpha = 0.70,
@@ -239,11 +236,8 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
-		endOfAscendance = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			ascendance = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		colors = {
 			text = {
@@ -267,11 +261,11 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
-				inAscendance = {
+				ascendance = {
 					color = "FFFA8128",
 					enabled = true
 				},
-				inAscendance1GCD = {
+				ascendanceEnd = {
 					color = "FFFF0000"
 				},
 			},
@@ -375,11 +369,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		endOfAscendance = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			ascendance = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		colors={
 			text = {
@@ -403,11 +394,11 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
-				inAscendance = {
+				ascendance = {
 					color = "FFFA8128",
 					enabled = true
 				},
-				inAscendance1GCD = {
+				ascendanceEnd = {
 					color = "FFFF0000"
 				},
 			},
@@ -624,38 +615,24 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.inAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Bar_Option_inAscendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.inAscendance
+	controls.checkBoxes.ascendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Bar_Option_ascendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ascendance
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxAscendance"])
 	f.tooltip = L["ShamanElementalCheckboxAscendanceTooltip"]
-	f:SetChecked(spec.colors.bar.inAscendance.enabled)
+	f:SetChecked(spec.colors.bar.ascendance.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.inAscendance.enabled = self:GetChecked()
+		spec.colors.bar.ascendance.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance		
+	controls.colors.ascendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendance"], spec.colors.bar.ascendance.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.ascendance		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ascendance")
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Checkbox_EOA", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfAscendance
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxAscendanceEnd"])
-	f.tooltip = L["ShamanElementalCheckboxAscendanceEndTooltip"]
-	f:SetChecked(spec.endOfAscendance.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfAscendance.enabled = self:GetChecked()
-	end)
-
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "ascendance", L["ShamanElementalCheckboxAscendanceEnd"], L["ShamanElementalCheckboxAscendanceEndTooltip"], L["ShamanElementalColorPickerAscendanceEnd"])
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
@@ -674,58 +651,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 7, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(false)
-		spec.endOfAscendance.mode = "gcd"
-	end)
-
-	title = L["ShamanAscendanceGcds"]
-	controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfAscendance.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(true)
-		spec.endOfAscendance.mode = "time"
-	end)
-
-	title = L["ShamanAscendanceTime"]
-	controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfAscendance.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "ascendance", L["ShamanHeaderEndOfAscendanceConfiguration"], L["ShamanCheckboxAscendanceGcds"], L["ShamanAscendanceGcds"], L["ShamanCheckboxAscendanceTime"], L["ShamanAscendanceTime"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], ELEMENTAL_MAX_MAELSTROM)
@@ -1162,38 +1088,24 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.inAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_Bar_Option_inAscendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.inAscendance
+	controls.checkBoxes.ascendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_Bar_Option_ascendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ascendance
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendance"])
 	f.tooltip = L["ShamanManaCheckboxAscendanceTooltip"]
-	f:SetChecked(spec.colors.bar.inAscendance.enabled)
+	f:SetChecked(spec.colors.bar.ascendance.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.inAscendance.enabled = self:GetChecked()
+		spec.colors.bar.ascendance.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance
+	controls.colors.ascendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.ascendance.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.ascendance
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ascendance")
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_Checkbox_EOA", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfAscendance
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendanceEnd"])
-	f.tooltip = L["ShamanManaCheckboxAscendanceEndTooltip"]
-	f:SetChecked(spec.endOfAscendance.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfAscendance.enabled = self:GetChecked()
-	end)
-
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "ascendance", L["ShamanManaCheckboxAscendanceEnd"], L["ShamanManaCheckboxAscendanceEndTooltip"], L["ShamanManaColorPickerAscendanceEnd"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], false, false)
@@ -1282,57 +1194,7 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 2, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(false)
-		spec.endOfAscendance.mode = "gcd"
-	end)
-
-	title = L["ShamanAscendanceGcds"]
-	controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfAscendance.gcdsMax = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(true)
-		spec.endOfAscendance.mode = "time"
-	end)
-
-	title = L["ShamanAscendanceTime"]
-	controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfAscendance.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "ascendance", L["ShamanHeaderEndOfAscendanceConfiguration"], L["ShamanCheckboxAscendanceGcds"], L["ShamanAscendanceGcds"], L["ShamanCheckboxAscendanceTime"], L["ShamanAscendanceTime"])
 end
 
 local function EnhancementConstructFontAndTextPanel(parent)
@@ -1662,38 +1524,24 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.inAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Bar_Option_inAscendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.inAscendance
+	controls.checkBoxes.ascendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Bar_Option_ascendanceColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ascendance
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendance"])
 	f.tooltip = L["ShamanManaCheckboxAscendanceTooltip"]
-	f:SetChecked(spec.colors.bar.inAscendance.enabled)
+	f:SetChecked(spec.colors.bar.ascendance.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.inAscendance.enabled = self:GetChecked()
+		spec.colors.bar.ascendance.enabled = self:GetChecked()
 	end)
 
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance		
+	controls.colors.ascendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.ascendance.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.ascendance		
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ascendance")
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Enabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfAscendance
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendanceEnd"])
-	f.tooltip = L["ShamanManaCheckboxAscendanceEndTooltip"]
-	f:SetChecked(spec.endOfAscendance.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfAscendance.enabled = self:GetChecked()
-	end)
-	
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "ascendance", L["ShamanManaCheckboxAscendanceEnd"], L["ShamanManaCheckboxAscendanceEndTooltip"], L["ShamanManaColorPickerAscendanceEnd"])
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
@@ -1709,58 +1557,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Mode_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(false)
-		spec.endOfAscendance.mode = "gcd"
-	end)
-
-	title = L["ShamanAscendanceGcds"]
-	controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfAscendance.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Mode_Time", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(true)
-		spec.endOfAscendance.mode = "time"
-	end)
-
-	title = L["ShamanAscendanceTime"]
-	controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfAscendance.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "ascendance", L["ShamanHeaderEndOfAscendanceConfiguration"], L["ShamanCheckboxAscendanceGcds"], L["ShamanAscendanceGcds"], L["ShamanCheckboxAscendanceTime"], L["ShamanAscendanceTime"])
 end
 
 local function RestorationConstructThresholdPanel(parent)
