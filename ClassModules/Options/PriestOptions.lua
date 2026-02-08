@@ -200,11 +200,8 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		endOfApotheosis = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			apotheosis = TRB.Functions.Settings:DefaultEndOfSettings()
 		},
 		colors={
 			text = {
@@ -1240,38 +1237,17 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.apotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Bar_Option_apotheosisColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.apotheosis
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxApotheosis"])
-	f.tooltip = L["PriestHolyCheckboxApotheosisTooltip"]
-	f:SetChecked(spec.colors.bar.apotheosis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.apotheosis.enabled = self:GetChecked()
-	end)
-
-	controls.colors.apotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosis"], spec.colors.bar.apotheosis.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.apotheosis
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "apotheosis")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfApotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfApotheosis
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxApotheosisEnd"])
-	f.tooltip = L["PriestHolyCheckboxApotheosisEndTooltip"]
-	f:SetChecked(spec.endOfApotheosis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfApotheosis.enabled = self:GetChecked()
-	end)
-
-	controls.colors.apotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerApotheosisEnd"], spec.colors.bar.apotheosisEnd.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.apotheosisEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "apotheosisEnd")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 5, 2, yCoord, {
+		endOfKey = "apotheosis",
+		activeColorKey = "apotheosis",
+		endColorKey = "apotheosisEnd",
+		checkboxLabel = L["PriestHolyCheckboxApotheosis"],
+		checkboxTooltip = L["PriestHolyCheckboxApotheosisTooltip"],
+		activeColorLabel = L["PriestHolyColorPickerApotheosis"],
+		endCheckboxLabel = L["PriestHolyCheckboxApotheosisEnd"],
+		endCheckboxTooltip = L["PriestHolyCheckboxApotheosisEndTooltip"],
+		endColorLabel = L["PriestHolyColorPickerApotheosisEnd"],
+	})
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
@@ -1455,59 +1431,15 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 2, yCoord)
 	
-	
-	
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyHeaderEndOfApotheosisConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfApotheosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfApotheosisModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxApotheosisGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfApotheosis.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfApotheosisModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfApotheosisModeTime:SetChecked(false)
-		spec.endOfApotheosis.mode = "gcd"
-	end)
-
-	title = L["PriestHolyApotheosisGcds"]
-	controls.endOfApotheosisGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfApotheosis.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfApotheosisGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfApotheosis.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfApotheosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfApotheosisModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxApotheosisTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfApotheosis.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfApotheosisModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfApotheosisModeTime:SetChecked(true)
-		spec.endOfApotheosis.mode = "time"
-	end)
-
-	title = L["PriestHolyApotheosisTime"]
-	controls.endOfApotheosisTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfApotheosis.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfApotheosisTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfApotheosis.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 2, yCoord, {
+		endOfKey = "apotheosis",
+		sectionHeader = L["PriestHolyHeaderEndOfApotheosisConfiguration"],
+		gcdRadioLabel = L["PriestHolyCheckboxApotheosisGcds"],
+		gcdSliderLabel = L["PriestHolyApotheosisGcds"],
+		timeRadioLabel = L["PriestHolyCheckboxApotheosisTime"],
+		timeSliderLabel = L["PriestHolyApotheosisTime"],
+	})
 end
 
 local function HolyConstructThresholdPanel(parent)
@@ -1879,24 +1811,17 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.voidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_voidformColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.voidform
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxVoidform"])
-	f.tooltip = L["PriestShadowCheckboxVoidformTooltip"]
-	f:SetChecked(spec.colors.bar.voidform.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.voidform.enabled = self:GetChecked()
-	end)
-
-	controls.colors.voidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerVoidform"], spec.colors.bar.voidform.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.voidform		
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "voidform")
-	end)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "voidform", L["PriestShadowCheckboxVoidformEnd"], L["PriestShadowCheckboxVoidformEndTooltip"], L["PriestShadowColorPickerVoidformEnd"])
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 5, 3, yCoord, {
+		endOfKey = "voidform",
+		activeColorKey = "voidform",
+		endColorKey = "voidformEnd",
+		checkboxLabel = L["PriestShadowCheckboxVoidform"],
+		checkboxTooltip = L["PriestShadowCheckboxVoidformTooltip"],
+		activeColorLabel = L["PriestShadowColorPickerVoidform"],
+		endCheckboxLabel = L["PriestShadowCheckboxVoidformEnd"],
+		endCheckboxTooltip = L["PriestShadowCheckboxVoidformEndTooltip"],
+		endColorLabel = L["PriestShadowColorPickerVoidformEnd"],
+	})
 
 	yCoord = yCoord - 30
 	controls.colors.shadowWordMadnessUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerShadowWordMadness"], spec.colors.bar.shadowWordMadnessUsable.color, 300, 25, oUi.xCoord2, yCoord)
@@ -2017,7 +1942,14 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "voidform", L["PriestShadowHeaderEndOfVoidformConfiguration"], L["PriestShadowCheckboxVoidformGcds"], L["PriestShadowVoidformGcds"], L["PriestShadowCheckboxVoidformTime"], L["PriestShadowVoidformTime"])
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 3, yCoord, {
+		endOfKey = "voidform",
+		sectionHeader = L["PriestShadowHeaderEndOfVoidformConfiguration"],
+		gcdRadioLabel = L["PriestShadowCheckboxVoidformGcds"],
+		gcdSliderLabel = L["PriestShadowVoidformGcds"],
+		timeRadioLabel = L["PriestShadowCheckboxVoidformTime"],
+		timeSliderLabel = L["PriestShadowVoidformTime"],
+	})
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], SHADOW_MAX_INSANITY)

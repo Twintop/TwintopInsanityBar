@@ -62,11 +62,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
-				configuration.endOfBestialWrath = settings.endOfBestialWrath
 			elseif specId == 2 then -- Marksmanship
-				configuration.endOfTrueshot = settings.endOfTrueshot
 			elseif specId == 3 then -- Survival
-				configuration.endOfTakedown = settings.endOfTakedown
 			end
 		elseif classId == 4 then -- Rogue
 			if specId == 1 then -- Assassination
@@ -84,11 +81,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				--configuration.colors.comboPoints = settings.colors.comboPoints
 				--configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Holy
-				configuration.endOfApotheosis = settings.endOfApotheosis
 				--configuration.colors.comboPoints = settings.colors.comboPoints
 				--configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Shadow
-				configuration.endOf = settings.endOf
 				-- Export mana bar settings
 				configuration.bars = configuration.bars or {}
 				configuration.bars.mana = settings.bars and settings.bars.mana
@@ -115,7 +110,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
-				configuration.endOf = settings.endOf
 				-- Export mana bar settings
 				configuration.bars = configuration.bars or {}
 				configuration.bars.mana = settings.bars and settings.bars.mana
@@ -131,9 +125,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Enhancement
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
-				configuration.endOf = settings.endOf
 			elseif specId == 3 then -- Restoration
-				configuration.endOf = settings.endOf
 			end
 		elseif classId == 8 then -- Mage
 			if specId == 1 then -- Arcane
@@ -174,7 +166,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
-				configuration.endOf = settings.endOf
 				-- Export mana bar settings
 				configuration.bars = configuration.bars or {}
 				configuration.bars.mana = settings.bars and settings.bars.mana
@@ -191,22 +182,16 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Guardian
-				-- No special bar display configuration for Guardian
-				configuration.endOf = settings.endOf
 			elseif specId == 4 then -- Restoration
-				configuration.endOf = settings.endOf
 			end
 		elseif classId == 12 then -- Demon Hunter
 			if specId == 1 then -- Havoc
-				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 			elseif specId == 2 then -- Vengeance
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
-				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 			elseif specId == 3 then -- Devourer
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
-				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
 			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
@@ -218,7 +203,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Augmentation
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
-				configuration.endOf = settings.endOf
 			end
 		end
 	end

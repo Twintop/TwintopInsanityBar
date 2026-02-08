@@ -3821,6 +3821,46 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Cleanup: Remove orphaned endOfMetamorphosis if endOf already exists (Havoc)
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.endOf ~= nil then
+		TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis = nil
+	end
+
+	-- Cleanup: Remove orphaned endOfMetamorphosis if endOf already exists (Vengeance)
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOf ~= nil then
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis = nil
+	end
+
+	-- Port forward endOfMetamorphosis to endOf.metamorphosis for Demon Hunter Devourer
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.endOf == nil then
+
+		TwintopInsanityBarSettings.demonhunter.devourer.endOf = {
+			metamorphosis = TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis
+		}
+		TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis = nil
+	end
+
+	-- Cleanup: Remove orphaned endOfMetamorphosis if endOf already exists (Devourer)
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.endOf ~= nil then
+		TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis = nil
+	end
+
 	-- Port forward endOfBestialWrath to endOf.bestialWrath for Hunter Beast Mastery
 	if TwintopInsanityBarSettings ~= nil and
 		TwintopInsanityBarSettings.hunter ~= nil and
@@ -3964,6 +4004,16 @@ function TRB.Functions.Settings:PortForwardSettings()
 		}
 		TwintopInsanityBarSettings.priest.holy.endOfApotheosis = nil
 		-- Note: apotheosisEnd already uses correct naming convention
+	end
+
+	-- Cleanup: Remove orphaned endOfApotheosis if endOf already exists
+	-- This handles the case where both old and new keys exist from prior faulty migration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.holy ~= nil and
+		TwintopInsanityBarSettings.priest.holy.endOfApotheosis ~= nil and
+		TwintopInsanityBarSettings.priest.holy.endOf ~= nil then
+		TwintopInsanityBarSettings.priest.holy.endOfApotheosis = nil
 	end
 
 	-- Port forward endOfVoidform to endOf.voidform for Priest Shadow

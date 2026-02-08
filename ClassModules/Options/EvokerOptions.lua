@@ -1645,24 +1645,17 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
 	
 	yCoord = yCoord - 30
-	controls.checkBoxes.ebonMight = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMight", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ebonMight
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMight"])
-	f.tooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"]
-	f:SetChecked(spec.colors.bar.ebonMight.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.ebonMight.enabled = self:GetChecked()
-	end)
-
-	controls.colors.ebonMight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMight"], spec.colors.bar.ebonMight.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.ebonMight
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMight")
-	end)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, yCoord, "ebonMight", L["EvokerAugmentationCheckboxEndOfEbonMight"], L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"], L["EvokerAugmentationColorPickerEbonMightEnd"])
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 13, 3, yCoord, {
+		endOfKey = "ebonMight",
+		activeColorKey = "ebonMight",
+		endColorKey = "ebonMightEnd",
+		checkboxLabel = L["EvokerAugmentationCheckboxEbonMight"],
+		checkboxTooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"],
+		activeColorLabel = L["EvokerAugmentationColorPickerEbonMight"],
+		endCheckboxLabel = L["EvokerAugmentationCheckboxEndOfEbonMight"],
+		endCheckboxTooltip = L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"],
+		endColorLabel = L["EvokerAugmentationColorPickerEbonMightEnd"],
+	})
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.ebonMightDropDuringCast = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightDropDuringCast", parent, "ChatConfigCheckButtonTemplate")
@@ -1761,7 +1754,14 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, yCoord, "ebonMight", L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"], L["EvokerAugmentationEndOfEbonMightGcdMode"], L["EvokerAugmentationEndOfEbonMightGcdSlider"], L["EvokerAugmentationEndOfEbonMightTimeMode"], L["EvokerAugmentationEndOfEbonMightTimeSlider"])
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 3, yCoord, {
+		endOfKey = "ebonMight",
+		sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
+		gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
+		gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
+		timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
+		timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
+	})
 end
 
 local function AugmentationConstructFontAndTextPanel(parent)

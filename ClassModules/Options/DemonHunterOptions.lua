@@ -464,11 +464,8 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 			health = "always",
 			dragonriding = true
 		},
-		endOfMetamorphosis = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			metamorphosis = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		overcap = {
 			mode = "relative",

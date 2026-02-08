@@ -1710,13 +1710,13 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfApotheosisColor = false
 
-					if specSettings.endOfApotheosis.enabled then
+					if specSettings.endOf.apotheosis.enabled then
 						useEndOfApotheosisColor = true
-						if specSettings.endOfApotheosis.mode == "gcd" then
+						if specSettings.endOf.apotheosis.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfApotheosis.gcdsMax
-						elseif specSettings.endOfApotheosis.mode == "time" then
-							timeThreshold = specSettings.endOfApotheosis.timeMax
+							timeThreshold = gcd * specSettings.endOf.apotheosis.gcdsMax
+						elseif specSettings.endOf.apotheosis.mode == "time" then
+							timeThreshold = specSettings.endOf.apotheosis.timeMax
 						end
 					end
 
