@@ -151,7 +151,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public fontJustifyHorizontal string
 ---@field public fontJustifyHorizontalName string
 ---@field public fontSize integer
----@field public color string
+---@field public color TRB.Classes.Settings.ColorEntry
 
 ---@class TRB.Classes.Settings.DisplayTextEntry : TRB.Classes.Settings.DisplayTextDefault
 ---@field public useDefaultFontFace boolean

@@ -727,9 +727,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				settings.textures.border,
 				settings.textures.background
 			)
-			primaryNode:SetColor(settings.colors.bar.base)
-			primaryNode:SetBorderColor(settings.colors.bar.border)
-			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background)
+			primaryNode:SetColor(settings.colors.bar.base.color)
+			primaryNode:SetBorderColor(settings.colors.bar.border.color)
+			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
 			primaryNode:SetFrameLevels(
 				frameLevels.barContainer,
 				frameLevels.barBorder,
@@ -834,9 +834,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				else
 					node:SetMinMax(0, 1)
 				end
-				node:SetBorderColor(effectiveSettings.colors.comboPoints.border)
-				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background)
-				node:SetColor(effectiveSettings.colors.comboPoints.base)
+				node:SetBorderColor(effectiveSettings.colors.comboPoints.border.color)
+				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background.color)
+				node:SetColor(effectiveSettings.colors.comboPoints.base.color)
 				node:SetFrameLevels(
 					frameLevels.cpContainer,
 					frameLevels.cpBorder,
