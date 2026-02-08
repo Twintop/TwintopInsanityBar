@@ -12,6 +12,66 @@ local content = [====[
 
 ---
 
+# 12.0.0.22-release (2026-02-08)
+## General
+
+- [#597](#597) Standardized color settings across all class modules.
+- [#597](#597) Added enable/disable checkboxes for proc and buff bar color changes that previously could not be toggled independently. See below for specifics by specialization.
+- [#538](#538) Standardize `endOf` buff expiration settings.
+- Fixed combo point threshold repositioning to use the correct width settings.
+
+## Demon Hunter
+### Havoc and Vengeance
+
+- [#597](#597) Add checkbox to enable/disable Metamorphosis bar color change.
+
+## Druid
+### Balance
+
+- [#597](#597) Add checkboxes to enable/disable Solar Eclipse, Lunar Eclipse, and Celestial Alignment bar color changes.
+
+### Feral
+
+- [#597](#597) Add checkboxes to Max Damage Ferocious Bite and Apex Predator's Craving bar color changes.
+- [#597](#597) Add checkbox to enable/disable Stealth border color change.
+
+### Restoration
+
+- [#597](#597) Add checkboxes to enable/disable No Efflorescence and Incarnation: Tree of Life bar color changes.
+
+## Hunter
+### Marksmanship
+
+- [#597](#597) Add checkbox to enable/disable Trueshot bar color change.
+
+## Priest
+### Holy
+
+- [#597](#597) Add checkbox to enable/disable Apotheosis bar color change.
+
+### Shadow
+
+- [#597](#597) Add checkboxes to enable/disable Voidform and Shadow Word: Madness usable bar color changes.
+
+## Rogue
+
+- [#597](#597) Add checkbox to enable/disable Stealth border color change.
+
+### Subtlety
+
+- [#597](#597) Add checkbox to enable/disable Shadowcraft border color change.
+
+## Shaman
+### Elemental
+
+- [#597](#597) Add checkboxes to enable/disable Earth Shock/Elemental Blast threshold and Ascendance bar color changes.
+
+### Enhancement and Restoration
+
+- [#597](#597) Add checkbox to enable/disable Ascendance bar color change.
+
+---
+
 # 12.0.0.21-release (2026-02-05)
 ## General
 
