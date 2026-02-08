@@ -632,9 +632,9 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 				settings.textures.comboPointsBackground
 			)
 			node:SetMinMax(0, 1)
-			node:SetBorderColor(settings.colors.comboPoints.border)
-			node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-			node:SetColor(settings.colors.comboPoints.base)
+			node:SetBorderColor(settings.colors.comboPoints.border.color)
+			node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+			node:SetColor(settings.colors.comboPoints.base.color)
 			node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 			node:Show()
 		end

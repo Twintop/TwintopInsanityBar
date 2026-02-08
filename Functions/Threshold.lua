@@ -243,7 +243,7 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 		end
 	end
 	
-	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.comboPoints.border, true)
+	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.comboPoints.border.color, true)
 end
 
 ---Resets a threshold line for custom bar groups (stagger, defensives, etc.)

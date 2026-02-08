@@ -767,7 +767,7 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 				elseif frameType == "bar" then
 					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, newColorString)
 				elseif frameType == "threshold" then
-					TRB.Functions.Color:SetThresholdColor(frame, nil, newColorString, true, classId, specId)
+					TRB.Functions.Color:SetThresholdColor(frame, newColorString, true, classId, specId)
 				end			
 			elseif frameType == "health" then
 				TRB.Functions.Character:UpdateHealthValues()

@@ -2162,9 +2162,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.borderMindFlayInsanity) == "string" then
@@ -2228,9 +2229,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.lunar) == "string" then
@@ -2264,9 +2266,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.borderStealth) == "string" then
@@ -2324,9 +2327,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.berserk) == "string" then
@@ -2387,9 +2391,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 	end
@@ -2438,9 +2443,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 	end
@@ -2489,9 +2495,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 	end
@@ -2540,9 +2547,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.metamorphosis) == "string" then
@@ -2570,9 +2578,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.metamorphosis) == "string" then
@@ -2624,9 +2633,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.voidMetamorphosis) == "string" then
@@ -2867,9 +2877,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.beastCleave) == "string" then
@@ -2906,9 +2917,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.trueshot) == "string" then
@@ -2936,9 +2948,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.takedown) == "string" then
@@ -3047,9 +3060,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.invokeNiuzao) == "string" then
@@ -3116,9 +3130,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.borderChiJi) == "string" then
@@ -3311,9 +3326,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.borderStealth) == "string" then
@@ -3365,9 +3381,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.borderStealth) == "string" then
@@ -3425,9 +3442,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.borderStealth) == "string" then
@@ -3485,9 +3503,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.earthShock) == "string" then
@@ -3719,9 +3738,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 	end
@@ -3743,9 +3763,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 		if type(bar.enrage) == "string" then
@@ -3770,9 +3791,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.borderOvercap) == "string" then
-			local enabled = bar.borderOvercapEnabled
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
 			if enabled == nil then enabled = true end
 			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
 			bar.borderOvercapEnabled = nil
 		end
 	end
