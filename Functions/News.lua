@@ -18,6 +18,7 @@ local content = [====[
 - [#597](#597) Standardized color settings across all class modules.
 - [#597](#597) Added enable/disable checkboxes for proc and buff bar color changes that previously could not be toggled independently. See below for specifics by specialization.
 - [#538](#538) Standardize `endOf` buff expiration settings.
+- [#599](#599) Fix the "ability usable" bar text color change option for most threshold specializations.
 - Fixed combo point threshold repositioning to use the correct width settings.
 - Adjust abbreviations of numbers to be locale aware.
 
