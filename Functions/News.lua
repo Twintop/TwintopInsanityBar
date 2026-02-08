@@ -12,13 +12,14 @@ local content = [====[
 
 ---
 
-# 12.0.0.22-release (2026-02-08)
+# 12.0.0.22-release (2026-02-09)
 ## General
 
 - [#597](#597) Standardized color settings across all class modules.
 - [#597](#597) Added enable/disable checkboxes for proc and buff bar color changes that previously could not be toggled independently. See below for specifics by specialization.
 - [#538](#538) Standardize `endOf` buff expiration settings.
 - Fixed combo point threshold repositioning to use the correct width settings.
+- Adjust abbreviations of numbers to be locale aware.
 
 ## Demon Hunter
 ### Havoc and Vengeance
