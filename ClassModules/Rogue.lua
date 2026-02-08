@@ -52,6 +52,8 @@ local function FillSpecializationCache()
 	specCache.assassination.snapshotData.attributes.resourceRegen = 0
 	specCache.assassination.snapshotData.attributes.comboPoints = 0
 	specCache.assassination.snapshotData.audio = {
+		comboPointThreshold1Played = false,
+		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -121,6 +123,8 @@ local function FillSpecializationCache()
 	specCache.outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.outlaw.snapshotData.attributes.comboPoints = 0
 	specCache.outlaw.snapshotData.audio = {
+		comboPointThreshold1Played = false,
+		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -230,6 +234,8 @@ local function FillSpecializationCache()
 	specCache.subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.subtlety.snapshotData.attributes.comboPoints = 0
 	specCache.subtlety.snapshotData.audio = {
+		comboPointThreshold1Played = false,
+		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -1329,6 +1335,42 @@ local function UpdateResourceBar()
 				end
 			end
 
+			-- Combo Point threshold audio cues
+			do
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshotData.attributes.resource2
+				local threshold1 = specSettings.audio.comboPointThreshold1
+				local threshold2 = specSettings.audio.comboPointThreshold2
+				local threshold1Value = threshold1.configuration.thresholdValue
+				local threshold2Value = threshold2.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
+				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
+
+				if threshold1ShouldFire and threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					snapshotData.audio.comboPointThreshold2Played = true
+					if threshold2Value > threshold1Value then
+						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+					else
+						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					end
+				elseif threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold2Played = true
+					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+				elseif threshold1ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				end
+
+				if currentResource2 < threshold1Value then
+					snapshotData.audio.comboPointThreshold1Played = false
+				end
+				if currentResource2 < threshold2Value then
+					snapshotData.audio.comboPointThreshold2Played = false
+				end
+			end
+
 			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
@@ -1618,6 +1660,42 @@ local function UpdateResourceBar()
 							cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 						end
 					end
+				end
+			end
+
+			-- Combo Point threshold audio cues
+			do
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshotData.attributes.resource2
+				local threshold1 = specSettings.audio.comboPointThreshold1
+				local threshold2 = specSettings.audio.comboPointThreshold2
+				local threshold1Value = threshold1.configuration.thresholdValue
+				local threshold2Value = threshold2.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
+				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
+
+				if threshold1ShouldFire and threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					snapshotData.audio.comboPointThreshold2Played = true
+					if threshold2Value > threshold1Value then
+						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+					else
+						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					end
+				elseif threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold2Played = true
+					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+				elseif threshold1ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				end
+
+				if currentResource2 < threshold1Value then
+					snapshotData.audio.comboPointThreshold1Played = false
+				end
+				if currentResource2 < threshold2Value then
+					snapshotData.audio.comboPointThreshold2Played = false
 				end
 			end
 
@@ -1911,6 +1989,42 @@ local function UpdateResourceBar()
 							cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 						end
 					end
+				end
+			end
+
+			-- Combo Point threshold audio cues
+			do
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshotData.attributes.resource2
+				local threshold1 = specSettings.audio.comboPointThreshold1
+				local threshold2 = specSettings.audio.comboPointThreshold2
+				local threshold1Value = threshold1.configuration.thresholdValue
+				local threshold2Value = threshold2.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
+				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
+
+				if threshold1ShouldFire and threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					snapshotData.audio.comboPointThreshold2Played = true
+					if threshold2Value > threshold1Value then
+						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+					else
+						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					end
+				elseif threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold2Played = true
+					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+				elseif threshold1ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				end
+
+				if currentResource2 < threshold1Value then
+					snapshotData.audio.comboPointThreshold1Played = false
+				end
+				if currentResource2 < threshold2Value then
+					snapshotData.audio.comboPointThreshold2Played = false
 				end
 			end
 

@@ -714,7 +714,25 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
-			}
+			},
+			comboPointThreshold1={
+				name = L["DruidFeralAudioComboPointThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			comboPointThreshold2={
+				name = L["DruidFeralAudioComboPointThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -2212,6 +2230,31 @@ local function FeralConstructAudioAndTrackingPanel(parent)
 	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "apexPredatorsCraving", spec, classId, specId, yCoord, L["DruidFeralCheckboxApexPredatorsCravingProc"], L["DruidFeralCheckboxApexPredatorsCravingProcTooltip"])
+
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "comboPointThreshold1", spec, classId, specId, yCoord, L["DruidFeralAudioCheckboxComboPointThreshold1"], L["DruidFeralAudioCheckboxComboPointThreshold1Tooltip"])
+
+	controls.comboPointThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["DruidFeralComboPointThresholdSliderTitle"], 0, 5, spec.audio["comboPointThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.comboPointThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["comboPointThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "comboPointThreshold2", spec, classId, specId, yCoord, L["DruidFeralAudioCheckboxComboPointThreshold2"], L["DruidFeralAudioCheckboxComboPointThreshold2Tooltip"])
+
+	controls.comboPointThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["DruidFeralComboPointThresholdSliderTitle"], 0, 5, spec.audio["comboPointThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.comboPointThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["comboPointThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function FeralConstructBarTextDisplayPanel(parent, cache)

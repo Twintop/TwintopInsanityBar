@@ -140,6 +140,8 @@ local function FillSpecializationCache()
 
 	specCache.windwalker.snapshotData.attributes.resourceRegen = 0
 	specCache.windwalker.snapshotData.audio = {
+		chiThreshold1Played = false,
+		chiThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
@@ -1392,6 +1394,42 @@ local function UpdateResourceBar()
 							chiNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 						end
 					end
+				end
+			end
+
+			-- Chi threshold audio cues
+			do
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshotData.attributes.resource2
+				local threshold1 = specSettings.audio.chiThreshold1
+				local threshold2 = specSettings.audio.chiThreshold2
+				local threshold1Value = threshold1.configuration.thresholdValue
+				local threshold2Value = threshold2.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.chiThreshold1Played and currentResource2 >= threshold1Value
+				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.chiThreshold2Played and currentResource2 >= threshold2Value
+
+				if threshold1ShouldFire and threshold2ShouldFire then
+					snapshotData.audio.chiThreshold1Played = true
+					snapshotData.audio.chiThreshold2Played = true
+					if threshold2Value > threshold1Value then
+						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+					else
+						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					end
+				elseif threshold2ShouldFire then
+					snapshotData.audio.chiThreshold2Played = true
+					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+				elseif threshold1ShouldFire then
+					snapshotData.audio.chiThreshold1Played = true
+					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				end
+
+				if currentResource2 < threshold1Value then
+					snapshotData.audio.chiThreshold1Played = false
+				end
+				if currentResource2 < threshold2Value then
+					snapshotData.audio.chiThreshold2Played = false
 				end
 			end
 

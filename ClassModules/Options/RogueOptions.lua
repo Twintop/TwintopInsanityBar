@@ -239,6 +239,24 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
 			},
+			comboPointThreshold1={
+				name = L["RogueAudioComboPointThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			comboPointThreshold2={
+				name = L["RogueAudioComboPointThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -483,6 +501,24 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
 			},
+			comboPointThreshold1={
+				name = L["RogueAudioComboPointThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			comboPointThreshold2={
+				name = L["RogueAudioComboPointThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -721,6 +757,24 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			comboPointThreshold1={
+				name = L["RogueAudioComboPointThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			comboPointThreshold2={
+				name = L["RogueAudioComboPointThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -1371,6 +1425,30 @@ local function AssassinationConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "comboPointThreshold1", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold1"], L["RogueAudioCheckboxComboPointThreshold1Tooltip"])
+
+	controls.comboPointThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.comboPointThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["comboPointThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "comboPointThreshold2", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold2"], L["RogueAudioCheckboxComboPointThreshold2Tooltip"])
+
+	controls.comboPointThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.comboPointThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["comboPointThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function AssassinationConstructBarTextDisplayPanel(parent, cache)
@@ -1453,29 +1531,19 @@ local function AssassinationConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
 
 	tabsheets[1]:Show()
@@ -1492,7 +1560,7 @@ local function AssassinationConstructOptionsPanel(cache)
 	AssassinationConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	AssassinationConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	AssassinationConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--AssassinationConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	AssassinationConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	AssassinationConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	AssassinationConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -2140,6 +2208,30 @@ local function OutlawConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "comboPointThreshold1", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold1"], L["RogueAudioCheckboxComboPointThreshold1Tooltip"])
+
+	controls.comboPointThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.comboPointThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["comboPointThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "comboPointThreshold2", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold2"], L["RogueAudioCheckboxComboPointThreshold2Tooltip"])
+
+	controls.comboPointThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.comboPointThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["comboPointThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function OutlawConstructBarTextDisplayPanel(parent, cache)
@@ -2222,29 +2314,19 @@ local function OutlawConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
 
 	tabsheets[1]:Show()
@@ -2261,7 +2343,7 @@ local function OutlawConstructOptionsPanel(cache)
 	OutlawConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	OutlawConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	OutlawConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--OutlawConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	OutlawConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	OutlawConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	OutlawConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -2897,6 +2979,30 @@ local function SubtletyConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "comboPointThreshold1", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold1"], L["RogueAudioCheckboxComboPointThreshold1Tooltip"])
+
+	controls.comboPointThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.comboPointThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["comboPointThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "comboPointThreshold2", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold2"], L["RogueAudioCheckboxComboPointThreshold2Tooltip"])
+
+	controls.comboPointThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.comboPointThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["comboPointThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function SubtletyConstructBarTextDisplayPanel(parent, cache)
@@ -2979,29 +3085,19 @@ local function SubtletyConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
 
 	tabsheets[1]:Show()
@@ -3018,7 +3114,7 @@ local function SubtletyConstructOptionsPanel(cache)
 	SubtletyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	SubtletyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	SubtletyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--SubtletyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	SubtletyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	SubtletyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	SubtletyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end

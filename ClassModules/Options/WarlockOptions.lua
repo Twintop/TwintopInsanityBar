@@ -103,6 +103,24 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			soulShardThreshold1={
+				name = L["WarlockAudioSoulShardThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			soulShardThreshold2={
+				name = L["WarlockAudioSoulShardThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -205,6 +223,24 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			soulShardThreshold1={
+				name = L["WarlockAudioSoulShardThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			soulShardThreshold2={
+				name = L["WarlockAudioSoulShardThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -324,6 +360,24 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			soulShardThreshold1={
+				name = L["WarlockAudioSoulShardThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			soulShardThreshold2={
+				name = L["WarlockAudioSoulShardThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 4.5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -619,6 +673,30 @@ local function AfflictionConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "soulShardThreshold1", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold1"], L["WarlockAudioCheckboxSoulShardThreshold1Tooltip"])
+
+	controls.soulShardThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.soulShardThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["soulShardThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "soulShardThreshold2", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold2"], L["WarlockAudioCheckboxSoulShardThreshold2Tooltip"])
+
+	controls.soulShardThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.soulShardThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["soulShardThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 
@@ -705,10 +783,7 @@ local function AfflictionConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Threshold Lines. Make the width 1 instead of 100
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -716,9 +791,9 @@ local function AfflictionConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines or Audio & Tracking. Don't let these tabs be made/rendered.
+			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
 		]]
-		if i == 2 or i == 4 then
+		if i == 2 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -744,7 +819,7 @@ local function AfflictionConstructOptionsPanel(cache)
 	AfflictionConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--AfflictionConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	AfflictionConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--AfflictionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	AfflictionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	AfflictionConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	AfflictionConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -923,6 +998,30 @@ local function DemonologyConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "soulShardThreshold1", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold1"], L["WarlockAudioCheckboxSoulShardThreshold1Tooltip"])
+
+	controls.soulShardThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.soulShardThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["soulShardThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "soulShardThreshold2", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold2"], L["WarlockAudioCheckboxSoulShardThreshold2Tooltip"])
+
+	controls.soulShardThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.soulShardThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["soulShardThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function DemonologyConstructBarTextDisplayPanel(parent, cache)
@@ -1102,10 +1201,7 @@ local function DemonologyConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -1113,9 +1209,9 @@ local function DemonologyConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines or Audio & Tracking. Don't let these tabs be made/rendered.
+			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
 		]]
-		if i == 2 or i == 4 then
+		if i == 2 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -1141,7 +1237,7 @@ local function DemonologyConstructOptionsPanel(cache)
 	DemonologyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--DemonologyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	DemonologyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--DemonologyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	DemonologyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	DemonologyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	DemonologyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1404,12 +1500,40 @@ local function DestructionConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
+	local classId = 9
+	local specId = 3
+
 	controls.buttons.exportButton_Warlock_Destruction_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Warlock_Destruction_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 9, 3, false, false, false, true, false, false)
 	end)
 
 	controls.textAudioSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "soulShardThreshold1", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold1"], L["WarlockAudioCheckboxSoulShardThreshold1Tooltip"])
+
+	controls.soulShardThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold1"].configuration.thresholdValue, 0.1, 1,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.soulShardThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["soulShardThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "soulShardThreshold2", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold2"], L["WarlockAudioCheckboxSoulShardThreshold2Tooltip"])
+
+	controls.soulShardThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold2"].configuration.thresholdValue, 0.1, 1,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.soulShardThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["soulShardThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function DestructionConstructBarTextDisplayPanel(parent, cache)
@@ -1495,10 +1619,7 @@ local function DestructionConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -1506,9 +1627,9 @@ local function DestructionConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines or Audio & Tracking. Don't let these tabs be made/rendered.
+			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
 		]]
-		if i == 2 or i == 4 then
+		if i == 2 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -1534,7 +1655,7 @@ local function DestructionConstructOptionsPanel(cache)
 	DestructionConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--DestructionConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	DestructionConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--DestructionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	DestructionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	DestructionConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	DestructionConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
