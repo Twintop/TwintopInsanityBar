@@ -4578,8 +4578,7 @@ end
 ---@return {fontFace: string, fontFaceName: string}
 function TRB.Functions.Settings:DefaultFontConstants()
 	local locale = GetLocale()
-	print("Locale detected:", locale)
-	if locale == "ruRU" then		
+	if locale == "ruRU" then
 		return {
 			fontFace = "Fonts\\FRIZQT___CYR.TTF",
 			fontFaceName = "Friz Quadrata TT",
