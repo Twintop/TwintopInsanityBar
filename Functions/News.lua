@@ -12,6 +12,41 @@ local content = [====[
 
 ---
 
+# 12.0.1.0-release (2026-02-10)
+## General
+
+- [#582](#582) All secondary resource audio cues (Holy Power, Combo Points, Soul Shards, Chi, Arcane Charges, Maelstrom Weapon) now fire independently of bar visibility and only trigger during combat.
+
+## Druid
+### Feral
+
+- [#582](#582) Add two new audio cues for when Combo Points are at or above a configured threshold. These default to 3 and 5 Combo Points.
+
+## Mage
+### Arcane
+
+- [#582](#582) Add two new audio cues for when Arcane Charges are at or above a configured threshold. These default to 2 and 4 Arcane Charges.
+
+## Monk
+### Windwalker
+
+- [#582](#582) Add two new audio cues for when Chi is at or above a configured threshold. These default to 3 and 5 Chi.
+
+## Rogue
+
+- [#582](#582) Add two new audio cues for when Combo Points are at or above a configured threshold. These default to 3 and 5 Combo Points.
+
+## Shaman
+### Enhancement
+
+- [#582](#582) Add two new audio cues for when Maelstrom Weapon stacks are at or above a configured threshold. These default to 5 and 10 Maelstrom Weapon stacks.
+
+## Warlock
+
+- [#582](#582) Add two new audio cues for when Soul Shards are at or above a configured threshold. These default to 3 and 5 Soul Shards. Destruction supports fractional (0.1) precision.
+
+---
+
 # 12.0.0.22-release (2026-02-09)
 ## General
 
