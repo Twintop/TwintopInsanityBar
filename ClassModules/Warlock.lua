@@ -669,6 +669,44 @@ local function UpdateSnapshot_Destruction()
 	UpdateSnapshot()
 end
 
+---Processes soul shard threshold audio cues for any Warlock spec
+---@param specSettings table The spec-specific settings table containing audio thresholds
+local function ProcessSoulShardAudioCues(specSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local coreSettings = TRB.Data.settings.core
+	local currentResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
+	local threshold1 = specSettings.audio.soulShardThreshold1
+	local threshold2 = specSettings.audio.soulShardThreshold2
+	local threshold1Value = threshold1.configuration.thresholdValue
+	local threshold2Value = threshold2.configuration.thresholdValue
+
+	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.soulShardThreshold1Played and currentResource2 >= threshold1Value
+	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.soulShardThreshold2Played and currentResource2 >= threshold2Value
+
+	if threshold1ShouldFire and threshold2ShouldFire then
+		snapshotData.audio.soulShardThreshold1Played = true
+		snapshotData.audio.soulShardThreshold2Played = true
+		if threshold2Value > threshold1Value then
+			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+		else
+			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+		end
+	elseif threshold2ShouldFire then
+		snapshotData.audio.soulShardThreshold2Played = true
+		PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+	elseif threshold1ShouldFire then
+		snapshotData.audio.soulShardThreshold1Played = true
+		PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+	end
+
+	if currentResource2 < threshold1Value then
+		snapshotData.audio.soulShardThreshold1Played = false
+	end
+	if currentResource2 < threshold2Value then
+		snapshotData.audio.soulShardThreshold2Played = false
+	end
+end
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local coreSettings = TRB.Data.settings.core
@@ -818,42 +856,6 @@ local function UpdateResourceBar()
 				UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, spells)
 			end
 
-			-- Soul Shard threshold audio cues
-			do
-				local coreSettings = TRB.Data.settings.core
-				local currentResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				local threshold1 = specSettings.audio.soulShardThreshold1
-				local threshold2 = specSettings.audio.soulShardThreshold2
-				local threshold1Value = threshold1.configuration.thresholdValue
-				local threshold2Value = threshold2.configuration.thresholdValue
-
-				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.soulShardThreshold1Played and currentResource2 >= threshold1Value
-				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.soulShardThreshold2Played and currentResource2 >= threshold2Value
-
-				if threshold1ShouldFire and threshold2ShouldFire then
-					snapshotData.audio.soulShardThreshold1Played = true
-					snapshotData.audio.soulShardThreshold2Played = true
-					if threshold2Value > threshold1Value then
-						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-					else
-						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-					end
-				elseif threshold2ShouldFire then
-					snapshotData.audio.soulShardThreshold2Played = true
-					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-				elseif threshold1ShouldFire then
-					snapshotData.audio.soulShardThreshold1Played = true
-					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-				end
-
-				if currentResource2 < threshold1Value then
-					snapshotData.audio.soulShardThreshold1Played = false
-				end
-				if currentResource2 < threshold2Value then
-					snapshotData.audio.soulShardThreshold2Played = false
-				end
-			end
-
 			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
@@ -866,6 +868,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Soul Shard threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessSoulShardAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.demonology
@@ -891,42 +899,6 @@ local function UpdateResourceBar()
 				UpdateSoulShards(specSettings, specCacheSettings, normalizedResource2)
 			end
 
-			-- Soul Shard threshold audio cues
-			do
-				local coreSettings = TRB.Data.settings.core
-				local currentResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				local threshold1 = specSettings.audio.soulShardThreshold1
-				local threshold2 = specSettings.audio.soulShardThreshold2
-				local threshold1Value = threshold1.configuration.thresholdValue
-				local threshold2Value = threshold2.configuration.thresholdValue
-
-				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.soulShardThreshold1Played and currentResource2 >= threshold1Value
-				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.soulShardThreshold2Played and currentResource2 >= threshold2Value
-
-				if threshold1ShouldFire and threshold2ShouldFire then
-					snapshotData.audio.soulShardThreshold1Played = true
-					snapshotData.audio.soulShardThreshold2Played = true
-					if threshold2Value > threshold1Value then
-						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-					else
-						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-					end
-				elseif threshold2ShouldFire then
-					snapshotData.audio.soulShardThreshold2Played = true
-					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-				elseif threshold1ShouldFire then
-					snapshotData.audio.soulShardThreshold1Played = true
-					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-				end
-
-				if currentResource2 < threshold1Value then
-					snapshotData.audio.soulShardThreshold1Played = false
-				end
-				if currentResource2 < threshold2Value then
-					snapshotData.audio.soulShardThreshold2Played = false
-				end
-			end
-
 			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
@@ -939,6 +911,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Soul Shard threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessSoulShardAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.destruction
@@ -964,42 +942,6 @@ local function UpdateResourceBar()
 				UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
 			end
 
-			-- Soul Shard threshold audio cues
-			do
-				local coreSettings = TRB.Data.settings.core
-				local currentResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				local threshold1 = specSettings.audio.soulShardThreshold1
-				local threshold2 = specSettings.audio.soulShardThreshold2
-				local threshold1Value = threshold1.configuration.thresholdValue
-				local threshold2Value = threshold2.configuration.thresholdValue
-
-				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.soulShardThreshold1Played and currentResource2 >= threshold1Value
-				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.soulShardThreshold2Played and currentResource2 >= threshold2Value
-
-				if threshold1ShouldFire and threshold2ShouldFire then
-					snapshotData.audio.soulShardThreshold1Played = true
-					snapshotData.audio.soulShardThreshold2Played = true
-					if threshold2Value > threshold1Value then
-						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-					else
-						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-					end
-				elseif threshold2ShouldFire then
-					snapshotData.audio.soulShardThreshold2Played = true
-					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-				elseif threshold1ShouldFire then
-					snapshotData.audio.soulShardThreshold1Played = true
-					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-				end
-
-				if currentResource2 < threshold1Value then
-					snapshotData.audio.soulShardThreshold1Played = false
-				end
-				if currentResource2 < threshold2Value then
-					snapshotData.audio.soulShardThreshold2Played = false
-				end
-			end
-
 			if specSettings.displayBar.health ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
@@ -1012,6 +954,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Soul Shard threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessSoulShardAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

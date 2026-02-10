@@ -725,7 +725,21 @@ local function UpdateResourceBar()
 				end
 			end
 
-			-- Arcane Charge threshold audio cues
+			if specSettings.displayBar.health ~= "never" then
+				refreshText = true
+				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+				if healthNode then
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border.color)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
+				end
+			end
+		end
+
+		-- Arcane Charge threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
 			do
 				local coreSettings = TRB.Data.settings.core
 				local currentResource2 = snapshotData.attributes.resource2
@@ -760,19 +774,8 @@ local function UpdateResourceBar()
 					snapshotData.audio.arcaneChargeThreshold2Played = false
 				end
 			end
-
-			if specSettings.displayBar.health ~= "never" then
-				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
-				end
-			end
 		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fire

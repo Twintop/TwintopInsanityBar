@@ -706,6 +706,44 @@ local function UpdateSnapshot_Retribution()
 	UpdateSnapshot()
 end
 
+---Processes holy power threshold audio cues for any Paladin spec
+---@param specSettings table The spec-specific settings table containing audio thresholds
+local function ProcessHolyPowerAudioCues(specSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local coreSettings = TRB.Data.settings.core
+	local currentResource2 = snapshotData.attributes.resource2 or 0
+	local threshold1 = specSettings.audio.holyPowerThreshold1
+	local threshold2 = specSettings.audio.holyPowerThreshold2
+	local threshold1Value = threshold1.configuration.thresholdValue
+	local threshold2Value = threshold2.configuration.thresholdValue
+
+	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.holyPowerThreshold1Played and currentResource2 >= threshold1Value
+	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.holyPowerThreshold2Played and currentResource2 >= threshold2Value
+
+	if threshold1ShouldFire and threshold2ShouldFire then
+		snapshotData.audio.holyPowerThreshold1Played = true
+		snapshotData.audio.holyPowerThreshold2Played = true
+		if threshold2Value > threshold1Value then
+			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+		else
+			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+		end
+	elseif threshold2ShouldFire then
+		snapshotData.audio.holyPowerThreshold2Played = true
+		PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+	elseif threshold1ShouldFire then
+		snapshotData.audio.holyPowerThreshold1Played = true
+		PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+	end
+
+	if currentResource2 < threshold1Value then
+		snapshotData.audio.holyPowerThreshold1Played = false
+	end
+	if currentResource2 < threshold2Value then
+		snapshotData.audio.holyPowerThreshold2Played = false
+	end
+end
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.paladin
@@ -762,42 +800,6 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-
-		-- Holy Power threshold audio cues
-		local coreSettings = TRB.Data.settings.core
-		local threshold1 = specSettings.audio.holyPowerThreshold1
-		local threshold2 = specSettings.audio.holyPowerThreshold2
-		local threshold1Value = threshold1.configuration.thresholdValue
-		local threshold2Value = threshold2.configuration.thresholdValue
-		
-		local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.holyPowerThreshold1Played and currentHolyPower >= threshold1Value
-		local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.holyPowerThreshold2Played and currentHolyPower >= threshold2Value
-
-		-- If both would fire, mark both as played but only play the higher threshold's sound
-		-- If equal, play threshold 1's sound
-		if threshold1ShouldFire and threshold2ShouldFire then
-			snapshotData.audio.holyPowerThreshold1Played = true
-			snapshotData.audio.holyPowerThreshold2Played = true
-			if threshold2Value > threshold1Value then
-				PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-			else
-				PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-			end
-		elseif threshold2ShouldFire then
-			snapshotData.audio.holyPowerThreshold2Played = true
-			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-		elseif threshold1ShouldFire then
-			snapshotData.audio.holyPowerThreshold1Played = true
-			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-		end
-
-		-- Reset flags independently when Holy Power drops below respective threshold
-		if currentHolyPower < threshold1Value then
-			snapshotData.audio.holyPowerThreshold1Played = false
-		end
-		if currentHolyPower < threshold2Value then
-			snapshotData.audio.holyPowerThreshold2Played = false
-		end
 	end
 
 	if TRB.Data.character.specId == 1 then
@@ -848,7 +850,14 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
+
 		end
+
+		-- Holy Power threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessHolyPowerAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.protection
@@ -883,7 +892,14 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
+
 		end
+
+		-- Holy Power threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessHolyPowerAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.retribution
@@ -918,7 +934,14 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
+
 		end
+
+		-- Holy Power threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessHolyPowerAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

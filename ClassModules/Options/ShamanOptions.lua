@@ -336,7 +336,7 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"],
 				configuration = {
-					thresholdValue = 8
+					thresholdValue = 10
 				}
 			},
 		},

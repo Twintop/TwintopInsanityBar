@@ -375,7 +375,7 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"],
 				configuration = {
-					thresholdValue = 4.5
+					thresholdValue = 5
 				}
 			},
 		},

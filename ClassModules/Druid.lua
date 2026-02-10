@@ -2458,7 +2458,22 @@ local function UpdateResourceBar()
 				end
 			end
 
-			-- Combo Point threshold audio cues
+			-- Health bar update
+			if specSettings.displayBar.health ~= "never" then
+				refreshText = true
+				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+				if healthNode then
+					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+					healthNode:SetValue(snapshotData.attributes.health or 0)
+					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+					healthNode:SetBorderColor(specSettings.colors.healthBar.border.color)
+					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
+				end
+			end
+		end
+
+		-- Combo Point threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
 			do
 				local coreSettings = TRB.Data.settings.core
 				local currentResource2 = snapshotData.attributes.resource2
@@ -2493,20 +2508,8 @@ local function UpdateResourceBar()
 					snapshotData.audio.comboPointThreshold2Played = false
 				end
 			end
-
-			-- Health bar update
-			if specSettings.displayBar.health ~= "never" then
-				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
-				end
-			end
 		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
