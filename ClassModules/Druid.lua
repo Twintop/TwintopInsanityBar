@@ -113,7 +113,9 @@ local function FillSpecializationCache()
 	specCache.feral.snapshotData.attributes.resourceRegen = 0
 	specCache.feral.snapshotData.attributes.comboPoints = 0
 	specCache.feral.snapshotData.audio = {
-		apexPredatorsCravingCue = false
+		apexPredatorsCravingCue = false,
+		comboPointThreshold1Played = false,
+		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
@@ -2469,6 +2471,45 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Combo Point threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			do
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshotData.attributes.resource2
+				local threshold1 = specSettings.audio.comboPointThreshold1
+				local threshold2 = specSettings.audio.comboPointThreshold2
+				local threshold1Value = threshold1.configuration.thresholdValue
+				local threshold2Value = threshold2.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
+				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
+
+				if threshold1ShouldFire and threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					snapshotData.audio.comboPointThreshold2Played = true
+					if threshold2Value > threshold1Value then
+						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+					else
+						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					end
+				elseif threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold2Played = true
+					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+				elseif threshold1ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				end
+
+				if currentResource2 < threshold1Value then
+					snapshotData.audio.comboPointThreshold1Played = false
+				end
+				if currentResource2 < threshold2Value then
+					snapshotData.audio.comboPointThreshold2Played = false
+				end
+			end
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration

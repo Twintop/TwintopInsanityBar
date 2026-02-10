@@ -321,6 +321,24 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			maelstromWeaponThreshold1={
+				name = L["ShamanAudioMaelstromWeaponThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
+			maelstromWeaponThreshold2={
+				name = L["ShamanAudioMaelstromWeaponThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 10
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -1252,6 +1270,31 @@ local function EnhancementConstructAudioAndTrackingPanel(parent)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "maelstromWeaponThreshold1", spec, classId, specId, yCoord, L["ShamanAudioCheckboxMaelstromWeaponThreshold1"], L["ShamanAudioCheckboxMaelstromWeaponThreshold1Tooltip"])
+
+	controls.maelstromWeaponThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShamanMaelstromWeaponThresholdSliderTitle"], 0, 10, spec.audio["maelstromWeaponThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.maelstromWeaponThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["maelstromWeaponThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "maelstromWeaponThreshold2", spec, classId, specId, yCoord, L["ShamanAudioCheckboxMaelstromWeaponThreshold2"], L["ShamanAudioCheckboxMaelstromWeaponThreshold2Tooltip"])
+
+	controls.maelstromWeaponThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShamanMaelstromWeaponThresholdSliderTitle"], 0, 10, spec.audio["maelstromWeaponThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.maelstromWeaponThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["maelstromWeaponThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function EnhancementConstructBarTextDisplayPanel(parent, cache)
@@ -1337,10 +1380,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -1348,9 +1388,9 @@ local function EnhancementConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines or Audio & Tracking. Don't let these tabs be made/rendered.
+			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
 		]]
-		if i == 2 or i == 4 then
+		if i == 2 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -1376,7 +1416,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	EnhancementConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--EnhancementConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	EnhancementConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--EnhancementConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	EnhancementConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	EnhancementConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	EnhancementConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end

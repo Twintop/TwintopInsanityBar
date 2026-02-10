@@ -103,6 +103,8 @@ local function FillSpecializationCache()
 
 	specCache.enhancement.snapshotData.attributes.manaRegen = 0
 	specCache.enhancement.snapshotData.audio = {
+		maelstromWeaponThreshold1Played = false,
+		maelstromWeaponThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.enhancement.snapshotData.snapshots[spells.maelstromWeapon.id] = TRB.Classes.Snapshot:New(spells.maelstromWeapon)
@@ -1291,6 +1293,45 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Maelstrom Weapon threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			do
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshots[spells.maelstromWeapon.id].buff.applications or 0
+				local threshold1 = specSettings.audio.maelstromWeaponThreshold1
+				local threshold2 = specSettings.audio.maelstromWeaponThreshold2
+				local threshold1Value = threshold1.configuration.thresholdValue
+				local threshold2Value = threshold2.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.maelstromWeaponThreshold1Played and currentResource2 >= threshold1Value
+				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.maelstromWeaponThreshold2Played and currentResource2 >= threshold2Value
+
+				if threshold1ShouldFire and threshold2ShouldFire then
+					snapshotData.audio.maelstromWeaponThreshold1Played = true
+					snapshotData.audio.maelstromWeaponThreshold2Played = true
+					if threshold2Value > threshold1Value then
+						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+					else
+						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					end
+				elseif threshold2ShouldFire then
+					snapshotData.audio.maelstromWeaponThreshold2Played = true
+					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+				elseif threshold1ShouldFire then
+					snapshotData.audio.maelstromWeaponThreshold1Played = true
+					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				end
+
+				if currentResource2 < threshold1Value then
+					snapshotData.audio.maelstromWeaponThreshold1Played = false
+				end
+				if currentResource2 < threshold2Value then
+					snapshotData.audio.maelstromWeaponThreshold2Played = false
+				end
+			end
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.restoration

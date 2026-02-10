@@ -557,6 +557,24 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
 			},
+			chiThreshold1={
+				name = L["MonkAudioChiThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3
+				}
+			},
+			chiThreshold2={
+				name = L["MonkAudioChiThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -2081,6 +2099,30 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "chiThreshold1", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold1"], L["MonkAudioCheckboxChiThreshold1Tooltip"])
+
+	controls.chiThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.chiThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["chiThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "chiThreshold2", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold2"], L["MonkAudioCheckboxChiThreshold2Tooltip"])
+
+	controls.chiThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.chiThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["chiThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
@@ -2163,29 +2205,19 @@ local function WindwalkerConstructOptionsPanel(cache)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
 	yCoord = yCoord - 15
 
 	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
+		PanelTemplates_TabResize(tabs[i], 0)
+		PanelTemplates_DeselectTab(tabs[i])
+		tabs[i].Text:SetPoint("TOP", 0, 0)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
+		tabsheets[i]:Hide()
+		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
 
 	tabsheets[1]:Show()
@@ -2202,7 +2234,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	WindwalkerConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	WindwalkerConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	WindwalkerConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--WindwalkerConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	WindwalkerConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	WindwalkerConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	WindwalkerConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
