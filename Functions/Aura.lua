@@ -3,6 +3,14 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Aura = {}
 
+---@type table<number, integer>
+local auraCacheBuffer = {}
+---@type table<number, TRB.Classes.SnapshotBuff>
+local auraRequests = {}
+local auraCacheCleanupTime = 0
+local AURA_CACHE_MAX_DURATION = 1 -- seconds
+local auraCacheEnabled = false
+
 ---Handles UNIT_AURA events
 ---@param self any
 ---@param event string
@@ -11,6 +19,7 @@ TRB.Functions.Aura = {}
 local function AuraUpdateEvent(self, event, unit, info)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData
+	local currentTime = GetTime()
 	
 	-- Short circuit this for now
 	if unit == "player" then
@@ -21,6 +30,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 		return
 	end
 	
+---@diagnostic disable-next-line: param-type-mismatch
 	if not issecretvalue(info.isFullUpdate) and info.isFullUpdate then
 		--Only do a full refresh of buffs for now
 		snapshotData:RefreshAllBuffs()
@@ -37,7 +47,20 @@ local function AuraUpdateEvent(self, event, unit, info)
 
 	if info.addedAuras then
 		if unit == "player" then
+			-- Aura cache handling: if enabled and exactly one aura was added, try to match it to a pending request
+			if auraCacheEnabled and #info.addedAuras == 1 then
+				for _, v in pairs(info.addedAuras) do
+					if auraRequests[currentTime] ~= nil then
+						auraRequests[currentTime]:SetAuraInstanceId(v.auraInstanceID)
+						auraRequests[currentTime] = nil
+					else
+						auraCacheBuffer[currentTime] = v.auraInstanceID
+					end
+				end
+			end
+
 			for _, v in pairs(info.addedAuras) do
+---@diagnostic disable-next-line: param-type-mismatch
 				if not issecretvalue(v.spellId) then
 					local snapshot = snapshotData.snapshots[v.spellId]
 
@@ -116,7 +139,13 @@ local function AuraUpdateEvent(self, event, unit, info)
 			for _, v in pairs(info.removedAuraInstanceIDs) do
 				local snapshot = snapshotData.auraInstanceIds[v]
 				if snapshot ~= nil then
-					snapshot:Refresh()
+					if auraCacheEnabled then
+						-- Cache-managed snapshot: call Reset() to fully clear it
+						snapshot:Reset()
+					else
+						-- Standard snapshot: call Refresh() to update from current aura state
+						snapshot:Refresh()
+					end
 				end
 				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
 			end
@@ -139,6 +168,16 @@ local function AuraUpdateEvent(self, event, unit, info)
 			end
 		end
 	end
+
+	-- Aura cache buffer cleanup
+	if auraCacheEnabled and currentTime - auraCacheCleanupTime > AURA_CACHE_MAX_DURATION then
+		auraCacheCleanupTime = currentTime
+		for k, v in pairs(auraCacheBuffer) do
+			if currentTime - k > AURA_CACHE_MAX_DURATION then
+				auraCacheBuffer[k] = nil
+			end
+		end
+	end
 end
 
 local unitAuraFrame = CreateFrame("Frame")
@@ -152,95 +191,14 @@ function TRB.Functions.Aura:DisableUnitAura()
 	unitAuraFrame:UnregisterEvent("UNIT_AURA")
 end
 
-
----@type table<number, integer>
-local auraCacheBuffer = {}
----@type table<number, TRB.Classes.SnapshotBuff>
-local auraRequests = {}
-local auraCacheCleanupTime = 0
-local AURA_CACHE_MAX_DURATION = 1 -- seconds
-
----Handles UNIT_AURA events that need caching for later processing
----@param self any
----@param event string
----@param unit UnitToken
----@param info UnitAuraUpdateInfo
-local function AuraUpdateEventCache(self, event, unit, info)
-	---@type TRB.Classes.SnapshotData
-	local snapshotData = TRB.Data.snapshotData
-	local currentTime = GetTime()
-	
-	-- Only do this for the player
-	if unit ~= "player" then
-		return
-	end
-	
-	--[[if info.isFullUpdate then
-		--Only do a full refresh of buffs for now
-		snapshotData:RefreshAllBuffs()
-		TRB.Data.cache.values.resource = {}
-		return
-	end]]
-
-	if info.addedAuras then
-		if unit == "player" and #info.addedAuras == 1 then
-			for _, v in pairs(info.addedAuras) do
-				if auraRequests[currentTime] ~= nil then
-					auraRequests[currentTime]:SetAuraInstanceId(v.auraInstanceID)
-					--print("Found matching aura request for ID " .. v.auraInstanceID .. ", spell " .. auraRequests[currentTime].parent.spell.name .. " (" .. auraRequests[currentTime].parent.spell.id .. ")")
-					auraRequests[currentTime] = nil
-				else
-					auraCacheBuffer[currentTime] = v.auraInstanceID
-					--print("Did not find matching aura request for ID " .. v.auraInstanceID .. ", buffering")
-				end
-			end
-		end
-	end
-
-	--[[if info.updatedAuraInstanceIDs then
-		if unit == "player" then
-			for _, v in pairs(info.updatedAuraInstanceIDs) do
-				if auraCache[v] ~= nil then
-					-- TODO: something about refreshing
-					--print("Refreshing aura ID " .. v)
-				end
-			end
-		end
-	end]]
-
-	if info.removedAuraInstanceIDs then
-		if unit == "player" then
-			for _, v in pairs(info.removedAuraInstanceIDs) do
-				local snapshot = snapshotData.auraInstanceIds[v]
-				if snapshot ~= nil then
-					--print("Removing aura ID " .. v .. " from snapshot tracking for spell " .. (snapshot.parent.spell.name) .. " (" .. (snapshot.parent.spell.id) .. ")")
-					snapshot:Reset()
-				end
-				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
-			end
-		end
-	end
-
-	if currentTime - auraCacheCleanupTime > AURA_CACHE_MAX_DURATION then
-		auraCacheCleanupTime = currentTime
-		for k, v in pairs(auraCacheBuffer) do
-			if currentTime - k > AURA_CACHE_MAX_DURATION then
-				--print("Cleaning up buffered aura ID " .. v)
-				auraCacheBuffer[k] = nil
-			end
-		end
-	end	
-end
-
-local unitAuraCacheFrame = CreateFrame("Frame")
-unitAuraCacheFrame:SetScript("OnEvent", AuraUpdateEventCache)
-
 function TRB.Functions.Aura:EnableUnitAuraCache()
-	unitAuraCacheFrame:RegisterEvent("UNIT_AURA")
+	auraCacheEnabled = true
 end
 
 function TRB.Functions.Aura:DisableUnitAuraCache()
-	unitAuraCacheFrame:UnregisterEvent("UNIT_AURA")
+	auraCacheEnabled = false
+	auraCacheBuffer = {}
+	auraRequests = {}
 end
 
 ---Gets an aura from the cache buffer by its timestamp
@@ -321,6 +279,7 @@ function TRB.Functions.Aura:FindBuffById(spellId, onWhom, byWhom)
 		buffData = C_UnitAuras.GetBuffDataByIndex(onWhom, i)
 		if not buffData then
 			return
+---@diagnostic disable-next-line: param-type-mismatch
 		elseif issecretvalue(buffData.spellId) then
 			-- do nothing
 		elseif spellId == buffData.spellId and (byWhom == nil or byWhom == buffData.sourceUnit) then

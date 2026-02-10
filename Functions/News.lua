@@ -45,6 +45,11 @@ local content = [====[
 
 - [#582](#582) Add two new audio cues for when Soul Shards are at or above a configured threshold. These default to 3 and 5 Soul Shards. Destruction supports fractional (0.1) precision.
 
+## Warrior
+### Protection
+
+- [#604](#604) Fix an issue with tracking when Ignore Pain is removed.
+
 ---
 
 # 12.0.0.22-release (2026-02-09)
