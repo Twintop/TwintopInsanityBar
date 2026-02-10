@@ -1,4 +1,4 @@
-## Interface: 120000, 120001
+## Interface: 120001
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
