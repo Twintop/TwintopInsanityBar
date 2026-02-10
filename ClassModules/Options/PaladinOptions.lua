@@ -125,6 +125,15 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"],
 				configuration = {
+					thresholdValue = 4
+				}
+			},
+			holyPowerThreshold3={
+				name = L["PaladinAudioHolyPowerThreshold3"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
 					thresholdValue = 5
 				}
 			},
@@ -251,6 +260,15 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"],
 				configuration = {
+					thresholdValue = 4
+				}
+			},
+			holyPowerThreshold3={
+				name = L["PaladinAudioHolyPowerThreshold3"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
 					thresholdValue = 5
 				}
 			},
@@ -366,6 +384,15 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 			},
 			holyPowerThreshold2={
 				name = L["PaladinAudioHolyPowerThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 4
+				}
+			},
+			holyPowerThreshold3={
+				name = L["PaladinAudioHolyPowerThreshold3"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"],
@@ -716,6 +743,18 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["holyPowerThreshold2"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold3", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold3"], L["PaladinAudioCheckboxHolyPowerThreshold3Tooltip"])
+
+	controls.holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold3"].configuration.thresholdValue = value
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "infusionOfLight", spec, classId, specId, yCoord, L["PaladinHolyAudioCheckboxInfusionOfLight"], L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"])
@@ -1142,6 +1181,18 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.audio["holyPowerThreshold2"].configuration.thresholdValue = value
 	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold3", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold3"], L["PaladinAudioCheckboxHolyPowerThreshold3Tooltip"])
+
+	controls.holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold3"].configuration.thresholdValue = value
+	end)
 end
 
 local function ProtectionConstructBarTextDisplayPanel(parent, cache)
@@ -1563,6 +1614,18 @@ local function RetributionConstructAudioAndTrackingPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["holyPowerThreshold2"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold3", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold3"], L["PaladinAudioCheckboxHolyPowerThreshold3Tooltip"])
+
+	controls.holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["holyPowerThreshold3"].configuration.thresholdValue = value
 	end)
 end
 

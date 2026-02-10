@@ -142,6 +142,7 @@ local function FillSpecializationCache()
 	specCache.windwalker.snapshotData.audio = {
 		chiThreshold1Played = false,
 		chiThreshold2Played = false,
+		chiThreshold3Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
@@ -1417,26 +1418,44 @@ local function UpdateResourceBar()
 				local currentResource2 = snapshotData.attributes.resource2
 				local threshold1 = specSettings.audio.chiThreshold1
 				local threshold2 = specSettings.audio.chiThreshold2
+				local threshold3 = specSettings.audio.chiThreshold3
 				local threshold1Value = threshold1.configuration.thresholdValue
 				local threshold2Value = threshold2.configuration.thresholdValue
+				local threshold3Value = threshold3.configuration.thresholdValue
 
 				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.chiThreshold1Played and currentResource2 >= threshold1Value
 				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.chiThreshold2Played and currentResource2 >= threshold2Value
+				local threshold3ShouldFire = threshold3.enabled and not snapshotData.audio.chiThreshold3Played and currentResource2 >= threshold3Value
 
-				if threshold1ShouldFire and threshold2ShouldFire then
-					snapshotData.audio.chiThreshold1Played = true
-					snapshotData.audio.chiThreshold2Played = true
-					if threshold2Value > threshold1Value then
-						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-					else
-						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				if threshold1ShouldFire or threshold2ShouldFire or threshold3ShouldFire then
+					local highestValue = 0
+					local highestSound = nil
+
+					if threshold1ShouldFire then
+						snapshotData.audio.chiThreshold1Played = true
+						if threshold1Value > highestValue then
+							highestValue = threshold1Value
+							highestSound = threshold1.sound
+						end
 					end
-				elseif threshold2ShouldFire then
-					snapshotData.audio.chiThreshold2Played = true
-					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-				elseif threshold1ShouldFire then
-					snapshotData.audio.chiThreshold1Played = true
-					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					if threshold2ShouldFire then
+						snapshotData.audio.chiThreshold2Played = true
+						if threshold2Value > highestValue then
+							highestValue = threshold2Value
+							highestSound = threshold2.sound
+						end
+					end
+					if threshold3ShouldFire then
+						snapshotData.audio.chiThreshold3Played = true
+						if threshold3Value > highestValue then
+							highestValue = threshold3Value
+							highestSound = threshold3.sound
+						end
+					end
+
+					if highestSound then
+						PlaySoundFile(highestSound, coreSettings.audio.channel.channel)
+					end
 				end
 
 				if currentResource2 < threshold1Value then
@@ -1444,6 +1463,9 @@ local function UpdateResourceBar()
 				end
 				if currentResource2 < threshold2Value then
 					snapshotData.audio.chiThreshold2Played = false
+				end
+				if currentResource2 < threshold3Value then
+					snapshotData.audio.chiThreshold3Played = false
 				end
 			end
 		end

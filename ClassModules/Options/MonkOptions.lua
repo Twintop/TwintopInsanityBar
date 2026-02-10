@@ -575,6 +575,15 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					thresholdValue = 5
 				}
 			},
+			chiThreshold3={
+				name = L["MonkAudioChiThreshold3"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 6
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -2122,6 +2131,18 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["chiThreshold2"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "chiThreshold3", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold3"], L["MonkAudioCheckboxChiThreshold3Tooltip"])
+
+	controls.chiThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold3"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.chiThreshold3Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["chiThreshold3"].configuration.thresholdValue = value
 	end)
 end
 

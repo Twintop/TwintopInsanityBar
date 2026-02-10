@@ -30,7 +30,11 @@ local content = [====[
 ## Monk
 ### Windwalker
 
-- [#582](#582) Add two new audio cues for when Chi is at or above a configured threshold. These default to 3 and 5 Chi.
+- [#582](#582) Add three new audio cues for when Chi is at or above a configured threshold. These default to 3, 5, and 6 Chi.
+
+## Paladin
+
+- Add a 3rd Holy Power threshold audio cue.
 
 ## Rogue
 
