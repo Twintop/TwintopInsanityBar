@@ -47,7 +47,7 @@ addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
 
 addonData.libs.LibSmoothMove = LibStub:GetLibrary("LibSmoothMove-1.0")
 
-addonData.libs.LibEditMode = LibStub:GetLibrary("LibEditMode")
+addonData.libs.LibEditMode = TRB.LibEditMode or LibStub:GetLibrary("LibEditMode-1.0")
 
 --addonData.libs.LibAdvFlight = LibStub:GetLibrary("LibAdvFlight-1.0")
 

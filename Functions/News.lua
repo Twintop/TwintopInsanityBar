@@ -12,10 +12,11 @@ local content = [====[
 
 ---
 
-# 12.0.1.0-release (2026-02-10)
+# 12.0.1.0-release (2026-02-11)
 ## General
 
 - [#582](#582) All secondary resource audio cues (Holy Power, Combo Points, Soul Shards, Chi, Arcane Charges, Maelstrom Weapon) now fire independently of bar visibility and only trigger during combat.
+- Update LibEditMode to version 15.
 
 ## Druid
 ### Feral

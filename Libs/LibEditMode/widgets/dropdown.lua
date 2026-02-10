@@ -1,7 +1,13 @@
-local MINOR = 14
-local lib, minor = LibStub('LibEditMode')
-if minor > MINOR then
-	return
+local _, ns = ...
+local lib
+if ns.LibEditMode then
+	lib = ns.LibEditMode
+else
+	local MINOR, prevMinor = 15
+	lib, prevMinor = LibStub('LibEditMode')
+	if prevMinor > MINOR then
+		return
+	end
 end
 
 local function showTooltip(self)
@@ -54,7 +60,12 @@ function dropdownMixin:Setup(data)
 				rootDescription:SetScrollMode(data.height)
 			end
 
-			for _, value in next, data.values do
+			local values = data.values
+			if type(values) == 'function' then
+				values = values()
+			end
+
+			for _, value in next, values do
 				if data.multiple then
 					rootDescription:CreateCheckbox(value.text, get, set, {
 						get = data.get,
