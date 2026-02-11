@@ -822,21 +822,21 @@ end
 ---@param specCacheSettings table # The spec cache settings
 local function UpdateEssence(specSettings, specCacheSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	for x = 1, TRB.Data.character.maxResource2 do
-		local cpBorderColor = specSettings.colors.comboPoints.border
-		local cpColor = specSettings.colors.comboPoints.base
+		local cpBorderColor = specSettings.colors.comboPoints.border.color
+		local cpColor = specSettings.colors.comboPoints.base.color
 
 		local essenceValue = 0
 		if snapshotData.attributes.resource2 >= x then
 			essenceValue = 1000
 			-- Color logic for penultimate/final
 			if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-				cpColor = specSettings.colors.comboPoints.penultimate
+				cpColor = specSettings.colors.comboPoints.penultimate.color
 			elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2) or x == TRB.Data.character.maxResource2 then
-				cpColor = specSettings.colors.comboPoints.final
+				cpColor = specSettings.colors.comboPoints.final.color
 			end
 		elseif snapshotData.attributes.resource2 + 1 == x then
 			essenceValue = snapshotData.attributes.essencePartial or UnitPartialPower("player", Enum.PowerType.Essence)
@@ -907,8 +907,8 @@ local function UpdateResourceBar()
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
@@ -946,7 +946,7 @@ local function UpdateResourceBar()
 
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -974,8 +974,8 @@ local function UpdateResourceBar()
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barBorderColor = specSettings.colors.bar.border
-				local barColor = specSettings.colors.bar.base
+				local barBorderColor = specSettings.colors.bar.border.color
+				local barColor = specSettings.colors.bar.base.color
 
 				if snapshotData.attributes.essenceBurstActive then
 					if specSettings.colors.bar.essenceBurst.enabled then
@@ -986,7 +986,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				
 			end
 
@@ -1018,8 +1018,8 @@ local function UpdateResourceBar()
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
@@ -1030,13 +1030,13 @@ local function UpdateResourceBar()
 					local ebonMightTimeThreshold = 0
 					local useEndOfEbonMightColor = false
 
-					if specSettings.endOfEbonMight.enabled then
+					if specSettings.endOf.ebonMight.enabled then
 						useEndOfEbonMightColor = true
-						if specSettings.endOfEbonMight.mode == "gcd" then
+						if specSettings.endOf.ebonMight.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							ebonMightTimeThreshold = gcd * specSettings.endOfEbonMight.gcdsMax
-						elseif specSettings.endOfEbonMight.mode == "time" then
-							ebonMightTimeThreshold = specSettings.endOfEbonMight.timeMax
+							ebonMightTimeThreshold = gcd * specSettings.endOf.ebonMight.gcdsMax
+						elseif specSettings.endOf.ebonMight.mode == "time" then
+							ebonMightTimeThreshold = specSettings.endOf.ebonMight.timeMax
 						end
 					end
 
@@ -1058,12 +1058,12 @@ local function UpdateResourceBar()
 							snapshotData.audio.playedEbonMightCue = true
 							PlaySoundFile(specSettings.audio.ebonMightEnding.sound, coreSettings.audio.channel.channel)
 						end
-					elseif useEndOfEbonMightColor and specSettings.colors.bar.inEbonMight1GCD.enabled and ebonMightTimeLeft <= ebonMightTimeThreshold then
+					elseif useEndOfEbonMightColor and specSettings.colors.bar.ebonMightEnd.enabled and ebonMightTimeLeft <= ebonMightTimeThreshold then
 						-- Ebon Might is ending soon
-						barColor = specSettings.colors.bar.inEbonMight1GCD.color
-					elseif specSettings.colors.bar.inEbonMight.enabled then
+						barColor = specSettings.colors.bar.ebonMightEnd.color
+					elseif specSettings.colors.bar.ebonMight.enabled then
 						-- Ebon Might is active
-						barColor = specSettings.colors.bar.inEbonMight.color
+						barColor = specSettings.colors.bar.ebonMight.color
 						snapshotData.audio.playedEbonMightCue = false
 					end
 				else
@@ -1078,7 +1078,7 @@ local function UpdateResourceBar()
 
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText

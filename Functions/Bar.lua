@@ -483,16 +483,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			end
 			primaryNode:SetMinMax(0, max)
 
-			-- Enable drag and drop:
-			-- Use Case 1: Edit Mode disabled -> Legacy drag-and-drop uses settings.bar.dragAndDrop
-			-- Use Case 2: Edit Mode enabled + Free Position -> Edit Mode handles positioning, no legacy drag
-			-- Use Case 3: Edit Mode enabled + CDM anchor -> No drag, anchored to CDM
-			-- Summary: If Edit Mode is enabled, disable legacy drag (Edit Mode or CDM handles it)
-			if editModeLayoutEnabled then
-				primary:SetDragAndDrop(false, settings)
-			else
-				primary:SetDragAndDrop(settings.bar.dragAndDrop, settings)
-			end
+			primary:SetDragAndDrop(false, settings)
 
 			-- Show the primary bar (now parented directly to UIParent)
 			primary:Show()
@@ -727,9 +718,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				settings.textures.border,
 				settings.textures.background
 			)
-			primaryNode:SetColor(settings.colors.bar.base)
-			primaryNode:SetBorderColor(settings.colors.bar.border)
-			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background)
+			primaryNode:SetColor(settings.colors.bar.base.color)
+			primaryNode:SetBorderColor(settings.colors.bar.border.color)
+			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
 			primaryNode:SetFrameLevels(
 				frameLevels.barContainer,
 				frameLevels.barBorder,
@@ -834,9 +825,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				else
 					node:SetMinMax(0, 1)
 				end
-				node:SetBorderColor(effectiveSettings.colors.comboPoints.border)
-				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background)
-				node:SetColor(effectiveSettings.colors.comboPoints.base)
+				node:SetBorderColor(effectiveSettings.colors.comboPoints.border.color)
+				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background.color)
+				node:SetColor(effectiveSettings.colors.comboPoints.base.color)
 				node:SetFrameLevels(
 					frameLevels.cpContainer,
 					frameLevels.cpBorder,
@@ -917,9 +908,13 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	local frameLevels = TRB.Data.constants.frameLevels
 
 	-- Determine node count
+	-- Priority: 1) config.nodeCount (explicit), 2) lastRebuildNodeCount (from RebuildNodes, respects compressed view), 3) maxResource2
 	local nodes
 	if config.nodeCount ~= nil then
 		nodes = config.nodeCount
+	elseif targetGroup.lastRebuildNodeCount ~= nil then
+		-- Use the node count from the last RebuildNodes call (respects compressed view)
+		nodes = targetGroup.lastRebuildNodeCount
 	else
 		nodes = TRB.Data.character.maxResource2
 		if nodes == nil or nodes == 0 then

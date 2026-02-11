@@ -99,7 +99,6 @@ if locale == "enGB" then
     L["PriestShadowCheckboxMindDevourerTooltip"] = "This will change the bar border colour when you are able to cast Shadow Word: Madness for 0 Insanity cost via a Mind Devourer proc."
     L["PriestShadowTextColorsHeader"] = "Insanity Text Colours"
     L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text colour when you are able to cast Devouring Plague"
-    L["PriestShadowHeaderHasteThreshold"] = "Haste Threshold Colours in Voidform"
     L["ShamanManaCheckboxAscendanceEnd"] = "Ascendance colour change when ending enabled"
     L["ShamanManaCheckboxAscendanceEndTooltip"] = "Changes the bar colour when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["ShamanElementalCheckboxAscendanceEnd"] = "Ascendance colour change when ending enabled"
@@ -149,7 +148,6 @@ if locale == "enGB" then
     L["CheckboxUseGlobalTooltip_TextColors"] = "When checked, the global settings for resource text colours will be used."
     L["GlobalTextColorsHeader"] = "Resource Text Colours"
     L["GlobalCheckboxThresholdOverTooltip"] = "This will change the Resource text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
-    L["HunterSurvivalCheckboxExplosiveShotTooltip"] = "This will change the bar border colour when Explosive Shot is off cooldown."
     L["ThresholdLineColorsHeader"] = "Threshold Line Colours"
     L["ThresholdLineColorsForDpsAndTanksHeader"] = "Threshold Line Colours for DPS and Tanks"
     L["CheckboxUseGlobalTooltip_ThresholdColors"] = "When checked, the global settings for threshold colours will be used. The global setting used varies by specialisation role."
@@ -263,14 +261,38 @@ if locale == "enGB" then
     L["EvokerDevastationCheckboxDragonrageEnd"] = "Change bar colour when Dragonrage is ending"
     L["EvokerDevastationCheckboxDragonrageEndTooltip"] = "Changes the bar colour when Dragonrage is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 
-    -- Stagger Bar Enhancements (Brewmaster Monk)
     L["StaggerBarColorExtreme"] = "Extremely Heavy Stagger Colour"
     L["StaggerBarThresholdExtremeTooltip"] = "Stagger percentage at which the bar colour transitions from Heavy to Extremely Heavy."
 
     L["PaladinHolyCheckboxInfusionOfLightTooltip"] = "This will change the bar border colour when you have Infusion of Light."
 
-    -- Additional British English translations
     L["BarTextInstructions1"] = "For more detailed information about Bar Text customisation, see the TRB Wiki on GitHub.\n\n"
     L["StaggerBarColorType"] = "Colour Transition Type"
     L["EvokerCheckboxEssenceBurstTooltip"] = "This will change the bar border colour when you have Essence Burst."
+
+    L["PriestHolyCheckboxApotheosisTooltip"] = "This will change the bar colour when you have Apotheosis active."
+    L["PriestShadowCheckboxVoidformTooltip"] = "This will change the bar colour when you have Voidform active."
+    L["ShamanElementalCheckboxEarthShockTooltip"] = "This will change the bar colour when you have enough Maelstrom to use Earth Shock or Elemental Blast."
+    L["ShamanElementalCheckboxAscendanceTooltip"] = "This will change the bar colour when you have Ascendance active."
+    L["ShamanManaCheckboxAscendanceTooltip"] = "This will change the bar colour when you have Ascendance active."
+    L["RogueCheckboxStealthTooltip"] = "This will change the bar border colour when you are stealthed."
+
+    L["PriestShadowCheckboxShadowWordMadnessUsableTooltip"] = "This will change the bar colour when you have enough Insanity to cast Shadow Word: Madness."
+
+    L["DemonHunterHavocCheckboxMetamorphosisTooltip"] = "This will change the bar colour when you have Metamorphosis active."
+    L["DemonHunterVengeanceCheckboxMetamorphosisTooltip"] = "This will change the bar colour when you have Metamorphosis active."
+
+    L["DruidBalanceCheckboxSolarTooltip"] = "This will change the bar colour when you are in Solar Eclipse."
+    L["DruidBalanceCheckboxLunarTooltip"] = "This will change the bar colour when you are in Lunar Eclipse."
+    L["DruidBalanceCheckboxCelestialTooltip"] = "This will change the bar colour when you have Celestial Alignment or Incarnation: Chosen of Elune active."
+
+    L["DruidFeralCheckboxClearcastingTooltip"] = "This will change the bar colour when you have a Clearcasting proc."
+    L["DruidFeralCheckboxMaxBiteTooltip"] = "This will change the bar colour when you have enough Energy to cast a maximum damage Ferocious Bite."
+    L["DruidFeralCheckboxApexPredatorTooltip"] = "This will change the bar colour when you have an Apex Predator's Craving proc."
+
+    L["DruidRestorationCheckboxNoEfflorescenceTooltip"] = "This will change the bar colour when Efflorescence is not active on the ground."
+    L["DruidRestorationCheckboxIncarnationTooltip"] = "This will change the bar colour when you have Incarnation: Tree of Life active."
+
+    L["HunterMarksmanshipCheckboxTrueshotTooltip"] = "This will change the bar colour when you have Trueshot active."
+    L["CheckboxBorderStealthTooltip"] = "This will change the bar border colour when you are stealthed."
 end

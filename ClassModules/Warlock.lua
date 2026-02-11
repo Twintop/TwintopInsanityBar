@@ -50,6 +50,8 @@ local function FillSpecializationCache()
 	local spells = specCache.affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
 	specCache.affliction.snapshotData.audio = {
+		soulShardThreshold1Played = false,
+		soulShardThreshold2Played = false,
 	}
 
 	specCache.affliction.barTextVariables = {
@@ -84,6 +86,8 @@ local function FillSpecializationCache()
 	local spells = specCache.demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
 	specCache.demonology.snapshotData.audio = {
+		soulShardThreshold1Played = false,
+		soulShardThreshold2Played = false,
 	}
 
 	specCache.demonology.barTextVariables = {
@@ -118,6 +122,8 @@ local function FillSpecializationCache()
 	local spells = specCache.destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 
 	specCache.destruction.snapshotData.audio = {
+		soulShardThreshold1Played = false,
+		soulShardThreshold2Played = false,
 	}
 
 	specCache.destruction.barTextVariables = {
@@ -434,9 +440,9 @@ local function ConstructResourceBar(settings)
 					settings.textures.comboPointsBackground
 				)
 				node:SetMinMax(0, 1)
-				node:SetBorderColor(settings.colors.comboPoints.border)
-				node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-				node:SetColor(settings.colors.comboPoints.base)
+				node:SetBorderColor(settings.colors.comboPoints.border.color)
+				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+				node:SetColor(settings.colors.comboPoints.base.color)
 				node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 			end
 		end
@@ -663,6 +669,44 @@ local function UpdateSnapshot_Destruction()
 	UpdateSnapshot()
 end
 
+---Processes soul shard threshold audio cues for any Warlock spec
+---@param specSettings table The spec-specific settings table containing audio thresholds
+local function ProcessSoulShardAudioCues(specSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local coreSettings = TRB.Data.settings.core
+	local currentResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
+	local threshold1 = specSettings.audio.soulShardThreshold1
+	local threshold2 = specSettings.audio.soulShardThreshold2
+	local threshold1Value = threshold1.configuration.thresholdValue
+	local threshold2Value = threshold2.configuration.thresholdValue
+
+	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.soulShardThreshold1Played and currentResource2 >= threshold1Value
+	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.soulShardThreshold2Played and currentResource2 >= threshold2Value
+
+	if threshold1ShouldFire and threshold2ShouldFire then
+		snapshotData.audio.soulShardThreshold1Played = true
+		snapshotData.audio.soulShardThreshold2Played = true
+		if threshold2Value > threshold1Value then
+			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+		else
+			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+		end
+	elseif threshold2ShouldFire then
+		snapshotData.audio.soulShardThreshold2Played = true
+		PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+	elseif threshold1ShouldFire then
+		snapshotData.audio.soulShardThreshold1Played = true
+		PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+	end
+
+	if currentResource2 < threshold1Value then
+		snapshotData.audio.soulShardThreshold1Played = false
+	end
+	if currentResource2 < threshold2Value then
+		snapshotData.audio.soulShardThreshold2Played = false
+	end
+end
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local coreSettings = TRB.Data.settings.core
@@ -693,10 +737,10 @@ local function UpdateResourceBar()
 	end
 
 	local function UpdateSoulShards(specSettings, specCacheSettings, normalizedResource2)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = specSettings.colors.comboPoints.border
-			local cpColor = specSettings.colors.comboPoints.base
+			local cpBorderColor = specSettings.colors.comboPoints.border.color
+			local cpColor = specSettings.colors.comboPoints.base.color
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -704,9 +748,9 @@ local function UpdateResourceBar()
 
 			if filled then
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
+					cpColor = specSettings.colors.comboPoints.penultimate.color
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
+					cpColor = specSettings.colors.comboPoints.final.color
 				end
 			end
 
@@ -723,10 +767,10 @@ local function UpdateResourceBar()
 	end
 
 	local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, spells)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = specSettings.colors.comboPoints.border
-			local cpColor = specSettings.colors.comboPoints.base
+			local cpBorderColor = specSettings.colors.comboPoints.border.color
+			local cpColor = specSettings.colors.comboPoints.base.color
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -734,9 +778,9 @@ local function UpdateResourceBar()
 
 			if filled then
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
+					cpColor = specSettings.colors.comboPoints.penultimate.color
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
+					cpColor = specSettings.colors.comboPoints.final.color
 				end
 			end
 
@@ -753,10 +797,10 @@ local function UpdateResourceBar()
 	end
 
 	local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = specSettings.colors.comboPoints.border
-			local cpColor = specSettings.colors.comboPoints.base
+			local cpBorderColor = specSettings.colors.comboPoints.border.color
+			local cpColor = specSettings.colors.comboPoints.base.color
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -765,9 +809,9 @@ local function UpdateResourceBar()
 			if normalizedResource2 >= x then
 				fillValue = 1
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
+					cpColor = specSettings.colors.comboPoints.penultimate.color
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
+					cpColor = specSettings.colors.comboPoints.final.color
 				end
 			elseif normalizedResource2 >= (x - 1) then
 				-- Partial fill for Destruction
@@ -795,13 +839,13 @@ local function UpdateResourceBar()
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
@@ -824,6 +868,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Soul Shard threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessSoulShardAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.demonology
@@ -833,13 +883,13 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
@@ -861,6 +911,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Soul Shard threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessSoulShardAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.destruction
@@ -870,13 +926,13 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
@@ -898,6 +954,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Soul Shard threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessSoulShardAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

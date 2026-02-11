@@ -113,7 +113,9 @@ local function FillSpecializationCache()
 	specCache.feral.snapshotData.attributes.resourceRegen = 0
 	specCache.feral.snapshotData.attributes.comboPoints = 0
 	specCache.feral.snapshotData.audio = {
-		apexPredatorsCravingCue = false
+		apexPredatorsCravingCue = false,
+		comboPointThreshold1Played = false,
+		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
@@ -1051,7 +1053,7 @@ local function RefreshLookupData_Feral()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -1161,7 +1163,7 @@ local function RefreshLookupData_Guardian()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -1826,11 +1828,11 @@ local function UpdateResourceBar()
 		-- This ensures formSpecSettings points to Feral settings (which has comboPoints defined)
 		if displaySpecId == 2 and formSpecSettings.displayBar.secondary ~= "never" then
 			-- Use Feral's combo point settings (formSpecSettings points to Feral when displaySpecId == 2)
-			local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(formSpecSettings.colors.comboPoints.background, true)
+			local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(formSpecSettings.colors.comboPoints.background.color, true)
 			
 			for x = 1, TRB.Data.character.maxComboPoints do
-				local cpBorderColor = formSpecSettings.colors.comboPoints.border
-				local cpColor = formSpecSettings.colors.comboPoints.base
+				local cpBorderColor = formSpecSettings.colors.comboPoints.border.color
+				local cpColor = formSpecSettings.colors.comboPoints.base.color
 				local cpBR = cpBackgroundRed
 				local cpBG = cpBackgroundGreen
 				local cpBB = cpBackgroundBlue
@@ -1841,9 +1843,9 @@ local function UpdateResourceBar()
 						if (snapshotData.attributes.comboPoints or 0) >= x then
 							TRB.Functions.Bar:SetBarNodeValue(formSpecCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 							if (formSpecSettings.comboPoints.sameColor and snapshotData.attributes.comboPoints == (TRB.Data.character.maxComboPoints - 1)) or (not formSpecSettings.comboPoints.sameColor and x == (TRB.Data.character.maxComboPoints - 1)) then
-								cpColor = formSpecSettings.colors.comboPoints.penultimate
+								cpColor = formSpecSettings.colors.comboPoints.penultimate.color
 							elseif (formSpecSettings.comboPoints.sameColor and snapshotData.attributes.comboPoints == (TRB.Data.character.maxComboPoints)) or x == TRB.Data.character.maxComboPoints then
-								cpColor = formSpecSettings.colors.comboPoints.final
+								cpColor = formSpecSettings.colors.comboPoints.final.color
 							end
 						else
 							TRB.Functions.Bar:SetBarNodeValue(formSpecCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
@@ -1879,18 +1881,18 @@ local function UpdateResourceBar()
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 				local flashBar = false
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base
-					barBorderColor = formSpecSettings.colors.bar.border
+					barColor = formSpecSettings.colors.bar.base.color
+					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 				else
 					local thresholds = primaryNode:GetThresholds()
@@ -2064,33 +2066,37 @@ local function UpdateResourceBar()
 						local timeThreshold = 0
 						local useEndOfEclipseColor = false
 
-						if specSettings.endOfEclipse.enabled and (not specSettings.endOfEclipse.celestialAlignmentOnly or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive) then
+						if specSettings.endOf.eclipse.enabled and (not specSettings.endOf.eclipse.celestialAlignmentOnly or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive) then
 							useEndOfEclipseColor = true
-							if specSettings.endOfEclipse.mode == "gcd" then
+							if specSettings.endOf.eclipse.mode == "gcd" then
 								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-								timeThreshold = gcd * specSettings.endOfEclipse.gcdsMax
-							elseif specSettings.endOfEclipse.mode == "time" then
-								timeThreshold = specSettings.endOfEclipse.timeMax
+								timeThreshold = gcd * specSettings.endOf.eclipse.gcdsMax
+							elseif specSettings.endOf.eclipse.mode == "time" then
+								timeThreshold = specSettings.endOf.eclipse.timeMax
 							end
 						end
 
 						if useEndOfEclipseColor and GetEclipseRemainingTime() <= timeThreshold then
-							barColor = specSettings.colors.bar.eclipse1GCD
+							barColor = specSettings.colors.bar.eclipseEnd.color
+						elseif snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive) then
+							if specSettings.colors.bar.celestial.enabled then
+								barColor = specSettings.colors.bar.celestial.color
+							end
+						elseif snapshots[spells.eclipseSolar.id].buff.isActive then
+							if specSettings.colors.bar.solar.enabled then
+								barColor = specSettings.colors.bar.solar.color
+							end
 						else
-							if snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive) then
-								barColor = specSettings.colors.bar.celestial
-							elseif snapshots[spells.eclipseSolar.id].buff.isActive then
-								barColor = specSettings.colors.bar.solar
-							else
-								barColor = specSettings.colors.bar.lunar
+							if specSettings.colors.bar.lunar.enabled then
+								barColor = specSettings.colors.bar.lunar.color
 							end
 						end
 					end
 				end
 
 				-- Apply overcap border color if enabled (Cat/Feral uses Energy, Bear/Guardian uses Rage)
-				if formSpecSettings.colors.bar.overcapEnabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap)
+				if formSpecSettings.colors.bar.borderOvercap ~= nil and formSpecSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -2098,7 +2104,7 @@ local function UpdateResourceBar()
 				end
 
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 
 				if flashBar then
@@ -2154,15 +2160,15 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				local apcActive = IsApexPredatorsCravingActive()
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base
-					barBorderColor = formSpecSettings.colors.bar.border
+					barColor = formSpecSettings.colors.bar.base.color
+					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 					primaryNode:SetBorderColor(barBorderColor)
 				else
@@ -2359,18 +2365,20 @@ local function UpdateResourceBar()
 					
 					-- Use simple colors when in non-native form
 					if displaySpecId ~= TRB.Data.character.specId then
-						barColor = specSettings.colors.bar.base
+						barColor = specSettings.colors.bar.base.color
 					else
-						if snapshots[spells.clearcasting.id].buff.remaining > 0 then
-							barColor = specSettings.colors.bar.clearcasting
+						if specSettings.colors.bar.clearcasting.enabled and snapshots[spells.clearcasting.id].buff.remaining > 0 then
+							barColor = specSettings.colors.bar.clearcasting.color
 						end
 
-						if snapshotData.attributes.resource2 == 5 and spells.ferociousBiteMaximum:IsUsable() then
-							barColor = specSettings.colors.bar.maxBite
+						if specSettings.colors.bar.maxBite.enabled and snapshotData.attributes.resource2 == 5 and spells.ferociousBiteMaximum:IsUsable() then
+							barColor = specSettings.colors.bar.maxBite.color
 						end						
 
 						if apcActive then
-							barColor = specSettings.colors.bar.apexPredator
+							if specSettings.colors.bar.apexPredator.enabled then
+								barColor = specSettings.colors.bar.apexPredator.color
+							end
 
 							if specSettings.audio.apexPredatorsCraving.enabled and not snapshotData.audio.apexPredatorsCravingCue then
 								snapshotData.audio.apexPredatorsCravingCue = true
@@ -2382,12 +2390,12 @@ local function UpdateResourceBar()
 						end
 					end
 
-					local barBorderColor = specSettings.colors.bar.border
-					if IsStealthed() then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth)
-					elseif specSettings.colors.bar.overcapEnabled and affectingCombat then
+					local barBorderColor = specSettings.colors.bar.border.color
+					if specSettings.colors.bar.borderStealth.enabled and IsStealthed() then
+						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
+					elseif specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -2396,7 +2404,7 @@ local function UpdateResourceBar()
 				end
 
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
@@ -2404,15 +2412,15 @@ local function UpdateResourceBar()
 			if (currentForm == "cat" or displaySpecId == 2) and specSettings.displayBar.secondary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local berserkTotalCps = snapshots[spells.berserk.id].attributes.ticks
 				local berserkNextTick = snapshots[spells.berserk.id].attributes.tickRate - snapshots[spells.berserk.id].attributes.untilNextTick
 
 				local berserkTickShown = 0
 
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
+					local cpBorderColor = specSettings.colors.comboPoints.border.color
+					local cpColor = specSettings.colors.comboPoints.base.color
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -2423,9 +2431,9 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate
+									cpColor = specSettings.colors.comboPoints.penultimate.color
 								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final
+									cpColor = specSettings.colors.comboPoints.final.color
 								end
 							else
 								if specSettings.colors.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 then
@@ -2433,9 +2441,9 @@ local function UpdateResourceBar()
 									berserkTickShown = 1
 
 									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-										cpColor = specSettings.colors.comboPoints.penultimate
+										cpColor = specSettings.colors.comboPoints.penultimate.color
 									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-										cpColor = specSettings.colors.comboPoints.final
+										cpColor = specSettings.colors.comboPoints.final.color
 									end
 								else
 									TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
@@ -2463,6 +2471,45 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Combo Point threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			do
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshotData.attributes.resource2
+				local threshold1 = specSettings.audio.comboPointThreshold1
+				local threshold2 = specSettings.audio.comboPointThreshold2
+				local threshold1Value = threshold1.configuration.thresholdValue
+				local threshold2Value = threshold2.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
+				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
+
+				if threshold1ShouldFire and threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					snapshotData.audio.comboPointThreshold2Played = true
+					if threshold2Value > threshold1Value then
+						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+					else
+						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					end
+				elseif threshold2ShouldFire then
+					snapshotData.audio.comboPointThreshold2Played = true
+					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+				elseif threshold1ShouldFire then
+					snapshotData.audio.comboPointThreshold1Played = true
+					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				end
+
+				if currentResource2 < threshold1Value then
+					snapshotData.audio.comboPointThreshold1Played = false
+				end
+				if currentResource2 < threshold2Value then
+					snapshotData.audio.comboPointThreshold2Played = false
+				end
+			end
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
@@ -2480,13 +2527,13 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base
-					barBorderColor = formSpecSettings.colors.bar.border
+					barColor = formSpecSettings.colors.bar.base.color
+					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 					primaryNode:SetBorderColor(barBorderColor)
 				else
@@ -2578,13 +2625,13 @@ local function UpdateResourceBar()
 						local timeThreshold = 0
 						local useEndOfBerserkColor = false
 
-						if specSettings.endOfBerserk.enabled then
+						if specSettings.endOf.berserk.enabled then
 							useEndOfBerserkColor = true
-							if specSettings.endOfBerserk.mode == "gcd" then
+							if specSettings.endOf.berserk.mode == "gcd" then
 								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-								timeThreshold = gcd * specSettings.endOfBerserk.gcdsMax
-							elseif specSettings.endOfBerserk.mode == "time" then
-								timeThreshold = specSettings.endOfBerserk.timeMax
+								timeThreshold = gcd * specSettings.endOf.berserk.gcdsMax
+							elseif specSettings.endOf.berserk.mode == "time" then
+								timeThreshold = specSettings.endOf.berserk.timeMax
 							end
 						end
 
@@ -2596,8 +2643,8 @@ local function UpdateResourceBar()
 					end
 
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					if specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -2605,7 +2652,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				primaryNode:SetColor(barColor)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
@@ -2643,43 +2690,43 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barBorderColor = formSpecSettings.colors.bar.border
-				local barColor = specSettings.colors.bar.base
+				local barBorderColor = formSpecSettings.colors.bar.border.color
+				local barColor = specSettings.colors.bar.base.color
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base
+					barColor = formSpecSettings.colors.bar.base.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 				else
 					if (currentForm == "humanoid" or currentForm == "treeOfLife" or currentForm == "treant") then
-						if affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive then
-							barColor = specSettings.colors.bar.noEfflorescence
+						if specSettings.colors.bar.noEfflorescence.enabled and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive then
+							barColor = specSettings.colors.bar.noEfflorescence.color
 						elseif snapshots[spells.incarnationTreeOfLife.id].buff.isActive and (talents:IsTalentActive(spells.cenariusGuidance) or snapshots[spells.clearcasting.id].buff.isActive) then
 							local timeThreshold = 0
 							local useEndOfIncarnationColor = false
 
-							if specSettings.endOfIncarnation.enabled then
+							if specSettings.endOf.incarnation.enabled then
 								useEndOfIncarnationColor = true
-								if specSettings.endOfIncarnation.mode == "gcd" then
+								if specSettings.endOf.incarnation.mode == "gcd" then
 									local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-									timeThreshold = gcd * specSettings.endOfIncarnation.gcdsMax
-								elseif specSettings.endOfIncarnation.mode == "time" then
-									timeThreshold = specSettings.endOfIncarnation.timeMax
+									timeThreshold = gcd * specSettings.endOf.incarnation.gcdsMax
+								elseif specSettings.endOf.incarnation.mode == "time" then
+									timeThreshold = specSettings.endOf.incarnation.timeMax
 								end
 							end
 
 							if useEndOfIncarnationColor and snapshots[spells.incarnationTreeOfLife.id].buff.remaining <= timeThreshold then
-								barColor = specSettings.colors.bar.incarnationEnd
-							else
-								barColor = specSettings.colors.bar.incarnation
+								barColor = specSettings.colors.bar.incarnationEnd.color
+							elseif specSettings.colors.bar.incarnation.enabled then
+								barColor = specSettings.colors.bar.incarnation.color
 							end
 						end
 					end
 				end
 
 				-- Apply overcap border color if enabled (Cat/Feral uses Energy, Bear/Guardian uses Rage)
-				if formSpecSettings.colors.bar.overcapEnabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap)
+				if formSpecSettings.colors.bar.borderOvercap ~= nil and formSpecSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -2688,7 +2735,7 @@ local function UpdateResourceBar()
 	
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
@@ -3082,6 +3129,10 @@ function TRB.Functions.Class:CheckCharacter()
 			
 			-- Only configure combo points for Feral, or for other specs when form switching is enabled
 			if barGroups.secondary and (TRB.Data.character.specId == 2 or enableFormSwitching) then
+				-- Clear cached node count if combo point max changed, so the new value is used
+				if TRB.Data.character.maxResource2 ~= TRB.Data.character.maxComboPoints then
+					barGroups.secondary.lastRebuildNodeCount = nil
+				end
 				TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
 				-- Use Feral settings for combo point configuration
 				local feralSettings = TRB.Data.specCache.feral.settings
@@ -3110,9 +3161,9 @@ function TRB.Functions.Class:CheckCharacter()
 								feralSettings.textures.comboPointsBackground
 							)
 							node:SetMinMax(0, 1)
-							node:SetBorderColor(feralSettings.colors.comboPoints.border)
-							node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background)
-							node:SetColor(feralSettings.colors.comboPoints.base)
+							node:SetBorderColor(feralSettings.colors.comboPoints.border.color)
+							node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background.color)
+							node:SetColor(feralSettings.colors.comboPoints.base.color)
 							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 						end
 					end

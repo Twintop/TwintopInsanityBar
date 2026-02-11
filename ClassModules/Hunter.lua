@@ -458,7 +458,7 @@ local function RefreshLookupData_BeastMastery()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -541,7 +541,7 @@ local function RefreshLookupData_Marksmanship()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -617,7 +617,7 @@ local function RefreshLookupData_Survival()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -960,21 +960,21 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				if specSettings.colors.bar.bestialWrath.enabled and snapshotData.snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat then
 					local timeLeft = snapshots[spells.bestialWrath.id].buff.remaining
 					local timeThreshold = 0
 					local useEndOfBestialWrathColor = false
 
-					if specSettings.endOfBestialWrath.enabled then
+					if specSettings.endOf.bestialWrath.enabled then
 						useEndOfBestialWrathColor = true
-						if specSettings.endOfBestialWrath.mode == "gcd" then
+						if specSettings.endOf.bestialWrath.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfBestialWrath.gcdsMax
-						elseif specSettings.endOfBestialWrath.mode == "time" then
-							timeThreshold = specSettings.endOfBestialWrath.timeMax
+							timeThreshold = gcd * specSettings.endOf.bestialWrath.gcdsMax
+						elseif specSettings.endOf.bestialWrath.mode == "time" then
+							timeThreshold = specSettings.endOf.bestialWrath.timeMax
 						end
 					end
 
@@ -990,7 +990,7 @@ local function UpdateResourceBar()
 				end
 
 				if spells.bestialWrath:IsUsable() then
-					if specSettings.colors.bar.flashEnabled then
+					if specSettings.colors.bar.flashEnabled and TRB.Data.character.inCombat then
 						TRB.Functions.Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					else
 						barGroups.primary:GetContainerFrame():SetAlpha(1.0)
@@ -1000,15 +1000,15 @@ local function UpdateResourceBar()
 				end
 
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 		end
 
@@ -1044,7 +1044,7 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
@@ -1151,40 +1151,40 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 
 				if snapshots[spells.trueshot.id].buff.isActive then
 					local timeThreshold = 0
 					local useEndOfTrueshotColor = false
 
-					if specSettings.endOfTrueshot.enabled then
+					if specSettings.endOf.trueshot.enabled then
 						useEndOfTrueshotColor = true
-						if specSettings.endOfTrueshot.mode == "gcd" then
+						if specSettings.endOf.trueshot.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfTrueshot.gcdsMax
-						elseif specSettings.endOfTrueshot.mode == "time" then
-							timeThreshold = specSettings.endOfTrueshot.timeMax
+							timeThreshold = gcd * specSettings.endOf.trueshot.gcdsMax
+						elseif specSettings.endOf.trueshot.mode == "time" then
+							timeThreshold = specSettings.endOf.trueshot.timeMax
 						end
 					end
 
 					if useEndOfTrueshotColor and snapshots[spells.trueshot.id].buff:GetRemainingTime() <= timeThreshold then
-						barColor = specSettings.colors.bar.trueshotEnding
-					else
-						barColor = specSettings.colors.bar.trueshot
+						barColor = specSettings.colors.bar.trueshotEnd.color
+					elseif specSettings.colors.bar.trueshot.enabled then
+						barColor = specSettings.colors.bar.trueshot.color
 					end
 				end
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 		end
 
@@ -1220,7 +1220,7 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
@@ -1281,19 +1281,19 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 
 				if snapshots[spells.takedown.id].buff.isActive then
 					local timeThreshold = 0
 					local useEndOfTakedownColor = false
 
-					if specSettings.endOfTakedown.enabled then
+					if specSettings.endOf.takedown.enabled then
 						useEndOfTakedownColor = true
-						if specSettings.endOfTakedown.mode == "gcd" then
+						if specSettings.endOf.takedown.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfTakedown.gcdsMax
-						elseif specSettings.endOfTakedown.mode == "time" then
-							timeThreshold = specSettings.endOfTakedown.timeMax
+							timeThreshold = gcd * specSettings.endOf.takedown.gcdsMax
+						elseif specSettings.endOf.takedown.mode == "time" then
+							timeThreshold = specSettings.endOf.takedown.timeMax
 						end
 					end
 
@@ -1306,15 +1306,15 @@ local function UpdateResourceBar()
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.overcapEnabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 		end
 

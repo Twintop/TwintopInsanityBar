@@ -1,0 +1,13 @@
+## Interface: 11508, 11507, 20505, 30405, 38000, 40402, 50503, 50502, 120001, 110207, 120000
+## Version: v11.2.1
+## LoadOnDemand: 1
+## Title: Lib: DataBrokerIcon-1.0
+## Notes: Allows addons to easily create a lightweight minimap icon as an alternative to heavier LDB displays.
+## Author: Funkeh
+## X-Category: Library
+## X-License: All Rights Reserved
+## X-Credits: Rabbit, copystring
+
+embeds.xml
+LibDBIcon-1.0\lib.xml
+

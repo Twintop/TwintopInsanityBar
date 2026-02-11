@@ -52,6 +52,8 @@ local function FillSpecializationCache()
 	specCache.assassination.snapshotData.attributes.resourceRegen = 0
 	specCache.assassination.snapshotData.attributes.comboPoints = 0
 	specCache.assassination.snapshotData.audio = {
+		comboPointThreshold1Played = false,
+		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -121,6 +123,8 @@ local function FillSpecializationCache()
 	specCache.outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.outlaw.snapshotData.attributes.comboPoints = 0
 	specCache.outlaw.snapshotData.audio = {
+		comboPointThreshold1Played = false,
+		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -230,6 +234,8 @@ local function FillSpecializationCache()
 	specCache.subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.subtlety.snapshotData.attributes.comboPoints = 0
 	specCache.subtlety.snapshotData.audio = {
+		comboPointThreshold1Played = false,
+		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
@@ -663,9 +669,9 @@ local function ConstructResourceBar(settings)
 					settings.textures.comboPointsBackground
 				)
 				node:SetMinMax(0, 1)
-				node:SetBorderColor(settings.colors.comboPoints.border)
-				node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-				node:SetColor(settings.colors.comboPoints.base)
+				node:SetBorderColor(settings.colors.comboPoints.border.color)
+				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+				node:SetColor(settings.colors.comboPoints.base.color)
 				node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 			end
 		end
@@ -694,7 +700,7 @@ local function RefreshLookupData_Assassination()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -779,7 +785,7 @@ local function RefreshLookupData_Outlaw()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -932,7 +938,7 @@ local function RefreshLookupData_Subtlety()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -1083,6 +1089,44 @@ local function UpdateSnapshot_Subtlety()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()]]
+end
+
+---Processes combo point threshold audio cues for any Rogue spec
+---@param specSettings table The spec-specific settings table containing audio thresholds
+local function ProcessComboPointAudioCues(specSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local coreSettings = TRB.Data.settings.core
+	local currentResource2 = snapshotData.attributes.resource2
+	local threshold1 = specSettings.audio.comboPointThreshold1
+	local threshold2 = specSettings.audio.comboPointThreshold2
+	local threshold1Value = threshold1.configuration.thresholdValue
+	local threshold2Value = threshold2.configuration.thresholdValue
+
+	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
+	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
+
+	if threshold1ShouldFire and threshold2ShouldFire then
+		snapshotData.audio.comboPointThreshold1Played = true
+		snapshotData.audio.comboPointThreshold2Played = true
+		if threshold2Value > threshold1Value then
+			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+		else
+			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+		end
+	elseif threshold2ShouldFire then
+		snapshotData.audio.comboPointThreshold2Played = true
+		PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
+	elseif threshold1ShouldFire then
+		snapshotData.audio.comboPointThreshold1Played = true
+		PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+	end
+
+	if currentResource2 < threshold1Value then
+		snapshotData.audio.comboPointThreshold1Played = false
+	end
+	if currentResource2 < threshold2Value then
+		snapshotData.audio.comboPointThreshold2Played = false
+	end
 end
 
 local function UpdateResourceBar()
@@ -1254,38 +1298,38 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				if barGroups and barGroups.primary then
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				end
 
 				if primaryNode then
-					if IsStealthed() or stealthViaBuff then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth)
-					elseif specSettings.colors.bar.overcapEnabled and affectingCombat then
+					if specSettings.colors.bar.borderStealth.enabled and (IsStealthed() or stealthViaBuff) then
+						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
+					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
 			if specSettings.displayBar.secondary ~= "never" then
 				refreshText = true
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 
 				local charged = GetUnitChargedPowerPoints("player")
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
+					local cpBorderColor = specSettings.colors.comboPoints.border.color
+					local cpColor = specSettings.colors.comboPoints.base.color
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -1297,9 +1341,9 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate
+									cpColor = specSettings.colors.comboPoints.penultimate.color
 								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final
+									cpColor = specSettings.colors.comboPoints.final.color
 								end
 							else
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
@@ -1308,14 +1352,14 @@ local function UpdateResourceBar()
 							if charged ~= nil then
 								for y = 1, #charged do
 									if charged[y] == x then
-										cpColor = specSettings.colors.comboPoints.echoingReprimand
+										cpColor = specSettings.colors.comboPoints.echoingReprimand.color
 										
 										if not sbs then
-											cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
+											cpBorderColor = specSettings.colors.comboPoints.echoingReprimand.color
 										end
-				
+			
 										if not specSettings.colors.comboPoints.consistentUnfilledColor then
-											cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+											cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand.color, true)
 										end
 									end
 								end
@@ -1341,6 +1385,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Combo Point threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessComboPointAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.outlaw
@@ -1545,43 +1595,43 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				if barGroups and barGroups.primary then
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				end
 
 				if primaryNode then
-					if IsStealthed() or stealthViaBuff then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth)
+					if specSettings.colors.bar.borderStealth.enabled and (IsStealthed() or stealthViaBuff) then
+						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					--[[elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == true and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderRtbGood)
 					elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == false and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderRtbBad)]]
-					elseif specSettings.colors.bar.overcapEnabled and affectingCombat then
+					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
 			if specSettings.displayBar.secondary ~= "never" then
 				refreshText = true
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 
 				local charged = GetUnitChargedPowerPoints("player")
 
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
+					local cpBorderColor = specSettings.colors.comboPoints.border.color
+					local cpColor = specSettings.colors.comboPoints.base.color
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -1592,9 +1642,9 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate
+									cpColor = specSettings.colors.comboPoints.penultimate.color
 								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final
+									cpColor = specSettings.colors.comboPoints.final.color
 								end
 							else
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
@@ -1603,11 +1653,11 @@ local function UpdateResourceBar()
 							if charged ~= nil then
 								for y = 1, #charged do
 									if charged[y] == x then
-										cpColor = specSettings.colors.comboPoints.echoingReprimand
-										cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
+										cpColor = specSettings.colors.comboPoints.echoingReprimand.color
+										cpBorderColor = specSettings.colors.comboPoints.echoingReprimand.color
 				
 										if not specSettings.colors.comboPoints.consistentUnfilledColor then
-											cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+											cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand.color, true)
 										end
 									end
 								end
@@ -1633,6 +1683,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Combo Point threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessComboPointAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.subtlety
@@ -1826,44 +1882,45 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 				
 				if barGroups and barGroups.primary then
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				end
 
 				if primaryNode then
-					if snapshots[spells.symbolsOfDeath.id].buff.isActive and
+					if specSettings.colors.bar.borderShadowcraft.enabled and
+						snapshots[spells.symbolsOfDeath.id].buff.isActive and
 						snapshots[spells.shadowTechniques.id].buff.applications >= TRB.Data.character.maxResource2 and
 						talents:IsTalentActive(spells.shadowcraft) then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderShadowcraft)
-					elseif stealthViaBuff or IsStealthed() then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth)
-					elseif specSettings.colors.bar.overcapEnabled and affectingCombat then
+						primaryNode:SetBorderColor(specSettings.colors.bar.borderShadowcraft.color)
+					elseif specSettings.colors.bar.borderStealth.enabled and (stealthViaBuff or IsStealthed()) then
+						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
+					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
 			if specSettings.displayBar.secondary ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 
 				local charged = GetUnitChargedPowerPoints("player")
 
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
+					local cpBorderColor = specSettings.colors.comboPoints.border.color
+					local cpColor = specSettings.colors.comboPoints.base.color
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -1874,9 +1931,9 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate
+									cpColor = specSettings.colors.comboPoints.penultimate.color
 								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final
+									cpColor = specSettings.colors.comboPoints.final.color
 								end
 							else
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
@@ -1886,11 +1943,11 @@ local function UpdateResourceBar()
 							if charged ~= nil then
 								for y = 1, #charged do
 									if charged[y] == x then
-										cpColor = specSettings.colors.comboPoints.echoingReprimand
-										cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
-					
+										cpColor = specSettings.colors.comboPoints.echoingReprimand.color
+										cpBorderColor = specSettings.colors.comboPoints.echoingReprimand.color
+				
 										if not specSettings.colors.comboPoints.consistentUnfilledColor then
-											cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+											cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand.color, true)
 										end
 										isCharged = true
 									end
@@ -1898,10 +1955,10 @@ local function UpdateResourceBar()
 							end
 
 							if not isCharged and x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.applications + snapshotData.attributes.resource2) >= x then
-								cpBorderColor = specSettings.colors.comboPoints.shadowTechniques
+								cpBorderColor = specSettings.colors.comboPoints.shadowTechniques.color
 
 								if not specSettings.colors.comboPoints.consistentUnfilledColor then
-									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.shadowTechniques, true)
+									cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.shadowTechniques.color, true)
 								end
 							end
 							
@@ -1925,6 +1982,12 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Combo Point threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessComboPointAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
@@ -2230,6 +2293,9 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 			-- Rebuild secondary bar layout when combo point count changes
 			if barGroups and barGroups.secondary then
+				-- Clear cached node count so ApplyBarGroupsLayout uses the new maxResource2
+				barGroups.secondary.lastRebuildNodeCount = nil
+				
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
 				barGroups.secondary:SetNodeCount(maxComboPoints)
 				barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
@@ -2254,9 +2320,9 @@ function TRB.Functions.Class:CheckCharacter()
 							sharedSettings.textures.comboPointsBackground
 						)
 						node:SetMinMax(0, 1)
-						node:SetBorderColor(sharedSettings.colors.comboPoints.border)
-						node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background)
-						node:SetColor(sharedSettings.colors.comboPoints.base)
+						node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
+						node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
+						node:SetColor(sharedSettings.colors.comboPoints.base.color)
 						node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 					end
 				end

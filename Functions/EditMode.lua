@@ -18,6 +18,9 @@ local editModeWrapperFrame = nil
 -- Track if Initialize has been called
 local isInitialized = false
 
+-- Guard to prevent re-entrancy when temporarily showing CDM to get dimensions
+local isTemporarilyShowingCDM = false
+
 ---Initializes the Edit Mode integration
 ---Sets up callbacks for layout changes, renames, and deletions
 ---Safe to call multiple times - will only initialize once
@@ -398,6 +401,23 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 		registeredFrame = wrapperFrame
 		self.primaryContainerFrame = containerFrame
 		self:UpdateWrapperSize()
+		
+		-- Even when already registered, we need to reapply layout after a delay
+		-- to ensure CDM width matching is applied correctly after spec switches.
+		-- The CDM frame dimensions may not be finalized when ConstructBarGroups runs.
+		C_Timer.After(0, function()
+			C_Timer.After(0.1, function()
+				if not TRB.Data.specSupported then
+					return
+				end
+				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
+					local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+					if specSettings and specSettings.settings then
+						TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
+					end
+				end
+			end)
+		end)
 		return
 	end
 
@@ -554,22 +574,6 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 	self:HookCooldownManagerResize()
 	self:HookCooldownManagerShow()
 
-	-- Apply CDM layout after a delay to ensure all initialization is complete.
-	-- This handles login/reload when CDM is already visible but bar construction
-	-- happens before CDM dimensions are finalized.
-	-- We call ApplyBarGroupsLayout directly rather than ReapplyCooldownManagerLayout
-	-- because LibEditMode:GetActiveLayoutName() may not be available during early init.
-	C_Timer.After(1.0, function()
-		if not TRB.Data.specSupported then
-			return
-		end
-		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
-			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
-			if specSettings and specSettings.settings then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
-			end
-		end
-	end)
 
 	-- If we're registering while Edit Mode is active (e.g., after a spec switch),
 	-- we need to show the selection frame and make the bar visible
@@ -751,18 +755,12 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		editModeWrapperFrame:SetFrameLevel(1)
 	end
 
-	-- Re-enable legacy drag-and-drop if it was enabled in settings and reapply layout
-	-- Reapplying layout is critical to reset all frame stratas/levels that were affected during Edit Mode
+	-- Reapply layout to reset frame stratas and levels after Edit Mode
 	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 		local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
 		if specSettings and specSettings.settings then
 			-- Reapply layout to reset frame stratas and levels
 			TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
-			
-			-- Re-enable legacy drag-and-drop if it was enabled in settings
-			if specSettings.settings.bar.dragAndDrop then
-				TRB.Frames.barGroups.primary:SetDragAndDrop(true, specSettings.settings)
-			end
 		end
 
 		-- Rebuild bar text frames to restore proper strata/level ordering
@@ -912,7 +910,8 @@ end
 
 ---Helper function to reapply bar layout when CDM changes
 ---@param layoutName string? # Optional layout name override
-local function ReapplyCooldownManagerLayout(layoutName)
+---@param forceUpdate boolean? # If true, skip the "no change" optimization
+local function ReapplyCooldownManagerLayout(layoutName, forceUpdate)
 	if not TRB.Data.specSupported then
 		return
 	end
@@ -932,7 +931,21 @@ local function ReapplyCooldownManagerLayout(layoutName)
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
 			if specSettings and specSettings.settings then
+				-- Skip layout update if width hasn't changed (avoids flickering)
+				-- We already got CDM width via temporary show, so bar is already sized correctly
+				if not forceUpdate then
+					local currentEffectiveWidth = TRB.Frames.barGroups.effectiveWidth
+					local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+					if currentEffectiveWidth and cdmWidth and math.abs(currentEffectiveWidth - cdmWidth) < 1 then
+						-- Width is already correct, no need to reapply layout
+						return
+					end
+				end
+				
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
+				-- Restore correct bar visibility after layout changes
+				-- ApplyBarGroupsLayout may show bars that should be hidden
+				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
 	end
@@ -972,11 +985,32 @@ function TRB.Functions.EditMode:HookCooldownManagerShow()
 	end
 
 	-- Use HookScript to post-hook rather than replace (prevents taint)
+	-- Add a small delay to ensure CDM dimensions are finalized after showing
+	-- Use nested timers to ensure the callback actually fires.
+	-- Check the guard to prevent re-entrancy when we temporarily show CDM for dimension queries.
 	EssentialCooldownViewer:HookScript("OnShow", function(frame)
-		ReapplyCooldownManagerLayout()
+		if isTemporarilyShowingCDM then
+			return
+		end
+		C_Timer.After(0, function()
+			C_Timer.After(0.1, function()
+				ReapplyCooldownManagerLayout()
+			end)
+		end)
 	end)
 
 	cdmShowHooked = true
+	
+	-- If CDM is already visible when we hook it (e.g., "Always Show" setting),
+	-- trigger layout update immediately since OnShow won't fire.
+	-- Use nested timers to ensure the callback actually fires.
+	if EssentialCooldownViewer:IsShown() then
+		C_Timer.After(0, function()
+			C_Timer.After(0.1, function()
+				ReapplyCooldownManagerLayout()
+			end)
+		end)
+	end
 end
 
 ---Gets the anchor mode for the current layout
@@ -1051,6 +1085,26 @@ end
 function TRB.Functions.EditMode:IsWidthMatchingEnabled(layoutName)
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
+		-- LibEditMode hasn't initialized yet or no active layout
+		-- During early initialization, we need to check if width matching MIGHT apply
+		-- by looking at all saved layouts. If any enabled layout has width matching
+		-- and we're anchored to CDM, assume we should try to match width.
+		-- This prevents the bar from flashing to settings.bar.width during init.
+		if TRB.Data.settings.core.editMode and TRB.Data.settings.core.editMode.layouts then
+			for _, layoutData in pairs(TRB.Data.settings.core.editMode.layouts) do
+				if layoutData.enabled and
+				   layoutData.matchCooldownManagerWidth and
+				   layoutData.anchorToCooldownManager and
+				   layoutData.anchorToCooldownManager ~= "none" then
+					-- At least one layout has CDM width matching enabled
+					-- Check if CDM is actually available
+					if self:IsCooldownManagerAvailable() then
+						return true
+					end
+					break
+				end
+			end
+		end
 		return false
 	end
 
@@ -1134,8 +1188,11 @@ function TRB.Functions.EditMode:GetTRBBounds(includeHidden)
 			bottom = frameBottom
 		else
 			left = math.min(left, frameLeft)
+---@diagnostic disable-next-line: param-type-mismatch
 			right = math.max(right, frameRight)
+---@diagnostic disable-next-line: param-type-mismatch
 			top = math.max(top, frameTop)
+---@diagnostic disable-next-line: param-type-mismatch
 			bottom = math.min(bottom, frameBottom)
 		end
 	end
@@ -1159,11 +1216,37 @@ function TRB.Functions.EditMode:GetTRBBounds(includeHidden)
 end
 
 ---Gets the Cooldown Manager's width
+---If CDM is hidden (e.g., "show in combat only"), temporarily shows it to get valid dimensions
 ---@return number? # The width in pixels, or nil if CDM not available
 function TRB.Functions.EditMode:GetCooldownManagerWidth()
 	local cdm = self:GetCooldownManagerFrame()
 	if cdm then
-		return cdm:GetWidth()
+		-- If CDM is hidden, we need to temporarily show it to get valid dimensions
+		-- Hidden frames return 0 or stale values for GetWidth()
+		local wasHidden = not cdm:IsShown()
+		if wasHidden then
+			-- Set guard to prevent OnShow hook from triggering layout updates
+			isTemporarilyShowingCDM = true
+			
+			-- Store original alpha and set to 0 so user doesn't see the flash
+			local originalAlpha = cdm:GetAlpha()
+			cdm:SetAlpha(0)
+			cdm:Show()
+			
+			-- Get the width
+			local width = cdm:GetWidth()
+			
+			-- Restore original state
+			cdm:Hide()
+			cdm:SetAlpha(originalAlpha)
+			
+			-- Clear the guard
+			isTemporarilyShowingCDM = false
+			
+			return width
+		else
+			return cdm:GetWidth()
+		end
 	end
 	return nil
 end

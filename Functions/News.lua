@@ -12,11 +12,139 @@ local content = [====[
 
 ---
 
-# 12.0.0.20-release (2026-02-03)
+# 12.0.1.1-release (2026-02-12)
 ## General
+
+- [#352](#352) Add a new dedicated movable options window. Access it via `/trb` or the new minimap button.
+- Add a minimap button for quick access to the options window. Toggle it with `/trb minimap show` and `/trb minimap hide`.
+- Remove legacy drag and drop bar positioning. Use Edit Mode instead.
+
+---
+
+# 12.0.1.0-release (2026-02-11)
+## General
+
+- [#582](#582) All secondary resource audio cues (Holy Power, Combo Points, Soul Shards, Chi, Arcane Charges, Maelstrom Weapon) now fire independently of bar visibility and only trigger during combat.
+- Update LibEditMode to version 15.
+
+## Druid
+### Feral
+
+- [#582](#582) Add two new audio cues for when Combo Points are at or above a configured threshold. These default to 3 and 5 Combo Points.
+
+## Mage
+### Arcane
+
+- [#582](#582) Add two new audio cues for when Arcane Charges are at or above a configured threshold. These default to 2 and 4 Arcane Charges.
+
+## Monk
+### Windwalker
+
+- [#582](#582) Add three new audio cues for when Chi is at or above a configured threshold. These default to 3, 5, and 6 Chi.
+
+## Paladin
+
+- Add a 3rd Holy Power threshold audio cue.
+
+## Rogue
+
+- [#582](#582) Add two new audio cues for when Combo Points are at or above a configured threshold. These default to 3 and 5 Combo Points.
+
+## Shaman
+### Enhancement
+
+- [#582](#582) Add two new audio cues for when Maelstrom Weapon stacks are at or above a configured threshold. These default to 5 and 10 Maelstrom Weapon stacks.
+
+## Warlock
+
+- [#582](#582) Add two new audio cues for when Soul Shards are at or above a configured threshold. These default to 3 and 5 Soul Shards. Destruction supports fractional (0.1) precision.
+
+## Warrior
+### Protection
+
+- [#604](#604) Fix an issue with tracking when Ignore Pain is removed.
+
+---
+
+# 12.0.0.22-release (2026-02-09)
+## General
+
+- [#597](#597) Standardized color settings across all class modules.
+- [#597](#597) Added enable/disable checkboxes for proc and buff bar color changes that previously could not be toggled independently. See below for specifics by specialization.
+- [#538](#538) Standardize `endOf` buff expiration settings.
+- [#599](#599) Fix the "ability usable" bar text color change option for most threshold specializations.
+- Fixed combo point threshold repositioning to use the correct width settings.
+- Adjust abbreviations of numbers to be locale aware.
+
+## Demon Hunter
+### Havoc and Vengeance
+
+- [#597](#597) Add checkbox to enable/disable Metamorphosis bar color change.
+
+## Druid
+### Balance
+
+- [#597](#597) Add checkboxes to enable/disable Solar Eclipse, Lunar Eclipse, and Celestial Alignment bar color changes.
+
+### Feral
+
+- [#597](#597) Add checkboxes to Max Damage Ferocious Bite and Apex Predator's Craving bar color changes.
+- [#597](#597) Add checkbox to enable/disable Stealth border color change.
+
+### Restoration
+
+- [#597](#597) Add checkboxes to enable/disable No Efflorescence and Incarnation: Tree of Life bar color changes.
+
+## Hunter
+### Marksmanship
+
+- [#597](#597) Add checkbox to enable/disable Trueshot bar color change.
+
+## Priest
+### Holy
+
+- [#597](#597) Add checkbox to enable/disable Apotheosis bar color change.
+
+### Shadow
+
+- [#597](#597) Add checkboxes to enable/disable Voidform and Shadow Word: Madness usable bar color changes.
+
+## Rogue
+
+- [#597](#597) Add checkbox to enable/disable Stealth border color change.
+
+### Subtlety
+
+- [#597](#597) Add checkbox to enable/disable Shadowcraft border color change.
+
+## Shaman
+### Elemental
+
+- [#597](#597) Add checkboxes to enable/disable Earth Shock/Elemental Blast threshold and Ascendance bar color changes.
+
+### Enhancement and Restoration
+
+- [#597](#597) Add checkbox to enable/disable Ascendance bar color change.
+
+---
+
+# 12.0.0.21-release (2026-02-05)
+## General
+
+- [#596](#596) Fix an issue with secondary resource nodes not adjusting to be the correct width when talents change while using Edit Mode.
+
+---
+
+# 12.0.0.20-release (2026-02-04)
+## General
+
+- [#516](#516) Add checkbox to enable/disable a global setting for all classes and specializations. This is available from the "Global Options" screen. Changes are immediately reflected across all specializations.
+- [#528](#528) Fix Edit Mode positioning issues when loading in or changing specializations. Thanks to Supra for help with debugging.
+
 ### Localization
 
 - [#594](#594) Completed translation coverage for German (deDE) by Triplehxh! Thank you so much for your help!
+- [#595](#595) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Demon Hunter
 ### Vengeance

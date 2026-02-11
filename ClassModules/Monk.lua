@@ -140,6 +140,9 @@ local function FillSpecializationCache()
 
 	specCache.windwalker.snapshotData.attributes.resourceRegen = 0
 	specCache.windwalker.snapshotData.audio = {
+		chiThreshold1Played = false,
+		chiThreshold2Played = false,
+		chiThreshold3Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.windwalker.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
@@ -497,9 +500,9 @@ local function ConstructResourceBar(settings)
 						settings.textures.comboPointsBackground
 					)
 					node:SetMinMax(0, 1)
-					node:SetBorderColor(settings.colors.comboPoints.border)
-					node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-					node:SetColor(settings.colors.comboPoints.base)
+					node:SetBorderColor(settings.colors.comboPoints.border.color)
+					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+					node:SetColor(settings.colors.comboPoints.base.color)
 					node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 				end
 			end
@@ -529,7 +532,7 @@ local function RefreshLookupData_Brewmaster()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -668,7 +671,7 @@ local function RefreshLookupData_Windwalker()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -1068,8 +1071,8 @@ local function UpdateResourceBar()
 						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					end
 
-					local barBorderColor = specSettings.colors.bar.border
-					local barColor = specSettings.colors.bar.base
+					local barBorderColor = specSettings.colors.bar.border.color
+					local barColor = specSettings.colors.bar.base.color
 
 					-- Invoke Niuzao bar color change
 					if specSettings.colors.bar.invokeNiuzao.enabled and snapshots[spells.invokeNiuzao.id].buff.isActive then
@@ -1096,15 +1099,15 @@ local function UpdateResourceBar()
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
@@ -1212,8 +1215,8 @@ local function UpdateResourceBar()
 				if primaryNode then
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-					local barColor = specSettings.colors.bar.base
-					local barBorderColor = specSettings.colors.bar.border
+					local barColor = specSettings.colors.bar.base.color
+					local barBorderColor = specSettings.colors.bar.border.color
 
 					if specSettings.colors.bar.vivaciousVivification.enabled and affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive then
 						barColor = specSettings.colors.bar.vivaciousVivification.color
@@ -1222,7 +1225,7 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 
@@ -1336,39 +1339,39 @@ local function UpdateResourceBar()
 						TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					end
 
-					local barColor = specSettings.colors.bar.base
-					local barBorderColor = specSettings.colors.bar.border
+					local barColor = specSettings.colors.bar.base.color
+					local barBorderColor = specSettings.colors.bar.border.color
 
 					if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable() and TRB.Data.character.inCombat then
 						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
 					elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
-					elseif snapshots[spells.danceOfChiJi.id].buff.isActive then
-						barBorderColor = specSettings.colors.bar.borderChiJi
+					elseif specSettings.colors.bar.borderChiJi.enabled and snapshots[spells.danceOfChiJi.id].buff.isActive then
+						barBorderColor = specSettings.colors.bar.borderChiJi.color
 					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.overcapEnabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
 					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				end
 			end
 			
 			if specSettings.displayBar.secondary ~= "never" then
 				refreshText = true
 				-- Update Chi using BarNodes
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border
-					local cpColor = specSettings.colors.comboPoints.base
+					local cpBorderColor = specSettings.colors.comboPoints.border.color
+					local cpColor = specSettings.colors.comboPoints.base.color
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -1379,9 +1382,9 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 1, 1)
 								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate
+									cpColor = specSettings.colors.comboPoints.penultimate.color
 								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final
+									cpColor = specSettings.colors.comboPoints.final.color
 								end
 							else
 								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 0, 1)
@@ -1407,6 +1410,66 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Chi threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			do
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshotData.attributes.resource2
+				local threshold1 = specSettings.audio.chiThreshold1
+				local threshold2 = specSettings.audio.chiThreshold2
+				local threshold3 = specSettings.audio.chiThreshold3
+				local threshold1Value = threshold1.configuration.thresholdValue
+				local threshold2Value = threshold2.configuration.thresholdValue
+				local threshold3Value = threshold3.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.chiThreshold1Played and currentResource2 >= threshold1Value
+				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.chiThreshold2Played and currentResource2 >= threshold2Value
+				local threshold3ShouldFire = threshold3.enabled and not snapshotData.audio.chiThreshold3Played and currentResource2 >= threshold3Value
+
+				if threshold1ShouldFire or threshold2ShouldFire or threshold3ShouldFire then
+					local highestValue = 0
+					local highestSound = nil
+
+					if threshold1ShouldFire then
+						snapshotData.audio.chiThreshold1Played = true
+						if threshold1Value > highestValue then
+							highestValue = threshold1Value
+							highestSound = threshold1.sound
+						end
+					end
+					if threshold2ShouldFire then
+						snapshotData.audio.chiThreshold2Played = true
+						if threshold2Value > highestValue then
+							highestValue = threshold2Value
+							highestSound = threshold2.sound
+						end
+					end
+					if threshold3ShouldFire then
+						snapshotData.audio.chiThreshold3Played = true
+						if threshold3Value > highestValue then
+							highestValue = threshold3Value
+							highestSound = threshold3.sound
+						end
+					end
+
+					if highestSound then
+						PlaySoundFile(highestSound, coreSettings.audio.channel.channel)
+					end
+				end
+
+				if currentResource2 < threshold1Value then
+					snapshotData.audio.chiThreshold1Played = false
+				end
+				if currentResource2 < threshold2Value then
+					snapshotData.audio.chiThreshold2Played = false
+				end
+				if currentResource2 < threshold3Value then
+					snapshotData.audio.chiThreshold3Played = false
+				end
+			end
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
@@ -1722,6 +1785,9 @@ function TRB.Functions.Class:CheckCharacter()
 				end
 				-- Rebuild secondary bar layout when chi count changes
 				if barGroups and barGroups.secondary then
+					-- Clear cached node count so ApplyBarGroupsLayout uses the new maxResource2
+					barGroups.secondary.lastRebuildNodeCount = nil
+					
 					barGroups.secondary:SetMaxNodes(maxComboPoints)
 					barGroups.secondary:SetNodeCount(maxComboPoints)
 					barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
@@ -1746,9 +1812,9 @@ function TRB.Functions.Class:CheckCharacter()
 								sharedSettings.textures.comboPointsBackground
 							)
 							node:SetMinMax(0, 1)
-							node:SetBorderColor(sharedSettings.colors.comboPoints.border)
-							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background)
-							node:SetColor(sharedSettings.colors.comboPoints.base)
+							node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
+							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
+							node:SetColor(sharedSettings.colors.comboPoints.base.color)
 							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 						end
 					end

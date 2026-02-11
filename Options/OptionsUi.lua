@@ -58,7 +58,7 @@ local function SetCheckboxTriState(checkbox, state)
 		checkbox:SetChecked(true)
 		if check then
 			check:SetDesaturated(true)
-			check:SetVertexColor(0.6, 0.6, 0.6, 0.8)
+			check:SetVertexColor(0.8, 0.8, 0.8, 1)
 		end
 	else
 		checkbox:SetChecked(false)
@@ -198,6 +198,18 @@ function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls,
 	end)
 	
 	return yCoord
+end
+
+---Refreshes the bulk global toggle checkbox state based on current per-spec settings
+---Call this after changing a per-spec "Use global settings" checkbox
+---@param settingKey string # The global setting key (e.g., "bar", "comboPoints", "textures")
+function TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox(settingKey)
+	local frameName = "TwintopResourceBar_Global_enableAll_" .. settingKey
+	local checkbox = _G[frameName]
+	if checkbox then
+		local currentState = GetAllSpecsGlobalState(settingKey)
+		SetCheckboxTriState(checkbox, currentState)
+	end
 end
 
 local sounds = {}
@@ -715,11 +727,23 @@ end
 
 function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
 	if button == "LeftButton" then
-		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key].color, true)
+		-- Handle both table format { color = "FFRRGGBB" } and direct string format "FFRRGGBB"
+		local colorValue = colorTable[key]
+		local isNestedTable = type(colorValue) == "table" and colorValue.color ~= nil
+		local colorString = isNestedTable and colorValue.color or colorValue
+		
+		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
 			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
-			colorTable[key].color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+			local newColorString = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+			
+			-- Update the color in the appropriate format
+			if isNestedTable then
+				colorTable[key].color = newColorString
+			else
+				colorTable[key] = newColorString
+			end
 		
 			if frame ~= nil then
 				if frameType == "backdrop" then
@@ -735,15 +759,15 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 					-- Handle both single frame and array of frames
 					if type(frame) == "table" and frame[1] ~= nil then
 						for _, f in ipairs(frame) do
-							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, colorTable[key].color)
+							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, newColorString)
 						end
 					else
-						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key].color)
+						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, newColorString)
 					end
 				elseif frameType == "bar" then
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key].color)
+					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, newColorString)
 				elseif frameType == "threshold" then
-					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key].color, true, classId, specId)
+					TRB.Functions.Color:SetThresholdColor(frame, newColorString, true, classId, specId)
 				end			
 			elseif frameType == "health" then
 				TRB.Functions.Character:UpdateHealthValues()
@@ -806,51 +830,6 @@ function TRB.Functions.OptionsUi:GetHealthBackdropFrame()
 	return nil
 end
 
-function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
-	if button == "LeftButton" then
-		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key], true)
-		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
-			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
-			colorTable[key] = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
-
-			if frame ~= nil then
-				if frameType == "backdrop" then
-					-- Handle both single frame and array of frames
-					if type(frame) == "table" and frame[1] ~= nil then
-						for _, f in ipairs(frame) do
-							TRB.Functions.Color:SetBackdropColor(f, nil, r_1, g_1, b_1, a_1)
-						end
-					else
-						TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
-					end
-				elseif frameType == "border" then
-					-- Handle both single frame and array of frames
-					if type(frame) == "table" and frame[1] ~= nil then
-						for _, f in ipairs(frame) do
-							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, colorTable[key])
-						end
-					else
-						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, colorTable[key])
-					end
-				elseif frameType == "bar" then
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, colorTable[key])
-				elseif frameType == "threshold" then
-					TRB.Functions.Color:SetThresholdColor(frame, nil, colorTable[key], true, classId, specId)
-				end
-			end
-
-			-- Clear color caches and trigger resource bar update to apply correct spec colors
-			TRB.Data.cache.colors.backdrop = {}
-			TRB.Data.cache.colors.border = {}
-			TRB.Data.cache.colors.bar = {}
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
-		end)
-	end
-end
-
 function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
 	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	f:SetSize(sizeFrame, sizeFrame)
@@ -910,7 +889,7 @@ function TRB.Functions.OptionsUi:BuildColorPickerWithEnable(parent, yCoord, cont
 		end)
 	end
 
-	controls.colors.threshold[value.name] = TRB.Functions.OptionsUi:BuildColorPicker(parent, value.colorLocalization, colorTable[value.name].color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.threshold[value.name] = TRB.Functions.OptionsUi:BuildColorPicker(parent, value.colorLocalization, colorTable[value.name].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	fColor = controls.colors.threshold[value.name]
 
 	if value.colorScript ~= nil and type(value.colorScript) == "function" then
@@ -1023,6 +1002,76 @@ function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, he
 	return f
 end
 
+---Builds an export button anchored to the top-right corner of its parent panel.
+---Used for "Export Bar Display", "Export Thresholds", "Export Bar Text", etc.
+---@param parent Frame The parent panel
+---@param text string Button label text
+---@param yCoord number Vertical offset from parent's top
+---@param height? number Button height (default 25)
+---@return Button
+function TRB.Functions.OptionsUi:BuildExportButton(parent, text, yCoord, height)
+	height = height or 25
+	local f = TRB.Functions.OptionsUi:BuildButton(parent, text, 0, 0, 225, height)
+	f:ClearAllPoints()
+	f:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5, yCoord)
+	return f
+end
+
+---Builds the spec title row: header + enabled checkbox + import button + export button,
+---all anchored from the right side of the parent so they stay right-aligned on resize.
+---@param parent Frame The spec display panel
+---@param controls table The controls table for this spec
+---@param specLabel string Localized spec name (e.g. L["PriestDisciplineFull"])
+---@param enabledSettingRef table Reference table where .enabled lives (e.g. TRB.Data.settings.core.enabled.priest)
+---@param enabledKey string Key into enabledSettingRef (e.g. "discipline")
+---@param checkboxName string Global checkbox frame name (e.g. "TwintopResourceBar_Priest_Discipline_disciplinePriestEnabled")
+---@param checkboxControlKey string Key in controls.checkBoxes (e.g. "disciplinePriestEnabled")
+---@param exportControlKey string Key in controls.buttons for the export button (e.g. "exportButton_Priest_Discipline_All")
+---@param exportCallback function OnClick handler for export button
+---@return number yCoord The updated yCoord after the title row
+function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, enabledSettingRef, enabledKey, checkboxName, checkboxControlKey, exportControlKey, exportCallback)
+	local yCoord = 0
+
+	-- Section header (left-aligned)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, specLabel, oUi.xCoord, yCoord - 5)
+
+	-- Export button (rightmost, anchored to parent's top-right)
+	controls.buttons[exportControlKey] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 0, 0, 150, 20)
+	local exportBtn = controls.buttons[exportControlKey]
+	exportBtn:ClearAllPoints()
+	exportBtn:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5, yCoord - 10)
+	exportBtn:SetScript("OnClick", exportCallback)
+
+	-- Import button (anchored to left of export)
+	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 0, 0, 90, 20)
+	local importBtn = controls.buttons.importButton
+	importBtn:ClearAllPoints()
+	importBtn:SetPoint("RIGHT", exportBtn, "LEFT", -5, 0)
+	importBtn:SetFrameLevel(10000)
+	importBtn:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Import")
+	end)
+
+	-- Enabled checkbox (anchored to left of import, with gap for label text)
+	controls.checkBoxes[checkboxControlKey] = CreateFrame("CheckButton", checkboxName, parent, "ChatConfigCheckButtonTemplate")
+	local cb = controls.checkBoxes[checkboxControlKey]
+	getglobal(cb:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	cb.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], specLabel)
+	cb:SetChecked(enabledSettingRef[enabledKey])
+	cb:SetScript("OnClick", function(self, ...)
+		enabledSettingRef[enabledKey] = self:GetChecked()
+		TRB.Functions.Class:EventRegistration()
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
+	end)
+	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
+
+	-- Position checkbox: anchor its right edge left of import, leaving room for the label text
+	-- ChatConfigCheckButtonTemplate renders text to the RIGHT of the frame, so we offset enough for it
+	cb:SetPoint("RIGHT", importBtn, "LEFT", -75, 0)
+
+	return yCoord - 52
+end
+
 ---Builds a Label object for the Options UI
 ---@param parent frame
 ---@param text string
@@ -1079,6 +1128,7 @@ function TRB.Functions.OptionsUi:CreateScrollFrameContainer(name, parent, width,
 end
 
 function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame)
+	local fillParent = (width == nil and height == nil)
 	width = width or 652
 	height = height or 523
 	local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
@@ -1096,14 +1146,29 @@ function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, he
 		}
 	})
 	cf:SetBackdropColor(0, 0, 0, 0.5)
-	cf:SetWidth(width)
-	cf:SetHeight(height)
-	cf:SetPoint("TOPLEFT", 0, 0)
+
+	if fillParent then
+		-- Caller sets TOPLEFT; stretch to bottom-right of parent, mirroring the TOPLEFT x-padding
+		cf:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -5, 0)
+	else
+		cf:SetWidth(width)
+		cf:SetHeight(height)
+		cf:SetPoint("TOPLEFT", 0, 0)
+	end
 
 	if not isManualScrollFrame then
 		---@diagnostic disable-next-line: inject-field
 		cf.scrollFrame = TRB.Functions.OptionsUi:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
 		cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
+		if fillParent then
+			cf.scrollFrame:SetPoint("BOTTOMRIGHT", cf, "BOTTOMRIGHT", -25, 5)
+			-- Keep scrollChild width in sync with the resolved scrollFrame width
+			cf.scrollFrame:HookScript("OnSizeChanged", function(self, w, h)
+				if self.scrollChild then
+					self.scrollChild:SetWidth(w)
+				end
+			end)
+		end
 	end
 	return cf
 end
@@ -1201,6 +1266,17 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	e:SetWidth(width)
 	e:SetText(text)
 	e:SetAutoFocus(false)
+
+	-- Clicking anywhere in the scroll frame (not just on text) gives focus to the EditBox
+	s:EnableMouse(true)
+	s:SetScript("OnMouseDown", function(self)
+		e:SetFocus()
+	end)
+
+	-- Keep EditBox width in sync if the ScrollFrame resizes
+	s:HookScript("OnSizeChanged", function(self, w, h)
+		e:SetWidth(w)
+	end)
 
 	s:SetScrollChild(e)
 	return e
@@ -1352,6 +1428,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("bar")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -1486,26 +1563,11 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.width.MinLabel:SetText(tostring(minsliderWidth))
 	end)
 
-	--NOTE: the order of these checkboxes is reversed!
-
-	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.lockPosition
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DragAndDropEnabled"])
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["DragAndDropTooltip"]
-	f:SetChecked(spec.bar.dragAndDrop)
-	f:SetScript("OnClick", function(self, ...)
-		spec.bar.dragAndDrop = self:GetChecked()
-
-		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
-			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
-			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			if TRB.Frames.barGroups ~= nil and TRB.Frames.barGroups.primary ~= nil then
-				TRB.Frames.barGroups.primary:SetDragAndDrop(TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop, TRB.Data.specCache[TRB.Data.character.specName].settings)
-			end
-		end
-	end)
+	controls.dragAndDropMessage = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	controls.dragAndDropMessage:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	controls.dragAndDropMessage:SetWidth(oUi.maxOptionsWidth - oUi.xCoord2 - oUi.xPadding2)
+	controls.dragAndDropMessage:SetJustifyH("LEFT")
+	controls.dragAndDropMessage:SetText(L["DragAndDropEditModeMessage"])
 
 	yCoord = yCoord - 30
 
@@ -1581,6 +1643,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox(globalSettingKey)
 		end)
 	elseif globalSettingKey and classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
@@ -2138,7 +2201,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 	
 	if colorSettings.bar then
 		local barColorValue = type(colorSettings.bar) == "table" and colorSettings.bar.color or colorSettings.bar
-		colorControls.bar = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), barColorValue, 300, 25, oUi.xCoord2, yCoord)
+		colorControls.bar = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), barColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = colorControls.bar
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "bar", barTypeDef.key)
@@ -2174,7 +2237,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 					end)
 					
 					-- Create color picker
-					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorSettings.color, 300, 25, oUi.xCoord2, yCoord)
+					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorSettings.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 					f = nodeControls.color
 					f:SetScript("OnMouseDown", function(self, button, ...)
 						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[nodeKey], nodeControls, "color", barTypeDef.key .. "_node")
@@ -2182,10 +2245,10 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 				else
 					-- Simple color picker without enable checkbox
 					local nodeColorValue = nodeColorSettings.color or nodeColorSettings
-					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorValue, 300, 25, oUi.xCoord2, yCoord)
+					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 					f = nodeControls.color
 					f:SetScript("OnMouseDown", function(self, button, ...)
-						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors, nodeControls, nodeKey, barTypeDef.key .. "_node")
+						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[nodeKey], nodeControls, "color", barTypeDef.key .. "_node")
 					end)
 				end
 				yCoord = yCoord - 30
@@ -2196,7 +2259,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 	-- Border Color
 	if colorSettings.border then
 		local borderColorValue = type(colorSettings.border) == "table" and colorSettings.border.color or colorSettings.border
-		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, 300, 25, oUi.xCoord2, yCoord)
+		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = colorControls.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "border", barTypeDef.key)
@@ -2207,7 +2270,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 	-- Background Color
 	if colorSettings.background then
 		local bgColorValue = type(colorSettings.background) == "table" and colorSettings.background.color or colorSettings.background
-		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, 300, 25, oUi.xCoord2, yCoord)
+		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = colorControls.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "background", barTypeDef.key)
@@ -2346,7 +2409,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 		if colorSettings[thresholdKey] and colorSettings[thresholdKey].color then
 			-- Use resolved colorLabel string from thresholdLevel
 			local colorLabel = thresholdLevel.colorLabel
-			colorControls[thresholdKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorLabel, colorSettings[thresholdKey].color, 300, 25, oUi.xCoord2, yCoord2)
+			colorControls[thresholdKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorLabel, colorSettings[thresholdKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 			f = colorControls[thresholdKey]
 			f:SetScript("OnMouseDown", function(self, button, ...)
 				TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, barTypeDef.key)
@@ -2358,7 +2421,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	-- Border and background colors
 	if colorSettings.border then
 		local borderColorValue = type(colorSettings.border) == "table" and colorSettings.border.color or colorSettings.border
-		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, 300, 25, oUi.xCoord2, yCoord2)
+		colorControls.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 		f = colorControls.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "border", barTypeDef.key)
@@ -2368,7 +2431,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	
 	if colorSettings.background then
 		local bgColorValue = type(colorSettings.background) == "table" and colorSettings.background.color or colorSettings.background
-		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, 300, 25, oUi.xCoord2, yCoord2)
+		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 		f = colorControls.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "background", barTypeDef.key)
@@ -2575,6 +2638,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			else
 				TRB.Functions.Bar:Construct()
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textures")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -3155,6 +3219,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			else
 				TRB.Functions.Bar:Construct()
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayBar")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -3395,6 +3460,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("thresholdIcons")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -3665,6 +3731,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("thresholdColors")
 		end)
 	elseif classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
@@ -3673,7 +3740,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 
 	if under == true then
 		yCoord = yCoord - 30
-		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], localizationResource), spec.colors.threshold.under.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], localizationResource), spec.colors.threshold.under.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
@@ -3682,7 +3749,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 
 	if over == true then
 		yCoord = yCoord - 30
-		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], localizationResource), spec.colors.threshold.over.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], localizationResource), spec.colors.threshold.over.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
@@ -3691,7 +3758,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 
 	if unusable == true then
 		yCoord = yCoord - 30
-		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnusable"], spec.colors.threshold.unusable.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnusable"], spec.colors.threshold.unusable.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -3742,7 +3809,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 		
 		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -3763,7 +3830,7 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarColorsChangingHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		local barFrame = nil
@@ -3771,7 +3838,7 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
 			barFrame = node and node.GetResourceFrame and node:GetResourceFrame() or nil
 		end
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
 	end)
 
 	return yCoord
@@ -3785,7 +3852,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarBorderColorsChangingHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 25
-	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BorderColorBase"], spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BorderColorBase"], spec.colors.bar.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		local borderFrame = barBorderFrame
@@ -3793,7 +3860,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
 			borderFrame = node and node.GetBorderFrame and node:GetBorderFrame() or borderFrame
 		end
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
 	end)
 
 	if includeOvercap then
@@ -3804,15 +3871,15 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		getglobal(f:GetName() .. 'Text'):SetText(L["BorderColorOvercapToggle"])
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = string.format(L["BorderColorOvercapToggleTooltip"], primaryResourceString)
-		f:SetChecked(spec.colors.bar.overcapEnabled)
+		f:SetChecked(spec.colors.bar.borderOvercap.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
+			spec.colors.bar.borderOvercap.enabled = self:GetChecked()
 		end)
 
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["BorderColorOvercap"], primaryResourceString), spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["BorderColorOvercap"], primaryResourceString), spec.colors.bar.borderOvercap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 	end
 
@@ -3961,7 +4028,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 	-- Light Stagger Color
 	controls.colors = controls.colors or {}
 	controls.colors.comboPoints = controls.colors.comboPoints or {}
-	controls.colors.comboPoints.light = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorLight"], spec.colors.comboPoints.light.color, 300, 25, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.light = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorLight"], spec.colors.comboPoints.light.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.light
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "light", "stagger")
@@ -3969,7 +4036,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 
 	-- Medium Stagger Color
 	yCoord2 = yCoord2 - 30
-	controls.colors.comboPoints.medium = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorMedium"], spec.colors.comboPoints.medium.color, 300, 25, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.medium = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorMedium"], spec.colors.comboPoints.medium.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.medium
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "medium", "stagger")
@@ -3977,7 +4044,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 
 	-- Heavy Stagger Color
 	yCoord2 = yCoord2 - 30
-	controls.colors.comboPoints.heavy = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorHeavy"], spec.colors.comboPoints.heavy.color, 300, 25, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.heavy = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorHeavy"], spec.colors.comboPoints.heavy.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.heavy
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "heavy", "stagger")
@@ -3985,18 +4052,18 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 	
 	yCoord2 = yCoord2 - 30
 
-	controls.colors.staggerColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord2)
+	controls.colors.staggerColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.staggerColorBorder
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors, "border", "border", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "border", "border", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 	
 	yCoord2 = yCoord2 - 30
 
-	controls.colors.staggerColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord2)
+	controls.colors.staggerColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.staggerColorBackground
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord2 - 20
@@ -4136,7 +4203,7 @@ function TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spe
 		spec.colors.bar[config.activeColorKey].enabled = self:GetChecked()
 	end)
 
-	controls.colors[config.activeColorKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, config.activeColorLabel, spec.colors.bar[config.activeColorKey].color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors[config.activeColorKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, config.activeColorLabel, spec.colors.bar[config.activeColorKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors[config.activeColorKey]
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, config.activeColorKey)
@@ -4154,7 +4221,7 @@ function TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spe
 		spec.endOf[config.endOfKey].enabled = self:GetChecked()
 	end)
 
-	controls.colors[config.endColorKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, config.endColorLabel, spec.colors.bar[config.endColorKey].color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors[config.endColorKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, config.endColorLabel, spec.colors.bar[config.endColorKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors[config.endColorKey]
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, config.endColorKey)
@@ -4174,7 +4241,7 @@ function TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spe
 				spec.colors.bar[colorConfig.key].enabled = self:GetChecked()
 			end)
 
-			controls.colors[colorConfig.key] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorConfig.colorLabel, spec.colors.bar[colorConfig.key].color, 300, 25, oUi.xCoord2, yCoord)
+			controls.colors[colorConfig.key] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorConfig.colorLabel, spec.colors.bar[colorConfig.key].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 			f = controls.colors[colorConfig.key]
 			local capturedKey = colorConfig.key
 			f:SetScript("OnMouseDown", function(self, button, ...)
@@ -4293,6 +4360,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 			TRB.Data.settings.core.global[lowerClassName][specName].displayText = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayText")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -4332,11 +4400,11 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 30
-	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DefaultFontColor"], spec.displayText.default.color,
-																		250, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DefaultFontColor"], spec.displayText.default.color.color,
+																		oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.color
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.displayText.default, controls.colors.text, "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.displayText.default, controls.colors.text, "color")
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
@@ -4375,6 +4443,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 		TRB.Data.settings.core.global[lowerClassName][specName].textColors = self:GetChecked()
 		TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textColors")
 	end)
 
 	return yCoord
@@ -4407,6 +4476,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			TRB.Data.snapshotData.attributes.cacheRefresh = true
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("precision")
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -4595,26 +4665,38 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local btc = controls.barTextContainer
 
 	btc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
-	btc:SetWidth(620)
-	btc:SetHeight(105)
+	btc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+	btc:SetHeight(120)
 
-	yCoord = yCoord - 90
+	yCoord = yCoord - 105
 	local btoHeight = 400
-	local barTextTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, 4, 15, nil, btc, false, false)
+	local barTextTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, 5, 15, nil, btc, false, false)
+
+	-- Dynamically resize "Bar Text" column (index 4) to fill available width
+	btc:HookScript("OnSizeChanged", function(self, w, h)
+		local fixedWidth = columns[1].width + columns[2].width + columns[3].width + columns[5].width
+		local newBarTextWidth = math.max(200, w - fixedWidth - 30) -- 30 for internal padding/scrollbar
+		columns[4].width = newBarTextWidth
+		barTextTable:SetDisplayCols(columns)
+	end)
 	
-	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, L["AddNewBarTextArea"], 450, yCoord, 175, 25)
+	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, L["AddNewBarTextArea"], 0, 0, 175, 25)
 
 	local barTextOptionsFrame = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame", parent, "BackdropTemplate")
-	barTextOptionsFrame:SetPoint("TOPLEFT", btc, "BOTTOMLEFT", 0, 0)
-	barTextOptionsFrame:SetPoint("TOPRIGHT", btc, "BOTTOMRIGHT", 0, 0)
+	barTextOptionsFrame:SetPoint("TOPLEFT", btc, "BOTTOMLEFT", 0, -10)
+	barTextOptionsFrame:SetPoint("TOPRIGHT", btc, "BOTTOMRIGHT", 0, -10)
 	barTextOptionsFrame:SetHeight(btoHeight)
 	barTextOptionsFrame:Hide()
+
+	-- Place addButton in the same row as Name / Enabled, anchored to top-right of barTextOptionsFrame
+	addButton:ClearAllPoints()
+	addButton:SetPoint("TOPRIGHT", barTextOptionsFrame, "TOPRIGHT", -5, 5)
 
 	local oldYCoord = yCoord - btoHeight
 
 	yCoord = 0
 
-	local barTextName = TRB.Functions.OptionsUi:BuildTextBox(barTextOptionsFrame, "", 200, 250, 20, oUi.xCoord, yCoord)
+	local barTextName = TRB.Functions.OptionsUi:BuildTextBox(barTextOptionsFrame, "", 200, 300, 20, oUi.xCoord, yCoord)
 ---@diagnostic disable-next-line: inject-field
 	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["Name"], oUi.xCoord, yCoord+25)
 	barTextName.label.font:SetFontObject(GameFontNormal)
@@ -4625,7 +4707,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 ---@diagnostic disable-next-line: inject-field
 	barTextEntryEnabled.tooltip = L["BarTextEntryEnabledTooltip"]
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 55
 	title = L["HorizontalOffset"]
 	local barTextHorizontal = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxWidth), math.floor(sanityCheckValues.barMaxWidth), 0, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -5188,11 +5270,19 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	controls.colors = controls.colors or {}
 	controls.colors.barText = controls.colors.barText or {}
-	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontColor"], "FFFFFFFF",
-																			250, 25, oUi.xCoord2, yCoord)
+	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontColor"], (workingBarText.color and workingBarText.color.color) or "FFFFFFFF",
+																			oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	local barTextColor = controls.colors.barText.color
 	barTextColor:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, workingBarText, controls.colors.barText, "color")
+		-- Ensure color table is properly initialized before opening color picker
+		--[[if workingBarText.color == nil then
+			workingBarText.color = { color = "FFFFFFFF" }
+		elseif type(workingBarText.color) == "string" then
+			workingBarText.color = { color = workingBarText.color }
+		elseif workingBarText.color.color == nil then
+			workingBarText.color.color = "FFFFFFFF"
+		end]]
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, workingBarText, controls.colors.barText, "color")
 	end)
 
 	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
@@ -5212,6 +5302,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	yCoord = yCoord - 20
 	local barText = TRB.Functions.OptionsUi:CreateBarTextInputPanel(barTextOptionsFrame, namePrefix .. "_Text", "",
 													590, 45, oUi.xCoord, yCoord)
+	-- Make editbox scroll frame fill the parent width (accounting for scrollbar buttons)
+	local barTextScrollFrame = barText:GetParent() --[[@as Frame]]
+	barTextScrollFrame:ClearAllPoints()
+	barTextScrollFrame:SetPoint("TOPLEFT", barTextOptionsFrame, "TOPLEFT", oUi.xCoord, yCoord)
+	barTextScrollFrame:SetPoint("RIGHT", barTextOptionsFrame, "RIGHT", -30, 0)
 	barText:SetCursorPosition(0)
 
 	---@param displayText TRB.Classes.Settings.DisplayText
@@ -5221,7 +5316,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local entries = TRB.Functions.Table:Length(displayText.barText)
 		if entries > 0 then
 			for i = 1, entries do
-				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(displayText.barText[i].color, true)
+				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(displayText.barText[i].color.color, true)
 				table.insert(dataTable, {
 					cols = {
 						{
@@ -5262,7 +5357,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
-			color="FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 0,
 				yPos = 0,
@@ -5303,7 +5398,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
 
 		fontSize:SetValue(workingBarText.fontSize)
-		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(workingBarText.color, true))
+		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString((workingBarText.color and workingBarText.color.color) or "FFFFFFFF", true))
 		barText:SetText(workingBarText.text)
 
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)

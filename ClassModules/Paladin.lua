@@ -52,6 +52,7 @@ local function FillSpecializationCache()
 		innervateCue = false,
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
+		holyPowerThreshold3Played = false,
 		infusionOfLightPlayed = false,
 	}
 
@@ -85,6 +86,7 @@ local function FillSpecializationCache()
 	specCache.protection.snapshotData.audio = {
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
+		holyPowerThreshold3Played = false,
 	}
 
 	specCache.protection.barTextVariables = {
@@ -117,6 +119,7 @@ local function FillSpecializationCache()
 	specCache.retribution.snapshotData.audio = {
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
+		holyPowerThreshold3Played = false,
 	}
 
 	specCache.retribution.barTextVariables = {
@@ -443,9 +446,9 @@ local function ConstructResourceBar(settings)
 					settings.textures.comboPointsBackground
 				)
 				node:SetMinMax(0, 1)
-				node:SetBorderColor(settings.colors.comboPoints.border)
-				node:SetBackgroundColorFromString(settings.colors.comboPoints.background)
-				node:SetColor(settings.colors.comboPoints.base)
+				node:SetBorderColor(settings.colors.comboPoints.border.color)
+				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+				node:SetColor(settings.colors.comboPoints.base.color)
 				node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
 			end
 		end
@@ -706,6 +709,65 @@ local function UpdateSnapshot_Retribution()
 	UpdateSnapshot()
 end
 
+---Processes holy power threshold audio cues for any Paladin spec
+---@param specSettings table The spec-specific settings table containing audio thresholds
+local function ProcessHolyPowerAudioCues(specSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local coreSettings = TRB.Data.settings.core
+	local currentResource2 = snapshotData.attributes.resource2 or 0
+	local threshold1 = specSettings.audio.holyPowerThreshold1
+	local threshold2 = specSettings.audio.holyPowerThreshold2
+	local threshold3 = specSettings.audio.holyPowerThreshold3
+	local threshold1Value = threshold1.configuration.thresholdValue
+	local threshold2Value = threshold2.configuration.thresholdValue
+	local threshold3Value = threshold3.configuration.thresholdValue
+
+	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.holyPowerThreshold1Played and currentResource2 >= threshold1Value
+	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.holyPowerThreshold2Played and currentResource2 >= threshold2Value
+	local threshold3ShouldFire = threshold3.enabled and not snapshotData.audio.holyPowerThreshold3Played and currentResource2 >= threshold3Value
+
+	if threshold1ShouldFire or threshold2ShouldFire or threshold3ShouldFire then
+		local highestValue = 0
+		local highestSound = nil
+
+		if threshold1ShouldFire then
+			snapshotData.audio.holyPowerThreshold1Played = true
+			if threshold1Value > highestValue then
+				highestValue = threshold1Value
+				highestSound = threshold1.sound
+			end
+		end
+		if threshold2ShouldFire then
+			snapshotData.audio.holyPowerThreshold2Played = true
+			if threshold2Value > highestValue then
+				highestValue = threshold2Value
+				highestSound = threshold2.sound
+			end
+		end
+		if threshold3ShouldFire then
+			snapshotData.audio.holyPowerThreshold3Played = true
+			if threshold3Value > highestValue then
+				highestValue = threshold3Value
+				highestSound = threshold3.sound
+			end
+		end
+
+		if highestSound then
+			PlaySoundFile(highestSound, coreSettings.audio.channel.channel)
+		end
+	end
+
+	if currentResource2 < threshold1Value then
+		snapshotData.audio.holyPowerThreshold1Played = false
+	end
+	if currentResource2 < threshold2Value then
+		snapshotData.audio.holyPowerThreshold2Played = false
+	end
+	if currentResource2 < threshold3Value then
+		snapshotData.audio.holyPowerThreshold3Played = false
+	end
+end
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.paladin
@@ -735,10 +797,10 @@ local function UpdateResourceBar()
 
 	local function UpdateHolyPower(specSettings, specCacheSettings)
 		local currentHolyPower = snapshotData.attributes.resource2 or 0
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = specSettings.colors.comboPoints.border
-			local cpColor = specSettings.colors.comboPoints.base
+			local cpBorderColor = specSettings.colors.comboPoints.border.color
+			local cpColor = specSettings.colors.comboPoints.base.color
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -746,9 +808,9 @@ local function UpdateResourceBar()
 
 			if filled then
 				if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
+					cpColor = specSettings.colors.comboPoints.penultimate.color
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
+					cpColor = specSettings.colors.comboPoints.final.color
 				end
 			end
 
@@ -762,42 +824,6 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-
-		-- Holy Power threshold audio cues
-		local coreSettings = TRB.Data.settings.core
-		local threshold1 = specSettings.audio.holyPowerThreshold1
-		local threshold2 = specSettings.audio.holyPowerThreshold2
-		local threshold1Value = threshold1.configuration.thresholdValue
-		local threshold2Value = threshold2.configuration.thresholdValue
-		
-		local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.holyPowerThreshold1Played and currentHolyPower >= threshold1Value
-		local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.holyPowerThreshold2Played and currentHolyPower >= threshold2Value
-
-		-- If both would fire, mark both as played but only play the higher threshold's sound
-		-- If equal, play threshold 1's sound
-		if threshold1ShouldFire and threshold2ShouldFire then
-			snapshotData.audio.holyPowerThreshold1Played = true
-			snapshotData.audio.holyPowerThreshold2Played = true
-			if threshold2Value > threshold1Value then
-				PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-			else
-				PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-			end
-		elseif threshold2ShouldFire then
-			snapshotData.audio.holyPowerThreshold2Played = true
-			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-		elseif threshold1ShouldFire then
-			snapshotData.audio.holyPowerThreshold1Played = true
-			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-		end
-
-		-- Reset flags independently when Holy Power drops below respective threshold
-		if currentHolyPower < threshold1Value then
-			snapshotData.audio.holyPowerThreshold1Played = false
-		end
-		if currentHolyPower < threshold2Value then
-			snapshotData.audio.holyPowerThreshold2Played = false
-		end
 	end
 
 	if TRB.Data.character.specId == 1 then
@@ -808,8 +834,8 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barBorderColor = specSettings.colors.bar.border
-				local barColor = specSettings.colors.bar.base
+				local barBorderColor = specSettings.colors.bar.border.color
+				local barColor = specSettings.colors.bar.base.color
 
 				-- Check for Infusion of Light (Flash of Light becomes instant)
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
@@ -828,7 +854,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
@@ -848,7 +874,14 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
+
 		end
+
+		-- Holy Power threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessHolyPowerAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.protection
@@ -858,12 +891,12 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
@@ -883,7 +916,14 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
+
 		end
+
+		-- Holy Power threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessHolyPowerAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.retribution
@@ -893,12 +933,12 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border
+				local barColor = specSettings.colors.bar.base.color
+				local barBorderColor = specSettings.colors.bar.border.color
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
@@ -918,7 +958,14 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
+
 		end
+
+		-- Holy Power threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			ProcessHolyPowerAudioCues(specSettings)
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

@@ -1053,10 +1053,11 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				if not isEnabled or not isVisible then
 					TRB.Data.cache.values.frame["textFrames" .. i].text = ""
 				else
-					local color = e.color
+					local color = e.color.color
 					
 					if e.useDefaultFontColor then
-						color = displayText.default.color
+						-- displayText.default.color uses the new table format { color = "..." }
+						color = displayText.default.color.color
 					end
 
 					local barText = {

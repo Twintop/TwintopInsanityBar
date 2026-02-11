@@ -1,7 +1,13 @@
-local MINOR = 14
-local lib, minor = LibStub('LibEditMode')
-if minor > MINOR then
-	return
+local _, ns = ...
+local lib
+if ns.LibEditMode then
+	lib = ns.LibEditMode
+else
+	local MINOR, prevMinor = 15
+	lib, prevMinor = LibStub('LibEditMode')
+	if prevMinor > MINOR then
+		return
+	end
 end
 
 local CENTER = {
@@ -33,7 +39,9 @@ function dialogMixin:RefreshWidgets()
 		end
 	end
 
-	self:Layout()
+	if self:IsShown() then
+		self:Layout()
+	end
 end
 
 function dialogMixin:UpdateSettings()

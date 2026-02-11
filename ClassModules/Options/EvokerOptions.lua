@@ -29,7 +29,7 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=0}[$essenceRegenTime]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Essence1"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -52,7 +52,7 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=1}[$essenceRegenTime]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Essence2"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -75,7 +75,7 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=2}[$essenceRegenTime]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Essence3"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -98,7 +98,7 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=3}[$essenceRegenTime]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Essence4"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -121,7 +121,7 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=4}[$essenceRegenTime]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Essence5"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -144,7 +144,7 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=5}[$essenceRegenTime]",
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			name = L["Essence6"],
 			position = {
 				relativeToName = L["PositionCenter"],
@@ -223,9 +223,9 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
+				border = { color = "FF000099" },
+				background = { color = "66000000" },
+				base = { color = "FF0000FF" },
 				dragonrage = {
 					color = "FFFF6B00",
 					enabled = true
@@ -239,11 +239,11 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			comboPoints = {
-				border="FF246759",
-				background="66000000",
-				base="FF33937F",
-				penultimate="FFFF9900",
-				final="FFFF0000",
+				border = { color = "FF246759" },
+				background = { color = "66000000" },
+				base = { color = "FF33937F" },
+				penultimate = { color = "FFFF9900" },
+				final = { color = "FFFF0000" },
 				sameColor=false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -271,7 +271,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -354,21 +354,21 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
-				innervate="FF00FF00",
+				border = { color = "FF000099" },
+				background = { color = "66000000" },
+				base = { color = "FF0000FF" },
+				innervate = { color = "FF00FF00", enabled = true },
 				essenceBurst = {
 					color = "FFFCE58E",
 					enabled = true
 				},
 			},
 			comboPoints = {
-				border="FF246759",
-				background="66000000",
-				base="FF33937F",
-				penultimate="FFFF9900",
-				final="FFFF0000",
+				border = { color = "FF246759" },
+				background = { color = "66000000" },
+				base = { color = "FF33937F" },
+				penultimate = { color = "FFFF9900" },
+				final = { color = "FFFF0000" },
 				sameColor=false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -380,7 +380,7 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -440,7 +440,7 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -464,7 +464,7 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			fontJustifyHorizontal = "CENTER",
 			fontJustifyHorizontalName = L["PositionCenter"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 0,
 				yPos = 0,
@@ -506,6 +506,9 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		endOf = {
+			ebonMight = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
+		},
 		colors = {
 			text = {
 				current = {
@@ -519,16 +522,15 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
-				inEbonMight = {
+				border = { color = "FF000099" },
+				background = { color = "66000000" },
+				base = { color = "FF0000FF" },
+				ebonMight = {
 					color = "FFFF9900",
 					enabled = true
 				},
-				inEbonMight1GCD = {
-					color = "FFFF0000",
-					enabled = true
+				ebonMightEnd = {
+					color = "FFFF0000"
 				},
 				ebonMightDropDuringCast = {
 					color = "FF550000",
@@ -540,11 +542,11 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			comboPoints = {
-				border="FF246759",
-				background="66000000",
-				base="FF33937F",
-				penultimate="FFFF9900",
-				final="FFFF0000",
+				border = { color = "FF246759" },
+				background = { color = "66000000" },
+				base = { color = "FF33937F" },
+				penultimate = { color = "FFFF9900" },
+				final = { color = "FFFF0000" },
 				sameColor=false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -572,7 +574,7 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -598,12 +600,6 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
-		},
-		endOfEbonMight = {
-			enabled = true,
-			mode = "gcd",
-			gcdsMax = 2,
-			timeMax = 3.0
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -744,7 +740,7 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Devastation_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 1, true, false, false, false, false, false)
 	end)
@@ -781,10 +777,10 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 	})
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -801,7 +797,7 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
 	end)
 
-	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.essenceBurst
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
@@ -812,36 +808,36 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
 	yCoord = yCoord - 30
@@ -885,7 +881,7 @@ local function DevastationConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Evoker_Devastation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Devastation_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Devastation_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 13, 1, false, false, true, false, false, false)
 	end)
@@ -898,7 +894,7 @@ local function DevastationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 13, 1, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
@@ -920,7 +916,7 @@ local function DevastationConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.devastation
 	local yCoord = 5
 
-	controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -956,7 +952,7 @@ local function DevastationConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Devastation_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 13, 1, false, false, false, false, true, false)
 	end)
@@ -981,42 +977,18 @@ local function DevastationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.devastationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Devastation", UIParent)
-	interfaceSettingsFrame.devastationDisplayPanel.name = L["EvokerDevastationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.devastationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["devastation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.devastationDisplayPanel, L["EvokerDevastationFull"])
+	interfaceSettingsFrame.devastationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Devastation")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "devastation", L["EvokerDevastationFull"], interfaceSettingsFrame.devastationDisplayPanel)
 
 	parent = interfaceSettingsFrame.devastationDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerDevastationFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.devastationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_devastationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.devastationEvokerEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)		
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerDevastationFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.evoker.devastation)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.evoker.devastation = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.devastationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.devastation, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.devastationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.devastation, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Evoker_Devastation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Evoker_Devastation_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["EvokerDevastationFull"],
+		TRB.Data.settings.core.enabled.evoker, "devastation",
+		"TwintopResourceBar_Evoker_Devastation_devastationEvokerEnabled", "devastationEvokerEnabled",
+		"exportButton_Evoker_Devastation_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1184,7 +1156,7 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Preservation_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 2, true, false, false, false, false, false)
 	end)
@@ -1207,10 +1179,10 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
 	
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1227,7 +1199,7 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
 	end)
 
-	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.essenceBurst
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
@@ -1238,36 +1210,36 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
 	yCoord = yCoord - 30
@@ -1297,7 +1269,7 @@ local function PreservationConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Evoker_Preservation_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Preservation_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Preservation_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 13, 2, false, true, false, false, false, false)
 	end)
@@ -1317,7 +1289,7 @@ local function PreservationConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Evoker_Preservation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Preservation_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Preservation_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 13, 2, false, false, true, false, false, false)
 	end)
@@ -1330,13 +1302,13 @@ local function PreservationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 13, 2, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
@@ -1359,7 +1331,7 @@ local function PreservationConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Preservation_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1395,7 +1367,7 @@ local function PreservationConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 13, 2, false, false, false, false, true, false)
 	end)
@@ -1420,42 +1392,18 @@ local function PreservationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.preservationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Preservation", UIParent)
-	interfaceSettingsFrame.preservationDisplayPanel.name = L["EvokerPreservationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.preservationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["preservation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.preservationDisplayPanel, L["EvokerPreservationFull"])
+	interfaceSettingsFrame.preservationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Preservation")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "preservation", L["EvokerPreservationFull"], interfaceSettingsFrame.preservationDisplayPanel)
 
 	parent = interfaceSettingsFrame.preservationDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerPreservationFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.preservationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_preservationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.preservationEvokerEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerPreservationFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.evoker.preservation)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.evoker.preservation = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.preservationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.preservation, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.preservationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.preservation, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Evoker_Preservation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Evoker_Preservation_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["EvokerPreservationFull"],
+		TRB.Data.settings.core.enabled.evoker, "preservation",
+		"TwintopResourceBar_Evoker_Preservation_preservationEvokerEnabled", "preservationEvokerEnabled",
+		"exportButton_Evoker_Preservation_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1626,7 +1574,7 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Augmentation_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 3, true, false, false, false, false, false)
 	end)
@@ -1649,38 +1597,17 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
 	
 	yCoord = yCoord - 30
-	controls.checkBoxes.inEbonMight = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_inEbonMight", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.inEbonMight
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMight"])
-	f.tooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"]
-	f:SetChecked(spec.colors.bar.inEbonMight.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.inEbonMight.enabled = self:GetChecked()
-	end)
-
-	controls.colors.inEbonMight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMight"], spec.colors.bar.inEbonMight.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inEbonMight
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inEbonMight")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfEbonMight = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_endOfEbonMight", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfEbonMight
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEndOfEbonMight"])
-	f.tooltip = L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"]
-	f:SetChecked(spec.colors.bar.inEbonMight1GCD.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.inEbonMight1GCD.enabled = self:GetChecked()
-	end)
-
-	controls.colors.inEbonMight1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightEnd"], spec.colors.bar.inEbonMight1GCD.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inEbonMight1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inEbonMight1GCD")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 13, 3, yCoord, {
+		endOfKey = "ebonMight",
+		activeColorKey = "ebonMight",
+		endColorKey = "ebonMightEnd",
+		checkboxLabel = L["EvokerAugmentationCheckboxEbonMight"],
+		checkboxTooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"],
+		activeColorLabel = L["EvokerAugmentationColorPickerEbonMight"],
+		endCheckboxLabel = L["EvokerAugmentationCheckboxEndOfEbonMight"],
+		endCheckboxTooltip = L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"],
+		endColorLabel = L["EvokerAugmentationColorPickerEbonMightEnd"],
+	})
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.ebonMightDropDuringCast = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightDropDuringCast", parent, "ChatConfigCheckButtonTemplate")
@@ -1693,17 +1620,17 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.ebonMightDropDuringCast.enabled = self:GetChecked()
 	end)
 
-	controls.colors.ebonMightDropDuringCast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightDropDuringCast"], spec.colors.bar.ebonMightDropDuringCast.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.ebonMightDropDuringCast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightDropDuringCast"], spec.colors.bar.ebonMightDropDuringCast.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.ebonMightDropDuringCast
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMightDropDuringCast")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1720,7 +1647,7 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
 	end)
 
-	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.essenceBurst
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
@@ -1731,36 +1658,36 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
 	yCoord = yCoord - 30
@@ -1779,49 +1706,14 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfEbonMightModeGCDs = CreateFrame("CheckButton", "TRB_EOEM_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfEbonMightModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationEndOfEbonMightGcdMode"])
-	if spec.endOfEbonMight.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfEbonMightModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfEbonMightModeTime:SetChecked(false)
-		spec.endOfEbonMight.mode = "gcd"
-	end)
-
-	controls.endOfEbonMightGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, L["EvokerAugmentationEndOfEbonMightGcdSlider"], 0.5, 10, spec.endOfEbonMight.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfEbonMightGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfEbonMight.gcdsMax = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfEbonMightModeTime = CreateFrame("CheckButton", "TRB_EOEM_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfEbonMightModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationEndOfEbonMightTimeMode"])
-	if spec.endOfEbonMight.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfEbonMightModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfEbonMightModeTime:SetChecked(true)
-		spec.endOfEbonMight.mode = "time"
-	end)
-
-	controls.endOfEbonMightTime = TRB.Functions.OptionsUi:BuildSlider(parent, L["EvokerAugmentationEndOfEbonMightTimeSlider"], 0, 15, spec.endOfEbonMight.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfEbonMightTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfEbonMight.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 3, yCoord, {
+		endOfKey = "ebonMight",
+		sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
+		gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
+		gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
+		timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
+		timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
+	})
 end
 
 local function AugmentationConstructFontAndTextPanel(parent)
@@ -1838,7 +1730,7 @@ local function AugmentationConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Augmentation_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 13, 3, false, false, true, false, false, false)
 	end)
@@ -1851,7 +1743,7 @@ local function AugmentationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 13, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
@@ -1873,7 +1765,7 @@ local function AugmentationConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.augmentation
 	local yCoord = 5
 
-	controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1911,7 +1803,7 @@ local function AugmentationConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 13, 3, false, false, false, false, true, false)
 	end)
@@ -1936,42 +1828,18 @@ local function AugmentationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.augmentationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Augmentation", UIParent)
-	interfaceSettingsFrame.augmentationDisplayPanel.name = L["EvokerAugmentationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.augmentationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["augmentation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.augmentationDisplayPanel, L["EvokerAugmentationFull"])
+	interfaceSettingsFrame.augmentationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Augmentation")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "augmentation", L["EvokerAugmentationFull"], interfaceSettingsFrame.augmentationDisplayPanel)
 
 	parent = interfaceSettingsFrame.augmentationDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerAugmentationFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.augmentationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_augmentationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.augmentationEvokerEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)		
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerAugmentationFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.evoker.augmentation)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.evoker.augmentation = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.augmentationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.augmentation, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.augmentationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.augmentation, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Evoker_Augmentation_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["EvokerAugmentationFull"],
+		TRB.Data.settings.core.enabled.evoker, "augmentation",
+		"TwintopResourceBar_Evoker_Augmentation_augmentationEvokerEnabled", "augmentationEvokerEnabled",
+		"exportButton_Evoker_Augmentation_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -2026,9 +1894,12 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	
+	TRB.Options.OptionsFrame:RegisterClassHeader("evoker", L["Evoker"])
+
 	DevastationConstructOptionsPanel(specCache.devastation)
 	PreservationConstructOptionsPanel(specCache.preservation)
 	AugmentationConstructOptionsPanel(specCache.augmentation)
+
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Evoker.ConstructOptionsPanel = ConstructOptionsPanel

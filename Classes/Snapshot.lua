@@ -716,6 +716,7 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 	if remainingTime <= 0 then
 		remainingTime = 0
 		self.onCooldown = false
+---@diagnostic disable-next-line: param-type-mismatch
 	elseif not issecretvalue(self.charges) and self.charges > 0 then
 		self.onCooldown = false
 	else
@@ -724,8 +725,10 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 
 	self.remaining = remainingTime
 	
+---@diagnostic disable-next-line: param-type-mismatch
 	if not issecretvalue(self.maxCharges) and not issecretvalue(self.charges) and self.maxCharges > 1 and self.charges < self.maxCharges then
 		self.remainingTotal = self.remaining +  ((self.maxCharges - self.charges - 1) * self.duration)
+---@diagnostic disable-next-line: param-type-mismatch
 	elseif not issecretvalue(self.maxCharges) and not issecretvalue(self.charges) and self.maxCharges > 1 and self.maxCharges == self.charges then
 		self.startTime = nil
 		self.duration = 0
@@ -769,6 +772,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 			self.maxCharges = spellCharges.maxCharges
 			startTime = spellCharges.cooldownStartTime
 			duration = spellCharges.cooldownDuration
+---@diagnostic disable-next-line: param-type-mismatch
 			if not issecretvalue(self.charges) and not issecretvalue(self.maxCharges) and self.charges == self.maxCharges then
 				startTime = 0
 				duration = 0
@@ -783,6 +787,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 			self.castCount = C_Spell.GetSpellCastCount(self.parent.spell.id)
 		end
 
+---@diagnostic disable-next-line: param-type-mismatch
 		if not issecretvalue(startTime) then
 			---@type TRB.Classes.SnapshotCasting
 			local casting = TRB.Data.snapshotData.casting
@@ -817,6 +822,7 @@ end
 ---@return boolean
 function TRB.Classes.SnapshotCooldown:IsUnusable()
 	-- Lie and say it is not unusable if we have secret values for charges or cooldown state
+---@diagnostic disable-next-line: param-type-mismatch
 	if issecretvalue(self.charges) or issecretvalue(self.onCooldown) then
 		return false
 	end

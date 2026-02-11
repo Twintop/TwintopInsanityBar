@@ -77,9 +77,10 @@ local abbrevData = {
       fractionDivisor = 1e2,
     },
   },
+  locale = GetLocale()
 }
 
---[[ 
+--[[
 --Test data for debugging, borrowed from the WoW Addons discord.
 local t = {1, 12, 123, 1234, 12345, 123456, 1234567, 12345678, 123456789, 1234567890, 12345678901, 123456789012, 1234567890123, 12345678901234, 123456789012345, 1234567890123456, 12345678901234567}
 local t = {1, 1.2, 1.23, 1.234, 1.2345, 12.3, 123.4, 1234.5, 12.34, 12.345, 123.4, 123.456 }
@@ -91,8 +92,8 @@ end
 print("|cffffd200AbbreviateNumbers:|r")
 for _, number in next, t do
   print(" ", BreakUpLargeNumbers(number), "|cffffd200->|r", AbbreviateNumbers(number, abbrevData))
-end
-]]
+end]]
+
 
 ---Converts a number into a short notation following the pattern: 1000, 10.00k, 100.0k, 1000k, 10.00m, 100.0m, 1000m, 10.00b, 100.0b, 1000b
 ---As of Midnight, using built-in AbbreviateNumbers() method which means it returns capitals but in exchange can accept secrets.

@@ -1619,29 +1619,29 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.primary ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				-- Detect Surge of Light via Flash Heal mana cost reduction
 				if snapshotData.attributes.surgeOfLightActive then
-					if specSettings.colors.bar.surgeOfLightBorderChange1 then
-						barBorderColor = specSettings.colors.bar.surgeOfLight
+					if specSettings.colors.bar.surgeOfLight.enabled then
+						barBorderColor = specSettings.colors.bar.surgeOfLight.color
 					end
 				end
 
 				--[[if snapshots[spells.shadowCovenant.id].buff.isActive then
-					if specSettings.colors.bar.shadowCovenantBorderChange then
-						barBorderColor = specSettings.colors.bar.shadowCovenant
+					if specSettings.colors.bar.shadowCovenant.enabled then
+						barBorderColor = specSettings.colors.bar.shadowCovenant.color
 					end
 				end]]
 				
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				
-				local barColor = specSettings.colors.bar.base
+				local barColor = specSettings.colors.bar.base.color
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
 			-- Update health bar
@@ -1669,12 +1669,12 @@ local function UpdateResourceBar()
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-				local barBorderColor = specSettings.colors.bar.border
+				local barBorderColor = specSettings.colors.bar.border.color
 
 				-- Detect Surge of Light via Flash Heal mana cost reduction
 				if snapshotData.attributes.surgeOfLightActive then
-					if specSettings.colors.bar.surgeOfLightBorderChange1 then
-						barBorderColor = specSettings.colors.bar.surgeOfLight
+					if specSettings.colors.bar.surgeOfLight.enabled then
+						barBorderColor = specSettings.colors.bar.surgeOfLight.color
 					end
 				end
 				
@@ -1699,8 +1699,8 @@ local function UpdateResourceBar()
 						if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
 							holyWordCooldownCompletes = true
 							holyWordCooldownCompletesKey = maybeHolyWordSpell.holyWordKey
-							if specSettings.colors.bar[maybeHolyWordSpell.holyWordKey .. "Enabled"] then
-								barColor = specSettings.colors.bar[maybeHolyWordSpell.holyWordKey]
+							if specSettings.colors.bar[maybeHolyWordSpell.holyWordKey] and specSettings.colors.bar[maybeHolyWordSpell.holyWordKey].enabled then
+								barColor = specSettings.colors.bar[maybeHolyWordSpell.holyWordKey].color
 							end
 						end
 					end
@@ -1710,29 +1710,31 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfApotheosisColor = false
 
-					if specSettings.endOfApotheosis.enabled then
+					if specSettings.endOf.apotheosis.enabled then
 						useEndOfApotheosisColor = true
-						if specSettings.endOfApotheosis.mode == "gcd" then
+						if specSettings.endOf.apotheosis.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfApotheosis.gcdsMax
-						elseif specSettings.endOfApotheosis.mode == "time" then
-							timeThreshold = specSettings.endOfApotheosis.timeMax
+							timeThreshold = gcd * specSettings.endOf.apotheosis.gcdsMax
+						elseif specSettings.endOf.apotheosis.mode == "time" then
+							timeThreshold = specSettings.endOf.apotheosis.timeMax
 						end
 					end
 
 					if useEndOfApotheosisColor and snapshots[spells.apotheosis.id].buff.remaining <= timeThreshold then
-						barColor = specSettings.colors.bar.apotheosisEnd
-					else
-						barColor = specSettings.colors.bar.apotheosis
+						barColor = specSettings.colors.bar.apotheosisEnd.color
+					elseif specSettings.colors.bar.apotheosis.enabled then
+						barColor = specSettings.colors.bar.apotheosis.color
 					end
-				elseif barColor == nil then
-					barColor = specSettings.colors.bar.base
+				end
+				
+				if barColor == nil then
+					barColor = specSettings.colors.bar.base.color
 				end
 
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
 			-- Update health bar
@@ -1767,21 +1769,21 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border
-				local barColor = specSettings.colors.bar.base
+				local barBorderColor = specSettings.colors.bar.border.color
+				local barColor = specSettings.colors.bar.base.color
 
 				if specSettings.colors.bar.mindDevourer.enabled and spells.shadowWordMadness:IsFree() then --snapshots[spells.mindDevourer.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.mindDevourer.color
 				elseif specSettings.colors.bar.entropicRift.enabled and snapshots[spells.entropicRift.id].buff.isActive then
 					barBorderColor = specSettings.colors.bar.entropicRift.color
-				elseif specSettings.colors.bar.mindFlayInsanityBorderChange and snapshots[spells.mindFlayInsanity.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
+				elseif specSettings.colors.bar.borderMindFlayInsanity.enabled and snapshots[spells.mindFlayInsanity.id].buff.isActive then
+					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity.color
 				end
 
 				-- Build overcap border curve if enabled
 				local overcapBorderCurve = nil
-				if specSettings.colors.bar.overcapEnabled and affectingCombat then
-					overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap)
+				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+					overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 				end
 
 				-- Get resourceFrame and thresholds from the BarNode
@@ -1934,27 +1936,25 @@ local function UpdateResourceBar()
 					local timeThreshold = 0
 					local useEndOfVoidformColor = false
 
-					if specSettings.endOfVoidform.enabled then
+					if specSettings.endOf.voidform.enabled then
 						useEndOfVoidformColor = true
-						if specSettings.endOfVoidform.mode == "gcd" then
+						if specSettings.endOf.voidform.mode == "gcd" then
 							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfVoidform.gcdsMax
-						elseif specSettings.endOfVoidform.mode == "time" then
-							timeThreshold = specSettings.endOfVoidform.timeMax
+							timeThreshold = gcd * specSettings.endOf.voidform.gcdsMax
+						elseif specSettings.endOf.voidform.mode == "time" then
+							timeThreshold = specSettings.endOf.voidform.timeMax
 						end
 					end
 
 					if useEndOfVoidformColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.inVoidform1GCD
-					elseif spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
-						barColor = specSettings.colors.bar.shadowWordMadnessUsable
-					else
-						barColor = specSettings.colors.bar.inVoidform
+						barColor = specSettings.colors.bar.voidformEnd.color
+					elseif specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
+						barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
+					elseif specSettings.colors.bar.voidform.enabled then
+						barColor = specSettings.colors.bar.voidform.color
 					end
-				elseif spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
-					barColor = specSettings.colors.bar.shadowWordMadnessUsable
-				else
-					barColor = specSettings.colors.bar.base
+				elseif specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
+					barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
 				end
 				
 				if overcapBorderCurve then
@@ -1965,7 +1965,7 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background)
+				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 		end
 
@@ -2345,7 +2345,7 @@ function TRB.Functions.Class:CheckCharacter()
 		
 		local totalPowerWordCharges = 0
 		
-		--[[if talents:IsTalentActive(spells.powerWordRadiance) and settings.colors.comboPoints.powerWordRadianceEnabled then
+		--[[if talents:IsTalentActive(spells.powerWordRadiance) and settings.colors.comboPoints.powerWordRadiance.enabled then
 			totalPowerWordCharges = totalPowerWordCharges + 1
 			if talents:IsTalentActive(spells.lightsPromise) then
 				totalPowerWordCharges = totalPowerWordCharges + 1
@@ -2371,21 +2371,21 @@ function TRB.Functions.Class:CheckCharacter()
 
 		local totalHolyWordCharges = 0
 		
-		--[[if talents:IsTalentActive(spells.holyWordSerenity) and settings.colors.comboPoints.holyWordSerenityEnabled then
+		--[[if talents:IsTalentActive(spells.holyWordSerenity) and settings.colors.comboPoints.holyWordSerenity.enabled then
 			totalHolyWordCharges = totalHolyWordCharges + 1
 			if talents:IsTalentActive(spells.miracleWorker) then
 				totalHolyWordCharges = totalHolyWordCharges + 1
 			end
 		end
 		
-		if talents:IsTalentActive(spells.holyWordSanctify) and settings.colors.comboPoints.holyWordSanctifyEnabled then
+		if talents:IsTalentActive(spells.holyWordSanctify) and settings.colors.comboPoints.holyWordSanctify.enabled then
 			totalHolyWordCharges = totalHolyWordCharges + 1
 			if talents:IsTalentActive(spells.miracleWorker) then
 				totalHolyWordCharges = totalHolyWordCharges + 1
 			end
 		end
 		
-		if talents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastiseEnabled then
+		if talents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastise.enabled then
 			totalHolyWordCharges = totalHolyWordCharges + 1
 		end]]
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings

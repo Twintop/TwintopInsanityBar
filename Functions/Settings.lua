@@ -52,6 +52,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				enabled = true,
 				lastUpdate = ""
 			},
+			minimap = {
+				hide = false,
+			},
 			audio = {
 				channel = {
 					name = L["AudioChannelMaster"],
@@ -151,7 +154,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					fontJustifyHorizontal = "LEFT",
 					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize = 18,
-					color = "FFFFFFFF",
+					color = {
+						color = "FFFFFFFF"
+					},
 				},
 				barText = {}
 			},
@@ -725,7 +730,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 									fontJustifyHorizontal = "LEFT",
 									fontJustifyHorizontalName = L["PositionLeft"],
 									fontSize=18,
-									color = "FFFFFFFF"
+									color = {
+										color = "FFFFFFFF"
+									}
 								}
 
 								if specValue.displayText.fontSizeLock then
@@ -848,7 +855,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontal = "CENTER",
 											useDefaultFontSize = false,
 											fontSize = 14,
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 										},
 										{
 											enabled = enabled,
@@ -858,7 +865,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											guid = TRB.Functions.String:Guid(),
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=1)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=0)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=1)||($incarnationNextCp=($comboPoints+2)&$comboPoints=0)}[$incarnationTickTime]",
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											name = "CP2",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -881,7 +888,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											guid = TRB.Functions.String:Guid(),
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=2)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=1)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=2)||($incarnationNextCp=($comboPoints+2)&$comboPoints=1)}[$incarnationTickTime]",
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											name = "CP3",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -904,7 +911,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											guid = TRB.Functions.String:Guid(),
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=3)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=2)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=3)||($incarnationNextCp=($comboPoints+2)&$comboPoints=2)}[$incarnationTickTime]",
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											name = "CP4",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -927,7 +934,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											guid = TRB.Functions.String:Guid(),
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=4)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=3)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=4)||($incarnationNextCp=($comboPoints+2)&$comboPoints=3)}[$incarnationTickTime]",
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											name = "CP5",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -972,7 +979,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
-											color = "ffffffff",
+											color = { color = "FFFFFFFF" },
 											enabled = enabled,
 										},
 										{
@@ -983,7 +990,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSerenityTime&$hwSerenityCharges=1}[$hwSerenityTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = "HW Serenity 2",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1006,7 +1013,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSanctifyTime&$hwSanctifyCharges=0}[$hwSanctifyTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = "HW Sanctify 1",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1029,7 +1036,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSanctifyTime&$hwSanctifyCharges=1}[$hwSanctifyTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = "HW Sanctify 2",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1052,7 +1059,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwChastiseTime}[$hwChastiseTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = "HW Chastise",
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1085,7 +1092,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=0}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence1"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1108,7 +1115,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=1}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence2"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1131,7 +1138,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=2}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence3"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1154,7 +1161,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=3}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence4"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1177,7 +1184,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=4}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence5"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1200,7 +1207,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=5}[$essenceRegenTime]",
 											fontSize = 14,
-											color = "FFFFFFFF",
+											color = { color = "FFFFFFFF" },
 											name = L["Essence6"],
 											position = {
 												relativeToName = L["PositionCenter"],
@@ -1464,7 +1471,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 							-- Change to new bar text format
 							if specValue.hastePrecision ~= nil or specValue.resourcePrecision ~= nil then
 								specValue.precision = {
-			health = 1,
+									health = 1,
 									secondary = specValue.hastePrecision or 0,
 									resource = specValue.resourcePrecision or 0
 								}
@@ -1889,7 +1896,2252 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specSettings.textures.defensivesBackgroundName = specSettings.textures.backgroundName
 						end
 					end
+
+					-- Migrate displayText.default.color from flat string to table format
+					if specSettings.displayText and specSettings.displayText.default and 
+					   specSettings.displayText.default.color and type(specSettings.displayText.default.color) == "string" then
+						specSettings.displayText.default.color = {
+							color = specSettings.displayText.default.color
+						}
+					end
+
+					-- Migrate old *BorderChange* and flat *Enabled flags to nested .enabled format
+					-- This runs after the color table migration above, so colors are already in { color = "..." } format
+					if specSettings.colors and specSettings.colors.bar then
+						local bar = specSettings.colors.bar
+						
+						-- Map of old enabled flag names to their corresponding color key
+						-- Format: oldFlagName = colorKey (the .enabled will be set on colors.bar[colorKey].enabled)
+						local enabledFlagMappings = {
+							-- Priest Discipline/Holy
+							surgeOfLightBorderChange1 = "surgeOfLight",
+							shadowCovenantBorderChange = "shadowCovenant",
+							-- Priest Holy
+							holyWordChastiseEnabled = "holyWordChastise",
+							holyWordSanctifyEnabled = "holyWordSanctify",
+							holyWordSerenityEnabled = "holyWordSerenity",
+							resonantWordsBorderChange = "resonantWords",
+							lightweaverBorderChange = "lightweaver",
+							-- Priest Shadow
+							mindFlayInsanityBorderChange = "borderMindFlayInsanity",
+						}
+						
+						for oldFlag, colorKey in pairs(enabledFlagMappings) do
+							if bar[oldFlag] ~= nil then
+								-- Ensure the color table exists
+								bar[colorKey] = bar[colorKey] or {}
+								if type(bar[colorKey]) == "table" then
+									bar[colorKey].enabled = bar[oldFlag]
+								end
+								bar[oldFlag] = nil
+							end
+						end
+					end
+
+					-- Migrate old flat *Enabled flags in comboPoints to nested .enabled format
+					if specSettings.colors and specSettings.colors.comboPoints then
+						local cp = specSettings.colors.comboPoints
+						
+						local cpEnabledFlagMappings = {
+							-- Priest Discipline
+							powerWordRadianceEnabled = "powerWordRadiance",
+							-- Priest Holy
+							holyWordSerenityEnabled = "holyWordSerenity",
+							holyWordSanctifyEnabled = "holyWordSanctify",
+							holyWordChastiseEnabled = "holyWordChastise",
+							completeCooldownEnabled = "completeCooldown",
+							sacredReverenceEnabled = "sacredReverence",
+						}
+						
+						for oldFlag, colorKey in pairs(cpEnabledFlagMappings) do
+							if cp[oldFlag] ~= nil then
+								-- Ensure the color table exists
+								cp[colorKey] = cp[colorKey] or {}
+								if type(cp[colorKey]) == "table" then
+									cp[colorKey].enabled = cp[oldFlag]
+								end
+								cp[oldFlag] = nil
+							end
+						end
+					end
+
+					-- Migrate bar text entry colors from flat string format to table format
+					if specSettings.displayText and specSettings.displayText.barText then
+						for _, barTextEntry in ipairs(specSettings.displayText.barText) do
+							if barTextEntry.color ~= nil and type(barTextEntry.color) == "string" then
+								-- Flat string color, convert to table
+								barTextEntry.color = { color = barTextEntry.color }
+							elseif barTextEntry.color == nil then
+								-- No color field, create default
+								barTextEntry.color = { color = "FFFFFFFF" }
+							elseif type(barTextEntry.color) == "table" and barTextEntry.color.color == nil then
+								-- Table exists but missing inner .color key, add default
+								barTextEntry.color.color = "FFFFFFFF"
+							end
+						end
+					end
 				end
+			end
+		end
+	end
+
+	-- Priest Holy colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.holy ~= nil and
+		TwintopInsanityBarSettings.priest.holy.colors ~= nil and
+		TwintopInsanityBarSettings.priest.holy.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.priest.holy.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.apotheosis) == "string" then
+			print("apoth")
+			bar.apotheosis = { color = bar.apotheosis }
+		end
+		if type(bar.apotheosisEnd) == "string" then
+			bar.apotheosisEnd = { color = bar.apotheosisEnd }
+		end
+		if type(bar.surgeOfLight) == "string" then
+			local enabled = bar.surgeOfLightBorderChange1
+			if enabled == nil then enabled = true end
+			bar.surgeOfLight = { color = bar.surgeOfLight, enabled = enabled }
+			bar.surgeOfLightBorderChange1 = nil
+		end
+		if type(bar.resonantWords) == "string" then
+			local enabled = bar.resonantWordsBorderChange
+			if enabled == nil then enabled = true end
+			bar.resonantWords = { color = bar.resonantWords, enabled = enabled }
+			bar.resonantWordsBorderChange = nil
+		end
+		if type(bar.lightweaver) == "string" then
+			local enabled = bar.lightweaverBorderChange
+			if enabled == nil then enabled = true end
+			bar.lightweaver = { color = bar.lightweaver, enabled = enabled }
+			bar.lightweaverBorderChange = nil
+		end
+		if type(bar.holyWordChastise) == "string" then
+			local enabled = bar.holyWordChastiseEnabled
+			if enabled == nil then enabled = false end
+			bar.holyWordChastise = { color = bar.holyWordChastise, enabled = enabled }
+			bar.holyWordChastiseEnabled = nil
+		end
+		if type(bar.holyWordSanctify) == "string" then
+			local enabled = bar.holyWordSanctifyEnabled
+			if enabled == nil then enabled = true end
+			bar.holyWordSanctify = { color = bar.holyWordSanctify, enabled = enabled }
+			bar.holyWordSanctifyEnabled = nil
+		end
+		if type(bar.holyWordSerenity) == "string" then
+			local enabled = bar.holyWordSerenityEnabled
+			if enabled == nil then enabled = true end
+			bar.holyWordSerenity = { color = bar.holyWordSerenity, enabled = enabled }
+			bar.holyWordSerenityEnabled = nil
+		end
+	end
+
+	-- Priest Holy colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.holy ~= nil and
+		TwintopInsanityBarSettings.priest.holy.colors ~= nil and
+		TwintopInsanityBarSettings.priest.holy.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.priest.holy.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.holyWordSerenity) == "string" then
+			local enabled = cp.holyWordSerenityEnabled
+			if enabled == nil then enabled = true end
+			cp.holyWordSerenity = { color = cp.holyWordSerenity, enabled = enabled }
+			cp.holyWordSerenityEnabled = nil
+		end
+		if type(cp.holyWordSanctify) == "string" then
+			local enabled = cp.holyWordSanctifyEnabled
+			if enabled == nil then enabled = true end
+			cp.holyWordSanctify = { color = cp.holyWordSanctify, enabled = enabled }
+			cp.holyWordSanctifyEnabled = nil
+		end
+		if type(cp.holyWordChastise) == "string" then
+			local enabled = cp.holyWordChastiseEnabled
+			if enabled == nil then enabled = true end
+			cp.holyWordChastise = { color = cp.holyWordChastise, enabled = enabled }
+			cp.holyWordChastiseEnabled = nil
+		end
+		if type(cp.completeCooldown) == "string" then
+			local enabled = cp.completeCooldownEnabled
+			if enabled == nil then enabled = true end
+			cp.completeCooldown = { color = cp.completeCooldown, enabled = enabled }
+			cp.completeCooldownEnabled = nil
+		end
+		if type(cp.sacredReverence) == "string" then
+			local enabled = cp.sacredReverenceEnabled
+			if enabled == nil then enabled = true end
+			cp.sacredReverence = { color = cp.sacredReverence, enabled = enabled }
+			cp.sacredReverenceEnabled = nil
+		end
+	end
+
+	-- Priest Discipline colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.discipline ~= nil and
+		TwintopInsanityBarSettings.priest.discipline.colors ~= nil and
+		TwintopInsanityBarSettings.priest.discipline.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.priest.discipline.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.surgeOfLight) == "string" then
+			local enabled = bar.surgeOfLightBorderChange1
+			if enabled == nil then enabled = true end
+			bar.surgeOfLight = { color = bar.surgeOfLight, enabled = enabled }
+			bar.surgeOfLightBorderChange1 = nil
+		end
+		if type(bar.shadowCovenant) == "string" then
+			local enabled = bar.shadowCovenantBorderChange
+			if enabled == nil then enabled = true end
+			bar.shadowCovenant = { color = bar.shadowCovenant, enabled = enabled }
+			bar.shadowCovenantBorderChange = nil
+		end
+	end
+
+	-- Priest Discipline colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.discipline ~= nil and
+		TwintopInsanityBarSettings.priest.discipline.colors ~= nil and
+		TwintopInsanityBarSettings.priest.discipline.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.priest.discipline.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.powerWordRadiance) == "string" then
+			local enabled = cp.powerWordRadianceEnabled
+			if enabled == nil then enabled = true end
+			cp.powerWordRadiance = { color = cp.powerWordRadiance, enabled = enabled }
+			cp.powerWordRadianceEnabled = nil
+		end
+	end
+
+	-- Priest Shadow colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.shadow ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.colors ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.priest.shadow.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.borderMindFlayInsanity) == "string" then
+			local enabled = bar.mindFlayInsanityBorderChange
+			if enabled == nil then enabled = true end
+			bar.borderMindFlayInsanity = { color = bar.borderMindFlayInsanity, enabled = enabled }
+			bar.mindFlayInsanityBorderChange = nil
+		end
+		if type(bar.shadowWordMadnessUsable) == "string" then
+			bar.shadowWordMadnessUsable = { color = bar.shadowWordMadnessUsable }
+		end
+		if type(bar.shadowWordMadnessUsableCasting) == "string" then
+			bar.shadowWordMadnessUsableCasting = { color = bar.shadowWordMadnessUsableCasting }
+		end
+		if type(bar.critMindBlast) == "string" then
+			local enabled = bar.critMindBlastEnabled
+			if enabled == nil then enabled = true end
+			bar.critMindBlast = { color = bar.critMindBlast, enabled = enabled }
+			bar.critMindBlastEnabled = nil
+		end
+		if type(bar.instantMindBlast) == "string" then
+			local enabled = bar.instantMindBlastEnabled
+			if enabled == nil then enabled = true end
+			bar.instantMindBlast = { color = bar.instantMindBlast, enabled = enabled }
+			bar.instantMindBlastEnabled = nil
+		end
+		if type(bar.mindDevourer) == "string" then
+			local enabled = bar.mindDevourerEnabled
+			if enabled == nil then enabled = true end
+			bar.mindDevourer = { color = bar.mindDevourer, enabled = enabled }
+			bar.mindDevourerEnabled = nil
+		end
+		if type(bar.entropicRift) == "string" then
+			local enabled = bar.entropicRiftEnabled
+			if enabled == nil then enabled = true end
+			bar.entropicRift = { color = bar.entropicRift, enabled = enabled }
+			bar.entropicRiftEnabled = nil
+		end
+		if type(bar.inVoidform) == "string" then
+			bar.inVoidform = { color = bar.inVoidform }
+		end
+		if type(bar.inVoidform1GCD) == "string" then
+			bar.inVoidform1GCD = { color = bar.inVoidform1GCD }
+		end
+	end
+
+	-- Druid Balance colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.balance ~= nil and
+		TwintopInsanityBarSettings.druid.balance.colors ~= nil and
+		TwintopInsanityBarSettings.druid.balance.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.druid.balance.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.lunar) == "string" then
+			bar.lunar = { color = bar.lunar }
+		end
+		if type(bar.solar) == "string" then
+			bar.solar = { color = bar.solar }
+		end
+		if type(bar.celestial) == "string" then
+			bar.celestial = { color = bar.celestial }
+		end
+		if type(bar.eclipse1GCD) == "string" then
+			bar.eclipse1GCD = { color = bar.eclipse1GCD }
+		end
+	end
+
+	-- Druid Feral colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.feral ~= nil and
+		TwintopInsanityBarSettings.druid.feral.colors ~= nil and
+		TwintopInsanityBarSettings.druid.feral.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.druid.feral.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.borderStealth) == "string" then
+			bar.borderStealth = { color = bar.borderStealth }
+		end
+		if type(bar.clearcasting) == "string" then
+			bar.clearcasting = { color = bar.clearcasting }
+		end
+		if type(bar.maxBite) == "string" then
+			bar.maxBite = { color = bar.maxBite }
+		end
+		if type(bar.apexPredator) == "string" then
+			bar.apexPredator = { color = bar.apexPredator }
+		end
+	end
+
+	-- Druid Feral colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.feral ~= nil and
+		TwintopInsanityBarSettings.druid.feral.colors ~= nil and
+		TwintopInsanityBarSettings.druid.feral.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.druid.feral.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Druid Guardian colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.guardian ~= nil and
+		TwintopInsanityBarSettings.druid.guardian.colors ~= nil and
+		TwintopInsanityBarSettings.druid.guardian.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.druid.guardian.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.berserk) == "string" then
+			local enabled = bar.berserkEnabled
+			if enabled == nil then enabled = true end
+			bar.berserk = { color = bar.berserk, enabled = enabled }
+			bar.berserkEnabled = nil
+		end
+		if type(bar.berserkEnd) == "string" then
+			bar.berserkEnd = { color = bar.berserkEnd }
+		end
+	end
+
+	-- Druid Restoration colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.restoration ~= nil and
+		TwintopInsanityBarSettings.druid.restoration.colors ~= nil and
+		TwintopInsanityBarSettings.druid.restoration.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.druid.restoration.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.noEfflorescence) == "string" then
+			bar.noEfflorescence = { color = bar.noEfflorescence }
+		end
+		if type(bar.clearcasting) == "string" then
+			bar.clearcasting = { color = bar.clearcasting }
+		end
+		if type(bar.incarnation) == "string" then
+			bar.incarnation = { color = bar.incarnation }
+		end
+		if type(bar.incarnationEnd) == "string" then
+			bar.incarnationEnd = { color = bar.incarnationEnd }
+		end
+	end
+
+	-- Death Knight Blood colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.deathknight ~= nil and
+		TwintopInsanityBarSettings.deathknight.blood ~= nil and
+		TwintopInsanityBarSettings.deathknight.blood.colors ~= nil and
+		TwintopInsanityBarSettings.deathknight.blood.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.deathknight.blood.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+	end
+
+	-- Death Knight Blood colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.deathknight ~= nil and
+		TwintopInsanityBarSettings.deathknight.blood ~= nil and
+		TwintopInsanityBarSettings.deathknight.blood.colors ~= nil and
+		TwintopInsanityBarSettings.deathknight.blood.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.deathknight.blood.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.cooldown) == "string" then
+			cp.cooldown = { color = cp.cooldown }
+		end
+		if type(cp.overcap) == "string" then
+			local enabled = cp.overcapEnabled
+			if enabled == nil then enabled = false end
+			cp.overcap = { color = cp.overcap, enabled = enabled }
+			cp.overcapEnabled = nil
+		end
+	end
+
+	-- Death Knight Frost colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.deathknight ~= nil and
+		TwintopInsanityBarSettings.deathknight.frost ~= nil and
+		TwintopInsanityBarSettings.deathknight.frost.colors ~= nil and
+		TwintopInsanityBarSettings.deathknight.frost.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.deathknight.frost.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+	end
+
+	-- Death Knight Frost colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.deathknight ~= nil and
+		TwintopInsanityBarSettings.deathknight.frost ~= nil and
+		TwintopInsanityBarSettings.deathknight.frost.colors ~= nil and
+		TwintopInsanityBarSettings.deathknight.frost.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.deathknight.frost.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.cooldown) == "string" then
+			cp.cooldown = { color = cp.cooldown }
+		end
+		if type(cp.overcap) == "string" then
+			local enabled = cp.overcapEnabled
+			if enabled == nil then enabled = false end
+			cp.overcap = { color = cp.overcap, enabled = enabled }
+			cp.overcapEnabled = nil
+		end
+	end
+
+	-- Death Knight Unholy colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.deathknight ~= nil and
+		TwintopInsanityBarSettings.deathknight.unholy ~= nil and
+		TwintopInsanityBarSettings.deathknight.unholy.colors ~= nil and
+		TwintopInsanityBarSettings.deathknight.unholy.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.deathknight.unholy.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+	end
+
+	-- Death Knight Unholy colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.deathknight ~= nil and
+		TwintopInsanityBarSettings.deathknight.unholy ~= nil and
+		TwintopInsanityBarSettings.deathknight.unholy.colors ~= nil and
+		TwintopInsanityBarSettings.deathknight.unholy.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.deathknight.unholy.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.cooldown) == "string" then
+			cp.cooldown = { color = cp.cooldown }
+		end
+		if type(cp.overcap) == "string" then
+			local enabled = cp.overcapEnabled
+			if enabled == nil then enabled = false end
+			cp.overcap = { color = cp.overcap, enabled = enabled }
+			cp.overcapEnabled = nil
+		end
+	end
+
+	-- Demon Hunter Havoc colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.colors ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.demonhunter.havoc.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.metamorphosis) == "string" then
+			bar.metamorphosis = { color = bar.metamorphosis }
+		end
+		if type(bar.metamorphosisEnding) == "string" then
+			bar.metamorphosisEnding = { color = bar.metamorphosisEnding }
+		end
+	end
+
+	-- Demon Hunter Vengeance colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.colors ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.metamorphosis) == "string" then
+			bar.metamorphosis = { color = bar.metamorphosis }
+		end
+		if type(bar.metamorphosisEnding) == "string" then
+			bar.metamorphosisEnding = { color = bar.metamorphosisEnding }
+		end
+	end
+
+	-- Demon Hunter Vengeance colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.colors ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.demonhunter.vengeance.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Demon Hunter Devourer colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.colors ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.demonhunter.devourer.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.voidMetamorphosis) == "string" then
+			local enabled = bar.voidMetamorphosisEnabled
+			if enabled == nil then enabled = true end
+			bar.voidMetamorphosis = { color = bar.voidMetamorphosis, enabled = enabled }
+			bar.voidMetamorphosisEnabled = nil
+		end
+	end
+
+	-- Demon Hunter Devourer colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.colors ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.demonhunter.devourer.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+		if type(cp.voidMetamorphosisReady) == "string" then
+			local enabled = cp.voidMetamorphosisReadyEnabled
+			if enabled == nil then enabled = true end
+			cp.voidMetamorphosisReady = { color = cp.voidMetamorphosisReady, enabled = enabled }
+			cp.voidMetamorphosisReadyEnabled = nil
+		end
+		if type(cp.collapsingStar) == "string" then
+			cp.collapsingStar = { color = cp.collapsingStar }
+		end
+		if type(cp.collapsingStarReady) == "string" then
+			local enabled = cp.collapsingStarReadyEnabled
+			if enabled == nil then enabled = true end
+			cp.collapsingStarReady = { color = cp.collapsingStarReady, enabled = enabled }
+			cp.collapsingStarReadyEnabled = nil
+		end
+	end
+
+	-- Evoker Devastation colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.evoker.devastation.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.dragonrage) == "string" then
+			local enabled = bar.dragonrageEnabled
+			if enabled == nil then enabled = true end
+			bar.dragonrage = { color = bar.dragonrage, enabled = enabled }
+			bar.dragonrageEnabled = nil
+		end
+		if type(bar.dragonrageEnd) == "string" then
+			bar.dragonrageEnd = { color = bar.dragonrageEnd }
+		end
+		if type(bar.essenceBurst) == "string" then
+			local enabled = bar.essenceBurstEnabled
+			if enabled == nil then enabled = true end
+			bar.essenceBurst = { color = bar.essenceBurst, enabled = enabled }
+			bar.essenceBurstEnabled = nil
+		end
+	end
+
+	-- Evoker Devastation colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.evoker.devastation.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Evoker Preservation colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.evoker.preservation.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.innervate) == "string" then
+			bar.innervate = { color = bar.innervate }
+		end
+		if type(bar.essenceBurst) == "string" then
+			local enabled = bar.essenceBurstEnabled
+			if enabled == nil then enabled = true end
+			bar.essenceBurst = { color = bar.essenceBurst, enabled = enabled }
+			bar.essenceBurstEnabled = nil
+		end
+	end
+
+	-- Evoker Preservation colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.evoker.preservation.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Evoker Augmentation colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.evoker.augmentation.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.inEbonMight) == "string" then
+			local enabled = bar.inEbonMightEnabled
+			if enabled == nil then enabled = true end
+			bar.inEbonMight = { color = bar.inEbonMight, enabled = enabled }
+			bar.inEbonMightEnabled = nil
+		end
+		if type(bar.inEbonMight1GCD) == "string" then
+			local enabled = bar.inEbonMight1GCDEnabled
+			if enabled == nil then enabled = true end
+			bar.inEbonMight1GCD = { color = bar.inEbonMight1GCD, enabled = enabled }
+			bar.inEbonMight1GCDEnabled = nil
+		end
+		if type(bar.ebonMightDropDuringCast) == "string" then
+			local enabled = bar.ebonMightDropDuringCastEnabled
+			if enabled == nil then enabled = true end
+			bar.ebonMightDropDuringCast = { color = bar.ebonMightDropDuringCast, enabled = enabled }
+			bar.ebonMightDropDuringCastEnabled = nil
+		end
+		if type(bar.essenceBurst) == "string" then
+			local enabled = bar.essenceBurstEnabled
+			if enabled == nil then enabled = true end
+			bar.essenceBurst = { color = bar.essenceBurst, enabled = enabled }
+			bar.essenceBurstEnabled = nil
+		end
+	end
+
+	-- Evoker Augmentation colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.evoker.augmentation.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Hunter Beast Mastery colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery.colors ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.hunter.beastMastery.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.beastCleave) == "string" then
+			local enabled = bar.beastCleaveEnabled
+			if enabled == nil then enabled = true end
+			bar.beastCleave = { color = bar.beastCleave, enabled = enabled }
+			bar.beastCleaveEnabled = nil
+		end
+		if type(bar.bestialWrath) == "string" then
+			local enabled = bar.bestialWrathEnabled
+			if enabled == nil then enabled = true end
+			bar.bestialWrath = { color = bar.bestialWrath, enabled = enabled }
+			bar.bestialWrathEnabled = nil
+		end
+		if type(bar.bestialWrathEnd) == "string" then
+			bar.bestialWrathEnd = { color = bar.bestialWrathEnd }
+		end
+	end
+
+	-- Hunter Marksmanship colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship.colors ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.hunter.marksmanship.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.trueshot) == "string" then
+			bar.trueshot = { color = bar.trueshot }
+		end
+		if type(bar.trueshotEnding) == "string" then
+			bar.trueshotEnding = { color = bar.trueshotEnding }
+		end
+	end
+
+	-- Hunter Survival colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.survival ~= nil and
+		TwintopInsanityBarSettings.hunter.survival.colors ~= nil and
+		TwintopInsanityBarSettings.hunter.survival.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.hunter.survival.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.takedown) == "string" then
+			local enabled = bar.takedownEnabled
+			if enabled == nil then enabled = true end
+			bar.takedown = { color = bar.takedown, enabled = enabled }
+			bar.takedownEnabled = nil
+		end
+		if type(bar.takedownEnd) == "string" then
+			bar.takedownEnd = { color = bar.takedownEnd }
+		end
+	end
+
+	-- Mage Arcane colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.mage ~= nil and
+		TwintopInsanityBarSettings.mage.arcane ~= nil and
+		TwintopInsanityBarSettings.mage.arcane.colors ~= nil and
+		TwintopInsanityBarSettings.mage.arcane.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.mage.arcane.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+	end
+
+	-- Mage Arcane colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.mage ~= nil and
+		TwintopInsanityBarSettings.mage.arcane ~= nil and
+		TwintopInsanityBarSettings.mage.arcane.colors ~= nil and
+		TwintopInsanityBarSettings.mage.arcane.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.mage.arcane.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Mage Fire colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.mage ~= nil and
+		TwintopInsanityBarSettings.mage.fire ~= nil and
+		TwintopInsanityBarSettings.mage.fire.colors ~= nil and
+		TwintopInsanityBarSettings.mage.fire.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.mage.fire.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+	end
+
+	-- Mage Frost colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.mage ~= nil and
+		TwintopInsanityBarSettings.mage.frost ~= nil and
+		TwintopInsanityBarSettings.mage.frost.colors ~= nil and
+		TwintopInsanityBarSettings.mage.frost.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.mage.frost.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+	end
+
+	-- Monk Brewmaster colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.monk ~= nil and
+		TwintopInsanityBarSettings.monk.brewmaster ~= nil and
+		TwintopInsanityBarSettings.monk.brewmaster.colors ~= nil and
+		TwintopInsanityBarSettings.monk.brewmaster.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.monk.brewmaster.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.invokeNiuzao) == "string" then
+			local enabled = bar.invokeNiuzaoEnabled
+			if enabled == nil then enabled = true end
+			bar.invokeNiuzao = { color = bar.invokeNiuzao, enabled = enabled }
+			bar.invokeNiuzaoEnabled = nil
+		end
+		if type(bar.invokeNiuzaoEnd) == "string" then
+			bar.invokeNiuzaoEnd = { color = bar.invokeNiuzaoEnd }
+		end
+	end
+
+	-- Monk Mistweaver colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.monk ~= nil and
+		TwintopInsanityBarSettings.monk.mistweaver ~= nil and
+		TwintopInsanityBarSettings.monk.mistweaver.colors ~= nil and
+		TwintopInsanityBarSettings.monk.mistweaver.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.monk.mistweaver.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.vivaciousVivification) == "string" then
+			local enabled = bar.vivaciousVivificationEnabled
+			if enabled == nil then enabled = true end
+			bar.vivaciousVivification = { color = bar.vivaciousVivification, enabled = enabled }
+			bar.vivaciousVivificationEnabled = nil
+		end
+		if type(bar.heartOfTheJadeSerpentReady) == "string" then
+			local enabled = bar.heartOfTheJadeSerpentReadyEnabled
+			if enabled == nil then enabled = true end
+			bar.heartOfTheJadeSerpentReady = { color = bar.heartOfTheJadeSerpentReady, enabled = enabled }
+			bar.heartOfTheJadeSerpentReadyEnabled = nil
+		end
+		if type(bar.heartOfTheJadeSerpent) == "string" then
+			local enabled = bar.heartOfTheJadeSerpentEnabled
+			if enabled == nil then enabled = true end
+			bar.heartOfTheJadeSerpent = { color = bar.heartOfTheJadeSerpent, enabled = enabled }
+			bar.heartOfTheJadeSerpentEnabled = nil
+		end
+	end
+
+	-- Monk Windwalker colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.monk ~= nil and
+		TwintopInsanityBarSettings.monk.windwalker ~= nil and
+		TwintopInsanityBarSettings.monk.windwalker.colors ~= nil and
+		TwintopInsanityBarSettings.monk.windwalker.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.monk.windwalker.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.borderChiJi) == "string" then
+			bar.borderChiJi = { color = bar.borderChiJi }
+		end
+		if type(bar.heartOfTheJadeSerpentReady) == "string" then
+			local enabled = bar.heartOfTheJadeSerpentReadyEnabled
+			if enabled == nil then enabled = true end
+			bar.heartOfTheJadeSerpentReady = { color = bar.heartOfTheJadeSerpentReady, enabled = enabled }
+			bar.heartOfTheJadeSerpentReadyEnabled = nil
+		end
+		if type(bar.heartOfTheJadeSerpent) == "string" then
+			local enabled = bar.heartOfTheJadeSerpentEnabled
+			if enabled == nil then enabled = true end
+			bar.heartOfTheJadeSerpent = { color = bar.heartOfTheJadeSerpent, enabled = enabled }
+			bar.heartOfTheJadeSerpentEnabled = nil
+		end
+	end
+
+	-- Monk Windwalker colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.monk ~= nil and
+		TwintopInsanityBarSettings.monk.windwalker ~= nil and
+		TwintopInsanityBarSettings.monk.windwalker.colors ~= nil and
+		TwintopInsanityBarSettings.monk.windwalker.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.monk.windwalker.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Paladin Holy colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.paladin ~= nil and
+		TwintopInsanityBarSettings.paladin.holy ~= nil and
+		TwintopInsanityBarSettings.paladin.holy.colors ~= nil and
+		TwintopInsanityBarSettings.paladin.holy.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.paladin.holy.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.infusionOfLight) == "string" then
+			local enabled = bar.infusionOfLightEnabled
+			if enabled == nil then enabled = true end
+			bar.infusionOfLight = { color = bar.infusionOfLight, enabled = enabled }
+			bar.infusionOfLightEnabled = nil
+		end
+	end
+
+	-- Paladin Holy colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.paladin ~= nil and
+		TwintopInsanityBarSettings.paladin.holy ~= nil and
+		TwintopInsanityBarSettings.paladin.holy.colors ~= nil and
+		TwintopInsanityBarSettings.paladin.holy.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.paladin.holy.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Paladin Protection colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.paladin ~= nil and
+		TwintopInsanityBarSettings.paladin.protection ~= nil and
+		TwintopInsanityBarSettings.paladin.protection.colors ~= nil and
+		TwintopInsanityBarSettings.paladin.protection.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.paladin.protection.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+	end
+
+	-- Paladin Protection colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.paladin ~= nil and
+		TwintopInsanityBarSettings.paladin.protection ~= nil and
+		TwintopInsanityBarSettings.paladin.protection.colors ~= nil and
+		TwintopInsanityBarSettings.paladin.protection.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.paladin.protection.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Paladin Retribution colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.paladin ~= nil and
+		TwintopInsanityBarSettings.paladin.retribution ~= nil and
+		TwintopInsanityBarSettings.paladin.retribution.colors ~= nil and
+		TwintopInsanityBarSettings.paladin.retribution.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.paladin.retribution.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+	end
+
+	-- Paladin Retribution colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.paladin ~= nil and
+		TwintopInsanityBarSettings.paladin.retribution ~= nil and
+		TwintopInsanityBarSettings.paladin.retribution.colors ~= nil and
+		TwintopInsanityBarSettings.paladin.retribution.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.paladin.retribution.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Rogue Assassination colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.rogue ~= nil and
+		TwintopInsanityBarSettings.rogue.assassination ~= nil and
+		TwintopInsanityBarSettings.rogue.assassination.colors ~= nil and
+		TwintopInsanityBarSettings.rogue.assassination.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.rogue.assassination.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.borderStealth) == "string" then
+			bar.borderStealth = { color = bar.borderStealth }
+		end
+	end
+
+	-- Rogue Assassination colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.rogue ~= nil and
+		TwintopInsanityBarSettings.rogue.assassination ~= nil and
+		TwintopInsanityBarSettings.rogue.assassination.colors ~= nil and
+		TwintopInsanityBarSettings.rogue.assassination.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.rogue.assassination.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+		if type(cp.echoingReprimand) == "string" then
+			cp.echoingReprimand = { color = cp.echoingReprimand }
+		end
+	end
+
+	-- Rogue Outlaw colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.rogue ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw.colors ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.rogue.outlaw.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.borderStealth) == "string" then
+			bar.borderStealth = { color = bar.borderStealth }
+		end
+		if type(bar.borderRtbBad) == "string" then
+			bar.borderRtbBad = { color = bar.borderRtbBad }
+		end
+		if type(bar.borderRtbGood) == "string" then
+			bar.borderRtbGood = { color = bar.borderRtbGood }
+		end
+	end
+
+	-- Rogue Outlaw colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.rogue ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw.colors ~= nil and
+		TwintopInsanityBarSettings.rogue.outlaw.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.rogue.outlaw.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+		if type(cp.echoingReprimand) == "string" then
+			cp.echoingReprimand = { color = cp.echoingReprimand }
+		end
+	end
+
+	-- Rogue Subtlety colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.rogue ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety.colors ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.rogue.subtlety.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.borderStealth) == "string" then
+			bar.borderStealth = { color = bar.borderStealth }
+		end
+		if type(bar.borderShadowcraft) == "string" then
+			bar.borderShadowcraft = { color = bar.borderShadowcraft }
+		end
+	end
+
+	-- Rogue Subtlety colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.rogue ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety.colors ~= nil and
+		TwintopInsanityBarSettings.rogue.subtlety.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.rogue.subtlety.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+		if type(cp.echoingReprimand) == "string" then
+			cp.echoingReprimand = { color = cp.echoingReprimand }
+		end
+		if type(cp.shadowTechniques) == "string" then
+			cp.shadowTechniques = { color = cp.shadowTechniques }
+		end
+	end
+
+	-- Shaman Elemental colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental.colors ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.shaman.elemental.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.earthShock) == "string" then
+			bar.earthShock = { color = bar.earthShock }
+		end
+		if type(bar.inAscendance) == "string" then
+			bar.inAscendance = { color = bar.inAscendance }
+		end
+		if type(bar.inAscendance1GCD) == "string" then
+			bar.inAscendance1GCD = { color = bar.inAscendance1GCD }
+		end
+	end
+
+	-- Shaman Enhancement colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement.colors ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.shaman.enhancement.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.inAscendance) == "string" then
+			bar.inAscendance = { color = bar.inAscendance }
+		end
+		if type(bar.inAscendance1GCD) == "string" then
+			bar.inAscendance1GCD = { color = bar.inAscendance1GCD }
+		end
+	end
+
+	-- Shaman Enhancement colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement.colors ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.shaman.enhancement.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.overflowBase) == "string" then
+			cp.overflowBase = { color = cp.overflowBase }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Shaman Restoration colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration.colors ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.shaman.restoration.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.inAscendance) == "string" then
+			bar.inAscendance = { color = bar.inAscendance }
+		end
+		if type(bar.inAscendance1GCD) == "string" then
+			bar.inAscendance1GCD = { color = bar.inAscendance1GCD }
+		end
+	end
+
+	-- Warlock Affliction colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warlock ~= nil and
+		TwintopInsanityBarSettings.warlock.affliction ~= nil and
+		TwintopInsanityBarSettings.warlock.affliction.colors ~= nil and
+		TwintopInsanityBarSettings.warlock.affliction.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.warlock.affliction.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+	end
+
+	-- Warlock Affliction colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warlock ~= nil and
+		TwintopInsanityBarSettings.warlock.affliction ~= nil and
+		TwintopInsanityBarSettings.warlock.affliction.colors ~= nil and
+		TwintopInsanityBarSettings.warlock.affliction.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.warlock.affliction.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Warlock Demonology colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warlock ~= nil and
+		TwintopInsanityBarSettings.warlock.demonology ~= nil and
+		TwintopInsanityBarSettings.warlock.demonology.colors ~= nil and
+		TwintopInsanityBarSettings.warlock.demonology.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.warlock.demonology.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+	end
+
+	-- Warlock Demonology colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warlock ~= nil and
+		TwintopInsanityBarSettings.warlock.demonology ~= nil and
+		TwintopInsanityBarSettings.warlock.demonology.colors ~= nil and
+		TwintopInsanityBarSettings.warlock.demonology.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.warlock.demonology.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Warlock Destruction colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warlock ~= nil and
+		TwintopInsanityBarSettings.warlock.destruction ~= nil and
+		TwintopInsanityBarSettings.warlock.destruction.colors ~= nil and
+		TwintopInsanityBarSettings.warlock.destruction.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.warlock.destruction.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+	end
+
+	-- Warlock Destruction colors.comboPoints migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warlock ~= nil and
+		TwintopInsanityBarSettings.warlock.destruction ~= nil and
+		TwintopInsanityBarSettings.warlock.destruction.colors ~= nil and
+		TwintopInsanityBarSettings.warlock.destruction.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.warlock.destruction.colors.comboPoints
+		if type(cp.base) == "string" then
+			cp.base = { color = cp.base }
+		end
+		if type(cp.border) == "string" then
+			cp.border = { color = cp.border }
+		end
+		if type(cp.background) == "string" then
+			cp.background = { color = cp.background }
+		end
+		if type(cp.penultimate) == "string" then
+			cp.penultimate = { color = cp.penultimate }
+		end
+		if type(cp.final) == "string" then
+			cp.final = { color = cp.final }
+		end
+	end
+
+	-- Warrior Arms colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warrior ~= nil and
+		TwintopInsanityBarSettings.warrior.arms ~= nil and
+		TwintopInsanityBarSettings.warrior.arms.colors ~= nil and
+		TwintopInsanityBarSettings.warrior.arms.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.warrior.arms.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+	end
+
+	-- Warrior Fury colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warrior ~= nil and
+		TwintopInsanityBarSettings.warrior.fury ~= nil and
+		TwintopInsanityBarSettings.warrior.fury.colors ~= nil and
+		TwintopInsanityBarSettings.warrior.fury.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.warrior.fury.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+		if type(bar.enrage) == "string" then
+			bar.enrage = { color = bar.enrage }
+		end
+	end
+
+	-- Warrior Protection colors.bar migration from flat string to table format
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warrior ~= nil and
+		TwintopInsanityBarSettings.warrior.protection ~= nil and
+		TwintopInsanityBarSettings.warrior.protection.colors ~= nil and
+		TwintopInsanityBarSettings.warrior.protection.colors.bar ~= nil then
+		local bar = TwintopInsanityBarSettings.warrior.protection.colors.bar
+		if type(bar.base) == "string" then
+			bar.base = { color = bar.base }
+		end
+		if type(bar.border) == "string" then
+			bar.border = { color = bar.border }
+		end
+		if type(bar.background) == "string" then
+			bar.background = { color = bar.background }
+		end
+		if type(bar.borderOvercap) == "string" then
+			local enabled = bar.overcapEnabled or bar.borderOvercapEnabled
+			if enabled == nil then enabled = true end
+			bar.borderOvercap = { color = bar.borderOvercap, enabled = enabled }
+			bar.overcapEnabled = nil
+			bar.borderOvercapEnabled = nil
+		end
+	end
+
+	-- Port forward endOfMetamorphosis to endOf.metamorphosis for Demon Hunter Havoc
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.endOf == nil then
+
+		TwintopInsanityBarSettings.demonhunter.havoc.endOf = {
+			metamorphosis = TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis
+		}
+		TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis = nil
+
+		-- Migrate color key: metamorphosisEnding -> metamorphosisEnd
+		if TwintopInsanityBarSettings.demonhunter.havoc.colors and
+			TwintopInsanityBarSettings.demonhunter.havoc.colors.bar and
+			TwintopInsanityBarSettings.demonhunter.havoc.colors.bar.metamorphosisEnding ~= nil then
+			TwintopInsanityBarSettings.demonhunter.havoc.colors.bar.metamorphosisEnd =
+				TwintopInsanityBarSettings.demonhunter.havoc.colors.bar.metamorphosisEnding
+			TwintopInsanityBarSettings.demonhunter.havoc.colors.bar.metamorphosisEnding = nil
+		end
+	end
+
+	-- Port forward endOfMetamorphosis to endOf.metamorphosis for Demon Hunter Vengeance
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOf == nil then
+
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOf = {
+			metamorphosis = TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis
+		}
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis = nil
+
+		-- Migrate color key: metamorphosisEnding -> metamorphosisEnd
+		if TwintopInsanityBarSettings.demonhunter.vengeance.colors and
+			TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar and
+			TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar.metamorphosisEnding ~= nil then
+			TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar.metamorphosisEnd =
+				TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar.metamorphosisEnding
+			TwintopInsanityBarSettings.demonhunter.vengeance.colors.bar.metamorphosisEnding = nil
+		end
+	end
+
+	-- Cleanup: Remove orphaned endOfMetamorphosis if endOf already exists (Havoc)
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.endOf ~= nil then
+		TwintopInsanityBarSettings.demonhunter.havoc.endOfMetamorphosis = nil
+	end
+
+	-- Cleanup: Remove orphaned endOfMetamorphosis if endOf already exists (Vengeance)
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOf ~= nil then
+		TwintopInsanityBarSettings.demonhunter.vengeance.endOfMetamorphosis = nil
+	end
+
+	-- Port forward endOfMetamorphosis to endOf.metamorphosis for Demon Hunter Devourer
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.endOf == nil then
+
+		TwintopInsanityBarSettings.demonhunter.devourer.endOf = {
+			metamorphosis = TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis
+		}
+		TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis = nil
+	end
+
+	-- Cleanup: Remove orphaned endOfMetamorphosis if endOf already exists (Devourer)
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis ~= nil and
+		TwintopInsanityBarSettings.demonhunter.devourer.endOf ~= nil then
+		TwintopInsanityBarSettings.demonhunter.devourer.endOfMetamorphosis = nil
+	end
+
+	-- Port forward endOfBestialWrath to endOf.bestialWrath for Hunter Beast Mastery
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery.endOfBestialWrath ~= nil and
+		TwintopInsanityBarSettings.hunter.beastMastery.endOf == nil then
+
+		TwintopInsanityBarSettings.hunter.beastMastery.endOf = {
+			bestialWrath = TwintopInsanityBarSettings.hunter.beastMastery.endOfBestialWrath
+		}
+		TwintopInsanityBarSettings.hunter.beastMastery.endOfBestialWrath = nil
+		-- Note: bestialWrathEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfTrueshot to endOf.trueshot for Hunter Marksmanship
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship.endOfTrueshot ~= nil and
+		TwintopInsanityBarSettings.hunter.marksmanship.endOf == nil then
+
+		TwintopInsanityBarSettings.hunter.marksmanship.endOf = {
+			trueshot = TwintopInsanityBarSettings.hunter.marksmanship.endOfTrueshot
+		}
+		TwintopInsanityBarSettings.hunter.marksmanship.endOfTrueshot = nil
+
+		-- Migrate color key: trueshotEnding -> trueshotEnd
+		if TwintopInsanityBarSettings.hunter.marksmanship.colors and
+			TwintopInsanityBarSettings.hunter.marksmanship.colors.bar and
+			TwintopInsanityBarSettings.hunter.marksmanship.colors.bar.trueshotEnding ~= nil then
+			TwintopInsanityBarSettings.hunter.marksmanship.colors.bar.trueshotEnd =
+				TwintopInsanityBarSettings.hunter.marksmanship.colors.bar.trueshotEnding
+			TwintopInsanityBarSettings.hunter.marksmanship.colors.bar.trueshotEnding = nil
+		end
+	end
+
+	-- Port forward endOfTakedown to endOf.takedown for Hunter Survival
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.hunter ~= nil and
+		TwintopInsanityBarSettings.hunter.survival ~= nil and
+		TwintopInsanityBarSettings.hunter.survival.endOfTakedown ~= nil and
+		TwintopInsanityBarSettings.hunter.survival.endOf == nil then
+
+		TwintopInsanityBarSettings.hunter.survival.endOf = {
+			takedown = TwintopInsanityBarSettings.hunter.survival.endOfTakedown
+		}
+		TwintopInsanityBarSettings.hunter.survival.endOfTakedown = nil
+		-- Note: takedownEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfAscendance to endOf.ascendance for Shaman Elemental
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental.endOfAscendance ~= nil and
+		TwintopInsanityBarSettings.shaman.elemental.endOf == nil then
+
+		TwintopInsanityBarSettings.shaman.elemental.endOf = {
+			ascendance = TwintopInsanityBarSettings.shaman.elemental.endOfAscendance
+		}
+		TwintopInsanityBarSettings.shaman.elemental.endOfAscendance = nil
+
+		-- Migrate color keys: inAscendance -> ascendance, inAscendance1GCD -> ascendanceEnd
+		if TwintopInsanityBarSettings.shaman.elemental.colors and
+			TwintopInsanityBarSettings.shaman.elemental.colors.bar then
+			local bar = TwintopInsanityBarSettings.shaman.elemental.colors.bar
+			if bar.inAscendance ~= nil then
+				bar.ascendance = bar.inAscendance
+				bar.inAscendance = nil
+			end
+			if bar.inAscendance1GCD ~= nil then
+				bar.ascendanceEnd = bar.inAscendance1GCD
+				bar.inAscendance1GCD = nil
+			end
+		end
+	end
+
+	-- Port forward endOfAscendance to endOf.ascendance for Shaman Enhancement
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement.endOfAscendance ~= nil and
+		TwintopInsanityBarSettings.shaman.enhancement.endOf == nil then
+
+		TwintopInsanityBarSettings.shaman.enhancement.endOf = {
+			ascendance = TwintopInsanityBarSettings.shaman.enhancement.endOfAscendance
+		}
+		TwintopInsanityBarSettings.shaman.enhancement.endOfAscendance = nil
+
+		-- Migrate color keys: inAscendance -> ascendance, inAscendance1GCD -> ascendanceEnd
+		if TwintopInsanityBarSettings.shaman.enhancement.colors and
+			TwintopInsanityBarSettings.shaman.enhancement.colors.bar then
+			local bar = TwintopInsanityBarSettings.shaman.enhancement.colors.bar
+			if bar.inAscendance ~= nil then
+				bar.ascendance = bar.inAscendance
+				bar.inAscendance = nil
+			end
+			if bar.inAscendance1GCD ~= nil then
+				bar.ascendanceEnd = bar.inAscendance1GCD
+				bar.inAscendance1GCD = nil
+			end
+		end
+	end
+
+	-- Port forward endOfAscendance to endOf.ascendance for Shaman Restoration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.shaman ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration.endOfAscendance ~= nil and
+		TwintopInsanityBarSettings.shaman.restoration.endOf == nil then
+
+		TwintopInsanityBarSettings.shaman.restoration.endOf = {
+			ascendance = TwintopInsanityBarSettings.shaman.restoration.endOfAscendance
+		}
+		TwintopInsanityBarSettings.shaman.restoration.endOfAscendance = nil
+
+		-- Migrate color keys: inAscendance -> ascendance, inAscendance1GCD -> ascendanceEnd
+		if TwintopInsanityBarSettings.shaman.restoration.colors and
+			TwintopInsanityBarSettings.shaman.restoration.colors.bar then
+			local bar = TwintopInsanityBarSettings.shaman.restoration.colors.bar
+			if bar.inAscendance ~= nil then
+				bar.ascendance = bar.inAscendance
+				bar.inAscendance = nil
+			end
+			if bar.inAscendance1GCD ~= nil then
+				bar.ascendanceEnd = bar.inAscendance1GCD
+				bar.inAscendance1GCD = nil
+			end
+		end
+	end
+
+	-- Port forward endOfApotheosis to endOf.apotheosis for Priest Holy
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.holy ~= nil and
+		TwintopInsanityBarSettings.priest.holy.endOfApotheosis ~= nil and
+		TwintopInsanityBarSettings.priest.holy.endOf == nil then
+
+		TwintopInsanityBarSettings.priest.holy.endOf = {
+			apotheosis = TwintopInsanityBarSettings.priest.holy.endOfApotheosis
+		}
+		TwintopInsanityBarSettings.priest.holy.endOfApotheosis = nil
+		-- Note: apotheosisEnd already uses correct naming convention
+	end
+
+	-- Cleanup: Remove orphaned endOfApotheosis if endOf already exists
+	-- This handles the case where both old and new keys exist from prior faulty migration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.holy ~= nil and
+		TwintopInsanityBarSettings.priest.holy.endOfApotheosis ~= nil and
+		TwintopInsanityBarSettings.priest.holy.endOf ~= nil then
+		TwintopInsanityBarSettings.priest.holy.endOfApotheosis = nil
+	end
+
+	-- Port forward endOfVoidform to endOf.voidform for Priest Shadow
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.shadow ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.endOfVoidform ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.endOf == nil then
+
+		TwintopInsanityBarSettings.priest.shadow.endOf = {
+			voidform = TwintopInsanityBarSettings.priest.shadow.endOfVoidform
+		}
+		TwintopInsanityBarSettings.priest.shadow.endOfVoidform = nil
+
+		-- Migrate color keys: inVoidform -> voidform, inVoidform1GCD -> voidformEnd
+		if TwintopInsanityBarSettings.priest.shadow.colors and
+			TwintopInsanityBarSettings.priest.shadow.colors.bar then
+			local bar = TwintopInsanityBarSettings.priest.shadow.colors.bar
+			if bar.inVoidform ~= nil then
+				bar.voidform = bar.inVoidform
+				bar.inVoidform = nil
+			end
+			if bar.inVoidform1GCD ~= nil then
+				bar.voidformEnd = bar.inVoidform1GCD
+				bar.inVoidform1GCD = nil
+			end
+		end
+	end
+
+	-- Port forward endOfEclipse to endOf.eclipse for Druid Balance
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.balance ~= nil and
+		TwintopInsanityBarSettings.druid.balance.endOfEclipse ~= nil and
+		TwintopInsanityBarSettings.druid.balance.endOf == nil then
+
+		-- Preserve celestialAlignmentOnly inside the new structure
+		TwintopInsanityBarSettings.druid.balance.endOf = {
+			eclipse = TwintopInsanityBarSettings.druid.balance.endOfEclipse
+		}
+		TwintopInsanityBarSettings.druid.balance.endOfEclipse = nil
+
+		-- Migrate color key: eclipse1GCD -> eclipseEnd
+		if TwintopInsanityBarSettings.druid.balance.colors and
+			TwintopInsanityBarSettings.druid.balance.colors.bar and
+			TwintopInsanityBarSettings.druid.balance.colors.bar.eclipse1GCD ~= nil then
+			TwintopInsanityBarSettings.druid.balance.colors.bar.eclipseEnd =
+				TwintopInsanityBarSettings.druid.balance.colors.bar.eclipse1GCD
+			TwintopInsanityBarSettings.druid.balance.colors.bar.eclipse1GCD = nil
+		end
+	end
+
+	-- Port forward endOfBerserk to endOf.berserk for Druid Guardian
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.guardian ~= nil and
+		TwintopInsanityBarSettings.druid.guardian.endOfBerserk ~= nil and
+		TwintopInsanityBarSettings.druid.guardian.endOf == nil then
+
+		TwintopInsanityBarSettings.druid.guardian.endOf = {
+			berserk = TwintopInsanityBarSettings.druid.guardian.endOfBerserk
+		}
+		TwintopInsanityBarSettings.druid.guardian.endOfBerserk = nil
+		-- Note: berserkEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfIncarnation to endOf.incarnation for Druid Restoration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.restoration ~= nil and
+		TwintopInsanityBarSettings.druid.restoration.endOfIncarnation ~= nil and
+		TwintopInsanityBarSettings.druid.restoration.endOf == nil then
+
+		TwintopInsanityBarSettings.druid.restoration.endOf = {
+			incarnation = TwintopInsanityBarSettings.druid.restoration.endOfIncarnation
+		}
+		TwintopInsanityBarSettings.druid.restoration.endOfIncarnation = nil
+		-- Note: incarnationEnd already uses correct naming convention
+	end
+
+	-- Port forward endOfEbonMight to endOf.ebonMight for Evoker Augmentation
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.endOfEbonMight ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.endOf == nil then
+
+		TwintopInsanityBarSettings.evoker.augmentation.endOf = {
+			ebonMight = TwintopInsanityBarSettings.evoker.augmentation.endOfEbonMight
+		}
+		TwintopInsanityBarSettings.evoker.augmentation.endOfEbonMight = nil
+
+		-- Migrate color keys: inEbonMight -> ebonMight, inEbonMight1GCD -> ebonMightEnd
+		if TwintopInsanityBarSettings.evoker.augmentation.colors and
+			TwintopInsanityBarSettings.evoker.augmentation.colors.bar then
+			local bar = TwintopInsanityBarSettings.evoker.augmentation.colors.bar
+			if bar.inEbonMight ~= nil then
+				bar.ebonMight = bar.inEbonMight
+				bar.inEbonMight = nil
+			end
+			if bar.inEbonMight1GCD ~= nil then
+				bar.ebonMightEnd = bar.inEbonMight1GCD
+				bar.inEbonMight1GCD = nil
 			end
 		end
 	end
@@ -1939,8 +4191,7 @@ function TRB.Functions.Settings:DefaultBarDimensions(classic)
 		height = 30,
 		xPos = 0,
 		yPos = -200,
-		border = border,
-		dragAndDrop = false
+		border = border
 	}
 end
 
@@ -2246,14 +4497,23 @@ end
 ---@param mode "gcd"|"time" # Whether to use GCD count or time for the threshold
 ---@param gcdsMax number # Number of GCDs for the threshold (when mode is "gcd")
 ---@param timeMax number # Seconds for the threshold (when mode is "time")
+---@param extraOptions table? # Optional table of additional options to merge into the result
 ---@return TRB.Classes.Settings.GenericTrackingOverX
-function TRB.Functions.Settings:DefaultEndOfSettings(mode, gcdsMax, timeMax)
-	return {
+function TRB.Functions.Settings:DefaultEndOfSettings(mode, gcdsMax, timeMax, extraOptions)
+	local settings = {
 		enabled = true,
 		mode = mode or "gcd",
 		gcdsMax = gcdsMax or 2,
 		timeMax = timeMax or 3.0
 	}
+
+	if extraOptions then
+		for k, v in pairs(extraOptions) do
+			settings[k] = v
+		end
+	end
+
+	return settings
 end
 
 ---Creates a default bar text entry for buff time display with icon
@@ -2297,7 +4557,7 @@ function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, clas
 			fontJustifyHorizontal = position,
 			fontJustifyHorizontalName = fontJustifyHorizontalName,
 			fontSize = 14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = xPos,
 				yPos = 0,
@@ -2320,8 +4580,7 @@ end
 ---@return {fontFace: string, fontFaceName: string}
 function TRB.Functions.Settings:DefaultFontConstants()
 	local locale = GetLocale()
-	print("Locale detected:", locale)
-	if locale == "ruRU" then		
+	if locale == "ruRU" then
 		return {
 			fontFace = "Fonts\\FRIZQT___CYR.TTF",
 			fontFaceName = "Friz Quadrata TT",
@@ -2390,7 +4649,7 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=13,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -2414,7 +4673,7 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 2,
 				yPos = 0,
@@ -2437,7 +4696,7 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -2472,7 +4731,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=13,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -2496,7 +4755,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 2,
 				yPos = 0,
@@ -2519,7 +4778,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
-			color = "FFFFFFFF",
+			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
 				yPos = 0,
@@ -2569,7 +4828,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=20,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,
 					yPos = 0,
@@ -2594,7 +4853,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "CENTER",
 				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=16,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = 0,
 					yPos = 0,
@@ -2620,7 +4879,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,
 					yPos = 0,
@@ -2645,7 +4904,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=16,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = 2,
 					yPos = 0,
@@ -2668,7 +4927,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,
 					yPos = 0,

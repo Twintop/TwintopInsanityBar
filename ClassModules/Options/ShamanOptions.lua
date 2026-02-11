@@ -83,11 +83,8 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 			mana = "never",
 			dragonriding = true
 		},
-		endOfAscendance = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			ascendance = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		overcap = {
 			mode = "relative",
@@ -123,17 +120,33 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			bar = {
-				border="FF00008D",
-				overcapEnabled=true,
-				borderOvercap="FFFF0000",
-				background="66000000",
-				base="FF0055FF",
-				earthShock="FF00096A",
-				inAscendance="FFFA8128",
-				inAscendance1GCD="FFFF0000",
-				flashAlpha=0.70,
-				flashPeriod=0.5,
-				flashEnabled=true,
+				border = {
+					color = "FF00008D"
+				},
+				borderOvercap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF0055FF"
+				},
+				earthShock = {
+					color = "FF00096A",
+					enabled = true
+				},
+				ascendance = {
+					color = "FFFA8128",
+					enabled = true
+				},
+				ascendanceEnd = {
+					color = "FFFF0000"
+				},
+				flashAlpha = 0.70,
+				flashPeriod = 0.5,
+				flashEnabled = true,
 			},
 				threshold = {
 				under = {
@@ -164,7 +177,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -223,11 +236,8 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
-		endOfAscendance = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			ascendance = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		colors = {
 			text = {
@@ -242,23 +252,44 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
-				inAscendance="FFFA8128",
-				inAscendance1GCD="FFFF0000",
+				border = {
+					color = "FF000099"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF0000FF"
+				},
+				ascendance = {
+					color = "FFFA8128",
+					enabled = true
+				},
+				ascendanceEnd = {
+					color = "FFFF0000"
+				},
 			},
 			comboPoints = {
-				border="ff0071df",
-				background="66000000",
-				base="ff55e2ff",
+				border = {
+					color = "FF0071DF"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF55E2FF"
+				},
 				overflowBase = {
 					color = "FF0077DD"
 				},
-				penultimate="FFFF9900",
-				final="FFFF0000",
-				sameColor=false,
-				compressedView=true
+				penultimate = {
+					color = "FFFF9900"
+				},
+				final = {
+					color = "FFFF0000"
+				},
+				sameColor = false,
+				compressedView = true
 			},
 			threshold = {
 				under = {
@@ -285,11 +316,29 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
 		audio = {
+			maelstromWeaponThreshold1={
+				name = L["ShamanAudioMaelstromWeaponThreshold1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
+			maelstromWeaponThreshold2={
+				name = L["ShamanAudioMaelstromWeaponThreshold2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 10
+				}
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -338,11 +387,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
-		endOfAscendance = {
-			enabled=true,
-			mode="gcd",
-			gcdsMax=2,
-			timeMax=3.0
+		endOf = {
+			ascendance = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		colors={
 			text = {
@@ -357,11 +403,22 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bar = {
-				border="FF000099",
-				background="66000000",
-				base="FF0000FF",
-				inAscendance="FFFA8128",
-				inAscendance1GCD="FFFF0000",
+				border = {
+					color = "FF000099"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF0000FF"
+				},
+				ascendance = {
+					color = "FFFA8128",
+					enabled = true
+				},
+				ascendanceEnd = {
+					color = "FFFF0000"
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
@@ -372,7 +429,7 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
-				color = "FFFFFFFF",
+				color = { color = "FFFFFFFF" },
 			},
 			barText = {}
 		},
@@ -536,7 +593,7 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Elemental_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 7, 1, true, false, false, false, false, false)
 	end)
@@ -559,41 +616,40 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
 
 	yCoord = yCoord - 30
-	controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthShock"], spec.colors.bar.earthShock, 300, 25, oUi.xCoord2, yCoord)
+	controls.checkBoxes.earthShock = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Bar_Option_earthShockColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.earthShock
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxEarthShock"])
+	f.tooltip = L["ShamanElementalCheckboxEarthShockTooltip"]
+	f:SetChecked(spec.colors.bar.earthShock.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.earthShock.enabled = self:GetChecked()
+	end)
+
+	controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthShock"], spec.colors.bar.earthShock.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.earthShock
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "earthShock")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthShock")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance		
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 7, 1, yCoord, {
+		endOfKey = "ascendance",
+		activeColorKey = "ascendance",
+		endColorKey = "ascendanceEnd",
+		checkboxLabel = L["ShamanElementalCheckboxAscendance"],
+		checkboxTooltip = L["ShamanElementalCheckboxAscendanceTooltip"],
+		activeColorLabel = L["ShamanElementalColorPickerAscendance"],
+		endCheckboxLabel = L["ShamanElementalCheckboxAscendanceEnd"],
+		endCheckboxTooltip = L["ShamanElementalCheckboxAscendanceEndTooltip"],
+		endColorLabel = L["ShamanElementalColorPickerAscendanceEnd"],
+	})
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Checkbox_EOA", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfAscendance
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxAscendanceEnd"])
-	f.tooltip = L["ShamanElementalCheckboxAscendanceEndTooltip"]
-	f:SetChecked(spec.endOfAscendance.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfAscendance.enabled = self:GetChecked()
-	end)
-
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -606,58 +662,14 @@ local function ElementalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 7, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(false)
-		spec.endOfAscendance.mode = "gcd"
-	end)
-
-	title = L["ShamanAscendanceGcds"]
-	controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfAscendance.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(true)
-		spec.endOfAscendance.mode = "time"
-	end)
-
-	title = L["ShamanAscendanceTime"]
-	controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfAscendance.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 7, 1, yCoord, {
+		endOfKey = "ascendance",
+		sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
+		gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
+		gcdSliderLabel = L["ShamanAscendanceGcds"],
+		timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
+		timeSliderLabel = L["ShamanAscendanceTime"],
+	})
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], ELEMENTAL_MAX_MAELSTROM)
@@ -678,7 +690,7 @@ local function ElementalConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Priest_Shadow_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Priest_Shadow_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Priest_Shadow_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 7, 1, false, true, false, false, false, false)
 	end)
@@ -739,7 +751,7 @@ local function ElementalConstructFontAndTextPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Elemental_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 7, 1, false, false, true, false, false, false)
 	end)
@@ -752,26 +764,26 @@ local function ElementalConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 7, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCasting"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCasting"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -801,7 +813,7 @@ local function ElementalConstructFontAndTextPanel(parent)
 
 	yCoord = yCoord - 30
 	spec.colors.text.manaBar = spec.colors.text.manaBar or { color = "FF0000FF" }
-	controls.colors.text.manaBar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarTextColor"], spec.colors.text.manaBar.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.manaBar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ManaBarTextColor"], spec.colors.text.manaBar.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.manaBar
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "manaBar")
@@ -823,7 +835,7 @@ local function ElementalConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.elemental
 	local yCoord = 5
 
-	controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -845,7 +857,7 @@ local function ElementalConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 7, 1, false, false, false, false, true, false)
 	end)
@@ -862,44 +874,20 @@ local function ElementalConstructOptionsPanel(cache)
 	local controls = interfaceSettingsFrame.controls
 	local yCoord = 0
 	local f = nil
-	interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental", UIParent)
-	interfaceSettingsFrame.elementalDisplayPanel.name = L["ShamanElementalFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["elemental"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.elementalDisplayPanel, L["ShamanElementalFull"])
+	interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "elemental", L["ShamanElementalFull"], interfaceSettingsFrame.elementalDisplayPanel)
 	
 	parent = interfaceSettingsFrame.elementalDisplayPanel
 
 	controls.buttons = controls.buttons or {}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanElementalFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.elementalShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_elementalShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.elementalShamanEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanElementalFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.shaman.elemental)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.shaman.elemental = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Shaman_Elemental_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["ShamanElementalFull"],
+		TRB.Data.settings.core.enabled.shaman, "elemental",
+		"TwintopResourceBar_Shaman_Elemental_elementalShamanEnabled", "elementalShamanEnabled",
+		"exportButton_Shaman_Elemental_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1071,7 +1059,7 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Enhancement_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 7, 2, true, false, false, false, false, false)
 	end)
@@ -1094,37 +1082,26 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_Checkbox_EOA", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfAscendance
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendanceEnd"])
-	f.tooltip = L["ShamanManaCheckboxAscendanceEndTooltip"]
-	f:SetChecked(spec.endOfAscendance.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfAscendance.enabled = self:GetChecked()
-	end)
-
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 7, 2, yCoord, {
+		endOfKey = "ascendance",
+		activeColorKey = "ascendance",
+		endColorKey = "ascendanceEnd",
+		checkboxLabel = L["ShamanManaCheckboxAscendance"],
+		checkboxTooltip = L["ShamanManaCheckboxAscendanceTooltip"],
+		activeColorLabel = L["ShamanManaColorPickerAscendance"],
+		endCheckboxLabel = L["ShamanManaCheckboxAscendanceEnd"],
+		endCheckboxTooltip = L["ShamanManaCheckboxAscendanceEndTooltip"],
+		endColorLabel = L["ShamanManaColorPickerAscendanceEnd"],
+	})
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], false, false)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1132,42 +1109,42 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceMaelstromWeapon"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceMaelstromWeapon"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.overflowBase = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"], spec.colors.comboPoints.overflowBase.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.overflowBase = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"], spec.colors.comboPoints.overflowBase.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.overflowBase
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overflowBase")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30
@@ -1204,57 +1181,14 @@ local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 2, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(false)
-		spec.endOfAscendance.mode = "gcd"
-	end)
-
-	title = L["ShamanAscendanceGcds"]
-	controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfAscendance.gcdsMax = value
-	end)
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(true)
-		spec.endOfAscendance.mode = "time"
-	end)
-
-	title = L["ShamanAscendanceTime"]
-	controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfAscendance.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 7, 2, yCoord, {
+		endOfKey = "ascendance",
+		sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
+		gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
+		gcdSliderLabel = L["ShamanAscendanceGcds"],
+		timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
+		timeSliderLabel = L["ShamanAscendanceTime"],
+	})
 end
 
 local function EnhancementConstructFontAndTextPanel(parent)
@@ -1271,7 +1205,7 @@ local function EnhancementConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Enhancement_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 7, 2, false, false, true, false, false, false)
 	end)
@@ -1284,7 +1218,7 @@ local function EnhancementConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 7, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DPSColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
@@ -1306,12 +1240,37 @@ local function EnhancementConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.enhancement
 	local yCoord = 5
 
-	controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 2, false, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "maelstromWeaponThreshold1", spec, classId, specId, yCoord, L["ShamanAudioCheckboxMaelstromWeaponThreshold1"], L["ShamanAudioCheckboxMaelstromWeaponThreshold1Tooltip"])
+
+	controls.maelstromWeaponThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShamanMaelstromWeaponThresholdSliderTitle"], 0, 10, spec.audio["maelstromWeaponThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.maelstromWeaponThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["maelstromWeaponThreshold1"].configuration.thresholdValue = value
+	end)
+
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "maelstromWeaponThreshold2", spec, classId, specId, yCoord, L["ShamanAudioCheckboxMaelstromWeaponThreshold2"], L["ShamanAudioCheckboxMaelstromWeaponThreshold2Tooltip"])
+
+	controls.maelstromWeaponThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShamanMaelstromWeaponThresholdSliderTitle"], 0, 10, spec.audio["maelstromWeaponThreshold2"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.maelstromWeaponThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["maelstromWeaponThreshold2"].configuration.thresholdValue = value
+	end)
 end
 
 local function EnhancementConstructBarTextDisplayPanel(parent, cache)
@@ -1325,7 +1284,7 @@ local function EnhancementConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 7, 2, false, false, false, false, true, false)
 	end)
@@ -1350,42 +1309,18 @@ local function EnhancementConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.enhancementDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Enhancement", UIParent)
-	interfaceSettingsFrame.enhancementDisplayPanel.name = L["ShamanEnhancementFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.enhancementDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["enhancement"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.enhancementDisplayPanel, L["ShamanEnhancementFull"])
+	interfaceSettingsFrame.enhancementDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Enhancement")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "enhancement", L["ShamanEnhancementFull"], interfaceSettingsFrame.enhancementDisplayPanel)
 
 	parent = interfaceSettingsFrame.enhancementDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanEnhancementFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.enhancementShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_enhancementShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.enhancementShamanEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)		
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanEnhancementFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.shaman.enhancement)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.shaman.enhancement = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.enhancementShamanEnabled, TRB.Data.settings.core.enabled.shaman.enhancement, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.enhancementShamanEnabled, TRB.Data.settings.core.enabled.shaman.enhancement, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Shaman_Enhancement_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["ShamanEnhancementFull"],
+		TRB.Data.settings.core.enabled.shaman, "enhancement",
+		"TwintopResourceBar_Shaman_Enhancement_enhancementShamanEnabled", "enhancementShamanEnabled",
+		"exportButton_Shaman_Enhancement_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1397,10 +1332,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	]]
 	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
 	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
 	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
 	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
 
@@ -1408,9 +1340,9 @@ local function EnhancementConstructOptionsPanel(cache)
 
 	for i = 1, 6 do
 		--[[
-			This spec doesn't use Threshold Lines or Audio & Tracking. Don't let these tabs be made/rendered.
+			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
 		]]
-		if i == 2 or i == 4 then
+		if i == 2 then
 			tabs[i]:Hide()
 		else
 			PanelTemplates_TabResize(tabs[i], 0)
@@ -1436,7 +1368,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	EnhancementConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
 	--EnhancementConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
 	EnhancementConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--EnhancementConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
+	EnhancementConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
 	EnhancementConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
 	EnhancementConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
 end
@@ -1564,7 +1496,7 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 7, 3, true, false, false, false, false, false)
 	end)
@@ -1584,34 +1516,23 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance		
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 7, 3, yCoord, {
+		endOfKey = "ascendance",
+		activeColorKey = "ascendance",
+		endColorKey = "ascendanceEnd",
+		checkboxLabel = L["ShamanManaCheckboxAscendance"],
+		checkboxTooltip = L["ShamanManaCheckboxAscendanceTooltip"],
+		activeColorLabel = L["ShamanManaColorPickerAscendance"],
+		endCheckboxLabel = L["ShamanManaCheckboxAscendanceEnd"],
+		endCheckboxTooltip = L["ShamanManaCheckboxAscendanceEndTooltip"],
+		endColorLabel = L["ShamanManaColorPickerAscendanceEnd"],
+	})
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Enabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfAscendance
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendanceEnd"])
-	f.tooltip = L["ShamanManaCheckboxAscendanceEndTooltip"]
-	f:SetChecked(spec.endOfAscendance.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfAscendance.enabled = self:GetChecked()
-	end)
-	
-	controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.inAscendance1GCD
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
 	end)
 
 	yCoord = yCoord - 40
@@ -1621,58 +1542,14 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Mode_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(false)
-		spec.endOfAscendance.mode = "gcd"
-	end)
-
-	title = L["ShamanAscendanceGcds"]
-	controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfAscendance.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Mode_Time", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfAscendanceModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	
-	if spec.endOfAscendance.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfAscendanceModeTime:SetChecked(true)
-		spec.endOfAscendance.mode = "time"
-	end)
-
-	title = L["ShamanAscendanceTime"]
-	controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfAscendance.timeMax = value
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 7, 3, yCoord, {
+		endOfKey = "ascendance",
+		sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
+		gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
+		gcdSliderLabel = L["ShamanAscendanceGcds"],
+		timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
+		timeSliderLabel = L["ShamanAscendanceTime"],
+	})
 end
 
 local function RestorationConstructThresholdPanel(parent)
@@ -1687,7 +1564,7 @@ local function RestorationConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Priest_Holy_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Priest_Holy_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Priest_Holy_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 7, 3, false, true, false, false, false, false)
 	end)
@@ -1707,7 +1584,7 @@ local function RestorationConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 7, 3, false, false, true, false, false, false)
 	end)
@@ -1720,13 +1597,13 @@ local function RestorationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 7, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
@@ -1748,7 +1625,7 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1768,7 +1645,7 @@ local function RestorationConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)		
-	controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 7, 3, false, false, false, false, true, false)
 	end)
@@ -1793,42 +1670,18 @@ local function RestorationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Restoration", UIParent)
-	interfaceSettingsFrame.restorationDisplayPanel.name = L["ShamanRestorationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["restoration"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["ShamanRestorationFull"])
+	interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Restoration")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "restoration", L["ShamanRestorationFull"], interfaceSettingsFrame.restorationDisplayPanel)
 	
 	parent = interfaceSettingsFrame.restorationDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanRestorationFull"], oUi.xCoord, yCoord-5)
-	
-	controls.checkBoxes.restorationShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.restorationShamanEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanRestorationFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.shaman.restoration)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.shaman.restoration = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Shaman_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["ShamanRestorationFull"],
+		TRB.Data.settings.core.enabled.shaman, "restoration",
+		"TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", "restorationShamanEnabled",
+		"exportButton_Shaman_Restoration_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1886,8 +1739,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("shaman", L["Shaman"])
 	ElementalConstructOptionsPanel(specCache.elemental)
 	EnhancementConstructOptionsPanel(specCache.enhancement)
 	RestorationConstructOptionsPanel(specCache.restoration)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Shaman.ConstructOptionsPanel = ConstructOptionsPanel
