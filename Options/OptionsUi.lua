@@ -1531,26 +1531,11 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		controls.width.MinLabel:SetText(tostring(minsliderWidth))
 	end)
 
-	--NOTE: the order of these checkboxes is reversed!
-
-	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.lockPosition
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DragAndDropEnabled"])
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["DragAndDropTooltip"]
-	f:SetChecked(spec.bar.dragAndDrop)
-	f:SetScript("OnClick", function(self, ...)
-		spec.bar.dragAndDrop = self:GetChecked()
-
-		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
-			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
-			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-			if TRB.Frames.barGroups ~= nil and TRB.Frames.barGroups.primary ~= nil then
-				TRB.Frames.barGroups.primary:SetDragAndDrop(TRB.Data.specCache[TRB.Data.character.specName].settings.bar.dragAndDrop, TRB.Data.specCache[TRB.Data.character.specName].settings)
-			end
-		end
-	end)
+	controls.dragAndDropMessage = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	controls.dragAndDropMessage:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	controls.dragAndDropMessage:SetWidth(oUi.maxOptionsWidth - oUi.xCoord2)
+	controls.dragAndDropMessage:SetJustifyH("LEFT")
+	controls.dragAndDropMessage:SetText(L["DragAndDropEditModeMessage"])
 
 	yCoord = yCoord - 30
 

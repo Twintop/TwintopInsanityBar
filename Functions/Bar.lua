@@ -483,16 +483,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			end
 			primaryNode:SetMinMax(0, max)
 
-			-- Enable drag and drop:
-			-- Use Case 1: Edit Mode disabled -> Legacy drag-and-drop uses settings.bar.dragAndDrop
-			-- Use Case 2: Edit Mode enabled + Free Position -> Edit Mode handles positioning, no legacy drag
-			-- Use Case 3: Edit Mode enabled + CDM anchor -> No drag, anchored to CDM
-			-- Summary: If Edit Mode is enabled, disable legacy drag (Edit Mode or CDM handles it)
-			if editModeLayoutEnabled then
-				primary:SetDragAndDrop(false, settings)
-			else
-				primary:SetDragAndDrop(settings.bar.dragAndDrop, settings)
-			end
+			primary:SetDragAndDrop(false, settings)
 
 			-- Show the primary bar (now parented directly to UIParent)
 			primary:Show()

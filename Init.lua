@@ -115,7 +115,7 @@ TRB.Data.constants = {
 		dropdownWidth = 225,
 		sliderWidth = 260,
 		sliderHeight = 20,
-		maxOptionsWidth = 650
+		maxOptionsWidth = 700
 	}
 }
 

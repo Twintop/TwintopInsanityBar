@@ -1843,3 +1843,6 @@ L["MonkAudioCheckboxChiThreshold3Tooltip"] = "Play an audio cue when your curren
 -- Standalone Options Frame
 L["OpenTRBOptions"] = "Open Twintop's Resource Bar Options"
 L["OpenTRBOptionsDescription"] = "Click the button below or type /trb to open options."
+
+-- Drag & Drop removal
+L["DragAndDropEditModeMessage"] = "For Drag & Drop placement of the bar, please use Edit Mode."

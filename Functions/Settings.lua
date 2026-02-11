@@ -4188,8 +4188,7 @@ function TRB.Functions.Settings:DefaultBarDimensions(classic)
 		height = 30,
 		xPos = 0,
 		yPos = -200,
-		border = border,
-		dragAndDrop = false
+		border = border
 	}
 end
 
