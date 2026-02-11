@@ -255,6 +255,17 @@ end)
 TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 
+-- Minimap button: initialize once settings are loaded
+local minimapButtonInitFrame = CreateFrame("Frame")
+minimapButtonInitFrame:RegisterEvent("PLAYER_LOGIN")
+minimapButtonInitFrame:SetScript("OnEvent", function(self)
+	self:UnregisterAllEvents()
+	-- Delay slightly to ensure saved variables and settings merging is complete
+	C_Timer.After(2, function()
+		TRB.Functions.MinimapButton:Initialize()
+	end)
+end)
+
 
 local function ParseCmdString(msg)
 	if msg then
@@ -281,6 +292,15 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
 	elseif cmd == "news" then
 		TRB.Functions.News:Show()
+	elseif cmd == "minimap" then
+		local minimapCmd = ParseCmdString(subcmd)
+		if minimapCmd == "hide" then
+			TRB.Functions.MinimapButton:Hide()
+		elseif minimapCmd == "show" then
+			TRB.Functions.MinimapButton:Show()
+		else
+			TRB.Functions.MinimapButton:Toggle()
+		end
 	else
 		if InCombatLockdown() then
 			print(L["CannotOpenOptionsInCombat"])

@@ -52,6 +52,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				enabled = true,
 				lastUpdate = ""
 			},
+			minimap = {
+				hide = false,
+			},
 			audio = {
 				channel = {
 					name = L["AudioChannelMaster"],

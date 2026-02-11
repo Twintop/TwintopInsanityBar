@@ -39,6 +39,8 @@
 
 Libs\LibStub.lua
 Libs\CallbackHandler-1.0.lua
+Libs\LibDBIcon-1.0\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
 Libs\LibSharedMedia-3.0.lua
 Libs\LibSmoothMove-1.0.lua
 Libs\LibMarkdown\LibMarkdown.xml
@@ -103,6 +105,7 @@ Functions\EditMode.lua
 Functions\Item.lua
 Functions\IO.lua
 Functions\LibSharedMedia.lua
+Functions\MinimapButton.lua
 Functions\Number.lua
 Functions\Settings.lua
 Functions\SpellCast.lua

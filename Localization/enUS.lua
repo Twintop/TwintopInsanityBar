@@ -1852,3 +1852,5 @@ L["AboutTwintopsResourceBar"] = "About Twintop's Resource Bar"
 L["FooterDiscord"] = "Discord"
 L["FooterGitHubIssues"] = "GitHub Issues"
 L["FooterNews"] = "News"
+-- Minimap Button
+L["MinimapTooltipLeftClick"] = "Left-click to open settings"

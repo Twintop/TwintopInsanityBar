@@ -1188,8 +1188,11 @@ function TRB.Functions.EditMode:GetTRBBounds(includeHidden)
 			bottom = frameBottom
 		else
 			left = math.min(left, frameLeft)
+---@diagnostic disable-next-line: param-type-mismatch
 			right = math.max(right, frameRight)
+---@diagnostic disable-next-line: param-type-mismatch
 			top = math.max(top, frameTop)
+---@diagnostic disable-next-line: param-type-mismatch
 			bottom = math.min(bottom, frameBottom)
 		end
 	end
