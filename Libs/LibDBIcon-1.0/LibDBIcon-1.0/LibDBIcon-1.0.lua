@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, undefined-global, param-type-mismatch, inject-field
 --@curseforge-project-slug: libdbicon-1-0@
 -----------------------------------------------------------------------
 -- LibDBIcon-1.0

@@ -13,6 +13,7 @@ local icon = LibStub("LibDBIcon-1.0")
 local dataObject = ldb:NewDataObject(ADDON_NAME, {
 	type = "launcher",
 	text = "Twintop's Resource Bar",
+---@diagnostic disable-next-line: assign-type-mismatch
 	icon = ICON_TEXTURE,
 	OnClick = function(_, button)
 		if button == "LeftButton" then
@@ -46,13 +47,6 @@ function TRB.Functions.MinimapButton:Initialize()
 		settings.core.minimap = {
 			hide = false,
 		}
-	end
-
-	-- Migrate from old format
-	if settings.core.minimap.shown ~= nil then
-		settings.core.minimap.hide = not settings.core.minimap.shown
-		settings.core.minimap.shown = nil
-		settings.core.minimap.angle = nil
 	end
 
 	if not icon:IsRegistered(ADDON_NAME) then
