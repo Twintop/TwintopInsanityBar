@@ -741,34 +741,13 @@ local function AfflictionConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.afflictionDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockAfflictionFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.afflictionWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_afflictionWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.afflictionWarlockEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarlockAfflictionFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.warlock.affliction)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.warlock.affliction = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.afflictionWarlockEnabled, TRB.Data.settings.core.enabled.warlock.affliction, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.afflictionWarlockEnabled, TRB.Data.settings.core.enabled.warlock.affliction, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Warlock_Affliction_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Warlock_Affliction_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarlockAfflictionFull"],
+		TRB.Data.settings.core.enabled.warlock, "affliction",
+		"TwintopResourceBar_Warlock_Affliction_afflictionWarlockEnabled", "afflictionWarlockEnabled",
+		"exportButton_Warlock_Affliction_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1156,34 +1135,13 @@ local function DemonologyConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.demonologyDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockDemonologyFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.demonologyWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar" .. namePrefix .. "_demonologyWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.demonologyWarlockEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarlockDemonologyFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.warlock.demonology)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.warlock.demonology = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.demonologyWarlockEnabled, TRB.Data.settings.core.enabled.warlock.demonology, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.demonologyWarlockEnabled, TRB.Data.settings.core.enabled.warlock.demonology, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Warlock_Demonology_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Warlock_Demonology_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDemonologyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarlockDemonologyFull"],
+		TRB.Data.settings.core.enabled.warlock, "demonology",
+		"TwintopResourceBarWarlock_Demonology_demonologyWarlockEnabled", "demonologyWarlockEnabled",
+		"exportButton_Warlock_Demonology_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDemonologyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1571,34 +1529,13 @@ local function DestructionConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.destructionDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockDestructionFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.destructionWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .. "_destructionWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.destructionWarlockEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarlockDestructionFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.warlock.destruction)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.warlock.destruction = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.destructionWarlockEnabled, TRB.Data.settings.core.enabled.warlock.destruction, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.destructionWarlockEnabled, TRB.Data.settings.core.enabled.warlock.destruction, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Warlock_Destruction_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Warlock_Destruction_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarlockDestructionFull"],
+		TRB.Data.settings.core.enabled.warlock, "destruction",
+		"TwintopResourceBar_Warlock_Destruction_destructionWarlockEnabled", "destructionWarlockEnabled",
+		"exportButton_Warlock_Destruction_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}

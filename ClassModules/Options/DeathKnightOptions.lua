@@ -1065,34 +1065,13 @@ local function BloodConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.bloodDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightBloodFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.bloodDeathKnightEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_bloodDeathKnightEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.bloodDeathKnightEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DeathKnightBloodFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.deathknight.blood)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.deathknight.blood = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.bloodDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.blood, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.bloodDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.blood, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DeathKnight_Blood_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DeathKnight_Blood_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightBloodFull"],
+		TRB.Data.settings.core.enabled.deathknight, "blood",
+		"TwintopResourceBar_DeathKnight_Blood_bloodDeathKnightEnabled", "bloodDeathKnightEnabled",
+		"exportButton_DeathKnight_Blood_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1553,34 +1532,13 @@ local function FrostConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightFrostFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.frostDeathKnightEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_frostDeathKnightEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.frostDeathKnightEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DeathKnightFrostFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.deathknight.frost)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.deathknight.frost = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.frostDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.frost, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.frostDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.frost, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DeathKnight_Frost_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DeathKnight_Frost_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightFrostFull"],
+		TRB.Data.settings.core.enabled.deathknight, "frost",
+		"TwintopResourceBar_DeathKnight_Frost_frostDeathKnightEnabled", "frostDeathKnightEnabled",
+		"exportButton_DeathKnight_Frost_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -2019,34 +1977,13 @@ local function UnholyConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.unholyDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightUnholyFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.unholyDeathKnightEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_unholyDeathKnightEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.unholyDeathKnightEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DeathKnightUnholyFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.deathknight.unholy)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.deathknight.unholy = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.unholyDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.unholy, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.unholyDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.unholy, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DeathKnight_Unholy_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DeathKnight_Unholy_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightUnholyFull"],
+		TRB.Data.settings.core.enabled.deathknight, "unholy",
+		"TwintopResourceBar_DeathKnight_Unholy_unholyDeathKnightEnabled", "unholyDeathKnightEnabled",
+		"exportButton_DeathKnight_Unholy_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}

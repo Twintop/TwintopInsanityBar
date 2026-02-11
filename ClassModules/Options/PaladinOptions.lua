@@ -801,34 +801,13 @@ local function HolyConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.holyDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinHolyFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.holyPaladinEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_holyPaladinEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyPaladinEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PaladinHolyFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.paladin.holy)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.paladin.holy = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.holyPaladinEnabled, TRB.Data.settings.core.enabled.paladin.holy, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.holyPaladinEnabled, TRB.Data.settings.core.enabled.paladin.holy, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Paladin_Holy_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Paladin_Holy_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PaladinHolyFull"],
+		TRB.Data.settings.core.enabled.paladin, "holy",
+		"TwintopResourceBar_Paladin_Holy_holyPaladinEnabled", "holyPaladinEnabled",
+		"exportButton_Paladin_Holy_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1233,34 +1212,13 @@ local function ProtectionConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.protectionDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinProtectionFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.protectionPaladinEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Protection_protectionPaladinEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.protectionPaladinEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PaladinProtectionFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.paladin.protection)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.paladin.protection = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.protectionPaladinEnabled, TRB.Data.settings.core.enabled.paladin.protection, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.protectionPaladinEnabled, TRB.Data.settings.core.enabled.paladin.protection, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Paladin_Protection_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Paladin_Protection_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinProtectionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PaladinProtectionFull"],
+		TRB.Data.settings.core.enabled.paladin, "protection",
+		"TwintopResourceBar_Paladin_Protection_protectionPaladinEnabled", "protectionPaladinEnabled",
+		"exportButton_Paladin_Protection_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinProtectionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1664,34 +1622,13 @@ local function RetributionConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.retributionDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinRetributionFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.retributionPaladinEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Retribution_retributionPaladinEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.retributionPaladinEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PaladinRetributionFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.paladin.retribution)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.paladin.retribution = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.retributionPaladinEnabled, TRB.Data.settings.core.enabled.paladin.retribution, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.retributionPaladinEnabled, TRB.Data.settings.core.enabled.paladin.retribution, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Paladin_Retribution_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Paladin_Retribution_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinRetributionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PaladinRetributionFull"],
+		TRB.Data.settings.core.enabled.paladin, "retribution",
+		"TwintopResourceBar_Paladin_Retribution_retributionPaladinEnabled", "retributionPaladinEnabled",
+		"exportButton_Paladin_Retribution_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinRetributionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}

@@ -647,34 +647,13 @@ local function ArcaneConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.arcaneDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageArcaneFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.arcaneMageEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Mage_Arcane_arcaneMageEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.arcaneMageEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MageArcaneFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.mage.arcane)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.mage.arcane = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.arcaneMageEnabled, TRB.Data.settings.core.enabled.mage.arcane, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.arcaneMageEnabled, TRB.Data.settings.core.enabled.mage.arcane, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Mage_Arcane_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Mage_Arcane_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageArcaneFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageArcaneFull"],
+		TRB.Data.settings.core.enabled.mage, "arcane",
+		"TwintopResourceBar_Mage_Arcane_arcaneMageEnabled", "arcaneMageEnabled",
+		"exportButton_Mage_Arcane_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageArcaneFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -974,34 +953,13 @@ local function FireConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.fireDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageFireFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.fireMageEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Mage_Fire_fireMageEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.fireMageEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MageFireFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.mage.fire)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.mage.fire = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.fireMageEnabled, TRB.Data.settings.core.enabled.mage.fire, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.fireMageEnabled, TRB.Data.settings.core.enabled.mage.fire, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Mage_Fire_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Mage_Fire_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageFireFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageFireFull"],
+		TRB.Data.settings.core.enabled.mage, "fire",
+		"TwintopResourceBar_Mage_Fire_fireMageEnabled", "fireMageEnabled",
+		"exportButton_Mage_Fire_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageFireFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1303,34 +1261,13 @@ local function FrostConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageFrostFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.frostMageEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Mage_Frost_frostMageEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.frostMageEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MageFrostFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.mage.frost)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.mage.frost = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.frostMageEnabled, TRB.Data.settings.core.enabled.mage.frost, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.frostMageEnabled, TRB.Data.settings.core.enabled.mage.frost, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Mage_Frost_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Mage_Frost_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageFrostFull"],
+		TRB.Data.settings.core.enabled.mage, "frost",
+		"TwintopResourceBar_Mage_Frost_frostMageEnabled", "frostMageEnabled",
+		"exportButton_Mage_Frost_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}

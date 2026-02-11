@@ -629,7 +629,7 @@ local function ConstructImportExportPanel()
 
 	yCoord = yCoord - 30
 	---@diagnostic disable-next-line: inject-field
-	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel", parent, 652, 555)
+	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel", parent)
 	parent.panel:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	parent.panel:Show()
 

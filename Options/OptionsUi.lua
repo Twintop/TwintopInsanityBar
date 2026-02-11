@@ -1002,6 +1002,61 @@ function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, he
 	return f
 end
 
+---Builds the spec title row: header + enabled checkbox + import button + export button,
+---all anchored from the right side of the parent so they stay right-aligned on resize.
+---@param parent Frame The spec display panel
+---@param controls table The controls table for this spec
+---@param specLabel string Localized spec name (e.g. L["PriestDisciplineFull"])
+---@param enabledSettingRef table Reference table where .enabled lives (e.g. TRB.Data.settings.core.enabled.priest)
+---@param enabledKey string Key into enabledSettingRef (e.g. "discipline")
+---@param checkboxName string Global checkbox frame name (e.g. "TwintopResourceBar_Priest_Discipline_disciplinePriestEnabled")
+---@param checkboxControlKey string Key in controls.checkBoxes (e.g. "disciplinePriestEnabled")
+---@param exportControlKey string Key in controls.buttons for the export button (e.g. "exportButton_Priest_Discipline_All")
+---@param exportCallback function OnClick handler for export button
+---@return number yCoord The updated yCoord after the title row
+function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, enabledSettingRef, enabledKey, checkboxName, checkboxControlKey, exportControlKey, exportCallback)
+	local yCoord = 0
+
+	-- Section header (left-aligned)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, specLabel, oUi.xCoord, yCoord - 5)
+
+	-- Export button (rightmost, anchored to parent's top-right)
+	controls.buttons[exportControlKey] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 0, 0, 150, 20)
+	local exportBtn = controls.buttons[exportControlKey]
+	exportBtn:ClearAllPoints()
+	exportBtn:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5, yCoord - 10)
+	exportBtn:SetScript("OnClick", exportCallback)
+
+	-- Import button (anchored to left of export)
+	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 0, 0, 90, 20)
+	local importBtn = controls.buttons.importButton
+	importBtn:ClearAllPoints()
+	importBtn:SetPoint("RIGHT", exportBtn, "LEFT", -5, 0)
+	importBtn:SetFrameLevel(10000)
+	importBtn:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_Import")
+	end)
+
+	-- Enabled checkbox (anchored to left of import, with gap for label text)
+	controls.checkBoxes[checkboxControlKey] = CreateFrame("CheckButton", checkboxName, parent, "ChatConfigCheckButtonTemplate")
+	local cb = controls.checkBoxes[checkboxControlKey]
+	getglobal(cb:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	cb.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], specLabel)
+	cb:SetChecked(enabledSettingRef[enabledKey])
+	cb:SetScript("OnClick", function(self, ...)
+		enabledSettingRef[enabledKey] = self:GetChecked()
+		TRB.Functions.Class:EventRegistration()
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
+	end)
+	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
+
+	-- Position checkbox: anchor its right edge left of import, leaving room for the label text
+	-- ChatConfigCheckButtonTemplate renders text to the RIGHT of the frame, so we offset enough for it
+	cb:SetPoint("RIGHT", importBtn, "LEFT", -75, 0)
+
+	return yCoord - 52
+end
+
 ---Builds a Label object for the Options UI
 ---@param parent frame
 ---@param text string
@@ -1058,6 +1113,7 @@ function TRB.Functions.OptionsUi:CreateScrollFrameContainer(name, parent, width,
 end
 
 function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame)
+	local fillParent = (width == nil and height == nil)
 	width = width or 652
 	height = height or 523
 	local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
@@ -1075,14 +1131,23 @@ function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, he
 		}
 	})
 	cf:SetBackdropColor(0, 0, 0, 0.5)
-	cf:SetWidth(width)
-	cf:SetHeight(height)
-	cf:SetPoint("TOPLEFT", 0, 0)
+
+	if fillParent then
+		-- Caller sets TOPLEFT; stretch to bottom-right of parent
+		cf:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 0)
+	else
+		cf:SetWidth(width)
+		cf:SetHeight(height)
+		cf:SetPoint("TOPLEFT", 0, 0)
+	end
 
 	if not isManualScrollFrame then
 		---@diagnostic disable-next-line: inject-field
 		cf.scrollFrame = TRB.Functions.OptionsUi:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
 		cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
+		if fillParent then
+			cf.scrollFrame:SetPoint("BOTTOMRIGHT", cf, "BOTTOMRIGHT", -25, 5)
+		end
 	end
 	return cf
 end

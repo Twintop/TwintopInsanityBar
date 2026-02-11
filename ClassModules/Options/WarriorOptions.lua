@@ -1078,34 +1078,13 @@ local function ArmsConstructOptionsPanel(cache)
 
 	controls.buttons = controls.buttons or {}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarriorArmsFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.armsWarriorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_armsWarriorEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.armsWarriorEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorArmsFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.warrior.arms)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.warrior.arms = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.armsWarriorEnabled, TRB.Data.settings.core.enabled.warrior.arms, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.armsWarriorEnabled, TRB.Data.settings.core.enabled.warrior.arms, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Warrior_Arms_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Warrior_Arms_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarriorArmsFull"],
+		TRB.Data.settings.core.enabled.warrior, "arms",
+		"TwintopResourceBar_Warrior_Arms_armsWarriorEnabled", "armsWarriorEnabled",
+		"exportButton_Warrior_Arms_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1584,34 +1563,13 @@ local function FuryConstructOptionsPanel(cache)
 
 	controls.buttons = controls.buttons or {}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarriorFuryFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.furyWarriorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_furyWarriorEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.furyWarriorEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorFuryFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.warrior.fury)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.warrior.fury = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.furyWarriorEnabled, TRB.Data.settings.core.enabled.warrior.fury, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.furyWarriorEnabled, TRB.Data.settings.core.enabled.warrior.fury, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Warrior_Fury_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Warrior_Fury_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarriorFuryFull"],
+		TRB.Data.settings.core.enabled.warrior, "fury",
+		"TwintopResourceBar_Warrior_Fury_furyWarriorEnabled", "furyWarriorEnabled",
+		"exportButton_Warrior_Fury_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -2119,34 +2077,13 @@ local function ProtectionConstructOptionsPanel(cache)
 
 	controls.buttons = controls.buttons or {}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarriorProtection"].. " " .. L["Warrior"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.protectionWarriorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_protectionWarriorEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.protectionWarriorEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorProtectionFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.warrior.protection)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.warrior.protection = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.protectionWarriorEnabled, TRB.Data.settings.core.enabled.warrior.protection, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.protectionWarriorEnabled, TRB.Data.settings.core.enabled.warrior.protection, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Warrior_Protection_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Warrior_Protection_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarriorProtectionFull"],
+		TRB.Data.settings.core.enabled.warrior, "protection",
+		"TwintopResourceBar_Warrior_Protection_protectionWarriorEnabled", "protectionWarriorEnabled",
+		"exportButton_Warrior_Protection_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
