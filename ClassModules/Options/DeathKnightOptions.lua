@@ -788,7 +788,7 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Blood_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Blood_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Blood_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 6, 1, true, false, false, false, false, false)
 	end)
@@ -811,7 +811,7 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -825,26 +825,26 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorder"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
@@ -861,7 +861,7 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.overcap.enabled = self:GetChecked()
 	end)
 
-	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overcap")
@@ -900,7 +900,7 @@ local function BloodConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Blood_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Blood_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Blood_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 6, 1, false, true, false, false, false, false)
 	end)
@@ -961,7 +961,7 @@ local function BloodConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DeathKnight_Blood_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Blood_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Blood_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 6, 1, false, false, true, false, false, false)
 	end)
@@ -974,13 +974,13 @@ local function BloodConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1015,7 +1015,7 @@ local function BloodConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Blood_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Blood_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Blood_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1035,7 +1035,7 @@ local function BloodConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_DeathKnight_Blood_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Blood_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Blood_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 6, 1, false, false, false, false, true, false)
 	end)
@@ -1060,42 +1060,18 @@ local function BloodConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.bloodDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Blood", UIParent)
-	interfaceSettingsFrame.bloodDisplayPanel.name = L["DeathKnightBloodFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.bloodDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["blood"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.bloodDisplayPanel, L["DeathKnightBloodFull"])
+	interfaceSettingsFrame.bloodDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Blood")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "blood", L["DeathKnightBloodFull"], interfaceSettingsFrame.bloodDisplayPanel)
 	
 	parent = interfaceSettingsFrame.bloodDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightBloodFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.bloodDeathKnightEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_bloodDeathKnightEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.bloodDeathKnightEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DeathKnightBloodFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.deathknight.blood)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.deathknight.blood = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.bloodDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.blood, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.bloodDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.blood, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DeathKnight_Blood_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DeathKnight_Blood_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightBloodFull"],
+		TRB.Data.settings.core.enabled.deathknight, "blood",
+		"TwintopResourceBar_DeathKnight_Blood_bloodDeathKnightEnabled", "bloodDeathKnightEnabled",
+		"exportButton_DeathKnight_Blood_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1256,7 +1232,7 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Frost_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Frost_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Frost_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 6, 2, true, false, false, false, false, false)
 	end)
@@ -1279,7 +1255,7 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -1293,26 +1269,26 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
@@ -1329,7 +1305,7 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.overcap.enabled = self:GetChecked()
 	end)
 
-	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overcap")
@@ -1368,7 +1344,7 @@ local function FrostConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Frost_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Frost_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Frost_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 6, 2, false, true, false, false, false, false)
 	end)
@@ -1452,7 +1428,7 @@ local function FrostConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DeathKnight_Frost_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Frost_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Frost_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 6, 2, false, false, true, false, false, false)
 	end)
@@ -1465,13 +1441,13 @@ local function FrostConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1506,7 +1482,7 @@ local function FrostConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Frost_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Frost_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Frost_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1526,7 +1502,7 @@ local function FrostConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_DeathKnight_Frost_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Frost_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Frost_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 6, 2, false, false, false, false, true, false)
 	end)
@@ -1551,42 +1527,18 @@ local function FrostConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Frost", UIParent)
-	interfaceSettingsFrame.frostDisplayPanel.name = L["DeathKnightFrostFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.frostDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["frost"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.frostDisplayPanel, L["DeathKnightFrostFull"])
+	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Frost")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "frost", L["DeathKnightFrostFull"], interfaceSettingsFrame.frostDisplayPanel)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightFrostFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.frostDeathKnightEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_frostDeathKnightEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.frostDeathKnightEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DeathKnightFrostFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.deathknight.frost)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.deathknight.frost = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.frostDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.frost, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.frostDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.frost, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DeathKnight_Frost_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DeathKnight_Frost_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightFrostFull"],
+		TRB.Data.settings.core.enabled.deathknight, "frost",
+		"TwintopResourceBar_DeathKnight_Frost_frostDeathKnightEnabled", "frostDeathKnightEnabled",
+		"exportButton_DeathKnight_Frost_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1746,7 +1698,7 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Unholy_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Unholy_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Unholy_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 6, 3, true, false, false, false, false, false)
 	end)
@@ -1769,7 +1721,7 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
 	
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -1784,26 +1736,26 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
@@ -1820,7 +1772,7 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.overcap.enabled = self:GetChecked()
 	end)
 
-	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerOvercap"], spec.colors.comboPoints.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overcap")
@@ -1859,7 +1811,7 @@ local function UnholyConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Unholy_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Unholy_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Unholy_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 6, 3, false, true, false, false, false, false)
 	end)
@@ -1921,7 +1873,7 @@ local function UnholyConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DeathKnight_Unholy_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Unholy_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Unholy_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 6, 3, false, false, true, false, false, false)
 	end)
@@ -1934,13 +1886,13 @@ local function UnholyConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1975,7 +1927,7 @@ local function UnholyConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Unholy_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Unholy_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Unholy_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1995,7 +1947,7 @@ local function UnholyConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_DeathKnight_Unholy_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DeathKnight_Unholy_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Unholy_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 6, 3, false, false, false, false, true, false)
 	end)
@@ -2020,42 +1972,18 @@ local function UnholyConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.unholyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Unholy", UIParent)
-	interfaceSettingsFrame.unholyDisplayPanel.name = L["DeathKnightUnholyFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.unholyDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["unholy"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.unholyDisplayPanel, L["DeathKnightUnholyFull"])
+	interfaceSettingsFrame.unholyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Unholy")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "unholy", L["DeathKnightUnholyFull"], interfaceSettingsFrame.unholyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.unholyDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightUnholyFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.unholyDeathKnightEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_unholyDeathKnightEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.unholyDeathKnightEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DeathKnightUnholyFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.deathknight.unholy)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.deathknight.unholy = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.unholyDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.unholy, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.unholyDeathKnightEnabled, TRB.Data.settings.core.enabled.deathknight.unholy, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DeathKnight_Unholy_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DeathKnight_Unholy_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightUnholyFull"],
+		TRB.Data.settings.core.enabled.deathknight, "unholy",
+		"TwintopResourceBar_DeathKnight_Unholy_unholyDeathKnightEnabled", "unholyDeathKnightEnabled",
+		"exportButton_DeathKnight_Unholy_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -2110,9 +2038,12 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	
+	TRB.Options.OptionsFrame:RegisterClassHeader("deathKnight", L["DeathKnight"])
+
 	BloodConstructOptionsPanel(specCache.blood)
 	FrostConstructOptionsPanel(specCache.frost)
 	UnholyConstructOptionsPanel(specCache.unholy)
+
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.DeathKnight.ConstructOptionsPanel = ConstructOptionsPanel

@@ -718,7 +718,7 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DemonHunter_Havoc_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Havoc_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Havoc_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 12, 1, true, false, false, false, false, false)
 	end)
@@ -751,7 +751,7 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	})
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -793,7 +793,7 @@ local function HavocConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 12, 1, false, true, false, false, false, false)
 	end)
@@ -882,7 +882,7 @@ local function HavocConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DemonHunter_Havoc_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Havoc_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Havoc_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 12, 1, false, false, true, false, false, false)
 	end)
@@ -895,20 +895,20 @@ local function HavocConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 12, 1, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocTextColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocTextColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -952,7 +952,7 @@ local function HavocConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.havoc
 	local yCoord = 5
 
-	controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -972,7 +972,7 @@ local function HavocConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_DemonHunter_Havoc_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Havoc_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Havoc_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 12, 1, false, false, false, false, true, false)
 	end)
@@ -996,44 +996,20 @@ local function HavocConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.havocDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Havoc", UIParent)
-	interfaceSettingsFrame.havocDisplayPanel.name = L["DemonHunterHavoc"].. " " .. L["DemonHunter"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.havocDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["havoc"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.havocDisplayPanel, L["DemonHunterHavocFull"])
+	interfaceSettingsFrame.havocDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Havoc")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "havoc", L["DemonHunterHavocFull"], interfaceSettingsFrame.havocDisplayPanel)
 	
 	parent = interfaceSettingsFrame.havocDisplayPanel
 
 	controls.buttons = controls.buttons or {}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterHavoc"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.havocDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_havocDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.havocDemonHunterEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterHavocFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.havoc)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.demonhunter.havoc = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.havocDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.havoc, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.havocDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.havoc, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DemonHunter_Havoc_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DemonHunter_Havoc_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DemonHunterHavocFull"],
+		TRB.Data.settings.core.enabled.demonhunter, "havoc",
+		"TwintopResourceBar_DemonHunter_Havoc_havocDemonHunterEnabled", "havocDemonHunterEnabled",
+		"exportButton_DemonHunter_Havoc_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1200,7 +1176,7 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DemonHunter_Vengeance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Vengeance_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Vengeance_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 12, 2, true, false, false, false, false, false)
 	end)
@@ -1236,7 +1212,7 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	})
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -1251,13 +1227,13 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
@@ -1265,13 +1241,13 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 30
 	--[[
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentPenultimate"], spec.colors.comboPoints.penultimate.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentFinal"], spec.colors.comboPoints.final.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
@@ -1288,7 +1264,7 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)]]
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
@@ -1327,7 +1303,7 @@ local function VengeanceConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 12, 2, false, true, false, false, false, false)
 	end)
@@ -1403,7 +1379,7 @@ local function VengeanceConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DemonHunter_Vengeance_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Vengeance_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Vengeance_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 12, 2, false, false, true, false, false, false)
 	end)
@@ -1416,20 +1392,20 @@ local function VengeanceConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 12, 2, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceTextColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceTextColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1473,7 +1449,7 @@ local function VengeanceConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.vengeance
 	local yCoord = 5
 
-	controls.buttons.exportButton_DemonHunter_Vengeance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Vengeance_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Vengeance_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1493,7 +1469,7 @@ local function VengeanceConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_DemonHunter_Vengeance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Vengeance_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Vengeance_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 12, 2, false, false, false, false, true, false)
 	end)
@@ -1517,44 +1493,20 @@ local function VengeanceConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.vengeanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Vengeance", UIParent)
-	interfaceSettingsFrame.vengeanceDisplayPanel.name = L["DemonHunterVengeance"].. " " .. L["DemonHunter"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.vengeanceDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["vengeance"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.vengeanceDisplayPanel, L["DemonHunterVengeanceFull"])
+	interfaceSettingsFrame.vengeanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Vengeance")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "vengeance", L["DemonHunterVengeanceFull"], interfaceSettingsFrame.vengeanceDisplayPanel)
 	
 	parent = interfaceSettingsFrame.vengeanceDisplayPanel
 
 	controls.buttons = controls.buttons or {}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterVengeance"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.vengeanceDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_vengeanceDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.vengeanceDemonHunterEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterVengeanceFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.vengeance)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.demonhunter.vengeance = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.vengeanceDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.vengeance, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.vengeanceDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.vengeance, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DemonHunter_Vengeance_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DemonHunter_Vengeance_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DemonHunterVengeanceFull"],
+		TRB.Data.settings.core.enabled.demonhunter, "vengeance",
+		"TwintopResourceBar_DemonHunter_Vengeance_vengeanceDemonHunterEnabled", "vengeanceDemonHunterEnabled",
+		"exportButton_DemonHunter_Vengeance_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1683,7 +1635,7 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DemonHunter_Devourer_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Devourer_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Devourer_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 12, 3, true, false, false, false, false, false)
 	end)
@@ -1716,7 +1668,7 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.voidMetamorphosis.enabled = self:GetChecked()
 	end)
 
-	controls.colors.voidMetamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosis"], spec.colors.bar.voidMetamorphosis.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.voidMetamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosis"], spec.colors.bar.voidMetamorphosis.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.voidMetamorphosis
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "voidMetamorphosis")
@@ -1733,14 +1685,14 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 		spec.endOfMetamorphosis.enabled = self:GetChecked()
 	end)
 
-	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding.color, 250, 25, oUi.xCoord2, yCoord)
+	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.metamorphosisEnding
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
 	end)]]
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -1755,7 +1707,7 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
@@ -1772,14 +1724,14 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.voidMetamorphosisReady.enabled = self:GetChecked()
 	end)
 
-	controls.colors.comboPoints.voidMetamorphosisReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentVoidMetamorphosisReady"], spec.colors.comboPoints.voidMetamorphosisReady.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.voidMetamorphosisReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentVoidMetamorphosisReady"], spec.colors.comboPoints.voidMetamorphosisReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.voidMetamorphosisReady
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "voidMetamorphosisReady")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.collapsingStar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceCollapsingStar"], spec.colors.comboPoints.collapsingStar.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.collapsingStar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceCollapsingStar"], spec.colors.comboPoints.collapsingStar.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.collapsingStar
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "collapsingStar")
@@ -1796,21 +1748,21 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.comboPoints.collapsingStarReady.enabled = self:GetChecked()
 	end)
 
-	controls.colors.comboPoints.collapsingStarReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentCollapsingStarReady"], spec.colors.comboPoints.collapsingStarReady.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.collapsingStarReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentCollapsingStarReady"], spec.colors.comboPoints.collapsingStarReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.collapsingStarReady
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "collapsingStarReady")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
@@ -1893,7 +1845,7 @@ local function DevourerConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DemonHunter_Devourer_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Devourer_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Devourer_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 12, 3, false, true, false, false, false, false)
 	end)
@@ -1947,7 +1899,7 @@ local function DevourerConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_DemonHunter_Devourer_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Devourer_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Devourer_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 12, 3, false, false, true, false, false, false)
 	end)
@@ -1960,20 +1912,20 @@ local function DevourerConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 12, 3, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerTextColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerTextColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -2017,7 +1969,7 @@ local function DevourerConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.devourer
 	local yCoord = 5
 
-	controls.buttons.exportButton_DemonHunter_Devourer_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Devourer_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Devourer_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -2037,7 +1989,7 @@ local function DevourerConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_DemonHunter_Devourer_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_DemonHunter_Devourer_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Devourer_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 12, 3, false, false, false, false, true, false)
 	end)
@@ -2061,44 +2013,20 @@ local function DevourerConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.devourerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Devourer", UIParent)
-	interfaceSettingsFrame.devourerDisplayPanel.name = L["DemonHunterDevourer"].. " " .. L["DemonHunter"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.devourerDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["devourer"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.devourerDisplayPanel, L["DemonHunterDevourerFull"])
+	interfaceSettingsFrame.devourerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Devourer")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "devourer", L["DemonHunterDevourerFull"], interfaceSettingsFrame.devourerDisplayPanel)
 	
 	parent = interfaceSettingsFrame.devourerDisplayPanel
 
 	controls.buttons = controls.buttons or {}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterDevourer"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.devourerDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_devourerDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.devourerDemonHunterEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterDevourerFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.devourer)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.demonhunter.devourer = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.devourerDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.devourer, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.devourerDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.devourer, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_DemonHunter_Devourer_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_DemonHunter_Devourer_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DemonHunterDevourerFull"],
+		TRB.Data.settings.core.enabled.demonhunter, "devourer",
+		"TwintopResourceBar_DemonHunter_Devourer_devourerDemonHunterEnabled", "devourerDemonHunterEnabled",
+		"exportButton_DemonHunter_Devourer_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -2154,8 +2082,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("demonHunter", L["DemonHunter"])
 	HavocConstructOptionsPanel(specCache.havoc)
 	VengeanceConstructOptionsPanel(specCache.vengeance)
 	DevourerConstructOptionsPanel(specCache.devourer)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.DemonHunter.ConstructOptionsPanel = ConstructOptionsPanel

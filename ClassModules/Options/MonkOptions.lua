@@ -722,7 +722,7 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Monk_Brewmaster_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Monk_Brewmaster_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 1, true, false, false, false, false, false)
 	end)
@@ -776,7 +776,7 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	})
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -836,7 +836,7 @@ local function BrewmasterConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Monk_Brewmaster_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Monk_Brewmaster_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 10, 1, false, true, false, false, false, false)
 	end)
@@ -1028,7 +1028,7 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Monk_Brewmaster_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Monk_Brewmaster_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 10, 1, false, false, true, false, false, false)
 	end)
@@ -1041,26 +1041,26 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 10, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCasting"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCasting"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)	
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerThresholdOver"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1103,7 +1103,7 @@ local function BrewmasterConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Monk_Brewmaster_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Monk_Brewmaster_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 10, 1, false, false, false, true, false, false)
 	end)
@@ -1122,7 +1122,7 @@ local function BrewmasterConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Monk_Brewmaster_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Brewmaster_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Monk_Brewmaster_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 10, 1, false, false, false, false, true, false)
 	end)
@@ -1147,42 +1147,18 @@ local function BrewmasterConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.brewmasterDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Brewmaster", UIParent)
-	interfaceSettingsFrame.brewmasterDisplayPanel.name = L["MonkBrewmasterFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.brewmasterDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["brewmaster"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.brewmasterDisplayPanel, L["MonkBrewmasterFull"])
+	interfaceSettingsFrame.brewmasterDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Brewmaster")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "brewmaster", L["MonkBrewmasterFull"], interfaceSettingsFrame.brewmasterDisplayPanel)
 	
 	parent = interfaceSettingsFrame.brewmasterDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkBrewmasterFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.brewmasterMonkEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_brewmasterMonkEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.brewmasterMonkEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)		
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MonkBrewmasterFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.monk.brewmaster)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.monk.brewmaster = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.brewmasterMonkEnabled, TRB.Data.settings.core.enabled.monk.brewmaster, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.brewmasterMonkEnabled, TRB.Data.settings.core.enabled.monk.brewmaster, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Monk_Brewmaster_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Monk_Brewmaster_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkBrewmasterFull"],
+		TRB.Data.settings.core.enabled.monk, "brewmaster",
+		"TwintopResourceBar_Monk_Brewmaster_brewmasterMonkEnabled", "brewmasterMonkEnabled",
+		"exportButton_Monk_Brewmaster_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1350,7 +1326,7 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Monk_Mistweaver_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Mistweaver_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 2, true, false, false, false, false, false)
 	end)
@@ -1380,14 +1356,14 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.vivaciousVivification.enabled = self:GetChecked()
 	end)
 
-	controls.colors.vivaciousVivification = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerVivify"], spec.colors.bar.vivaciousVivification.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.vivaciousVivification = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerVivify"], spec.colors.bar.vivaciousVivification.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.vivaciousVivification
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "vivaciousVivification")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -1408,7 +1384,7 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.heartOfTheJadeSerpentReady.enabled = self:GetChecked()
 	end)
 
-	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.heartOfTheJadeSerpentReady
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpentReady")
@@ -1425,7 +1401,7 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.heartOfTheJadeSerpent.enabled = self:GetChecked()
 	end)
 
-	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.heartOfTheJadeSerpent
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
@@ -1447,7 +1423,7 @@ local function MistweaverConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Monk_Mistweaver_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Mistweaver_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Monk_Mistweaver_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 10, 2, false, true, false, false, false, false)
 	end)
@@ -1467,7 +1443,7 @@ local function MistweaverConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Monk_Mistweaver_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Mistweaver_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Monk_Mistweaver_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 10, 2, false, false, true, false, false, false)
 	end)
@@ -1480,13 +1456,13 @@ local function MistweaverConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 10, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
@@ -1509,7 +1485,7 @@ local function MistweaverConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Monk_Mistweaver_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1529,7 +1505,7 @@ local function MistweaverConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Monk_Mistweaver_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Mistweaver_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Monk_Mistweaver_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 10, 2, false, false, false, false, true, false)
 	end)
@@ -1554,42 +1530,18 @@ local function MistweaverConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.mistweaverDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Mistweaver", UIParent)
-	interfaceSettingsFrame.mistweaverDisplayPanel.name = L["MonkMistweaverFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.mistweaverDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["mistweaver"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.mistweaverDisplayPanel, L["MonkMistweaverFull"])
+	interfaceSettingsFrame.mistweaverDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Mistweaver")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "mistweaver", L["MonkMistweaverFull"], interfaceSettingsFrame.mistweaverDisplayPanel)
 	
 	parent = interfaceSettingsFrame.mistweaverDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkMistweaverFull"], oUi.xCoord, yCoord-5)	
-	
-	controls.checkBoxes.mistweaverMonkEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_mistweaverMonkEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mistweaverMonkEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MonkMistweaverFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.monk.mistweaver)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.monk.mistweaver = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.mistweaverMonkEnabled, TRB.Data.settings.core.enabled.monk.mistweaver, true)
-	end)
-	
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.mistweaverMonkEnabled, TRB.Data.settings.core.enabled.monk.mistweaver, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Monk_Mistweaver_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Monk_Mistweaver_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkMistweaverFull"],
+		TRB.Data.settings.core.enabled.monk, "mistweaver",
+		"TwintopResourceBar_Monk_Mistweaver_mistweaverMonkEnabled", "mistweaverMonkEnabled",
+		"exportButton_Monk_Mistweaver_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1760,7 +1712,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Monk_Windwalker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Windwalker_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Monk_Windwalker_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 3, true, false, false, false, false, false)
 	end)
@@ -1783,7 +1735,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -1793,7 +1745,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, false)
 
 	--[[yCoord = yCoord - 30
-	controls.colors.borderChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerDanceOfChiJi"], spec.colors.bar.borderChiJi.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.borderChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerDanceOfChiJi"], spec.colors.bar.borderChiJi.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.borderChiJi
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderChiJi")
@@ -1810,7 +1762,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.heartOfTheJadeSerpentReady.enabled = self:GetChecked()
 	end)
 
-	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.heartOfTheJadeSerpentReady
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpentReady")
@@ -1827,7 +1779,7 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.heartOfTheJadeSerpent.enabled = self:GetChecked()
 	end)
 
-	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.heartOfTheJadeSerpent
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
@@ -1838,33 +1790,33 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceChi"], spec.colors.comboPoints.base.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceChi"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBorder"], spec.colors.comboPoints.border.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBackground"], spec.colors.comboPoints.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerFinal"], spec.colors.comboPoints.final.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
@@ -1903,7 +1855,7 @@ local function WindwalkerConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Monk_Windwalker_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Windwalker_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Monk_Windwalker_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 10, 3, false, true, false, false, false, false)
 	end)
@@ -2028,7 +1980,7 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Monk_Windwalker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Windwalker_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Monk_Windwalker_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 10, 3, false, false, true, false, false, false)
 	end)
@@ -2041,20 +1993,20 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 10, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -2101,7 +2053,7 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Monk_Windwalker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Windwalker_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Monk_Windwalker_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -2157,7 +2109,7 @@ local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Monk_Windwalker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Monk_Windwalker_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Monk_Windwalker_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 10, 3, false, false, false, false, true, false)
 	end)
@@ -2182,42 +2134,18 @@ local function WindwalkerConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.windwalkerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Windwalker", UIParent)
-	interfaceSettingsFrame.windwalkerDisplayPanel.name = L["MonkWindwalkerFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.windwalkerDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["windwalker"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.windwalkerDisplayPanel, L["MonkWindwalkerFull"])
+	interfaceSettingsFrame.windwalkerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Windwalker")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "windwalker", L["MonkWindwalkerFull"], interfaceSettingsFrame.windwalkerDisplayPanel)
 	
 	parent = interfaceSettingsFrame.windwalkerDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkWindwalkerFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.windwalkerMonkEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_windwalkerMonkEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.windwalkerMonkEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)		
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MonkWindwalkerFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.monk.windwalker)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.monk.windwalker = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.windwalkerMonkEnabled, TRB.Data.settings.core.enabled.monk.windwalker, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.windwalkerMonkEnabled, TRB.Data.settings.core.enabled.monk.windwalker, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Monk_Windwalker_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Monk_Windwalker_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkWindwalkerFull"],
+		TRB.Data.settings.core.enabled.monk, "windwalker",
+		"TwintopResourceBar_Monk_Windwalker_windwalkerMonkEnabled", "windwalkerMonkEnabled",
+		"exportButton_Monk_Windwalker_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -2262,8 +2190,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("monk", L["Monk"])
 	BrewmasterConstructOptionsPanel(specCache.brewmaster)
 	MistweaverConstructOptionsPanel(specCache.mistweaver)
 	WindwalkerConstructOptionsPanel(specCache.windwalker)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Monk.ConstructOptionsPanel = ConstructOptionsPanel

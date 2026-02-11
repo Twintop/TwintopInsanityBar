@@ -755,18 +755,12 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		editModeWrapperFrame:SetFrameLevel(1)
 	end
 
-	-- Re-enable legacy drag-and-drop if it was enabled in settings and reapply layout
-	-- Reapplying layout is critical to reset all frame stratas/levels that were affected during Edit Mode
+	-- Reapply layout to reset frame stratas and levels after Edit Mode
 	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 		local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
 		if specSettings and specSettings.settings then
 			-- Reapply layout to reset frame stratas and levels
 			TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
-			
-			-- Re-enable legacy drag-and-drop if it was enabled in settings
-			if specSettings.settings.bar.dragAndDrop then
-				TRB.Frames.barGroups.primary:SetDragAndDrop(true, specSettings.settings)
-			end
 		end
 
 		-- Rebuild bar text frames to restore proper strata/level ordering
@@ -1194,8 +1188,11 @@ function TRB.Functions.EditMode:GetTRBBounds(includeHidden)
 			bottom = frameBottom
 		else
 			left = math.min(left, frameLeft)
+---@diagnostic disable-next-line: param-type-mismatch
 			right = math.max(right, frameRight)
+---@diagnostic disable-next-line: param-type-mismatch
 			top = math.max(top, frameTop)
+---@diagnostic disable-next-line: param-type-mismatch
 			bottom = math.min(bottom, frameBottom)
 		end
 	end

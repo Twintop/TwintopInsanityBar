@@ -669,7 +669,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 1, true, false, false, false, false, false)
 	end)
@@ -702,7 +702,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	})
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -722,7 +722,7 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 		spec.colors.bar.beastCleave.enabled = self:GetChecked()
 	end)
 
-	controls.colors.beastCleave = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBeastCleave"], spec.colors.bar.beastCleave.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.beastCleave = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBeastCleave"], spec.colors.bar.beastCleave.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.beastCleave
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "beastCleave")
@@ -761,7 +761,7 @@ local function BeastMasteryConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Hunter_BeastMastery_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_BeastMastery_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Hunter_BeastMastery_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 3, 1, false, true, false, false, false, false)
 	end)
@@ -900,7 +900,7 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_BeastMastery_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_BeastMastery_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Hunter_BeastMastery_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 1, false, false, true, false, false, false)
 	end)
@@ -913,20 +913,20 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 3, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -973,7 +973,7 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Hunter_BeastMastery_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -995,7 +995,7 @@ local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Hunter_BeastMastery_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_BeastMastery_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Hunter_BeastMastery_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 1, false, false, false, false, true, false)
 	end)
@@ -1020,42 +1020,18 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.beastMasteryDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_BeastMastery", UIParent)
-	interfaceSettingsFrame.beastMasteryDisplayPanel.name = L["HunterBeastMasteryFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.beastMasteryDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["beastMastery"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.beastMasteryDisplayPanel, L["HunterBeastMasteryFull"])
+	interfaceSettingsFrame.beastMasteryDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_BeastMastery")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "beastMastery", L["HunterBeastMasteryFull"], interfaceSettingsFrame.beastMasteryDisplayPanel)
 
 	parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterBeastMasteryFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.beastMasteryHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.beastMasteryHunterEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterBeastMasteryFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.hunter.beastMastery)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.hunter.beastMastery = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 1, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterBeastMasteryFull"],
+		TRB.Data.settings.core.enabled.hunter, "beastMastery",
+		"TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", "beastMasteryHunterEnabled",
+		"exportButton_Hunter_BeastMastery_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 1, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1212,7 +1188,7 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 2, true, false, false, false, false, false)
 	end)
@@ -1245,7 +1221,7 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	})
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -1288,7 +1264,7 @@ local function MarksmanshipConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Hunter_Marksmanship_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Marksmanship_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Marksmanship_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 3, 2, false, true, false, false, false, false)
 	end)
@@ -1424,7 +1400,7 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_Marksmanship_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Marksmanship_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Marksmanship_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 2, false, false, true, false, false, false)
 	end)
@@ -1437,32 +1413,32 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 3, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingBuilder"], spec.colors.text.casting.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingBuilder"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
-	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.spending
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1509,7 +1485,7 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Marksmanship_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -1580,7 +1556,7 @@ local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Hunter_Marksmanship_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Marksmanship_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Marksmanship_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 2, false, false, false, false, true, false)
 	end)
@@ -1605,42 +1581,18 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.marksmanshipDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship", UIParent)
-	interfaceSettingsFrame.marksmanshipDisplayPanel.name = L["HunterMarksmanshipFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.marksmanshipDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["marksmanship"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.marksmanshipDisplayPanel, L["HunterMarksmanshipFull"])
+	interfaceSettingsFrame.marksmanshipDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "marksmanship", L["HunterMarksmanshipFull"], interfaceSettingsFrame.marksmanshipDisplayPanel)
 
 	parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterMarksmanshipFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.marksmanshipHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.marksmanshipHunterEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterMarksmanshipFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.hunter.marksmanship)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.hunter.marksmanship = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Hunter_Marksmanship_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 2, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterMarksmanshipFull"],
+		TRB.Data.settings.core.enabled.hunter, "marksmanship",
+		"TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", "marksmanshipHunterEnabled",
+		"exportButton_Hunter_Marksmanship_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 2, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -1808,7 +1760,7 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_Survival_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Survival_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Survival_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 3, true, false, false, false, false, false)
 	end)
@@ -1841,7 +1793,7 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	})
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
@@ -1884,7 +1836,7 @@ local function SurvivalConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Hunter_Survival_Thresholds = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportThresholds"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Survival_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Survival_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 3, 3, false, true, false, false, false, false)
 	end)
@@ -1985,7 +1937,7 @@ local function SurvivalConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_Survival_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Survival_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Survival_FontAndText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 3, 3, false, false, true, false, false, false)
 	end)
@@ -1998,26 +1950,26 @@ local function SurvivalConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 3, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.spending
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
@@ -2064,7 +2016,7 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Hunter_Survival_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Survival_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Survival_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 	end)
@@ -2084,7 +2036,7 @@ local function SurvivalConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Hunter_Survival_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
+	controls.buttons.exportButton_Hunter_Survival_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Survival_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 3, 3, false, false, false, false, true, false)
 	end)
@@ -2109,42 +2061,18 @@ local function SurvivalConstructOptionsPanel(cache)
 	controls.dropDown = {}		
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.survivalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Survival", UIParent)
-	interfaceSettingsFrame.survivalDisplayPanel.name = L["HunterSurvivalFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.survivalDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["survival"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.survivalDisplayPanel, L["HunterSurvivalFull"])
+	interfaceSettingsFrame.survivalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Survival")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "survival", L["HunterSurvivalFull"], interfaceSettingsFrame.survivalDisplayPanel)
 	
 	parent = interfaceSettingsFrame.survivalDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvivalFull"], oUi.xCoord, yCoord-5)
-
-	controls.checkBoxes.survivalHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.survivalHunterEnabled
-	f:SetPoint("TOPLEFT", 320, yCoord-10)
-	getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterSurvivalFull"])
-	f:SetChecked(TRB.Data.settings.core.enabled.hunter.survival)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.enabled.hunter.survival = self:GetChecked()
-		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
-
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	controls.buttons.exportButton_Hunter_Survival_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
-	controls.buttons.exportButton_Hunter_Survival_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 3, true, true, true, true, true, false)
-	end)
-
-	yCoord = yCoord - 52
+	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterSurvivalFull"],
+		TRB.Data.settings.core.enabled.hunter, "survival",
+		"TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", "survivalHunterEnabled",
+		"exportButton_Hunter_Survival_All",
+		function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 3, true, true, true, true, true, false)
+		end)
 
 	local tabs = {}
 	local tabsheets = {}
@@ -2200,8 +2128,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("hunter", L["Hunter"])
 	BeastMasteryConstructOptionsPanel(specCache.beastMastery)
 	MarksmanshipConstructOptionsPanel(specCache.marksmanship)
 	SurvivalConstructOptionsPanel(specCache.survival)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Hunter.ConstructOptionsPanel = ConstructOptionsPanel

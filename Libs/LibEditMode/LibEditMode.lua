@@ -1,3 +1,4 @@
+---@diagnostic disable: redundant-parameter
 local MINOR = 15
 
 local _, ns = ...
