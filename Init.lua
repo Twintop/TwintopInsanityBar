@@ -109,13 +109,15 @@ TRB.Data.constants = {
 		xPadding = 10,
 		xPadding2 = 30,
 		xCoord = 5,
-		xCoord2 = 320,
+		xCoord2 = 360,
 		xOffset1 = 50,
-		xOffset2 = 370, --Calculated below
-		dropdownWidth = 225,
-		sliderWidth = 260,
+		xOffset2 = 410, --Calculated below
+		dropdownWidth = 350,
+		sliderWidth = 300,
 		sliderHeight = 20,
-		maxOptionsWidth = 700
+		maxOptionsWidth = 720,
+		colorPickerTextWidth = 350,
+		colorPickerFrameSize = 25
 	}
 }
 
