@@ -1846,3 +1846,9 @@ L["OpenTRBOptionsDescription"] = "Click the button below or type /trb to open op
 
 -- Drag & Drop removal
 L["DragAndDropEditModeMessage"] = "For Drag & Drop placement of the bar, please use Edit Mode."
+
+-- Options Frame Footer
+L["AboutTwintopsResourceBar"] = "About Twintop's Resource Bar"
+L["FooterDiscord"] = "Discord"
+L["FooterGitHubIssues"] = "GitHub Issues"
+L["FooterNews"] = "News"

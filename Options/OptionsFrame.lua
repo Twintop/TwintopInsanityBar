@@ -3,14 +3,72 @@ local L = TRB.Localization
 
 TRB.Options = TRB.Options or {}
 
+-- URL copy dialog (defined eagerly so it's always available)
+StaticPopupDialogs["TRB_OPTIONSFRAME_URL"] = {
+	OnShow = function(self, data)
+		self:SetWidth(450)
+		self:SetFormattedText("%s", data.title)
+		self:GetEditBox():SetText(data.url)
+		self:GetEditBox():SetAutoFocus(true)
+		self:GetEditBox():HighlightText()
+	end,
+	OnAccept = function(self) self:Hide() end,
+	EditBoxOnEnterPressed = function(self) self:GetParent():Hide() end,
+	EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
+	text = "",
+	button1 = L["OK"],
+	hasEditBox = true,
+	hasWideEditBox = true,
+	editBoxWidth = 400,
+	timeout = 60,
+	whileDead = true,
+	closeButton = true,
+	hideOnEscape = true
+}
+
 -- Constants
 local FRAME_WIDTH = 960
 local FRAME_HEIGHT = 700
 local TITLE_HEIGHT = 30
-local NAV_WIDTH = 200
+local FOOTER_HEIGHT = 24
+local NAV_WIDTH = 220
 local NAV_INDENT = 20
 local NAV_BUTTON_HEIGHT = 22
 local NAV_BUTTON_PAD = 2
+local NAV_ICON_SIZE = 16
+
+-- Lookup tables for class/spec icons
+local CLASS_IDS = {
+	deathKnight = 6,
+	demonHunter = 12,
+	druid = 11,
+	evoker = 13,
+	hunter = 3,
+	mage = 8,
+	monk = 10,
+	paladin = 2,
+	priest = 5,
+	rogue = 4,
+	shaman = 7,
+	warlock = 9,
+	warrior = 1,
+}
+
+local SPEC_INDICES = {
+	deathKnight = { blood = 1, frost = 2, unholy = 3 },
+	demonHunter = { havoc = 1, vengeance = 2, devourer = 3 },
+	druid = { balance = 1, feral = 2, guardian = 3, restoration = 4 },
+	evoker = { devastation = 1, preservation = 2, augmentation = 3 },
+	hunter = { beastMastery = 1, marksmanship = 2, survival = 3 },
+	mage = { arcane = 1, fire = 2, frost = 3 },
+	monk = { brewmaster = 1, mistweaver = 2, windwalker = 3 },
+	paladin = { holy = 1, protection = 2, retribution = 3 },
+	priest = { discipline = 1, holy = 2, shadow = 3 },
+	rogue = { assassination = 1, outlaw = 2, subtlety = 3 },
+	shaman = { elemental = 1, enhancement = 2, restoration = 3 },
+	warlock = { affliction = 1, demonology = 2, destruction = 3 },
+	warrior = { arms = 1, fury = 2, protection = 3 },
+}
 
 -- ─────────────────────────────────────────────────────────────────────
 -- Class definition
@@ -40,12 +98,35 @@ OptionsFrame.__index = OptionsFrame
 -- Internal helpers
 -- ─────────────────────────────────────────────────────────────────────
 
+---Get icon info for a nav entry
+---@param classKey string|nil
+---@param specKey string|nil
+---@return table|nil iconInfo {atlas=string} or {texture=number} or nil
+local function GetNavIcon(classKey, specKey)
+	if not classKey then
+		return nil
+	end
+	if specKey and CLASS_IDS[classKey] and SPEC_INDICES[classKey] then
+		local classId = CLASS_IDS[classKey]
+		local specIndex = SPEC_INDICES[classKey][specKey]
+		if classId and specIndex and GetSpecializationInfoForClassID then
+			local _, _, _, icon = GetSpecializationInfoForClassID(classId, specIndex)
+			if icon then
+				return { texture = icon }
+			end
+		end
+	end
+	-- Fall back to class icon atlas
+	return { atlas = "classicon-" .. string.lower(classKey) }
+end
+
 ---@param parent Frame
 ---@param label string
 ---@param indent number
 ---@param isHeader boolean
+---@param iconInfo table|nil {atlas=string} or {texture=number}
 ---@return Frame
-local function CreateNavButton(parent, label, indent, isHeader)
+local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
 	local btn = CreateFrame("Button", nil, parent)
 	btn:SetHeight(NAV_BUTTON_HEIGHT)
 	btn:SetWidth(NAV_WIDTH - 16 - indent)
@@ -63,11 +144,27 @@ local function CreateNavButton(parent, label, indent, isHeader)
 	---@diagnostic disable-next-line: inject-field
 	btn.selectedTexture = selected
 
+	-- Icon (optional)
+	local textLeftOffset = 4
+	if iconInfo then
+		local icon = btn:CreateTexture(nil, "ARTWORK")
+		icon:SetSize(NAV_ICON_SIZE, NAV_ICON_SIZE)
+		icon:SetPoint("LEFT", 2, 0)
+		if iconInfo.atlas then
+			icon:SetAtlas(iconInfo.atlas)
+		elseif iconInfo.texture then
+			icon:SetTexture(iconInfo.texture)
+		end
+		---@diagnostic disable-next-line: inject-field
+		btn.icon = icon
+		textLeftOffset = 2 + NAV_ICON_SIZE + 3
+	end
+
 	-- Text
 	local text = btn:CreateFontString(nil, "OVERLAY")
 	text:SetFontObject(isHeader and GameFontNormal or GameFontHighlightSmall)
 	text:SetJustifyH("LEFT")
-	text:SetPoint("LEFT", 4, 0)
+	text:SetPoint("LEFT", textLeftOffset, 0)
 	text:SetPoint("RIGHT", -4, 0)
 	text:SetText(label)
 	---@diagnostic disable-next-line: inject-field
@@ -99,11 +196,13 @@ function OptionsFrame:New()
 
 	instance.navEntries = {}
 	instance.navOrder = {}
+	instance.navBottomOrder = {}
 	instance.selectedKey = nil
 	instance.currentPanel = nil
 	instance.mainFrame = nil
 	instance.navScrollChild = nil
 	instance.contentArea = nil
+	instance.footerFrame = nil
 
 	return instance
 end
@@ -177,7 +276,7 @@ function OptionsFrame:EnsureFrame()
 	local navFrame = CreateFrame("Frame", nil, mainFrame, "BackdropTemplate")
 	navFrame:SetWidth(NAV_WIDTH)
 	navFrame:SetPoint("TOPLEFT", 4, -(TITLE_HEIGHT + 4))
-	navFrame:SetPoint("BOTTOMLEFT", 4, 4)
+	navFrame:SetPoint("BOTTOMLEFT", 4, 4 + FOOTER_HEIGHT + 1)
 	navFrame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -191,10 +290,10 @@ function OptionsFrame:EnsureFrame()
 	-- Nav scroll frame
 	local navScroll = CreateFrame("ScrollFrame", "TRB_OptionsFrame_NavScroll", navFrame, "UIPanelScrollFrameTemplate")
 	navScroll:SetPoint("TOPLEFT", 4, -4)
-	navScroll:SetPoint("BOTTOMRIGHT", -22, 4)
+	navScroll:SetPoint("BOTTOMRIGHT", -26, 4)
 
 	local navScrollChild = CreateFrame("Frame", nil, navScroll)
-	navScrollChild:SetWidth(NAV_WIDTH - 26)
+	navScrollChild:SetWidth(NAV_WIDTH - 30)
 	navScrollChild:SetHeight(1) -- updated by RefreshNav
 	navScroll:SetScrollChild(navScrollChild)
 
@@ -205,15 +304,147 @@ function OptionsFrame:EnsureFrame()
 	navDivider:SetPoint("BOTTOMLEFT", navFrame, "BOTTOMRIGHT", 0, 0)
 	navDivider:SetColorTexture(0.4, 0.4, 0.4, 0.8)
 
-	-- Right content area
+	-- Footer bar
+	local footerFrame = CreateFrame("Frame", "TRB_OptionsFrame_Footer", mainFrame)
+	footerFrame:SetHeight(FOOTER_HEIGHT)
+	footerFrame:SetPoint("BOTTOMLEFT", 4, 4)
+	footerFrame:SetPoint("BOTTOMRIGHT", -4, 4)
+
+	-- Divider above footer
+	local footerDivider = mainFrame:CreateTexture(nil, "ARTWORK")
+	footerDivider:SetHeight(1)
+	footerDivider:SetPoint("BOTTOMLEFT", footerFrame, "TOPLEFT", 0, 0)
+	footerDivider:SetPoint("BOTTOMRIGHT", footerFrame, "TOPRIGHT", 0, 0)
+	footerDivider:SetColorTexture(0.4, 0.4, 0.4, 0.8)
+
+	-- Footer: version text (left)
+	local versionText = footerFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	versionText:SetPoint("LEFT", 8, 0)
+	versionText:SetTextColor(0.6, 0.6, 0.6, 1)
+	local versionStr = TRB.Details.addonVersion
+	if TRB.Details.addonReleaseDate and TRB.Details.addonReleaseDate ~= "" then
+		versionStr = versionStr .. " (" .. TRB.Details.addonReleaseDate .. ")"
+	end
+	versionText:SetText(versionStr)
+
+	local discordIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\discord64.png"
+	local githubIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\GitHub_Invertocat_White64.png"
+	local newsIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\newspaper.png"
+	local FOOTER_BTN_WIDTH = 120
+
+	-- Footer: Discord button (right) — styled with blurple border, black bg, white text
+	local blurpleR, blurpleG, blurpleB = 0.345, 0.396, 0.949
+	local discordBtn = CreateFrame("Button", nil, footerFrame, "BackdropTemplate")
+	discordBtn:SetSize(FOOTER_BTN_WIDTH, 20)
+	discordBtn:SetPoint("RIGHT", -4, 0)
+	discordBtn:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Buttons\\WHITE8X8",
+		edgeSize = 1,
+		insets = { left = 1, right = 1, top = 1, bottom = 1 },
+	})
+	discordBtn:SetBackdropColor(0, 0, 0, 1)
+	discordBtn:SetBackdropBorderColor(blurpleR, blurpleG, blurpleB, 1)
+	discordBtn:EnableMouse(true)
+	discordBtn:RegisterForClicks("AnyUp")
+
+	local discordText = discordBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	discordText:SetPoint("CENTER", 8, 0)
+	discordText:SetText(L["FooterDiscord"])
+	discordText:SetTextColor(1, 1, 1, 1)
+
+	local discordHighlight = discordBtn:CreateTexture(nil, "HIGHLIGHT")
+	discordHighlight:SetAllPoints()
+	discordHighlight:SetColorTexture(blurpleR, blurpleG, blurpleB, 0.15)
+
+	discordBtn:SetScript("OnClick", function()
+		StaticPopup_Show("TRB_OPTIONSFRAME_URL", nil, nil, {
+			title = L["FooterDiscord"],
+			url = L["FooterDiscordUrl"]
+		})
+	end)
+	local discordIcon = discordBtn:CreateTexture(nil, "ARTWORK")
+	discordIcon:SetSize(14, 14)
+	discordIcon:SetPoint("LEFT", 8, 0)
+	discordIcon:SetTexture(discordIconPath)
+
+	-- Footer: GitHub Issues button (left of Discord) — styled with black bg, gray border, white text
+	local githubBtn = CreateFrame("Button", nil, footerFrame, "BackdropTemplate")
+	githubBtn:SetSize(FOOTER_BTN_WIDTH, 20)
+	githubBtn:SetPoint("RIGHT", discordBtn, "LEFT", -6, 0)
+	githubBtn:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Buttons\\WHITE8X8",
+		edgeSize = 1,
+		insets = { left = 1, right = 1, top = 1, bottom = 1 },
+	})
+	githubBtn:SetBackdropColor(0, 0, 0, 1)
+	githubBtn:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
+	githubBtn:EnableMouse(true)
+	githubBtn:RegisterForClicks("AnyUp")
+
+	local githubText = githubBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	githubText:SetPoint("CENTER", 8, 0)
+	githubText:SetText(L["FooterGitHubIssues"])
+	githubText:SetTextColor(1, 1, 1, 1)
+
+	local githubHighlight = githubBtn:CreateTexture(nil, "HIGHLIGHT")
+	githubHighlight:SetAllPoints()
+	githubHighlight:SetColorTexture(1, 1, 1, 0.1)
+
+	githubBtn:SetScript("OnClick", function()
+		StaticPopup_Show("TRB_OPTIONSFRAME_URL", nil, nil, {
+			title = L["FooterGitHubIssues"],
+			url = L["FooterGitHubIssuesUrl"]
+		})
+	end)
+	local githubIcon = githubBtn:CreateTexture(nil, "ARTWORK")
+	githubIcon:SetSize(14, 14)
+	githubIcon:SetPoint("LEFT", 8, 0)
+	githubIcon:SetTexture(githubIconPath)
+
+	-- Footer: News button (left of GitHub) — styled with dark bg, gray border, white text
+	local newsBtn = CreateFrame("Button", nil, footerFrame, "BackdropTemplate")
+	newsBtn:SetSize(FOOTER_BTN_WIDTH, 20)
+	newsBtn:SetPoint("RIGHT", githubBtn, "LEFT", -6, 0)
+	newsBtn:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Buttons\\WHITE8X8",
+		edgeSize = 1,
+		insets = { left = 1, right = 1, top = 1, bottom = 1 },
+	})
+	newsBtn:SetBackdropColor(0.1, 0.1, 0.1, 1)
+	newsBtn:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
+	newsBtn:EnableMouse(true)
+	newsBtn:RegisterForClicks("AnyUp")
+
+	local newsText = newsBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	newsText:SetPoint("CENTER", 8, 0)
+	newsText:SetText(L["FooterNews"])
+	newsText:SetTextColor(1, 1, 1, 1)
+
+	local newsHighlight = newsBtn:CreateTexture(nil, "HIGHLIGHT")
+	newsHighlight:SetAllPoints()
+	newsHighlight:SetColorTexture(1, 1, 1, 0.1)
+
+	newsBtn:SetScript("OnClick", function()
+		TRB.Functions.News:Show()
+	end)
+	local newsIcon = newsBtn:CreateTexture(nil, "ARTWORK")
+	newsIcon:SetSize(14, 14)
+	newsIcon:SetPoint("LEFT", 8, 0)
+	newsIcon:SetTexture(newsIconPath)
+
+	-- Right content area (above footer)
 	local contentArea = CreateFrame("Frame", "TRB_OptionsFrame_Content", mainFrame)
 	contentArea:SetPoint("TOPLEFT", navFrame, "TOPRIGHT", 1, 0)
-	contentArea:SetPoint("BOTTOMRIGHT", mainFrame, "BOTTOMRIGHT", -4, 4)
+	contentArea:SetPoint("BOTTOMRIGHT", mainFrame, "BOTTOMRIGHT", -4, 4 + FOOTER_HEIGHT + 1)
 
 	-- Store references on self
 	self.mainFrame = mainFrame
 	self.navScrollChild = navScrollChild
 	self.contentArea = contentArea
+	self.footerFrame = footerFrame
 
 	TRB.Frames.optionsFrame = mainFrame
 end
@@ -238,6 +469,30 @@ function OptionsFrame:RegisterCategory(key, label, panel)
 		button = nil,
 	}
 	table.insert(self.navOrder, key)
+
+	-- Re-parent the panel into content area, hide it
+	panel:SetParent(self.contentArea)
+	panel:ClearAllPoints()
+	panel:SetAllPoints(self.contentArea)
+	panel:Hide()
+end
+
+---Register a top-level nav category that always appears at the bottom of the nav list
+---@param key string
+---@param label string
+---@param panel Frame
+function OptionsFrame:RegisterBottomCategory(key, label, panel)
+	self:EnsureFrame()
+	self.navEntries[key] = {
+		key = key,
+		label = label,
+		panel = panel,
+		parentKey = nil,
+		children = nil,
+		collapsed = false,
+		button = nil,
+	}
+	table.insert(self.navBottomOrder, key)
 
 	-- Re-parent the panel into content area, hide it
 	panel:SetParent(self.contentArea)
@@ -342,19 +597,19 @@ function OptionsFrame:SelectCategory(key)
 	self:RefreshNav()
 end
 
----Rebuild the nav button layout
-function OptionsFrame:RefreshNav()
-	self:EnsureFrame()
-
-	local yOffset = -4
-
-	for _, topKey in ipairs(self.navOrder) do
+---Render a list of nav keys into the scroll child and return the updated yOffset
+---@param keys string[]
+---@param yOffset number
+---@return number
+function OptionsFrame:RenderNavSection(keys, yOffset)
+	for _, topKey in ipairs(keys) do
 		local entry = self.navEntries[topKey]
 		if entry then
 			-- Create or update button
 			local isHeader = (entry.children ~= nil and #entry.children > 0)
 			if not entry.button then
-				entry.button = CreateNavButton(self.navScrollChild, entry.label, 0, isHeader)
+				local iconInfo = isHeader and GetNavIcon(entry.key, nil) or nil
+				entry.button = CreateNavButton(self.navScrollChild, entry.label, 0, isHeader, iconInfo)
 				if isHeader then
 					local selfRef = self
 					entry.button:SetScript("OnClick", function()
@@ -371,7 +626,7 @@ function OptionsFrame:RefreshNav()
 			end
 
 			entry.button:SetPoint("TOPLEFT", self.navScrollChild, "TOPLEFT", 4, yOffset)
-			entry.button:SetWidth(NAV_WIDTH - 30)
+			entry.button:SetWidth(NAV_WIDTH - 34)
 			entry.button:Show()
 
 			-- Update selected highlight
@@ -394,7 +649,8 @@ function OptionsFrame:RefreshNav()
 					local childEntry = self.navEntries[childKey]
 					if childEntry then
 						if not childEntry.button then
-							childEntry.button = CreateNavButton(self.navScrollChild, childEntry.label, NAV_INDENT, false)
+						local childIconInfo = GetNavIcon(entry.key, childEntry.key)
+						childEntry.button = CreateNavButton(self.navScrollChild, childEntry.label, NAV_INDENT, false, childIconInfo)
 							local selfRef = self
 							local ck = childEntry.key
 							childEntry.button:SetScript("OnClick", function()
@@ -403,7 +659,7 @@ function OptionsFrame:RefreshNav()
 						end
 
 						childEntry.button:SetPoint("TOPLEFT", self.navScrollChild, "TOPLEFT", 4 + NAV_INDENT, yOffset)
-						childEntry.button:SetWidth(NAV_WIDTH - 30 - NAV_INDENT)
+						childEntry.button:SetWidth(NAV_WIDTH - 34 - NAV_INDENT)
 						childEntry.button:Show()
 
 						if self.selectedKey == childKey then
@@ -425,6 +681,23 @@ function OptionsFrame:RefreshNav()
 				end
 			end
 		end
+	end
+
+	return yOffset
+end
+
+---Rebuild the nav button layout
+function OptionsFrame:RefreshNav()
+	self:EnsureFrame()
+
+	local yOffset = -4
+
+	-- Main nav items (top section)
+	yOffset = self:RenderNavSection(self.navOrder, yOffset)
+
+	-- Bottom nav items (always last)
+	if #self.navBottomOrder > 0 then
+		yOffset = self:RenderNavSection(self.navBottomOrder, yOffset)
 	end
 
 	-- Update scroll child height

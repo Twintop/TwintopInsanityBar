@@ -918,8 +918,8 @@ function TRB.Options:ConstructOptionsPanel()
 	TRB.Details.addonCategory = TRB.Details.addonCategory or {}
 	TRB.Details.addonCategory.specs = TRB.Details.addonCategory.specs or {}
 
-	-- Register the info panel with the standalone options frame
-	TRB.Options.OptionsFrame:RegisterCategory("main", L["TwintopsResourceBar"], interfaceSettingsFrame.panel)
+	-- Register the info panel with the standalone options frame (always at bottom of nav)
+	TRB.Options.OptionsFrame:RegisterBottomCategory("main", L["AboutTwintopsResourceBar"], interfaceSettingsFrame.panel)
 
 	-- Create a minimal stub in Blizzard's addon settings
 	local blizzardStub = CreateFrame("Frame", "TwintopResourceBarPanel_BlizzardStub")

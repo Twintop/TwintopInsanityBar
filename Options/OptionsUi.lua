@@ -1133,8 +1133,8 @@ function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, he
 	cf:SetBackdropColor(0, 0, 0, 0.5)
 
 	if fillParent then
-		-- Caller sets TOPLEFT; stretch to bottom-right of parent
-		cf:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 0)
+		-- Caller sets TOPLEFT; stretch to bottom-right of parent, mirroring the TOPLEFT x-padding
+		cf:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -5, 0)
 	else
 		cf:SetWidth(width)
 		cf:SetHeight(height)
