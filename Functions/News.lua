@@ -19,6 +19,10 @@ local content = [====[
 - Add a minimap button for quick access to the options window. Toggle it with `/trb minimap show` and `/trb minimap hide`.
 - Remove legacy drag and drop bar positioning. Use Edit Mode instead.
 
+### Localization
+
+- [#606](#606) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ---
 
 # 12.0.1.0-release (2026-02-11)
