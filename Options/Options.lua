@@ -552,54 +552,54 @@ local function ConstructImportExportRow(parent, yCoord, controls, classId, specI
 	if classId == nil then
 		exportInnerMessage = L["ExportMessagePrefixAll"] .. " " .. classOrSpecLocalization .. " " .. L["ExportMessagePostfixSpecializations"]
 		yCoord = yCoord - 35
-		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord, yCoord, 120, 20)
+		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord, yCoord, 130, 20)
 	elseif specId == nil then
 		exportInnerMessage = L["ExportMessagePrefixAll"] .. " " .. classOrSpecLocalization .. " " .. L["ExportMessagePostfixSpecializations"]
 		yCoord = yCoord - 35
-		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord, yCoord, 120, 20)
+		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord, yCoord, 130, 20)
 	else
 		exportInnerMessage = L["ExportMessagePrefix"] .. " " .. classOrSpecLocalization
 		yCoord = yCoord - 25
-		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord+oUi.xPadding, yCoord, 110, 20, TRB.Options.fonts.options.exportSpec)
 	end
 
 	if includeButtons then
-		buttonOffset = oUi.xCoord + oUi.xPadding + 100
-		controls.buttons["export_" .. namePrefix .. "_All"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
+		buttonOffset = oUi.xCoord + oUi.xPadding + 110
+		controls.buttons["export_" .. namePrefix .. "_All"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 60, 20)
 		controls.buttons["export_" .. namePrefix .. "_All"]:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixAll"] .. ".", classId, specId, true, true, true, true, true, false)
 		end)
 
-		buttonOffset = buttonOffset + buttonSpacing + 50
-		controls["export_" .. namePrefix .. "_BarDisplay"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
+		buttonOffset = buttonOffset + buttonSpacing + 60
+		controls["export_" .. namePrefix .. "_BarDisplay"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 90, 20)
 		controls["export_" .. namePrefix .. "_BarDisplay"]:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", classId, specId, true, false, false, false, false, false)
 		end)
 
-		buttonOffset = buttonOffset + buttonSpacing + 80
+		buttonOffset = buttonOffset + buttonSpacing + 90
 		if includeThreshold then
-			controls["export_" .. namePrefix .. "_Thresholds"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageThresholds"], buttonOffset, yCoord, 80, 20)
+			controls["export_" .. namePrefix .. "_Thresholds"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageThresholds"], buttonOffset, yCoord, 90, 20)
 			controls["export_" .. namePrefix .. "_Thresholds"]:SetScript("OnClick", function(self, ...)
 				TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixThresholds"] .. ".", classId, specId, false, true, false, false, false, false)
 			end)
 		end
 
-		buttonOffset = buttonOffset + buttonSpacing + 80
-		controls["export_" .. namePrefix .. "_FontAndText"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
+		buttonOffset = buttonOffset + buttonSpacing + 90
+		controls["export_" .. namePrefix .. "_FontAndText"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 100, 20)
 		controls["export_" .. namePrefix .. "_FontAndText"]:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixFontText"] .. ".", classId, specId, false, false, true, false, false, false)
 		end)
 
-		buttonOffset = buttonOffset + buttonSpacing + 90
+		buttonOffset = buttonOffset + buttonSpacing + 100
 		if includeAudioTracking then
-			controls["export_" .. namePrefix .. "_AudioAndTracking"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
+			controls["export_" .. namePrefix .. "_AudioAndTracking"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 130, 20)
 			controls["export_" .. namePrefix .. "_AudioAndTracking"]:SetScript("OnClick", function(self, ...)
 				TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
 			end)
 		end
 
-		buttonOffset = buttonOffset + buttonSpacing + 120
-		controls["export_" .. namePrefix .. "_BarText"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
+		buttonOffset = buttonOffset + buttonSpacing + 130
+		controls["export_" .. namePrefix .. "_BarText"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 80, 20)
 		controls["export_" .. namePrefix .. "_BarText"]:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixBarText"] .. ".", classId, specId, false, false, false, false, true, false)
 		end)
@@ -729,14 +729,14 @@ local function ConstructImportExportPanel()
 
 	yCoord = yCoord - 35
 
-	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Everything = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAllClassesSpecs"] .. " + " .. L["GlobalOptions"], buttonOffset, yCoord, 300, 20)
+	buttonOffset = oUi.xCoord + oUi.xPadding + 110
+	controls.buttons.exportButton_Everything = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAllClassesSpecs"] .. " + " .. L["GlobalOptions"], buttonOffset, yCoord, 340, 20)
 	controls.buttons.exportButton_Everything:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageAllClassesSpecs"] .. " + " .. L["GlobalOptions"] .. ".", nil, nil, true, false, true, true, true, true)
 	end)
 
-	buttonOffset = buttonOffset + buttonSpacing + 300
-	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageGlobalOptionsOnly"], buttonOffset, yCoord, 200, 20)
+	buttonOffset = buttonOffset + buttonSpacing + 340
+	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageGlobalOptionsOnly"], buttonOffset, yCoord, 220, 20)
 	controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageGlobalOptionsOnly"] .. ".", nil, -1, false, false, false, false, false, true)
 	end)
@@ -830,13 +830,6 @@ function TRB.Options:ConstructOptionsPanel()
 
 	interfaceSettingsFrame.controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, TRB.Details.addonTitle, oUi.xCoord+oUi.xPadding, yCoord)
 
-	local newsButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ShowNewsPopup"], 510, yCoord, 200, 40)
-	newsButton:ClearAllPoints()
-	newsButton:SetPoint("TOPRIGHT", yCoord, 5)
-	newsButton:SetScript("OnClick", function(self, ...)
-		TRB.Functions.News:Show()
-	end)
-
 	yCoord = yCoord - 40
 	interfaceSettingsFrame.controls.labels.infoAuthor = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["Author"] .. ":", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
 	yCoord = yCoord - 40
@@ -905,7 +898,7 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText4 = localeText4 .. "\n" .. "需要翻譯！"
 
 
-	yCoord = yCoord - 170
+	yCoord = yCoord - 180
 	interfaceSettingsFrame.controls.labels.localization1 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Localization" .. ":", localeText1, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 100, 15, 300)
 	interfaceSettingsFrame.controls.labels.localization2 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText2, oUi.xCoord+(oUi.xPadding*2)+50, yCoord, 0, 100, 15, 300, "RIGHT")
 	interfaceSettingsFrame.controls.labels.localization3 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText3, oUi.xCoord+(oUi.xPadding*2)+200, yCoord, 0, 375, 15, 300)
