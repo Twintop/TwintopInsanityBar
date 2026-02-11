@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.0.1.1-release (2026-02-12)
+## General
+
+- [#352](#352) Add a new dedicated movable options window. Access it via `/trb` or the new minimap button.
+- Add a minimap button for quick access to the options window. Toggle it with `/trb minimap show` and `/trb minimap hide`.
+- Remove legacy drag and drop bar positioning. Use Edit Mode instead.
+
+---
+
 # 12.0.1.0-release (2026-02-11)
 ## General
 
