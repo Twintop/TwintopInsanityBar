@@ -1,7 +1,7 @@
 local _, TRB = ...
 local L = TRB.Localization
 
-TRB.Options = {}
+TRB.Options = TRB.Options or {}
 
 local oUi = TRB.Data.constants.optionsUi
 
@@ -452,12 +452,8 @@ local function ConstructGlobalOptionsPanel()
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 	
-	interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
-	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.optionsPanel.name = L["GlobalOptions"]
-	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.optionsPanel.parent = parent.name
-	TRB.Details.addonCategory.global, _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.optionsPanel, L["GlobalOptions"])
+	interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General")
+	TRB.Options.OptionsFrame:RegisterCategory("global", L["GlobalOptions"], interfaceSettingsFrame.optionsPanel)
 
 	parent = interfaceSettingsFrame.optionsPanel
 
@@ -623,12 +619,8 @@ local function ConstructImportExportPanel()
 	local buttonOffset = 0
 	local buttonSpacing = 5
 
-	interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
-	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.importExportPanel.name = string.format("%s/%s", L["Import"], L["Export"])
-	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.importExportPanel.parent = parent.name
-	TRB.Details.addonCategory.io, _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.importExportPanel, string.format("%s/%s", L["Import"], L["Export"]))
+	interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport")
+	TRB.Options.OptionsFrame:RegisterCategory("importExport", string.format("%s/%s", L["Import"], L["Export"]), interfaceSettingsFrame.importExportPanel)
 
 	parent = interfaceSettingsFrame.importExportPanel
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format("%s/%s", L["Import"], L["Export"]), oUi.xCoord, yCoord)
@@ -923,13 +915,34 @@ function TRB.Options:ConstructOptionsPanel()
 
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.yCoord = yCoord
-	TRB.Details.addonCategory = {}
-	TRB.Details.addonCategory.specs = {}
-	TRB.Details.addonCategory.main, _ = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, L["TwintopsResourceBar"])
+	TRB.Details.addonCategory = TRB.Details.addonCategory or {}
+	TRB.Details.addonCategory.specs = TRB.Details.addonCategory.specs or {}
+
+	-- Register the info panel with the standalone options frame
+	TRB.Options.OptionsFrame:RegisterCategory("main", L["TwintopsResourceBar"], interfaceSettingsFrame.panel)
+
+	-- Create a minimal stub in Blizzard's addon settings
+	local blizzardStub = CreateFrame("Frame", "TwintopResourceBarPanel_BlizzardStub")
+	local stubTitle = blizzardStub:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	stubTitle:SetPoint("TOPLEFT", 16, -16)
+	stubTitle:SetText(L["TwintopsResourceBar"])
+	local stubDesc = blizzardStub:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	stubDesc:SetPoint("TOPLEFT", stubTitle, "BOTTOMLEFT", 0, -8)
+	stubDesc:SetText(L["OpenTRBOptionsDescription"])
+	local stubButton = CreateFrame("Button", nil, blizzardStub, "UIPanelButtonTemplate")
+	stubButton:SetSize(260, 30)
+	stubButton:SetPoint("TOPLEFT", stubDesc, "BOTTOMLEFT", 0, -12)
+	stubButton:SetText(L["OpenTRBOptions"])
+	stubButton:SetScript("OnClick", function()
+		TRB.Options.OptionsFrame:Show()
+	end)
+	TRB.Details.addonCategory.main, _ = Settings.RegisterCanvasLayoutCategory(blizzardStub, L["TwintopsResourceBar"])
 	Settings.RegisterAddOnCategory(TRB.Details.addonCategory.main)
 
 	ConstructGlobalOptionsPanel()
 	ConstructImportExportPanel()
+
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 
 function TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)

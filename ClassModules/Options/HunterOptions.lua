@@ -1020,11 +1020,8 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.beastMasteryDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_BeastMastery", UIParent)
-	interfaceSettingsFrame.beastMasteryDisplayPanel.name = L["HunterBeastMasteryFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.beastMasteryDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["beastMastery"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.beastMasteryDisplayPanel, L["HunterBeastMasteryFull"])
+	interfaceSettingsFrame.beastMasteryDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_BeastMastery")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "beastMastery", L["HunterBeastMasteryFull"], interfaceSettingsFrame.beastMasteryDisplayPanel)
 
 	parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
@@ -1605,11 +1602,8 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.marksmanshipDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship", UIParent)
-	interfaceSettingsFrame.marksmanshipDisplayPanel.name = L["HunterMarksmanshipFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.marksmanshipDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["marksmanship"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.marksmanshipDisplayPanel, L["HunterMarksmanshipFull"])
+	interfaceSettingsFrame.marksmanshipDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "marksmanship", L["HunterMarksmanshipFull"], interfaceSettingsFrame.marksmanshipDisplayPanel)
 
 	parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
@@ -2109,11 +2103,8 @@ local function SurvivalConstructOptionsPanel(cache)
 	controls.dropDown = {}		
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.survivalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Survival", UIParent)
-	interfaceSettingsFrame.survivalDisplayPanel.name = L["HunterSurvivalFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.survivalDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["survival"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.survivalDisplayPanel, L["HunterSurvivalFull"])
+	interfaceSettingsFrame.survivalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Survival")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "survival", L["HunterSurvivalFull"], interfaceSettingsFrame.survivalDisplayPanel)
 	
 	parent = interfaceSettingsFrame.survivalDisplayPanel
 
@@ -2200,8 +2191,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("hunter", L["Hunter"])
 	BeastMasteryConstructOptionsPanel(specCache.beastMastery)
 	MarksmanshipConstructOptionsPanel(specCache.marksmanship)
 	SurvivalConstructOptionsPanel(specCache.survival)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Hunter.ConstructOptionsPanel = ConstructOptionsPanel

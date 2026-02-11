@@ -642,11 +642,8 @@ local function ArcaneConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.arcaneDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Arcane", UIParent)
-	interfaceSettingsFrame.arcaneDisplayPanel.name = L["MageArcaneFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.arcaneDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["arcane"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.arcaneDisplayPanel, L["MageArcaneFull"])
+	interfaceSettingsFrame.arcaneDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Arcane")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "arcane", L["MageArcaneFull"], interfaceSettingsFrame.arcaneDisplayPanel)
 	
 	parent = interfaceSettingsFrame.arcaneDisplayPanel
 
@@ -972,11 +969,8 @@ local function FireConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.fireDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Fire", UIParent)
-	interfaceSettingsFrame.fireDisplayPanel.name = L["MageFireFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.fireDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["fire"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.fireDisplayPanel, L["MageFireFull"])
+	interfaceSettingsFrame.fireDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Fire")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "fire", L["MageFireFull"], interfaceSettingsFrame.fireDisplayPanel)
 	
 	parent = interfaceSettingsFrame.fireDisplayPanel
 
@@ -1304,11 +1298,8 @@ local function FrostConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Frost", UIParent)
-	interfaceSettingsFrame.frostDisplayPanel.name = L["MageFrostFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.frostDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["frost"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.frostDisplayPanel, L["MageFrostFull"])
+	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Frost")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "frost", L["MageFrostFull"], interfaceSettingsFrame.frostDisplayPanel)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
@@ -1397,9 +1388,12 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	
+	TRB.Options.OptionsFrame:RegisterClassHeader("mage", L["Mage"])
+
 	ArcaneConstructOptionsPanel(specCache.arcane)
 	FireConstructOptionsPanel(specCache.fire)
 	FrostConstructOptionsPanel(specCache.frost)
+
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Mage.ConstructOptionsPanel = ConstructOptionsPanel

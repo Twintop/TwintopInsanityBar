@@ -1060,11 +1060,8 @@ local function BloodConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.bloodDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Blood", UIParent)
-	interfaceSettingsFrame.bloodDisplayPanel.name = L["DeathKnightBloodFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.bloodDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["blood"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.bloodDisplayPanel, L["DeathKnightBloodFull"])
+	interfaceSettingsFrame.bloodDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Blood")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "blood", L["DeathKnightBloodFull"], interfaceSettingsFrame.bloodDisplayPanel)
 	
 	parent = interfaceSettingsFrame.bloodDisplayPanel
 
@@ -1551,11 +1548,8 @@ local function FrostConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Frost", UIParent)
-	interfaceSettingsFrame.frostDisplayPanel.name = L["DeathKnightFrostFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.frostDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["frost"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.frostDisplayPanel, L["DeathKnightFrostFull"])
+	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Frost")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "frost", L["DeathKnightFrostFull"], interfaceSettingsFrame.frostDisplayPanel)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
@@ -2020,11 +2014,8 @@ local function UnholyConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.unholyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Unholy", UIParent)
-	interfaceSettingsFrame.unholyDisplayPanel.name = L["DeathKnightUnholyFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.unholyDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["unholy"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.unholyDisplayPanel, L["DeathKnightUnholyFull"])
+	interfaceSettingsFrame.unholyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Unholy")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "unholy", L["DeathKnightUnholyFull"], interfaceSettingsFrame.unholyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.unholyDisplayPanel
 
@@ -2110,9 +2101,12 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	
+	TRB.Options.OptionsFrame:RegisterClassHeader("deathKnight", L["DeathKnight"])
+
 	BloodConstructOptionsPanel(specCache.blood)
 	FrostConstructOptionsPanel(specCache.frost)
 	UnholyConstructOptionsPanel(specCache.unholy)
+
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.DeathKnight.ConstructOptionsPanel = ConstructOptionsPanel

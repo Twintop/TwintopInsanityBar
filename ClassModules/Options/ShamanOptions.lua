@@ -874,11 +874,8 @@ local function ElementalConstructOptionsPanel(cache)
 	local controls = interfaceSettingsFrame.controls
 	local yCoord = 0
 	local f = nil
-	interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental", UIParent)
-	interfaceSettingsFrame.elementalDisplayPanel.name = L["ShamanElementalFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["elemental"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.elementalDisplayPanel, L["ShamanElementalFull"])
+	interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "elemental", L["ShamanElementalFull"], interfaceSettingsFrame.elementalDisplayPanel)
 	
 	parent = interfaceSettingsFrame.elementalDisplayPanel
 
@@ -1333,11 +1330,8 @@ local function EnhancementConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.enhancementDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Enhancement", UIParent)
-	interfaceSettingsFrame.enhancementDisplayPanel.name = L["ShamanEnhancementFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.enhancementDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["enhancement"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.enhancementDisplayPanel, L["ShamanEnhancementFull"])
+	interfaceSettingsFrame.enhancementDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Enhancement")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "enhancement", L["ShamanEnhancementFull"], interfaceSettingsFrame.enhancementDisplayPanel)
 
 	parent = interfaceSettingsFrame.enhancementDisplayPanel
 
@@ -1718,11 +1712,8 @@ local function RestorationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Restoration", UIParent)
-	interfaceSettingsFrame.restorationDisplayPanel.name = L["ShamanRestorationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["restoration"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["ShamanRestorationFull"])
+	interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Restoration")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "restoration", L["ShamanRestorationFull"], interfaceSettingsFrame.restorationDisplayPanel)
 	
 	parent = interfaceSettingsFrame.restorationDisplayPanel
 
@@ -1811,8 +1802,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("shaman", L["Shaman"])
 	ElementalConstructOptionsPanel(specCache.elemental)
 	EnhancementConstructOptionsPanel(specCache.enhancement)
 	RestorationConstructOptionsPanel(specCache.restoration)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Shaman.ConstructOptionsPanel = ConstructOptionsPanel

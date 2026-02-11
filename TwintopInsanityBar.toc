@@ -111,6 +111,7 @@ Functions\Talent.lua
 Functions\Threshold.lua
 
 Options\OptionsUi.lua
+Options\OptionsFrame.lua
 Options\Options.lua
 
 ClassModules\DeathKnight.lua

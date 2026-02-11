@@ -946,11 +946,8 @@ local function DisciplineConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.disciplineDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Discipline", UIParent)
-	interfaceSettingsFrame.disciplineDisplayPanel.name = L["PriestDisciplineFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.disciplineDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["discipline"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.disciplineDisplayPanel, L["PriestDisciplineFull"])
+	interfaceSettingsFrame.disciplineDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Discipline")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "discipline", L["PriestDisciplineFull"], interfaceSettingsFrame.disciplineDisplayPanel)
 	parent = interfaceSettingsFrame.disciplineDisplayPanel
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestDisciplineFull"], oUi.xCoord, yCoord-5)
@@ -1571,11 +1568,8 @@ local function HolyConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.holyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Holy", UIParent)
-	interfaceSettingsFrame.holyDisplayPanel.name = L["PriestHolyFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.holyDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["holy"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.holyDisplayPanel, L["PriestHolyFull"])
+	interfaceSettingsFrame.holyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Holy")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "holy", L["PriestHolyFull"], interfaceSettingsFrame.holyDisplayPanel)
 
 	parent = interfaceSettingsFrame.holyDisplayPanel
 
@@ -2246,11 +2240,8 @@ local function ShadowConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 	
-	interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Shadow", UIParent)
-	interfaceSettingsFrame.shadowDisplayPanel.name = L["PriestShadowFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["shadow"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.shadowDisplayPanel, L["PriestShadowFull"])
+	interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Shadow")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "shadow", L["PriestShadowFull"], interfaceSettingsFrame.shadowDisplayPanel)
 
 	parent = interfaceSettingsFrame.shadowDisplayPanel
 
@@ -2326,8 +2317,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("priest", L["Priest"])
 	DisciplineConstructOptionsPanel(specCache.discipline)
 	HolyConstructOptionsPanel(specCache.holy)
 	ShadowConstructOptionsPanel(specCache.shadow)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Priest.ConstructOptionsPanel = ConstructOptionsPanel

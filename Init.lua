@@ -286,14 +286,11 @@ function SlashCmdList.TWINTOP(msg)
 			print(L["CannotOpenOptionsInCombat"])
 			return
 		end
-		if TRB.Data.barConstructedForSpec == nil then
-			Settings.OpenToCategory(TRB.Details.addonCategory.main.ID)
+		TRB.Options.OptionsFrame:Show()
+		if TRB.Data.barConstructedForSpec ~= nil then
+			TRB.Options.OptionsFrame:SelectCategory(TRB.Data.barConstructedForSpec)
 		else
-			if TRB.Data.barConstructedForSpec ~= nil and TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec] ~= nil and TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec].ID ~= nil then
-				Settings.OpenToCategory(TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec].ID)
-			else
-				Settings.OpenToCategory(TRB.Details.addonCategory.main.ID)
-			end
+			TRB.Options.OptionsFrame:SelectCategory("main")
 		end
 	end
 end

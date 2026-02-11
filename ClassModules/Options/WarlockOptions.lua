@@ -736,11 +736,8 @@ local function AfflictionConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.afflictionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warlock_Affliction", UIParent)
-	interfaceSettingsFrame.afflictionDisplayPanel.name = L["WarlockAfflictionFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.afflictionDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["affliction"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.afflictionDisplayPanel, L["WarlockAfflictionFull"])
+	interfaceSettingsFrame.afflictionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warlock_Affliction")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "affliction", L["WarlockAfflictionFull"], interfaceSettingsFrame.afflictionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.afflictionDisplayPanel
 
@@ -1154,11 +1151,8 @@ local function DemonologyConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.demonologyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_".. namePrefix, UIParent)
-	interfaceSettingsFrame.demonologyDisplayPanel.name = L["WarlockDemonologyFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.demonologyDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["demonology"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.demonologyDisplayPanel, L["WarlockDemonologyFull"])
+	interfaceSettingsFrame.demonologyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_".. namePrefix)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "demonology", L["WarlockDemonologyFull"], interfaceSettingsFrame.demonologyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.demonologyDisplayPanel
 
@@ -1572,11 +1566,8 @@ local function DestructionConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.destructionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_".. namePrefix, UIParent)
-	interfaceSettingsFrame.destructionDisplayPanel.name = L["WarlockDestructionFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.destructionDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["destruction"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.destructionDisplayPanel, L["WarlockDestructionFull"])
+	interfaceSettingsFrame.destructionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_".. namePrefix)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "destruction", L["WarlockDestructionFull"], interfaceSettingsFrame.destructionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.destructionDisplayPanel
 
@@ -1662,9 +1653,12 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	
+	TRB.Options.OptionsFrame:RegisterClassHeader("warlock", L["Warlock"])
+
 	AfflictionConstructOptionsPanel(specCache.affliction)
 	DemonologyConstructOptionsPanel(specCache.demonology)
 	DestructionConstructOptionsPanel(specCache.destruction)
+
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Warlock.ConstructOptionsPanel = ConstructOptionsPanel

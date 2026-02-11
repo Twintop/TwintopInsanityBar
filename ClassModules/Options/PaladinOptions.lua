@@ -796,11 +796,8 @@ local function HolyConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.holyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Holy", UIParent)
-	interfaceSettingsFrame.holyDisplayPanel.name = L["PaladinHolyFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.holyDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["holy"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.holyDisplayPanel, L["PaladinHolyFull"])
+	interfaceSettingsFrame.holyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Holy")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "holy", L["PaladinHolyFull"], interfaceSettingsFrame.holyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.holyDisplayPanel
 
@@ -1231,11 +1228,8 @@ local function ProtectionConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.protectionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Protection", UIParent)
-	interfaceSettingsFrame.protectionDisplayPanel.name = L["PaladinProtectionFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.protectionDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["protection"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.protectionDisplayPanel, L["PaladinProtectionFull"])
+	interfaceSettingsFrame.protectionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Protection")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "protection", L["PaladinProtectionFull"], interfaceSettingsFrame.protectionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.protectionDisplayPanel
 
@@ -1665,11 +1659,8 @@ local function RetributionConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.retributionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Retribution", UIParent)
-	interfaceSettingsFrame.retributionDisplayPanel.name = L["PaladinRetributionFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.retributionDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["retribution"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.retributionDisplayPanel, L["PaladinRetributionFull"])
+	interfaceSettingsFrame.retributionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Retribution")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "retribution", L["PaladinRetributionFull"], interfaceSettingsFrame.retributionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.retributionDisplayPanel
 
@@ -1755,9 +1746,12 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	
+	TRB.Options.OptionsFrame:RegisterClassHeader("paladin", L["Paladin"])
+
 	HolyConstructOptionsPanel(specCache.holy)
 	ProtectionConstructOptionsPanel(specCache.protection)
 	RetributionConstructOptionsPanel(specCache.retribution)
+
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Paladin.ConstructOptionsPanel = ConstructOptionsPanel

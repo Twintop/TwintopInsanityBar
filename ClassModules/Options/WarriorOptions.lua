@@ -1071,11 +1071,8 @@ local function ArmsConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.armsDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Arms", UIParent)
-	interfaceSettingsFrame.armsDisplayPanel.name = L["WarriorArmsFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.armsDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["arms"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.armsDisplayPanel, L["WarriorArmsFull"])
+	interfaceSettingsFrame.armsDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Arms")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "arms", L["WarriorArmsFull"], interfaceSettingsFrame.armsDisplayPanel)
 	
 	parent = interfaceSettingsFrame.armsDisplayPanel
 
@@ -1580,12 +1577,8 @@ local function FuryConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.furyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Fury", UIParent)
----@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.furyDisplayPanel.name = L["WarriorFuryFull"]
----@diagnostic disable-next-line: undefined-field, inject-field
-	interfaceSettingsFrame.furyDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["fury"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.furyDisplayPanel, L["WarriorFuryFull"])
+	interfaceSettingsFrame.furyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Fury")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "fury", L["WarriorFuryFull"], interfaceSettingsFrame.furyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.furyDisplayPanel
 
@@ -2119,11 +2112,8 @@ local function ProtectionConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.protectionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Protection", UIParent)
-	interfaceSettingsFrame.protectionDisplayPanel.name = L["WarriorProtection"].. " " .. L["Warrior"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.protectionDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["protection"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.protectionDisplayPanel, L["WarriorProtectionFull"])
+	interfaceSettingsFrame.protectionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Protection")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "protection", L["WarriorProtectionFull"], interfaceSettingsFrame.protectionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.protectionDisplayPanel
 
@@ -2212,8 +2202,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("warrior", L["Warrior"])
 	ArmsConstructOptionsPanel(specCache.arms)
 	FuryConstructOptionsPanel(specCache.fury)
 	ProtectionConstructOptionsPanel(specCache.protection)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Warrior.ConstructOptionsPanel = ConstructOptionsPanel

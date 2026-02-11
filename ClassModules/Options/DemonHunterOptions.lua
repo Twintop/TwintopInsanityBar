@@ -996,11 +996,8 @@ local function HavocConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.havocDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Havoc", UIParent)
-	interfaceSettingsFrame.havocDisplayPanel.name = L["DemonHunterHavoc"].. " " .. L["DemonHunter"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.havocDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["havoc"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.havocDisplayPanel, L["DemonHunterHavocFull"])
+	interfaceSettingsFrame.havocDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Havoc")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "havoc", L["DemonHunterHavocFull"], interfaceSettingsFrame.havocDisplayPanel)
 	
 	parent = interfaceSettingsFrame.havocDisplayPanel
 
@@ -1517,11 +1514,8 @@ local function VengeanceConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.vengeanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Vengeance", UIParent)
-	interfaceSettingsFrame.vengeanceDisplayPanel.name = L["DemonHunterVengeance"].. " " .. L["DemonHunter"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.vengeanceDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["vengeance"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.vengeanceDisplayPanel, L["DemonHunterVengeanceFull"])
+	interfaceSettingsFrame.vengeanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Vengeance")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "vengeance", L["DemonHunterVengeanceFull"], interfaceSettingsFrame.vengeanceDisplayPanel)
 	
 	parent = interfaceSettingsFrame.vengeanceDisplayPanel
 
@@ -2061,11 +2055,8 @@ local function DevourerConstructOptionsPanel(cache)
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.devourerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Devourer", UIParent)
-	interfaceSettingsFrame.devourerDisplayPanel.name = L["DemonHunterDevourer"].. " " .. L["DemonHunter"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.devourerDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["devourer"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.devourerDisplayPanel, L["DemonHunterDevourerFull"])
+	interfaceSettingsFrame.devourerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Devourer")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "devourer", L["DemonHunterDevourerFull"], interfaceSettingsFrame.devourerDisplayPanel)
 	
 	parent = interfaceSettingsFrame.devourerDisplayPanel
 
@@ -2154,8 +2145,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("demonHunter", L["DemonHunter"])
 	HavocConstructOptionsPanel(specCache.havoc)
 	VengeanceConstructOptionsPanel(specCache.vengeance)
 	DevourerConstructOptionsPanel(specCache.devourer)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.DemonHunter.ConstructOptionsPanel = ConstructOptionsPanel

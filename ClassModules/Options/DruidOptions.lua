@@ -1552,11 +1552,8 @@ local function BalanceConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.balanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Balance", UIParent)
-	interfaceSettingsFrame.balanceDisplayPanel.name = L["DruidBalanceFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.balanceDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["balance"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.balanceDisplayPanel, L["DruidBalanceFull"])
+	interfaceSettingsFrame.balanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Balance")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "balance", L["DruidBalanceFull"], interfaceSettingsFrame.balanceDisplayPanel)
 
 	parent = interfaceSettingsFrame.balanceDisplayPanel
 
@@ -2293,11 +2290,8 @@ local function FeralConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.feralDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Feral", UIParent)
-	interfaceSettingsFrame.feralDisplayPanel.name = L["DruidFeralFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.feralDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["feral"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.feralDisplayPanel, L["DruidFeralFull"])
+	interfaceSettingsFrame.feralDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Feral")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "feral", L["DruidFeralFull"], interfaceSettingsFrame.feralDisplayPanel)
 
 	parent = interfaceSettingsFrame.feralDisplayPanel
 
@@ -2776,11 +2770,8 @@ local function GuardianConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.guardianDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Guardian", UIParent)
-	interfaceSettingsFrame.guardianDisplayPanel.name = L["DruidGuardianFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.guardianDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["guardian"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.guardianDisplayPanel, L["DruidGuardianFull"])
+	interfaceSettingsFrame.guardianDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Guardian")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "guardian", L["DruidGuardianFull"], interfaceSettingsFrame.guardianDisplayPanel)
 
 	parent = interfaceSettingsFrame.guardianDisplayPanel
 
@@ -3204,11 +3195,8 @@ local function RestorationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Restoration", UIParent)
-	interfaceSettingsFrame.restorationDisplayPanel.name = L["DruidRestorationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["restoration"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["DruidRestorationFull"])
+	interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Restoration")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "restoration", L["DruidRestorationFull"], interfaceSettingsFrame.restorationDisplayPanel)
 
 	parent = interfaceSettingsFrame.restorationDisplayPanel
 
@@ -3297,9 +3285,11 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("druid", L["Druid"])
 	BalanceConstructOptionsPanel(specCache.balance)
 	FeralConstructOptionsPanel(specCache.feral)
 	GuardianConstructOptionsPanel(specCache.guardian)
 	RestorationConstructOptionsPanel(specCache.restoration)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Druid.ConstructOptionsPanel = ConstructOptionsPanel

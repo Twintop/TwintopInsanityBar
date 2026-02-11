@@ -1147,11 +1147,8 @@ local function BrewmasterConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.brewmasterDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Brewmaster", UIParent)
-	interfaceSettingsFrame.brewmasterDisplayPanel.name = L["MonkBrewmasterFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.brewmasterDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["brewmaster"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.brewmasterDisplayPanel, L["MonkBrewmasterFull"])
+	interfaceSettingsFrame.brewmasterDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Brewmaster")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "brewmaster", L["MonkBrewmasterFull"], interfaceSettingsFrame.brewmasterDisplayPanel)
 	
 	parent = interfaceSettingsFrame.brewmasterDisplayPanel
 
@@ -1554,11 +1551,8 @@ local function MistweaverConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.mistweaverDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Mistweaver", UIParent)
-	interfaceSettingsFrame.mistweaverDisplayPanel.name = L["MonkMistweaverFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.mistweaverDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["mistweaver"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.mistweaverDisplayPanel, L["MonkMistweaverFull"])
+	interfaceSettingsFrame.mistweaverDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Mistweaver")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "mistweaver", L["MonkMistweaverFull"], interfaceSettingsFrame.mistweaverDisplayPanel)
 	
 	parent = interfaceSettingsFrame.mistweaverDisplayPanel
 
@@ -2182,11 +2176,8 @@ local function WindwalkerConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.windwalkerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Windwalker", UIParent)
-	interfaceSettingsFrame.windwalkerDisplayPanel.name = L["MonkWindwalkerFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.windwalkerDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["windwalker"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.windwalkerDisplayPanel, L["MonkWindwalkerFull"])
+	interfaceSettingsFrame.windwalkerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Windwalker")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "windwalker", L["MonkWindwalkerFull"], interfaceSettingsFrame.windwalkerDisplayPanel)
 	
 	parent = interfaceSettingsFrame.windwalkerDisplayPanel
 
@@ -2262,8 +2253,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("monk", L["Monk"])
 	BrewmasterConstructOptionsPanel(specCache.brewmaster)
 	MistweaverConstructOptionsPanel(specCache.mistweaver)
 	WindwalkerConstructOptionsPanel(specCache.windwalker)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Monk.ConstructOptionsPanel = ConstructOptionsPanel

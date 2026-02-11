@@ -977,11 +977,8 @@ local function DevastationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.devastationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Devastation", UIParent)
-	interfaceSettingsFrame.devastationDisplayPanel.name = L["EvokerDevastationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.devastationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["devastation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.devastationDisplayPanel, L["EvokerDevastationFull"])
+	interfaceSettingsFrame.devastationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Devastation")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "devastation", L["EvokerDevastationFull"], interfaceSettingsFrame.devastationDisplayPanel)
 
 	parent = interfaceSettingsFrame.devastationDisplayPanel
 
@@ -1416,11 +1413,8 @@ local function PreservationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.preservationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Preservation", UIParent)
-	interfaceSettingsFrame.preservationDisplayPanel.name = L["EvokerPreservationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.preservationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["preservation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.preservationDisplayPanel, L["EvokerPreservationFull"])
+	interfaceSettingsFrame.preservationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Preservation")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "preservation", L["EvokerPreservationFull"], interfaceSettingsFrame.preservationDisplayPanel)
 
 	parent = interfaceSettingsFrame.preservationDisplayPanel
 
@@ -1876,11 +1870,8 @@ local function AugmentationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.augmentationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Augmentation", UIParent)
-	interfaceSettingsFrame.augmentationDisplayPanel.name = L["EvokerAugmentationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.augmentationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["augmentation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.augmentationDisplayPanel, L["EvokerAugmentationFull"])
+	interfaceSettingsFrame.augmentationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Augmentation")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "augmentation", L["EvokerAugmentationFull"], interfaceSettingsFrame.augmentationDisplayPanel)
 
 	parent = interfaceSettingsFrame.augmentationDisplayPanel
 
@@ -1966,9 +1957,12 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	
+	TRB.Options.OptionsFrame:RegisterClassHeader("evoker", L["Evoker"])
+
 	DevastationConstructOptionsPanel(specCache.devastation)
 	PreservationConstructOptionsPanel(specCache.preservation)
 	AugmentationConstructOptionsPanel(specCache.augmentation)
+
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Evoker.ConstructOptionsPanel = ConstructOptionsPanel

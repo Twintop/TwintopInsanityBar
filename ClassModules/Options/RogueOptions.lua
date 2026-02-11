@@ -1487,11 +1487,8 @@ local function AssassinationConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.assassinationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Assassination", UIParent)
-	interfaceSettingsFrame.assassinationDisplayPanel.name = L["RogueAssassinationFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.assassinationDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["assassination"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.assassinationDisplayPanel, L["RogueAssassinationFull"])
+	interfaceSettingsFrame.assassinationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Assassination")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "assassination", L["RogueAssassinationFull"], interfaceSettingsFrame.assassinationDisplayPanel)
 	
 	parent = interfaceSettingsFrame.assassinationDisplayPanel
 
@@ -2270,11 +2267,8 @@ local function OutlawConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.outlawDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Outlaw", UIParent)
-	interfaceSettingsFrame.outlawDisplayPanel.name = L["RogueOutlawFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.outlawDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["outlaw"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.outlawDisplayPanel, L["RogueOutlawFull"])
+	interfaceSettingsFrame.outlawDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Outlaw")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "outlaw", L["RogueOutlawFull"], interfaceSettingsFrame.outlawDisplayPanel)
 	
 	parent = interfaceSettingsFrame.outlawDisplayPanel
 
@@ -3041,11 +3035,8 @@ local function SubtletyConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.subtletyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Subtlety", UIParent)
-	interfaceSettingsFrame.subtletyDisplayPanel.name = L["RogueSubtletyFull"]
----@diagnostic disable-next-line: undefined-field
-	interfaceSettingsFrame.subtletyDisplayPanel.parent = parent.name
-	TRB.Details.addonCategory.specs["subtlety"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.subtletyDisplayPanel, L["RogueSubtletyFull"])
+	interfaceSettingsFrame.subtletyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Subtlety")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "subtlety", L["RogueSubtletyFull"], interfaceSettingsFrame.subtletyDisplayPanel)
 
 	parent = interfaceSettingsFrame.subtletyDisplayPanel
 
@@ -3121,8 +3112,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("rogue", L["Rogue"])
 	AssassinationConstructOptionsPanel(specCache.assassination)
 	OutlawConstructOptionsPanel(specCache.outlaw)
 	SubtletyConstructOptionsPanel(specCache.subtlety)
+	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Rogue.ConstructOptionsPanel = ConstructOptionsPanel

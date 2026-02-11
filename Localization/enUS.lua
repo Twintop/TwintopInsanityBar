@@ -1839,3 +1839,7 @@ L["PaladinAudioCheckboxHolyPowerThreshold3Tooltip"] = "Play an audio cue when yo
 L["MonkAudioChiThreshold3"] = "Chi Threshold 3"
 L["MonkAudioCheckboxChiThreshold3"] = "Play when >= X Chi (Threshold 3)"
 L["MonkAudioCheckboxChiThreshold3Tooltip"] = "Play an audio cue when your current Chi reach or exceed the configured value to the right."
+
+-- Standalone Options Frame
+L["OpenTRBOptions"] = "Open Twintop's Resource Bar Options"
+L["OpenTRBOptionsDescription"] = "Click the button below or type /trb to open options."
