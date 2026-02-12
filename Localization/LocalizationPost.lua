@@ -10,3 +10,4 @@ L["BarTextInstructions"] = L["BarTextInstructions1"] .. L["BarTextInstructions2"
 
 L["FooterDiscordUrl"] = "https://discord.gg/eThqxM78xm"
 L["FooterGitHubIssuesUrl"] = "https://github.com/Twintop/TwintopInsanityBar/issues"
+L["FooterKofiUrl"] = "https://ko-fi.com/twintop"

@@ -1843,3 +1843,4 @@ L["FooterGitHubIssues"] = "GitHub Issues"
 L["FooterNews"] = "News"
 -- Minimap Button
 L["MinimapTooltipLeftClick"] = "Left-click to open settings"
+L["FooterKofi"] = "Donate on Ko-fi"

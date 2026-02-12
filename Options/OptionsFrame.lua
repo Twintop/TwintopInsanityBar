@@ -330,6 +330,7 @@ function OptionsFrame:EnsureFrame()
 	local discordIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\discord64.png"
 	local githubIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\GitHub_Invertocat_White64.png"
 	local newsIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\newspaper.png"
+	local kofiIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\kofi.png"
 	local FOOTER_BTN_WIDTH = 120
 
 	-- Footer: Discord button (right) — styled with blurple border, black bg, white text
@@ -368,10 +369,45 @@ function OptionsFrame:EnsureFrame()
 	discordIcon:SetPoint("LEFT", 8, 0)
 	discordIcon:SetTexture(discordIconPath)
 
-	-- Footer: GitHub Issues button (left of Discord) — styled with black bg, gray border, white text
+	-- Footer: Ko-fi button (left of Discord) — styled with black bg, gray border, white text
+	local kofiBtn = CreateFrame("Button", nil, footerFrame, "BackdropTemplate")
+	kofiBtn:SetSize(FOOTER_BTN_WIDTH, 20)
+	kofiBtn:SetPoint("RIGHT", discordBtn, "LEFT", -6, 0)
+	kofiBtn:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Buttons\\WHITE8X8",
+		edgeSize = 1,
+		insets = { left = 1, right = 1, top = 1, bottom = 1 },
+	})
+	kofiBtn:SetBackdropColor(0, 0, 0, 1)
+	kofiBtn:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
+	kofiBtn:EnableMouse(true)
+	kofiBtn:RegisterForClicks("AnyUp")
+
+	local kofiText = kofiBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	kofiText:SetPoint("CENTER", 8, 0)
+	kofiText:SetText(L["FooterKofi"])
+	kofiText:SetTextColor(1, 1, 1, 1)
+
+	local kofiHighlight = kofiBtn:CreateTexture(nil, "HIGHLIGHT")
+	kofiHighlight:SetAllPoints()
+	kofiHighlight:SetColorTexture(1, 1, 1, 0.1)
+
+	kofiBtn:SetScript("OnClick", function()
+		StaticPopup_Show("TRB_OPTIONSFRAME_URL", nil, nil, {
+			title = L["FooterKofi"],
+			url = L["FooterKofiUrl"]
+		})
+	end)
+	local kofiIcon = kofiBtn:CreateTexture(nil, "ARTWORK")
+	kofiIcon:SetSize(14, 14)
+	kofiIcon:SetPoint("LEFT", 8, 0)
+	kofiIcon:SetTexture(kofiIconPath)
+
+	-- Footer: GitHub Issues button (left of Ko-fi) — styled with black bg, gray border, white text
 	local githubBtn = CreateFrame("Button", nil, footerFrame, "BackdropTemplate")
 	githubBtn:SetSize(FOOTER_BTN_WIDTH, 20)
-	githubBtn:SetPoint("RIGHT", discordBtn, "LEFT", -6, 0)
+	githubBtn:SetPoint("RIGHT", kofiBtn, "LEFT", -6, 0)
 	githubBtn:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Buttons\\WHITE8X8",
