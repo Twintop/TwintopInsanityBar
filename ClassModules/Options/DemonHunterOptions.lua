@@ -1011,55 +1011,16 @@ local function HavocConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 1, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
 
-	HavocConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	HavocConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	HavocConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--HavocConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	HavocConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	HavocConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = HavocConstructBarColorsAndBehaviorPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = HavocConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = HavocConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) HavocConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = HavocConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 --[[
@@ -1508,55 +1469,16 @@ local function VengeanceConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 2, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
 
-	VengeanceConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	VengeanceConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	VengeanceConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--VengeanceConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	VengeanceConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	VengeanceConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = VengeanceConstructBarColorsAndBehaviorPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = VengeanceConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = VengeanceConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) VengeanceConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = VengeanceConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 --[[
@@ -2028,55 +1950,16 @@ local function DevourerConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 3, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.devourer = controls
 
-	DevourerConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	DevourerConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	DevourerConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--DevourerConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	DevourerConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	DevourerConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = DevourerConstructBarColorsAndBehaviorPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = DevourerConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = DevourerConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) DevourerConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = DevourerConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 

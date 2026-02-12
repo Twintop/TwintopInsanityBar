@@ -467,55 +467,20 @@ local function ConstructGlobalOptionsPanel()
 
 	yCoord = yCoord - 52
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab2", L["TabThresholds"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		Global options don't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab5", L["TabMiscellaneous"], 5, parent, 100, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Global_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, #tabs do
-		--[[
-			Global options don't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Global_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
-	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+	-- Must assign controls before BuildTabGroup, since constructors read interfaceSettingsFrame.controls.global
 	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
 
-	ConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	ConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	ConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--ShadowConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
-	ConstructMiscellaneousPanel(tabsheets[5].scrollFrame.scrollChild)
-	ConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	local tabDefinitions = {
+		{ "barDisplay", L["TabBarDisplay"], 85, ConstructBarColorsAndBehaviorPanel },
+		{ "thresholds", L["TabThresholds"], 85, ConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], 85, ConstructFontAndTextPanel },
+		{ "miscellaneous", L["TabMiscellaneous"], 100, ConstructMiscellaneousPanel },
+		{ "resetDefaults", L["TabResetDefaults"], 100, ConstructResetDefaultsPanel },
+	}
+
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, "Global", tabDefinitions, yCoord)
+
+	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end
 
 ---comment

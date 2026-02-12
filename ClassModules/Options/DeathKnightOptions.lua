@@ -1073,55 +1073,16 @@ local function BloodConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 1, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.blood = controls
 
-	BloodConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	BloodConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	BloodConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--BloodConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	BloodConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	BloodConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = BloodConstructBarColorsAndBehaviorPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = BloodConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = BloodConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) BloodConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = BloodConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 
@@ -1540,55 +1501,16 @@ local function FrostConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 2, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.frost = controls
 
-	FrostConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	FrostConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	FrostConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--FrostConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	FrostConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	FrostConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = FrostConstructBarColorsAndBehaviorPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = FrostConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = FrostConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) FrostConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = FrostConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 -- Unholy Option Menus
@@ -1985,55 +1907,16 @@ local function UnholyConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 3, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.unholy = controls
 
-	UnholyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	UnholyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	UnholyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--UnholyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	UnholyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	UnholyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = UnholyConstructBarColorsAndBehaviorPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = UnholyConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = UnholyConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) UnholyConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = UnholyConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 local function ConstructOptionsPanel(specCache)

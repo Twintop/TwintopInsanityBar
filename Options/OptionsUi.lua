@@ -1206,11 +1206,108 @@ function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width,
 	return tab
 end
 
-function TRB.Functions.OptionsUi:SwitchToBarTextTabByClassSpec(classId, specId)
+---Switches to a specific tab by key for a given class/spec's options panel.
+---@param classId integer
+---@param specId integer
+---@param tabKey string The tab key to switch to (e.g., "barText", "barDisplay")
+function TRB.Functions.OptionsUi:SwitchToTabByClassSpec(classId, specId, tabKey)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
-	local tab = _G["TwintopResourceBar_Options_" .. namePrefix .. "_Tab5"]
-	TRB.Functions.OptionsUi:SwitchTab(tab, tab.id)
+	local tab = _G["TwintopResourceBar_Options_" .. namePrefix .. "_Tab_" .. tabKey]
+	if tab then
+		TRB.Functions.OptionsUi:SwitchTab(tab, tab.id)
+	end
+end
+
+---Switches to the Bar Text tab for a given class/spec. Convenience wrapper around SwitchToTabByClassSpec.
+---@param classId integer
+---@param specId integer
+function TRB.Functions.OptionsUi:SwitchToBarTextTabByClassSpec(classId, specId)
+	TRB.Functions.OptionsUi:SwitchToTabByClassSpec(classId, specId, "barText")
+end
+
+---Standard tab key constants used across all options panels.
+TRB.Functions.OptionsUi.TabKeys = {
+	BarDisplay = "barDisplay",
+	Thresholds = "thresholds",
+	FontText = "fontText",
+	AudioTracking = "audioTracking",
+	BarText = "barText",
+	Miscellaneous = "miscellaneous",
+	ResetDefaults = "resetDefaults",
+}
+
+---Builds a dynamic set of tabs and tabsheets for an options panel.
+---@param parent Frame The parent frame to attach tabs to (e.g., the spec display panel)
+---@param namePrefix string The naming prefix (e.g., "Priest_Shadow")
+---@param tabDefinitions table[] Ordered list of tab definitions: { [1]=key:string, [2]=label:string, [3]=width:number, [4]=constructor:function(scrollChild) }
+---@param yCoord number The starting y coordinate for the tabs row. Will be adjusted internally.
+---@return number yCoord The adjusted yCoord after tabs are placed (for further content below if needed)
+function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
+	local optionsUiFuncs = TRB.Functions.OptionsUi
+
+	-- Normalize: support both positional { key, label, width, constructor } and named { key=, label=, width=, constructor= }
+	for i, def in ipairs(tabDefinitions) do
+		if def[1] == nil and def.key ~= nil then
+			def[1] = def.key
+			def[2] = def.label
+			def[3] = def.width
+			def[4] = def.constructor
+		end
+	end
+
+	local tabs = {}
+	local tabsheets = {}
+	local tabOrder = {}
+	local prevTab = nil
+
+	for i, def in ipairs(tabDefinitions) do
+		local key = def[1]
+		local label = def[2]
+		local width = def[3]
+		local frameName = "TwintopResourceBar_Options_" .. namePrefix .. "_Tab_" .. key
+		tabs[key] = optionsUiFuncs:CreateTab(frameName, label, key, parent, width, prevTab)
+		if i == 1 then
+			tabs[key]:SetPoint("TOPLEFT", 15, yCoord)
+		end
+		tabOrder[i] = key
+		prevTab = tabs[key]
+	end
+
+	yCoord = yCoord - 15
+
+	for _, def in ipairs(tabDefinitions) do
+		local key = def[1]
+		PanelTemplates_TabResize(tabs[key], 0)
+		PanelTemplates_DeselectTab(tabs[key])
+		tabs[key].Text:SetPoint("TOP", 0, 0)
+		tabsheets[key] = optionsUiFuncs:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel_" .. key, parent)
+		tabsheets[key]:Hide()
+		tabsheets[key]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	end
+
+	-- Show the first tab by default
+	local firstKey = tabOrder[1]
+	tabsheets[firstKey]:Show()
+	---@diagnostic disable-next-line: inject-field
+	tabsheets[firstKey].selected = true
+	tabs[firstKey]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	parent.tabs = tabs
+	parent.tabsheets = tabsheets
+	parent.lastTab = tabsheets[firstKey]
+	parent.lastTabId = firstKey
+	parent.tabOrder = tabOrder
+
+	-- Call each tab's constructor to populate its content
+	for _, def in ipairs(tabDefinitions) do
+		local key = def[1]
+		local constructor = def[4]
+		if constructor then
+			constructor(tabsheets[key].scrollFrame.scrollChild)
+		end
+	end
+
+	return yCoord
 end
 
 function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name)
