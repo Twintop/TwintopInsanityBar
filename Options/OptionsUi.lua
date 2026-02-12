@@ -1386,6 +1386,7 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 	tabsheets[firstKey].selected = true
 	tabs[firstKey].Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 	tabs[firstKey]:SetBackdropColor(0.3, 0.3, 0.3, 0.9)
+	tabs[firstKey].bottomCover:SetColorTexture(0.5, 0.5, 0.5, 1.0)
 	parent.tabs = tabs
 	parent.tabsheets = tabsheets
 	parent.lastTab = tabsheets[firstKey]

@@ -752,6 +752,7 @@ local function BrewmasterConstructEnergyBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, false)
 
 	-- Invoke Niuzao configuration options
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 10, 1, yCoord, {
 		endOfKey = "invokeNiuzao",
 		sectionHeader = L["MonkBrewmasterEndOfInvokeNiuzaoConfigurationHeader"],
@@ -785,12 +786,13 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 	end
 
 	-- Stagger bar colors using custom bar system
-	yCoord = yCoord - 40
+	yCoord = yCoord - 90
 	if staggerBarDef then
 		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
 	end
 
 	-- Maximum Stagger Scale slider
+	yCoord = yCoord - 40
 	controls.staggerMaxScaleSlider = TRB.Functions.OptionsUi:BuildPercentageSlider(parent, L["StaggerBarMaxScaleSlider"], 100, 1000, spec.bars.stagger.maxScale or 1.0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.staggerMaxScaleSlider.tooltip = L["StaggerBarMaxScaleTooltip"]
 	controls.staggerMaxScaleSlider:SetScript("OnValueChanged", function(self, value)
