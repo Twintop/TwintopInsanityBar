@@ -1729,4 +1729,13 @@ if locale == "zhCN" then
     L["MonkAudioChiThreshold3"] = "真气阈值3"
     L["MonkAudioCheckboxChiThreshold3"] = "真气≥X时触发 (阈值3)"
     L["MonkAudioCheckboxChiThreshold3Tooltip"] = "当你的当前真气值达到或超过右侧设定值时，播放音频提示。"
+
+    L["OpenTRBOptions"] = "打开Twintop资源条设置"
+    L["OpenTRBOptionsDescription"] = "点击下方按钮或输入 /trb 打开设置界面。"
+    L["DragAndDropEditModeMessage"] = "如需拖动调整资源条位置，请使用编辑模式。"
+    L["AboutTwintopsResourceBar"] = "关于Twintop资源条"
+    L["FooterDiscord"] = "Discord社区"
+    L["FooterGitHubIssues"] = "GitHub反馈"
+    L["FooterNews"] = "最新动态"
+    L["MinimapTooltipLeftClick"] = "左键点击打开设置"
 end
