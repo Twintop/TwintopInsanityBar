@@ -1201,7 +1201,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 		{ "staggerBar", L["TabStagger"], 125, BrewmasterConstructStaggerBarPanel },
 		{ "healthBar", L["TabHealth"], 125, BrewmasterConstructHealthBarPanel },
 		{ "barTextures", L["TabTextures"], 125, BrewmasterConstructBarTexturesPanel },
-		{ "barVisibility", L["TabDisplay"], 125, BrewmasterConstructBarVisibilityPanel },
+		{ "barVisibility", L["TabVisibility"], 125, BrewmasterConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], 175, BrewmasterConstructThresholdPanel },
 		{ "fontText", L["TabFontText"], 150, BrewmasterConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], 125, function(scrollChild) BrewmasterConstructBarTextDisplayPanel(scrollChild, cache) end },

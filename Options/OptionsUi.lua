@@ -1178,43 +1178,52 @@ function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 	if parent.lastTab then
 		parent.lastTab:Hide()
 		local lastTab = parent.tabs[parent.lastTabId]
-		lastTab:SetNormalFontObject(TRB.Options.fonts.options.tabNormalSmall)
-		lastTab.bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
+		lastTab.Text:SetFontObject(TRB.Options.fonts.options.tabNormalSmall)
+		lastTab:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
+		lastTab.bottomCover:SetColorTexture(0.1, 0.1, 0.1, 0.8)
 	end
 	parent.tabsheets[tabId]:Show()
 	local activeTab = parent.tabs[tabId]
-	activeTab:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	activeTab.bg:SetColorTexture(0.3, 0.3, 0.3, 0.9)
+	activeTab.Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	activeTab:SetBackdropColor(0.3, 0.3, 0.3, 0.9)
+	activeTab.bottomCover:SetColorTexture(0.5, 0.5, 0.5, 1.0)
 	parent.lastTab = parent.tabsheets[tabId]
 	parent.lastTabId = tabId
 end
 
 function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width)
 	width = width or 100
-	local tabHeight = 18
+	local tabHeight = 20
 	local tab = CreateFrame("Button", name, parent, "BackdropTemplate")
 	---@diagnostic disable-next-line: inject-field
 	tab.id = id
 	tab:SetSize(width, tabHeight)
 
-	-- Background texture
-	local bg = tab:CreateTexture(nil, "BACKGROUND")
-	bg:SetAllPoints()
-	bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
-	---@diagnostic disable-next-line: inject-field
-	tab.bg = bg
-
-	-- Border
+	-- Border + background via backdrop
 	tab:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true,
 		edgeSize = 8,
+		tileSize = 32,
 		insets = { left = 1, right = 1, top = 1, bottom = 1 },
 	})
+	tab:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
+
+	-- Bottom cover: hides the bottom border to create a tab effect.
+	-- Extends slightly below the frame to also cover the top border of what's beneath.
+	local bottomCover = tab:CreateTexture(nil, "OVERLAY")
+	bottomCover:SetHeight(6)
+	bottomCover:SetPoint("BOTTOMLEFT", 1, -1)
+	bottomCover:SetPoint("BOTTOMRIGHT", -1, -1)
+	bottomCover:SetColorTexture(0.1, 0.1, 0.1, 0.8)
+	---@diagnostic disable-next-line: inject-field
+	tab.bottomCover = bottomCover
 
 	-- Label
 	local label = tab:CreateFontString(nil, "OVERLAY")
 	label:SetFontObject(TRB.Options.fonts.options.tabNormalSmall)
-	label:SetPoint("CENTER", 0, 0)
+	label:SetPoint("CENTER", 0, 1)
 	label:SetText(displayText)
 	---@diagnostic disable-next-line: inject-field
 	tab.Text = label
@@ -1222,12 +1231,14 @@ function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width)
 	-- Hover highlight
 	tab:SetScript("OnEnter", function(self)
 		if parent.lastTabId ~= self.id then
-			self.bg:SetColorTexture(0.2, 0.2, 0.2, 0.9)
+			self:SetBackdropColor(0.2, 0.2, 0.2, 0.9)
+			self.bottomCover:SetColorTexture(0.35, 0.35, 0.35, 1.0)
 		end
 	end)
 	tab:SetScript("OnLeave", function(self)
 		if parent.lastTabId ~= self.id then
-			self.bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
+			self:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
+			self.bottomCover:SetColorTexture(0.1, 0.1, 0.1, 0.8)
 		end
 	end)
 
@@ -1235,7 +1246,6 @@ function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width)
 		TRB.Functions.OptionsUi:SwitchTab(self, self.id)
 	end)
 
-	tab:SetNormalFontObject(TRB.Options.fonts.options.tabNormalSmall)
 	return tab
 end
 
@@ -1299,45 +1309,68 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 	local tabsheets = {}
 	local tabOrder = {}
 
-	-- Multi-row layout: track current row width and row count
 	local leftPadding = 15
-	local tabRowHeight = 22
-	local maxWidth = parent:GetWidth() - leftPadding
-	local currentRowWidth = 0
-	local numRows = 1
-	local rowFirstTab = nil -- first tab of the current row (used as anchor for next row)
-	local prevTab = nil
+	local rightPadding = 15
+	local tabRowHeight = 20
+	local borderOverlap = 0 -- rows overlap by this amount so borders touch
+	local tabSpacing = 5 -- horizontal gap between tabs
+	local maxWidth = parent:GetWidth() - leftPadding - rightPadding
+
+	-- Pass 1: Break definitions into rows based on available width (accounting for spacing)
+	local rows = { {} }
+	local rowWidths = { 0 }
+	local currentRow = 1
 
 	for i, def in ipairs(tabDefinitions) do
-		local key = def[1]
-		local label = def[2]
 		local width = def[3]
-		local frameName = "TwintopResourceBar_Options_" .. namePrefix .. "_Tab_" .. key
-		tabs[key] = optionsUiFuncs:CreateTab(frameName, label, key, parent, width)
-		tabOrder[i] = key
-
-		if i == 1 then
-			-- First tab: anchor to parent TOPLEFT
-			tabs[key]:SetPoint("TOPLEFT", leftPadding, yCoord)
-			currentRowWidth = width
-			rowFirstTab = tabs[key]
-		elseif currentRowWidth + width > maxWidth then
-			-- Would overflow: start a new row below the first tab of the previous row
-			numRows = numRows + 1
-			tabs[key]:SetPoint("TOPLEFT", rowFirstTab, "BOTTOMLEFT", 0, 0)
-			currentRowWidth = width
-			rowFirstTab = tabs[key]
-		else
-			-- Same row: chain to the right of the previous tab
-			tabs[key]:SetPoint("LEFT", prevTab, "RIGHT")
-			currentRowWidth = currentRowWidth + width
+		local numInRow = #rows[currentRow]
+		local totalWithNew = rowWidths[currentRow] + width + (numInRow > 0 and tabSpacing or 0)
+		if numInRow > 0 and totalWithNew > maxWidth then
+			currentRow = currentRow + 1
+			rows[currentRow] = {}
+			rowWidths[currentRow] = 0
 		end
+		local n = #rows[currentRow]
+		rows[currentRow][n + 1] = def
+		rowWidths[currentRow] = rowWidths[currentRow] + width + (n > 0 and tabSpacing or 0)
+	end
 
-		prevTab = tabs[key]
+	local numRows = #rows
+
+	-- Pass 2: Create tabs, distribute extra width evenly, and position left-aligned per row
+	for rowIndex, rowDefs in ipairs(rows) do
+		local rowY = yCoord - ((rowIndex - 1) * (tabRowHeight - borderOverlap))
+		local numTabs = #rowDefs
+		local totalSpacing = (numTabs - 1) * tabSpacing
+		local baseRowWidth = 0
+		for _, def in ipairs(rowDefs) do
+			baseRowWidth = baseRowWidth + def[3]
+		end
+		local extraSpace = maxWidth - baseRowWidth - totalSpacing
+		local extraPerTab = math.floor(extraSpace / numTabs)
+		local remainder = extraSpace - (extraPerTab * numTabs)
+
+		local prevTab = nil
+		for colIndex, def in ipairs(rowDefs) do
+			local key = def[1]
+			local label = def[2]
+			local width = def[3] + extraPerTab + (colIndex <= remainder and 1 or 0)
+			local frameName = "TwintopResourceBar_Options_" .. namePrefix .. "_Tab_" .. key
+			tabs[key] = optionsUiFuncs:CreateTab(frameName, label, key, parent, width)
+			tabOrder[#tabOrder + 1] = key
+
+			if colIndex == 1 then
+				tabs[key]:SetPoint("TOPLEFT", parent, "TOPLEFT", leftPadding, rowY)
+			else
+				tabs[key]:SetPoint("LEFT", prevTab, "RIGHT", tabSpacing, 0)
+			end
+
+			prevTab = tabs[key]
+		end
 	end
 
 	-- Offset yCoord past all tab rows
-	yCoord = yCoord - (numRows * tabRowHeight)
+	yCoord = yCoord - (numRows * tabRowHeight) + ((numRows) * borderOverlap)
 
 	for _, def in ipairs(tabDefinitions) do
 		local key = def[1]
@@ -1351,8 +1384,8 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 	tabsheets[firstKey]:Show()
 	---@diagnostic disable-next-line: inject-field
 	tabsheets[firstKey].selected = true
-	tabs[firstKey]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	tabs[firstKey].bg:SetColorTexture(0.3, 0.3, 0.3, 0.9)
+	tabs[firstKey].Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	tabs[firstKey]:SetBackdropColor(0.3, 0.3, 0.3, 0.9)
 	parent.tabs = tabs
 	parent.tabsheets = tabsheets
 	parent.lastTab = tabsheets[firstKey]
