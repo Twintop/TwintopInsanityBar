@@ -455,6 +455,10 @@ local function RemoveInvalidVariablesFromBarText(tree)
 					if TRB.Data.lookupLogic[nextVariable.variable] and nextVariable.prevSymbol ~= "!" and ((nextVariable.prevSymbol ~= "{" and nextVariable.prevSymbol ~= "|" and nextVariable.prevSymbol ~= "&" and nextVariable.prevSymbol ~= "(") or (nextVariable.nextSymbol ~= "}" and nextVariable.nextSymbol ~= "|" and nextVariable.nextSymbol ~= "&" and nextVariable.nextSymbol ~= ")")) then
 						valid = TRB.Data.lookupLogic[nextVariable.variable]
 
+						if issecretvalue(valid) then
+							valid = false
+						end
+
 						if type(valid) == "number" and not TRB.Functions.Number:IsInteger(tostring(valid)) then
 							canCache = false
 						end

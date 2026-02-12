@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.2-release (2026-02-13)
+## General
+
+- Fix an issue where attempting to use `secret` values in Boolean bar text logic would cause Lua errors and stop the addon from working completely.
+
+---
+
 # 12.0.1.1-release (2026-02-12)
 ## General
 
