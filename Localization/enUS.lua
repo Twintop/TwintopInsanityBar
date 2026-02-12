@@ -1844,3 +1844,10 @@ L["FooterNews"] = "News"
 -- Minimap Button
 L["MinimapTooltipLeftClick"] = "Left-click to open settings"
 L["FooterKofi"] = "Donate on Ko-fi"
+
+-- Tab Labels for Split Bar Display
+L["TabEnergy"] = "Energy"
+L["TabStagger"] = "Stagger"
+L["TabHealth"] = "Health"
+L["TabTextures"] = "Textures"
+L["TabDisplay"] = "Display"

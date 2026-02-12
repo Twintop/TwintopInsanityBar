@@ -711,7 +711,7 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
+local function BrewmasterConstructEnergyBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -722,41 +722,7 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Monk_Brewmaster_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Monk_Brewmaster_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
-
-	-- Stagger bar dimensions using custom bar system
-	yCoord = yCoord - 40
-	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
-	if staggerBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef, L["ResourceEnergy"])
-	end
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 60
-	-- Pass stagger bar definition to include its textures in the standard texture section
-	local customBars = {}
-	if staggerBarDef then
-		table.insert(customBars, staggerBarDef)
-	end
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false, nil, false, customBars)
-
-	yCoord = yCoord - 30
-	-- Note: We use a custom visibility section for stagger since it's a custom bar
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, false, nil, true)
-
-	-- Stagger bar visibility using custom bar system
-	-- Need to offset yCoord to account for primary/health dropdown height
-	yCoord = yCoord - 70
-	if staggerBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
-	end
 
 	yCoord = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
@@ -785,6 +751,39 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, false)
 
+	-- Invoke Niuzao configuration options
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 10, 1, yCoord, {
+		endOfKey = "invokeNiuzao",
+		sectionHeader = L["MonkBrewmasterEndOfInvokeNiuzaoConfigurationHeader"],
+		gcdRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoGcds"],
+		gcdSliderLabel = L["MonkBrewmasterInvokeNiuzaoGcds"],
+		timeRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoTime"],
+		timeSliderLabel = L["MonkBrewmasterInvokeNiuzaoTime"],
+	})
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], BREWMASTER_MAX_ENERGY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, BREWMASTER_MAX_ENERGY)
+end
+
+local function BrewmasterConstructStaggerBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
+
+	-- Stagger bar dimensions using custom bar system
+	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
+	if staggerBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef, L["ResourceEnergy"])
+	end
+
 	-- Stagger bar colors using custom bar system
 	yCoord = yCoord - 40
 	if staggerBarDef then
@@ -803,25 +802,62 @@ local function BrewmasterConstructBarColorsAndBehaviorPanel(parent)
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
+end
+
+local function BrewmasterConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
+end
 
-	-- Invoke Niuzao configuration options
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 10, 1, yCoord, {
-		endOfKey = "invokeNiuzao",
-		sectionHeader = L["MonkBrewmasterEndOfInvokeNiuzaoConfigurationHeader"],
-		gcdRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoGcds"],
-		gcdSliderLabel = L["MonkBrewmasterInvokeNiuzaoGcds"],
-		timeRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoTime"],
-		timeSliderLabel = L["MonkBrewmasterInvokeNiuzaoTime"],
-	})
+local function BrewmasterConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], BREWMASTER_MAX_ENERGY)
+	local spec = TRB.Data.settings.monk.brewmaster
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, BREWMASTER_MAX_ENERGY)
+	-- Pass stagger bar definition to include its textures in the standard texture section
+	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
+	local customBars = {}
+	if staggerBarDef then
+		table.insert(customBars, staggerBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false, nil, false, customBars)
+end
+
+local function BrewmasterConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.brewmaster
+	local yCoord = 5
+
+	-- Primary and health bar visibility
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, false, nil, true)
+
+	-- Stagger bar visibility using custom bar system
+	yCoord = yCoord - 70
+	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
+	if staggerBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
+	end
 end
 
 local function BrewmasterConstructThresholdPanel(parent)
@@ -1161,11 +1197,15 @@ local function BrewmasterConstructOptionsPanel(cache)
 		end)
 
 	local tabDefinitions = {
-		{ "barDisplay", L["TabBarDisplay"], 85, BrewmasterConstructBarColorsAndBehaviorPanel },
-		{ "thresholds", L["TabThresholds"], 100, BrewmasterConstructThresholdPanel },
-		{ "fontText", L["TabFontText"], 85, BrewmasterConstructFontAndTextPanel },
-		{ "barText", L["TabBarText"], 60, function(scrollChild) BrewmasterConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ "resetDefaults", L["TabResetDefaults"], 100, BrewmasterConstructResetDefaultsPanel },
+		{ "energyBar", L["TabEnergy"], 125, BrewmasterConstructEnergyBarPanel },
+		{ "staggerBar", L["TabStagger"], 125, BrewmasterConstructStaggerBarPanel },
+		{ "healthBar", L["TabHealth"], 125, BrewmasterConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], 125, BrewmasterConstructBarTexturesPanel },
+		{ "barVisibility", L["TabDisplay"], 125, BrewmasterConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], 175, BrewmasterConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], 150, BrewmasterConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], 125, function(scrollChild) BrewmasterConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], 150, BrewmasterConstructResetDefaultsPanel },
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
