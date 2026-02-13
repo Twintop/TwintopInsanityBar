@@ -914,7 +914,7 @@ local function AssassinationConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
+local function AssassinationConstructEnergyBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -926,28 +926,9 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Rogue_Assassination_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Rogue_Assassination_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 1, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], L["ResourceComboPoints"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 1, yCoord, true, L["ResourceComboPoints"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
@@ -978,6 +959,27 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], ASSASSINATION_MAX_ENERGY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 1, ASSASSINATION_MAX_ENERGY)
+end
+
+local function AssassinationConstructComboPointsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.assassination
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.assassination
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], L["ResourceComboPoints"])
+
+	yCoord = yCoord - 60
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ComboPointColorsHeader"], oUi.xCoord, yCoord)
 	
 	controls.colors.comboPoints = {}
@@ -1042,15 +1044,51 @@ local function AssassinationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function AssassinationConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.assassination
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.assassination
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 4, 1, yCoord)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], ASSASSINATION_MAX_ENERGY)
+local function AssassinationConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 1, ASSASSINATION_MAX_ENERGY)
+	local spec = TRB.Data.settings.rogue.assassination
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.assassination
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 1, yCoord, true, L["ResourceComboPoints"])
+end
+
+local function AssassinationConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.assassination
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.assassination
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
 end
 
 local function AssassinationConstructThresholdPanel(parent)
@@ -1329,6 +1367,7 @@ local function AssassinationConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], true, true, true, true, custom)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 1, yCoord)
 end
 
@@ -1500,45 +1539,23 @@ local function AssassinationConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 1, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, AssassinationConstructEnergyBarPanel },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, AssassinationConstructComboPointsBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AssassinationConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, AssassinationConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, AssassinationConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, AssassinationConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, AssassinationConstructFontAndTextPanel },
+		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, AssassinationConstructAudioAndTrackingPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) AssassinationConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, AssassinationConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 
-	AssassinationConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	AssassinationConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	AssassinationConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	AssassinationConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	AssassinationConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	AssassinationConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 
@@ -1656,7 +1673,7 @@ local function OutlawConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function OutlawConstructBarColorsAndBehaviorPanel(parent)
+local function OutlawConstructEnergyBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1668,28 +1685,9 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Rogue_Outlaw_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Rogue_Outlaw_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], L["ResourceComboPoints"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 2, yCoord, true, L["ResourceComboPoints"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
@@ -1734,8 +1732,28 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderStealth")
 	end)
 
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], OUTLAW_MAX_ENERGY)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 1, OUTLAW_MAX_ENERGY)
+end
+
+local function OutlawConstructComboPointsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.outlaw
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.outlaw
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], L["ResourceComboPoints"])
+
+	yCoord = yCoord - 60
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ComboPointColorsHeader"], oUi.xCoord, yCoord)
 	
 	controls.colors.comboPoints = {}
@@ -1799,15 +1817,51 @@ local function OutlawConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function OutlawConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.outlaw
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.outlaw
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 4, 2, yCoord)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], OUTLAW_MAX_ENERGY)
+local function OutlawConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 1, OUTLAW_MAX_ENERGY)
+	local spec = TRB.Data.settings.rogue.outlaw
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.outlaw
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 2, yCoord, true, L["ResourceComboPoints"])
+end
+
+local function OutlawConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.outlaw
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.outlaw
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
 end
 
 local function OutlawConstructThresholdPanel(parent)
@@ -2087,6 +2141,7 @@ local function OutlawConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, true, true, true, custom)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 2, yCoord)
 end
 
@@ -2259,45 +2314,23 @@ local function OutlawConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 2, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, OutlawConstructEnergyBarPanel },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, OutlawConstructComboPointsBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, OutlawConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, OutlawConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, OutlawConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, OutlawConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, OutlawConstructFontAndTextPanel },
+		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, OutlawConstructAudioAndTrackingPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) OutlawConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, OutlawConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 
-	OutlawConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	OutlawConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	OutlawConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	OutlawConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	OutlawConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	OutlawConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 --[[
@@ -2414,7 +2447,7 @@ local function SubtletyConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
+local function SubtletyConstructEnergyBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -2426,28 +2459,9 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Rogue_Subtlety_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Rogue_Subtlety_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 3, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 3, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], L["ResourceComboPoints"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 3, yCoord, true, L["ResourceComboPoints"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
@@ -2485,6 +2499,27 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], SUBTLETY_MAX_ENERGY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 1, SUBTLETY_MAX_ENERGY)
+end
+
+local function SubtletyConstructComboPointsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.subtlety
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.subtlety
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], L["ResourceComboPoints"])
+
+	yCoord = yCoord - 60
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ComboPointColorsHeader"], oUi.xCoord, yCoord)
 	
 	controls.colors.comboPoints = {}
@@ -2555,15 +2590,51 @@ local function SubtletyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function SubtletyConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.subtlety
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.subtlety
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 4, 3, yCoord)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], SUBTLETY_MAX_ENERGY)
+local function SubtletyConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 1, SUBTLETY_MAX_ENERGY)
+	local spec = TRB.Data.settings.rogue.subtlety
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.subtlety
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 3, yCoord, true, L["ResourceComboPoints"])
+end
+
+local function SubtletyConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.rogue.subtlety
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.subtlety
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
 end
 
 local function SubtletyConstructThresholdPanel(parent)
@@ -2834,6 +2905,7 @@ local function SubtletyConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, true, true, true, custom)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 3, yCoord)
 end
 
@@ -3006,45 +3078,23 @@ local function SubtletyConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 3, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, SubtletyConstructEnergyBarPanel },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, SubtletyConstructComboPointsBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, SubtletyConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, SubtletyConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, SubtletyConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SubtletyConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, SubtletyConstructFontAndTextPanel },
+		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, SubtletyConstructAudioAndTrackingPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) SubtletyConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, SubtletyConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = controls
 
-	SubtletyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	SubtletyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	SubtletyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	SubtletyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	SubtletyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	SubtletyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 local function ConstructOptionsPanel(specCache)

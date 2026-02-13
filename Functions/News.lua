@@ -12,10 +12,16 @@ local content = [====[
 
 ---
 
-# 12.0.1.2-release (2026-02-13)
+# 12.0.1.2-release (2026-02-14)
 ## General
 
+- [#352](#352) Reorganize options menus to spread out and group options across more tabs to make them easier to navigate.
 - Fix an issue where attempting to use `secret` values in Boolean bar text logic would cause Lua errors and stop the addon from working completely.
+- Add a checkbox toggle to control minimap button visibility.
+
+### Localization
+
+- [#609](#609) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Rogue
 ### Outlaw and Subtlety

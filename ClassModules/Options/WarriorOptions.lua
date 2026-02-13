@@ -736,37 +736,20 @@ local function ArmsConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function ArmsConstructBarColorsAndBehaviorPanel(parent)
+local function ArmsConstructRageBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.warrior.arms
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.arms
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Warrior_Arms_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Arms_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 1, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 1, yCoord, false)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 30
@@ -780,13 +763,52 @@ local function ArmsConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 1, 1, yCoord)
-
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], ARMS_MAX_RAGE)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], 1, ARMS_MAX_RAGE)
+end
+
+local function ArmsConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.arms
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.arms
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 1, 1, yCoord)
+end
+
+local function ArmsConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.arms
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.arms
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 1, yCoord, false)
+end
+
+local function ArmsConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.arms
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.arms
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
 end
 
 local function ArmsConstructThresholdPanel(parent)
@@ -938,6 +960,7 @@ local function ArmsConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, true, true, true, nil)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 1, yCoord)
 end
 
@@ -1086,55 +1109,21 @@ local function ArmsConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 1, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ArmsConstructRageBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ArmsConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ArmsConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ArmsConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ArmsConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ArmsConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ArmsConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ArmsConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
 
-	ArmsConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	ArmsConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	ArmsConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--ArmsConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	ArmsConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	ArmsConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 
@@ -1251,37 +1240,20 @@ local function FuryConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function FuryConstructBarColorsAndBehaviorPanel(parent)
+local function FuryConstructRageBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.warrior.fury
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.fury
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Warrior_Fury_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Fury_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 1, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 60
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
 
 	--[[yCoord = yCoord - 30
@@ -1302,13 +1274,52 @@ local function FuryConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 1, 2, yCoord)
-
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], FURY_MAX_RAGE)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], 1, FURY_MAX_RAGE)
+end
+
+local function FuryConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.fury
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.fury
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 1, 2, yCoord)
+end
+
+local function FuryConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.fury
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.fury
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
+end
+
+local function FuryConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.fury
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.fury
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
 end
 
 local function FuryConstructThresholdPanel(parent)
@@ -1425,6 +1436,7 @@ local function FuryConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, true, true, true, nil)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 2, yCoord)
 end
 
@@ -1571,55 +1583,21 @@ local function FuryConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 2, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "rageBar", L["TabRage"], oUi.tabWidth.small, FuryConstructRageBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, FuryConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, FuryConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, FuryConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, FuryConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, FuryConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) FuryConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, FuryConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.fury = controls
 
-	FuryConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	FuryConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	FuryConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--FuryConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	FuryConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	FuryConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 
@@ -1736,44 +1714,20 @@ local function ProtectionConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
+local function ProtectionConstructRageBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.warrior.protection
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.protection
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Warrior_Protection_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Protection_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 1, 3, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"), L["ResourceRage"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 3, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives") })
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
-
-	-- Defensives bar visibility using custom bar system
-	yCoord = yCoord - 70
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 1, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"))
-
-	yCoord = yCoord - 20
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 30
@@ -1787,16 +1741,77 @@ local function ProtectionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], true, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 1, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"))
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 1, 3, yCoord)
-
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], PROTECTION_MAX_RAGE)
-	
+
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], 1, PROTECTION_MAX_RAGE)
+end
+
+local function ProtectionConstructDefensivesBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.protection
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.protection
+	local yCoord = 5
+
+	local defensivesBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives")
+	if defensivesBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord, defensivesBarDef, L["ResourceRage"])
+	end
+
+	yCoord = yCoord - 90
+	if defensivesBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 1, 3, yCoord, defensivesBarDef)
+	end
+end
+
+local function ProtectionConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.protection
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.protection
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 1, 3, yCoord)
+end
+
+local function ProtectionConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.protection
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.protection
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 3, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives") })
+end
+
+local function ProtectionConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.protection
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.protection
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
+
+	-- Defensives bar visibility using custom bar system
+	yCoord = yCoord - 70
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 1, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"))
 end
 
 local function ProtectionConstructThresholdPanel(parent)
@@ -1939,6 +1954,7 @@ local function ProtectionConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], true, true, true, true, custom)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 3, yCoord)
 end
 
@@ -2085,55 +2101,22 @@ local function ProtectionConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 3, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ProtectionConstructRageBarPanel },
+		{ "defensivesBar", L["TabDefensives"], oUi.tabWidth.small, ProtectionConstructDefensivesBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ProtectionConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ProtectionConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ProtectionConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ProtectionConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ProtectionConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ProtectionConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ProtectionConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.protection = controls
 
-	ProtectionConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	ProtectionConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	ProtectionConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--ProtectionConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	ProtectionConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	ProtectionConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 

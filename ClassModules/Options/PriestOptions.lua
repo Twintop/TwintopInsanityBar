@@ -696,7 +696,7 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
+local function DisciplineConstructManaBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -708,28 +708,12 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 
 	local spec = TRB.Data.settings.priest.discipline
 
-	local title = ""
-
-	controls.buttons.exportButton_Priest_Discipline_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Priest_Discipline_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDisciplineFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 5, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 1, yCoord)
 
 	--yCoord = yCoord - 30
 	--yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], L["PriestDisciplinePowerWords"])
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord)--, true, L["PriestDisciplinePowerWords"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
@@ -816,9 +800,51 @@ local function DisciplineConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)]]
+end
 
-	yCoord = yCoord - 40
+local function DisciplineConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.discipline
+	local yCoord = 5
+
+	local spec = TRB.Data.settings.priest.discipline
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 1, yCoord)
+end
+
+local function DisciplineConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.discipline
+	local yCoord = 5
+
+	local spec = TRB.Data.settings.priest.discipline
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord)--, true, L["PriestDisciplinePowerWords"])
+end
+
+local function DisciplineConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.discipline
+	local yCoord = 5
+
+	local spec = TRB.Data.settings.priest.discipline
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 end
 
 local function DisciplineConstructThresholdPanel(parent)
@@ -958,55 +984,19 @@ local function DisciplineConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDisciplineFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 5, 1, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	--[[
-		This spec doesn't use Threshold Lines. Make the width 1 instead of 100
-	]]
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
-		]]
-		if i == 2 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.discipline = controls
 
-	DisciplineConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	--DisciplineConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	DisciplineConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	DisciplineConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	DisciplineConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	DisciplineConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DisciplineConstructManaBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DisciplineConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarVisibilityPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DisciplineConstructFontAndTextPanel },
+		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = DisciplineConstructAudioAndTrackingPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) DisciplineConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = DisciplineConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 
@@ -1125,7 +1115,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function HolyConstructBarColorsAndBehaviorPanel(parent)
+local function HolyConstructManaBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1137,28 +1127,12 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 
 	local spec = TRB.Data.settings.priest.holy
 
-	local title = ""
-
-	controls.buttons.exportButton_Priest_Holy_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Priest_Holy_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHolyFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 5, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord)
 
 	--yCoord = yCoord - 30
 	--yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], L["PriestHolyHolyWords"])
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord)--, true, L["PriestHolyHolyWords"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"])
 	
 	--[[yCoord = yCoord - 30
@@ -1405,9 +1379,6 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 2, yCoord)
-	
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 2, yCoord, {
 		endOfKey = "apotheosis",
 		sectionHeader = L["PriestHolyHeaderEndOfApotheosisConfiguration"],
@@ -1416,6 +1387,51 @@ local function HolyConstructBarColorsAndBehaviorPanel(parent)
 		timeRadioLabel = L["PriestHolyCheckboxApotheosisTime"],
 		timeSliderLabel = L["PriestHolyApotheosisTime"],
 	})
+end
+
+local function HolyConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.holy
+	local yCoord = 5
+
+	local spec = TRB.Data.settings.priest.holy
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 2, yCoord)
+end
+
+local function HolyConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.holy
+	local yCoord = 5
+
+	local spec = TRB.Data.settings.priest.holy
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord)--, true, L["PriestHolyHolyWords"])
+end
+
+local function HolyConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.holy
+	local yCoord = 5
+
+	local spec = TRB.Data.settings.priest.holy
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 end
 
 local function HolyConstructThresholdPanel(parent)
@@ -1560,55 +1576,19 @@ local function HolyConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHolyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 5, 2, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	--[[
-		This spec doesn't use Threshold Lines. Make the width 1 instead of 100
-	]]
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 1, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Threshold Lines. Don't let this tab be made/rendered.
-		]]
-		if i == 2 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
 
-	HolyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	--HolyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	HolyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	HolyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	HolyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	HolyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = HolyConstructManaBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HolyConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HolyConstructBarVisibilityPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = HolyConstructFontAndTextPanel },
+		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = HolyConstructAudioAndTrackingPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) HolyConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = HolyConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 
@@ -1726,7 +1706,7 @@ local function ShadowConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function ShadowConstructBarColorsAndBehaviorPanel(parent)
+local function ShadowConstructInsanityBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1738,28 +1718,9 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Priest_Shadow_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Priest_Shadow_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadowFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 5, 3, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceInsanity"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true)
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowShadowWordMadness"], L["PriestShadowShadowWordMadnessAbbreviation"], false, nil, true, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 30
@@ -1888,12 +1849,6 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 3, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
-
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 3, yCoord, {
 		endOfKey = "voidform",
 		sectionHeader = L["PriestShadowHeaderEndOfVoidformConfiguration"],
@@ -1908,6 +1863,68 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], 1, SHADOW_MAX_INSANITY)
+end
+
+local function ShadowConstructManaBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.shadow
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shadow
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceInsanity"])
+
+	yCoord = yCoord - 90
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
+end
+
+local function ShadowConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.shadow
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shadow
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 5, 3, yCoord)
+end
+
+local function ShadowConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.shadow
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shadow
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true)
+end
+
+local function ShadowConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.shadow
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shadow
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowShadowWordMadness"], L["PriestShadowShadowWordMadnessAbbreviation"], false, nil, true, true)
 end
 
 local function ShadowConstructThresholdPanel(parent)
@@ -1981,6 +1998,7 @@ local function ShadowConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], true, true, false, true, custom)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 3, yCoord)
 end
 
@@ -2147,45 +2165,21 @@ local function ShadowConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadowFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 5, 3, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
 
-	ShadowConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	ShadowConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	ShadowConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	ShadowConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	ShadowConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	ShadowConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "insanityBar", label = L["TabInsanity"], width = oUi.tabWidth.small, constructor = ShadowConstructInsanityBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ShadowConstructManaBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ShadowConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ShadowConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ShadowConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = ShadowConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = ShadowConstructFontAndTextPanel },
+		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = ShadowConstructAudioAndTrackingPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) ShadowConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = ShadowConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 local function ConstructOptionsPanel(specCache)

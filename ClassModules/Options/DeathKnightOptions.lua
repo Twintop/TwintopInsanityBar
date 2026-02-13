@@ -776,7 +776,7 @@ local function BloodConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function BloodConstructBarColorsAndBehaviorPanel(parent)
+local function BloodConstructRunicPowerBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -788,26 +788,9 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Blood_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_DeathKnight_Blood_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 6, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 30
@@ -819,8 +802,29 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], true, false)
-	
+
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], BLOOD_MAX_RUNIC_POWER)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], 1, BLOOD_MAX_RUNIC_POWER)
+end
+
+local function BloodConstructRunesBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.blood
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
@@ -877,15 +881,51 @@ local function BloodConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function BloodConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.blood
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 1, yCoord)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], BLOOD_MAX_RUNIC_POWER)
+local function BloodConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], 1, BLOOD_MAX_RUNIC_POWER)
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.blood
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"])
+end
+
+local function BloodConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.blood
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
 end
 
 local function BloodConstructThresholdPanel(parent)
@@ -944,6 +984,7 @@ local function BloodConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 1, yCoord)
 end
 
@@ -1073,55 +1114,20 @@ local function BloodConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 1, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.blood = controls
 
-	BloodConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	BloodConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	BloodConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--BloodConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	BloodConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	BloodConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = BloodConstructRunicPowerBarPanel },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = BloodConstructRunesBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BloodConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = BloodConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BloodConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = BloodConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = BloodConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) BloodConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = BloodConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 
@@ -1220,7 +1226,7 @@ local function FrostConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function FrostConstructBarColorsAndBehaviorPanel(parent)
+local function FrostConstructRunicPowerBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1232,26 +1238,9 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Frost_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_DeathKnight_Frost_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 6, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 2, yCoord, true, L["ResourceRunes"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 30
@@ -1263,8 +1252,29 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], true, false)
-	
+
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], FROST_MAX_RUNIC_POWER)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], 1, FROST_MAX_RUNIC_POWER)
+end
+
+local function FrostConstructRunesBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.frost
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
@@ -1321,15 +1331,51 @@ local function FrostConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function FrostConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.frost
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 2, yCoord)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], FROST_MAX_RUNIC_POWER)
+local function FrostConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], 1, FROST_MAX_RUNIC_POWER)
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.frost
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 2, yCoord, true, L["ResourceRunes"])
+end
+
+local function FrostConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.frost
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
 end
 
 local function FrostConstructThresholdPanel(parent)
@@ -1411,6 +1457,7 @@ local function FrostConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 2, yCoord)
 end
 
@@ -1540,55 +1587,20 @@ local function FrostConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 2, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.frost = controls
 
-	FrostConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	FrostConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	FrostConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--FrostConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	FrostConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	FrostConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = FrostConstructRunicPowerBarPanel },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = FrostConstructRunesBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FrostConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FrostConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FrostConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) FrostConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = FrostConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 -- Unholy Option Menus
@@ -1686,7 +1698,7 @@ local function UnholyConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function UnholyConstructBarColorsAndBehaviorPanel(parent)
+local function UnholyConstructRunicPowerBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1698,28 +1710,11 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_DeathKnight_Unholy_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_DeathKnight_Unholy_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 6, 3, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 3, yCoord, true, L["ResourceRunes"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
-	
+
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
@@ -1729,9 +1724,29 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], true, false)
-	
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], UNHOLY_MAX_RUNIC_POWER)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], 1, UNHOLY_MAX_RUNIC_POWER)
+end
+
+local function UnholyConstructRunesBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.unholy
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
@@ -1788,15 +1803,51 @@ local function UnholyConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.sortRunes = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function UnholyConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.unholy
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 3, yCoord)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], UNHOLY_MAX_RUNIC_POWER)
+local function UnholyConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], 1, UNHOLY_MAX_RUNIC_POWER)
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.unholy
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 3, yCoord, true, L["ResourceRunes"])
+end
+
+local function UnholyConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.unholy
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
 end
 
 local function UnholyConstructThresholdPanel(parent)
@@ -1856,6 +1907,7 @@ local function UnholyConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 3, yCoord)
 end
 
@@ -1985,55 +2037,20 @@ local function UnholyConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 6, 3, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
-
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.unholy = controls
 
-	UnholyConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	UnholyConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	UnholyConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--UnholyConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	UnholyConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	UnholyConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = UnholyConstructRunicPowerBarPanel },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = UnholyConstructRunesBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = UnholyConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = UnholyConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = UnholyConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = UnholyConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = UnholyConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) UnholyConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = UnholyConstructResetDefaultsPanel },
+	}, yCoord)
 end
 
 local function ConstructOptionsPanel(specCache)

@@ -117,7 +117,13 @@ TRB.Data.constants = {
 		sliderHeight = 20,
 		maxOptionsWidth = 720,
 		colorPickerTextWidth = 350,
-		colorPickerFrameSize = 25
+		colorPickerFrameSize = 25,
+		tabWidth = {
+			small = 125,
+			medium = 150,
+			large = 175,
+			xlarge = 250
+		}
 	}
 }
 

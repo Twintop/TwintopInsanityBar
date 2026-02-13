@@ -655,7 +655,7 @@ local function BeastMasteryConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
+local function BeastMasteryConstructFocusBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -667,27 +667,11 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", true, L["HunterBeastMasteryBestialWrath"], L["HunterBeastMasteryBestialWrath"], false, nil, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
-	
+
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 3, 1, yCoord, {
 		endOfKey = "bestialWrath",
@@ -729,10 +713,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 1, yCoord)
-
-
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 3, 1, yCoord, {
 		endOfKey = "bestialWrath",
 		sectionHeader = L["HunterBeastMasteryHeaderEndOfBestialWrathConfiguration"],
@@ -744,9 +724,55 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], BEAST_MASTERY_MAX_FOCUS)
-	
+
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
+end
+
+local function BeastMasteryConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.beastMastery
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.beastMastery
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 1, yCoord)
+end
+
+local function BeastMasteryConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.beastMastery
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.beastMastery
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
+end
+
+local function BeastMasteryConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.beastMastery
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.beastMastery
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", true, L["HunterBeastMasteryBestialWrath"], L["HunterBeastMasteryBestialWrath"], false, nil, true)
 end
 
 local function BeastMasteryConstructThresholdPanel(parent)
@@ -883,6 +909,7 @@ local function BeastMasteryConstructThresholdPanel(parent)
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 1, yCoord)
 end
 
@@ -1033,45 +1060,22 @@ local function BeastMasteryConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 1, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 120, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		PanelTemplates_TabResize(tabs[i], 0)
-		PanelTemplates_DeselectTab(tabs[i])
-		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-		tabsheets[i]:Hide()
-		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, BeastMasteryConstructFocusBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BeastMasteryConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, BeastMasteryConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BeastMasteryConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BeastMasteryConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, BeastMasteryConstructFontAndTextPanel },
+		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, BeastMasteryConstructAudioAndTrackingPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) BeastMasteryConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, BeastMasteryConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 
-	BeastMasteryConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	BeastMasteryConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	BeastMasteryConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	BeastMasteryConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	BeastMasteryConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	BeastMasteryConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 --[[
@@ -1174,7 +1178,7 @@ local function MarksmanshipConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
+local function MarksmanshipConstructFocusBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1186,25 +1190,9 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Hunter_Marksmanship_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 2, yCoord, false)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 30
@@ -1231,9 +1219,6 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 2, yCoord)
-
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 3, 2, yCoord, {
 		endOfKey = "trueshot",
 		sectionHeader = L["HunterMarksmanshipHeaderEndOfTrueshotConfiguration"],
@@ -1248,8 +1233,52 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 1, MARKSMANSHIP_MAX_FOCUS)
+end
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
+local function MarksmanshipConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.marksmanship
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.marksmanship
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 2, yCoord)
+end
+
+local function MarksmanshipConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.marksmanship
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.marksmanship
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 2, yCoord, false)
+end
+
+local function MarksmanshipConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.marksmanship
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.marksmanship
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, false, nil, true)
 end
 
 local function MarksmanshipConstructThresholdPanel(parent)
@@ -1383,6 +1412,7 @@ local function MarksmanshipConstructThresholdPanel(parent)
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
 end
 
@@ -1594,55 +1624,21 @@ local function MarksmanshipConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 2, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, MarksmanshipConstructFocusBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MarksmanshipConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, MarksmanshipConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, MarksmanshipConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, MarksmanshipConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, MarksmanshipConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) MarksmanshipConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, MarksmanshipConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 
-	MarksmanshipConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	MarksmanshipConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	MarksmanshipConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--MarksmanshipConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	MarksmanshipConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	MarksmanshipConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 --[[
@@ -1746,7 +1742,7 @@ local function SurvivalConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
+local function SurvivalConstructFocusBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1758,27 +1754,11 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Hunter_Survival_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Hunter_Survival_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 3, 3, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, false)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
-	
+
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 3, 3, yCoord, {
 		endOfKey = "takedown",
@@ -1803,9 +1783,6 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)
-
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 3, 3, yCoord, {
 		endOfKey = "takedown",
 		sectionHeader = L["HunterSurvivalHeaderEndOfTakedownConfiguration"],
@@ -1820,8 +1797,52 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 1, SURVIVAL_MAX_FOCUS)
+end
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
+local function SurvivalConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.survival
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.survival
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)
+end
+
+local function SurvivalConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.survival
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.survival
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, false)
+end
+
+local function SurvivalConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.survival
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.survival
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, false, nil, true)
 end
 
 local function SurvivalConstructThresholdPanel(parent)
@@ -1920,6 +1941,7 @@ local function SurvivalConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
 end
 
@@ -2074,55 +2096,21 @@ local function SurvivalConstructOptionsPanel(cache)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 3, true, true, true, true, true, false)
 		end)
 
-	local tabs = {}
-	local tabsheets = {}
-
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab1", L["TabBarDisplay"], 1, parent, 85)
-	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab2", L["TabThresholds"], 2, parent, 100, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab3", L["TabFontText"], 3, parent, 85, tabs[2])
-	--[[
-		This spec doesn't use Audio & Tracking options. Make the width 1 instead of 120
-	]]
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab4", L["TabAudioTracking"], 4, parent, 1, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab5", L["TabBarText"], 5, parent, 60, tabs[4])
-	tabs[6] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_" .. namePrefix .. "_Tab6", L["TabResetDefaults"], 6, parent, 100, tabs[5])
-
-	yCoord = yCoord - 15
-
-	for i = 1, 6 do
-		--[[
-			This spec doesn't use Audio & Tracking options. Don't let this tab be made/rendered.
-		]]
-		if i == 4 then
-			tabs[i]:Hide()
-		else
-			PanelTemplates_TabResize(tabs[i], 0)
-			PanelTemplates_DeselectTab(tabs[i])
-			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel" .. i, parent)
-			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		end
-	end
-
-	tabsheets[1]:Show()
-	tabsheets[1].selected = true
-	tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
-	parent.tabs = tabs
-	parent.tabsheets = tabsheets
-	parent.lastTab = tabsheets[1]
-	parent.lastTabId = 1
+	local tabDefinitions = {
+		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, SurvivalConstructFocusBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, SurvivalConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, SurvivalConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, SurvivalConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SurvivalConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, SurvivalConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) SurvivalConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, SurvivalConstructResetDefaultsPanel },
+	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 
-	SurvivalConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
-	SurvivalConstructThresholdPanel(tabsheets[2].scrollFrame.scrollChild)
-	SurvivalConstructFontAndTextPanel(tabsheets[3].scrollFrame.scrollChild)
-	--SurvivalConstructAudioAndTrackingPanel(tabsheets[4].scrollFrame.scrollChild)
-	SurvivalConstructBarTextDisplayPanel(tabsheets[5].scrollFrame.scrollChild, cache)
-	SurvivalConstructResetDefaultsPanel(tabsheets[6].scrollFrame.scrollChild)
+	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 

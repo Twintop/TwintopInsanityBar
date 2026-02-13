@@ -270,7 +270,6 @@ if locale == "zhCN" then
     L["BarDisplayTextCustomizationHeader"] = "资源条显示与文字自定义"
     L["IsBarEnabledForSpecTooltip"] = "%s专精下启用Twintop资源条"
     L["ExportSpecialization"] = "导出专精配置"
-    L["TabBarDisplay"] = "资源条显示"
     L["TabFontText"] = "字体与文字"
     L["TabAudioTracking"] = "音效与追踪"
     L["TabBarText"] = "资源条文字"

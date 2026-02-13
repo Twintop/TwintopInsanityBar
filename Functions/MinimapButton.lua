@@ -60,6 +60,7 @@ function TRB.Functions.MinimapButton:Show()
 		TRB.Data.settings.core.minimap.hide = false
 	end
 	icon:Show(ADDON_NAME)
+	self:SyncCheckbox()
 end
 
 ---Hide the minimap button and update the saved setting
@@ -68,6 +69,18 @@ function TRB.Functions.MinimapButton:Hide()
 		TRB.Data.settings.core.minimap.hide = true
 	end
 	icon:Hide(ADDON_NAME)
+	self:SyncCheckbox()
+end
+
+---Sync the minimap checkbox in Global Options with the current visibility state
+function TRB.Functions.MinimapButton:SyncCheckbox()
+	local controls = TRB.Frames.interfaceSettingsFrameContainer
+		and TRB.Frames.interfaceSettingsFrameContainer.controls
+		and TRB.Frames.interfaceSettingsFrameContainer.controls.global
+	if controls and controls.checkBoxes and controls.checkBoxes.minimapIcon then
+		local isVisible = not (TRB.Data.settings.core.minimap and TRB.Data.settings.core.minimap.hide)
+		controls.checkBoxes.minimapIcon:SetChecked(isVisible)
+	end
 end
 
 ---Toggle the minimap button visibility
